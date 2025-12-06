@@ -7,18 +7,4 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-// Note: This schema will be populated by running:
-// npx prisma db pull
-// 
-// This will introspect your existing Supabase database and create
-// Prisma models from the current database schema.
-
-// Placeholder model - will be replaced by introspection
-model _Placeholder {
-  id String @id @default(uuid())
-  
-  @@map("_placeholder")
 }
