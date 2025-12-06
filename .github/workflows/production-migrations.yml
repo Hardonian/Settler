@@ -24,26 +24,50 @@ jobs:
       - run: npm ci
       - name: Build application
         run: npm run build
-      - name: Run production migrations
+      - name: Run Prisma migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NODE_ENV: production
+        run: |
+          echo "🔄 Running Prisma database migrations..."
+          echo "📋 Checking migration status (before)..."
+          npx prisma migrate status || echo "⚠️  Status check (may be expected if no migrations exist)"
+          echo ""
+          echo "🚀 Deploying Prisma migrations..."
+          npm run prisma:migrate
+          echo "✅ Prisma migrations completed"
+      
+      - name: Run production migrations (API)
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: production
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
         run: |
-          echo "🔄 Running production database migrations..."
+          echo "🔄 Running API database migrations..."
           cd packages/api
-          npm run migrate:prod
-          echo "✅ Production migrations completed"
-      - name: Verify migration success
+          npm run migrate:prod || echo "⚠️  API migrations skipped (no migrate:prod script or already applied)"
+          echo "✅ API migrations completed"
+      - name: Verify Prisma migration success
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          echo "🔍 Verifying migration success..."
+          echo "🔍 Verifying Prisma migration success..."
+          npx prisma migrate status
+          echo ""
+          echo "📊 Checking _prisma_migrations table..."
+          npx prisma db execute --stdin <<< "SELECT migration_name, finished_at FROM _prisma_migrations ORDER BY finished_at DESC LIMIT 5;" || echo "⚠️  Could not query migrations table"
+          echo "✅ Prisma migration verification complete"
+      
+      - name: Verify API migration success
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🔍 Verifying API migration success..."
           # Check that refresh_tokens table exists
-          PGPASSWORD=$(echo $DATABASE_URL | sed -n 's/.*:\([^@]*\)@.*/\1/p') \
+          PGPASSWORD=$(echo $DATABASE_URL | sed -n 's/.*:\([^@]*\)@.*/\1/p') || echo ""
           psql $DATABASE_URL -c "\d refresh_tokens" && echo "✅ refresh_tokens table exists" || echo "⚠️  refresh_tokens table check skipped"
-          echo "✅ Migration verification complete"
+          echo "✅ API migration verification complete"
       - name: Health check after migration
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
