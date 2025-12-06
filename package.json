@@ -40,6 +40,7 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",
+    "migration:guardian": "tsx scripts/migration-guardian.ts",
     "postinstall": "prisma generate 2>/dev/null || true"
   },
   "lint-staged": {
@@ -53,13 +54,16 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
+    "@prisma/client": "^7.1.0",
     "@types/node": "^20.10.0",
+    "@upstash/redis": "^1.35.7",
     "dotenv": "^17.2.3",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "pg": "^8.16.3",
     "prettier": "^3.1.1",
+    "prisma": "^7.1.0",
     "tsx": "^4.7.0",
     "turbo": "^2.6.2",
     "typescript": "^5.7.2"

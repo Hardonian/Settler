@@ -1,0 +1,150 @@
+name: Migration Guardian
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual trigger
+  push:
+    branches:
+      - main
+    paths:
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+      - 'scripts/migration-guardian.ts'
+
+env:
+  # GitHub Secrets - these will be available as environment variables
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+  UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+  UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+
+jobs:
+  migration-guardian:
+    name: Run Migration Guardian
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate || npx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Run Migration Guardian
+        run: npm run migration:guardian
+        env:
+          # All secrets are already in env: section above, but explicitly list here for clarity
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+
+      - name: Upload Migration Log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-log
+          path: MIGRATION_LOG.md
+          retention-days: 30
+
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let logContent = '';
+            try {
+              logContent = fs.readFileSync('MIGRATION_LOG.md', 'utf-8');
+              // Extract the latest run summary
+              const runs = logContent.split('## Run:');
+              const latestRun = runs[runs.length - 1];
+              const outcomeMatch = latestRun.match(/STATE: (.*?)(?:\n|$)/);
+              const outcome = outcomeMatch ? outcomeMatch[1] : 'Unknown';
+              
+              const body = `## Migration Guardian Results
+              
+              **Outcome:** \`${outcome}\`
+              
+              <details>
+              <summary>View Migration Log</summary>
+              
+              \`\`\`
+              ${latestRun.substring(0, 2000)}
+              \`\`\`
+              
+              </details>
+              
+              [View Full Log](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            } catch (error) {
+              console.log('Could not read migration log:', error.message);
+            }
+
+      - name: Create Issue on Failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let logContent = '';
+            try {
+              logContent = fs.readFileSync('MIGRATION_LOG.md', 'utf-8');
+            } catch (error) {
+              logContent = 'Migration log not available';
+            }
+            
+            const title = `🚨 Migration Guardian Failed - ${new Date().toISOString()}`;
+            const body = `## Migration Guardian Failure
+            
+            **Workflow Run:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            **Commit:** \`${{ github.sha }}\`
+            **Branch:** \`${{ github.ref }}\`
+            
+            ### Migration Log
+            <details>
+            <summary>View Full Log</summary>
+            
+            \`\`\`
+            ${logContent.substring(0, 10000)}
+            \`\`\`
+            
+            </details>
+            
+            ### Next Steps
+            1. Review the migration log above
+            2. Check database connectivity
+            3. Verify Prisma migrations are valid
+            4. Re-run the workflow once issues are resolved
+            `;
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['bug', 'migration-failure', 'urgent']
+            });
