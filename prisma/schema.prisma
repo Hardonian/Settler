@@ -7,4 +7,166 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// BILLING INFRASTRUCTURE MODELS
+// ============================================================================
+
+model BillingAccount {
+  id                String    @id @default(uuid())
+  userId            String    @db.Uuid
+  tenantId          String?   @db.Uuid
+  stripeCustomerId  String?   @unique
+  stripeAccountId   String?
+  email             String
+  name              String?
+  address           Json?
+  taxId             String?
+  currency          String    @default("usd")
+  status            String    @default("active") // active, suspended, cancelled
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  subscriptions     Subscription[]
+  addOnPurchases    AddOnPurchase[]
+  usageEvents       UsageEvent[]
+  usageAggregates   UsageAggregateDaily[]
+
+  @@index([userId])
+  @@index([tenantId])
+  @@index([stripeCustomerId])
+  @@index([status])
+  @@map("billing_accounts")
+}
+
+model Subscription {
+  id                    String    @id @default(uuid())
+  billingAccountId      String    @db.Uuid
+  stripeSubscriptionId  String?   @unique
+  stripePriceId         String?
+  planId                String    // base, pro, enterprise
+  planName              String    // "Settler Core"
+  status                String    // active, cancelled, past_due, trialing
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean   @default(false)
+  cancelledAt           DateTime?
+  trialStart            DateTime?
+  trialEnd              DateTime?
+  metadata              Json?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  billingAccount        BillingAccount @relation(fields: [billingAccountId], references: [id])
+
+  @@index([billingAccountId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+  @@map("subscriptions")
+}
+
+model AddOn {
+  id                String    @id @default(uuid())
+  integrationId     String    @unique // tiktok, wix, ga4, paypal-payouts, whatsapp-telegram
+  name              String    // "TikTok Shop + TikTok Ads"
+  description       String?
+  category          String    // integration, feature, support
+  basePriceMonthly  Decimal   @db.Decimal(10, 2)
+  usagePricePerUnit Decimal?  @db.Decimal(10, 6) // per order, per event, etc.
+  usageUnit         String?   // order, event, message, payout
+  stripeProductId   String?
+  stripePriceId     String?
+  isActive          Boolean   @default(true)
+  isStandard        Boolean   @default(false) // true if included in base plan
+  metadata          Json?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  purchases         AddOnPurchase[]
+
+  @@index([integrationId])
+  @@index([isActive])
+  @@index([isStandard])
+  @@map("add_ons")
+}
+
+model AddOnPurchase {
+  id                String    @id @default(uuid())
+  billingAccountId  String    @db.Uuid
+  addOnId           String    @db.Uuid
+  stripeSubscriptionItemId String? @unique
+  status            String    @default("active") // active, cancelled, expired
+  purchasedAt       DateTime  @default(now())
+  cancelledAt       DateTime?
+  metadata          Json?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id])
+  addOn             AddOn @relation(fields: [addOnId], references: [id])
+
+  @@index([billingAccountId])
+  @@index([addOnId])
+  @@index([status])
+  @@map("add_on_purchases")
+}
+
+model UsageEvent {
+  id                String    @id @default(uuid())
+  billingAccountId  String    @db.Uuid
+  projectId         String?   @db.Uuid
+  userId            String?   @db.Uuid
+  tenantId          String?   @db.Uuid
+  eventType        String    // auth_user_created, db_query, webhook_event, ai_request, etc.
+  integrationId     String?   // stripe, shopify, tiktok, etc.
+  addOnId           String?   @db.Uuid
+  quantity          Decimal   @db.Decimal(15, 6) // can be fractional
+  unit              String?   // request, job, event, message, etc.
+  metadata          Json?
+  timestamp         DateTime  @default(now())
+  aggregated        Boolean   @default(false) // true once aggregated into daily table
+
+  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id])
+
+  @@index([billingAccountId])
+  @@index([projectId])
+  @@index([userId])
+  @@index([tenantId])
+  @@index([eventType])
+  @@index([integrationId])
+  @@index([timestamp])
+  @@index([aggregated])
+  @@index([billingAccountId, eventType, timestamp])
+  @@map("usage_events")
+}
+
+model UsageAggregateDaily {
+  id                String    @id @default(uuid())
+  billingAccountId  String    @db.Uuid
+  projectId         String?   @db.Uuid
+  tenantId          String?   @db.Uuid
+  date              DateTime  @db.Date
+  eventType         String
+  integrationId     String?
+  addOnId           String?   @db.Uuid
+  totalQuantity     Decimal   @db.Decimal(15, 6)
+  eventCount        Int       @default(0)
+  estimatedCost     Decimal?  @db.Decimal(10, 2)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id])
+
+  @@unique([billingAccountId, projectId, date, eventType, integrationId, addOnId])
+  @@index([billingAccountId])
+  @@index([projectId])
+  @@index([tenantId])
+  @@index([date])
+  @@index([eventType])
+  @@index([integrationId])
+  @@map("usage_aggregate_daily")
 }

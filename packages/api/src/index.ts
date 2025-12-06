@@ -30,6 +30,7 @@ import { notificationsRouter } from "./routes/notifications";
 import { usageRouter } from "./routes/usage";
 import { batchRouter } from "./routes/batch";
 import { exportsRouter } from "./routes/exports";
+import { billingRouter } from "./routes/billing";
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
 import { featureFlagsMiddleware } from "./middleware/feature-flags";
 import { usageTrackingMiddleware } from "./middleware/usage-tracking";
@@ -318,6 +319,9 @@ app.use("/api/v2/notifications", authMiddleware, notificationsRouter);
 // Usage tracking routes (requires auth)
 app.use("/api/v1/usage", authMiddleware, usageRouter);
 app.use("/api/v2/usage", authMiddleware, usageRouter);
+
+// Billing routes (requires auth, except webhook endpoint)
+app.use("/api/billing", billingRouter);
 
 // User routes (requires auth)
 import userRouter from "./routes/user";
