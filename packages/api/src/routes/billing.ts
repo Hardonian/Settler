@@ -559,7 +559,9 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
     let event: Stripe.Event;
 
     try {
-      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+      // req.body is already a Buffer from express.raw() middleware
+      const body = req.body instanceof Buffer ? req.body : Buffer.from(JSON.stringify(req.body));
+      event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err) {
       logError("Webhook signature verification failed", err);
       return res.status(400).json({

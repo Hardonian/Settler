@@ -157,6 +157,13 @@ const ipLimiter = rateLimit({
 
 app.use("/api/", ipLimiter);
 
+// Stripe webhook needs raw body for signature verification
+// Register it BEFORE JSON parser
+app.use(
+  "/api/billing/webhook",
+  express.raw({ type: "application/json", limit: "1mb" })
+);
+
 // Body parsing with size and depth limits
 function countDepth(obj: unknown, current = 0): number {
   if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
@@ -322,6 +329,10 @@ app.use("/api/v2/usage", authMiddleware, usageRouter);
 
 // Billing routes (requires auth, except webhook endpoint)
 app.use("/api/billing", billingRouter);
+
+// Admin billing configuration routes
+import { adminBillingConfigRouter } from "./routes/admin/billing-config";
+app.use("/api/admin/billing", authMiddleware, adminBillingConfigRouter);
 
 // User routes (requires auth)
 import userRouter from "./routes/user";
