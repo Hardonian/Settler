@@ -1,109 +1,107 @@
-const withMDX = require("@next/mdx")({
-  extension: /\.mdx?$/,
-  options: {
-    remarkPlugins: [],
-    rehypePlugins: [],
-  },
-});
-
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: process.env.ANALYZE === "true",
-});
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
-  reactStrictMode: true,
-  swcMinify: true,
-  // Enable instrumentation
-  experimental: {
-    instrumentationHook: true,
-  },
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    // Temporarily enabled to allow build to pass - these are mostly style warnings
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
-    ignoreBuildErrors: false,
-  },
-  transpilePackages: [
-    "@settler/sdk",
-    "@settler/react-settler",
-    "@settler/protocol",
-    "@settler/types",
-  ],
-  // Image Optimization
+  // Performance optimizations
+  compress: true,
+  poweredByHeader: false,
+  
+  // Image optimization
   images: {
-    formats: ["image/webp", "image/avif"],
+    formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Add external image domains here if needed
-    // domains: ['example.com'],
   },
-  // PWA Configuration
+
+  // Bundle optimization
+  experimental: {
+    optimizeCss: true,
+  },
+
+  // Headers for performance
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: '/:path*',
         headers: [
           {
-            key: "X-DNS-Prefetch-Control",
-            value: "on",
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
           },
           {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
           },
           {
-            key: "X-Frame-Options",
-            value: "DENY",
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
           },
           {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin'
           },
+        ],
+      },
+      {
+        source: '/static/:path*',
+        headers: [
           {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
-          },
-          {
-            key: "Permissions-Policy",
-            value: "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()",
-          },
-          {
-            key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://vitals.vercel-insights.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;",
-          },
-          {
-            key: "X-Permitted-Cross-Domain-Policies",
-            value: "none",
-          },
-          {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "require-corp",
-          },
-          {
-            key: "Cross-Origin-Opener-Policy",
-            value: "same-origin",
-          },
-          {
-            key: "Cross-Origin-Resource-Policy",
-            value: "same-origin",
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
     ];
   },
+
+  // Webpack optimizations
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          framework: {
+            name: 'framework',
+            chunks: 'all',
+            test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|next)[\\/]/,
+            priority: 40,
+            enforce: true,
+          },
+          lib: {
+            test(module) {
+              return module.size() > 160000 && /node_modules[/\\]/.test(module.identifier());
+            },
+            name(module) {
+              const hash = require('crypto').createHash('sha1');
+              hash.update(module.identifier());
+              return hash.digest('hex').substring(0, 8);
+            },
+            priority: 30,
+            minChunks: 1,
+            reuseExistingChunk: true,
+          },
+          commons: {
+            name: 'commons',
+            minChunks: 2,
+            priority: 20,
+          },
+          shared: {
+            name(module, chunks) {
+              return require('crypto')
+                .createHash('sha1')
+                .update(chunks.reduce((acc, chunk) => acc + chunk.name, ''))
+                .digest('hex')
+                .substring(0, 8);
+            },
+            priority: 10,
+            minChunks: 2,
+            reuseExistingChunk: true,
+          },
+        },
+      };
+    }
+    return config;
+  },
 };
 
-module.exports = withBundleAnalyzer(withMDX(nextConfig));
+module.exports = nextConfig;

@@ -1,0 +1,36 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { integrationId: string } }
+) {
+  try {
+    const { integrationId } = params;
+    const searchParams = request.nextUrl.searchParams;
+    const currentVersion = searchParams.get("current") || "1.0.0";
+
+    // Mock version data (in production, fetch from integration registry)
+    const versionInfo = {
+      current: currentVersion,
+      latest: "2.1.0",
+      changelog: [
+        "Improved error handling for API rate limits",
+        "Added support for webhook retries",
+        "Enhanced data validation",
+        "Performance optimizations",
+      ],
+      breakingChanges: currentVersion.startsWith("1.")
+        ? [
+            "API response format changed (migration required)",
+            "Webhook signature format updated",
+          ]
+        : [],
+      requiresMigration: currentVersion.startsWith("1."),
+    };
+
+    return NextResponse.json(versionInfo);
+  } catch (error) {
+    console.error("Error in versions GET:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

@@ -1,0 +1,58 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { integrationId: string } }
+) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { integrationId } = params;
+
+    // Get current integration
+    const { data: integration } = await supabase
+      .from("integration_credentials")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("integration_id", integrationId)
+      .single();
+
+    if (!integration) {
+      return NextResponse.json({ error: "Integration not found" }, { status: 404 });
+    }
+
+    // In production, this would:
+    // 1. Backup current configuration
+    // 2. Run migration scripts if needed
+    // 3. Update integration version
+    // 4. Test new version
+    // 5. Rollback on failure
+
+    // For now, just update version
+    const { error: updateError } = await supabase
+      .from("integration_credentials")
+      .update({
+        version: "2.1.0",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", integration.id);
+
+    if (updateError) {
+      console.error("Error upgrading integration:", updateError);
+      return NextResponse.json({ error: "Failed to upgrade" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, version: "2.1.0" });
+  } catch (error) {
+    console.error("Error in upgrade POST:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
