@@ -2,12 +2,12 @@
  * Ingestion Service
  * Handles local data ingestion, schema inference, and PII detection
  */
-import Database from 'better-sqlite3';
-import { PIIRedactionService } from './PIIRedactionService';
+import Database from "better-sqlite3";
+import { PIIRedactionService } from "./PIIRedactionService";
 export interface InferredSchema {
     fields: Array<{
         name: string;
-        type: 'string' | 'number' | 'date' | 'boolean' | 'unknown';
+        type: "string" | "number" | "date" | "boolean" | "unknown";
         piiType?: string;
     }>;
 }

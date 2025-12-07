@@ -2,8 +2,8 @@
  * Sync Service
  * Handles synchronization of local data with Settler Cloud
  */
-import { AxiosInstance } from 'axios';
-import Database from 'better-sqlite3';
+import { AxiosInstance } from "axios";
+import Database from "better-sqlite3";
 export declare class SyncService {
     private cloudApi;
     private db;

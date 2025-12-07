@@ -45,20 +45,20 @@ class ModelManager {
     models = new Map();
     modelDir;
     constructor(dataDir) {
-        this.modelDir = path.join(dataDir, 'models');
+        this.modelDir = path.join(dataDir, "models");
         // Ensure models directory exists
         if (!fs.existsSync(this.modelDir)) {
             fs.mkdirSync(this.modelDir, { recursive: true });
         }
     }
     async loadModels() {
-        logger_1.logger.info('Loading models', { modelDir: this.modelDir });
+        logger_1.logger.info("Loading models", { modelDir: this.modelDir });
         // In production, this would:
         // 1. Download models from Settler Cloud
         // 2. Load ONNX Runtime, TensorRT, or other runtime
         // 3. Initialize models for inference
         // For now, just log that models would be loaded
-        logger_1.logger.info('Models loaded (placeholder)');
+        logger_1.logger.info("Models loaded (placeholder)");
     }
     async getModel(modelName) {
         return this.models.get(modelName) || null;
@@ -70,8 +70,8 @@ class ModelManager {
         }
         // In production, this would run actual inference
         // For now, return placeholder
-        logger_1.logger.debug('Running inference', { modelName });
-        return { result: 'placeholder' };
+        logger_1.logger.debug("Running inference", { modelName });
+        return { result: "placeholder" };
     }
 }
 exports.ModelManager = ModelManager;

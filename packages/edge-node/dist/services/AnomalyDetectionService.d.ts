@@ -2,11 +2,11 @@
  * Anomaly Detection Service
  * Detects anomalies in transaction data using ML models
  */
-import Database from 'better-sqlite3';
-import { ModelManager } from './ModelManager';
+import Database from "better-sqlite3";
+import { ModelManager } from "./ModelManager";
 export interface Anomaly {
     type: string;
-    severity: 'low' | 'medium' | 'high' | 'critical';
+    severity: "low" | "medium" | "high" | "critical";
     transactionData: Record<string, unknown>;
     score?: number;
 }

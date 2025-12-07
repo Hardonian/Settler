@@ -2,8 +2,8 @@
  * Matching Service
  * Performs local fuzzy matching and candidate scoring using optimized models
  */
-import Database from 'better-sqlite3';
-import { ModelManager } from './ModelManager';
+import Database from "better-sqlite3";
+import { ModelManager } from "./ModelManager";
 export interface Candidate {
     sourceId: string;
     targetId: string;
