@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Loader2, ArrowLeft, CheckCircle2, AlertCircle, Clock, Download, RefreshCw } from "lucide-react";
+import { Loader2, ArrowLeft, CheckCircle2, Clock, Download, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 interface JobDetail {
@@ -40,7 +40,6 @@ interface JobDetail {
 
 export default function JobDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const jobId = params.jobId as string;
   const [job, setJob] = useState<JobDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);

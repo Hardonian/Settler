@@ -133,7 +133,6 @@ export default function EdgeNodesPage() {
                     asChild
                     variant="outline"
                     size="sm"
-                    onClick={() => router.push(`/edge-ai/nodes/${node.id}`)}
                   >
                     <Link href={`/edge-ai/nodes/${node.id}`}>View Details</Link>
                   </Button>
