@@ -287,7 +287,7 @@ export async function updateIntegrationHealth(
     updated_at: string;
     last_successful_sync?: string;
     last_failed_sync?: string;
-    error_message?: string | null;
+    error_message?: string | null | undefined;
     error_count?: number;
     auto_disabled?: boolean;
   } = {
@@ -302,7 +302,7 @@ export async function updateIntegrationHealth(
     updateData.error_message = null;
   } else {
     updateData.last_failed_sync = new Date().toISOString();
-    updateData.error_message = errorMessage;
+    updateData.error_message = errorMessage || null;
     updateData.error_count = (existing?.error_count || 0) + 1;
   }
 
