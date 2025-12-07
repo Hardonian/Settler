@@ -51,16 +51,80 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
     };
   }, [open]);
 
+  React.useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  // Focus trap management
+  const dialogRef = React.useRef<HTMLDivElement>(null);
+  const previousFocusRef = React.useRef<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    previousFocusRef.current = document.activeElement as HTMLElement;
+
+    const timer = setTimeout(() => {
+      const firstFocusable = dialogRef.current?.querySelector(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      ) as HTMLElement;
+      firstFocusable?.focus();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      previousFocusRef.current?.focus();
+    };
+  }, [open]);
+
+  // Trap focus within dialog
+  React.useEffect(() => {
+    if (!open) return;
+
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !dialogRef.current) return;
+
+      const focusableElements = dialogRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleTabKey);
+    return () => document.removeEventListener("keydown", handleTabKey);
+  }, [open]);
+
   if (!open) return null;
 
   return (
     <DialogContext.Provider value={{ open, onOpenChange }}>
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 z-[1050] flex items-center justify-center p-4" ref={dialogRef}>
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
           onClick={() => onOpenChange(false)}
+          aria-hidden="true"
         />
-        <div className="relative z-50">{children}</div>
+        <div className="relative z-[1050]">{children}</div>
       </div>
     </DialogContext.Provider>
   );
@@ -74,18 +138,23 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
       <div
         ref={ref}
         className={cn(
-          "relative bg-white dark:bg-slate-900 rounded-lg shadow-lg",
-          "border border-slate-200 dark:border-slate-800",
-          "p-6 w-full max-w-lg mx-4",
-          "max-h-[90vh] overflow-y-auto",
+          "relative bg-card text-card-foreground rounded-lg shadow-lg",
+          "border border-border",
+          "p-4 md:p-6 w-full max-w-lg",
+          "max-h-[90vh] max-h-[calc(100vh-2rem)] overflow-y-auto",
+          "focus:outline-none",
           className
         )}
+        role="dialog"
+        aria-modal="true"
         {...props}
       >
         <Button
           variant="ghost"
-          className="absolute right-4 top-4 h-6 w-6 p-0 rounded-sm opacity-70 hover:opacity-100"
+          size="icon"
+          className="absolute right-4 top-4 h-8 w-8 opacity-70 hover:opacity-100"
           onClick={() => onOpenChange(false)}
+          aria-label="Close dialog"
         >
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
@@ -132,7 +201,7 @@ const DialogDescription = React.forwardRef<HTMLParagraphElement, DialogDescripti
     return (
       <p
         ref={ref}
-        className={cn("text-sm text-slate-500 dark:text-slate-400", className)}
+        className={cn("text-sm text-muted-foreground", className)}
         {...props}
       >
         {children}

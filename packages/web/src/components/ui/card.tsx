@@ -50,7 +50,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          "rounded-lg border bg-card text-card-foreground",
+          "rounded-lg border border-border bg-card text-card-foreground",
           "transition-shadow duration-200 ease-out",
           "motion-reduce:transition-none",
           elevationClasses[elevation],
@@ -68,7 +68,7 @@ Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-5 md:p-6", className)} {...props}>
+    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-4 md:p-6", className)} {...props}>
       {children}
     </div>
   )
@@ -99,7 +99,7 @@ CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn("p-5 md:p-6 pt-0", className)} {...props}>
+    <div ref={ref} className={cn("p-4 md:p-6 pt-0", className)} {...props}>
       {children}
     </div>
   )
@@ -108,7 +108,7 @@ CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn("flex items-center p-5 md:p-6 pt-0", className)} {...props}>
+    <div ref={ref} className={cn("flex items-center p-4 md:p-6 pt-0", className)} {...props}>
       {children}
     </div>
   )

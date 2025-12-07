@@ -107,5 +107,26 @@ router.get("/fx-rates", (0, authorization_1.requirePermission)(Permissions_1.Per
         (0, error_handler_1.handleRouteError)(res, error, "Failed to get FX rates", 500);
     }
 });
+/**
+ * POST /api/v1/currency/sync-rates
+ * Sync FX rates from external provider
+ */
+router.post("/sync-rates", (0, authorization_1.requirePermission)(Permissions_1.Permission.JOBS_WRITE), async (req, res) => {
+    try {
+        const tenantId = req.tenantId;
+        const baseCurrency = req.body.baseCurrency || "USD";
+        const date = req.body.date ? new Date(req.body.date) : undefined;
+        const syncedCount = await fxService.syncFXRates(tenantId, baseCurrency, date);
+        (0, api_response_1.sendSuccess)(res, {
+            syncedCount,
+            baseCurrency,
+            date: date?.toISOString() || new Date().toISOString(),
+            message: `Synced ${syncedCount} FX rates from external provider`,
+        });
+    }
+    catch (error) {
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to sync FX rates", 500);
+    }
+});
 exports.default = router;
 //# sourceMappingURL=currency.js.map

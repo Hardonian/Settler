@@ -7,7 +7,7 @@
 "use client";
 
 import React from "react";
-import { Skeleton } from "@/components/ui/loading";
+import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Card } from "@/components/ui/card";
 import { logger } from "../logging/logger";

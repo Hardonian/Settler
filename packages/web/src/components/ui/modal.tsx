@@ -156,10 +156,10 @@ const Modal: React.FC<ModalProps> = ({
   if (!isMounted || !open) return null;
 
   const sizeClasses = {
-    sm: "max-w-md",
-    default: "max-w-lg",
-    lg: "max-w-2xl",
-    xl: "max-w-4xl",
+    sm: "max-w-md mx-4",
+    default: "max-w-lg mx-4",
+    lg: "max-w-2xl mx-4",
+    xl: "max-w-4xl mx-4",
     full: "max-w-full mx-4",
   };
 
@@ -171,13 +171,14 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[1050] flex items-center justify-center p-4"
       onClick={handleBackdropClick}
+      role="presentation"
       aria-hidden="true"
     >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm transition-opacity"
         aria-hidden="true"
       />
 
@@ -185,10 +186,11 @@ const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={cn(
-          "relative z-50 w-full rounded-lg border bg-card text-card-foreground shadow-lg",
+          "relative z-[1050] w-full rounded-lg border border-border bg-card text-card-foreground shadow-lg",
           "animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-4",
-          "max-h-[90vh] overflow-y-auto",
+          "max-h-[90vh] max-h-[calc(100vh-2rem)] overflow-y-auto",
           "motion-reduce:animate-none",
+          "focus:outline-none",
           sizeClasses[size]
         )}
         onClick={(e) => e.stopPropagation()}
@@ -199,29 +201,39 @@ const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between border-b p-5 md:p-6">
+          <div className="flex items-start justify-between border-b border-border p-4 md:p-6">
             <div className="flex-1 min-w-0 pr-4">
               {title && (
-                <h2 id="modal-title" className="text-xl md:text-2xl font-semibold">
+                <h2 id="modal-title" className="text-xl md:text-2xl font-semibold text-foreground">
                   {title}
                 </h2>
               )}
               {description && (
-                <p id="modal-description" className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                <p
+                  id="modal-description"
+                  className="mt-1.5 text-sm text-muted-foreground leading-relaxed"
+                >
                   {description}
                 </p>
               )}
             </div>
             {showCloseButton && (
-              <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close modal" className="flex-shrink-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                aria-label="Close modal"
+                className="flex-shrink-0 h-8 w-8"
+              >
                 <X className="h-4 w-4" />
+                <span className="sr-only">Close</span>
               </Button>
             )}
           </div>
         )}
 
         {/* Content */}
-        <div className="p-5 md:p-6">{children}</div>
+        <div className="p-4 md:p-6">{children}</div>
       </div>
     </div>
   );

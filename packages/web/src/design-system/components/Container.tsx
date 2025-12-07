@@ -24,11 +24,11 @@ export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
 const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
   ({ className, maxWidth = "xl", padding = "default", center = true, children, ...props }, ref) => {
     const maxWidthClasses = {
-      sm: "max-w-screen-sm",
-      md: "max-w-screen-md",
-      lg: "max-w-screen-lg",
-      xl: "max-w-screen-xl",
-      "2xl": "max-w-[1400px]",
+      sm: "max-w-screen-sm", // 640px
+      md: "max-w-screen-md", // 768px
+      lg: "max-w-screen-lg", // 1024px
+      xl: "max-w-7xl", // 1280px (matches Tailwind's 7xl)
+      "2xl": "max-w-[1400px]", // 1400px (from tokens)
       full: "max-w-full",
     };
 

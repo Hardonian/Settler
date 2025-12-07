@@ -50,7 +50,7 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>(
       >
         {showSpinner && (
           <Loader2
-            className={cn("animate-spin text-primary-600", sizeClasses[size])}
+            className={cn("animate-spin text-primary-600 dark:text-primary-400", sizeClasses[size])}
             aria-hidden="true"
           />
         )}
@@ -59,7 +59,11 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>(
             {text}
           </p>
         )}
-        {!text && showSpinner && <span className="sr-only">Loading...</span>}
+        {!text && showSpinner && (
+          <span className="sr-only" aria-live="polite">
+            Loading...
+          </span>
+        )}
       </div>
     );
 
@@ -68,66 +72,4 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>(
 );
 Loading.displayName = "Loading";
 
-/**
- * Loading Skeleton Component
- */
-export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
-  /**
-   * Width variant
-   */
-  width?: string;
-
-  /**
-   * Height variant
-   */
-  height?: string;
-
-  /**
-   * Shape variant
-   * @default 'rect'
-   */
-  shape?: "rect" | "circle";
-}
-
-const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
-  ({ className, width, height, shape = "rect", ...props }, ref) => {
-    const widthClasses = {
-      full: "w-full",
-      sm: "w-16",
-      md: "w-32",
-      lg: "w-48",
-      xl: "w-64",
-    };
-
-    const heightClasses = {
-      sm: "h-4",
-      md: "h-6",
-      lg: "h-8",
-      xl: "h-12",
-    };
-
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "animate-pulse rounded-md bg-muted",
-          width &&
-            (typeof width === "string" && widthClasses[width as keyof typeof widthClasses]
-              ? widthClasses[width as keyof typeof widthClasses]
-              : `w-[${width}]`),
-          height &&
-            (typeof height === "string" && heightClasses[height as keyof typeof heightClasses]
-              ? heightClasses[height as keyof typeof heightClasses]
-              : `h-[${height}]`),
-          shape === "circle" && "rounded-full",
-          className
-        )}
-        {...props}
-        aria-hidden="true"
-      />
-    );
-  }
-);
-Skeleton.displayName = "Skeleton";
-
-export { Loading, Skeleton };
+export { Loading };

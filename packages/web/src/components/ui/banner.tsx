@@ -29,6 +29,13 @@ export function Banner({
     error: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-900 dark:text-red-100",
     success: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-900 dark:text-green-100",
   };
+  
+  const roleMap = {
+    info: "status",
+    warning: "alert",
+    error: "alert",
+    success: "status",
+  } as const;
 
   return (
     <div
@@ -37,16 +44,19 @@ export function Banner({
         variantStyles[variant],
         className
       )}
+      role={roleMap[variant]}
+      aria-live={variant === "error" || variant === "warning" ? "assertive" : "polite"}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex-1">{children}</div>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">{children}</div>
         {dismissible && (
           <button
             onClick={() => setDismissed(true)}
-            className="ml-4 p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded"
-            aria-label="Dismiss"
+            className="flex-shrink-0 p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors"
+            aria-label="Dismiss banner"
+            type="button"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         )}
       </div>

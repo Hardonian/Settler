@@ -63,15 +63,13 @@ const Section = React.forwardRef<HTMLElement, SectionProps>(
 
     const content = container ? <Container {...containerProps}>{children}</Container> : children;
 
-    return (
-      <Component
-        ref={ref as any}
-        className={cn(paddingClasses[padding], backgroundClasses[background], className)}
-        {...props}
-      >
-        {content}
-      </Component>
-    );
+    const ComponentProps = {
+      ref,
+      className: cn(paddingClasses[padding], backgroundClasses[background], className),
+      ...props,
+    };
+
+    return React.createElement(Component, ComponentProps, content);
   }
 );
 Section.displayName = "Section";
