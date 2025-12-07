@@ -72,11 +72,7 @@ export function APIQuotaManager() {
                     <Badge
                       variant={isCritical ? "destructive" : isWarning ? "default" : "outline"}
                       className={
-                        isCritical
-                          ? "bg-red-600"
-                          : isWarning
-                            ? "bg-amber-600"
-                            : "bg-green-600"
+                        isCritical ? "bg-red-600" : isWarning ? "bg-amber-600" : "bg-green-600"
                       }
                     >
                       {quota.used.toLocaleString()} / {quota.limit.toLocaleString()}

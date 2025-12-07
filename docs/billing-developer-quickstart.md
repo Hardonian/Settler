@@ -34,21 +34,25 @@ Quick reference guide for developers working with the billing system.
 ## Key Concepts
 
 ### 1. Billing Account
+
 - One per user
 - Links user to Stripe customer
 - Stores billing preferences
 
 ### 2. Subscription
+
 - Active subscription to base plan
 - Tracks current billing period
 - Links to Stripe subscription
 
 ### 3. Add-On Purchase
+
 - Premium feature purchase
 - Links to Stripe subscription item
 - Enables specific integrations/features
 
 ### 4. Usage Events
+
 - Individual usage occurrences
 - Logged in real-time
 - Aggregated daily for billing
@@ -149,7 +153,8 @@ Response:
 ```typescript
 import { featureGate } from "../middleware/billing-gating";
 
-router.post("/premium-feature",
+router.post(
+  "/premium-feature",
   authMiddleware,
   featureGate("advanced_analytics"), // Requires Pro plan
   async (req, res) => {
@@ -163,7 +168,8 @@ router.post("/premium-feature",
 ```typescript
 import { checkIntegrationAccess } from "../middleware/billing-gating";
 
-router.post("/integrations/:integrationId/sync",
+router.post(
+  "/integrations/:integrationId/sync",
   authMiddleware,
   checkIntegrationAccess(":integrationId"),
   async (req, res) => {
@@ -177,7 +183,8 @@ router.post("/integrations/:integrationId/sync",
 ```typescript
 import { checkUsageQuota } from "../middleware/billing-gating";
 
-router.post("/jobs",
+router.post(
+  "/jobs",
   authMiddleware,
   async (req, res, next) => {
     await checkUsageQuota(req, res, next, "reconciliation_job", 1);
@@ -198,10 +205,10 @@ import { logUsageEvent } from "../utils/usage-tracker";
 router.post("/reconcile", authMiddleware, async (req: AuthRequest, res: Response) => {
   // Get billing account
   const billingAccount = await getBillingAccount(req.user.id);
-  
+
   // Execute operation
   const result = await performReconciliation();
-  
+
   // Log usage
   await logUsageEvent({
     billingAccountId: billingAccount.id,
@@ -213,7 +220,7 @@ router.post("/reconcile", authMiddleware, async (req: AuthRequest, res: Response
     integrationId: "stripe",
     metadata: { job_id: result.id },
   });
-  
+
   return res.json(result);
 });
 ```
@@ -223,12 +230,7 @@ router.post("/reconcile", authMiddleware, async (req: AuthRequest, res: Response
 ```typescript
 import { getCurrentUsage } from "../utils/usage-tracker";
 
-const usage = await getCurrentUsage(
-  billingAccountId,
-  "reconciliation_job",
-  periodStart,
-  periodEnd
-);
+const usage = await getCurrentUsage(billingAccountId, "reconciliation_job", periodStart, periodEnd);
 ```
 
 ## Database Queries
@@ -285,7 +287,7 @@ const { data: usage } = await supabase
 const response = await fetch(`${SUPABASE_URL}/functions/v1/log-usage`, {
   method: "POST",
   headers: {
-    "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
@@ -335,14 +337,11 @@ const subscriptionItem = await stripe.subscriptionItems.create({
 ### Create Usage Record (Metered Billing)
 
 ```typescript
-await stripe.subscriptionItems.createUsageRecord(
-  subscriptionItemId,
-  {
-    quantity: usageQuantity,
-    timestamp: Math.floor(Date.now() / 1000),
-    action: "set",
-  }
-);
+await stripe.subscriptionItems.createUsageRecord(subscriptionItemId, {
+  quantity: usageQuantity,
+  timestamp: Math.floor(Date.now() / 1000),
+  action: "set",
+});
 ```
 
 ## Error Handling
@@ -359,14 +358,14 @@ try {
       message: error.message,
     });
   }
-  
+
   if (error.code === "PGRST116") {
     return res.status(404).json({
       error: "Not Found",
       message: "Billing account not found",
     });
   }
-  
+
   // Generic error
   return res.status(500).json({
     error: "Internal Server Error",
@@ -431,24 +430,24 @@ router.post("/feature", authMiddleware, async (req, res) => {
   if (!billingAccount) {
     return res.status(403).json({ error: "Billing account required" });
   }
-  
+
   // 2. Check subscription
   const subscription = await getActiveSubscription(billingAccount.id);
   if (!subscription) {
     return res.status(403).json({ error: "Active subscription required" });
   }
-  
+
   // 3. Check feature access
   if (subscription.plan_id !== "pro") {
     return res.status(403).json({ error: "Pro plan required" });
   }
-  
+
   // 4. Perform operation
   const result = await performOperation();
-  
+
   // 5. Log usage
   await logUsageEvent({...});
-  
+
   return res.json(result);
 });
 ```
@@ -456,7 +455,8 @@ router.post("/feature", authMiddleware, async (req, res) => {
 ### Pattern 2: Gate Multiple Features
 
 ```typescript
-router.post("/advanced",
+router.post(
+  "/advanced",
   authMiddleware,
   featureGate("advanced_analytics"),
   featureGate("realtime_dashboards"),
@@ -469,10 +469,7 @@ router.post("/advanced",
 ### Pattern 3: Conditional Feature Access
 
 ```typescript
-const hasAccess = await checkFeatureAccess(
-  billingAccountId,
-  "tiktok_integration"
-);
+const hasAccess = await checkFeatureAccess(billingAccountId, "tiktok_integration");
 
 if (!hasAccess) {
   return res.status(403).json({
@@ -485,18 +482,23 @@ if (!hasAccess) {
 ## Troubleshooting
 
 ### Issue: "Billing account not found"
+
 **Solution:** Create billing account first via `/api/billing/create-customer`
 
 ### Issue: "Active subscription required"
+
 **Solution:** Subscribe to base plan via `/api/billing/subscribe`
 
 ### Issue: "Add-on required"
+
 **Solution:** Purchase add-on via `/api/billing/addon/purchase`
 
 ### Issue: "Usage quota exceeded"
+
 **Solution:** Upgrade plan or wait for next billing period
 
 ### Issue: "Stripe webhook signature verification failed"
+
 **Solution:** Ensure webhook endpoint uses raw body, not parsed JSON
 
 ## Resources

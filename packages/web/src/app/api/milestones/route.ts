@@ -45,14 +45,12 @@ export async function POST(request: NextRequest) {
 
     // Update user lifecycle if this is an activation milestone
     if (milestoneType === "first_successful_run") {
-      await supabase
-        .from("user_lifecycle")
-        .upsert({
-          user_id: user.id,
-          first_successful_setup_at: new Date().toISOString(),
-          current_stage: "activation",
-          updated_at: new Date().toISOString(),
-        } as any);
+      await supabase.from("user_lifecycle").upsert({
+        user_id: user.id,
+        first_successful_setup_at: new Date().toISOString(),
+        current_stage: "activation",
+        updated_at: new Date().toISOString(),
+      } as any);
     }
 
     return NextResponse.json({ achieved: true, milestone: data });

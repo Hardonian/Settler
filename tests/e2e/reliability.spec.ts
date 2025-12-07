@@ -17,13 +17,13 @@ test.describe("E2E Reliability Tests", () => {
     await expect(page).toHaveURL(/.*dashboard/);
 
     // Complete activation
-    await page.click('text=Connect Integration');
+    await page.click("text=Connect Integration");
     await page.selectOption('select[name="integration"]', "stripe");
     await page.fill('input[name="api_key"]', "test_key");
     await page.click('button:has-text("Connect")');
 
     // Verify activation complete
-    await expect(page.locator('text=Activation Complete')).toBeVisible();
+    await expect(page.locator("text=Activation Complete")).toBeVisible();
   });
 
   test("Reconciliation job creation and execution", async ({ page }) => {
@@ -45,7 +45,7 @@ test.describe("E2E Reliability Tests", () => {
     await page.click('button:has-text("Run")');
 
     // Verify job completes
-    await expect(page.locator('text=Job Completed')).toBeVisible({ timeout: 30000 });
+    await expect(page.locator("text=Job Completed")).toBeVisible({ timeout: 30000 });
   });
 
   test("Payment processing and subscription", async ({ page }) => {
@@ -60,7 +60,7 @@ test.describe("E2E Reliability Tests", () => {
     await page.click('button[type="submit"]');
 
     // Verify subscription active
-    await expect(page.locator('text=Subscription Active')).toBeVisible();
+    await expect(page.locator("text=Subscription Active")).toBeVisible();
   });
 
   test("Integration connection and sync", async ({ page }) => {
@@ -77,12 +77,12 @@ test.describe("E2E Reliability Tests", () => {
     await page.click('button:has-text("Connect")');
 
     // Verify connection
-    await expect(page.locator('text=Connected')).toBeVisible();
+    await expect(page.locator("text=Connected")).toBeVisible();
 
     // Trigger sync
     await page.click('button:has-text("Sync Now")');
 
     // Verify sync completes
-    await expect(page.locator('text=Sync Complete')).toBeVisible({ timeout: 30000 });
+    await expect(page.locator("text=Sync Complete")).toBeVisible({ timeout: 30000 });
   });
 });

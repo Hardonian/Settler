@@ -1,26 +1,31 @@
 # Vendor Risk Assessment Matrix
 
 ## Overview
+
 This document assesses risks associated with third-party vendors and service providers used by Settler.
 
 ## Risk Categories
 
 ### 1. Data Security Risk
+
 - **High:** Vendors with access to customer data
 - **Medium:** Vendors with limited data access
 - **Low:** Vendors with no data access
 
 ### 2. Business Continuity Risk
+
 - **High:** Critical infrastructure dependencies
 - **Medium:** Important but replaceable services
 - **Low:** Non-critical services
 
 ### 3. Financial Risk
+
 - **High:** Large contracts or revenue dependency
 - **Medium:** Moderate financial exposure
 - **Low:** Minimal financial impact
 
 ### 4. Compliance Risk
+
 - **High:** GDPR, SOC 2, PCI-DSS requirements
 - **Medium:** Industry-specific compliance
 - **Low:** Basic compliance needs
@@ -30,17 +35,19 @@ This document assesses risks associated with third-party vendors and service pro
 ### Critical Vendors (High Risk)
 
 #### Supabase
+
 - **Category:** Infrastructure
 - **Risk Level:** High
 - **Data Access:** Full database access
 - **Compliance:** SOC 2 Type II, GDPR
-- **Mitigation:** 
+- **Mitigation:**
   - Regular security audits
   - Data encryption at rest and in transit
   - Backup and disaster recovery plan
   - Contract with SLA guarantees
 
 #### Stripe
+
 - **Category:** Payment Processing
 - **Risk Level:** High
 - **Data Access:** Payment data
@@ -51,6 +58,7 @@ This document assesses risks associated with third-party vendors and service pro
   - Regular security reviews
 
 #### Vercel
+
 - **Category:** Hosting
 - **Risk Level:** High
 - **Data Access:** Application code and logs
@@ -63,6 +71,7 @@ This document assesses risks associated with third-party vendors and service pro
 ### Medium Risk Vendors
 
 #### Resend
+
 - **Category:** Email Service
 - **Risk Level:** Medium
 - **Data Access:** Email addresses and content
@@ -72,6 +81,7 @@ This document assesses risks associated with third-party vendors and service pro
   - Email encryption
 
 #### Sentry
+
 - **Category:** Error Tracking
 - **Risk Level:** Medium
 - **Data Access:** Error logs and stack traces
@@ -83,6 +93,7 @@ This document assesses risks associated with third-party vendors and service pro
 ### Low Risk Vendors
 
 #### Analytics Services
+
 - **Category:** Analytics
 - **Risk Level:** Low
 - **Data Access:** Aggregated usage data
@@ -93,13 +104,13 @@ This document assesses risks associated with third-party vendors and service pro
 
 ## Risk Scoring Matrix
 
-| Vendor | Security | Continuity | Financial | Compliance | Overall |
-|--------|----------|------------|-----------|------------|---------|
-| Supabase | High | High | Medium | High | **High** |
-| Stripe | High | High | High | High | **High** |
-| Vercel | Medium | High | Medium | Medium | **Medium-High** |
-| Resend | Medium | Medium | Low | Medium | **Medium** |
-| Sentry | Medium | Low | Low | Medium | **Medium** |
+| Vendor   | Security | Continuity | Financial | Compliance | Overall         |
+| -------- | -------- | ---------- | --------- | ---------- | --------------- |
+| Supabase | High     | High       | Medium    | High       | **High**        |
+| Stripe   | High     | High       | High      | High       | **High**        |
+| Vercel   | Medium   | High       | Medium    | Medium     | **Medium-High** |
+| Resend   | Medium   | Medium     | Low       | Medium     | **Medium**      |
+| Sentry   | Medium   | Low        | Low       | Medium     | **Medium**      |
 
 ## Mitigation Strategies
 

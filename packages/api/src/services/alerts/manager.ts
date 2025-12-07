@@ -97,9 +97,7 @@ export async function resolveAlert(alertId: string): Promise<void> {
 /**
  * Get unresolved alerts
  */
-export async function getUnresolvedAlerts(
-  severity?: AlertSeverity
-): Promise<Alert[]> {
+export async function getUnresolvedAlerts(severity?: AlertSeverity): Promise<Alert[]> {
   try {
     let queryStr = `SELECT id, type, severity, message, details, resolved, created_at, resolved_at
                     FROM alerts

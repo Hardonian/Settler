@@ -62,8 +62,10 @@ export async function getCurrentUsage(
   period?: { start: Date; end: Date }
 ): Promise<number> {
   try {
-    const periodStart = period?.start || new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const periodEnd = period?.end || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+    const periodStart =
+      period?.start || new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const periodEnd =
+      period?.end || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
     const result = await query<{ metric_value: number }>(
       `SELECT metric_value
@@ -118,19 +120,13 @@ export async function trackReconciliationExecution(
 /**
  * Track export creation
  */
-export async function trackExportCreation(
-  userId: string,
-  tenantId: string
-): Promise<void> {
+export async function trackExportCreation(userId: string, tenantId: string): Promise<void> {
   await trackUsage(userId, tenantId, "exports", 1);
 }
 
 /**
  * Track playground run
  */
-export async function trackPlaygroundRun(
-  userId: string,
-  tenantId: string
-): Promise<void> {
+export async function trackPlaygroundRun(userId: string, tenantId: string): Promise<void> {
   await trackUsage(userId, tenantId, "playground_runs", 1);
 }

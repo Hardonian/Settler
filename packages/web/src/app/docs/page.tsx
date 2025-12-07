@@ -16,9 +16,7 @@ import Link from "next/link";
 export default function Docs() {
   const searchParams = useSearchParams();
   const sectionParam = searchParams.get("section");
-  const [activeSection, setActiveSection] = useState(
-    sectionParam || "getting-started"
-  );
+  const [activeSection, setActiveSection] = useState(sectionParam || "getting-started");
 
   useEffect(() => {
     if (sectionParam) {
@@ -65,7 +63,9 @@ export default function Docs() {
           </div>
           <div>
             <h3 className="text-2xl font-bold mb-5 text-slate-900 dark:text-white">Quick Start</h3>
-            <p className="text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">Get started in 5 minutes:</p>
+            <p className="text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">
+              Get started in 5 minutes:
+            </p>
             <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-6 overflow-x-auto mb-5">
               <pre className="text-green-400 text-sm">
                 <code>{`# Install the SDK

@@ -32,12 +32,7 @@ export async function identifyFrictionPoints(
   timeWindow: "day" | "week" | "month" = "week"
 ): Promise<FrictionAnalysis> {
   try {
-    const interval =
-      timeWindow === "day"
-        ? "1 day"
-        : timeWindow === "week"
-        ? "7 days"
-        : "30 days";
+    const interval = timeWindow === "day" ? "1 day" : timeWindow === "week" ? "7 days" : "30 days";
 
     const frictionPoints: FrictionPoint[] = [];
 
@@ -77,30 +72,20 @@ export async function identifyFrictionPoints(
     for (const log of errorLogs) {
       const frequency = parseInt(log.count || "0");
       const affectedUsers = parseInt(log.user_count || "0");
-      const severity =
-        frequency > 100
-          ? "high"
-          : frequency > 20
-          ? "medium"
-          : "low";
+      const severity = frequency > 100 ? "high" : frequency > 20 ? "medium" : "low";
 
       // Generate suggested fix based on error pattern
       let suggestedFix = "Review error logs and investigate root cause.";
       if (log.error_message?.toLowerCase().includes("timeout")) {
-        suggestedFix =
-          "Increase timeout settings or add retry logic with exponential backoff.";
+        suggestedFix = "Increase timeout settings or add retry logic with exponential backoff.";
       } else if (log.error_message?.toLowerCase().includes("connection")) {
-        suggestedFix =
-          "Check adapter connection health and credentials. Add connection pooling.";
+        suggestedFix = "Check adapter connection health and credentials. Add connection pooling.";
       } else if (log.error_message?.toLowerCase().includes("validation")) {
-        suggestedFix =
-          "Improve input validation and provide clearer error messages to users.";
+        suggestedFix = "Improve input validation and provide clearer error messages to users.";
       } else if (log.error_message?.toLowerCase().includes("permission")) {
-        suggestedFix =
-          "Review permission checks and ensure proper authorization middleware.";
+        suggestedFix = "Review permission checks and ensure proper authorization middleware.";
       } else if (log.error_message?.toLowerCase().includes("quota")) {
-        suggestedFix =
-          "Review quota limits and provide clearer upgrade paths for users.";
+        suggestedFix = "Review quota limits and provide clearer upgrade paths for users.";
       }
 
       frictionPoints.push({
@@ -136,9 +121,7 @@ export async function identifyFrictionPoints(
     const topIssue = frictionPoints[0] || null;
 
     // Generate summary
-    const highSeverityCount = frictionPoints.filter(
-      (p) => p.severity === "high"
-    ).length;
+    const highSeverityCount = frictionPoints.filter((p) => p.severity === "high").length;
     const summary = `Found ${totalIssues} friction points in the last ${timeWindow}. ${highSeverityCount} high-severity issues detected. Top issue: ${topIssue?.issue || "None"}.`;
 
     return {
@@ -171,9 +154,7 @@ export async function getEndpointFriction(
   days: number = 7
 ): Promise<FrictionPoint[]> {
   try {
-    const result = await identifyFrictionPoints(
-      days >= 30 ? "month" : days >= 7 ? "week" : "day"
-    );
+    const result = await identifyFrictionPoints(days >= 30 ? "month" : days >= 7 ? "week" : "day");
     return result.frictionPoints.filter((p) => p.endpoint === endpoint);
   } catch (error) {
     logInfo("Failed to get endpoint friction", {

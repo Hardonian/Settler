@@ -8,6 +8,7 @@
 ## Problem
 
 The build failed because:
+
 - `npm ci` requires package.json and package-lock.json to be in sync
 - I upgraded packages in package.json but didn't update package-lock.json
 - Vercel uses `npm ci` which doesn't update the lock file
@@ -19,9 +20,11 @@ The build failed because:
 Reverted package.json to versions compatible with existing package-lock.json, while keeping the security fix:
 
 ### Kept (Security Fix)
+
 - ✅ `jws` override: `>=3.2.3` (fixes vulnerability)
 
 ### Reverted (To Match Lock File)
+
 - `helmet`: `^8.0.0` → `^7.1.0` (lock has 7.2.0)
 - `express`: `^4.21.2` → `^4.18.2` (lock has 4.18.2)
 - `jsonwebtoken`: `^9.0.3` → `^9.0.2` (lock has 9.0.2)

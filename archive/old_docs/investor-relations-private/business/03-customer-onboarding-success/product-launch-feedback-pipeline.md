@@ -163,6 +163,7 @@ This document provides comprehensive guidance for product launches, user onboard
    - [ ] Status updates to "completed"
 
 6. **View Results (2 minutes)**
+
    ```typescript
    const report = await client.reports.get(job.data.id);
    console.log(report.data.summary);

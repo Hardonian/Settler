@@ -90,11 +90,7 @@ function getErrorDetails(error: unknown): unknown {
 /**
  * Standardize error response
  */
-export function standardizeErrorResponse(
-  error: unknown,
-  req: Request,
-  res: Response
-): void {
+export function standardizeErrorResponse(error: unknown, req: Request, res: Response): void {
   const traceId = (req as AuthRequest).traceId;
   const code = getErrorCode(error);
   const message = getErrorMessage(error);

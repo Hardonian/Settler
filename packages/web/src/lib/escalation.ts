@@ -14,10 +14,7 @@ export async function checkAndEscalateTickets(): Promise<void> {
   const supabase = createClient();
 
   // Get escalation rules
-  const { data: rules } = await supabase
-    .from("escalation_rules")
-    .select("*")
-    .eq("enabled", true);
+  const { data: rules } = await supabase.from("escalation_rules").select("*").eq("enabled", true);
 
   if (!rules || rules.length === 0) return;
 
@@ -30,7 +27,8 @@ export async function checkAndEscalateTickets(): Promise<void> {
   if (!tickets) return;
 
   for (const ticket of tickets) {
-    const ageHours = (Date.now() - new Date((ticket as any).created_at).getTime()) / (1000 * 60 * 60);
+    const ageHours =
+      (Date.now() - new Date((ticket as any).created_at).getTime()) / (1000 * 60 * 60);
 
     for (const rule of rules) {
       const condition = (rule as any).trigger_condition as {
@@ -40,13 +38,19 @@ export async function checkAndEscalateTickets(): Promise<void> {
       };
 
       // Check if rule matches
-      const matchesSeverity = !condition.severity || (ticket as any).severity === condition.severity;
+      const matchesSeverity =
+        !condition.severity || (ticket as any).severity === condition.severity;
       const matchesAge = !condition.age_hours || ageHours >= condition.age_hours;
       const matchesStatus = !condition.status || (ticket as any).status === condition.status;
 
       if (matchesSeverity && matchesAge && matchesStatus) {
         // Escalate
-        await escalateTicket((ticket as any).id, (rule as any).id, (rule as any).target_user_id, (rule as any).action);
+        await escalateTicket(
+          (ticket as any).id,
+          (rule as any).id,
+          (rule as any).target_user_id,
+          (rule as any).action
+        );
       }
     }
   }
@@ -82,7 +86,10 @@ async function escalateTicket(
     updates.assigned_to = targetUserId;
   }
 
-  await supabase.from("support_tickets").update(updates as any as never).eq("id", ticketId);
+  await supabase
+    .from("support_tickets")
+    .update(updates as any as never)
+    .eq("id", ticketId);
 
   // Log escalation
   await supabase.from("escalation_history").insert({

@@ -18,8 +18,12 @@ export function BillingCycleProgress({
   currentDate = new Date(),
   className,
 }: BillingCycleProgressProps) {
-  const totalDays = Math.ceil((periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24));
-  const daysElapsed = Math.ceil((currentDate.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24));
+  const totalDays = Math.ceil(
+    (periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const daysElapsed = Math.ceil(
+    (currentDate.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24)
+  );
   const daysRemaining = totalDays - daysElapsed;
   const percentage = (daysElapsed / totalDays) * 100;
 

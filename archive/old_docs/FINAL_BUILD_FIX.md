@@ -12,14 +12,15 @@
 **Issue:** `allowedOrigins[0]` could be undefined, and TypeScript's `exactOptionalPropertyTypes: true` requires explicit handling.
 
 **Fix:** Changed from ternary to explicit if-else with proper type:
+
 ```typescript
 let corsOrigin: string;
 if (origin && allowedOrigins.includes(origin)) {
   corsOrigin = origin;
-} else if (allowedOrigins.includes('*')) {
-  corsOrigin = '*';
+} else if (allowedOrigins.includes("*")) {
+  corsOrigin = "*";
 } else {
-  corsOrigin = allowedOrigins[0] || '*';
+  corsOrigin = allowedOrigins[0] || "*";
 }
 ```
 
@@ -30,6 +31,7 @@ This ensures `corsOrigin` is always a `string`, never `undefined`.
 ## Complete Fix Summary
 
 All 8 TypeScript errors fixed:
+
 1. ✅ Optional property type mismatches (5 errors) - Fixed with conditional spreading
 2. ✅ Unused variable - Fixed by removing `prefixLength`
 3. ✅ Possibly undefined - Fixed with null check

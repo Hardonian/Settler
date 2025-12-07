@@ -103,10 +103,7 @@ export async function trackEvents(events: AnalyticsEvent[]): Promise<void> {
 
   try {
     const values = events
-      .map(
-        (_, index) =>
-          `($${index * 3 + 1}, $${index * 3 + 2}, $${index * 3 + 3}, NOW())`
-      )
+      .map((_, index) => `($${index * 3 + 1}, $${index * 3 + 2}, $${index * 3 + 3}, NOW())`)
       .join(", ");
 
     const params = events.flatMap((e) => [

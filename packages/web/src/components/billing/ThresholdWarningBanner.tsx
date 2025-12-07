@@ -52,23 +52,15 @@ export function ThresholdWarningBanner({
             )}
           />
           <div className="flex-1">
-            {title && (
-              <h3 className="text-sm font-semibold mb-1">
-                {title}
-              </h3>
-            )}
-            <p className="text-sm">
-              {message}
-            </p>
+            {title && <h3 className="text-sm font-semibold mb-1">{title}</h3>}
+            <p className="text-sm">{message}</p>
             {onUpgrade && (
               <div className="mt-3">
                 <Button
                   onClick={onUpgrade}
                   size="sm"
                   variant={isDanger ? "default" : "outline"}
-                  className={cn(
-                    isDanger && "bg-red-600 hover:bg-red-700 text-white"
-                  )}
+                  className={cn(isDanger && "bg-red-600 hover:bg-red-700 text-white")}
                 >
                   Upgrade Plan
                 </Button>

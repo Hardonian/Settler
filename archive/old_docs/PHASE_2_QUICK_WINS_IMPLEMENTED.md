@@ -21,23 +21,30 @@ Implemented 4 high-impact, low-effort improvements from the Phase 2 Systematizat
 **File:** `packages/api/src/jobs/fx-rate-sync.ts`
 
 **Features:**
+
 - Automatically syncs FX rates for all active tenants
 - Runs daily at 1 AM UTC (via BullMQ scheduler)
 - Handles errors gracefully (continues with other tenants)
 - Logs sync progress and errors
 
 **Usage:**
+
 ```typescript
-import { syncFXRatesJob } from './jobs/fx-rate-sync';
+import { syncFXRatesJob } from "./jobs/fx-rate-sync";
 
 // Schedule in BullMQ:
-jobQueue.add('fx-rate-sync', {}, {
-  repeat: { pattern: '0 1 * * *' },
-  attempts: 3
-});
+jobQueue.add(
+  "fx-rate-sync",
+  {},
+  {
+    repeat: { pattern: "0 1 * * *" },
+    attempts: 3,
+  }
+);
 ```
 
 **Impact:**
+
 - Eliminates manual FX rate management
 - Ensures rates are always up-to-date
 - Reduces support tickets about stale rates
@@ -49,12 +56,14 @@ jobQueue.add('fx-rate-sync', {}, {
 **File:** `packages/api/src/middleware/error-standardization.ts`
 
 **Features:**
+
 - Standardizes all error responses to consistent format
 - Maps error types to error codes
 - Includes trace IDs for debugging
 - Logs server errors automatically
 
 **Error Format:**
+
 ```json
 {
   "error": "ERROR_CODE",
@@ -66,11 +75,13 @@ jobQueue.add('fx-rate-sync', {}, {
 ```
 
 **Impact:**
+
 - Consistent error handling across all endpoints
 - Better debugging with trace IDs
 - Improved error monitoring
 
 **Integration:**
+
 - Can be used alongside existing error handler
 - Provides `standardizeErrorResponse()` function
 - Can be integrated into existing error middleware
@@ -82,15 +93,17 @@ jobQueue.add('fx-rate-sync', {}, {
 **File:** `packages/api/src/services/onboarding/tracker.ts`
 
 **Features:**
+
 - Tracks user onboarding progress
 - 6 predefined steps: welcome, profile, first_job, first_reconciliation, first_export, webhook_setup
 - Calculates completion percentage
 - Provides next step recommendations
 
 **API:**
+
 ```typescript
 // Track step completion
-await trackOnboardingStep(userId, 'first_job', true);
+await trackOnboardingStep(userId, "first_job", true);
 
 // Get progress
 const progress = await getOnboardingProgress(userId);
@@ -104,6 +117,7 @@ const nextStep = await getNextOnboardingStep(userId);
 ```
 
 **Impact:**
+
 - Enables personalized onboarding flows
 - Tracks activation metrics
 - Supports automated email sequences
@@ -115,6 +129,7 @@ const nextStep = await getNextOnboardingStep(userId);
 **File:** `supabase/migrations/20260115000000_onboarding_progress.sql`
 
 **Schema:**
+
 ```sql
 CREATE TABLE onboarding_progress (
   user_id UUID NOT NULL REFERENCES users(id),
@@ -126,11 +141,13 @@ CREATE TABLE onboarding_progress (
 ```
 
 **Indexes:**
+
 - `idx_onboarding_progress_user_id` - Fast user lookups
 - `idx_onboarding_progress_completed` - Filter by completion
 - `idx_onboarding_progress_updated_at` - Sort by recency
 
 **Impact:**
+
 - Enables onboarding tracking
 - Supports analytics and reporting
 - Foundation for automated sequences
@@ -172,14 +189,16 @@ CREATE TABLE onboarding_progress (
 ## Integration Examples
 
 ### Track Job Creation
+
 ```typescript
 // In job creation endpoint
 const job = await createJob(data);
-await trackOnboardingStep(userId, 'first_job', true);
+await trackOnboardingStep(userId, "first_job", true);
 return job;
 ```
 
 ### Display Progress in Dashboard
+
 ```typescript
 // In dashboard endpoint
 const progress = await getOnboardingProgress(userId);
@@ -187,12 +206,13 @@ return {
   ...dashboardData,
   onboarding: {
     progress: progress.completionPercentage,
-    nextStep: await getNextOnboardingStep(userId)
-  }
+    nextStep: await getNextOnboardingStep(userId),
+  },
 };
 ```
 
 ### Send Completion Email
+
 ```typescript
 // In email scheduler
 const progress = await getOnboardingProgress(userId);
@@ -206,16 +226,18 @@ if (progress.completionPercentage === 100 && !progress.completedAt) {
 ## Testing
 
 ### FX Rate Sync
+
 ```bash
 # Test manually
 npm run tsx packages/api/src/jobs/fx-rate-sync.ts
 ```
 
 ### Onboarding Tracker
+
 ```typescript
 // Test tracking
-await trackOnboardingStep('user-123', 'welcome', true);
-const progress = await getOnboardingProgress('user-123');
+await trackOnboardingStep("user-123", "welcome", true);
+const progress = await getOnboardingProgress("user-123");
 console.log(progress); // Should show 16.67% completion
 ```
 

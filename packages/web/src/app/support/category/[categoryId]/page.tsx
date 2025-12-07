@@ -8,7 +8,10 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const CATEGORY_ARTICLES: Record<string, Array<{ id: string; title: string; description: string; href: string }>> = {
+const CATEGORY_ARTICLES: Record<
+  string,
+  Array<{ id: string; title: string; description: string; href: string }>
+> = {
   "getting-started": [
     {
       id: "1",
@@ -71,11 +74,7 @@ const CATEGORY_ARTICLES: Record<string, Array<{ id: string; title: string; descr
   ],
 };
 
-export default function CategoryPage({
-  params,
-}: {
-  params: Promise<{ categoryId: string }>;
-}) {
+export default function CategoryPage({ params }: { params: Promise<{ categoryId: string }> }) {
   const { categoryId } = use(params);
   const articles = CATEGORY_ARTICLES[categoryId] || [];
 

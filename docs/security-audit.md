@@ -3,9 +3,11 @@
 This document tracks security vulnerabilities found in dependencies and their resolution status.
 
 ## Audit Date
+
 2025-01-XX
 
 ## Audit Command
+
 ```bash
 npm audit --audit-level=moderate
 ```
@@ -13,20 +15,24 @@ npm audit --audit-level=moderate
 ## Summary
 
 ### High Priority Issues
+
 - **Status**: Review required
 - **Action**: Review and update vulnerable packages where safe
 
 ### Moderate Priority Issues
+
 - **Status**: Review required
 - **Action**: Update packages or document acceptable risk
 
 ### Low Priority Issues
+
 - **Status**: Monitor
 - **Action**: Update when convenient
 
 ## Known Vulnerabilities
 
 ### High Severity
+
 - **jws <3.2.3** - Improperly Verifies HMAC Signature (CVE-2024-XXXX)
   - **Status**: Fix available via `npm audit fix`
   - **Action**: Run `npm audit fix` to update to jws >=3.2.3
@@ -34,7 +40,9 @@ npm audit --audit-level=moderate
   - **Priority**: High - Should be fixed before next release
 
 ### Deprecated Packages (Informational)
+
 The following packages are deprecated but may still be in use by dependencies:
+
 - `npmlog` - Used by npm itself
 - `lodash.isequal` - Consider using native alternatives
 - `gauge` - Used by npm
@@ -68,6 +76,7 @@ The following packages are deprecated but may still be in use by dependencies:
 ## CI/CD Integration
 
 Security scanning is integrated into CI/CD:
+
 - GitHub Actions runs `npm audit` on every PR
 - Critical vulnerabilities block merges
 - Security reports are generated automatically

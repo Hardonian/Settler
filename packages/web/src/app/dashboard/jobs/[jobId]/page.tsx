@@ -7,7 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Loader2, ArrowLeft, CheckCircle2, AlertCircle, Clock, Download, RefreshCw } from "lucide-react";
+import {
+  Loader2,
+  ArrowLeft,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  Download,
+  RefreshCw,
+} from "lucide-react";
 import Link from "next/link";
 
 interface JobDetail {
@@ -161,9 +169,7 @@ export default function JobDetailPage() {
                 Created {new Date(job.createdAt).toLocaleDateString()}
               </span>
               {job.completedAt && (
-                <span>
-                  Completed {new Date(job.completedAt).toLocaleDateString()}
-                </span>
+                <span>Completed {new Date(job.completedAt).toLocaleDateString()}</span>
               )}
             </div>
           </div>
@@ -243,7 +249,9 @@ export default function JobDetailPage() {
             <CardContent>
               <div className="space-y-2">
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Adapter:</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Adapter:
+                  </span>
                   <span className="ml-2 text-sm text-slate-600 dark:text-slate-400 capitalize">
                     {job.source.adapter}
                   </span>
@@ -270,7 +278,9 @@ export default function JobDetailPage() {
             <CardContent>
               <div className="space-y-2">
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Adapter:</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Adapter:
+                  </span>
                   <span className="ml-2 text-sm text-slate-600 dark:text-slate-400 capitalize">
                     {job.target.adapter}
                   </span>

@@ -11,6 +11,7 @@ This document outlines known limitations, constraints, and current issues with S
 ### Currently Available
 
 **7 Platform Adapters:**
+
 - Stripe (payment processor)
 - PayPal (payment processor)
 - Square (payment processor)
@@ -22,6 +23,7 @@ This document outlines known limitations, constraints, and current issues with S
 ### Coming Soon
 
 We're actively adding new adapters. Coming soon:
+
 - Adyen
 - Braintree
 - WooCommerce
@@ -37,18 +39,21 @@ We're actively adding new adapters. Coming soon:
 ## Reconciliation Limits
 
 ### Free Tier
+
 - **Reconciliations:** 1,000 per month
 - **Adapters:** 2 platforms maximum
 - **Log Retention:** 7 days
 - **Support:** Community (Discord, GitHub)
 
 ### Commercial Tier
+
 - **Reconciliations:** 100,000 per month
 - **Adapters:** Unlimited
 - **Log Retention:** 30 days
 - **Support:** Email (24-hour response)
 
 ### Enterprise Tier
+
 - **Reconciliations:** Unlimited
 - **Adapters:** Unlimited
 - **Log Retention:** Custom (up to 7 years)
@@ -65,11 +70,13 @@ We're actively adding new adapters. Coming soon:
 **Status:** ✅ Fully implemented
 
 **Current Behavior:**
+
 - CSV export: ✅ Fully functional
 - JSON export: ✅ Fully functional
 - PDF export: ✅ Fully functional (includes summary, matches, unmatched, errors)
 
 **Features:**
+
 - Professional PDF reports with summary
 - Matched transactions table
 - Unmatched transactions table
@@ -77,10 +84,11 @@ We're actively adding new adapters. Coming soon:
 - Automatic pagination for large datasets
 
 **Usage:**
+
 ```typescript
 const exportResult = await settler.exports.create({
   jobId: "job_123",
-  format: "pdf"
+  format: "pdf",
 });
 // Returns PDF file stream
 ```
@@ -92,27 +100,30 @@ const exportResult = await settler.exports.create({
 **Status:** ✅ Fully functional with automatic FX rate provider
 
 **Current Behavior:**
+
 - Currency conversion logic: ✅ Implemented
 - FX rate storage: ✅ Implemented
 - Automatic FX rate fetching: ✅ Implemented (ECB provider)
 
 **Features:**
+
 - Automatic FX rate fetching from ECB (European Central Bank)
 - Manual rate entry support
 - Historical rate support
 - Rate syncing for common currencies
 
 **Usage:**
+
 ```typescript
 // Automatic: Rates fetched automatically when needed
 const rate = await settler.currency.getFXRate({
   fromCurrency: "EUR",
-  toCurrency: "USD"
+  toCurrency: "USD",
 });
 
 // Manual sync: Sync rates for common currencies
 await settler.currency.syncRates({
-  baseCurrency: "USD"
+  baseCurrency: "USD",
 });
 ```
 
@@ -123,6 +134,7 @@ await settler.currency.syncRates({
 **Status:** Partially implemented
 
 **Current Behavior:**
+
 - Exact matching: ✅ Fully functional
 - Fuzzy matching: ✅ Fully functional
 - Range matching: ✅ Fully functional
@@ -139,11 +151,13 @@ await settler.currency.syncRates({
 **Status:** Event-driven (not truly real-time)
 
 **Current Behavior:**
+
 - Scheduled jobs: ✅ Fully functional
 - Webhook integration: ✅ Fully functional
 - Instant processing: ❌ Not supported
 
 **Reality:**
+
 - Reconciliation runs on schedule (cron) or via webhook trigger
 - Processing time: Typically 1-30 seconds depending on volume
 - Not "instant" - requires job execution
@@ -157,18 +171,22 @@ await settler.currency.syncRates({
 ### Rate Limits
 
 **Free Tier:**
+
 - 100 requests per 15 minutes
 - Burst: 10 requests per second
 
 **Commercial Tier:**
+
 - 2,000 requests per 15 minutes
 - Burst: 50 requests per second
 
 **Enterprise Tier:**
+
 - Custom rate limits
 - Contact sales for details
 
 **Rate Limit Headers:**
+
 - `X-RateLimit-Limit`: Maximum requests
 - `X-RateLimit-Remaining`: Remaining requests
 - `X-RateLimit-Reset`: Reset time (Unix timestamp)
@@ -190,16 +208,19 @@ await settler.currency.syncRates({
 ### Data Retention
 
 **Free Tier:**
+
 - Transaction data: 7 days
 - Logs: 7 days
 - Reports: 7 days
 
 **Commercial Tier:**
+
 - Transaction data: 30 days
 - Logs: 30 days
 - Reports: 30 days
 
 **Enterprise Tier:**
+
 - Transaction data: Custom (up to 7 years)
 - Logs: Custom (up to 7 years)
 - Reports: Custom (up to 7 years)
@@ -215,6 +236,7 @@ await settler.currency.syncRates({
 **Typical Accuracy:** 95-99% (varies by data quality and matching rules)
 
 **Factors Affecting Accuracy:**
+
 - Data quality in source systems
 - Matching rule configuration
 - Currency differences
@@ -222,6 +244,7 @@ await settler.currency.syncRates({
 - Missing or incomplete data
 
 **Improving Accuracy:**
+
 - Fine-tune matching rules
 - Use fuzzy matching for text fields
 - Add date range tolerance
@@ -234,6 +257,7 @@ await settler.currency.syncRates({
 ### Unmatched Transactions
 
 **Common Reasons:**
+
 - Missing transactions in one system
 - Data quality issues (typos, formatting)
 - Currency conversion differences
@@ -241,6 +265,7 @@ await settler.currency.syncRates({
 - Duplicate transactions
 
 **Handling:**
+
 - Review exception queue regularly
 - Adjust matching rules as needed
 - Manually resolve exceptions
@@ -262,15 +287,18 @@ await settler.currency.syncRates({
 ### Coming Soon
 
 **Q2 2026:**
+
 - SSO (SAML, OIDC)
 - SOC 2 Type II certification
 - White-label reports
 
 **Q3 2026:**
+
 - PCI-DSS Level 1 certification
 - VPC peering
 
 **Q4 2026:**
+
 - On-premise deployment
 
 **Note:** Enterprise features marked "Coming Soon" are not available yet. Contact sales for timelines.
@@ -297,7 +325,8 @@ await settler.currency.syncRates({
 
 **Impact:** Large exports may fail.
 
-**Workaround:** 
+**Workaround:**
+
 - Use CSV export for large datasets
 - Export in smaller date ranges
 - Use pagination to process in batches
@@ -323,6 +352,7 @@ await settler.currency.syncRates({
 ### Large Volume Reconciliation
 
 **Recommendations:**
+
 - Use scheduled jobs for large volumes
 - Process in batches if possible
 - Monitor job execution time
@@ -331,6 +361,7 @@ await settler.currency.syncRates({
 ### API Response Times
 
 **Typical Response Times:**
+
 - Job creation: < 500ms
 - Job status: < 200ms
 - Report generation: 1-5 seconds (depends on volume)
@@ -362,21 +393,25 @@ await settler.currency.syncRates({
 ## Support Limitations
 
 ### Free Tier
+
 - Community support only (Discord, GitHub)
 - No guaranteed response time
 - No email support
 
 ### Commercial Tier
+
 - Email support (24-hour response time)
 - No phone support
 - No dedicated account manager
 
 ### Enterprise Tier
+
 - Dedicated account manager
 - Priority support (1-hour SLA)
 - Phone support available
 
 **Support Hours:**
+
 - Email: 24/7 (response within SLA)
 - Phone: Business hours (Enterprise only)
 
@@ -385,11 +420,13 @@ await settler.currency.syncRates({
 ## Roadmap & Future Improvements
 
 ### Q1 2026
+
 - PDF export implementation
 - Auto-trigger onboarding
 - Enhanced error messages
 
 ### Q2 2026
+
 - SSO (SAML, OIDC)
 - SOC 2 Type II certification
 - Automatic FX rate provider integration
@@ -397,11 +434,13 @@ await settler.currency.syncRates({
 - Custom matching functions (full support)
 
 ### Q3 2026
+
 - PCI-DSS Level 1 certification
 - VPC peering
 - Additional platform adapters (10+)
 
 ### Q4 2026
+
 - On-premise deployment
 - Advanced analytics
 - Custom reporting

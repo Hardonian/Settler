@@ -47,12 +47,7 @@ export const BILLING_TIERS: Record<string, BillingTier> = {
       auth_users: 1000,
       storage_gb: 10,
     },
-    features: [
-      "core_reconciliation",
-      "standard_integrations",
-      "basic_analytics",
-      "email_support",
-    ],
+    features: ["core_reconciliation", "standard_integrations", "basic_analytics", "email_support"],
   },
   pro: {
     id: "pro",
@@ -140,7 +135,7 @@ export const USAGE_PRICING_RULES: Record<string, UsagePricingRule> = {
   ai_request: {
     event_type: "ai_request",
     base_limit: 1000,
-    overage_price_per_unit: 0.10,
+    overage_price_per_unit: 0.1,
     unit: "request",
   },
 };

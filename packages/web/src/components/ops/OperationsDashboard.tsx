@@ -100,7 +100,11 @@ export function OperationsDashboard() {
                     <CardHeader className="pb-3">
                       <CardDescription>{health.component}</CardDescription>
                       <CardTitle className="text-2xl">
-                        {health.status === "healthy" ? "✓" : health.status === "degraded" ? "⚠" : "✗"}
+                        {health.status === "healthy"
+                          ? "✓"
+                          : health.status === "degraded"
+                            ? "⚠"
+                            : "✗"}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
@@ -141,7 +145,9 @@ export function OperationsDashboard() {
                     <div className="flex items-center gap-3">
                       <Zap className="w-5 h-5 text-blue-600" />
                       <div>
-                        <h4 className="font-semibold text-slate-900 dark:text-white">{func.name}</h4>
+                        <h4 className="font-semibold text-slate-900 dark:text-white">
+                          {func.name}
+                        </h4>
                         <div className="text-sm text-slate-500 dark:text-slate-400">
                           {func.invocations} invocations • {func.avgDuration}ms avg
                         </div>
@@ -177,7 +183,9 @@ export function OperationsDashboard() {
                     className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-semibold text-slate-900 dark:text-white">{queue.queueName}</h4>
+                      <h4 className="font-semibold text-slate-900 dark:text-white">
+                        {queue.queueName}
+                      </h4>
                       <Badge variant={queue.pending > 100 ? "destructive" : "default"}>
                         {queue.pending} pending
                       </Badge>

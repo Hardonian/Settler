@@ -34,7 +34,10 @@ async function verifyDeployment() {
         console.log("✅ Supabase connection verified");
       }
     } catch (error) {
-      console.log("❌ Supabase connection failed:", error instanceof Error ? error.message : String(error));
+      console.log(
+        "❌ Supabase connection failed:",
+        error instanceof Error ? error.message : String(error)
+      );
       allGood = false;
     }
   }
@@ -48,19 +51,18 @@ async function verifyDeployment() {
       await stripe.products.list({ limit: 1 });
       console.log("✅ Stripe connection verified");
     } catch (error) {
-      console.log("❌ Stripe connection failed:", error instanceof Error ? error.message : String(error));
+      console.log(
+        "❌ Stripe connection failed:",
+        error instanceof Error ? error.message : String(error)
+      );
       allGood = false;
     }
   }
 
   // 3. Check environment variables
-  const requiredEnvVars = [
-    "SUPABASE_URL",
-    "SUPABASE_ANON_KEY",
-    "SUPABASE_SERVICE_ROLE_KEY",
-  ];
+  const requiredEnvVars = ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"];
 
-  const missing = requiredEnvVars.filter(key => !process.env[key]);
+  const missing = requiredEnvVars.filter((key) => !process.env[key]);
   if (missing.length > 0) {
     console.log(`❌ Missing environment variables: ${missing.join(", ")}`);
     allGood = false;

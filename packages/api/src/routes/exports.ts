@@ -32,7 +32,12 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
 
     const supportedFormats = ["csv", "xlsx", "pdf", "json"];
     if (!supportedFormats.includes(format)) {
-      return sendError(res, 400, "BAD_REQUEST", `Unsupported format. Supported formats: ${supportedFormats.join(", ")}`);
+      return sendError(
+        res,
+        400,
+        "BAD_REQUEST",
+        `Unsupported format. Supported formats: ${supportedFormats.join(", ")}`
+      );
     }
 
     const userId = req.userId!;
@@ -41,7 +46,9 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
     }
 
     // Verify job ownership
-    const jobs = await query<{ user_id: string }>(`SELECT user_id FROM jobs WHERE id = $1`, [jobId]);
+    const jobs = await query<{ user_id: string }>(`SELECT user_id FROM jobs WHERE id = $1`, [
+      jobId,
+    ]);
     if (jobs.length === 0 || !jobs[0]) {
       return sendError(res, 404, "NOT_FOUND", "Job not found");
     }
@@ -113,9 +120,12 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
 
         // Generate CSV
         const csvHeader = "Source ID,Target ID,Amount,Currency,Confidence,Matched At\n";
-        const csvRows = matches.map((m) =>
-          `"${m.source_id}","${m.target_id}",${m.amount},"${m.currency}",${m.confidence},"${m.matched_at.toISOString()}"`
-        ).join("\n");
+        const csvRows = matches
+          .map(
+            (m) =>
+              `"${m.source_id}","${m.target_id}",${m.amount},"${m.currency}",${m.confidence},"${m.matched_at.toISOString()}"`
+          )
+          .join("\n");
         const csv = csvHeader + csvRows;
 
         res.setHeader("Content-Type", "text/csv");
@@ -177,7 +187,7 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
 /**
  * Download export file
  * GET /api/v1/exports/:exportId/download
- * 
+ *
  * Note: For PDF/CSV/JSON, files are streamed directly in POST /exports
  * This endpoint is kept for future use with file storage
  */
@@ -187,7 +197,12 @@ router.get("/:exportId/download", authMiddleware, async (_req: AuthRequest, res:
 
     // Future: Fetch from file storage (S3, R2, etc.)
     // For now, exports are streamed directly in POST /exports
-    return sendError(res, 404, "NOT_FOUND", "Export not found. Use POST /exports to generate and download directly.");
+    return sendError(
+      res,
+      404,
+      "NOT_FOUND",
+      "Export not found. Use POST /exports to generate and download directly."
+    );
   } catch (error) {
     logError("Export download failed", error);
     return sendError(res, 500, "INTERNAL_ERROR", "Failed to download export");

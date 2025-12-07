@@ -14,11 +14,13 @@ The `errorMessage` parameter is `string | undefined`, but the type definition ex
 ## Fix
 
 Changed:
+
 ```typescript
 updateData.error_message = errorMessage;
 ```
 
 To:
+
 ```typescript
 updateData.error_message = errorMessage || null;
 ```
@@ -26,6 +28,7 @@ updateData.error_message = errorMessage || null;
 This converts `undefined` to `null`, which matches the type definition.
 
 Also updated the type definition to explicitly allow `undefined`:
+
 ```typescript
 error_message?: string | null | undefined;
 ```

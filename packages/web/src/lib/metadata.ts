@@ -23,7 +23,8 @@ export function generateMetadata({
 }: PageMetadata): Metadata {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev";
   const fullTitle = title.includes("Settler") ? title : `${title} | Settler`;
-  const canonicalUrl = canonical || `${siteUrl}${typeof window !== "undefined" ? window.location.pathname : ""}`;
+  const canonicalUrl =
+    canonical || `${siteUrl}${typeof window !== "undefined" ? window.location.pathname : ""}`;
 
   const defaultKeywords = [
     "reconciliation API",
@@ -116,9 +117,7 @@ export function generatePricingMetadata(): Metadata {
  * Generate docs-specific metadata
  */
 export function generateDocsMetadata(section?: string): Metadata {
-  const title = section
-    ? `${section} - Documentation`
-    : "Documentation - API Reference & Guides";
+  const title = section ? `${section} - Documentation` : "Documentation - API Reference & Guides";
   return generateMetadata({
     title,
     description:

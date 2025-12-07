@@ -156,6 +156,7 @@ The codebase follows **Hexagonal Architecture** (Ports & Adapters) with **CQRS**
 **Copy-Pasted Logic:**
 
 - ⚠️ **Route mounting duplication**: Routes are mounted twice (v1 and v2) with identical middleware
+
   ```typescript
   // Current: Duplicated 20+ times
   app.use("/api/v1", authMiddleware, someRouter);
@@ -163,6 +164,7 @@ The codebase follows **Hexagonal Architecture** (Ports & Adapters) with **CQRS**
   ```
 
   - **Fix:** Create helper function:
+
   ```typescript
   function mountVersionedRoutes(path: string, router: Router, ...middleware: Middleware[]) {
     app.use(`/api/v1${path}`, ...middleware, router);

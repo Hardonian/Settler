@@ -177,7 +177,7 @@
    - [ ] Shopify
    - [ ] QuickBooks
    - [ ] PayPal
-   - [ ] Other: ****\_****
+   - [ ] Other: \***\*\_\*\***
 
 7. **How accurate were your reconciliation results?**
    - [ ] 95%+ (excellent)
@@ -189,7 +189,7 @@
    - [ ] Reviewed manually
    - [ ] Exported for review
    - [ ] Ignored them
-   - [ ] Other: ****\_****
+   - [ ] Other: \***\*\_\*\***
 
 #### Section 3: Value & Outcomes
 

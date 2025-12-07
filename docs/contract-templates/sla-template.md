@@ -5,16 +5,19 @@
 ### 1. SERVICE LEVELS
 
 #### 1.1 Uptime
+
 - **Target:** 99.9% monthly uptime
 - **Measurement:** Excludes scheduled maintenance
 - **Credit:** 10% credit for each hour below 99.9%
 
 #### 1.2 Response Time
+
 - **Target:** 95% of API requests < 500ms
 - **Measurement:** P95 latency
 - **Credit:** 5% credit if below 95%
 
 #### 1.3 Accuracy
+
 - **Target:** 99.7% reconciliation accuracy
 - **Measurement:** Correctly matched transactions
 - **Credit:** 5% credit if below 99.5%
@@ -39,6 +42,7 @@
 ### 5. EXCLUSIONS
 
 SLA does not apply to:
+
 - Customer-caused issues
 - Third-party service outages
 - Force majeure events

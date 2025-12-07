@@ -49,13 +49,7 @@ export function AnimatedGradient({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={cn(
-        "relative overflow-hidden",
-        className
-      )}
-    >
+    <div ref={containerRef} className={cn("relative overflow-hidden", className)}>
       <div
         className={cn(
           "absolute inset-0 bg-gradient-to-br",

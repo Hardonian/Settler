@@ -26,7 +26,8 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Reconciliation-as-a-Service API. Automate financial data reconciliation across all platforms.
+              Reconciliation-as-a-Service API. Automate financial data reconciliation across all
+              platforms.
             </p>
           </div>
 
@@ -163,9 +164,7 @@ export function Footer() {
         </div>
 
         <div className="pt-6 md:pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-sm text-muted-foreground">
-            © 2026 Settler. All rights reserved.
-          </div>
+          <div className="text-sm text-muted-foreground">© 2026 Settler. All rights reserved.</div>
           <nav className="flex flex-wrap gap-4 md:gap-6 text-sm" aria-label="Social media links">
             <a
               href="https://twitter.com/settler_io"

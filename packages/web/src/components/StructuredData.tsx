@@ -4,7 +4,7 @@ interface StructuredDataProps {
 
 /**
  * StructuredData Component
- * 
+ *
  * Safely renders JSON-LD structured data for SEO.
  * Uses dangerouslySetInnerHTML with JSON.stringify which is safe for controlled data.
  * All data passed to this component should be validated and not contain user input.
@@ -12,16 +12,14 @@ interface StructuredDataProps {
 export function StructuredData({ data }: StructuredDataProps) {
   // Validate that data is serializable and doesn't contain script tags
   const jsonString = JSON.stringify(data);
-  
+
   // Basic safety check - ensure no script injection
   if (jsonString.includes("<script") || jsonString.includes("</script>")) {
     console.error("StructuredData: Invalid data contains script tags");
     return null;
   }
 
-  return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonString }} />
-  );
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonString }} />;
 }
 
 export function OrganizationSchema() {

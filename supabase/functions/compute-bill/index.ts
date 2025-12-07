@@ -7,8 +7,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
@@ -21,13 +20,10 @@ serve(async (req) => {
     // Get authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing authorization header" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Initialize Supabase client
@@ -48,13 +44,10 @@ serve(async (req) => {
     } = await supabaseClient.auth.getUser();
 
     if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized", details: userError?.message }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Unauthorized", details: userError?.message }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Parse query parameters or request body
@@ -64,13 +57,10 @@ serve(async (req) => {
     const endDate = url.searchParams.get("end_date");
 
     if (!billingAccountId) {
-      return new Response(
-        JSON.stringify({ error: "Missing billing_account_id parameter" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing billing_account_id parameter" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Verify billing account belongs to user
@@ -81,23 +71,17 @@ serve(async (req) => {
       .single();
 
     if (billingError || !billingAccount) {
-      return new Response(
-        JSON.stringify({ error: "Billing account not found" }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Billing account not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     if (billingAccount.user_id !== user.id) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized access to billing account" }),
-        {
-          status: 403,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Unauthorized access to billing account" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Get current subscription period if dates not provided
@@ -118,13 +102,10 @@ serve(async (req) => {
         .single();
 
       if (!subscription) {
-        return new Response(
-          JSON.stringify({ error: "No active subscription found" }),
-          {
-            status: 404,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
+        return new Response(JSON.stringify({ error: "No active subscription found" }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       periodStart = subscription.current_period_start.split("T")[0];
@@ -132,14 +113,11 @@ serve(async (req) => {
     }
 
     // Compute estimated bill
-    const { data: bill, error: computeError } = await supabaseClient.rpc(
-      "compute_estimated_bill",
-      {
-        p_billing_account_id: billingAccountId,
-        p_start_date: periodStart,
-        p_end_date: periodEnd,
-      }
-    );
+    const { data: bill, error: computeError } = await supabaseClient.rpc("compute_estimated_bill", {
+      p_billing_account_id: billingAccountId,
+      p_start_date: periodStart,
+      p_end_date: periodEnd,
+    });
 
     if (computeError) {
       console.error("Error computing bill:", computeError);

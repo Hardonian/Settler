@@ -152,11 +152,7 @@ export function validateWebhookURL(url: string): { valid: boolean; error?: strin
 /**
  * Middleware to validate common request patterns
  */
-export function commonValidationsMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
+export function commonValidationsMiddleware(req: Request, res: Response, next: NextFunction): void {
   // Validate UUIDs in params
   validateUUID(req, res, () => {
     // Validate date ranges in query

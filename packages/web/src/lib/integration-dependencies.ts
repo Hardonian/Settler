@@ -122,9 +122,7 @@ export function checkIntegrationDependencies(
   // Check required dependencies
   for (const required of dependency.requires) {
     if (!currentIntegrations.includes(required)) {
-      errors.push(
-        `${newIntegration} requires ${required} to be connected first.`
-      );
+      errors.push(`${newIntegration} requires ${required} to be connected first.`);
       missingRequirements.push(required);
     }
   }
@@ -141,9 +139,7 @@ export function checkIntegrationDependencies(
   // Check dependencies
   for (const dep of dependency.dependsOn) {
     if (!currentIntegrations.includes(dep)) {
-      errors.push(
-        `${newIntegration} depends on ${dep}. Please connect ${dep} first.`
-      );
+      errors.push(`${newIntegration} depends on ${dep}. Please connect ${dep} first.`);
       missingRequirements.push(dep);
     }
   }

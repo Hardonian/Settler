@@ -19,6 +19,7 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 7. **Revenue Infrastructure** - Basic plan enforcement, needs enhancement
 
 **Estimated Impact:**
+
 - **Trial-to-Paid Conversion:** +25-35% (from baseline)
 - **Activation Rate:** +30-40% (improved onboarding)
 - **Churn Reduction:** -20-30% (proactive retention)
@@ -31,18 +32,21 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ### Current State Analysis
 
 #### Pricing Structure ✅
+
 - **Free:** $0, 1,000 transactions/month, 2 adapters
 - **Commercial:** $99/month, 100,000 transactions/month, unlimited adapters
 - **Enterprise:** Custom pricing, unlimited everything
 - **Trial:** 30-day free trial with full Commercial features
 
 **Strengths:**
+
 - Clear value differentiation
 - Generous trial (full Commercial access)
 - No credit card required for trial
 - Annual billing option (17% discount)
 
 **Gaps:**
+
 - No usage-based upgrade nudges
 - No feature previews for free tier
 - Missing upgrade moment indicators
@@ -51,13 +55,16 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ---
 
 #### Onboarding Flow ⚠️
+
 **Current State:**
+
 - WelcomeDashboard component exists
 - 3 quick start steps
 - Trial benefits displayed
 - Basic progress tracking (newly added)
 
 **Gaps:**
+
 - No completion detection
 - No progress persistence
 - No personalized next steps
@@ -67,7 +74,9 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ---
 
 #### Conversion Mechanisms ❌
+
 **Current State:**
+
 - Trial countdown banner exists
 - Pricing page accessible
 - No upgrade prompts in-app
@@ -75,6 +84,7 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 - No feature gates
 
 **Gaps:**
+
 - No upgrade nudge system
 - No usage limit warnings
 - No feature previews
@@ -84,7 +94,9 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ---
 
 #### Lifecycle Messaging ⚠️
+
 **Current State:**
+
 - Email scheduler exists (placeholder)
 - Onboarding email sequence created (Phase 2)
 - No trial expiration emails
@@ -92,6 +104,7 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 - No re-engagement flows
 
 **Gaps:**
+
 - Email templates not integrated
 - No personalization
 - No A/B testing
@@ -101,7 +114,9 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ---
 
 #### Analytics & Intelligence ❌
+
 **Current State:**
+
 - Basic usage tracking exists
 - No activation events
 - No conversion funnel
@@ -109,6 +124,7 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 - No growth metrics
 
 **Gaps:**
+
 - No event tracking system
 - No funnel analysis
 - No cohort tracking
@@ -120,9 +136,11 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ## 2. Activation Barriers & Optimization Plan
 
 ### Barrier 1: Unclear First Steps
+
 **Issue:** Users see welcome screen but don't know what to do next  
 **Impact:** High drop-off after signup  
 **Solution:**
+
 - Add progress indicator to WelcomeDashboard
 - Show "Next Step" prominently
 - Add inline tooltips for each step
@@ -134,9 +152,11 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ---
 
 ### Barrier 2: No Success Indicators
+
 **Issue:** Users complete steps but don't see progress  
 **Impact:** Low motivation to continue  
 **Solution:**
+
 - Add progress bar to dashboard
 - Show completion checkmarks
 - Celebrate milestones (first job, first match)
@@ -148,9 +168,11 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ---
 
 ### Barrier 3: Missing Inline Help
+
 **Issue:** Users get stuck and don't know where to find help  
 **Impact:** Abandonment during setup  
 **Solution:**
+
 - Add "?" tooltips to key UI elements
 - Create contextual help modals
 - Add "Need help?" links throughout
@@ -162,9 +184,11 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ---
 
 ### Barrier 4: No Demo Mode
+
 **Issue:** Users want to try before committing  
 **Impact:** Hesitation to create first job  
 **Solution:**
+
 - Add "Try Demo" button to empty state
 - Pre-populate demo job with sample data
 - Show results immediately
@@ -176,9 +200,11 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ---
 
 ### Barrier 5: Complex Setup Perceived
+
 **Issue:** Users think setup is too complicated  
 **Impact:** Delayed activation  
 **Solution:**
+
 - Simplify first job creation flow
 - Add "Quick Setup" wizard
 - Pre-fill common configurations
@@ -190,9 +216,11 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ---
 
 ### Barrier 6: No Personalized Guidance
+
 **Issue:** Generic onboarding doesn't match user needs  
 **Impact:** Lower relevance, higher drop-off  
 **Solution:**
+
 - Use pre-test questionnaire answers
 - Personalize welcome message
 - Show relevant cookbooks first
@@ -206,21 +234,24 @@ This report identifies **34 monetization opportunities**, **18 activation barrie
 ## 3. Trial → Paid Conversion Enhancements
 
 ### Enhancement 1: Usage-Based Upgrade Nudges
+
 **Current State:** No usage tracking for upgrade triggers  
 **Solution:**
+
 - Track reconciliation usage vs. plan limits
 - Show progress bar when approaching limits
 - Display "X% of free tier used" indicator
 - Add "Upgrade to unlock unlimited" CTA at 80% usage
 
 **Implementation:**
+
 ```typescript
 // packages/web/src/components/UsageUpgradeNudge.tsx
 export function UsageUpgradeNudge({ usage, limit, planType }) {
   if (planType !== 'free' && planType !== 'trial') return null;
-  
+
   const percentage = (usage / limit) * 100;
-  
+
   if (percentage >= 80) {
     return (
       <Banner>
@@ -238,8 +269,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 ### Enhancement 2: Feature Preview Gates
+
 **Current State:** Free tier users can't see premium features  
 **Solution:**
+
 - Show premium features with "Upgrade to unlock" overlay
 - Add "Preview" mode for locked features
 - Show feature comparison on lock
@@ -251,8 +284,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 ### Enhancement 3: Trial Progression Indicator
+
 **Current State:** Users don't see trial progress  
 **Solution:**
+
 - Add trial countdown with days remaining
 - Show "X days left in trial" banner
 - Display trial completion checklist
@@ -264,8 +299,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 ### Enhancement 4: Value Realization Moments
+
 **Current State:** No celebration of user success  
 **Solution:**
+
 - Show "You saved X hours" after first reconciliation
 - Display "X transactions matched" success message
 - Create "First successful reconciliation" celebration
@@ -277,8 +314,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 ### Enhancement 5: Upgrade Moment Detection
+
 **Current State:** No automatic detection of upgrade triggers  
 **Solution:**
+
 - Track when users hit 80% of free tier
 - Detect when users need premium features
 - Monitor trial expiration (7, 3, 1 days remaining)
@@ -290,8 +329,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 ### Enhancement 6: In-App Upgrade Flow
+
 **Current State:** Users must navigate to pricing page  
 **Solution:**
+
 - Add "Upgrade" button in dashboard header
 - Create upgrade modal with plan comparison
 - Show "What you'll get" preview
@@ -307,8 +348,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ### Email Sequence Strategy
 
 #### Day 0: Welcome Email ✅ (Implemented)
+
 **Status:** Created in Phase 2  
 **Enhancement Needed:**
+
 - Add personalization (name, industry)
 - Include onboarding checklist
 - Link to first step
@@ -317,8 +360,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Day 1: Onboarding Email ✅ (Implemented)
+
 **Status:** Created in Phase 2  
 **Enhancement Needed:**
+
 - Show next step based on progress
 - Include quick win tutorial
 - Add "Need help?" resources
@@ -327,8 +372,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Day 3: Activation Email ✅ (Implemented)
+
 **Status:** Created in Phase 2  
 **Enhancement Needed:**
+
 - Celebrate if onboarding complete
 - Show value achieved (if any)
 - Remind of trial benefits
@@ -337,8 +384,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Day 7: First Value Email (NEW)
+
 **Purpose:** Check if user has completed first reconciliation  
 **Content:**
+
 - "Have you tried your first reconciliation?"
 - Quick tutorial link
 - Success stories
@@ -350,8 +399,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Day 14: Progress Check (NEW)
+
 **Purpose:** Re-engage if low activity  
 **Content:**
+
 - "You're halfway through your trial"
 - Show what you've accomplished
 - Remind of remaining features
@@ -363,8 +414,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Day 21: Feature Deep Dive (NEW)
+
 **Purpose:** Show advanced features  
 **Content:**
+
 - "Unlock advanced features"
 - Multi-currency tutorial
 - Webhook setup guide
@@ -376,8 +429,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Day 27: Trial Expiration Warning (NEW)
+
 **Purpose:** Urgent upgrade prompt  
 **Content:**
+
 - "3 days left in your trial"
 - What you'll lose if you don't upgrade
 - Special offer (if applicable)
@@ -389,8 +444,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Day 29: Final Trial Reminder (NEW)
+
 **Purpose:** Last chance upgrade  
 **Content:**
+
 - "1 day left - don't lose access"
 - Value summary
 - Upgrade now CTA
@@ -402,8 +459,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Day 30: Trial Ended (NEW)
+
 **Purpose:** Convert or retain  
 **Content:**
+
 - "Your trial has ended"
 - Upgrade to keep access
 - Free tier option
@@ -417,8 +476,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ### Usage-Based Emails
 
 #### 80% Usage Warning (NEW)
+
 **Trigger:** Free tier user hits 80% of limit  
 **Content:**
+
 - "You're running out of reconciliations"
 - Upgrade to unlock unlimited
 - Show usage breakdown
@@ -430,8 +491,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Feature Lock Notification (NEW)
+
 **Trigger:** User tries to access locked feature  
 **Content:**
+
 - "This feature requires Commercial plan"
 - Feature benefits
 - Upgrade CTA
@@ -443,8 +506,10 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ---
 
 #### Low Activity Nudge (NEW)
+
 **Trigger:** User inactive for 7+ days  
 **Content:**
+
 - "We miss you!"
 - What you can do next
 - Success stories
@@ -460,6 +525,7 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 ### Nudge Component Architecture
 
 #### 1. Usage-Based Banner
+
 **Location:** Dashboard header  
 **Trigger:** 80%+ usage on free tier  
 **Design:** Non-intrusive banner with dismiss option  
@@ -469,9 +535,9 @@ export function UsageUpgradeNudge({ usage, limit, planType }) {
 // packages/web/src/components/UsageUpgradeBanner.tsx
 export function UsageUpgradeBanner({ usage, limit }) {
   const percentage = (usage / limit) * 100;
-  
+
   if (percentage < 80) return null;
-  
+
   return (
     <Banner variant="info" dismissible>
       You've used {usage} of {limit} reconciliations this month.
@@ -484,6 +550,7 @@ export function UsageUpgradeBanner({ usage, limit }) {
 ---
 
 #### 2. Trial Countdown Banner (Enhanced)
+
 **Location:** Dashboard (existing, enhance)  
 **Enhancement:** Add upgrade CTA at 7 days remaining  
 **Design:** Keep existing, add CTA button
@@ -503,6 +570,7 @@ if (daysRemaining <= 7) {
 ---
 
 #### 3. Feature Lock Overlay
+
 **Location:** On locked features  
 **Trigger:** User clicks locked feature  
 **Design:** Modal with feature preview and upgrade CTA
@@ -524,6 +592,7 @@ export function FeatureLockModal({ feature, currentPlan }) {
 ---
 
 #### 4. In-App Upgrade Button
+
 **Location:** Dashboard header, settings  
 **Design:** Subtle button, not pushy  
 **Frequency:** Always visible for free/trial users
@@ -534,7 +603,7 @@ export function UpgradeButton({ currentPlan }) {
   if (currentPlan === 'commercial' || currentPlan === 'enterprise') {
     return null;
   }
-  
+
   return (
     <Button variant="outline" size="sm">
       Upgrade
@@ -546,6 +615,7 @@ export function UpgradeButton({ currentPlan }) {
 ---
 
 #### 5. Success-Based Upgrade Prompt
+
 **Location:** After successful reconciliation  
 **Trigger:** First successful reconciliation  
 **Design:** Celebration modal with upgrade option
@@ -554,7 +624,7 @@ export function UpgradeButton({ currentPlan }) {
 // packages/web/src/components/SuccessUpgradePrompt.tsx
 export function SuccessUpgradePrompt({ isFirstSuccess }) {
   if (!isFirstSuccess) return null;
-  
+
   return (
     <Modal>
       <h2>🎉 Great job! You've completed your first reconciliation</h2>
@@ -571,8 +641,10 @@ export function SuccessUpgradePrompt({ isFirstSuccess }) {
 ## 6. Retention & Churn Prevention Enhancements
 
 ### Enhancement 1: Activity Monitoring
+
 **Current State:** No activity tracking  
 **Solution:**
+
 - Track last login date
 - Monitor feature usage
 - Detect dormancy (7+ days inactive)
@@ -584,8 +656,10 @@ export function SuccessUpgradePrompt({ isFirstSuccess }) {
 ---
 
 ### Enhancement 2: Churn Prediction Signals
+
 **Current State:** No churn detection  
 **Solution:**
+
 - Track login frequency decline
 - Monitor feature usage drop
 - Detect trial expiration without upgrade
@@ -597,8 +671,10 @@ export function SuccessUpgradePrompt({ isFirstSuccess }) {
 ---
 
 ### Enhancement 3: Re-Engagement Flows
+
 **Current State:** No re-engagement  
 **Solution:**
+
 - Send "We miss you" email after 7 days inactive
 - Offer help or resources
 - Show new features
@@ -610,8 +686,10 @@ export function SuccessUpgradePrompt({ isFirstSuccess }) {
 ---
 
 ### Enhancement 4: Success Checklist
+
 **Current State:** No completion tracking  
 **Solution:**
+
 - Create onboarding checklist component
 - Show progress in dashboard
 - Celebrate completions
@@ -623,8 +701,10 @@ export function SuccessUpgradePrompt({ isFirstSuccess }) {
 ---
 
 ### Enhancement 5: Help & Resources Hub
+
 **Current State:** Basic documentation links  
 **Solution:**
+
 - Create in-app help center
 - Add searchable knowledge base
 - Link to relevant docs from UI
@@ -636,8 +716,10 @@ export function SuccessUpgradePrompt({ isFirstSuccess }) {
 ---
 
 ### Enhancement 6: Cancellation Flow Enhancement
+
 **Current State:** No cancellation flow analysis  
 **Solution:**
+
 - Add exit survey on cancellation
 - Offer discount or pause option
 - Show value summary
@@ -653,6 +735,7 @@ export function SuccessUpgradePrompt({ isFirstSuccess }) {
 ### Event Tracking System
 
 #### Activation Events
+
 - `user.signup` - User signs up
 - `user.onboarding.step_completed` - Step completed
 - `user.onboarding.completed` - Full onboarding done
@@ -661,6 +744,7 @@ export function SuccessUpgradePrompt({ isFirstSuccess }) {
 - `export.created` - First export created
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/analytics/events.ts
 export async function trackEvent(
@@ -682,6 +766,7 @@ export async function trackEvent(
 ---
 
 #### Conversion Events
+
 - `upgrade.prompt_shown` - Upgrade nudge displayed
 - `upgrade.clicked` - User clicked upgrade
 - `upgrade.completed` - User upgraded
@@ -692,6 +777,7 @@ export async function trackEvent(
 ---
 
 #### Usage Events
+
 - `reconciliation.run` - Reconciliation executed
 - `reconciliation.limit_warning` - 80% usage reached
 - `feature.locked_accessed` - User tried locked feature
@@ -703,6 +789,7 @@ export async function trackEvent(
 ### Funnel Analysis
 
 #### Activation Funnel
+
 1. Signup → Onboarding Started
 2. Onboarding Started → First Step Completed
 3. First Step → First Job Created
@@ -710,6 +797,7 @@ export async function trackEvent(
 5. First Reconciliation → Activation Complete
 
 **Tracking:**
+
 ```typescript
 // Calculate funnel conversion rates
 const funnel = {
@@ -718,13 +806,14 @@ const funnel = {
   firstStepCompleted: usersWithStep1,
   firstJobCreated: usersWithJobs,
   firstReconciliation: usersWithReconciliations,
-  activated: usersFullyActivated
+  activated: usersFullyActivated,
 };
 ```
 
 ---
 
 #### Conversion Funnel
+
 1. Trial Started → Trial Active
 2. Trial Active → Upgrade Prompt Shown
 3. Upgrade Prompt → Upgrade Clicked
@@ -735,11 +824,13 @@ const funnel = {
 ### Cohort Tracking
 
 #### Activation Cohorts
+
 - Track activation rate by signup week
 - Compare cohorts over time
 - Identify trends
 
 #### Revenue Cohorts
+
 - Track revenue by signup month
 - Calculate LTV by cohort
 - Identify high-value cohorts
@@ -749,6 +840,7 @@ const funnel = {
 ### Growth Metrics Dashboard
 
 **Metrics to Track:**
+
 - Daily/Weekly/Monthly Active Users
 - Activation Rate (7-day, 30-day)
 - Trial-to-Paid Conversion Rate
@@ -757,6 +849,7 @@ const funnel = {
 - Customer Lifetime Value
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/analytics/metrics.ts
 export async function getActivationRate(days: number = 7) {
@@ -768,11 +861,11 @@ export async function getActivationRate(days: number = 7) {
     LEFT JOIN onboarding_progress op ON u.id = op.user_id
     WHERE u.created_at > NOW() - INTERVAL '${days} days'
   `);
-  
+
   return {
     total: result[0].total,
     activated: result[0].activated,
-    rate: (result[0].activated / result[0].total) * 100
+    rate: (result[0].activated / result[0].total) * 100,
   };
 }
 ```
@@ -782,8 +875,10 @@ export async function getActivationRate(days: number = 7) {
 ## 8. Revenue Infrastructure Enhancements
 
 ### Enhancement 1: Plan Enforcement Verification
+
 **Current State:** Basic plan checks exist  
 **Enhancement:**
+
 - Audit all endpoints for plan enforcement
 - Add middleware for automatic enforcement
 - Create plan limit checks
@@ -795,8 +890,10 @@ export async function getActivationRate(days: number = 7) {
 ---
 
 ### Enhancement 2: Usage Quota Tracking
+
 **Current State:** Limits defined, tracking partial  
 **Enhancement:**
+
 - Track reconciliation usage per user
 - Track adapter usage
 - Track export usage
@@ -808,8 +905,10 @@ export async function getActivationRate(days: number = 7) {
 ---
 
 ### Enhancement 3: Upgrade/Downgrade Flow
+
 **Current State:** No upgrade flow  
 **Enhancement:**
+
 - Create upgrade API endpoint
 - Add upgrade confirmation
 - Handle prorating (if billing exists)
@@ -821,8 +920,10 @@ export async function getActivationRate(days: number = 7) {
 ---
 
 ### Enhancement 4: Billing Integration Scaffold
+
 **Current State:** No billing system  
 **Enhancement:**
+
 - Create billing service interface
 - Add subscription management types
 - Prepare for Stripe/Paddle integration
@@ -838,24 +939,28 @@ export async function getActivationRate(days: number = 7) {
 ### 30-Day Sprint (Quick Wins)
 
 **Week 1-2: Activation Improvements**
+
 1. Add progress indicator to WelcomeDashboard
 2. Create success celebration components
 3. Add inline help tooltips
 4. Implement demo mode
 
 **Week 3-4: Conversion Nudges**
+
 1. Create usage-based upgrade banner
 2. Enhance trial countdown with CTA
 3. Add feature lock modals
 4. Implement upgrade button
 
 **Deliverables:**
+
 - Progress tracking UI
 - Upgrade nudge components
 - Demo mode
 - Inline help
 
 **Metrics:**
+
 - Activation rate: +15%
 - Upgrade prompts shown: 100% of eligible users
 - Conversion rate: +10%
@@ -865,24 +970,28 @@ export async function getActivationRate(days: number = 7) {
 ### 60-Day Sprint (Core Systems)
 
 **Week 5-6: Lifecycle Automation**
+
 1. Complete email sequence (Day 7, 14, 21, 27, 29, 30)
 2. Integrate email service (Resend/SendGrid)
 3. Add personalization
 4. Create email templates
 
 **Week 7-8: Analytics Foundation**
+
 1. Implement event tracking
 2. Create funnel analysis
 3. Build metrics dashboard
 4. Add cohort tracking
 
 **Deliverables:**
+
 - Complete email sequences
 - Event tracking system
 - Analytics dashboard
 - Funnel reports
 
 **Metrics:**
+
 - Email open rate: >30%
 - Email click rate: >5%
 - Conversion rate: +20%
@@ -893,24 +1002,28 @@ export async function getActivationRate(days: number = 7) {
 ### 90-Day Sprint (Scale & Optimize)
 
 **Week 9-10: Retention Systems**
+
 1. Implement activity monitoring
 2. Create churn prediction
 3. Build re-engagement flows
 4. Add cancellation survey
 
 **Week 11-12: Revenue Infrastructure**
+
 1. Complete plan enforcement audit
 2. Implement usage quota tracking
 3. Create upgrade/downgrade flows
 4. Prepare billing integration
 
 **Deliverables:**
+
 - Retention system
 - Churn prediction
 - Upgrade flows
 - Billing scaffold
 
 **Metrics:**
+
 - Churn rate: -20%
 - Retention rate: +15%
 - Upgrade completion: +25%
@@ -921,6 +1034,7 @@ export async function getActivationRate(days: number = 7) {
 ## 10. Proposed Code Patches (All Additive & Safe)
 
 ### Patch 1: Usage Upgrade Banner Component
+
 **File:** `packages/web/src/components/UsageUpgradeBanner.tsx`  
 **Lines:** ~80  
 **Impact:** High (conversion)
@@ -934,14 +1048,14 @@ import { useUser } from "@/hooks/useUser";
 
 export function UsageUpgradeBanner() {
   const { usage, planType } = useUser();
-  
+
   if (planType !== 'free' && planType !== 'trial') return null;
   if (!usage) return null;
-  
+
   const percentage = (usage.reconciliations.current / usage.reconciliations.limit) * 100;
-  
+
   if (percentage < 80) return null;
-  
+
   return (
     <Banner variant="info" dismissible>
       <div className="flex items-center justify-between">
@@ -964,6 +1078,7 @@ export function UsageUpgradeBanner() {
 ---
 
 ### Patch 2: Onboarding Progress Indicator
+
 **File:** `packages/web/src/components/OnboardingProgress.tsx`  
 **Lines:** ~100  
 **Impact:** High (activation)
@@ -977,9 +1092,9 @@ import { useOnboardingProgress } from "@/hooks/useOnboardingProgress";
 
 export function OnboardingProgress() {
   const { progress, nextStep } = useOnboardingProgress();
-  
+
   if (!progress || progress.completionPercentage === 100) return null;
-  
+
   return (
     <Card>
       <CardHeader>
@@ -1023,6 +1138,7 @@ export function OnboardingProgress() {
 ---
 
 ### Patch 3: Event Tracking Service
+
 **File:** `packages/api/src/services/analytics/events.ts`  
 **Lines:** ~120  
 **Impact:** High (enables all analytics)
@@ -1050,7 +1166,7 @@ export async function trackEvent(
        ON CONFLICT DO NOTHING`,
       [userId, event, properties ? JSON.stringify(properties) : null]
     );
-    
+
     logInfo("Event tracked", { userId, event, properties });
   } catch (error) {
     // Don't throw - analytics is non-critical
@@ -1058,10 +1174,7 @@ export async function trackEvent(
   }
 }
 
-export async function trackActivationEvent(
-  userId: string,
-  step: string
-): Promise<void> {
+export async function trackActivationEvent(userId: string, step: string): Promise<void> {
   await trackEvent(userId, `onboarding.step_completed`, { step });
 }
 
@@ -1077,6 +1190,7 @@ export async function trackConversionEvent(
 ---
 
 ### Patch 4: Usage Quota Middleware
+
 **File:** `packages/api/src/middleware/usage-quota.ts`  
 **Lines:** ~150  
 **Impact:** High (enables upgrade nudges)
@@ -1096,26 +1210,25 @@ export async function checkUsageQuota(
   const authReq = req as AuthRequest;
   const userId = authReq.userId;
   const tenantId = authReq.tenantId;
-  
+
   if (!userId || !tenantId) {
     return next();
   }
-  
+
   // Get user plan
-  const users = await query<{ plan_type: string }>(
-    `SELECT plan_type FROM users WHERE id = $1`,
-    [userId]
-  );
-  
+  const users = await query<{ plan_type: string }>(`SELECT plan_type FROM users WHERE id = $1`, [
+    userId,
+  ]);
+
   if (users.length === 0) {
     return next();
   }
-  
-  const planType = users[0]?.plan_type || 'free';
+
+  const planType = users[0]?.plan_type || "free";
   const limits = getPlanLimits(planType);
-  
+
   // Check reconciliation limit
-  if (limits.reconciliationsPerMonth !== 'unlimited') {
+  if (limits.reconciliationsPerMonth !== "unlimited") {
     const usage = await query<{ count: string }>(
       `SELECT COUNT(*) as count
        FROM executions
@@ -1123,30 +1236,30 @@ export async function checkUsageQuota(
          AND started_at > DATE_TRUNC('month', NOW())`,
       [tenantId]
     );
-    
-    const currentUsage = parseInt(usage[0]?.count || '0');
-    
+
+    const currentUsage = parseInt(usage[0]?.count || "0");
+
     if (currentUsage >= limits.reconciliationsPerMonth) {
       return sendError(
         res,
         429,
-        'QUOTA_EXCEEDED',
+        "QUOTA_EXCEEDED",
         `You've reached your monthly limit of ${limits.reconciliationsPerMonth} reconciliations. Upgrade to unlock unlimited.`,
         { currentUsage, limit: limits.reconciliationsPerMonth }
       );
     }
-    
+
     // Track usage for upgrade nudges
     if (currentUsage >= limits.reconciliationsPerMonth * 0.8) {
       // Trigger upgrade nudge (via event)
-      await trackEvent(userId, 'usage.quota_warning', {
+      await trackEvent(userId, "usage.quota_warning", {
         usage: currentUsage,
         limit: limits.reconciliationsPerMonth,
-        percentage: (currentUsage / limits.reconciliationsPerMonth) * 100
+        percentage: (currentUsage / limits.reconciliationsPerMonth) * 100,
       });
     }
   }
-  
+
   next();
 }
 ```
@@ -1154,6 +1267,7 @@ export async function checkUsageQuota(
 ---
 
 ### Patch 5: Enhanced Trial Countdown
+
 **File:** `packages/web/src/components/TrialCountdownBanner.tsx` (enhance existing)  
 **Lines:** +30  
 **Impact:** High (conversion)
@@ -1186,6 +1300,7 @@ if (daysRemaining <= 7) {
 ## 11. Database Schema Additions
 
 ### Analytics Events Table
+
 ```sql
 CREATE TABLE analytics_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1204,6 +1319,7 @@ CREATE INDEX idx_analytics_events_user_event ON analytics_events(user_id, event,
 ---
 
 ### Usage Tracking Table
+
 ```sql
 CREATE TABLE usage_tracking (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1229,23 +1345,27 @@ CREATE INDEX idx_usage_tracking_type ON usage_tracking(metric_type);
 ## 12. Success Metrics & KPIs
 
 ### Activation Metrics
+
 - **7-Day Activation Rate:** Target: 40% (baseline: ~25%)
 - **30-Day Activation Rate:** Target: 60% (baseline: ~40%)
 - **Time to First Value:** Target: < 24 hours (baseline: ~3 days)
 
 ### Conversion Metrics
+
 - **Trial-to-Paid Conversion:** Target: 25% (baseline: ~15%)
 - **Free-to-Paid Conversion:** Target: 5% (baseline: ~2%)
 - **Upgrade Prompt Click-Through:** Target: 15%
 - **Upgrade Completion Rate:** Target: 30%
 
 ### Retention Metrics
+
 - **7-Day Retention:** Target: 70%
 - **30-Day Retention:** Target: 50%
 - **Churn Rate:** Target: < 5% monthly
 - **Revenue Churn:** Target: < 3% monthly
 
 ### Revenue Metrics
+
 - **Monthly Recurring Revenue (MRR):** Track growth
 - **Average Revenue Per User (ARPU):** Target: $85
 - **Customer Lifetime Value (LTV):** Target: $1,020
@@ -1256,6 +1376,7 @@ CREATE INDEX idx_usage_tracking_type ON usage_tracking(metric_type);
 ## 13. Implementation Priority
 
 ### High Priority, Low Effort (Do First)
+
 1. ✅ Usage upgrade banner
 2. ✅ Onboarding progress indicator
 3. ✅ Enhanced trial countdown
@@ -1263,6 +1384,7 @@ CREATE INDEX idx_usage_tracking_type ON usage_tracking(metric_type);
 5. ✅ Success celebrations
 
 ### High Priority, Medium Effort (Plan Carefully)
+
 1. Complete email sequences
 2. Feature lock modals
 3. Usage quota tracking
@@ -1270,6 +1392,7 @@ CREATE INDEX idx_usage_tracking_type ON usage_tracking(metric_type);
 5. Upgrade flow
 
 ### Medium Priority, Low Effort (Quick Wins)
+
 1. Inline help tooltips
 2. Demo mode
 3. Success checklist
@@ -1281,17 +1404,20 @@ CREATE INDEX idx_usage_tracking_type ON usage_tracking(metric_type);
 ## 14. Risk Assessment
 
 ### Low Risk
+
 - UI component additions (banners, modals)
 - Event tracking (non-critical)
 - Email sequences (can be disabled)
 - Analytics (read-only)
 
 ### Medium Risk
+
 - Usage quota enforcement (could block legitimate users)
 - Upgrade flows (needs billing integration)
 - Plan changes (affects user access)
 
 ### Mitigation
+
 - Gradual rollout
 - Feature flags
 - A/B testing

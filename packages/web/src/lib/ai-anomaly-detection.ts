@@ -41,7 +41,8 @@ export async function detectBillingAnomalies(userId: string): Promise<Anomaly[]>
 
   // Check for unusual spending spikes
   const recentUsage = usage.slice(0, 7);
-  const avgUsage = recentUsage.reduce((sum, u: any) => sum + ((u as any).amount || 0), 0) / recentUsage.length;
+  const avgUsage =
+    recentUsage.reduce((sum, u: any) => sum + ((u as any).amount || 0), 0) / recentUsage.length;
   const currentUsage = (usage[0] as any)?.amount || 0;
 
   if (currentUsage > avgUsage * 2) {
@@ -97,8 +98,10 @@ export async function detectUsageAnomalies(userId: string): Promise<Anomaly[]> {
   if (!usage || usage.length < 7) return anomalies;
 
   // Detect sudden drops (potential churn indicator)
-  const recentAvg = usage.slice(0, 7).reduce((sum, u: any) => sum + ((u as any).amount || 0), 0) / 7;
-  const previousAvg = usage.slice(7, 14).reduce((sum, u: any) => sum + ((u as any).amount || 0), 0) / 7;
+  const recentAvg =
+    usage.slice(0, 7).reduce((sum, u: any) => sum + ((u as any).amount || 0), 0) / 7;
+  const previousAvg =
+    usage.slice(7, 14).reduce((sum, u: any) => sum + ((u as any).amount || 0), 0) / 7;
 
   if (recentAvg < previousAvg * 0.5) {
     anomalies.push({
@@ -188,7 +191,10 @@ export async function detectPerformanceAnomalies(userId: string): Promise<Anomal
   // Check for slow jobs
   const recentJobs = jobs.filter((j: any) => {
     const report = (j as any).reconciliation_reports?.[0];
-    return report && new Date((report as any).created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    return (
+      report &&
+      new Date((report as any).created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    );
   });
 
   const avgDuration =

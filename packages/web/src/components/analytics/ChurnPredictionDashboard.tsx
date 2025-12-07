@@ -111,7 +111,9 @@ export function ChurnPredictionDashboard() {
             <CardDescription>Avg Risk Score</CardDescription>
             <CardTitle className="text-3xl">
               {atRiskUsers.length > 0
-                ? (atRiskUsers.reduce((sum, u) => sum + u.churnRiskScore, 0) / atRiskUsers.length).toFixed(2)
+                ? (
+                    atRiskUsers.reduce((sum, u) => sum + u.churnRiskScore, 0) / atRiskUsers.length
+                  ).toFixed(2)
                 : "0.00"}
             </CardTitle>
           </CardHeader>
@@ -156,7 +158,9 @@ export function ChurnPredictionDashboard() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-semibold text-slate-900 dark:text-white">{user.email}</h4>
+                          <h4 className="font-semibold text-slate-900 dark:text-white">
+                            {user.email}
+                          </h4>
                           <Badge
                             variant={user.churnRiskScore >= 0.7 ? "destructive" : "default"}
                             className={cn(

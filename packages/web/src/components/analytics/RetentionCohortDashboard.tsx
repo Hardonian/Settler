@@ -51,13 +51,27 @@ export function RetentionCohortDashboard() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-700">
-                  <th className="text-left p-3 font-semibold text-slate-900 dark:text-white">Cohort</th>
-                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">Users</th>
-                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">Week 1</th>
-                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">Week 2</th>
-                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">Week 4</th>
-                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">Week 8</th>
-                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">Week 12</th>
+                  <th className="text-left p-3 font-semibold text-slate-900 dark:text-white">
+                    Cohort
+                  </th>
+                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">
+                    Users
+                  </th>
+                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">
+                    Week 1
+                  </th>
+                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">
+                    Week 2
+                  </th>
+                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">
+                    Week 4
+                  </th>
+                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">
+                    Week 8
+                  </th>
+                  <th className="text-center p-3 font-semibold text-slate-900 dark:text-white">
+                    Week 12
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -66,7 +80,9 @@ export function RetentionCohortDashboard() {
                     key={cohort.cohort}
                     className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50"
                   >
-                    <td className="p-3 font-medium text-slate-900 dark:text-white">{cohort.cohort}</td>
+                    <td className="p-3 font-medium text-slate-900 dark:text-white">
+                      {cohort.cohort}
+                    </td>
                     <td className="p-3 text-center text-slate-600 dark:text-slate-400">
                       {cohort.users}
                     </td>

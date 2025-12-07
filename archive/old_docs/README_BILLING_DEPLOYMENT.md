@@ -130,16 +130,19 @@ npm run billing:init
 ## Troubleshooting
 
 ### Migrations Fail
+
 - ✅ Check `DATABASE_URL` format
 - ✅ Verify Supabase credentials
 - ✅ Check GitHub Actions logs
 
 ### Stripe Products Not Created
+
 - ✅ Verify `STRIPE_SECRET_KEY` is set
 - ✅ Run manually: `npm run billing:setup-stripe`
 - ✅ Check Stripe Dashboard for products
 
 ### Edge Functions Not Deploying
+
 - ✅ Verify `SUPABASE_ACCESS_TOKEN` is set
 - ✅ Check `SUPABASE_PROJECT_REF` is correct
 - ✅ Review GitHub Actions logs

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, MouseEvent } from "react";
+import { useRef, MouseEvent } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -11,14 +11,8 @@ interface Card3DProps {
   perspective?: number;
 }
 
-export function Card3D({
-  children,
-  className,
-  intensity = 15,
-  perspective = 1000,
-}: Card3DProps) {
+export function Card3D({ children, className, intensity = 15, perspective = 1000 }: Card3DProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -47,7 +41,6 @@ export function Card3D({
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
     x.set(0);
     y.set(0);
   };
@@ -63,7 +56,6 @@ export function Card3D({
         perspective,
       }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}

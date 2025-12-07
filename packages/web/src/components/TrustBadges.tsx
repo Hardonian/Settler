@@ -77,9 +77,7 @@ export function TrustBadges() {
               {badge.name}
             </span>
             {badge.status === "in-progress" && badge.note && (
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                {badge.note}
-              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">{badge.note}</span>
             )}
           </div>
         </div>

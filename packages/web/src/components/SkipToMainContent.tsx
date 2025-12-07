@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Skip to Main Content Link
- * 
+ *
  * Provides keyboard users with a way to skip navigation and go directly to main content.
  * Hidden visually but accessible to screen readers and keyboard navigation.
  */

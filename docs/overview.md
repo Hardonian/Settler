@@ -55,6 +55,7 @@ This document provides a high-level overview of Settler.dev's architecture, comp
 ### 1. API Gateway Layer
 
 **Responsibilities:**
+
 - Authentication (API key validation)
 - Authorization (permission checks)
 - Rate limiting
@@ -63,6 +64,7 @@ This document provides a high-level overview of Settler.dev's architecture, comp
 - Error handling
 
 **Key Files:**
+
 - `packages/api/src/middleware/auth.ts` - Authentication
 - `packages/api/src/middleware/authorization.ts` - Authorization
 - `packages/api/src/middleware/quota.ts` - Quota enforcement
@@ -73,6 +75,7 @@ This document provides a high-level overview of Settler.dev's architecture, comp
 ### 2. Application Layer
 
 **Responsibilities:**
+
 - Job creation and management
 - Reconciliation execution
 - Matching rule processing
@@ -80,6 +83,7 @@ This document provides a high-level overview of Settler.dev's architecture, comp
 - Report generation
 
 **Key Files:**
+
 - `packages/api/src/routes/jobs.ts` - Job management
 - `packages/api/src/application/services/JobRouteService.ts` - Job service
 - `packages/api/src/services/reconciliation-graph/` - Reconciliation engine
@@ -89,17 +93,20 @@ This document provides a high-level overview of Settler.dev's architecture, comp
 ### 3. Adapter Layer
 
 **Responsibilities:**
+
 - Platform-specific data fetching
 - Data normalization
 - Error handling for platform APIs
 - Rate limit management
 
 **Key Files:**
+
 - `packages/adapters/src/stripe.ts` - Stripe adapter
 - `packages/adapters/src/shopify.ts` - Shopify adapter
 - `packages/adapters/src/base.ts` - Base adapter interface
 
 **Available Adapters:**
+
 - Stripe (payment processor)
 - PayPal (payment processor)
 - Square (payment processor)
@@ -115,6 +122,7 @@ This document provides a high-level overview of Settler.dev's architecture, comp
 **Database:** PostgreSQL (via Supabase)
 
 **Key Tables:**
+
 - `jobs` - Reconciliation job definitions
 - `executions` - Job execution records
 - `reconciliation_graph_nodes` - Transaction nodes
@@ -137,25 +145,25 @@ This document provides a high-level overview of Settler.dev's architecture, comp
 ```
 1. User creates job via API
    └─> Job stored in database
-   
+
 2. Job execution triggered (scheduled or manual)
    └─> Job status: "running"
-   
+
 3. Fetch data from source adapter
    └─> Normalize to common format
-   
+
 4. Fetch data from target adapter
    └─> Normalize to common format
-   
+
 5. Apply matching rules
    └─> Create graph nodes and edges
-   
+
 6. Generate reconciliation report
    └─> Calculate matches, unmatched, accuracy
-   
+
 7. Store results
    └─> Update job status: "completed"
-   
+
 8. Send webhooks (if configured)
    └─> Notify user of completion
 ```
@@ -372,6 +380,7 @@ packages/
 See [Limitations Documentation](./limitations.md) for detailed constraints.
 
 **Key Limitations:**
+
 - 7 platform adapters (growing)
 - PDF export in development
 - Multi-currency needs FX rate provider

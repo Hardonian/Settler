@@ -1,6 +1,6 @@
 /**
  * Error Message Utilities
- * 
+ *
  * Converts technical error messages into user-friendly, actionable messages.
  */
 
@@ -22,8 +22,10 @@ export function getAuthErrorMessage(error: string | Error): string {
     "Email already exists": "An account with this email already exists. Please sign in instead.",
     "Invalid email": "Please enter a valid email address.",
     "Password should be at least 6 characters": "Password must be at least 8 characters long.",
-    "Password is too weak": "Password is too weak. Please use a stronger password with at least 8 characters.",
-    "Invalid login credentials": "Invalid email or password. Please check your credentials and try again.",
+    "Password is too weak":
+      "Password is too weak. Please use a stronger password with at least 8 characters.",
+    "Invalid login credentials":
+      "Invalid email or password. Please check your credentials and try again.",
     "Email not confirmed": "Please check your email and confirm your account before signing in.",
     "Too many requests": "Too many attempts. Please wait a moment and try again.",
     "Network request failed": "Network error. Please check your connection and try again.",

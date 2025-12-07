@@ -1,7 +1,9 @@
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Feature
 - [ ] Bug Fix
 - [ ] Integration
@@ -10,11 +12,13 @@ Brief description of changes
 - [ ] Other
 
 ## Testing
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 - [ ] Manual testing completed
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Self-review completed
 - [ ] Comments added for complex code
@@ -24,10 +28,13 @@ Brief description of changes
 - [ ] TypeScript types are correct
 
 ## Related Issues
+
 Closes #
 
 ## Screenshots (if applicable)
+
 <!-- Add screenshots here -->
 
 ## Additional Notes
+
 <!-- Any additional information -->

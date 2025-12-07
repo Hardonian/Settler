@@ -138,7 +138,10 @@ export function ErrorState({
         aria-hidden="true"
       />
       <HeadingTag
-        className={cn("font-semibold text-foreground mb-3 text-center leading-tight", currentSize.title)}
+        className={cn(
+          "font-semibold text-foreground mb-3 text-center leading-tight",
+          currentSize.title
+        )}
       >
         {title}
       </HeadingTag>

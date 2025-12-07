@@ -26,9 +26,7 @@ export interface WarningSignal {
 /**
  * Detect early warning signals for a user
  */
-export async function detectEarlyWarningSignals(
-  userId: string
-): Promise<WarningSignal[]> {
+export async function detectEarlyWarningSignals(userId: string): Promise<WarningSignal[]> {
   try {
     const signals: WarningSignal[] = [];
 
@@ -50,10 +48,7 @@ export async function detectEarlyWarningSignals(
 
     const userCreatedAt = user[0]?.created_at;
     const daysSinceSignup = userCreatedAt
-      ? Math.floor(
-          (Date.now() - new Date(userCreatedAt).getTime()) /
-            (1000 * 60 * 60 * 24)
-        )
+      ? Math.floor((Date.now() - new Date(userCreatedAt).getTime()) / (1000 * 60 * 60 * 24))
       : 0;
 
     if (daysSinceSignup >= 7) {
@@ -65,8 +60,7 @@ export async function detectEarlyWarningSignals(
           severity: WarningSeverity.MEDIUM,
           detectedAt: new Date(),
           description: `Onboarding incomplete after ${daysSinceSignup} days. Completion: ${progress.completionPercentage}%.`,
-          suggestedAction:
-            "Send help email with onboarding checklist and support contact.",
+          suggestedAction: "Send help email with onboarding checklist and support contact.",
           metadata: {
             completionPercentage: progress.completionPercentage,
             daysSinceSignup,
@@ -106,8 +100,7 @@ export async function detectEarlyWarningSignals(
         detectedAt: new Date(),
         description:
           "User experienced errors after previously successful usage. This may indicate a configuration issue or system change.",
-        suggestedAction:
-          "Send troubleshooting email with common solutions and support contact.",
+        suggestedAction: "Send troubleshooting email with common solutions and support contact.",
         metadata: {
           errorCount: parseInt(hasRecentErrors[0]?.count || "0"),
         },
@@ -130,8 +123,7 @@ export async function detectEarlyWarningSignals(
         signal: "quota_exceeded",
         severity: WarningSeverity.HIGH,
         detectedAt: new Date(),
-        description:
-          "User has hit usage quota limits. This may cause frustration and churn.",
+        description: "User has hit usage quota limits. This may cause frustration and churn.",
         suggestedAction:
           "Send upgrade email highlighting benefits of higher tier and current usage stats.",
         metadata: {
@@ -159,13 +151,9 @@ export async function detectEarlyWarningSignals(
       [userId]
     );
 
-    if (
-      parseInt(isActivated[0]?.count || "0") > 0 &&
-      lastActivity[0]?.last_activity
-    ) {
+    if (parseInt(isActivated[0]?.count || "0") > 0 && lastActivity[0]?.last_activity) {
       const daysSinceActivity = Math.floor(
-        (Date.now() - new Date(lastActivity[0].last_activity).getTime()) /
-          (1000 * 60 * 60 * 24)
+        (Date.now() - new Date(lastActivity[0].last_activity).getTime()) / (1000 * 60 * 60 * 24)
       );
 
       if (daysSinceActivity >= 14) {
@@ -271,9 +259,7 @@ export async function detectEarlyWarningSignals(
 /**
  * Get all users with active warning signals
  */
-export async function getAllWarningSignals(
-  severity?: WarningSeverity
-): Promise<WarningSignal[]> {
+export async function getAllWarningSignals(severity?: WarningSeverity): Promise<WarningSignal[]> {
   try {
     // Get all active users
     const users = await query<{ id: string }>(
@@ -287,9 +273,7 @@ export async function getAllWarningSignals(
     const allSignals: WarningSignal[] = [];
     for (const user of users) {
       const signals = await detectEarlyWarningSignals(user.id);
-      const filtered = severity
-        ? signals.filter((s) => s.severity === severity)
-        : signals;
+      const filtered = severity ? signals.filter((s) => s.severity === severity) : signals;
       allSignals.push(...filtered);
     }
 
@@ -303,9 +287,7 @@ export async function getAllWarningSignals(
       if (severityOrder[b.severity] !== severityOrder[a.severity]) {
         return severityOrder[b.severity] - severityOrder[a.severity];
       }
-      return (
-        new Date(b.detectedAt).getTime() - new Date(a.detectedAt).getTime()
-      );
+      return new Date(b.detectedAt).getTime() - new Date(a.detectedAt).getTime();
     });
 
     return allSignals;

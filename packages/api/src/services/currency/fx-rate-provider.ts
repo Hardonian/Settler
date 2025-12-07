@@ -8,7 +8,11 @@ import { logInfo, logError } from "../../utils/logger";
 export interface FXRateProvider {
   name: string;
   fetchRate(fromCurrency: string, toCurrency: string, date?: Date): Promise<number | null>;
-  fetchRates(baseCurrency: string, targetCurrencies: string[], date?: Date): Promise<Record<string, number>>;
+  fetchRates(
+    baseCurrency: string,
+    targetCurrencies: string[],
+    date?: Date
+  ): Promise<Record<string, number>>;
 }
 
 /**
@@ -85,7 +89,11 @@ export class ECBProvider implements FXRateProvider {
 export class ManualProvider implements FXRateProvider {
   name = "manual";
 
-  async fetchRate(_fromCurrency: string, _toCurrency: string, _date?: Date): Promise<number | null> {
+  async fetchRate(
+    _fromCurrency: string,
+    _toCurrency: string,
+    _date?: Date
+  ): Promise<number | null> {
     // Manual provider doesn't fetch - rates must be entered via API
     return null;
   }

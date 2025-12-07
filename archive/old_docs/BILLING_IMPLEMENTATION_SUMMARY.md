@@ -18,6 +18,7 @@ The billing and subscription system for Settler.dev has been successfully archit
 - ✅ Real-time usage tracking
 
 **What's Working:**
+
 - Database schema (Prisma + Supabase)
 - Billing API routes
 - Feature gating middleware
@@ -26,6 +27,7 @@ The billing and subscription system for Settler.dev has been successfully archit
 - Edge functions for usage logging
 
 **What's Remaining:**
+
 - UI components and pages
 - Full integration implementations (8 of 10 pending)
 - Documentation generation
@@ -40,6 +42,7 @@ The billing and subscription system for Settler.dev has been successfully archit
 **File:** `/docs/settler-pricing-strategy.md`
 
 Comprehensive 12-section strategy document covering:
+
 - Executive summary
 - Value proposition
 - Pricing philosophy
@@ -55,9 +58,11 @@ Comprehensive 12-section strategy document covering:
 ### Phase 2: Billing Infrastructure (Backend) ✅
 
 #### Prisma Schema
+
 **File:** `/prisma/schema.prisma`
 
 Models created:
+
 - `BillingAccount` - Customer billing accounts
 - `Subscription` - Active subscriptions
 - `AddOn` - Available add-ons
@@ -66,11 +71,14 @@ Models created:
 - `UsageAggregateDaily` - Daily aggregated usage
 
 #### Supabase Migrations
+
 **Files:**
+
 - `/supabase/migrations/20250120000000_billing_schema.sql`
 - `/supabase/migrations/20250120000001_billing_functions.sql`
 
 **Tables:**
+
 - `billing_accounts`
 - `subscriptions`
 - `add_ons` (with seed data for 10 integrations)
@@ -80,15 +88,18 @@ Models created:
 - `stripe_event_log`
 
 **Database Functions:**
+
 - `log_usage_event()` - Log usage events
 - `aggregate_daily_usage()` - Aggregate events daily
 - `compute_estimated_bill()` - Calculate estimated bills
 - `check_upgrade_requirement()` - Check if upgrade needed
 
 #### Edge Functions
+
 **Directory:** `/supabase/functions/`
 
 Created:
+
 1. `log-usage/index.ts` - Log usage events
 2. `compute-bill/index.ts` - Compute estimated bills
 3. `trigger-upgrade-alert/index.ts` - Check upgrade requirements
@@ -103,9 +114,11 @@ Created:
 ### Phase 3: Stripe Billing System ✅
 
 #### API Routes
+
 **File:** `/packages/api/src/routes/billing.ts`
 
 Endpoints:
+
 - `POST /api/billing/create-customer` - Create/retrieve billing account
 - `POST /api/billing/subscribe` - Subscribe to base plan
 - `POST /api/billing/addon/purchase` - Purchase add-on
@@ -114,6 +127,7 @@ Endpoints:
 - `POST /api/billing/webhook` - Handle Stripe webhooks
 
 **Webhook Handlers:**
+
 - `customer.subscription.updated`
 - `customer.subscription.deleted`
 - `invoice.paid`
@@ -121,13 +135,16 @@ Endpoints:
 - `invoice.upcoming`
 
 #### Stripe Setup Script
+
 **File:** `/scripts/setup-stripe-products.ts`
 
 Script to create Stripe products and prices for:
+
 - Base plan ($49.95/month)
 - 5 premium add-ons with monthly + usage pricing
 
 **Dependencies:**
+
 - `stripe@^14.21.0` added to package.json
 
 **Status:** 95% Complete (webhook needs raw body handling)
@@ -137,14 +154,17 @@ Script to create Stripe products and prices for:
 ### Phase 5: Feature Gating & Upgrade Logic ✅
 
 #### Middleware
+
 **File:** `/packages/api/src/middleware/billing-gating.ts`
 
 Features:
+
 - `featureGate(featureName)` - Gate features by plan/add-on
 - `checkUsageQuota()` - Check usage limits
 - `checkIntegrationAccess()` - Verify integration access
 
 **Gated Features:**
+
 - SQL Editor (requires Pro plan)
 - Advanced Analytics (requires Pro plan)
 - AI Workflows (requires base plan + usage check)
@@ -153,6 +173,7 @@ Features:
 - Integration-specific gates (TikTok, Wix, GA4, PayPal Payouts, WhatsApp/Telegram)
 
 **Plan Limits:**
+
 - Base: 10k jobs, 100k API requests, 50k webhooks, 500k DB queries, 1k AI requests
 - Pro: 50k jobs, 500k API requests, 250k webhooks, 2.5M DB queries, 5k AI requests
 - Enterprise: Unlimited
@@ -164,24 +185,29 @@ Features:
 ### Phase 7: Usage Metering Pipeline ✅
 
 #### Utilities
+
 **File:** `/packages/api/src/utils/usage-tracker.ts`
 
 Functions:
+
 - `logUsageEvent()` - Log single usage event
 - `logUsageEventsBatch()` - Log multiple events
 - `getCurrentUsage()` - Get current usage for period
 - `getUsageByIntegration()` - Get usage breakdown
 
 #### Integration Examples
+
 **File:** `/docs/usage-tracking-integration-example.md`
 
 Examples for:
+
 - Reconciliation jobs
 - Integration syncs
 - AI requests
 - Batch operations
 
 **Event Types:**
+
 - `reconciliation_job`
 - `api_request`
 - `webhook_event`
@@ -200,6 +226,7 @@ Examples for:
 ### Phase 4: User Interface (UI Pages) - 0% Complete
 
 **Required:**
+
 - `/dashboard/billing` - Billing overview
 - `/dashboard/addons` - Add-on marketplace
 - `/dashboard/usage` - Usage dashboard
@@ -207,6 +234,7 @@ Examples for:
 - `/dashboard/integrations/[integrationId]` - Integration config
 
 **Components Needed:**
+
 - UsageBar
 - CostBreakdownCard
 - AddOnCard
@@ -221,6 +249,7 @@ Examples for:
 ### Phase 6: Integration Implementation - 20% Complete
 
 #### Standard Integrations (Included)
+
 - ✅ Stripe - Basic adapter exists, needs billing integration
 - ✅ Shopify - Basic adapter exists, needs billing integration
 - ⏳ PayPal - Needs implementation
@@ -228,6 +257,7 @@ Examples for:
 - ⏳ Meta Commerce + Meta Ads - Needs implementation
 
 #### Premium Add-Ons
+
 - ⏳ TikTok Shop + TikTok Ads - Needs implementation
 - ⏳ Wix Stores - Needs implementation
 - ⏳ Google Analytics GA4 - Needs implementation
@@ -235,6 +265,7 @@ Examples for:
 - ⏳ WhatsApp Business + Telegram - Needs implementation
 
 **For Each Integration:**
+
 - OAuth/API key flow
 - Configuration UI
 - Test endpoint
@@ -250,6 +281,7 @@ Examples for:
 ### Phase 8: Documentation Generation - 0% Complete
 
 **Required Documents:**
+
 - `/docs/billing-architecture.md`
 - `/docs/usage-events-reference.md`
 - `/docs/addons-catalog.md`
@@ -263,6 +295,7 @@ Examples for:
 ### Phase 9: Extensibility Requirements - 0% Complete
 
 **Required:**
+
 - JSON config for new add-ons (no schema changes)
 - Extensible usage event types
 - Dynamic billing tier configuration
@@ -334,6 +367,7 @@ tsx scripts/setup-stripe-products.ts
 ### 3. Environment Variables
 
 Add to `.env`:
+
 ```bash
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...
@@ -358,6 +392,7 @@ SUPABASE_SERVICE_ROLE_KEY=...
 ## 🔧 Known Issues & TODOs
 
 ### Critical
+
 1. **Stripe Webhook Raw Body** ⚠️
    - Webhook endpoint needs raw body for signature verification
    - Express middleware may parse JSON before handler
@@ -369,6 +404,7 @@ SUPABASE_SERVICE_ROLE_KEY=...
    - **Fix:** Run `setup-stripe-products.ts` and add IDs to .env
 
 ### Important
+
 3. **Usage Tracking Integration** ⚠️
    - Need to add usage logging to all API routes
    - **Fix:** Integrate `logUsageEvent()` into existing routes
@@ -378,6 +414,7 @@ SUPABASE_SERVICE_ROLE_KEY=...
    - **Fix:** Create scheduled job using BullMQ or Supabase CRON
 
 ### Nice to Have
+
 5. **UI Components** ⏳
    - No UI yet for billing management
    - **Fix:** Build React components in `/packages/web`
@@ -390,17 +427,17 @@ SUPABASE_SERVICE_ROLE_KEY=...
 
 ## 📊 Completion Status
 
-| Phase | Status | Progress |
-|-------|--------|----------|
-| Phase 1: Strategy Document | ✅ Complete | 100% |
-| Phase 2: Billing Infrastructure | ✅ Complete | 100% |
-| Phase 3: Stripe Billing | ✅ Complete | 95% |
-| Phase 4: UI Pages | ⏳ Pending | 0% |
-| Phase 5: Feature Gating | ✅ Complete | 100% |
-| Phase 6: Integrations | 🔄 Partial | 20% |
-| Phase 7: Usage Metering | ✅ Complete | 100% |
-| Phase 8: Documentation | ⏳ Pending | 0% |
-| Phase 9: Extensibility | ⏳ Pending | 0% |
+| Phase                           | Status      | Progress |
+| ------------------------------- | ----------- | -------- |
+| Phase 1: Strategy Document      | ✅ Complete | 100%     |
+| Phase 2: Billing Infrastructure | ✅ Complete | 100%     |
+| Phase 3: Stripe Billing         | ✅ Complete | 95%      |
+| Phase 4: UI Pages               | ⏳ Pending  | 0%       |
+| Phase 5: Feature Gating         | ✅ Complete | 100%     |
+| Phase 6: Integrations           | 🔄 Partial  | 20%      |
+| Phase 7: Usage Metering         | ✅ Complete | 100%     |
+| Phase 8: Documentation          | ⏳ Pending  | 0%       |
+| Phase 9: Extensibility          | ⏳ Pending  | 0%       |
 
 **Overall Progress:** ~40% Complete
 
@@ -450,6 +487,7 @@ SUPABASE_SERVICE_ROLE_KEY=...
 - Usage tracking utilities are **ready to use**
 
 **Deployment Checklist:**
+
 - [ ] Run database migrations
 - [ ] Deploy edge functions
 - [ ] Set up Stripe products/prices
@@ -468,6 +506,6 @@ SUPABASE_SERVICE_ROLE_KEY=...
 ✅ Usage tracking infrastructure  
 ✅ Comprehensive strategy document  
 ✅ Edge functions for serverless operations  
-✅ Setup scripts for Stripe products  
+✅ Setup scripts for Stripe products
 
 **The foundation is solid. The system is ready for UI development and integration implementations.**

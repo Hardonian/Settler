@@ -103,7 +103,9 @@ function UserDashboardContent() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
           <Card>
             <CardHeader className="pb-3">
-              <CardDescription className="text-xs md:text-sm">Total Reconciliations</CardDescription>
+              <CardDescription className="text-xs md:text-sm">
+                Total Reconciliations
+              </CardDescription>
               <CardTitle className="text-2xl md:text-3xl">
                 {data.metrics.totalReconciliations.toLocaleString()}
               </CardTitle>
@@ -119,7 +121,9 @@ function UserDashboardContent() {
           <Card>
             <CardHeader className="pb-3">
               <CardDescription className="text-xs md:text-sm">Average Accuracy</CardDescription>
-              <CardTitle className="text-2xl md:text-3xl">{data.metrics.averageAccuracy}%</CardTitle>
+              <CardTitle className="text-2xl md:text-3xl">
+                {data.metrics.averageAccuracy}%
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-xs md:text-sm text-green-600 dark:text-green-400">
@@ -177,7 +181,8 @@ function UserDashboardContent() {
                     Get Started with Your First Reconciliation
                   </h3>
                   <p className="text-sm md:text-base text-blue-800 dark:text-blue-400 mb-6 leading-relaxed">
-                    Create your first reconciliation job in minutes. Our step-by-step guide will walk you through the process.
+                    Create your first reconciliation job in minutes. Our step-by-step guide will
+                    walk you through the process.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Button asChild className="bg-blue-600 hover:bg-blue-700 font-medium">
@@ -253,25 +258,45 @@ function UserDashboardContent() {
           </CardHeader>
           <CardContent>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Button asChild variant="outline" className="h-auto py-5 md:py-6 flex-col items-center">
+              <Button
+                asChild
+                variant="outline"
+                className="h-auto py-5 md:py-6 flex-col items-center"
+              >
                 <Link href="/playground" className="flex flex-col items-center">
                   <span className="text-xl mb-2">🚀</span>
                   <span className="font-semibold text-sm md:text-base mb-1">Create New Job</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">Set up a reconciliation</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Set up a reconciliation
+                  </span>
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="h-auto py-5 md:py-6 flex-col items-center">
+              <Button
+                asChild
+                variant="outline"
+                className="h-auto py-5 md:py-6 flex-col items-center"
+              >
                 <Link href="/cookbooks" className="flex flex-col items-center">
                   <span className="text-xl mb-2">📚</span>
                   <span className="font-semibold text-sm md:text-base mb-1">Browse Cookbooks</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">Ready-to-use workflows</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Ready-to-use workflows
+                  </span>
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="h-auto py-5 md:py-6 flex-col items-center sm:col-span-2 lg:col-span-1">
+              <Button
+                asChild
+                variant="outline"
+                className="h-auto py-5 md:py-6 flex-col items-center sm:col-span-2 lg:col-span-1"
+              >
                 <Link href="/docs" className="flex flex-col items-center">
                   <span className="text-xl mb-2">📖</span>
-                  <span className="font-semibold text-sm md:text-base mb-1">View Documentation</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">Learn how to use Settler</span>
+                  <span className="font-semibold text-sm md:text-base mb-1">
+                    View Documentation
+                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Learn how to use Settler
+                  </span>
                 </Link>
               </Button>
             </div>

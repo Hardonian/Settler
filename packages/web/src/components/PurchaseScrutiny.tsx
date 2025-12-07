@@ -93,7 +93,9 @@ export function PurchaseScrutiny() {
             Try Risk-Free. Buy with Confidence.
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            We partner with Stripe and PayPal to process your payments securely. Enterprise-grade security protects your data. Start your 30-day free trial—no credit card required, cancel anytime.
+            We partner with Stripe and PayPal to process your payments securely. Enterprise-grade
+            security protects your data. Start your 30-day free trial—no credit card required,
+            cancel anytime.
           </p>
         </div>
 
@@ -178,7 +180,6 @@ export function PurchaseScrutiny() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

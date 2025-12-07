@@ -1,15 +1,18 @@
 # Web Package TypeScript Errors Fixed
 
 ## Summary
+
 Fixed all TypeScript compilation errors in the `@settler/web` package.
 
 ## Errors Fixed
 
 ### 1. Unused Import (`page.tsx`)
+
 - **Error**: `'UpgradeButton' is declared but its value is never read`
 - **Fix**: Removed unused `UpgradeButton` import
 
 ### 2. Type Mismatch (`page.tsx`)
+
 - **Error**: `Type 'number | "unlimited"' is not assignable to type 'number'`
 - **Fix**: Added type guard to only render `UsageUpgradeBanner` when `limit` is a number:
   ```tsx
@@ -19,6 +22,7 @@ Fixed all TypeScript compilation errors in the `@settler/web` package.
   ```
 
 ### 3. Missing Dialog Component
+
 - **Error**: `Cannot find module '@/components/ui/dialog'`
 - **Fix**: Created `packages/web/src/components/ui/dialog.tsx` with:
   - `Dialog` - Main wrapper component
@@ -30,18 +34,22 @@ Fixed all TypeScript compilation errors in the `@settler/web` package.
   - Full TypeScript support and accessibility features
 
 ### 4. Unused Parameter (`FeatureLockModal.tsx`)
+
 - **Error**: `'currentPlan' is declared but its value is never read`
 - **Fix**: Made `currentPlan` optional and removed it from destructuring
 
 ### 5. Missing date-fns Dependency (`TrialCountdownBanner.tsx`)
+
 - **Error**: `Cannot find module 'date-fns'`
 - **Fix**: Replaced `date-fns` import with a simple inline `formatDistanceToNow` function to avoid adding a dependency
 
 ### 6. Unused Import (`UpgradeButton.tsx`)
+
 - **Error**: `'Sparkles' is declared but its value is never read`
 - **Fix**: Removed unused `Sparkles` import
 
 ### 7. Missing Radix UI Progress Dependency (`progress.tsx`)
+
 - **Error**: `Cannot find module '@radix-ui/react-progress'`
 - **Fix**: Added `@radix-ui/react-progress` to `package.json` dependencies
 
@@ -70,4 +78,5 @@ Fixed all TypeScript compilation errors in the `@settler/web` package.
    - Added `@radix-ui/react-progress` dependency
 
 ## Status
+
 All TypeScript compilation errors in the web package are now resolved. The build should pass on Vercel.

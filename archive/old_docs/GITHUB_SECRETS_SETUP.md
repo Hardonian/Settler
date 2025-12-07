@@ -28,41 +28,49 @@ STRIPE_WEBHOOK_SECRET
 ### 2. Add Each Secret
 
 #### DATABASE_URL
+
 - **Value:** Your PostgreSQL connection string
 - **Format:** `postgresql://user:password@host:port/database`
 - **Where:** Supabase Dashboard → Project Settings → Database → Connection string
 
 #### SUPABASE_URL
+
 - **Value:** Your Supabase project URL
 - **Format:** `https://xxxxx.supabase.co`
 - **Where:** Supabase Dashboard → Project Settings → API → Project URL
 
 #### SUPABASE_ANON_KEY
+
 - **Value:** Supabase anonymous key
 - **Format:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
 - **Where:** Supabase Dashboard → Project Settings → API → anon public key
 
 #### SUPABASE_SERVICE_ROLE_KEY
+
 - **Value:** Supabase service role key (⚠️ Keep secret!)
 - **Format:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
 - **Where:** Supabase Dashboard → Project Settings → API → service_role secret key
 
 #### SUPABASE_PROJECT_REF
+
 - **Value:** Your Supabase project reference ID
 - **Format:** `abcdefghijklmnop`
 - **Where:** Supabase Dashboard → Project Settings → General → Reference ID
 
 #### SUPABASE_ACCESS_TOKEN
+
 - **Value:** Supabase access token for CLI
 - **Format:** `sbp_...`
 - **Where:** Supabase Dashboard → Account Settings → Access Tokens → Generate new token
 
 #### STRIPE_SECRET_KEY
+
 - **Value:** Your Stripe secret key
 - **Format:** `sk_live_...` (production) or `sk_test_...` (testing)
 - **Where:** Stripe Dashboard → Developers → API keys → Secret key
 
 #### STRIPE_WEBHOOK_SECRET
+
 - **Value:** Stripe webhook signing secret
 - **Format:** `whsec_...`
 - **Where:** Stripe Dashboard → Developers → Webhooks → (after creating webhook) → Signing secret

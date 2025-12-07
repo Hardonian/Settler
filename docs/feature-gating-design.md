@@ -5,6 +5,7 @@ Design documentation for Settler.dev's feature gating system.
 ## Overview
 
 Feature gating controls access to features based on:
+
 - Subscription plan tier
 - Add-on purchases
 - Usage limits
@@ -17,12 +18,14 @@ Feature gating controls access to features based on:
 Features are gated by subscription plan:
 
 **Base Plan:**
+
 - Core reconciliation features
 - 5 standard integrations
 - Basic analytics
 - Standard support
 
 **Pro Plan:**
+
 - All base plan features
 - SQL Editor
 - Advanced analytics
@@ -31,6 +34,7 @@ Features are gated by subscription plan:
 - Priority support
 
 **Enterprise Plan:**
+
 - All pro plan features
 - Unlimited usage
 - Custom integrations
@@ -66,7 +70,8 @@ Feature gating is implemented via Express middleware:
 ```typescript
 import { featureGate } from "../middleware/billing-gating";
 
-router.post("/premium-feature",
+router.post(
+  "/premium-feature",
   authMiddleware,
   featureGate("advanced_analytics"),
   async (req, res) => {
@@ -104,7 +109,8 @@ Check usage quotas before operations:
 ```typescript
 import { checkUsageQuota } from "../middleware/billing-gating";
 
-router.post("/jobs",
+router.post(
+  "/jobs",
   authMiddleware,
   async (req, res, next) => {
     await checkUsageQuota(req, res, next, "reconciliation_job", 1);
@@ -118,26 +124,31 @@ router.post("/jobs",
 ## Gated Features
 
 ### SQL Editor
+
 **Gate:** Pro plan required  
 **Middleware:** `featureGate("sql_editor")`  
 **Error:** "Plan Upgrade Required - This feature requires Pro plan or higher"
 
 ### Advanced Analytics
+
 **Gate:** Pro plan required  
 **Middleware:** `featureGate("advanced_analytics")`  
 **Error:** "Plan Upgrade Required - This feature requires Pro plan or higher"
 
 ### AI Workflows
+
 **Gate:** Base plan + usage check  
 **Middleware:** `featureGate("ai_workflows")`  
 **Error:** "Usage Limit Exceeded - You have reached your AI request limit"
 
 ### Real-Time Dashboards
+
 **Gate:** Pro plan required  
 **Middleware:** `featureGate("realtime_dashboards")`  
 **Error:** "Plan Upgrade Required - This feature requires Pro plan or higher"
 
 ### High-Volume API
+
 **Gate:** Pro plan required  
 **Middleware:** `featureGate("high_volume_api")`  
 **Error:** "Plan Upgrade Required - This feature requires Pro plan or higher"
@@ -147,7 +158,8 @@ router.post("/jobs",
 Each premium integration is gated:
 
 ```typescript
-router.post("/integrations/:integrationId/sync",
+router.post(
+  "/integrations/:integrationId/sync",
   authMiddleware,
   checkIntegrationAccess(":integrationId"),
   async (req, res) => {
@@ -183,6 +195,7 @@ Warnings are shown when usage approaches limits:
 ## Error Responses
 
 ### Plan Upgrade Required
+
 ```json
 {
   "error": "Plan Upgrade Required",
@@ -194,6 +207,7 @@ Warnings are shown when usage approaches limits:
 ```
 
 ### Add-On Required
+
 ```json
 {
   "error": "Add-On Required",
@@ -204,6 +218,7 @@ Warnings are shown when usage approaches limits:
 ```
 
 ### Usage Quota Exceeded
+
 ```json
 {
   "error": "Usage Quota Exceeded",
@@ -269,6 +284,7 @@ expect(res.status).not.toHaveBeenCalled();
 ## Monitoring
 
 Track feature gate metrics:
+
 - Gate hit rate by feature
 - Upgrade conversion rate
 - Usage limit warnings

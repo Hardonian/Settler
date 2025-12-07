@@ -62,7 +62,11 @@ const DEFAULT_CHECKLIST: ChecklistItem[] = [
   },
 ];
 
-export function ActivationChecklist({ userId, onItemComplete: _onItemComplete, onAllComplete: _onAllComplete }: ActivationChecklistProps) {
+export function ActivationChecklist({
+  userId,
+  onItemComplete: _onItemComplete,
+  onAllComplete: _onAllComplete,
+}: ActivationChecklistProps) {
   const [items, _setItems] = useState<ChecklistItem[]>(DEFAULT_CHECKLIST);
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -207,7 +211,9 @@ export function ActivationChecklist({ userId, onItemComplete: _onItemComplete, o
                     )}
                   </div>
                   {item.description && (
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{item.description}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                      {item.description}
+                    </p>
                   )}
                   {!isCompleted && item.action && (
                     <Button
@@ -235,7 +241,8 @@ export function ActivationChecklist({ userId, onItemComplete: _onItemComplete, o
               🎉 Congratulations! You're all set up.
             </p>
             <p className="text-xs text-green-800 dark:text-green-400">
-              You've completed all required activation steps. Start reconciling your transactions now!
+              You've completed all required activation steps. Start reconciling your transactions
+              now!
             </p>
           </div>
         )}

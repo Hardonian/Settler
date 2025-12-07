@@ -78,9 +78,7 @@ export async function getActivationRate(days: number = 7): Promise<ActivationMet
 /**
  * Get conversion metrics
  */
-export async function getConversionMetrics(
-  days: number = 30
-): Promise<ConversionMetrics> {
+export async function getConversionMetrics(days: number = 30): Promise<ConversionMetrics> {
   try {
     const result = await query<{
       trial_started: string;
@@ -115,8 +113,7 @@ export async function getConversionMetrics(
     const upgradeClicked = parseInt(result[0].upgrade_clicked || "0");
     const upgradeCompleted = parseInt(result[0].upgrade_completed || "0");
 
-    const conversionRate =
-      trialStarted > 0 ? (upgradeCompleted / trialStarted) * 100 : 0;
+    const conversionRate = trialStarted > 0 ? (upgradeCompleted / trialStarted) * 100 : 0;
 
     return {
       trialStarted,
@@ -152,8 +149,8 @@ export async function getUserUsageMetrics(
       period === "month"
         ? "DATE_TRUNC('month', NOW())"
         : period === "week"
-        ? "DATE_TRUNC('week', NOW())"
-        : "DATE_TRUNC('day', NOW())";
+          ? "DATE_TRUNC('week', NOW())"
+          : "DATE_TRUNC('day', NOW())";
 
     const [reconciliations, exports, webhooks] = await Promise.all([
       query<{ count: string }>(

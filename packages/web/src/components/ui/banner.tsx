@@ -25,11 +25,14 @@ export function Banner({
 
   const variantStyles = {
     info: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-100",
-    warning: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100",
-    error: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-900 dark:text-red-100",
-    success: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-900 dark:text-green-100",
+    warning:
+      "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100",
+    error:
+      "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-900 dark:text-red-100",
+    success:
+      "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-900 dark:text-green-100",
   };
-  
+
   const roleMap = {
     info: "status",
     warning: "alert",
@@ -39,11 +42,7 @@ export function Banner({
 
   return (
     <div
-      className={cn(
-        "border rounded-lg p-4 mb-6",
-        variantStyles[variant],
-        className
-      )}
+      className={cn("border rounded-lg p-4 mb-6", variantStyles[variant], className)}
       role={roleMap[variant]}
       aria-live={variant === "error" || variant === "warning" ? "assertive" : "polite"}
     >

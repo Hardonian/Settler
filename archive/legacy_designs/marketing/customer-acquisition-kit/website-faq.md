@@ -172,6 +172,7 @@ rules: {
 ### Which platforms do you support?
 
 **Currently Available (7+ adapters):**
+
 - **Payment Processors:** Stripe, PayPal, Square
 - **E-commerce:** Shopify
 - **Accounting:** QuickBooks, Xero
@@ -357,6 +358,7 @@ We follow SOC 2 controls today and will be fully certified soon.
 - ✅ Priority feature requests
 
 **Coming Soon:**
+
 - SSO (SAML, OIDC) - Q2 2026
 - SOC 2 Type II certification - Q2 2026
 - PCI-DSS Level 1 - Q3 2026

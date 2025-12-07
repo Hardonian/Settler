@@ -23,6 +23,7 @@
 Modern businesses operate across 10+ platforms: Stripe for payments, Shopify for orders, QuickBooks for accounting, NetSuite for ERP. Each platform has its own data format, timing, and quirks. Finance teams spend 2-3 hours daily manually reconciling transactions, hunting for mismatches, and fixing errors.
 
 **This causes:**
+
 - 💸 **Revenue Leakage:** Unmatched transactions = lost revenue
 - ⚖️ **Compliance Risks:** Manual reconciliation fails audits
 - ⏰ **Operational Overhead:** Hours wasted on repetitive work
@@ -33,6 +34,7 @@ Modern businesses operate across 10+ platforms: Stripe for payments, Shopify for
 Settler is reconciliation-as-a-service—a single API that normalizes, validates, and reconciles data across all platforms in real-time.
 
 **How it works:**
+
 1. Connect your platforms (Stripe, Shopify, QuickBooks, etc.) via adapters
 2. Configure matching rules (order ID, amount, timestamp)
 3. Automatic reconciliation runs in real-time or on schedule
@@ -54,29 +56,34 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 ### Core Features
 
 **Multi-Platform Reconciliation**
+
 - Connect 50+ platforms (Stripe, Shopify, QuickBooks, PayPal, Square, Xero, NetSuite, etc.)
 - Normalize data across different formats
 - Real-time or scheduled reconciliation
 
 **Flexible Matching Rules**
+
 - Exact matching (order ID, amount)
 - Fuzzy matching (amount tolerance, date ranges)
 - Custom matching logic
 - Conflict resolution strategies
 
 **Comprehensive Reporting**
+
 - JSON, CSV, PDF exports
 - White-label reports (Enterprise)
 - Audit trails
 - Exception reports
 
 **Developer-Friendly API**
+
 - RESTful API with comprehensive documentation
 - TypeScript SDK (`@settler/sdk`)
 - Webhooks for real-time updates
 - Rate limiting and quotas
 
 **Security & Compliance**
+
 - SOC 2 Type II certified (Q3 2026)
 - GDPR, CCPA, PIPEDA compliant
 - PCI-DSS ready
@@ -111,15 +118,15 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 
 **$0/month**
 
-| Feature | Limit |
-|---------|-------|
-| Reconciliations | 1,000/month |
-| Adapters | 2 |
-| Log Retention | 7 days |
-| Support | Community (Discord, GitHub) |
-| API Rate Limit | 100 requests/15 min |
-| Webhooks | ✅ Included |
-| Reports | JSON only |
+| Feature         | Limit                       |
+| --------------- | --------------------------- |
+| Reconciliations | 1,000/month                 |
+| Adapters        | 2                           |
+| Log Retention   | 7 days                      |
+| Support         | Community (Discord, GitHub) |
+| API Rate Limit  | 100 requests/15 min         |
+| Webhooks        | ✅ Included                 |
+| Reports         | JSON only                   |
 
 **[Get Started Free →](https://settler.io/signup)**
 
@@ -132,16 +139,16 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 **$29/month**  
 _$290/year (save $58, ~17% discount)_
 
-| Feature | Limit |
-|---------|-------|
-| Reconciliations | 10,000/month |
-| Adapters | 5 |
-| Log Retention | 30 days |
-| Support | Email (24-hour response) |
-| API Rate Limit | 500 requests/15 min |
-| Webhooks | ✅ Included |
-| Reports | JSON + CSV export |
-| Scheduled Jobs | ✅ Included |
+| Feature         | Limit                    |
+| --------------- | ------------------------ |
+| Reconciliations | 10,000/month             |
+| Adapters        | 5                        |
+| Log Retention   | 30 days                  |
+| Support         | Email (24-hour response) |
+| API Rate Limit  | 500 requests/15 min      |
+| Webhooks        | ✅ Included              |
+| Reports         | JSON + CSV export        |
+| Scheduled Jobs  | ✅ Included              |
 
 **Use Case:** Small e-commerce stores (100-1,000 orders/month), early-stage SaaS companies, freelancers managing multiple clients.
 
@@ -156,19 +163,19 @@ _$290/year (save $58, ~17% discount)_
 **$99/month**  
 _$990/year (save $198, ~17% discount)_
 
-| Feature | Limit |
-|---------|-------|
-| Reconciliations | 100,000/month |
-| Adapters | 15 |
-| Log Retention | 90 days |
-| Support | Priority email (4-hour response) |
-| API Rate Limit | 2,000 requests/15 min |
-| Webhooks | ✅ Included |
-| Reports | JSON + CSV + PDF export |
-| Scheduled Jobs | ✅ Included |
-| Advanced Matching Rules | ✅ Included |
-| Multi-Currency | ✅ Included |
-| Custom Webhooks | ✅ Included |
+| Feature                 | Limit                            |
+| ----------------------- | -------------------------------- |
+| Reconciliations         | 100,000/month                    |
+| Adapters                | 15                               |
+| Log Retention           | 90 days                          |
+| Support                 | Priority email (4-hour response) |
+| API Rate Limit          | 2,000 requests/15 min            |
+| Webhooks                | ✅ Included                      |
+| Reports                 | JSON + CSV + PDF export          |
+| Scheduled Jobs          | ✅ Included                      |
+| Advanced Matching Rules | ✅ Included                      |
+| Multi-Currency          | ✅ Included                      |
+| Custom Webhooks         | ✅ Included                      |
 
 **Use Case:** Mid-market SaaS companies, growing e-commerce (1,000-10,000 orders/month), multi-platform operations, need for advanced features.
 
@@ -183,22 +190,22 @@ _$990/year (save $198, ~17% discount)_
 **$299/month**  
 _$2,990/year (save $598, ~17% discount)_
 
-| Feature | Limit |
-|---------|-------|
-| Reconciliations | 1,000,000/month |
-| Adapters | Unlimited |
-| Log Retention | 1 year |
-| Support | Priority support (1-hour SLA) |
-| API Rate Limit | 10,000 requests/15 min |
-| Webhooks | ✅ Included |
-| Reports | All formats + White-label |
-| Scheduled Jobs | ✅ Included |
-| Advanced Matching Rules | ✅ Included |
-| Multi-Currency | ✅ Included |
-| Custom Webhooks | ✅ Included |
-| Multi-Entity Support | ✅ Included |
-| Dedicated Infrastructure | ✅ Included |
-| Custom Adapters | ✅ Included (1 free) |
+| Feature                  | Limit                         |
+| ------------------------ | ----------------------------- |
+| Reconciliations          | 1,000,000/month               |
+| Adapters                 | Unlimited                     |
+| Log Retention            | 1 year                        |
+| Support                  | Priority support (1-hour SLA) |
+| API Rate Limit           | 10,000 requests/15 min        |
+| Webhooks                 | ✅ Included                   |
+| Reports                  | All formats + White-label     |
+| Scheduled Jobs           | ✅ Included                   |
+| Advanced Matching Rules  | ✅ Included                   |
+| Multi-Currency           | ✅ Included                   |
+| Custom Webhooks          | ✅ Included                   |
+| Multi-Entity Support     | ✅ Included                   |
+| Dedicated Infrastructure | ✅ Included                   |
+| Custom Adapters          | ✅ Included (1 free)          |
 
 **Use Case:** Large e-commerce operations, enterprise SaaS companies, multi-entity organizations, high-volume reconciliation needs.
 
@@ -213,24 +220,24 @@ _$2,990/year (save $598, ~17% discount)_
 **Custom Pricing**  
 _Typically $1,000-$10,000+/month_
 
-| Feature | Limit |
-|---------|-------|
-| Reconciliations | Unlimited |
-| Adapters | Unlimited |
-| Log Retention | Custom (up to 7 years) |
-| Support | Dedicated account manager (1-hour SLA) |
-| API Rate Limit | Custom |
-| Webhooks | ✅ Included |
-| Reports | All formats + White-label + Custom |
-| Scheduled Jobs | ✅ Included |
-| Advanced Matching Rules | ✅ Included |
-| Multi-Currency | ✅ Included |
-| Custom Webhooks | ✅ Included |
-| Multi-Entity Support | ✅ Included |
-| Dedicated Infrastructure | ✅ Included |
-| Custom Adapters | ✅ Included (unlimited) |
-| SSO (SAML, OIDC) | ✅ Included |
-| Custom Integrations | ✅ Included |
+| Feature                  | Limit                                  |
+| ------------------------ | -------------------------------------- |
+| Reconciliations          | Unlimited                              |
+| Adapters                 | Unlimited                              |
+| Log Retention            | Custom (up to 7 years)                 |
+| Support                  | Dedicated account manager (1-hour SLA) |
+| API Rate Limit           | Custom                                 |
+| Webhooks                 | ✅ Included                            |
+| Reports                  | All formats + White-label + Custom     |
+| Scheduled Jobs           | ✅ Included                            |
+| Advanced Matching Rules  | ✅ Included                            |
+| Multi-Currency           | ✅ Included                            |
+| Custom Webhooks          | ✅ Included                            |
+| Multi-Entity Support     | ✅ Included                            |
+| Dedicated Infrastructure | ✅ Included                            |
+| Custom Adapters          | ✅ Included (unlimited)                |
+| SSO (SAML, OIDC)         | ✅ Included                            |
+| Custom Integrations      | ✅ Included                            |
 
 **[Contact Sales →](https://settler.io/contact)**
 
@@ -296,7 +303,9 @@ const job = await settler.jobs.create({
 
 ```typescript
 const result = await settler.jobs.run(job.data.id);
-console.log(`Reconciliation complete: ${result.data.matched} matched, ${result.data.exceptions} exceptions`);
+console.log(
+  `Reconciliation complete: ${result.data.matched} matched, ${result.data.exceptions} exceptions`
+);
 ```
 
 ### Step 6: Get Reports
@@ -320,6 +329,7 @@ const report = await settler.reports.get(job.data.id, {
 Settler integrates seamlessly with payment providers like Stripe, PayPal, Square, and Adyen, enabling merchants to automatically reconcile payments across multiple platforms.
 
 **Benefits:**
+
 - Reduce support tickets related to payment discrepancies
 - Improve merchant satisfaction with automated reconciliation
 - Enable multi-payment provider strategies
@@ -329,6 +339,7 @@ Settler integrates seamlessly with payment providers like Stripe, PayPal, Square
 Settler integrates with e-commerce platforms like Shopify, WooCommerce, and BigCommerce, enabling merchants to reconcile orders with payments and accounting systems.
 
 **Benefits:**
+
 - Reduce manual reconciliation work
 - Improve financial visibility
 - Enable automated accounting integration
@@ -338,6 +349,7 @@ Settler integrates with e-commerce platforms like Shopify, WooCommerce, and BigC
 Settler integrates with accounting platforms like QuickBooks, Xero, and NetSuite, enabling automated reconciliation between payment processors and accounting systems.
 
 **Benefits:**
+
 - Eliminate manual data entry
 - Improve accuracy and compliance
 - Enable real-time financial reporting
@@ -347,6 +359,7 @@ Settler integrates with accounting platforms like QuickBooks, Xero, and NetSuite
 Settler provides white-label reports and custom integrations for agencies and consultants managing multiple clients.
 
 **Benefits:**
+
 - Scale client management
 - Provide value-added services
 - Improve client retention

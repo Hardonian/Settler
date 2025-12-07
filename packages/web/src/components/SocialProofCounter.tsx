@@ -135,7 +135,8 @@ export function SocialProofCounter() {
             Trusted by Companies Processing Millions of Transactions
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Join 500+ companies saving 10+ hours per week with automated reconciliation. 99.7% accuracy. Enterprise-grade security.
+            Join 500+ companies saving 10+ hours per week with automated reconciliation. 99.7%
+            accuracy. Enterprise-grade security.
           </p>
         </div>
 
@@ -156,10 +157,12 @@ export function SocialProofCounter() {
               }}
               role="listitem"
             >
-              <div className={cn(
-                "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-500",
-                stat.color.replace("from-", "").replace("to-", "").split(" ")[0]
-              )} />
+              <div
+                className={cn(
+                  "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-500",
+                  stat.color.replace("from-", "").replace("to-", "").split(" ")[0]
+                )}
+              />
               <div
                 className={cn(
                   "w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br mx-auto mb-3 sm:mb-4 flex items-center justify-center text-white transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3",

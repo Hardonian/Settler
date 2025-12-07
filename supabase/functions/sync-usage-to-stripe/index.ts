@@ -8,8 +8,7 @@ import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
@@ -42,13 +41,10 @@ serve(async (req) => {
     const date = body.date || new Date().toISOString().split("T")[0];
 
     if (!billingAccountId) {
-      return new Response(
-        JSON.stringify({ error: "Missing billing_account_id" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing billing_account_id" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Get billing account with Stripe customer ID
@@ -135,14 +131,11 @@ serve(async (req) => {
 
           if (meteredItems.length > 0) {
             // Create usage record in Stripe
-            await stripe.subscriptionItems.createUsageRecord(
-              meteredItems[0].id,
-              {
-                quantity: Math.floor(Number(aggregate.total_quantity)),
-                timestamp: Math.floor(new Date(date).getTime() / 1000),
-                action: "set",
-              }
-            );
+            await stripe.subscriptionItems.createUsageRecord(meteredItems[0].id, {
+              quantity: Math.floor(Number(aggregate.total_quantity)),
+              timestamp: Math.floor(new Date(date).getTime() / 1000),
+              action: "set",
+            });
 
             results.push({
               event_type: aggregate.event_type,

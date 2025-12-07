@@ -2,194 +2,265 @@
 
 Thank you for your interest in contributing to Settler! This document provides guidelines and instructions for contributing.
 
-## Getting Started
+## Development Setup
 
-1. **Fork the repository**
-2. **Clone your fork**
-   ```bash
-   git clone https://github.com/your-username/settler.git
-   cd settler
-   ```
-3. **Install dependencies**
-   ```bash
-   npm install
-   ```
-4. **Create a branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+### Prerequisites
 
-## Development Workflow
+- Node.js 20+ and npm 10+
+- PostgreSQL 15+ (or Supabase account)
+- Redis (or Upstash account)
+- Docker & Docker Compose (for local development)
 
-### Running Locally
+### Initial Setup
 
 ```bash
-# Start all services
+# Clone the repository
+git clone https://github.com/settler/settler.git
+cd settler
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your database and API keys
+
+# Start services (PostgreSQL, Redis)
+docker-compose up -d
+
+# Run database migrations
+cd packages/api
+npm run migrate
+
+# Start development server
 npm run dev
-
-# Run specific package
-cd packages/api && npm run dev
-cd packages/web && npm run dev
 ```
 
-### Testing
-
-```bash
-# Run all tests
-npm run test
-
-# Run tests for specific package
-cd packages/api && npm test
-
-# Run E2E tests
-npm run test:e2e
-```
-
-### Code Quality
-
-```bash
-# Lint code
-npm run lint
-
-# Format code
-npm run format
-
-# Type check
-npm run typecheck
-```
-
-## Project Structure
-
-```
-settler/
-├── packages/
-│   ├── api/          # API server
-│   ├── sdk/           # TypeScript SDK
-│   ├── cli/           # CLI tool
-│   ├── web/           # Next.js web UI
-│   └── adapters/      # Platform adapters
-├── docs/              # Documentation
-├── tests/             # E2E tests
-└── .github/           # GitHub Actions workflows
-```
-
-## Coding Standards
+## Code Style
 
 ### TypeScript
 
-- Use TypeScript for all new code
-- Follow existing code style
-- Use meaningful variable names
-- Add JSDoc comments for public APIs
+- **Strict mode**: Always enabled. No `any` types (use `unknown` if needed)
+- **Naming**: Use descriptive names. Prefer `getUserById` over `getUser`
+- **Imports**: Use absolute imports when possible: `import { Job } from '@settler/api/domain'`
+- **Exports**: Prefer named exports over default exports
 
-### Code Style
+### Formatting
 
-- Use Prettier for formatting (configured in `.prettierrc`)
-- Use ESLint for linting (configured in `.eslintrc.js`)
-- Run `npm run format` before committing
+- **Prettier**: Auto-formats on save (configured in `.prettierrc`)
+- **Line length**: 100 characters
+- **Indentation**: 2 spaces
+- **Semicolons**: Required
 
-### Git Commits
+### Linting
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+- **ESLint**: Runs on save and in CI
+- **Rules**: TypeScript ESLint with strict rules
+- **Fix**: Run `npm run lint:fix` to auto-fix issues
 
+### Code Organization
+
+- **Layers**: Follow hexagonal architecture (domain → application → infrastructure → routes)
+- **Single Responsibility**: Each function/class should do one thing
+- **DRY**: Don't repeat yourself. Extract common logic to utilities
+- **Comments**: Add JSDoc comments for public APIs
+
+## Testing
+
+### Writing Tests
+
+- **Coverage**: Maintain 70%+ coverage minimum
+- **Unit tests**: Test domain logic and utilities in isolation
+- **Integration tests**: Test API endpoints with Supertest
+- **E2E tests**: Test full workflows with Playwright
+
+### Test Structure
+
+```typescript
+describe("FeatureName", () => {
+  beforeEach(() => {
+    // Setup
+  });
+
+  it("should do something", () => {
+    // Arrange
+    // Act
+    // Assert
+  });
+});
 ```
-feat: add new adapter for Square
-fix: resolve rate limiting issue
-docs: update API documentation
-test: add tests for webhook validation
+
+### Running Tests
+
+```bash
+# All tests
+npm run test
+
+# Unit tests only
+cd packages/api && npm run test
+
+# Integration tests
+cd packages/api && npm run test:integration
+
+# E2E tests
+npm run test:e2e
+
+# Coverage report
+cd packages/api && npm run test:coverage
 ```
-
-## Adding Features
-
-### New Adapter
-
-1. Create adapter class in `packages/adapters/src/`
-2. Implement `Adapter` interface
-3. Add tests
-4. Update documentation
-5. Submit PR
-
-See [adapters.md](./adapters.md) for detailed guide.
-
-### New API Endpoint
-
-1. Add route handler in `packages/api/src/routes/`
-2. Add validation schema (Zod)
-3. Add tests
-4. Update SDK client
-5. Update API documentation
-
-### New SDK Feature
-
-1. Add client method in `packages/sdk/src/clients/`
-2. Add TypeScript types
-3. Add tests
-4. Update SDK documentation
 
 ## Pull Request Process
 
-1. **Update documentation** if needed
-2. **Add tests** for new features
-3. **Ensure all tests pass**
-4. **Update CHANGELOG.md** (if applicable)
-5. **Create PR** with clear description
+### Before Submitting
+
+1. **Create feature branch**: `git checkout -b feature/your-feature-name`
+2. **Make changes**: Write code, add tests, update docs
+3. **Run checks**:
+   ```bash
+   npm run lint
+   npm run typecheck
+   npm run test
+   ```
+4. **Commit changes**: Use conventional commit format (see below)
+
+### Commit Message Format
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+**Types:**
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `refactor`: Code refactoring
+- `test`: Test additions/changes
+- `chore`: Build/tooling changes
+- `perf`: Performance improvements
+- `style`: Code style changes (formatting)
+
+**Examples:**
+
+```
+feat(api): add webhook retry mechanism
+fix(auth): handle expired refresh tokens
+docs(readme): add troubleshooting section
+refactor(repos): extract job repository interface
+```
 
 ### PR Checklist
 
-- [ ] Code follows project style guidelines
+- [ ] Code follows style guidelines
 - [ ] Tests added/updated and passing
-- [ ] Documentation updated
-- [ ] TypeScript types are correct
-- [ ] No linting errors
-- [ ] Commit messages follow conventional commits
+- [ ] Documentation updated (README, JSDoc, etc.)
+- [ ] No linter errors (`npm run lint`)
+- [ ] No type errors (`npm run typecheck`)
+- [ ] Coverage maintained (70%+)
+- [ ] Commit messages follow conventional format
 
-## Reporting Issues
-
-Use GitHub Issues to report bugs or request features.
-
-### Bug Report Template
+### PR Description Template
 
 ```markdown
-**Description**
-Clear description of the bug
+## Description
 
-**Steps to Reproduce**
+Brief description of changes
 
-1. Step one
-2. Step two
-3. Step three
+## Type of Change
 
-**Expected Behavior**
-What should happen
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
 
-**Actual Behavior**
-What actually happens
+## Testing
 
-**Environment**
+How was this tested?
 
-- Node version:
-- npm version:
-- OS:
+## Checklist
 
-**Additional Context**
-Any other relevant information
+- [ ] Tests added/updated
+- [ ] Documentation updated
+- [ ] No breaking changes (or documented)
 ```
 
-## Code Review
+## Architecture Guidelines
 
-- Be respectful and constructive
-- Focus on code, not the person
-- Ask questions if something is unclear
-- Suggest improvements when possible
+### Domain Layer (`domain/`)
 
-## License
+- **Pure business logic**: No dependencies on frameworks
+- **Entities**: Rich domain models with behavior
+- **Value Objects**: Immutable objects representing domain concepts
+- **Repository Interfaces**: Contracts for data access (ports)
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+### Application Layer (`application/`)
 
-## Questions?
+- **Orchestration**: Coordinates domain objects to fulfill use cases
+- **Services**: Thin layer that delegates to domain
+- **DTOs**: Data Transfer Objects for API boundaries
 
-- Open a GitHub Discussion
-- Join our Discord (coming soon)
-- Email: dev@settler.io
+### Infrastructure Layer (`infrastructure/`)
 
-Thank you for contributing! 🎉
+- **Repositories**: Database implementations of repository interfaces
+- **Security**: Password hashing, encryption, JWT handling
+- **Observability**: Logging, tracing, metrics
+- **Resilience**: Retry logic, circuit breakers
+
+### Routes Layer (`routes/`)
+
+- **Thin controllers**: Translate HTTP to application calls
+- **Validation**: Use Zod schemas for input validation
+- **Error handling**: Use `sendError()` from `api-response.ts`
+- **No business logic**: Delegate to application services
+
+## Security Guidelines
+
+- **Never commit secrets**: Use environment variables
+- **Input validation**: Validate all inputs with Zod
+- **SQL injection**: Always use parameterized queries
+- **XSS prevention**: Sanitize output data
+- **Rate limiting**: Apply rate limits to public endpoints
+- **Authentication**: Protect all routes except health/metrics
+
+## Documentation
+
+### Code Documentation
+
+- **JSDoc**: Add JSDoc comments for all public APIs
+- **Examples**: Include usage examples in JSDoc
+- **Types**: Document complex types and interfaces
+
+### README Updates
+
+- Update README if adding new features
+- Add troubleshooting tips for common issues
+- Update environment variable documentation
+
+## Getting Help
+
+- **Documentation**: Check [README.md](../README.md) and [ARCHITECTURE.md](../ARCHITECTURE.md)
+- **Issues**: Search existing issues before creating new ones
+- **Discussions**: Use GitHub Discussions for questions
+- **Email**: support@settler.io
+
+## Code Review Process
+
+1. **Automated checks**: CI runs lint, typecheck, and tests
+2. **Review**: At least one maintainer reviews the PR
+3. **Feedback**: Address review comments promptly
+4. **Approval**: PR is merged after approval and CI passes
+
+## Release Process
+
+- **Versioning**: Follow [Semantic Versioning](https://semver.org/)
+- **Changelog**: Update CHANGELOG.md with changes
+- **Tags**: Create git tags for releases
+- **Deployment**: Automated via CI/CD
+
+Thank you for contributing to Settler! 🎉

@@ -17,9 +17,9 @@ import { logUsageEvent } from "../utils/usage-tracker";
 router.post("/jobs", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     // ... create job logic ...
-    
+
     const job = await createJob(...);
-    
+
     // Log usage event
     await logUsageEvent({
       billingAccountId: req.user.billingAccountId,
@@ -34,7 +34,7 @@ router.post("/jobs", authMiddleware, async (req: AuthRequest, res: Response) => 
         target_adapter: job.targetAdapter,
       },
     });
-    
+
     return res.json(job);
   } catch (error) {
     // ... error handling ...
@@ -76,14 +76,14 @@ router.post("/reconcile", authMiddleware, async (req: AuthRequest, res: Response
   try {
     // Get billing account
     const billingAccount = await getBillingAccount(req.user.id);
-    
+
     if (!billingAccount) {
       return res.status(403).json({ error: "Billing account required" });
     }
-    
+
     // Execute reconciliation
     const result = await executeReconciliation(req.body);
-    
+
     // Log usage
     await logUsageEvent({
       billingAccountId: billingAccount.id,
@@ -98,7 +98,7 @@ router.post("/reconcile", authMiddleware, async (req: AuthRequest, res: Response
         records_processed: result.recordCount,
       },
     });
-    
+
     return res.json(result);
   } catch (error) {
     // ... error handling ...
@@ -109,17 +109,18 @@ router.post("/reconcile", authMiddleware, async (req: AuthRequest, res: Response
 ### Example 2: Integration Sync
 
 ```typescript
-router.post("/integrations/:integrationId/sync", 
+router.post(
+  "/integrations/:integrationId/sync",
   authMiddleware,
   checkIntegrationAccess(":integrationId"),
   async (req: AuthRequest, res: Response) => {
     try {
       const billingAccount = await getBillingAccount(req.user.id);
       const integrationId = req.params.integrationId;
-      
+
       // Perform sync
       const syncResult = await syncIntegration(integrationId, req.body);
-      
+
       // Log usage with integration-specific event type
       await logUsageEvent({
         billingAccountId: billingAccount.id,
@@ -134,7 +135,7 @@ router.post("/integrations/:integrationId/sync",
           records_synced: syncResult.recordCount,
         },
       });
-      
+
       return res.json(syncResult);
     } catch (error) {
       // ... error handling ...
@@ -146,16 +147,17 @@ router.post("/integrations/:integrationId/sync",
 ### Example 3: AI Request
 
 ```typescript
-router.post("/ai/analyze", 
+router.post(
+  "/ai/analyze",
   authMiddleware,
   featureGate("ai_workflows"),
   async (req: AuthRequest, res: Response) => {
     try {
       const billingAccount = await getBillingAccount(req.user.id);
-      
+
       // Execute AI analysis
       const analysis = await performAIAnalysis(req.body);
-      
+
       // Log usage
       await logUsageEvent({
         billingAccountId: billingAccount.id,
@@ -170,7 +172,7 @@ router.post("/ai/analyze",
           analysis_type: analysis.type,
         },
       });
-      
+
       return res.json(analysis);
     } catch (error) {
       // ... error handling ...
@@ -188,7 +190,7 @@ For high-volume operations, use Edge Functions to log usage:
 const response = await fetch(`${SUPABASE_URL}/functions/v1/log-usage`, {
   method: "POST",
   headers: {
-    "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
@@ -209,7 +211,7 @@ const response = await fetch(`${SUPABASE_URL}/functions/v1/log-usage`, {
 For multiple events, batch them:
 
 ```typescript
-const usageEvents = results.map(result => ({
+const usageEvents = results.map((result) => ({
   billing_account_id: billingAccount.id,
   event_type: "reconciliation_job",
   quantity: 1,

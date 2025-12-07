@@ -42,8 +42,7 @@ export async function POST(request: NextRequest) {
 
     if (recovery) {
       const recoveryData = recovery as any;
-      await (supabase
-        .from("payment_recovery") as any)
+      await (supabase.from("payment_recovery") as any)
         .update({
           recovery_attempts: (recoveryData.recovery_attempts || 0) + 1,
           updated_at: new Date().toISOString(),

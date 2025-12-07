@@ -1,0 +1,138 @@
+
+> @settler/cli@1.0.0 lint
+> eslint src --ext .ts --max-warnings 100
+
+
+/workspace/packages/cli/src/commands/admin.ts
+   17:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
+   19:54  warning  Unsafe member access .sagaId on an `any` value            @typescript-eslint/no-unsafe-member-access
+   19:80  warning  Unsafe member access .sagaType on an `any` value          @typescript-eslint/no-unsafe-member-access
+   28:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
+   29:49  warning  Unsafe member access .aggregateType on an `any` value     @typescript-eslint/no-unsafe-member-access
+   29:74  warning  Unsafe member access .aggregateId on an `any` value       @typescript-eslint/no-unsafe-member-access
+   38:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
+   39:44  warning  Unsafe member access .sagaId on an `any` value            @typescript-eslint/no-unsafe-member-access
+   48:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
+   49:44  warning  Unsafe member access .sagaId on an `any` value            @typescript-eslint/no-unsafe-member-access
+   58:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
+   59:46  warning  Unsafe member access .sagaId on an `any` value            @typescript-eslint/no-unsafe-member-access
+   68:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
+   69:58  warning  Unsafe member access .limit on an `any` value             @typescript-eslint/no-unsafe-member-access
+   78:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
+   79:50  warning  Unsafe member access .id on an `any` value                @typescript-eslint/no-unsafe-member-access
+   87:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
+   88:19  warning  Unsafe member access .reconciliationId on an `any` value  @typescript-eslint/no-unsafe-member-access
+   89:73  warning  Unsafe member access .reconciliationId on an `any` value  @typescript-eslint/no-unsafe-member-access
+  100:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
+  101:57  warning  Unsafe member access .reconciliationId on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+/workspace/packages/cli/src/commands/debug.ts
+   17:13  warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+   17:68  warning  Unsafe member access .parent on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+   23:63  warning  Unsafe member access .adapter on an `any` value                                        @typescript-eslint/no-unsafe-member-access
+   27:20  warning  Unsafe member access .parent on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+   31:13  warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+   35:13  warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+   35:30  warning  Unsafe member access .adapter on an `any` value                                        @typescript-eslint/no-unsafe-member-access
+   36:13  warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+   36:29  warning  Unsafe member access .config on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+   36:49  warning  Unsafe argument of type `any` assigned to a parameter of type `string`                 @typescript-eslint/no-unsafe-argument
+   36:57  warning  Unsafe member access .config on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+   36:69  warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+   36:85  warning  Unsafe member access .apiKey on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+   81:13  warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+   81:32  warning  Unsafe member access .file on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+   82:41  warning  Unsafe argument of type `any` assigned to a parameter of type `PathLike | FileHandle`  @typescript-eslint/no-unsafe-argument
+   83:32  warning  Unsafe argument of type `any` assigned to a parameter of type `string`                 @typescript-eslint/no-unsafe-argument
+   85:19  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
+   88:9   warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+   90:9   warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+  101:19  warning  Unsafe member access .name on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  105:19  warning  Unsafe member access .source on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  105:37  warning  Unsafe member access .source on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  109:19  warning  Unsafe member access .target on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  109:37  warning  Unsafe member access .target on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  113:19  warning  Unsafe member access .rules on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  113:36  warning  Unsafe member access .rules on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  113:76  warning  Unsafe member access .rules on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  124:49  warning  Unsafe member access .name on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  125:51  warning  Unsafe member access .source on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  126:51  warning  Unsafe member access .target on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  127:59  warning  Unsafe member access .rules on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  145:13  warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+  145:68  warning  Unsafe member access .parent on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  151:13  warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+  151:31  warning  Unsafe member access .parent on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  152:40  warning  Unsafe member access .path on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  155:52  warning  Unsafe member access .method on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  161:9   warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+  161:25  warning  Unsafe member access .method on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  163:11  warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+  168:19  warning  Unsafe member access .data on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  169:9   warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+  169:37  warning  Unsafe member access .data on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  170:52  warning  Unsafe member access .data on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  190:23  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
+  192:9   warning  Unsafe assignment of an `any` value                                                    @typescript-eslint/no-unsafe-assignment
+
+/workspace/packages/cli/src/commands/jobs.ts
+  114:13  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  114:61  warning  Unsafe member access .parent on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  121:9   warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  122:9   warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  122:26  warning  Unsafe member access .parent on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  125:46  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  128:19  warning  Unsafe member access .wait on an `any` value                            @typescript-eslint/no-unsafe-member-access
+  141:38  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  173:13  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  173:61  warning  Unsafe member access .parent on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  179:13  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  179:31  warning  Unsafe member access .parent on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  183:9   warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  183:24  warning  Unsafe member access .limit on an `any` value                           @typescript-eslint/no-unsafe-member-access
+  186:19  warning  Unsafe member access .since on an `any` value                           @typescript-eslint/no-unsafe-member-access
+  187:32  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  187:40  warning  Unsafe member access .since on an `any` value                           @typescript-eslint/no-unsafe-member-access
+  192:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  235:19  warning  Unsafe member access .tail on an `any` value                            @typescript-eslint/no-unsafe-member-access
+  256:13  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  256:61  warning  Unsafe member access .parent on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  262:13  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  262:31  warning  Unsafe member access .parent on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  265:25  warning  Unsafe member access .dryRun on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  268:19  warning  Unsafe member access .fromDate on an `any` value                        @typescript-eslint/no-unsafe-member-access
+  269:33  warning  Unsafe member access .fromDate on an `any` value                        @typescript-eslint/no-unsafe-member-access
+  272:19  warning  Unsafe member access .eventId on an `any` value                         @typescript-eslint/no-unsafe-member-access
+  273:32  warning  Unsafe member access .eventId on an `any` value                         @typescript-eslint/no-unsafe-member-access
+  281:11  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  298:19  warning  Unsafe member access .dryRun on an `any` value                          @typescript-eslint/no-unsafe-member-access
+
+/workspace/packages/cli/src/commands/reports.ts
+  16:13  warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  16:61  warning  Unsafe member access .parent on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  23:9   warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  24:9   warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  24:26  warning  Unsafe member access .parent on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  27:49  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  28:9   warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  28:28  warning  Unsafe member access .start on an `any` value                           @typescript-eslint/no-unsafe-member-access
+  29:9   warning  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  29:26  warning  Unsafe member access .end on an `any` value                             @typescript-eslint/no-unsafe-member-access
+
+/workspace/packages/cli/src/commands/webhooks.ts
+  14:13  warning  Unsafe assignment of an `any` value             @typescript-eslint/no-unsafe-assignment
+  14:61  warning  Unsafe member access .parent on an `any` value  @typescript-eslint/no-unsafe-member-access
+  21:9   warning  Unsafe assignment of an `any` value             @typescript-eslint/no-unsafe-assignment
+  22:9   warning  Unsafe assignment of an `any` value             @typescript-eslint/no-unsafe-assignment
+  22:26  warning  Unsafe member access .parent on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+✖ 113 problems (0 errors, 113 warnings)
+
+ESLint found too many warnings (maximum: 100).
+npm error Lifecycle script `lint` failed with error:
+npm error code 1
+npm error path /workspace/packages/cli
+npm error workspace @settler/cli@1.0.0
+npm error location /workspace/packages/cli
+npm error command failed
+npm error command sh -c eslint src --ext .ts --max-warnings 100

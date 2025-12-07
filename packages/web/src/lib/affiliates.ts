@@ -62,10 +62,7 @@ export async function trackAffiliateConversion(
 /**
  * Process affiliate payout
  */
-export async function processAffiliatePayout(
-  affiliateId: string,
-  amount: number
-): Promise<void> {
+export async function processAffiliatePayout(affiliateId: string, amount: number): Promise<void> {
   const supabase = createClient();
 
   // Get pending conversions
@@ -136,10 +133,13 @@ export async function getAffiliateStats(affiliateId: string): Promise<{
     .eq("affiliate_id", affiliateId);
 
   const totalRevenue = (affiliate as any).total_revenue || 0;
-  const totalCommissions = conversions?.reduce((sum, c: any) => sum + (c.commission_amount || 0), 0) || 0;
+  const totalCommissions =
+    conversions?.reduce((sum, c: any) => sum + (c.commission_amount || 0), 0) || 0;
   const totalPayouts = (affiliate as any).total_payouts || 0;
   const pendingCommissions =
-    conversions?.filter((c: any) => c.status === "pending").reduce((sum, c: any) => sum + (c.commission_amount || 0), 0) || 0;
+    conversions
+      ?.filter((c: any) => c.status === "pending")
+      .reduce((sum, c: any) => sum + (c.commission_amount || 0), 0) || 0;
   const conversionCount = conversions?.length || 0;
 
   return {

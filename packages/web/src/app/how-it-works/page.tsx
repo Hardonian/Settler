@@ -158,7 +158,11 @@ export default function HowItWorksPage() {
           />
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mt-6 sm:mt-8 w-full sm:w-auto px-4">
-            <Button size="lg" asChild className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
+            <Button
+              size="lg"
+              asChild
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+            >
               <Link href="/signup">Start Free Trial</Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
@@ -210,47 +214,47 @@ export default function HowItWorksPage() {
                   }}
                 >
                   <div className={cn(index % 2 === 1 && "lg:col-start-2")}>
-                    <div
-                      onClick={() => setActiveStep(index)}
-                      className="cursor-pointer"
-                    >
+                    <div onClick={() => setActiveStep(index)} className="cursor-pointer">
                       <SpotlightCard
                         className={cn(
                           "p-4 sm:p-6 md:p-8 h-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02]",
                           isActive && "ring-2 ring-blue-500 dark:ring-blue-400 scale-[1.02]"
                         )}
                       >
-                      <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-                        <div
-                          className={cn(
-                            "w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br flex items-center justify-center text-white text-xl sm:text-2xl font-bold flex-shrink-0 transition-all duration-300 hover:scale-110 hover:shadow-lg",
-                            step.gradient,
-                            isActive && "animate-pulse"
-                          )}
-                        >
-                          {step.number}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
-                            <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-white break-words">
-                              {step.title}
-                            </h3>
+                        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                          <div
+                            className={cn(
+                              "w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br flex items-center justify-center text-white text-xl sm:text-2xl font-bold flex-shrink-0 transition-all duration-300 hover:scale-110 hover:shadow-lg",
+                              step.gradient,
+                              isActive && "animate-pulse"
+                            )}
+                          >
+                            {step.number}
                           </div>
-                          <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-3 sm:mb-4 break-words">
-                            {step.description}
-                          </p>
-                          <ul className="space-y-1.5 sm:space-y-2">
-                            {step.details.map((detail, idx) => (
-                              <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 break-words">
-                                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                                <span>{detail}</span>
-                              </li>
-                            ))}
-                          </ul>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                              <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-white break-words">
+                                {step.title}
+                              </h3>
+                            </div>
+                            <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-3 sm:mb-4 break-words">
+                              {step.description}
+                            </p>
+                            <ul className="space-y-1.5 sm:space-y-2">
+                              {step.details.map((detail, idx) => (
+                                <li
+                                  key={idx}
+                                  className="flex items-start gap-2 text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 break-words"
+                                >
+                                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                                  <span>{detail}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         </div>
-                      </div>
-                    </SpotlightCard>
+                      </SpotlightCard>
                     </div>
                   </div>
 
@@ -307,16 +311,18 @@ export default function HowItWorksPage() {
                   }}
                 >
                   <SpotlightCard className="p-4 sm:p-6 text-center hover:scale-105 hover:shadow-lg">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:rotate-3">
-                    <Icon className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-300" />
-                  </div>
-                  <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2 break-words">
-                    {benefit.stat}
-                  </div>
-                  <h3 className="text-base sm:text-lg font-semibold mb-2 text-slate-900 dark:text-white break-words">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 break-words">{benefit.description}</p>
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:rotate-3">
+                      <Icon className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-300" />
+                    </div>
+                    <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2 break-words">
+                      {benefit.stat}
+                    </div>
+                    <h3 className="text-base sm:text-lg font-semibold mb-2 text-slate-900 dark:text-white break-words">
+                      {benefit.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 break-words">
+                      {benefit.description}
+                    </p>
                   </SpotlightCard>
                 </div>
               );
@@ -376,7 +382,11 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button size="lg" asChild className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
+              <Button
+                size="lg"
+                asChild
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+              >
                 <Link href="/signup">Start Free Trial</Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">

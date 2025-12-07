@@ -46,11 +46,17 @@ export default function ContactSupportPage() {
                 <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
                   We've received your message and will get back to you within 24 hours. For urgent
                   issues, please check our{" "}
-                  <Link href="/support" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  <Link
+                    href="/support"
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
                     support articles
                   </Link>{" "}
                   or{" "}
-                  <Link href="/community" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  <Link
+                    href="/community"
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
                     community forum
                   </Link>
                   .

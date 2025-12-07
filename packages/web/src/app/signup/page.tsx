@@ -27,7 +27,9 @@ function SignUpForm() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [passwordStrength, setPasswordStrength] = useState<"weak" | "medium" | "strong" | null>(null);
+  const [passwordStrength, setPasswordStrength] = useState<"weak" | "medium" | "strong" | null>(
+    null
+  );
   const [touched, setTouched] = useState({ email: false, password: false });
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -132,7 +134,10 @@ function SignUpForm() {
           )}
         </div>
         {emailError && (
-          <p id="email-error" className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
+          <p
+            id="email-error"
+            className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1"
+          >
             <AlertCircle className="w-3 h-3" aria-hidden="true" />
             {emailError}
           </p>
@@ -162,7 +167,10 @@ function SignUpForm() {
             className={cn(
               "w-full pr-10",
               passwordError && "border-red-500 focus:border-red-500 focus:ring-red-500",
-              !passwordError && password && passwordStrength && "border-green-500 focus:border-green-500 focus:ring-green-500"
+              !passwordError &&
+                password &&
+                passwordStrength &&
+                "border-green-500 focus:border-green-500 focus:ring-green-500"
             )}
             aria-describedby="password-help password-error password-strength"
             aria-invalid={passwordError ? "true" : "false"}
@@ -207,7 +215,10 @@ function SignUpForm() {
           </div>
         )}
         {passwordError && (
-          <p id="password-error" className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
+          <p
+            id="password-error"
+            className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1"
+          >
             <AlertCircle className="w-3 h-3" aria-hidden="true" />
             {passwordError}
           </p>
@@ -221,7 +232,10 @@ function SignUpForm() {
           role="alert"
           aria-live="polite"
         >
-          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" aria-hidden="true" />
+          <AlertCircle
+            className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0"
+            aria-hidden="true"
+          />
           <p id="password-error" className="text-sm text-red-800 dark:text-red-200">
             {error}
           </p>
@@ -262,7 +276,8 @@ export default function SignUpPage() {
               Start Your 30-Day Free Trial
             </h1>
             <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 mb-4 leading-relaxed px-2">
-              Get full access to all features for 30 days. Process unlimited transactions, connect all platforms, and access all cookbooks.
+              Get full access to all features for 30 days. Process unlimited transactions, connect
+              all platforms, and access all cookbooks.
             </p>
             <p className="text-xs md:text-sm font-semibold text-green-600 dark:text-green-400 mb-4">
               ✓ No credit card required • ✓ Cancel anytime • ✓ Full access
@@ -294,33 +309,59 @@ export default function SignUpPage() {
           </h3>
           <ul className="text-xs md:text-sm text-blue-800 dark:text-blue-400 space-y-3">
             <li className="flex items-start gap-3">
-              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
-              <span><strong>Full access to all features</strong> — no limits, no restrictions</span>
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">
+                ✓
+              </span>
+              <span>
+                <strong>Full access to all features</strong> — no limits, no restrictions
+              </span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
-              <span><strong>Unlimited transaction matching</strong> — process as many as you need</span>
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">
+                ✓
+              </span>
+              <span>
+                <strong>Unlimited transaction matching</strong> — process as many as you need
+              </span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
-              <span><strong>All 10+ platform adapters</strong> — connect Shopify, Stripe, PayPal, and more</span>
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">
+                ✓
+              </span>
+              <span>
+                <strong>All 10+ platform adapters</strong> — connect Shopify, Stripe, PayPal, and
+                more
+              </span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
-              <span><strong>Complete cookbook library</strong> — 10+ ready-to-use workflows</span>
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">
+                ✓
+              </span>
+              <span>
+                <strong>Complete cookbook library</strong> — 10+ ready-to-use workflows
+              </span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
-              <span><strong>Priority email support</strong> — get help when you need it</span>
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">
+                ✓
+              </span>
+              <span>
+                <strong>Priority email support</strong> — get help when you need it
+              </span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
-              <span><strong>No credit card required</strong> — start free, upgrade only if you love it</span>
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">
+                ✓
+              </span>
+              <span>
+                <strong>No credit card required</strong> — start free, upgrade only if you love it
+              </span>
             </li>
           </ul>
           <div className="mt-5 pt-5 border-t border-blue-200 dark:border-blue-800">
             <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-              <strong>After 30 days:</strong> Your trial converts to the Free plan (1,000 transactions/month) unless you upgrade. No charges, no surprises.
+              <strong>After 30 days:</strong> Your trial converts to the Free plan (1,000
+              transactions/month) unless you upgrade. No charges, no surprises.
             </p>
           </div>
         </div>

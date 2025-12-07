@@ -1,24 +1,24 @@
 /**
  * Integration Security Module
- * 
+ *
  * Provides credential encryption, webhook signature validation,
  * quota enforcement, and health monitoring for integrations
- * 
+ *
  * Priority: P0 (CRITICAL - Integration security)
  */
 
-import { createClient } from '@supabase/supabase-js';
-import * as crypto from 'crypto';
+import { createClient } from "@supabase/supabase-js";
+import * as crypto from "crypto";
 
 export interface IntegrationCredential {
   id: string;
   tenantId: string;
   integrationId: string;
-  credentialType: 'oauth_token' | 'api_key' | 'webhook_secret' | 'api_secret';
+  credentialType: "oauth_token" | "api_key" | "webhook_secret" | "api_secret";
   encryptedCredential: string;
   scopes?: string[];
   expiresAt?: Date | undefined;
-  status: 'active' | 'expired' | 'revoked' | 'error';
+  status: "active" | "expired" | "revoked" | "error";
 }
 
 /**
@@ -29,19 +29,19 @@ export function encryptCredential(
   credential: string,
   encryptionKey: string
 ): { encrypted: string; iv: string; tag: string } {
-  const algorithm = 'aes-256-gcm';
+  const algorithm = "aes-256-gcm";
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv(algorithm, Buffer.from(encryptionKey, 'hex'), iv);
+  const cipher = crypto.createCipheriv(algorithm, Buffer.from(encryptionKey, "hex"), iv);
 
-  let encrypted = cipher.update(credential, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
+  let encrypted = cipher.update(credential, "utf8", "hex");
+  encrypted += cipher.final("hex");
 
   const tag = cipher.getAuthTag();
 
   return {
     encrypted,
-    iv: iv.toString('hex'),
-    tag: tag.toString('hex'),
+    iv: iv.toString("hex"),
+    tag: tag.toString("hex"),
   };
 }
 
@@ -54,17 +54,17 @@ export function decryptCredential(
   tag: string,
   encryptionKey: string
 ): string {
-  const algorithm = 'aes-256-gcm';
+  const algorithm = "aes-256-gcm";
   const decipher = crypto.createDecipheriv(
     algorithm,
-    Buffer.from(encryptionKey, 'hex'),
-    Buffer.from(iv, 'hex')
+    Buffer.from(encryptionKey, "hex"),
+    Buffer.from(iv, "hex")
   );
 
-  decipher.setAuthTag(Buffer.from(tag, 'hex'));
+  decipher.setAuthTag(Buffer.from(tag, "hex"));
 
-  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
+  let decrypted = decipher.update(encrypted, "hex", "utf8");
+  decrypted += decipher.final("utf8");
 
   return decrypted;
 }
@@ -76,11 +76,11 @@ export function validateWebhookSignature(
   payload: string,
   signature: string,
   secret: string,
-  algorithm: 'sha256' | 'sha512' = 'sha256'
+  algorithm: "sha256" | "sha512" = "sha256"
 ): boolean {
   const hmac = crypto.createHmac(algorithm, secret);
   hmac.update(payload);
-  const computedSignature = hmac.digest('hex');
+  const computedSignature = hmac.digest("hex");
 
   // Constant-time comparison
   if (computedSignature.length !== signature.length) {
@@ -98,10 +98,7 @@ export function validateWebhookSignature(
 /**
  * Validate webhook timestamp (prevent replay attacks)
  */
-export function validateWebhookTimestamp(
-  timestamp: number,
-  maxAgeSeconds: number = 300
-): boolean {
+export function validateWebhookTimestamp(timestamp: number, maxAgeSeconds: number = 300): boolean {
   const now = Math.floor(Date.now() / 1000);
   const age = now - timestamp;
 
@@ -116,17 +113,17 @@ export async function getIntegrationCredential(
   supabaseServiceKey: string,
   tenantId: string,
   integrationId: string,
-  credentialType: 'oauth_token' | 'api_key' | 'webhook_secret' | 'api_secret'
+  credentialType: "oauth_token" | "api_key" | "webhook_secret" | "api_secret"
 ): Promise<IntegrationCredential | null> {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   const { data, error } = await supabase
-    .from('integration_credentials')
-    .select('*')
-    .eq('tenant_id', tenantId)
-    .eq('integration_id', integrationId)
-    .eq('credential_type', credentialType)
-    .eq('status', 'active')
+    .from("integration_credentials")
+    .select("*")
+    .eq("tenant_id", tenantId)
+    .eq("integration_id", integrationId)
+    .eq("credential_type", credentialType)
+    .eq("status", "active")
     .single();
 
   if (error || !data) {
@@ -153,34 +150,34 @@ export async function checkIntegrationQuota(
   supabaseServiceKey: string,
   tenantId: string,
   integrationId: string,
-  quotaType: 'api_calls' | 'webhook_events' | 'data_synced_mb',
+  quotaType: "api_calls" | "webhook_events" | "data_synced_mb",
   limit: number
 ): Promise<{ allowed: boolean; current: number; limit: number }> {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
 
   const { data, error } = await supabase
-    .from('integration_quota_usage')
-    .select('*')
-    .eq('tenant_id', tenantId)
-    .eq('integration_id', integrationId)
-    .eq('date', today)
+    .from("integration_quota_usage")
+    .select("*")
+    .eq("tenant_id", tenantId)
+    .eq("integration_id", integrationId)
+    .eq("date", today)
     .single();
 
-  if (error && error.code !== 'PGRST116') {
+  if (error && error.code !== "PGRST116") {
     // Error other than "not found"
-    console.error('Error checking quota:', error);
+    console.error("Error checking quota:", error);
     return { allowed: false, current: 0, limit };
   }
 
   const current =
     data?.[
-      quotaType === 'api_calls'
-        ? 'api_calls'
-        : quotaType === 'webhook_events'
-        ? 'webhook_events'
-        : 'data_synced_mb'
+      quotaType === "api_calls"
+        ? "api_calls"
+        : quotaType === "webhook_events"
+          ? "webhook_events"
+          : "data_synced_mb"
     ] || 0;
 
   return {
@@ -198,27 +195,27 @@ export async function recordIntegrationQuotaUsage(
   supabaseServiceKey: string,
   tenantId: string,
   integrationId: string,
-  quotaType: 'api_calls' | 'webhook_events' | 'data_synced_mb',
+  quotaType: "api_calls" | "webhook_events" | "data_synced_mb",
   amount: number
 ): Promise<void> {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
 
   const updateField =
-    quotaType === 'api_calls'
-      ? 'api_calls'
-      : quotaType === 'webhook_events'
-      ? 'webhook_events'
-      : 'data_synced_mb';
+    quotaType === "api_calls"
+      ? "api_calls"
+      : quotaType === "webhook_events"
+        ? "webhook_events"
+        : "data_synced_mb";
 
   // Get existing record to increment, or create new
   const { data: existing } = await supabase
-    .from('integration_quota_usage')
-    .select('*')
-    .eq('tenant_id', tenantId)
-    .eq('integration_id', integrationId)
-    .eq('date', today)
+    .from("integration_quota_usage")
+    .select("*")
+    .eq("tenant_id", tenantId)
+    .eq("integration_id", integrationId)
+    .eq("date", today)
     .single();
 
   const currentValue = (existing?.[updateField as keyof typeof existing] as number) || 0;
@@ -233,14 +230,12 @@ export async function recordIntegrationQuotaUsage(
   };
   updateData[updateField] = newValue;
 
-  const { error } = await supabase
-    .from('integration_quota_usage')
-    .upsert(updateData, {
-      onConflict: 'tenant_id,integration_id,date',
-    });
+  const { error } = await supabase.from("integration_quota_usage").upsert(updateData, {
+    onConflict: "tenant_id,integration_id,date",
+  });
 
   if (error) {
-    console.error('Error recording quota usage:', error);
+    console.error("Error recording quota usage:", error);
   }
 }
 
@@ -258,15 +253,13 @@ export async function updateIntegrationHealth(
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   const { data: existing } = await supabase
-    .from('integration_health')
-    .select('*')
-    .eq('tenant_id', tenantId)
-    .eq('integration_id', integrationId)
+    .from("integration_health")
+    .select("*")
+    .eq("tenant_id", tenantId)
+    .eq("integration_id", integrationId)
     .single();
 
-  const consecutiveFailures = success
-    ? 0
-    : (existing?.consecutive_failures || 0) + 1;
+  const consecutiveFailures = success ? 0 : (existing?.consecutive_failures || 0) + 1;
 
   const healthScore = Math.max(
     0,
@@ -274,11 +267,7 @@ export async function updateIntegrationHealth(
   );
 
   const status =
-    consecutiveFailures >= 5
-      ? 'error'
-      : consecutiveFailures >= 3
-      ? 'degraded'
-      : 'healthy';
+    consecutiveFailures >= 5 ? "error" : consecutiveFailures >= 3 ? "degraded" : "healthy";
 
   const updateData: {
     health_score: number;
@@ -310,21 +299,19 @@ export async function updateIntegrationHealth(
     updateData.auto_disabled = true;
   }
 
-  const { error } = await supabase
-    .from('integration_health')
-    .upsert(
-      {
-        tenant_id: tenantId,
-        integration_id: integrationId,
-        ...updateData,
-      },
-      {
-        onConflict: 'tenant_id,integration_id',
-      }
-    );
+  const { error } = await supabase.from("integration_health").upsert(
+    {
+      tenant_id: tenantId,
+      integration_id: integrationId,
+      ...updateData,
+    },
+    {
+      onConflict: "tenant_id,integration_id",
+    }
+  );
 
   if (error) {
-    console.error('Error updating integration health:', error);
+    console.error("Error updating integration health:", error);
   }
 }
 
@@ -334,9 +321,9 @@ export async function updateIntegrationHealth(
 export const webhookValidators = {
   stripe: (payload: string, signature: string, secret: string): boolean => {
     // Stripe uses timestamp + payload format
-    const elements = signature.split(',');
-    const timestamp = elements.find((e) => e.startsWith('t='))?.substring(2);
-    const signatureHash = elements.find((e) => e.startsWith('v1='))?.substring(3);
+    const elements = signature.split(",");
+    const timestamp = elements.find((e) => e.startsWith("t="))?.substring(2);
+    const signatureHash = elements.find((e) => e.startsWith("v1="))?.substring(3);
 
     if (!timestamp || !signatureHash) {
       return false;
@@ -353,11 +340,11 @@ export const webhookValidators = {
   },
 
   shopify: (payload: string, signature: string, secret: string): boolean => {
-    return validateWebhookSignature(payload, signature, secret, 'sha256');
+    return validateWebhookSignature(payload, signature, secret, "sha256");
   },
 
   paypal: (payload: string, signature: string, secret: string): boolean => {
     // PayPal uses different signature format
-    return validateWebhookSignature(payload, signature, secret, 'sha256');
+    return validateWebhookSignature(payload, signature, secret, "sha256");
   },
 };

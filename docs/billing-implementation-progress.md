@@ -28,6 +28,7 @@
 ## ✅ Phase 2: Billing Infrastructure (Backend) - COMPLETE
 
 ### Prisma Schema Updates
+
 **File:** `/prisma/schema.prisma`
 
 - ✅ `BillingAccount` model
@@ -38,11 +39,14 @@
 - ✅ `UsageAggregateDaily` model
 
 ### Supabase Migrations
+
 **Files:**
+
 - `/supabase/migrations/20250120000000_billing_schema.sql`
 - `/supabase/migrations/20250120000001_billing_functions.sql`
 
 **Tables Created:**
+
 - ✅ `billing_accounts`
 - ✅ `subscriptions`
 - ✅ `add_ons` (with seed data for 10 integrations)
@@ -52,12 +56,14 @@
 - ✅ `stripe_event_log`
 
 **Functions Created:**
+
 - ✅ `log_usage_event()` - Logs usage events for billing
 - ✅ `aggregate_daily_usage()` - Aggregates events into daily totals
 - ✅ `compute_estimated_bill()` - Computes estimated bill for period
 - ✅ `check_upgrade_requirement()` - Checks if upgrade needed
 
 ### Edge Functions Created
+
 **Directory:** `/supabase/functions/`
 
 - ✅ `log-usage/index.ts` - Log usage events
@@ -72,6 +78,7 @@
 ## 🔄 Phase 3: Stripe Billing System - IN PROGRESS
 
 ### API Routes Created
+
 **File:** `/packages/api/src/routes/billing.ts`
 
 - ✅ `POST /api/billing/create-customer` - Create/retrieve billing account & Stripe customer
@@ -82,6 +89,7 @@
 - ✅ `POST /api/billing/webhook` - Handle Stripe webhooks
 
 **Webhook Handlers:**
+
 - ✅ `customer.subscription.updated`
 - ✅ `customer.subscription.deleted`
 - ✅ `invoice.paid`
@@ -89,9 +97,11 @@
 - ✅ `invoice.upcoming`
 
 ### Dependencies Added
+
 - ✅ `stripe@^14.21.0` added to `/packages/api/package.json`
 
 ### Integration Status
+
 - ✅ Routes registered in main API server (`/packages/api/src/index.ts`)
 - ⚠️ Webhook endpoint needs raw body handling for Stripe signature verification
 - ⚠️ Stripe product/price IDs need to be configured (environment variables or database)
@@ -103,6 +113,7 @@
 **Status:** Not yet started
 
 **Required Pages:**
+
 - ⏳ `/dashboard/billing` - Billing overview
 - ⏳ `/dashboard/addons` - Add-on marketplace
 - ⏳ `/dashboard/usage` - Usage dashboard
@@ -110,6 +121,7 @@
 - ⏳ `/dashboard/integrations/[integrationId]` - Integration configuration
 
 **Required Components:**
+
 - ⏳ `UsageBar` - Visual usage indicator
 - ⏳ `CostBreakdownCard` - Cost breakdown display
 - ⏳ `AddOnCard` - Add-on purchase card
@@ -126,12 +138,14 @@
 **Status:** Not yet started
 
 **Required Middleware:**
+
 - ⏳ Plan limit enforcement
 - ⏳ Add-on purchase verification
 - ⏳ Usage threshold checking
 - ⏳ Integration availability gating
 
 **Features to Gate:**
+
 - ⏳ SQL Editor
 - ⏳ Advanced analytics
 - ⏳ AI workflow counts
@@ -141,6 +155,7 @@
 - ⏳ E-commerce integrations
 
 **Upgrade Prompts:**
+
 - ⏳ Usage limit reached
 - ⏳ Feature not available on current plan
 - ⏳ Add-on required for integration
@@ -152,6 +167,7 @@
 **Status:** Not yet started
 
 ### Standard Integrations (Included in Base Plan)
+
 - ⏳ 1. Stripe - Basic implementation exists, needs billing integration
 - ⏳ 2. Shopify - Basic implementation exists, needs billing integration
 - ⏳ 3. PayPal - Needs implementation
@@ -159,6 +175,7 @@
 - ⏳ 5. Meta Commerce + Meta Ads - Needs implementation
 
 ### Premium Add-Ons
+
 - ⏳ 6. TikTok Shop + TikTok Ads - Needs implementation
 - ⏳ 7. Wix Stores - Needs implementation
 - ⏳ 8. Google Analytics GA4 - Needs implementation
@@ -166,6 +183,7 @@
 - ⏳ 10. WhatsApp Business + Telegram - Needs implementation
 
 **For Each Integration, Need:**
+
 - ⏳ OAuth or API key flow
 - ⏳ Configuration UI panel
 - ⏳ Integration test endpoint
@@ -183,12 +201,14 @@
 **Status:** Infrastructure complete, integration pending
 
 **Completed:**
+
 - ✅ Database schema for usage events
 - ✅ Database functions for logging and aggregation
 - ✅ Edge functions for usage logging
 - ✅ API endpoint for usage reporting
 
 **Pending:**
+
 - ⏳ Integration into all API routes
 - ⏳ Nightly CRON job for aggregation
 - ⏳ Real-time usage dashboard queries
@@ -209,6 +229,7 @@
 **Status:** Not yet started
 
 **Required Documents:**
+
 - ⏳ `/docs/billing-architecture.md`
 - ⏳ `/docs/usage-events-reference.md`
 - ⏳ `/docs/addons-catalog.md`
@@ -224,6 +245,7 @@
 **Status:** Not yet started
 
 **Required Features:**
+
 - ⏳ JSON config for new add-ons (no schema changes)
 - ⏳ Extensible usage event types
 - ⏳ Dynamic billing tier configuration

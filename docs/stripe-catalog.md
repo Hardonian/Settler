@@ -11,6 +11,7 @@ Reference for Stripe products, prices, and webhook configuration.
 **Description:** Base reconciliation plan with 5 standard integrations
 
 **Monthly Price:**
+
 - Price ID: `price_base_plan` (configurable via env)
 - Amount: $49.95/month
 - Billing: Recurring monthly
@@ -19,38 +20,48 @@ Reference for Stripe products, prices, and webhook configuration.
 ### Premium Add-On Products
 
 #### TikTok Shop + TikTok Ads
+
 **Product ID:** `prod_tiktok`  
 **Name:** TikTok Shop + TikTok Ads  
 **Prices:**
+
 - Monthly: $39.95/month (recurring)
 - Usage: $0.02 per order (metered)
 - Usage: $0.01 per ad event (metered)
 
 #### Wix Stores
+
 **Product ID:** `prod_wix`  
 **Name:** Wix Stores  
 **Prices:**
+
 - Monthly: $19.95/month (recurring)
 - Usage: $0.01 per order (metered)
 
 #### Google Analytics GA4 Deep Sync
+
 **Product ID:** `prod_ga4`  
 **Name:** Google Analytics GA4 Deep Sync  
 **Prices:**
+
 - Monthly: $29.95/month (recurring)
 - Usage: $0.005 per event (metered)
 
 #### PayPal Payouts + Automation
+
 **Product ID:** `prod_paypal_payouts`  
 **Name:** PayPal Payouts + Automation  
 **Prices:**
+
 - Monthly: $49.95/month (recurring)
 - Usage: $0.03 per payout (metered)
 
 #### WhatsApp Business + Telegram Messaging
+
 **Product ID:** `prod_whatsapp_telegram`  
 **Name:** WhatsApp Business + Telegram Messaging  
 **Prices:**
+
 - Monthly: $79.95/month (recurring)
 - Usage: $0.001 per message (metered)
 
@@ -63,6 +74,7 @@ tsx scripts/setup-stripe-products.ts
 ```
 
 This script:
+
 1. Creates all products in Stripe
 2. Creates monthly recurring prices
 3. Creates metered usage prices
@@ -133,6 +145,7 @@ Subscribe to these events in Stripe Dashboard:
 ### Webhook Secret
 
 Store webhook secret in environment:
+
 ```bash
 STRIPE_WEBHOOK_SECRET=whsec_...
 ```
@@ -144,14 +157,11 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 Usage records are created via `sync-usage-to-stripe` edge function:
 
 ```typescript
-await stripe.subscriptionItems.createUsageRecord(
-  subscriptionItemId,
-  {
-    quantity: usageQuantity,
-    timestamp: Math.floor(Date.now() / 1000),
-    action: "set",
-  }
-);
+await stripe.subscriptionItems.createUsageRecord(subscriptionItemId, {
+  quantity: usageQuantity,
+  timestamp: Math.floor(Date.now() / 1000),
+  action: "set",
+});
 ```
 
 ### Usage Record Timing
@@ -190,6 +200,7 @@ await stripe.subscriptionItems.createUsageRecord(
 ### Test Mode
 
 Use Stripe test mode for development:
+
 - Test API keys: `sk_test_...`
 - Test webhook secret: `whsec_test_...`
 - Test cards: https://stripe.com/docs/testing
@@ -197,6 +208,7 @@ Use Stripe test mode for development:
 ### Webhook Testing
 
 Use Stripe CLI for local webhook testing:
+
 ```bash
 stripe listen --forward-to localhost:3000/api/billing/webhook
 ```
@@ -206,6 +218,7 @@ stripe listen --forward-to localhost:3000/api/billing/webhook
 ### Stripe Dashboard
 
 Monitor in Stripe Dashboard:
+
 - Subscription metrics
 - Revenue analytics
 - Failed payments
@@ -214,6 +227,7 @@ Monitor in Stripe Dashboard:
 ### Application Logs
 
 All Stripe operations are logged:
+
 - Webhook events in `stripe_event_log` table
 - API calls in application logs
 - Errors in error tracking system
@@ -223,12 +237,9 @@ All Stripe operations are logged:
 ### Webhook Signature Verification
 
 All webhooks verify HMAC signatures:
+
 ```typescript
-const event = stripe.webhooks.constructEvent(
-  req.body,
-  sig,
-  webhookSecret
-);
+const event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
 ```
 
 ### API Key Security

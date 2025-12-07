@@ -88,7 +88,7 @@ export async function triggerEmailSequence(
       metadata: metadata || {},
     } as any);
 
-    cumulativeDelay += ((template as any).delay_hours || 0);
+    cumulativeDelay += (template as any).delay_hours || 0;
   }
 }
 
@@ -133,7 +133,10 @@ export async function sendExpansionEmail(userId: string): Promise<void> {
 /**
  * Send trial ending reminder
  */
-export async function sendTrialEndingReminder(userId: string, daysRemaining: number): Promise<void> {
+export async function sendTrialEndingReminder(
+  userId: string,
+  daysRemaining: number
+): Promise<void> {
   await triggerEmailSequence(userId, "trial_ending", {
     days_remaining: daysRemaining,
     triggered_at: new Date().toISOString(),

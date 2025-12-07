@@ -29,14 +29,14 @@ async function findDeadCode(): Promise<DeadCodeResult> {
   for (const file of files) {
     try {
       const content = await fs.readFile(file, "utf-8");
-      
+
       // Check if file has exports
       const hasExports = /export\s+(function|class|const|interface|type|enum)/.test(content);
-      
+
       // Check if file is imported anywhere (simple check)
       const fileName = path.basename(file, ".ts");
       const filePath = file.replace(/\.ts$/, "");
-      
+
       let isImported = false;
       for (const otherFile of files) {
         if (otherFile === file) continue;
@@ -51,7 +51,7 @@ async function findDeadCode(): Promise<DeadCodeResult> {
           break;
         }
       }
-      
+
       if (hasExports && !isImported && !file.includes("index.ts")) {
         // This is a candidate for unused file
         // But we need to be careful - index files might re-export

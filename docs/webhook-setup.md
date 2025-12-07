@@ -48,13 +48,13 @@ app.use(express.json());
 app.post("/webhooks/settler", async (req, res) => {
   // Verify webhook signature (see Step 3)
   const isValid = verifyWebhookSignature(req);
-  
+
   if (!isValid) {
     return res.status(401).json({ error: "Invalid signature" });
   }
-  
+
   const { event, data } = req.body;
-  
+
   // Handle different event types
   switch (event) {
     case "reconciliation.completed":
@@ -69,7 +69,7 @@ app.post("/webhooks/settler", async (req, res) => {
     default:
       console.log(`Unhandled event: ${event}`);
   }
-  
+
   res.json({ received: true });
 });
 
@@ -93,11 +93,7 @@ const settler = new Settler({
 
 const webhook = await settler.webhooks.create({
   url: "https://your-app.com/webhooks/settler",
-  events: [
-    "reconciliation.completed",
-    "reconciliation.mismatch",
-    "reconciliation.error",
-  ],
+  events: ["reconciliation.completed", "reconciliation.mismatch", "reconciliation.error"],
   secret: process.env.WEBHOOK_SECRET, // Keep this secret!
 });
 
@@ -117,27 +113,24 @@ Settler signs all webhooks with HMAC-SHA256. Always verify signatures to ensure 
 function verifyWebhookSignature(req: express.Request): boolean {
   const signature = req.headers["x-settler-signature"] as string;
   const webhookSecret = process.env.WEBHOOK_SECRET!;
-  
+
   if (!signature) {
     return false;
   }
-  
+
   // Parse signature: "t=timestamp,v1=hash"
   const [timestamp, hash] = signature.split(",");
   const [t, v1] = hash.split("=");
-  
+
   // Create expected signature
   const payload = JSON.stringify(req.body);
   const expectedSignature = crypto
     .createHmac("sha256", webhookSecret)
     .update(`${timestamp.split("=")[1]}.${payload}`)
     .digest("hex");
-  
+
   // Compare signatures (timing-safe)
-  return crypto.timingSafeEqual(
-    Buffer.from(v1),
-    Buffer.from(expectedSignature)
-  );
+  return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expectedSignature));
 }
 ```
 
@@ -150,15 +143,15 @@ function verifyWebhookSignature(req: express.Request): boolean {
 ```typescript
 async function handleReconciliationCompleted(data: any) {
   const { jobId, summary } = data;
-  
+
   console.log(`Reconciliation completed for job ${jobId}`);
   console.log(`Matched: ${summary.matched}`);
   console.log(`Unmatched: ${summary.unmatched}`);
   console.log(`Accuracy: ${summary.accuracy}%`);
-  
+
   // Fetch full report if needed
   const report = await settler.reports.get(jobId);
-  
+
   // Update your database, send notifications, etc.
   await updateReconciliationStatus(jobId, report.data);
 }
@@ -169,11 +162,11 @@ async function handleReconciliationCompleted(data: any) {
 ```typescript
 async function handleMismatch(data: any) {
   const { jobId, sourceId, targetId, reason } = data;
-  
+
   console.log(`Mismatch detected in job ${jobId}`);
   console.log(`Source: ${sourceId}, Target: ${targetId}`);
   console.log(`Reason: ${reason}`);
-  
+
   // Alert finance team
   await sendAlert({
     type: "reconciliation_mismatch",
@@ -182,7 +175,7 @@ async function handleMismatch(data: any) {
     targetId,
     reason,
   });
-  
+
   // Create exception record in your system
   await createException({
     jobId,
@@ -199,10 +192,10 @@ async function handleMismatch(data: any) {
 ```typescript
 async function handleError(data: any) {
   const { jobId, error, message } = data;
-  
+
   console.error(`Reconciliation error in job ${jobId}:`, error);
   console.error(`Message: ${message}`);
-  
+
   // Log error to monitoring system
   await logError({
     jobId,
@@ -210,7 +203,7 @@ async function handleError(data: any) {
     message,
     timestamp: new Date(),
   });
-  
+
   // Retry if appropriate
   if (isRetryableError(error)) {
     await retryReconciliation(jobId);
@@ -238,10 +231,10 @@ app.post("/webhooks/settler/test", (req, res) => {
       },
     },
   };
-  
+
   // Simulate webhook
   handleReconciliationCompleted(testEvent.data);
-  
+
   res.json({ message: "Test webhook processed" });
 });
 ```
@@ -262,10 +255,10 @@ async function handleEvent(eventId: string, data: any) {
     console.log(`Event ${eventId} already processed`);
     return;
   }
-  
+
   // Process event
   await processEvent(data);
-  
+
   // Mark as processed
   processedEvents.add(eventId);
 }
@@ -304,7 +297,7 @@ Process webhooks quickly. Settler expects a response within 30 seconds:
 app.post("/webhooks/settler", async (req, res) => {
   // Acknowledge immediately
   res.status(202).json({ received: true });
-  
+
   // Process asynchronously
   processWebhookAsync(req.body).catch(console.error);
 });

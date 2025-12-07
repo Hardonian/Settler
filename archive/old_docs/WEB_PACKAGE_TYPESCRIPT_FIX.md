@@ -12,6 +12,7 @@
 **Issue:** `rateLimitStore[key]` could be undefined, TypeScript strict mode requires null check.
 
 **Fix:**
+
 ```typescript
 // Before
 if (rateLimitStore[key].resetTime < now) {
@@ -26,6 +27,7 @@ if (entry && entry.resetTime < now) {
 **Issue:** Parameter `apiKey` is unused (function is a TODO placeholder).
 
 **Fix:**
+
 ```typescript
 // Before
 export async function getRateLimitFromApiKey(

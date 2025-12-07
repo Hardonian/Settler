@@ -32,7 +32,7 @@ export function UsageCalculator() {
     // Transaction costs (beyond included)
     const includedTransactions = 100000;
     const overageTransactions = Math.max(0, transactions - includedTransactions);
-    const transactionCost = (overageTransactions / 1000) * 0.10; // $0.10 per 1K
+    const transactionCost = (overageTransactions / 1000) * 0.1; // $0.10 per 1K
 
     // Integration costs
     const integrationCost = (integrations - 5) * 50; // $50 per additional integration
@@ -109,7 +109,9 @@ export function UsageCalculator() {
 
         {estimate && (
           <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-3">Estimated Monthly Cost</h4>
+            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-3">
+              Estimated Monthly Cost
+            </h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span>Base Plan:</span>

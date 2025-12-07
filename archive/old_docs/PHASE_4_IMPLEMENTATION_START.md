@@ -19,6 +19,7 @@ Phase 4 implementation has begun with the creation of foundational AI insight se
 **Purpose:** Identifies exact steps where users abandon onboarding or workflows.
 
 **Features:**
+
 - Analyzes onboarding drop-off (6 steps: welcome, profile, first_job, first_reconciliation, first_export, webhook_setup)
 - Analyzes reconciliation drop-off (4 steps: job_created → job_executed → reconciliation_completed → export_created)
 - Analyzes export drop-off (2 steps: reconciliation_completed → export_created)
@@ -26,6 +27,7 @@ Phase 4 implementation has begun with the creation of foundational AI insight se
 - Generates actionable suggestions based on drop-off patterns
 
 **Usage:**
+
 ```typescript
 import { analyzeDropOffSteps } from "./services/ai-insights/dropoff-analyzer";
 
@@ -36,6 +38,7 @@ console.log(analysis.suggestions); // Actionable recommendations
 ```
 
 **Impact:**
+
 - Enables data-driven onboarding improvements
 - Identifies friction points in user workflows
 - Provides metrics for A/B testing
@@ -47,6 +50,7 @@ console.log(analysis.suggestions); // Actionable recommendations
 **Purpose:** Identifies where users struggle (errors, slow operations, retries).
 
 **Features:**
+
 - Analyzes error logs grouped by endpoint
 - Identifies high-frequency errors (>5 occurrences)
 - Calculates affected user count
@@ -55,6 +59,7 @@ console.log(analysis.suggestions); // Actionable recommendations
 - Supports time windows: day, week, month
 
 **Usage:**
+
 ```typescript
 import { identifyFrictionPoints } from "./services/ai-insights/friction-detector";
 
@@ -65,6 +70,7 @@ console.log(analysis.frictionPoints); // All detected issues
 ```
 
 **Impact:**
+
 - Proactive issue detection
 - Prioritized bug fixing
 - Improved user experience
@@ -76,6 +82,7 @@ console.log(analysis.frictionPoints); // All detected issues
 **Purpose:** Detects early signals that indicate a user might churn or need help.
 
 **Features:**
+
 - Detects incomplete onboarding after 7 days
 - Detects first error after successful usage
 - Detects quota exceeded events
@@ -86,6 +93,7 @@ console.log(analysis.frictionPoints); // All detected issues
 - Provides suggested actions for each signal
 
 **Usage:**
+
 ```typescript
 import { detectEarlyWarningSignals } from "./services/ai-insights/early-warning";
 
@@ -99,6 +107,7 @@ const highSignals = await getAllWarningSignals(WarningSeverity.HIGH);
 ```
 
 **Impact:**
+
 - Proactive churn prevention
 - Automated intervention triggers
 - Improved user retention
@@ -110,6 +119,7 @@ const highSignals = await getAllWarningSignals(WarningSeverity.HIGH);
 **Purpose:** Auto-generates API documentation from route definitions.
 
 **Features:**
+
 - Parses route files recursively
 - Extracts route paths, methods, and parameters
 - Detects authentication requirements
@@ -119,6 +129,7 @@ const highSignals = await getAllWarningSignals(WarningSeverity.HIGH);
 - Tracks documentation coverage
 
 **Usage:**
+
 ```typescript
 import { generateRouteDocs, saveRouteDocs } from "./services/ai-insights/doc-generator";
 
@@ -133,6 +144,7 @@ await saveRouteDocs("./docs/api/auto-generated-routes.md", report);
 ```
 
 **Impact:**
+
 - Automatic documentation updates
 - Reduced maintenance burden
 - Improved API discoverability
@@ -144,6 +156,7 @@ await saveRouteDocs("./docs/api/auto-generated-routes.md", report);
 **Purpose:** Detects when routes change and flags documentation updates needed.
 
 **Features:**
+
 - Compares current routes with last known state
 - Detects added routes
 - Detects modified routes (description, auth, permissions, file location)
@@ -152,6 +165,7 @@ await saveRouteDocs("./docs/api/auto-generated-routes.md", report);
 - Generates change reports
 
 **Usage:**
+
 ```typescript
 import { detectAPIChanges, saveChangeReport } from "./services/ai-insights/api-change-detector";
 
@@ -167,6 +181,7 @@ await saveChangeReport("./docs/api/changes.md", report);
 ```
 
 **Impact:**
+
 - Keeps documentation in sync with code
 - Identifies breaking changes
 - Enables automated documentation workflows
@@ -291,6 +306,7 @@ router.get("/insights/warnings", requireAdmin, async (req, res) => {
 ## Files Created
 
 ### Services
+
 - `packages/api/src/services/ai-insights/dropoff-analyzer.ts`
 - `packages/api/src/services/ai-insights/friction-detector.ts`
 - `packages/api/src/services/ai-insights/early-warning.ts`
@@ -299,6 +315,7 @@ router.get("/insights/warnings", requireAdmin, async (req, res) => {
 - `packages/api/src/services/ai-insights/index.ts`
 
 ### Documentation
+
 - `PHASE_4_AI_SELF_IMPROVING_SYSTEM.md` - Comprehensive Phase 4 report
 - `PHASE_4_IMPLEMENTATION_START.md` - This file
 

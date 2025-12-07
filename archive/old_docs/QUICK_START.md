@@ -67,6 +67,7 @@ npx tsx scripts/check-billing-setup.ts
 ```
 
 Or visit:
+
 - `/dashboard/billing` - Billing dashboard
 - `/dashboard/addons` - Add-ons marketplace
 - `/dashboard/usage` - Usage dashboard

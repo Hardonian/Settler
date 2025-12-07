@@ -7,18 +7,21 @@ This document summarizes the integration of Vercel Next.js SDKs into the Settler
 ## Integrated SDKs
 
 ### ✅ @vercel/analytics
+
 - **Status**: Already integrated
 - **Location**: `packages/web/src/app/layout.tsx`
 - **Purpose**: Automatic page view and event tracking
 - **Usage**: Automatically tracks page views and custom events
 
 ### ✅ @vercel/speed-insights
+
 - **Status**: Already integrated
 - **Location**: `packages/web/src/app/layout.tsx`
 - **Purpose**: Real-time performance monitoring
 - **Usage**: Automatically collects Web Vitals and performance metrics
 
 ### ✅ @vercel/kv (NEW)
+
 - **Status**: Integrated
 - **Location**: `packages/web/src/lib/vercel/kv.ts`
 - **Purpose**: Serverless Redis for caching and data storage
@@ -34,6 +37,7 @@ This document summarizes the integration of Vercel Next.js SDKs into the Settler
   - `KV_REST_API_READ_ONLY_TOKEN`
 
 ### ✅ @vercel/edge-config (NEW)
+
 - **Status**: Integrated
 - **Location**: `packages/web/src/lib/vercel/edge-config.ts`
 - **Purpose**: Edge configuration for feature flags and A/B testing
@@ -47,6 +51,7 @@ This document summarizes the integration of Vercel Next.js SDKs into the Settler
 - **Integration**: Automatically integrated with `packages/web/src/lib/flags/resolver.ts`
 
 ### ✅ @vercel/blob (NEW)
+
 - **Status**: Integrated
 - **Location**: `packages/web/src/lib/vercel/blob.ts`
 - **Purpose**: Serverless file storage
@@ -121,5 +126,6 @@ All SDKs are configured via environment variables. See `.env.example` for detail
 ## Documentation
 
 For detailed usage examples and API reference, see:
+
 - `packages/web/src/lib/vercel/README.md`
 - `packages/web/src/app/api/vercel-example/route.ts`

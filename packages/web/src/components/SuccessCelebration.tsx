@@ -82,9 +82,7 @@ export function SuccessCelebration({
             </div>
           </div>
           <DialogTitle className="text-center text-2xl">{message.title}</DialogTitle>
-          <DialogDescription className="text-center mt-2">
-            {message.description}
-          </DialogDescription>
+          <DialogDescription className="text-center mt-2">{message.description}</DialogDescription>
         </DialogHeader>
 
         {metrics && (
@@ -96,9 +94,7 @@ export function SuccessCelebration({
                   <p className="font-semibold text-blue-900 dark:text-blue-100">
                     {metrics.timeSaved} hours saved
                   </p>
-                  <p className="text-xs text-blue-700 dark:text-blue-300">
-                    This month so far
-                  </p>
+                  <p className="text-xs text-blue-700 dark:text-blue-300">This month so far</p>
                 </div>
               </div>
             )}
@@ -124,9 +120,7 @@ export function SuccessCelebration({
                   <p className="font-semibold text-purple-900 dark:text-purple-100">
                     {metrics.accuracy}% accuracy
                   </p>
-                  <p className="text-xs text-purple-700 dark:text-purple-300">
-                    Excellent results
-                  </p>
+                  <p className="text-xs text-purple-700 dark:text-purple-300">Excellent results</p>
                 </div>
               </div>
             )}

@@ -201,7 +201,9 @@ ${generatedStory.quote}
           <CardContent>
             <div className="prose dark:prose-invert max-w-none">
               <h2>{generatedStory.companyName}</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{generatedStory.industry}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {generatedStory.industry}
+              </p>
               <h3>The Challenge</h3>
               <p>{generatedStory.challenge}</p>
               <h3>The Solution</h3>

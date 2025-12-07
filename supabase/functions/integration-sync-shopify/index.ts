@@ -7,8 +7,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
@@ -19,13 +18,10 @@ serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing authorization header" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const supabaseClient = createClient(
@@ -44,43 +40,34 @@ serve(async (req) => {
     } = await supabaseClient.auth.getUser();
 
     if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const body = await req.json();
     const { billing_account_id, project_id, tenant_id, order_count } = body;
 
     if (!billing_account_id) {
-      return new Response(
-        JSON.stringify({ error: "Missing billing_account_id" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing billing_account_id" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Log usage event for Shopify sync
-    const { data: eventId, error: logError } = await supabaseClient.rpc(
-      "log_usage_event",
-      {
-        p_billing_account_id: billing_account_id,
-        p_event_type: "integration_sync",
-        p_quantity: order_count || 1,
-        p_project_id: project_id || null,
-        p_user_id: user.id,
-        p_tenant_id: tenant_id || null,
-        p_integration_id: "shopify",
-        p_unit: "order",
-        p_metadata: { integration: "shopify", sync_type: "orders" },
-      }
-    );
+    const { data: eventId, error: logError } = await supabaseClient.rpc("log_usage_event", {
+      p_billing_account_id: billing_account_id,
+      p_event_type: "integration_sync",
+      p_quantity: order_count || 1,
+      p_project_id: project_id || null,
+      p_user_id: user.id,
+      p_tenant_id: tenant_id || null,
+      p_integration_id: "shopify",
+      p_unit: "order",
+      p_metadata: { integration: "shopify", sync_type: "orders" },
+    });
 
     if (logError) {
       console.error("Error logging usage:", logError);

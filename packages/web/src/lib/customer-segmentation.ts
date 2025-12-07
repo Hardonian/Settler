@@ -40,10 +40,7 @@ export async function assignSegment(
 export async function getUserSegments(userId: string): Promise<CustomerSegment[]> {
   const supabase = createClient();
 
-  const { data, error } = await supabase
-    .from("user_segments")
-    .select("*")
-    .eq("user_id", userId);
+  const { data, error } = await supabase.from("user_segments").select("*").eq("user_id", userId);
 
   if (error) {
     console.error("Error fetching segments:", error);
@@ -71,7 +68,9 @@ export async function autoSegmentUser(userId: string): Promise<void> {
     .select("*")
     .eq("user_id", userId)
     .single();
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId } as any);
+  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
+    user_id: userId,
+  } as any);
 
   if (!user || !lifecycle || !metrics) return;
 
@@ -93,7 +92,10 @@ export async function autoSegmentUser(userId: string): Promise<void> {
     await assignSegment(userId, "behavioral", "expansion_ready", {
       opportunity_score: (lifecycle as any).expansion_opportunity_score,
     });
-  } else if ((lifecycle as any).current_stage === "retention" || (lifecycle as any).current_stage === "expansion") {
+  } else if (
+    (lifecycle as any).current_stage === "retention" ||
+    (lifecycle as any).current_stage === "expansion"
+  ) {
     await assignSegment(userId, "behavioral", "engaged", {
       stage: (lifecycle as any).current_stage,
     });

@@ -63,7 +63,11 @@ interface MigrationRun {
       tableCount: number;
     };
   };
-  outcome: "GO-LIVE VERIFIED" | "GO-LIVE VERIFIED (NO CHANGES NEEDED)" | "PARTIAL – MANUAL ACTION REQUIRED" | "FAILED – SEE ERRORS ABOVE";
+  outcome:
+    | "GO-LIVE VERIFIED"
+    | "GO-LIVE VERIFIED (NO CHANGES NEEDED)"
+    | "PARTIAL – MANUAL ACTION REQUIRED"
+    | "FAILED – SEE ERRORS ABOVE";
   errors: string[];
   warnings: string[];
 }
@@ -100,7 +104,11 @@ function loadEnvFile(file: string): Record<string, string> {
   return env;
 }
 
-function selectDatabaseUrl(envFiles: string[]): { file: string; url: string; mode: "LIVE/PROD" | "STAGING/DEV" } {
+function selectDatabaseUrl(envFiles: string[]): {
+  file: string;
+  url: string;
+  mode: "LIVE/PROD" | "STAGING/DEV";
+} {
   // Priority 1: GitHub Actions / CI environment variables (secrets)
   // These take precedence over .env files
   const ciEnvVars = [
@@ -117,14 +125,19 @@ function selectDatabaseUrl(envFiles: string[]): { file: string; url: string; mod
   }
 
   // Priority 2: Check if SUPABASE_URL + SUPABASE_DB_PASSWORD are in env (from GitHub secrets)
-  if (process.env.SUPABASE_URL && (process.env.SUPABASE_DB_PASSWORD || process.env.DATABASE_PASSWORD)) {
+  if (
+    process.env.SUPABASE_URL &&
+    (process.env.SUPABASE_DB_PASSWORD || process.env.DATABASE_PASSWORD)
+  ) {
     const constructed = constructSupabaseUrl({
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_DB_PASSWORD: process.env.SUPABASE_DB_PASSWORD || process.env.DATABASE_PASSWORD || "",
     });
     if (constructed) {
       const mode = determineMode("GitHub Actions / CI", constructed);
-      console.log("   ℹ️  Constructed URL from GitHub Actions / CI environment variables (secrets)");
+      console.log(
+        "   ℹ️  Constructed URL from GitHub Actions / CI environment variables (secrets)"
+      );
       return { file: "GitHub Actions / CI", url: constructed, mode };
     }
   }
@@ -147,9 +160,11 @@ function selectDatabaseUrl(envFiles: string[]): { file: string; url: string; mod
 
   throw new Error(
     "No DATABASE_URL or SUPABASE_DB_URL found in:\n" +
-    "  - GitHub Actions / CI environment variables (secrets)\n" +
-    "  - Env files: " + envFiles.join(", ") + "\n\n" +
-    "For GitHub Actions, ensure DATABASE_URL or SUPABASE_DB_URL is set as a repository secret."
+      "  - GitHub Actions / CI environment variables (secrets)\n" +
+      "  - Env files: " +
+      envFiles.join(", ") +
+      "\n\n" +
+      "For GitHub Actions, ensure DATABASE_URL or SUPABASE_DB_URL is set as a repository secret."
   );
 }
 
@@ -165,10 +180,7 @@ function constructSupabaseUrl(env: Record<string, string>): string | null {
   return `postgresql://postgres:${password}@${host}:5432/postgres?sslmode=require`;
 }
 
-function determineMode(
-  file: string,
-  url: string
-): "LIVE/PROD" | "STAGING/DEV" {
+function determineMode(file: string, url: string): "LIVE/PROD" | "STAGING/DEV" {
   const fileLower = file.toLowerCase();
   const urlLower = url.toLowerCase();
 
@@ -222,9 +234,7 @@ function extractDbInfo(url: string): { host: string; dbName: string } {
 async function testDatabaseConnection(url: string): Promise<void> {
   const pool = new Pool({
     connectionString: url,
-    ssl: url.includes("supabase.co")
-      ? { rejectUnauthorized: false }
-      : undefined,
+    ssl: url.includes("supabase.co") ? { rejectUnauthorized: false } : undefined,
     connectionTimeoutMillis: 10000,
   });
 
@@ -274,9 +284,7 @@ function getPrismaMigrateCommand(): string {
   // Check package.json scripts
   const packageJsonPath = path.join(process.cwd(), "package.json");
   if (fs.existsSync(packageJsonPath)) {
-    const packageJson = JSON.parse(
-      fs.readFileSync(packageJsonPath, "utf-8")
-    );
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
     const scripts = packageJson.scripts || {};
 
     if (scripts["prisma:migrate:deploy"]) {
@@ -293,9 +301,7 @@ function getPrismaMigrateCommand(): string {
 function getPrismaStatusCommand(): string {
   const packageJsonPath = path.join(process.cwd(), "package.json");
   if (fs.existsSync(packageJsonPath)) {
-    const packageJson = JSON.parse(
-      fs.readFileSync(packageJsonPath, "utf-8")
-    );
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
     const scripts = packageJson.scripts || {};
 
     if (scripts["prisma:status"]) {
@@ -391,10 +397,7 @@ function archiveMigrations(migrationIds: string[]): string {
     fs.mkdirSync(archiveBase, { recursive: true });
   }
 
-  const timestamp = new Date()
-    .toISOString()
-    .replace(/[:.]/g, "-")
-    .slice(0, 19);
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
   const archivePath = path.join(archiveBase, timestamp);
 
   fs.mkdirSync(archivePath, { recursive: true });
@@ -414,16 +417,10 @@ function archiveMigrations(migrationIds: string[]): string {
   if (fs.existsSync(gitignorePath)) {
     const gitignoreContent = fs.readFileSync(gitignorePath, "utf-8");
     if (!gitignoreContent.includes("prisma/_archive")) {
-      fs.appendFileSync(
-        gitignorePath,
-        "\n# Migration archives\nprisma/_archive/\n"
-      );
+      fs.appendFileSync(gitignorePath, "\n# Migration archives\nprisma/_archive/\n");
     }
   } else {
-    fs.writeFileSync(
-      gitignorePath,
-      "# Migration archives\nprisma/_archive/\n"
-    );
+    fs.writeFileSync(gitignorePath, "# Migration archives\nprisma/_archive/\n");
   }
 
   return archivePath;
@@ -437,10 +434,7 @@ function copyRecursiveSync(src: string, dest: string): void {
   if (isDirectory) {
     fs.mkdirSync(dest, { recursive: true });
     fs.readdirSync(src).forEach((childItemName) => {
-      copyRecursiveSync(
-        path.join(src, childItemName),
-        path.join(dest, childItemName)
-      );
+      copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
     });
   } else {
     fs.copyFileSync(src, dest);
@@ -515,9 +509,7 @@ async function verifyDbSchema(
 
   const pool = new Pool({
     connectionString: dbUrl,
-    ssl: dbUrl.includes("supabase.co")
-      ? { rejectUnauthorized: false }
-      : undefined,
+    ssl: dbUrl.includes("supabase.co") ? { rejectUnauthorized: false } : undefined,
     connectionTimeoutMillis: 10000,
   });
 
@@ -539,9 +531,7 @@ async function verifyDbSchema(
     for (const model of models.slice(0, 10)) {
       // Limit to first 10 models to avoid too many queries
       try {
-        const result = await pool.query(
-          `SELECT 1 FROM "${model}" LIMIT 1`
-        );
+        const result = await pool.query(`SELECT 1 FROM "${model}" LIMIT 1`);
         // Table exists and is queryable
       } catch (error: any) {
         // Check if it's a "does not exist" error
@@ -582,9 +572,7 @@ async function performHealthCheck(dbUrl: string): Promise<{
 }> {
   const pool = new Pool({
     connectionString: dbUrl,
-    ssl: dbUrl.includes("supabase.co")
-      ? { rejectUnauthorized: false }
-      : undefined,
+    ssl: dbUrl.includes("supabase.co") ? { rejectUnauthorized: false } : undefined,
     connectionTimeoutMillis: 10000,
   });
 
@@ -648,10 +636,11 @@ function appendMigrationLog(run: MigrationRun): void {
 
 ### Pre-run Status
 - **Pending Migrations:** ${run.preRunStatus.pendingMigrations.length}
-  ${run.preRunStatus.pendingMigrations.length > 0
+  ${
+    run.preRunStatus.pendingMigrations.length > 0
       ? run.preRunStatus.pendingMigrations.map((id) => `  - \`${id}\``).join("\n")
       : "  - None"
-    }
+  }
 - **Status Output:**
 \`\`\`
 ${run.preRunStatus.statusOutput}
@@ -662,27 +651,23 @@ ${run.commands.map((cmd) => `- \`${cmd}\``).join("\n")}
 
 ### Apply Results
 - **Success:** ${run.applyResults.success ? "✅ Yes" : "❌ No"}
-${run.applyResults.output
-      ? `- **Output:**\n\`\`\`\n${run.applyResults.output}\n\`\`\``
-      : ""
-    }
-${run.applyResults.error
-      ? `- **Error:**\n\`\`\`\n${run.applyResults.error}\n\`\`\``
-      : ""
-    }
+${run.applyResults.output ? `- **Output:**\n\`\`\`\n${run.applyResults.output}\n\`\`\`` : ""}
+${run.applyResults.error ? `- **Error:**\n\`\`\`\n${run.applyResults.error}\n\`\`\`` : ""}
 
 ### Archive Info
-${run.archiveInfo.appliedMigrationIds.length > 0
-      ? `- **Applied Migration IDs:**\n${run.archiveInfo.appliedMigrationIds.map((id) => `  - \`${id}\``).join("\n")}\n- **Archive Path:** \`${run.archiveInfo.archivePath}\``
-      : "- No migrations were applied in this run"
-    }
+${
+  run.archiveInfo.appliedMigrationIds.length > 0
+    ? `- **Applied Migration IDs:**\n${run.archiveInfo.appliedMigrationIds.map((id) => `  - \`${id}\``).join("\n")}\n- **Archive Path:** \`${run.archiveInfo.archivePath}\``
+    : "- No migrations were applied in this run"
+}
 
 ### Redis Connectivity Status
 - **Configured:** ${run.redisStatus.configured ? "✅ Yes" : "❌ No"}
-${run.redisStatus.configured
-      ? `- **Reachable:** ${run.redisStatus.reachable ? "✅ Yes" : "❌ No"}${run.redisStatus.latency ? ` (latency: ${run.redisStatus.latency}ms)` : ""}${run.redisStatus.error ? `\n- **Error:** ${run.redisStatus.error}` : ""}`
-      : "- **Status:** NO CONFIG FOUND (skipped)"
-    }
+${
+  run.redisStatus.configured
+    ? `- **Reachable:** ${run.redisStatus.reachable ? "✅ Yes" : "❌ No"}${run.redisStatus.latency ? ` (latency: ${run.redisStatus.latency}ms)` : ""}${run.redisStatus.error ? `\n- **Error:** ${run.redisStatus.error}` : ""}`
+    : "- **Status:** NO CONFIG FOUND (skipped)"
+}
 
 ### Reality Verification (GO-LIVE CHECK)
 - **Prisma Status:**
@@ -700,14 +685,8 @@ ${run.realityVerification.prismaStatus}
 ### Outcome
 **STATE: ${run.outcome}**
 
-${run.errors.length > 0
-      ? `### Errors\n${run.errors.map((e) => `- ${e}`).join("\n")}\n`
-      : ""
-    }
-${run.warnings.length > 0
-      ? `### Warnings\n${run.warnings.map((w) => `- ${w}`).join("\n")}\n`
-      : ""
-    }
+${run.errors.length > 0 ? `### Errors\n${run.errors.map((e) => `- ${e}`).join("\n")}\n` : ""}
+${run.warnings.length > 0 ? `### Warnings\n${run.warnings.map((w) => `- ${w}`).join("\n")}\n` : ""}
 
 ---
 
@@ -786,7 +765,9 @@ async function main() {
     console.log(`   Mode: ${run.env.mode}\n`);
 
     if (mode === "LIVE/PROD") {
-      run.warnings.push("⚠️  Operating on LIVE/PRODUCTION database. Proceeding with extra caution.");
+      run.warnings.push(
+        "⚠️  Operating on LIVE/PRODUCTION database. Proceeding with extra caution."
+      );
       console.log("   ⚠️  WARNING: LIVE/PRODUCTION database detected!\n");
     }
 
@@ -817,9 +798,7 @@ async function main() {
     console.log("🔍 Step 3: Detecting Prisma setup...");
     const prisma = detectPrisma();
     if (!prisma.installed) {
-      throw new Error(
-        "Prisma is not installed. Please run: npm install prisma @prisma/client"
-      );
+      throw new Error("Prisma is not installed. Please run: npm install prisma @prisma/client");
     }
     if (!prisma.schemaPath) {
       throw new Error(
@@ -879,9 +858,7 @@ async function main() {
       console.log("🔍 Step 5.2: Re-checking migration status...");
       const postStatus = getMigrationStatus();
       if (!postStatus.isUpToDate && postStatus.pending.length > 0) {
-        run.errors.push(
-          `Migrations still pending after apply: ${postStatus.pending.join(", ")}`
-        );
+        run.errors.push(`Migrations still pending after apply: ${postStatus.pending.join(", ")}`);
         console.log("   ❌ Migrations still pending\n");
         appendMigrationLog(run);
         process.exit(1);

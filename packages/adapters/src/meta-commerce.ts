@@ -52,10 +52,13 @@ export class MetaCommerceAdapter implements Adapter {
       });
 
       if (dateRange?.start && dateRange?.end) {
-        adsParams.append("time_range", JSON.stringify({
-          since: dateRange.start.toISOString(),
-          until: dateRange.end.toISOString(),
-        }));
+        adsParams.append(
+          "time_range",
+          JSON.stringify({
+            since: dateRange.start.toISOString(),
+            until: dateRange.end.toISOString(),
+          })
+        );
       }
 
       const adsResponse = await fetch(`${adsUrl}?${adsParams.toString()}`);
@@ -152,8 +155,6 @@ export class MetaCommerceAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return errors.length === 0
-      ? { valid: true }
-      : { valid: false, errors };
+    return errors.length === 0 ? { valid: true } : { valid: false, errors };
   }
 }

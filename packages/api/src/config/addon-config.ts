@@ -23,7 +23,7 @@ export interface AddOnConfig {
  * Add-on configurations (can be loaded from JSON file or database)
  */
 export const ADDON_CONFIGS: Record<string, AddOnConfig> = {
-  "stripe": {
+  stripe: {
     integration_id: "stripe",
     name: "Stripe",
     description: "Payment processor reconciliation",
@@ -32,7 +32,7 @@ export const ADDON_CONFIGS: Record<string, AddOnConfig> = {
     is_standard: true,
     required_credentials: ["apiKey"],
   },
-  "shopify": {
+  shopify: {
     integration_id: "shopify",
     name: "Shopify",
     description: "E-commerce order & payment sync",
@@ -41,7 +41,7 @@ export const ADDON_CONFIGS: Record<string, AddOnConfig> = {
     is_standard: true,
     required_credentials: ["storeUrl", "apiKey", "apiSecret"],
   },
-  "paypal": {
+  paypal: {
     integration_id: "paypal",
     name: "PayPal",
     description: "Standard payment reconciliation",
@@ -201,9 +201,7 @@ export function validateAddOnConfig(config: AddOnConfig): { valid: boolean; erro
     errors.push("usage_unit is required when usage_price_per_unit is set");
   }
 
-  return errors.length === 0
-    ? { valid: true }
-    : { valid: false, errors };
+  return errors.length === 0 ? { valid: true } : { valid: false, errors };
 }
 
 /**

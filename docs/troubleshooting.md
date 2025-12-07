@@ -9,11 +9,14 @@
 ### Issue: Can't create reconciliation job
 
 **Symptoms:**
+
 - API returns 400 or 401 error
 - Job creation fails
 
 **Solutions:**
+
 1. **Check API Key**
+
    ```bash
    echo $SETTLER_API_KEY
    # Should start with sk_live_ or sk_test_
@@ -33,6 +36,7 @@
 ### Issue: Job execution fails
 
 **Symptoms:**
+
 - Job status shows "failed"
 - No matches found
 - Error messages in job logs
@@ -40,13 +44,14 @@
 **Solutions:**
 
 1. **Check Adapter Connection**
+
    ```typescript
    // Test adapter connection
    const testResult = await settler.adapters.test({
      adapter: "stripe",
-     config: { apiKey: process.env.STRIPE_KEY }
+     config: { apiKey: process.env.STRIPE_KEY },
    });
-   
+
    if (!testResult.success) {
      console.error("Adapter connection failed:", testResult.error);
    }
@@ -75,6 +80,7 @@
 ### Issue: High number of unmatched transactions
 
 **Symptoms:**
+
 - Low match rate (< 80%)
 - Many exceptions in queue
 - Reconciliation accuracy is low
@@ -87,35 +93,37 @@
    - Consider date range matching for processing delays
 
 2. **Check Data Quality**
+
    ```typescript
    // Inspect source data
    const sourceData = await settler.adapters.fetch({
      adapter: "shopify",
-     config: { /* ... */ },
-     dateRange: { start: "2026-01-01", end: "2026-01-31" }
+     config: {
+       /* ... */
+     },
+     dateRange: { start: "2026-01-01", end: "2026-01-31" },
    });
-   
+
    // Check for missing fields, typos, formatting issues
    console.log("Sample source data:", sourceData[0]);
    ```
 
 3. **Adjust Matching Tolerance**
+
    ```typescript
    rules: {
      matching: [
        { field: "order_id", type: "exact" },
        { field: "amount", type: "range", tolerance: 0.01 }, // Increase if needed
-       { field: "date", type: "range", days: 2 } // Increase if processing delays
-     ]
+       { field: "date", type: "range", days: 2 }, // Increase if processing delays
+     ];
    }
    ```
 
 4. **Use Fuzzy Matching for Text Fields**
    ```typescript
    rules: {
-     matching: [
-       { field: "customer_name", type: "fuzzy", threshold: 0.8 }
-     ]
+     matching: [{ field: "customer_name", type: "fuzzy", threshold: 0.8 }];
    }
    ```
 
@@ -124,24 +132,27 @@
 ### Issue: Rate limit errors (429)
 
 **Symptoms:**
+
 - API returns 429 Too Many Requests
 - Requests fail with rate limit message
 
 **Solutions:**
 
 1. **Check Current Rate Limits**
+
    ```typescript
    // Rate limit info in response headers
-   const response = await fetch('/api/v1/jobs', {
-     headers: { 'Authorization': `Bearer ${apiKey}` }
+   const response = await fetch("/api/v1/jobs", {
+     headers: { Authorization: `Bearer ${apiKey}` },
    });
-   
-   console.log('Rate limit:', response.headers.get('X-RateLimit-Limit'));
-   console.log('Remaining:', response.headers.get('X-RateLimit-Remaining'));
-   console.log('Reset at:', response.headers.get('X-RateLimit-Reset'));
+
+   console.log("Rate limit:", response.headers.get("X-RateLimit-Limit"));
+   console.log("Remaining:", response.headers.get("X-RateLimit-Remaining"));
+   console.log("Reset at:", response.headers.get("X-RateLimit-Reset"));
    ```
 
 2. **Implement Rate Limit Handling**
+
    ```typescript
    async function handleRateLimit(fn: () => Promise<any>) {
      try {
@@ -150,10 +161,10 @@
        if (error.status === 429) {
          const resetAt = new Date(error.details.resetAt);
          const waitTime = resetAt.getTime() - Date.now();
-         
+
          if (waitTime > 0) {
            console.log(`Rate limit exceeded. Waiting ${waitTime}ms`);
-           await new Promise(resolve => setTimeout(resolve, waitTime));
+           await new Promise((resolve) => setTimeout(resolve, waitTime));
            return await fn(); // Retry
          }
        }
@@ -177,16 +188,18 @@
 ### Issue: PDF export not working
 
 **Symptoms:**
+
 - PDF export returns JSON instead of file
 - Export endpoint returns error
 
 **Solutions:**
 
 1. **Check Export Format**
+
    ```typescript
    const exportResult = await settler.exports.create({
      jobId: "job_123",
-     format: "pdf" // Must be lowercase
+     format: "pdf", // Must be lowercase
    });
    ```
 
@@ -204,7 +217,7 @@
    ```typescript
    const csvExport = await settler.exports.create({
      jobId: "job_123",
-     format: "csv" // More reliable for large datasets
+     format: "csv", // More reliable for large datasets
    });
    ```
 
@@ -213,6 +226,7 @@
 ### Issue: Multi-currency reconciliation not working
 
 **Symptoms:**
+
 - Currency conversion fails
 - FX rates not available
 - Amounts don't match after conversion
@@ -220,26 +234,29 @@
 **Solutions:**
 
 1. **Sync FX Rates**
+
    ```typescript
    // Sync rates from external provider
    await settler.currency.syncRates({
      baseCurrency: "USD",
-     date: "2026-01-15" // Optional: historical date
+     date: "2026-01-15", // Optional: historical date
    });
    ```
 
 2. **Manually Enter FX Rates**
+
    ```typescript
    // If automatic sync fails, enter rates manually
    await settler.currency.recordRate({
      fromCurrency: "EUR",
      toCurrency: "USD",
      rate: 1.08,
-     date: "2026-01-15"
+     date: "2026-01-15",
    });
    ```
 
 3. **Check Base Currency**
+
    ```typescript
    const baseCurrency = await settler.currency.getBaseCurrency();
    console.log("Base currency:", baseCurrency);
@@ -255,6 +272,7 @@
 ### Issue: Webhooks not received
 
 **Symptoms:**
+
 - Webhook events not arriving
 - Webhook delivery fails
 
@@ -266,26 +284,25 @@
    - Test endpoint manually
 
 2. **Check Webhook Signature**
+
    ```typescript
-   import crypto from 'crypto';
+   import crypto from "crypto";
 
    function verifyWebhookSignature(signature: string, payload: string, secret: string): boolean {
-     const [timestamp, hash] = signature.split(',');
-     const [t, v1] = hash.split('=');
-     
+     const [timestamp, hash] = signature.split(",");
+     const [t, v1] = hash.split("=");
+
      const expected = crypto
-       .createHmac('sha256', secret)
-       .update(`${timestamp.split('=')[1]}.${payload}`)
-       .digest('hex');
-     
-     return crypto.timingSafeEqual(
-       Buffer.from(v1),
-       Buffer.from(expected)
-     );
+       .createHmac("sha256", secret)
+       .update(`${timestamp.split("=")[1]}.${payload}`)
+       .digest("hex");
+
+     return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expected));
    }
    ```
 
 3. **Check Webhook Delivery Logs**
+
    ```typescript
    const webhook = await settler.webhooks.get(webhookId);
    console.log("Delivery history:", webhook.deliveries);
@@ -306,6 +323,7 @@
 ### Issue: Slow reconciliation performance
 
 **Symptoms:**
+
 - Jobs take long time to complete
 - Timeout errors
 - High API latency
@@ -323,10 +341,13 @@
    - Reduce number of matching rules
 
 3. **Check Adapter Performance**
+
    ```typescript
    // Test adapter response time
    const start = Date.now();
-   await settler.adapters.fetch({ /* ... */ });
+   await settler.adapters.fetch({
+     /* ... */
+   });
    const duration = Date.now() - start;
    console.log(`Adapter fetch took ${duration}ms`);
    ```
@@ -346,12 +367,14 @@
 ### Issue: Authentication errors
 
 **Symptoms:**
+
 - 401 Unauthorized errors
 - API key validation fails
 
 **Solutions:**
 
 1. **Verify API Key Format**
+
    ```bash
    # Should start with sk_live_ or sk_test_
    echo $SETTLER_API_KEY | grep -E '^sk_(live|test)_'
@@ -363,18 +386,20 @@
    - Ensure key is for correct environment (live vs test)
 
 3. **Regenerate API Key**
+
    ```typescript
    // In dashboard: Settings → API Keys → Regenerate
    // Or via API (if you have admin access)
    ```
 
 4. **Check Authorization Header**
+
    ```typescript
    // Correct format
    headers: {
      'Authorization': `Bearer ${apiKey}`
    }
-   
+
    // NOT: 'Authorization': apiKey
    // NOT: 'X-API-Key': apiKey
    ```
@@ -384,6 +409,7 @@
 ### Issue: Data not matching expected format
 
 **Symptoms:**
+
 - Adapter returns unexpected data structure
 - Field names don't match
 - Missing required fields
@@ -391,22 +417,24 @@
 **Solutions:**
 
 1. **Inspect Adapter Response**
+
    ```typescript
    const data = await settler.adapters.fetch({
      adapter: "stripe",
-     config: { apiKey: process.env.STRIPE_KEY }
+     config: { apiKey: process.env.STRIPE_KEY },
    });
-   
+
    console.log("Sample data:", JSON.stringify(data[0], null, 2));
    ```
 
 2. **Check Field Mappings**
+
    ```typescript
    // Verify field names in matching rules match actual data
    rules: {
      matching: [
-       { field: "order_id", type: "exact" } // Must exist in data
-     ]
+       { field: "order_id", type: "exact" }, // Must exist in data
+     ];
    }
    ```
 
@@ -448,6 +476,7 @@
 ### When Contacting Support
 
 **Include:**
+
 - Error message and code
 - Trace ID (from error response)
 - Job ID (if applicable)
@@ -462,22 +491,27 @@
 ## Common Error Messages
 
 ### "Job not found"
+
 - **Cause:** Job ID incorrect or job deleted
 - **Fix:** Verify job ID, check job exists in dashboard
 
 ### "Adapter connection failed"
+
 - **Cause:** Invalid adapter API key or network issue
 - **Fix:** Verify adapter API key, check network connectivity
 
 ### "No FX rate available"
+
 - **Cause:** FX rate not in database and provider fetch failed
 - **Fix:** Sync FX rates or enter manually
 
 ### "Quota exceeded"
+
 - **Cause:** Plan limit reached
 - **Fix:** Upgrade plan or wait for next billing cycle
 
 ### "Rate limit exceeded"
+
 - **Cause:** Too many API requests
 - **Fix:** Wait for reset time, reduce request frequency
 

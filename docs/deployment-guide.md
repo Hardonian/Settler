@@ -148,6 +148,7 @@ supabase functions deploy log-usage-secure
 **Set up cron jobs for:**
 
 1. **Alert notifications** (every 5 minutes):
+
 ```sql
 SELECT cron.schedule(
   'send-alert-notifications',
@@ -162,6 +163,7 @@ SELECT cron.schedule(
 ```
 
 2. **Reset daily AI quotas** (daily at midnight):
+
 ```sql
 SELECT cron.schedule(
   'reset-daily-ai-quotas',
@@ -171,6 +173,7 @@ SELECT cron.schedule(
 ```
 
 3. **Reset monthly AI quotas** (monthly on 1st):
+
 ```sql
 SELECT cron.schedule(
   'reset-monthly-ai-quotas',
@@ -180,6 +183,7 @@ SELECT cron.schedule(
 ```
 
 4. **Cleanup expired idempotency keys** (daily):
+
 ```sql
 SELECT cron.schedule(
   'cleanup-idempotency-keys',
@@ -189,6 +193,7 @@ SELECT cron.schedule(
 ```
 
 5. **Check and suspend abusive accounts** (hourly):
+
 ```sql
 SELECT cron.schedule(
   'suspend-abusive-accounts',
@@ -203,15 +208,15 @@ SELECT cron.schedule(
 
 ```typescript
 // packages/web/src/app/api/example/route.ts
-import { withAPISecurity } from '@/lib/security/api-security';
-import { rateLimiters } from '@/lib/security/rate-limiter';
+import { withAPISecurity } from "@/lib/security/api-security";
+import { rateLimiters } from "@/lib/security/rate-limiter";
 
 export const POST = withAPISecurity(
   async (req: NextRequest) => {
     // Your handler
   },
   {
-    rateLimit: 'api',
+    rateLimit: "api",
     requireAuth: true,
     requireCSRF: true,
     maxRequestSize: 1024 * 1024, // 1MB
@@ -255,6 +260,7 @@ jest packages/api/src/security/__tests__/security.test.ts
 **Manual testing:**
 
 1. **Rate Limiting:**
+
    ```bash
    # Make 101 requests quickly (should get 429)
    for i in {1..101}; do
@@ -263,6 +269,7 @@ jest packages/api/src/security/__tests__/security.test.ts
    ```
 
 2. **RLS Policies:**
+
    ```sql
    -- Test tenant isolation
    SET request.jwt.claims = '{"sub": "user-1"}';
@@ -401,6 +408,7 @@ supabase functions deploy log-usage --no-verify-jwt
 ### Alert Thresholds
 
 Configure alerts for:
+
 - **Critical:** >10 fraud signals/hour, >1000 rate limit violations/hour
 - **High:** >5 integration failures/hour, >$1000 AI cost/day
 - **Medium:** >100 failed auth attempts/hour
@@ -425,6 +433,7 @@ Configure alerts for:
 ## Support
 
 For issues or questions:
+
 - **Security Team:** security@settler.dev
 - **Documentation:** `/docs/settler-defense-moat.md`
 - **Runbook:** `/docs/INCIDENT_RUNBOOK.md`

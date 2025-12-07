@@ -3,6 +3,7 @@
 ## What's Been Set Up
 
 ### ✅ Migration Guardian Script
+
 - **Location:** `scripts/migration-guardian.ts`
 - **Command:** `npm run migration:guardian`
 - **Features:**
@@ -13,6 +14,7 @@
   - Maintains detailed `MIGRATION_LOG.md`
 
 ### ✅ GitHub Actions Workflow
+
 - **Location:** `.github/workflows/migration-guardian.yml`
 - **Triggers:**
   - Every hour (cron schedule)
@@ -21,6 +23,7 @@
 - **Uses GitHub repository secrets** for database connection
 
 ### ✅ Prisma Setup
+
 - Prisma installed: `prisma` and `@prisma/client`
 - Schema file: `prisma/schema.prisma`
 - Migrations directory: `prisma/migrations/`
@@ -83,19 +86,24 @@ npm run migration:guardian
 ## Running Migrations
 
 ### Local Development
+
 ```bash
 # Run Migration Guardian locally
 npm run migration:guardian
 ```
 
 ### GitHub Actions
+
 The workflow runs automatically:
+
 - Every hour
 - When Prisma migrations change
 - Can be triggered manually
 
 ### Supabase Migrations (Alternative)
+
 If you prefer to use Supabase migrations:
+
 ```bash
 npm run db:migrate:auto
 ```
@@ -103,6 +111,7 @@ npm run db:migrate:auto
 ## Migration Log
 
 All migration operations are logged to `MIGRATION_LOG.md` with:
+
 - Timestamp and run ID
 - Environment details
 - Migration status
@@ -139,6 +148,7 @@ The Migration Guardian performs these checks:
 ## Support
 
 For issues or questions:
+
 1. Check `MIGRATION_LOG.md` for detailed error messages
 2. Review workflow logs in GitHub Actions
 3. See `scripts/MIGRATION_GUARDIAN_README.md` for troubleshooting

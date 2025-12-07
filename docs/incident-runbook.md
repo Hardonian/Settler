@@ -14,23 +14,27 @@ This runbook provides step-by-step procedures for responding to security inciden
 ## Incident Severity Levels
 
 ### Critical (P0)
+
 - Data breach
 - System compromise
 - Billing fraud >$10K
 - DDoS attack (service down)
 
 ### High (P1)
+
 - Billing fraud <$10K
 - Rate limit abuse
 - Integration compromise
 - API abuse
 
 ### Medium (P2)
+
 - Anomaly detected
 - Failed authentication spike
 - Performance degradation
 
 ### Low (P3)
+
 - Minor security alerts
 - False positives
 - Informational events
@@ -42,12 +46,14 @@ This runbook provides step-by-step procedures for responding to security inciden
 ### 1. Detection
 
 **Sources:**
+
 - Alert notifications (email, webhook, Telegram)
 - Monitoring dashboards
 - Customer reports
 - Security logs
 
 **Initial Assessment:**
+
 1. Check alert details in `alerts` table
 2. Review related logs
 3. Assess severity
@@ -219,11 +225,13 @@ WHERE tenant_id = 'tenant-id'
 ### Scenario 1: Usage Spike (Fraud Signal)
 
 **Symptoms:**
+
 - Alert: "Fraud Signal Detected"
 - Usage spike >300%
 - Billing account flagged
 
 **Response:**
+
 1. Check fraud signal details
 2. Review usage events
 3. Suspend if confirmed fraud
@@ -232,11 +240,13 @@ WHERE tenant_id = 'tenant-id'
 ### Scenario 2: Rate Limit Abuse
 
 **Symptoms:**
+
 - Alert: "Rate limit exceeded"
 - High API call volume
 - Service degradation
 
 **Response:**
+
 1. Identify abusive IP/user
 2. Block IP or suspend user
 3. Review API logs
@@ -245,11 +255,13 @@ WHERE tenant_id = 'tenant-id'
 ### Scenario 3: Integration Failure
 
 **Symptoms:**
+
 - Alert: "Integration failure"
 - High error rate
 - Auto-disabled integration
 
 **Response:**
+
 1. Check integration health
 2. Review error logs
 3. Test integration manually
@@ -258,11 +270,13 @@ WHERE tenant_id = 'tenant-id'
 ### Scenario 4: Cost Explosion
 
 **Symptoms:**
+
 - Alert: "Cost threshold exceeded"
 - High AI usage costs
 - Billing threshold hit
 
 **Response:**
+
 1. Check AI usage quotas
 2. Suspend AI usage if needed
 3. Review usage patterns
@@ -273,12 +287,14 @@ WHERE tenant_id = 'tenant-id'
 ## Escalation
 
 **Escalate to Security Team if:**
+
 - Data breach suspected
 - System compromise
 - Billing fraud >$10K
 - Unable to contain incident
 
 **Contact:**
+
 - **Security Team:** security@settler.dev
 - **On-Call:** [On-call rotation]
 - **Emergency:** [Emergency contact]
@@ -322,6 +338,7 @@ supabase functions logs log-usage-secure | grep ERROR
 ## Prevention
 
 **Regular Tasks:**
+
 1. Review fraud signals daily
 2. Monitor rate limit violations
 3. Check integration health weekly

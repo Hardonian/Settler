@@ -12,29 +12,34 @@ This directory contains comprehensive security documentation and implementations
 ### Security Features
 
 ✅ **Database Security**
+
 - Row Level Security (RLS) on all billing tables
 - Tenant isolation enforced
 - Audit logging
 
 ✅ **API Security**
+
 - Rate limiting (per-IP, per-user, per-API-key)
 - CSRF protection
 - Origin validation
 - Security headers
 
 ✅ **Billing Security**
+
 - Idempotency keys
 - Fraud detection
 - Server-side validation
 - Automatic suspension
 
 ✅ **Integration Security**
+
 - Credential encryption (AES-256)
 - Webhook signature validation
 - Quota enforcement
 - Health monitoring
 
 ✅ **Compliance**
+
 - GDPR support (data export, deletion)
 - SOC2-lite audit logging
 - PCI-adjacent security

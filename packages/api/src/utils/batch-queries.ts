@@ -133,7 +133,7 @@ export async function batchInsert<T extends Record<string, unknown>>(
     if (records.length === 0) return;
     const firstRecord = records[0];
     if (!firstRecord) return;
-    
+
     const columns = Object.keys(firstRecord);
     const placeholders = records
       .map(

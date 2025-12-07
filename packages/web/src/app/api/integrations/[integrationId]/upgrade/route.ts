@@ -38,8 +38,7 @@ export async function POST(
 
     // For now, just update version
     const integrationData = integration as any;
-    const { error: updateError } = await (supabase
-      .from("integration_credentials") as any)
+    const { error: updateError } = await (supabase.from("integration_credentials") as any)
       .update({
         version: "2.1.0",
         updated_at: new Date().toISOString(),

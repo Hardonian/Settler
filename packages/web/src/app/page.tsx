@@ -56,7 +56,10 @@ const SocialProof = dynamic(
   { ssr: false }
 );
 const CustomerTestimonials = dynamic(
-  () => import("@/components/CustomerTestimonials").then((mod) => ({ default: mod.CustomerTestimonials })),
+  () =>
+    import("@/components/CustomerTestimonials").then((mod) => ({
+      default: mod.CustomerTestimonials,
+    })),
   { ssr: true }
 );
 const NewsletterSignup = dynamic(
@@ -112,13 +115,15 @@ export default function Home() {
     {
       icon: Rocket,
       title: "Process Millions in Minutes",
-      description: "Cloud reconciliation at unlimited scale. Edge AI with <10ms latency. Real-time webhooks or scheduled batch processing.",
+      description:
+        "Cloud reconciliation at unlimited scale. Edge AI with <10ms latency. Real-time webhooks or scheduled batch processing.",
       gradient: "from-electric-neon to-electric-cyan",
     },
     {
       icon: Target,
       title: "99.7% Accuracy",
-      description: "Intelligent matching rules catch transactions automatically. Eliminate human error with full audit trails.",
+      description:
+        "Intelligent matching rules catch transactions automatically. Eliminate human error with full audit trails.",
       gradient: "from-electric-blue to-electric-purple",
     },
     {
@@ -143,7 +148,6 @@ export default function Home() {
     { value: "10+", label: "Platform Adapters", description: "Pre-built integrations" },
     { value: "5 min", label: "Setup Time", description: "Get started in minutes" },
   ];
-
 
   const codeExample = `npm install @settler/sdk
 
@@ -233,7 +237,11 @@ const report = await client.jobs.run(job.id);
                   className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-electric-cyan dark:to-electric-blue dark:hover:from-electric-cyan/90 dark:hover:to-electric-blue/90 text-white px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-electric-cyan/50 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-blue-500 dark:focus:ring-electric-cyan focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 relative overflow-hidden group"
                   onClick={() => trackCTA("Start Free Trial", { location: "hero" })}
                 >
-                  <Link href="/signup" aria-label="Start free trial of Settler" className="text-center relative z-10">
+                  <Link
+                    href="/signup"
+                    aria-label="Start free trial of Settler"
+                    className="text-center relative z-10"
+                  >
                     Start Free Trial — No Credit Card
                   </Link>
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -244,7 +252,11 @@ const report = await client.jobs.run(job.id);
                   asChild
                   className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-medium border-2 border-slate-300 dark:border-white/20 glass hover:border-indigo-500 dark:hover:border-electric-purple/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-electric-purple focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 relative overflow-hidden group"
                 >
-                  <Link href="/how-it-works" aria-label="See how Settler works" className="text-center relative z-10">
+                  <Link
+                    href="/how-it-works"
+                    aria-label="See how Settler works"
+                    className="text-center relative z-10"
+                  >
                     See How It Works
                   </Link>
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -435,12 +447,16 @@ const report = await client.jobs.run(job.id);
                   <div
                     className={`w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-gradient-to-br ${item.gradient} mx-auto mb-3 sm:mb-4 flex items-center justify-center`}
                   >
-                    <span className="text-xl sm:text-2xl font-bold text-white break-words">{item.metric}</span>
+                    <span className="text-xl sm:text-2xl font-bold text-white break-words">
+                      {item.metric}
+                    </span>
                   </div>
                   <h3 className="text-base sm:text-lg font-bold mb-2 text-slate-900 dark:text-white break-words">
                     {item.label}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 break-words">{item.comparison}</p>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 break-words">
+                    {item.comparison}
+                  </p>
                 </SpotlightCard>
               ))}
             </div>

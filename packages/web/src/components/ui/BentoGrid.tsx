@@ -23,7 +23,6 @@ const gapClasses = {
   xl: "gap-8",
 };
 
-
 export function BentoGrid({ children, className, columns = 3, gap = "md" }: BentoGridProps) {
   // Tailwind doesn't support dynamic class names, so we use inline styles
   const gridColsClass = {

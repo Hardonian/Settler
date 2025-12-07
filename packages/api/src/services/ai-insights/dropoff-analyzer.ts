@@ -58,9 +58,7 @@ export async function analyzeDropOffSteps(
 /**
  * Analyze onboarding drop-off
  */
-async function analyzeOnboardingDropOff(
-  days: number
-): Promise<DropOffAnalysis> {
+async function analyzeOnboardingDropOff(days: number): Promise<DropOffAnalysis> {
   const onboardingSteps = [
     "welcome",
     "profile",
@@ -146,15 +144,12 @@ async function analyzeOnboardingDropOff(
     }
   }
 
-  const overallCompletionRate =
-    totalStarted > 0 ? (totalCompleted / totalStarted) * 100 : 0;
+  const overallCompletionRate = totalStarted > 0 ? (totalCompleted / totalStarted) * 100 : 0;
 
   // Find biggest drop-off
   const biggestDropOff: DropOffStep | null =
     steps.length > 0
-      ? steps.reduce((max, step) =>
-          step.dropOffRate > max.dropOffRate ? step : max
-        )
+      ? steps.reduce((max, step) => (step.dropOffRate > max.dropOffRate ? step : max))
       : null;
 
   // Generate suggestions
@@ -190,9 +185,7 @@ async function analyzeOnboardingDropOff(
 /**
  * Analyze reconciliation drop-off
  */
-async function analyzeReconciliationDropOff(
-  days: number
-): Promise<DropOffAnalysis> {
+async function analyzeReconciliationDropOff(days: number): Promise<DropOffAnalysis> {
   // Steps: job_created → job_executed → reconciliation_completed → export_created
   const steps: DropOffStep[] = [];
 
@@ -276,20 +269,18 @@ async function analyzeReconciliationDropOff(
     droppedUsers: completedCount - exportCount,
   });
 
-    const overallCompletionRate = totalJobs > 0 ? (exportCount / totalJobs) * 100 : 0;
-    const biggestDropOff: DropOffStep | null =
-      steps.length > 0
-        ? steps.reduce((max, step) =>
-            step.dropOffRate > max.dropOffRate ? step : max
-          )
-        : null;
+  const overallCompletionRate = totalJobs > 0 ? (exportCount / totalJobs) * 100 : 0;
+  const biggestDropOff: DropOffStep | null =
+    steps.length > 0
+      ? steps.reduce((max, step) => (step.dropOffRate > max.dropOffRate ? step : max))
+      : null;
 
-    const suggestions: string[] = [];
-    if (biggestDropOff && biggestDropOff.dropOffRate > 30 && biggestDropOff.step) {
-      suggestions.push(
-        `${Math.round(biggestDropOff.dropOffRate)}% drop-off at "${biggestDropOff.step}". Consider: adding progress indicators, error handling improvements, or automated retries.`
-      );
-    }
+  const suggestions: string[] = [];
+  if (biggestDropOff && biggestDropOff.dropOffRate > 30 && biggestDropOff.step) {
+    suggestions.push(
+      `${Math.round(biggestDropOff.dropOffRate)}% drop-off at "${biggestDropOff.step}". Consider: adding progress indicators, error handling improvements, or automated retries.`
+    );
+  }
 
   const jobExecutedStep = steps.find((s) => s.step === "job_executed");
   if (jobExecutedStep && jobExecutedStep.dropOffRate > 25) {
@@ -352,8 +343,8 @@ async function analyzeExportDropOff(days: number): Promise<DropOffAnalysis> {
     },
   ];
 
-    const exportStep = steps.find((s) => s.step === "export_created");
-    const biggestDropOff: DropOffStep | null = exportStep || null;
+  const exportStep = steps.find((s) => s.step === "export_created");
+  const biggestDropOff: DropOffStep | null = exportStep || null;
   const suggestions: string[] = [];
 
   if (exportRate < 50) {

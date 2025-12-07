@@ -56,14 +56,20 @@ serve(async (req) => {
 ${lastMonth.toISOString().substring(0, 7)},${newUsers?.length || 0},${activeUsers?.length || 0},${mrr},${jobs?.length || 0}`;
 
     // In production, save to storage and email
-    return new Response(JSON.stringify({ csv, metrics: {
-      newUsers: newUsers?.length || 0,
-      activeUsers: activeUsers?.length || 0,
-      mrr,
-      jobsCreated: jobs?.length || 0,
-    } }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        csv,
+        metrics: {
+          newUsers: newUsers?.length || 0,
+          activeUsers: activeUsers?.length || 0,
+          mrr,
+          jobsCreated: jobs?.length || 0,
+        },
+      }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,

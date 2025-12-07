@@ -7,11 +7,13 @@ Complete catalog of premium add-ons available for Settler.dev.
 These integrations are included with the base $49.95/month subscription.
 
 ### 1. Stripe
+
 **Integration ID:** `stripe`  
 **Category:** Payment Processor  
 **Description:** Payment processor reconciliation for Stripe charges, refunds, and transfers.
 
 **Features:**
+
 - Real-time payment reconciliation
 - Refund tracking
 - Transfer reconciliation
@@ -23,11 +25,13 @@ These integrations are included with the base $49.95/month subscription.
 ---
 
 ### 2. Shopify
+
 **Integration ID:** `shopify`  
 **Category:** E-Commerce  
 **Description:** E-commerce order and payment synchronization with Shopify stores.
 
 **Features:**
+
 - Order reconciliation
 - Payment method sync
 - Product catalog sync
@@ -39,11 +43,13 @@ These integrations are included with the base $49.95/month subscription.
 ---
 
 ### 3. PayPal
+
 **Integration ID:** `paypal`  
 **Category:** Payment Processor  
 **Description:** Standard PayPal payment reconciliation.
 
 **Features:**
+
 - Payment reconciliation
 - Refund tracking
 - Transaction history
@@ -54,11 +60,13 @@ These integrations are included with the base $49.95/month subscription.
 ---
 
 ### 4. Google Pay
+
 **Integration ID:** `google-pay`  
 **Category:** Payment Method  
 **Description:** Google Pay payment method reconciliation.
 
 **Features:**
+
 - Payment reconciliation
 - Transaction history
 - Multi-currency support
@@ -68,11 +76,13 @@ These integrations are included with the base $49.95/month subscription.
 ---
 
 ### 5. Meta Commerce + Meta Ads
+
 **Integration ID:** `meta-commerce`  
 **Category:** E-Commerce + Advertising  
 **Description:** Facebook and Instagram shop reconciliation plus Meta Ads spend tracking.
 
 **Features:**
+
 - Facebook Shop order reconciliation
 - Instagram Shop order reconciliation
 - Meta Ads spend tracking
@@ -88,6 +98,7 @@ These integrations are included with the base $49.95/month subscription.
 These integrations require a separate monthly subscription plus usage-based fees.
 
 ### 6. TikTok Shop + TikTok Ads
+
 **Integration ID:** `tiktok-shop`  
 **Category:** E-Commerce + Advertising  
 **Base Price:** $39.95/month  
@@ -95,6 +106,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 **Description:** TikTok Shop order reconciliation and TikTok Ads spend tracking.
 
 **Features:**
+
 - TikTok Shop order reconciliation
 - TikTok Ads spend tracking
 - Real-time inventory sync
@@ -103,17 +115,20 @@ These integrations require a separate monthly subscription plus usage-based fees
 - Multi-store support
 
 **Use Cases:**
+
 - E-commerce brands selling on TikTok
 - DTC brands using TikTok for sales
 - Social commerce sellers
 - Brands running TikTok ad campaigns
 
 **Expected Usage:**
+
 - Small: 100-500 orders/month
 - Medium: 500-2,000 orders/month
 - Large: 2,000+ orders/month
 
 **Example Monthly Cost:**
+
 - Base: $39.95
 - 1,000 orders: $20.00
 - 500 ad events: $5.00
@@ -122,6 +137,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 ---
 
 ### 7. Wix Stores
+
 **Integration ID:** `wix-stores`  
 **Category:** E-Commerce  
 **Base Price:** $19.95/month  
@@ -129,6 +145,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 **Description:** Wix Stores order reconciliation for SMB e-commerce stores.
 
 **Features:**
+
 - Wix Stores order reconciliation
 - Payment processor sync (Stripe/PayPal via Wix)
 - Product catalog reconciliation
@@ -137,17 +154,20 @@ These integrations require a separate monthly subscription plus usage-based fees
 - Multi-store support
 
 **Use Cases:**
+
 - SMBs using Wix for e-commerce
 - Service businesses with online stores
 - Small retailers
 - Service providers with booking systems
 
 **Expected Usage:**
+
 - Small: 50-200 orders/month
 - Medium: 200-1,000 orders/month
 - Large: 1,000+ orders/month
 
 **Example Monthly Cost:**
+
 - Base: $19.95
 - 500 orders: $5.00
 - **Total: $24.95/month**
@@ -155,6 +175,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 ---
 
 ### 8. Google Analytics GA4 Deep Sync
+
 **Integration ID:** `ga4-deep-sync`  
 **Category:** Analytics  
 **Base Price:** $29.95/month  
@@ -162,6 +183,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 **Description:** GA4 event data reconciliation with revenue for accurate attribution.
 
 **Features:**
+
 - GA4 event data reconciliation
 - E-commerce transaction matching
 - Attribution modeling reconciliation
@@ -171,17 +193,20 @@ These integrations require a separate monthly subscription plus usage-based fees
 - Custom dimension tracking
 
 **Use Cases:**
+
 - E-commerce brands needing accurate attribution
 - SaaS companies tracking revenue
 - Marketing teams requiring precise analytics
 - Businesses with multi-channel sales
 
 **Expected Usage:**
+
 - Small: 10,000-50,000 events/month
 - Medium: 50,000-200,000 events/month
 - Large: 200,000+ events/month
 
 **Example Monthly Cost:**
+
 - Base: $29.95
 - 100,000 events: $500.00
 - **Total: $529.95/month**
@@ -189,6 +214,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 ---
 
 ### 9. PayPal Payouts + Automation
+
 **Integration ID:** `paypal-payouts`  
 **Category:** Payouts & Automation  
 **Base Price:** $49.95/month  
@@ -196,6 +222,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 **Description:** PayPal Payouts API reconciliation and automated payout scheduling.
 
 **Features:**
+
 - PayPal Payouts API reconciliation
 - Automated payout scheduling
 - Multi-recipient payout reconciliation
@@ -205,6 +232,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 - Payout status monitoring
 
 **Use Cases:**
+
 - Marketplaces with seller payouts
 - Platforms with affiliate programs
 - Creator economy platforms
@@ -212,11 +240,13 @@ These integrations require a separate monthly subscription plus usage-based fees
 - Gig economy platforms
 
 **Expected Usage:**
+
 - Small: 50-200 payouts/month
 - Medium: 200-1,000 payouts/month
 - Large: 1,000+ payouts/month
 
 **Example Monthly Cost:**
+
 - Base: $49.95
 - 500 payouts: $15.00
 - **Total: $64.95/month**
@@ -224,6 +254,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 ---
 
 ### 10. WhatsApp Business + Telegram Messaging
+
 **Integration ID:** `whatsapp-telegram`  
 **Category:** Messaging & Payments  
 **Base Price:** $79.95/month  
@@ -231,6 +262,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 **Description:** WhatsApp Business API and Telegram Bot API integration with payment link reconciliation.
 
 **Features:**
+
 - WhatsApp Business API integration
 - Telegram Bot API integration
 - Payment link reconciliation (WhatsApp Pay, Telegram Payments)
@@ -240,6 +272,7 @@ These integrations require a separate monthly subscription plus usage-based fees
 - Payment link tracking
 
 **Use Cases:**
+
 - E-commerce brands using messaging for sales
 - International sellers
 - DTC brands with high-touch customer service
@@ -247,11 +280,13 @@ These integrations require a separate monthly subscription plus usage-based fees
 - Platforms with in-app messaging payments
 
 **Expected Usage:**
+
 - Small: 1,000-5,000 messages/month
 - Medium: 5,000-20,000 messages/month
 - Large: 20,000+ messages/month
 
 **Example Monthly Cost:**
+
 - Base: $79.95
 - 10,000 messages: $10.00
 - **Total: $89.95/month**
@@ -260,17 +295,18 @@ These integrations require a separate monthly subscription plus usage-based fees
 
 ## Add-On Comparison
 
-| Add-On | Base Price | Usage Unit | Usage Price | Best For |
-|--------|-----------|------------|-------------|----------|
-| TikTok Shop + Ads | $39.95/mo | Order/Event | $0.02/$0.01 | E-commerce on TikTok |
-| Wix Stores | $19.95/mo | Order | $0.01 | SMB e-commerce |
-| GA4 Deep Sync | $29.95/mo | Event | $0.005 | Analytics & Attribution |
-| PayPal Payouts | $49.95/mo | Payout | $0.03 | Marketplaces & Platforms |
-| WhatsApp + Telegram | $79.95/mo | Message | $0.001 | Messaging Commerce |
+| Add-On              | Base Price | Usage Unit  | Usage Price | Best For                 |
+| ------------------- | ---------- | ----------- | ----------- | ------------------------ |
+| TikTok Shop + Ads   | $39.95/mo  | Order/Event | $0.02/$0.01 | E-commerce on TikTok     |
+| Wix Stores          | $19.95/mo  | Order       | $0.01       | SMB e-commerce           |
+| GA4 Deep Sync       | $29.95/mo  | Event       | $0.005      | Analytics & Attribution  |
+| PayPal Payouts      | $49.95/mo  | Payout      | $0.03       | Marketplaces & Platforms |
+| WhatsApp + Telegram | $79.95/mo  | Message     | $0.001      | Messaging Commerce       |
 
 ## Purchasing Add-Ons
 
 ### Via API
+
 ```bash
 POST /api/billing/addon/purchase
 {
@@ -280,6 +316,7 @@ POST /api/billing/addon/purchase
 ```
 
 ### Via UI
+
 1. Navigate to `/dashboard/addons`
 2. Browse available add-ons
 3. Click "Purchase Add-On"
@@ -289,6 +326,7 @@ POST /api/billing/addon/purchase
 ## Canceling Add-Ons
 
 Add-ons can be canceled at any time:
+
 - Cancellation takes effect at end of billing period
 - Usage charges apply until cancellation
 - No refunds for partial periods
@@ -296,6 +334,7 @@ Add-ons can be canceled at any time:
 ## Usage Monitoring
 
 Monitor add-on usage via:
+
 - `/dashboard/usage` - Usage dashboard
 - `/dashboard/billing` - Billing overview
 - API: `GET /api/billing/usage/report`
@@ -303,6 +342,7 @@ Monitor add-on usage via:
 ## Support
 
 For add-on support:
+
 - Documentation: `/docs/integrations/{integration-id}.md`
 - Support: support@settler.dev
 - Status: status.settler.dev

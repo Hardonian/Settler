@@ -23,6 +23,7 @@ All Phase 2 30-day sprint items have been implemented:
 **File:** `packages/api/src/infrastructure/jobs/scheduler.ts`
 
 **Features:**
+
 - Replaces setTimeout/setInterval with BullMQ
 - Handles 7 scheduled jobs:
   - Data retention (daily 2 AM)
@@ -37,6 +38,7 @@ All Phase 2 30-day sprint items have been implemented:
 - Graceful shutdown
 
 **Integration:**
+
 - Import `initializeScheduledJobs()` in `index.ts`
 - Call on server startup
 - Add to graceful shutdown handler
@@ -48,6 +50,7 @@ All Phase 2 30-day sprint items have been implemented:
 **File:** `packages/api/src/services/email/onboarding-sequence.ts`
 
 **Features:**
+
 - Day 0: Welcome email (sent on signup day)
 - Day 1: Onboarding email with next step guidance
 - Day 3: Activation email (completion check)
@@ -55,6 +58,7 @@ All Phase 2 30-day sprint items have been implemented:
 - Integrates with onboarding progress tracker
 
 **Usage:**
+
 - Scheduled daily at 10 AM UTC
 - Automatically processes users by signup date
 - Logs all email sends (ready for email service integration)
@@ -67,6 +71,7 @@ All Phase 2 30-day sprint items have been implemented:
 **Migration:** `supabase/migrations/20260115000001_alerts_table.sql`
 
 **Features:**
+
 - Alert creation with severity levels (low, medium, high, critical)
 - Alert resolution tracking
 - Unresolved alert queries
@@ -77,6 +82,7 @@ All Phase 2 30-day sprint items have been implemented:
 - Alert logging based on severity
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE alerts (
   id UUID PRIMARY KEY,
@@ -97,6 +103,7 @@ CREATE TABLE alerts (
 **File:** `packages/api/src/utils/circuit-breakers.ts`
 
 **Features:**
+
 - Generic circuit breaker utility
 - Specialized breakers:
   - Adapter circuit breakers (30s timeout)
@@ -106,10 +113,11 @@ CREATE TABLE alerts (
 - Configurable thresholds and timeouts
 
 **Usage:**
-```typescript
-import { createAdapterCircuitBreaker } from './utils/circuit-breakers';
 
-const breaker = createAdapterCircuitBreaker('stripe', async () => {
+```typescript
+import { createAdapterCircuitBreaker } from "./utils/circuit-breakers";
+
+const breaker = createAdapterCircuitBreaker("stripe", async () => {
   // Adapter call
 });
 const result = await breaker.fire();
@@ -122,6 +130,7 @@ const result = await breaker.fire();
 **Status:** Already implemented in `packages/api/src/middleware/request-timeout.ts`
 
 **Enhancements:**
+
 - Default: 30 seconds
 - Job creation: 60 seconds
 - Reports: 45 seconds
@@ -135,6 +144,7 @@ const result = await breaker.fire();
 **File:** `packages/api/src/middleware/validation-enhancements.ts`
 
 **Features:**
+
 - UUID validation middleware
 - Email format validation
 - Date range validation (max 1 year)
@@ -145,10 +155,11 @@ const result = await breaker.fire();
 - Common validations middleware
 
 **Usage:**
-```typescript
-import { commonValidationsMiddleware } from './middleware/validation-enhancements';
 
-app.use('/api/v1', commonValidationsMiddleware);
+```typescript
+import { commonValidationsMiddleware } from "./middleware/validation-enhancements";
+
+app.use("/api/v1", commonValidationsMiddleware);
 ```
 
 ---
@@ -158,12 +169,14 @@ app.use('/api/v1', commonValidationsMiddleware);
 ### 1. Update index.ts
 
 Add to startup:
+
 ```typescript
 // Initialize scheduled jobs
 await initializeScheduledJobs();
 ```
 
 Add to shutdown:
+
 ```typescript
 // Shutdown scheduler
 await shutdownScheduler();
@@ -176,12 +189,14 @@ npm run migrate
 ```
 
 This will create:
+
 - `onboarding_progress` table
 - `alerts` table
 
 ### 3. Environment Variables
 
 Ensure Redis is configured:
+
 ```env
 REDIS_HOST=localhost
 REDIS_PORT=6379

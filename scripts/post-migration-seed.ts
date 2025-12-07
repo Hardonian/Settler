@@ -30,9 +30,8 @@ async function seedAddOns() {
 
   for (const config of configs) {
     try {
-      const { error } = await supabase
-        .from("add_ons")
-        .upsert({
+      const { error } = await supabase.from("add_ons").upsert(
+        {
           integration_id: config.integration_id,
           name: config.name,
           description: config.description,
@@ -43,9 +42,11 @@ async function seedAddOns() {
           is_standard: config.is_standard,
           is_active: true,
           metadata: config.metadata || {},
-        }, {
+        },
+        {
           onConflict: "integration_id",
-        });
+        }
+      );
 
       if (error) {
         if (error.code === "23505") {

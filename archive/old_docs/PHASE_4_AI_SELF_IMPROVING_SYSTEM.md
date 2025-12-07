@@ -19,6 +19,7 @@ This report identifies **28 AI-driven enhancement opportunities** across 7 core 
 7. **Continuous Optimization Loop** - Insight logging, improvement suggestions, and automated recommendations
 
 **Estimated Impact:**
+
 - **Developer Onboarding Time:** -40% (from codebase maps and auto-docs)
 - **Error Resolution Time:** -50% (from intelligent error summaries)
 - **Proactive Issue Detection:** +80% (from predictive health signals)
@@ -34,12 +35,14 @@ This report identifies **28 AI-driven enhancement opportunities** across 7 core 
 ### Current State Analysis
 
 #### Strengths ✅
+
 - Analytics events tracking (`analytics_events` table)
 - Usage tracking per user (`usage_tracking` table)
 - Onboarding progress tracking (`onboarding_progress` table)
 - Event tracking service with batch support
 
 #### Gaps ❌
+
 - No pattern detection for feature dependencies
 - No incomplete workflow detection
 - No friction point identification
@@ -53,11 +56,10 @@ This report identifies **28 AI-driven enhancement opportunities** across 7 core 
 **Purpose:** Identify which features users rely on together, enabling better feature recommendations and bundle optimization.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/pattern-detector.ts
-export async function detectFeatureDependencies(
-  days: number = 30
-): Promise<FeatureDependency[]> {
+export async function detectFeatureDependencies(days: number = 30): Promise<FeatureDependency[]> {
   // Analyze analytics_events to find co-occurring features
   // Example: Users who use "multi_currency" also use "export_pdf" 85% of the time
   // Returns: [{ featureA: "multi_currency", featureB: "export_pdf", correlation: 0.85 }]
@@ -76,18 +78,18 @@ export async function detectFeatureDependencies(
 **Purpose:** Identify users who start workflows but don't complete them, enabling targeted help.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/workflow-analyzer.ts
-export async function detectIncompleteWorkflows(
-  userId?: string
-): Promise<IncompleteWorkflow[]> {
+export async function detectIncompleteWorkflows(userId?: string): Promise<IncompleteWorkflow[]> {
   // Analyze job creation → execution → export patterns
   // Identify: Jobs created but never executed, Executions without exports, etc.
   // Returns: [{ userId, workflowType, dropOffStep, completionRate }]
 }
 ```
 
-**Output:** 
+**Output:**
+
 - User-facing: "You have 3 incomplete reconciliations. Complete them now?"
 - Admin: "45% of users drop off after job creation. Consider simplifying job setup."
 
@@ -101,6 +103,7 @@ export async function detectIncompleteWorkflows(
 **Purpose:** Automatically detect where users struggle (repeated errors, slow operations, high retry rates).
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/friction-detector.ts
 export async function identifyFrictionPoints(
@@ -127,6 +130,7 @@ export async function identifyFrictionPoints(
 **Purpose:** Group users by behavior patterns to enable personalized experiences.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/user-clustering.ts
 export async function clusterUsersByBehavior(): Promise<UserCluster[]> {
@@ -151,6 +155,7 @@ export async function clusterUsersByBehavior(): Promise<UserCluster[]> {
 **Purpose:** Identify exact steps where users abandon onboarding or workflows.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/dropoff-analyzer.ts
 export async function analyzeDropOffSteps(
@@ -174,6 +179,7 @@ export async function analyzeDropOffSteps(
 ### Current State Analysis
 
 #### Strengths ✅
+
 - Structured logging with OpenTelemetry
 - Error tracking with Sentry integration
 - Alert manager with severity levels
@@ -181,6 +187,7 @@ export async function analyzeDropOffSteps(
 - Circuit breaker utilities
 
 #### Gaps ❌
+
 - No predictive failure detection
 - No slow process identification
 - No integration health monitoring
@@ -194,11 +201,10 @@ export async function analyzeDropOffSteps(
 **Purpose:** Detect patterns that indicate a job/process is likely to fail before it does.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/failure-predictor.ts
-export async function predictJobFailure(
-  jobId: string
-): Promise<FailurePrediction> {
+export async function predictJobFailure(jobId: string): Promise<FailurePrediction> {
   // Analyze:
   // - Historical success rate for similar jobs
   // - Adapter connection health
@@ -220,6 +226,7 @@ export async function predictJobFailure(
 **Purpose:** Automatically identify and flag processes that are taking longer than expected.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/performance-analyzer.ts
 export async function identifySlowProcesses(
@@ -244,11 +251,10 @@ export async function identifySlowProcesses(
 **Purpose:** Monitor external adapter/API health and predict integration issues.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/integration-health.ts
-export async function monitorIntegrationHealth(
-  adapter: string
-): Promise<IntegrationHealth> {
+export async function monitorIntegrationHealth(adapter: string): Promise<IntegrationHealth> {
   // Track:
   // - Success rate per adapter
   // - Response time trends
@@ -270,6 +276,7 @@ export async function monitorIntegrationHealth(
 **Purpose:** Automatically categorize and summarize error patterns for faster debugging.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/error-analyzer.ts
 export async function analyzeErrorPatterns(
@@ -296,6 +303,7 @@ export async function analyzeErrorPatterns(
 **Purpose:** Automatically generate debugging breadcrumbs and context summaries.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/debug-context.ts
 export async function generateDebugContext(
@@ -323,11 +331,13 @@ export async function generateDebugContext(
 ### Current State Analysis
 
 #### Strengths ✅
+
 - Comprehensive docs structure (`/docs`)
 - API reference documentation
 - Route inventory exists
 
 #### Gaps ❌
+
 - No automatic route documentation generation
 - No workflow diagram generation
 - No API change detection
@@ -340,6 +350,7 @@ export async function generateDebugContext(
 **Purpose:** Auto-generate API route documentation from code.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/doc-generator.ts
 export async function generateRouteDocs(): Promise<RouteDoc[]> {
@@ -364,6 +375,7 @@ export async function generateRouteDocs(): Promise<RouteDoc[]> {
 **Purpose:** Auto-generate workflow diagrams from code execution patterns.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/workflow-diagram.ts
 export async function generateWorkflowDiagram(
@@ -390,6 +402,7 @@ export async function generateWorkflowDiagram(
 **Purpose:** Detect when routes change and flag documentation updates needed.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/api-change-detector.ts
 export async function detectAPIChanges(): Promise<APIChange[]> {
@@ -414,6 +427,7 @@ export async function detectAPIChanges(): Promise<APIChange[]> {
 **Purpose:** Identify endpoints that exist but aren't documented.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/doc-coverage.ts
 export async function checkDocumentationCoverage(): Promise<CoverageReport> {
@@ -436,11 +450,13 @@ export async function checkDocumentationCoverage(): Promise<CoverageReport> {
 ### Current State Analysis
 
 #### Strengths ✅
+
 - Well-structured codebase
 - TypeScript for type safety
 - Modular service architecture
 
 #### Gaps ❌
+
 - No codebase maps
 - No dependency summaries
 - No architecture diagrams
@@ -453,6 +469,7 @@ export async function checkDocumentationCoverage(): Promise<CoverageReport> {
 **Purpose:** Generate visual maps of the codebase structure and relationships.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/codebase-mapper.ts
 export async function generateCodebaseMap(): Promise<CodebaseMap> {
@@ -477,11 +494,10 @@ export async function generateCodebaseMap(): Promise<CodebaseMap> {
 **Purpose:** Auto-generate summaries of module dependencies and relationships.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/dependency-analyzer.ts
-export async function generateDependencySummary(
-  module: string
-): Promise<DependencySummary> {
+export async function generateDependencySummary(module: string): Promise<DependencySummary> {
   // Analyze:
   // - What this module imports
   // - What imports this module
@@ -503,6 +519,7 @@ export async function generateDependencySummary(
 **Purpose:** Auto-generate architecture diagrams from code structure.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/architecture-generator.ts
 export async function generateArchitectureDiagram(): Promise<ArchitectureDiagram> {
@@ -526,6 +543,7 @@ export async function generateArchitectureDiagram(): Promise<ArchitectureDiagram
 **Purpose:** Auto-generate personalized onboarding guides based on codebase analysis.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/onboarding-generator.ts
 export async function generateDeveloperOnboarding(
@@ -553,12 +571,14 @@ export async function generateDeveloperOnboarding(
 ### Current State Analysis
 
 #### Strengths ✅
+
 - Analytics events tracking
 - Usage tracking
 - Onboarding progress tracking
 - Lifecycle email sequences
 
 #### Gaps ❌
+
 - No churn prediction heuristics
 - No early warning signals
 - No activation success markers
@@ -571,11 +591,10 @@ export async function generateDeveloperOnboarding(
 **Purpose:** Identify users at risk of churning using simple heuristics (no ML required).
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/churn-predictor.ts
-export async function predictChurn(
-  userId: string
-): Promise<ChurnPrediction> {
+export async function predictChurn(userId: string): Promise<ChurnPrediction> {
   // Heuristic signals:
   // - Login frequency decline (>50% drop)
   // - Feature usage decline
@@ -598,11 +617,10 @@ export async function predictChurn(
 **Purpose:** Detect early signals that indicate a user might churn.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/early-warning.ts
-export async function detectEarlyWarningSignals(
-  userId: string
-): Promise<WarningSignal[]> {
+export async function detectEarlyWarningSignals(userId: string): Promise<WarningSignal[]> {
   // Detect:
   // - First error after successful usage
   // - Feature access denied (quota exceeded)
@@ -624,6 +642,7 @@ export async function detectEarlyWarningSignals(
 **Purpose:** Identify what successful users do differently to guide others.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/activation-analyzer.ts
 export async function identifyActivationMarkers(): Promise<ActivationMarker[]> {
@@ -648,12 +667,10 @@ export async function identifyActivationMarkers(): Promise<ActivationMarker[]> {
 **Purpose:** Automatically trigger interventions based on churn risk or activation signals.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/intervention-trigger.ts
-export async function triggerIntervention(
-  userId: string,
-  signal: WarningSignal
-): Promise<void> {
+export async function triggerIntervention(userId: string, signal: WarningSignal): Promise<void> {
   // Actions:
   // - Send targeted email
   // - Show in-app banner
@@ -675,11 +692,13 @@ export async function triggerIntervention(
 ### Current State Analysis
 
 #### Strengths ✅
+
 - Structured error logging
 - Sentry integration
 - Alert system
 
 #### Gaps ❌
+
 - No error summarization
 - No debugging hints
 - No support reply templates
@@ -692,12 +711,10 @@ export async function triggerIntervention(
 **Purpose:** Automatically generate human-readable error summaries for support.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/error-summarizer.ts
-export async function summarizeError(
-  errorId: string,
-  traceId: string
-): Promise<ErrorSummary> {
+export async function summarizeError(errorId: string, traceId: string): Promise<ErrorSummary> {
   // Generate:
   // - Plain English description
   // - Root cause analysis
@@ -720,6 +737,7 @@ export async function summarizeError(
 **Purpose:** Provide contextual debugging hints based on error patterns.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/debug-hints.ts
 export async function generateDebugHints(
@@ -747,6 +765,7 @@ export async function generateDebugHints(
 **Purpose:** Generate draft support replies based on error context and past resolutions.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/support-templates.ts
 export async function generateSupportReply(
@@ -776,6 +795,7 @@ export async function generateSupportReply(
 **Purpose:** Automatically link errors and issues to relevant documentation.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/knowledge-linker.ts
 export async function linkToKnowledgeBase(
@@ -802,11 +822,13 @@ export async function linkToKnowledgeBase(
 ### Current State Analysis
 
 #### Strengths ✅
+
 - Analytics infrastructure
 - Logging infrastructure
 - Scheduled jobs (BullMQ)
 
 #### Gaps ❌
+
 - No insight aggregation
 - No improvement suggestions
 - No automated recommendations
@@ -819,6 +841,7 @@ export async function linkToKnowledgeBase(
 **Purpose:** Aggregate all AI-generated insights into actionable reports.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/insight-aggregator.ts
 export async function aggregateInsights(
@@ -846,6 +869,7 @@ export async function aggregateInsights(
 **Purpose:** Automatically suggest product improvements based on insights.
 
 **Implementation:**
+
 ```typescript
 // packages/api/src/services/ai-insights/improvement-suggester.ts
 export async function suggestImprovements(): Promise<ImprovementSuggestion[]> {
@@ -871,22 +895,26 @@ export async function suggestImprovements(): Promise<ImprovementSuggestion[]> {
 ### 30-Day Sprint (Quick Wins)
 
 **Week 1-2: Pattern Detection**
+
 1. Implement drop-off step analysis
 2. Implement friction point identification
 3. Create insight aggregation service
 
 **Week 3-4: Documentation Automation**
+
 1. Implement route documentation generator
 2. Implement API change detection
 3. Create codebase map generator
 
 **Deliverables:**
+
 - Drop-off analysis reports
 - Friction point alerts
 - Auto-generated route docs
 - Codebase maps
 
 **Metrics:**
+
 - Documentation coverage: +30%
 - Developer onboarding time: -20%
 - Issue detection: +40%
@@ -896,24 +924,28 @@ export async function suggestImprovements(): Promise<ImprovementSuggestion[]> {
 ### 60-Day Sprint (Core Systems)
 
 **Week 5-6: Predictive Signals**
+
 1. Implement failure prediction
 2. Implement slow process identification
 3. Implement error pattern recognition
 4. Create debug context generator
 
 **Week 7-8: Churn & Activation**
+
 1. Implement churn prediction heuristics
 2. Implement early warning signals
 3. Implement activation markers
 4. Create intervention trigger system
 
 **Deliverables:**
+
 - Predictive health dashboard
 - Churn risk scoring
 - Automatic interventions
 - Error pattern analysis
 
 **Metrics:**
+
 - Proactive issue detection: +60%
 - Churn reduction: +10%
 - Activation rate: +15%
@@ -923,24 +955,28 @@ export async function suggestImprovements(): Promise<ImprovementSuggestion[]> {
 ### 90-Day Sprint (Advanced Features)
 
 **Week 9-10: Support Assist**
+
 1. Implement error summarization
 2. Implement debugging hints
 3. Implement support reply templates
 4. Create knowledge base integration
 
 **Week 11-12: Optimization Loop**
+
 1. Implement improvement suggestion engine
 2. Create insight dashboard
 3. Integrate all AI services
 4. Add admin UI for insights
 
 **Deliverables:**
+
 - Support assist tools
 - Improvement suggestions
 - Insight dashboard
 - Complete AI layer
 
 **Metrics:**
+
 - Support response time: -40%
 - Improvement suggestions: 10+ per week
 - System optimization: +25%
@@ -971,9 +1007,7 @@ export interface FeatureDependency {
   sampleSize: number;
 }
 
-export async function detectFeatureDependencies(
-  days: number = 30
-): Promise<FeatureDependency[]> {
+export async function detectFeatureDependencies(days: number = 30): Promise<FeatureDependency[]> {
   // Implementation: Analyze analytics_events for co-occurring features
   // Returns correlations > 0.5
 }
@@ -1070,9 +1104,7 @@ export interface ChurnPrediction {
   interventions: string[];
 }
 
-export async function predictChurn(
-  userId: string
-): Promise<ChurnPrediction> {
+export async function predictChurn(userId: string): Promise<ChurnPrediction> {
   // Implementation: Analyze login frequency, usage, errors, trial status
 }
 ```
@@ -1103,10 +1135,7 @@ export interface ErrorSummary {
   suggestedFix: string;
 }
 
-export async function summarizeError(
-  errorId: string,
-  traceId: string
-): Promise<ErrorSummary> {
+export async function summarizeError(errorId: string, traceId: string): Promise<ErrorSummary> {
   // Implementation: Collect related logs, analyze patterns, generate summary
 }
 ```
@@ -1156,21 +1185,25 @@ CREATE INDEX idx_improvement_suggestions_priority ON improvement_suggestions(pri
 ## 11. Success Metrics & KPIs
 
 ### Developer Experience Metrics
+
 - **New Developer Onboarding Time:** Target: -40% (from baseline)
 - **Documentation Coverage:** Target: +60%
 - **Code Understanding Time:** Target: -30%
 
 ### Operational Metrics
+
 - **Proactive Issue Detection:** Target: +80%
 - **Error Resolution Time:** Target: -50%
 - **Support Response Time:** Target: -40%
 
 ### Product Metrics
+
 - **Activation Rate:** Target: +20%
 - **Churn Reduction:** Target: +15%
 - **User Retention:** Target: +15%
 
 ### System Metrics
+
 - **Insight Generation:** Target: 50+ insights per week
 - **Improvement Suggestions:** Target: 10+ per week
 - **Auto-Documentation Updates:** Target: 100% of route changes
@@ -1180,6 +1213,7 @@ CREATE INDEX idx_improvement_suggestions_priority ON improvement_suggestions(pri
 ## 12. Implementation Priority
 
 ### High Priority, Low Effort (Do First)
+
 1. ✅ Drop-off step analysis
 2. ✅ Friction point identification
 3. ✅ Route documentation generator
@@ -1187,6 +1221,7 @@ CREATE INDEX idx_improvement_suggestions_priority ON improvement_suggestions(pri
 5. ✅ Early warning signals
 
 ### High Priority, Medium Effort (Plan Carefully)
+
 1. Churn prediction heuristics
 2. Error pattern recognition
 3. Failure prediction
@@ -1194,6 +1229,7 @@ CREATE INDEX idx_improvement_suggestions_priority ON improvement_suggestions(pri
 5. Improvement suggestion engine
 
 ### Medium Priority, Low Effort (Quick Wins)
+
 1. Undocumented endpoint alerts
 2. Knowledge base integration
 3. Codebase map generator
@@ -1205,17 +1241,20 @@ CREATE INDEX idx_improvement_suggestions_priority ON improvement_suggestions(pri
 ## 13. Risk Assessment
 
 ### Low Risk
+
 - Pattern detection (read-only analysis)
 - Documentation generation (additive)
 - Codebase mapping (read-only)
 - Insight aggregation (non-critical)
 
 ### Medium Risk
+
 - Churn prediction (could trigger false alarms)
 - Intervention triggers (could be intrusive)
 - Error summarization (could be inaccurate)
 
 ### Mitigation
+
 - All insights marked with confidence scores
 - Human review required for interventions
 - A/B testing for intervention effectiveness

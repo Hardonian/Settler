@@ -64,8 +64,12 @@ export function PricingExperimentEngine() {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h4 className="font-semibold text-slate-900 dark:text-white">{experiment.name}</h4>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">{experiment.variant}</p>
+                    <h4 className="font-semibold text-slate-900 dark:text-white">
+                      {experiment.name}
+                    </h4>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      {experiment.variant}
+                    </p>
                   </div>
                   <Badge
                     variant={
@@ -93,11 +97,15 @@ export function PricingExperimentEngine() {
                   </div>
                   <div>
                     <span className="text-slate-500 dark:text-slate-400">Conversion:</span>
-                    <span className="ml-2 font-semibold">{experiment.conversionRate.toFixed(1)}%</span>
+                    <span className="ml-2 font-semibold">
+                      {experiment.conversionRate.toFixed(1)}%
+                    </span>
                   </div>
                   <div>
                     <span className="text-slate-500 dark:text-slate-400">Revenue:</span>
-                    <span className="ml-2 font-semibold">${experiment.revenue.toLocaleString()}</span>
+                    <span className="ml-2 font-semibold">
+                      ${experiment.revenue.toLocaleString()}
+                    </span>
                   </div>
                 </div>
               </div>

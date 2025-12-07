@@ -99,7 +99,11 @@ export function ReferralProgram() {
             </label>
             <div className="flex items-center gap-2">
               <Input value={referralLink} readOnly className="text-sm" />
-              <Button onClick={() => navigator.clipboard.writeText(referralLink)} size="sm" variant="outline">
+              <Button
+                onClick={() => navigator.clipboard.writeText(referralLink)}
+                size="sm"
+                variant="outline"
+              >
                 <Copy className="w-4 h-4" />
               </Button>
             </div>

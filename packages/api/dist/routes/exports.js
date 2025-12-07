@@ -38,7 +38,9 @@ router.post("/", auth_1.authMiddleware, async (req, res) => {
             return (0, api_response_1.sendError)(res, 401, "UNAUTHORIZED", "User ID required");
         }
         // Verify job ownership
-        const jobs = await (0, db_1.query)(`SELECT user_id FROM jobs WHERE id = $1`, [jobId]);
+        const jobs = await (0, db_1.query)(`SELECT user_id FROM jobs WHERE id = $1`, [
+            jobId,
+        ]);
         if (jobs.length === 0 || !jobs[0]) {
             return (0, api_response_1.sendError)(res, 404, "NOT_FOUND", "Job not found");
         }
@@ -86,7 +88,9 @@ router.post("/", auth_1.authMiddleware, async (req, res) => {
            LIMIT 10000`);
                 // Generate CSV
                 const csvHeader = "Source ID,Target ID,Amount,Currency,Confidence,Matched At\n";
-                const csvRows = matches.map((m) => `"${m.source_id}","${m.target_id}",${m.amount},"${m.currency}",${m.confidence},"${m.matched_at.toISOString()}"`).join("\n");
+                const csvRows = matches
+                    .map((m) => `"${m.source_id}","${m.target_id}",${m.amount},"${m.currency}",${m.confidence},"${m.matched_at.toISOString()}"`)
+                    .join("\n");
                 const csv = csvHeader + csvRows;
                 res.setHeader("Content-Type", "text/csv");
                 res.setHeader("Content-Disposition", `attachment; filename="reconciliation_${jobId}_${Date.now()}.csv"`);

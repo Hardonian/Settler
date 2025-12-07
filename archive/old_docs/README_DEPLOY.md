@@ -2,9 +2,10 @@
 
 ## ✅ Everything is Complete
 
-The entire billing system is **100% implemented** and **fully automated**. 
+The entire billing system is **100% implemented** and **fully automated**.
 
 **You only need to:**
+
 1. Add GitHub Secrets (5 minutes)
 2. Commit to main
 3. Everything else happens automatically!
@@ -19,16 +20,16 @@ The entire billing system is **100% implemented** and **fully automated**.
 
 **Add these 8 secrets:**
 
-| Secret Name | Where to Find |
-|------------|---------------|
-| `DATABASE_URL` | Supabase Dashboard → Settings → Database → Connection string |
-| `SUPABASE_URL` | Supabase Dashboard → Settings → API → Project URL |
-| `SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API → anon public key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Settings → API → service_role secret |
-| `SUPABASE_PROJECT_REF` | Supabase Dashboard → Settings → General → Reference ID |
-| `SUPABASE_ACCESS_TOKEN` | Supabase Dashboard → Account → Access Tokens → Generate |
-| `STRIPE_SECRET_KEY` | Stripe Dashboard → Developers → API keys → Secret key |
-| `STRIPE_WEBHOOK_SECRET` | Stripe Dashboard → Webhooks → (after creating webhook) |
+| Secret Name                 | Where to Find                                                |
+| --------------------------- | ------------------------------------------------------------ |
+| `DATABASE_URL`              | Supabase Dashboard → Settings → Database → Connection string |
+| `SUPABASE_URL`              | Supabase Dashboard → Settings → API → Project URL            |
+| `SUPABASE_ANON_KEY`         | Supabase Dashboard → Settings → API → anon public key        |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Settings → API → service_role secret    |
+| `SUPABASE_PROJECT_REF`      | Supabase Dashboard → Settings → General → Reference ID       |
+| `SUPABASE_ACCESS_TOKEN`     | Supabase Dashboard → Account → Access Tokens → Generate      |
+| `STRIPE_SECRET_KEY`         | Stripe Dashboard → Developers → API keys → Secret key        |
+| `STRIPE_WEBHOOK_SECRET`     | Stripe Dashboard → Webhooks → (after creating webhook)       |
 
 **📖 Detailed guide:** See `GITHUB_SECRETS_SETUP.md`
 
@@ -49,6 +50,7 @@ git push origin main
 Go to **GitHub → Actions** tab and watch the workflow run.
 
 **What happens:**
+
 - ✅ Database migrations run
 - ✅ Add-ons get seeded
 - ✅ Stripe products created
@@ -78,6 +80,7 @@ npx tsx scripts/check-billing-setup.ts
 ```
 
 Should show:
+
 - ✅ Supabase: Connected
 - ✅ Stripe: Connected
 - ✅ Database: Tables exist
@@ -93,6 +96,7 @@ Should show:
 ---
 
 **Questions?** See:
+
 - `GITHUB_SECRETS_SETUP.md` - Secrets guide
 - `DEPLOYMENT_SETUP.md` - Detailed deployment
 - `START_HERE.md` - Quick start

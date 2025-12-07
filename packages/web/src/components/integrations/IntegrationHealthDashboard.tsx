@@ -43,8 +43,16 @@ export function IntegrationHealthDashboard() {
   };
 
   const statusConfig = {
-    healthy: { icon: CheckCircle2, color: "text-green-600", bg: "bg-green-100 dark:bg-green-900/30" },
-    degraded: { icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/30" },
+    healthy: {
+      icon: CheckCircle2,
+      color: "text-green-600",
+      bg: "bg-green-100 dark:bg-green-900/30",
+    },
+    degraded: {
+      icon: AlertTriangle,
+      color: "text-amber-600",
+      bg: "bg-amber-100 dark:bg-amber-900/30",
+    },
     down: { icon: XCircle, color: "text-red-600", bg: "bg-red-100 dark:bg-red-900/30" },
     unknown: { icon: Clock, color: "text-slate-600", bg: "bg-slate-100 dark:bg-slate-800" },
   };
@@ -128,7 +136,12 @@ export function IntegrationHealthDashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{integration.name}</CardTitle>
-                  <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", config.bg)}>
+                  <div
+                    className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center",
+                      config.bg
+                    )}
+                  >
                     <Icon className={cn("w-5 h-5", config.color)} />
                   </div>
                 </div>

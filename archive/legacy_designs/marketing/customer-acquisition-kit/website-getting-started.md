@@ -233,14 +233,17 @@ const job = await settler.jobs.create({
 ### Currently Available
 
 **Payment Processors:**
+
 - ✅ Stripe
 - ✅ PayPal
 - ✅ Square
 
 **E-commerce Platforms:**
+
 - ✅ Shopify
 
 **Accounting Systems:**
+
 - ✅ QuickBooks
 - ✅ Xero
 

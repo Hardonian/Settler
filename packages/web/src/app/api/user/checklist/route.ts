@@ -25,7 +25,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Failed to fetch checklist" }, { status: 500 });
     }
 
-    const completedItems = (data || []).filter((item: any) => item.completed).map((item: any) => item.checklist_item);
+    const completedItems = (data || [])
+      .filter((item: any) => item.completed)
+      .map((item: any) => item.checklist_item);
 
     return NextResponse.json({ completedItems });
   } catch (error) {

@@ -9,6 +9,7 @@ Go to your GitHub repository → Settings → Secrets and variables → Actions 
 Add these secrets:
 
 **Required:**
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `SUPABASE_URL` - Your Supabase project URL
 - `SUPABASE_ANON_KEY` - Supabase anonymous key
@@ -17,7 +18,8 @@ Add these secrets:
 - `SUPABASE_ACCESS_TOKEN` - Supabase access token (for CLI)
 
 **Stripe (Required for billing):**
-- `STRIPE_SECRET_KEY` - Your Stripe secret key (sk_live_... or sk_test_...)
+
+- `STRIPE_SECRET_KEY` - Your Stripe secret key (sk*live*... or sk*test*...)
 - `STRIPE_WEBHOOK_SECRET` - Stripe webhook secret (get from Stripe Dashboard after setting up webhook)
 
 ### 2. Commit to Main
@@ -33,6 +35,7 @@ git push origin main
 ### 3. Automatic Deployment
 
 The GitHub Actions workflow will automatically:
+
 - ✅ Run database migrations
 - ✅ Seed add-ons
 - ✅ Create Stripe products (if Stripe key is set)
@@ -88,6 +91,7 @@ The GitHub Actions workflow will automatically:
 ### 2. Verify Stripe Products
 
 After first deployment, check if Stripe products were created:
+
 - Go to Stripe Dashboard → Products
 - Verify all 6 products exist (1 base + 5 add-ons)
 - If missing, run: `npm run billing:setup-stripe`
@@ -135,6 +139,7 @@ npm run billing:init
 All required environment variables are documented in `.env.example`.
 
 **Minimum required for billing:**
+
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
@@ -144,21 +149,25 @@ All required environment variables are documented in `.env.example`.
 ## Troubleshooting
 
 ### Migrations Fail
+
 - Check `DATABASE_URL` is correct
 - Verify Supabase credentials
 - Check migration files are valid
 
 ### Stripe Products Not Created
+
 - Verify `STRIPE_SECRET_KEY` is set
 - Check Stripe key has product creation permissions
 - Run `npm run billing:setup-stripe` manually
 
 ### Edge Functions Fail to Deploy
+
 - Verify `SUPABASE_ACCESS_TOKEN` is set
 - Check `SUPABASE_PROJECT_REF` is correct
 - Ensure Supabase CLI has deployment permissions
 
 ### Add-Ons Not Seeded
+
 - Check `SUPABASE_SERVICE_ROLE_KEY` is set
 - Verify database tables exist
 - Run `npm run billing:seed` manually
@@ -181,6 +190,7 @@ curl https://your-domain.com/api/billing/invoice/estimate?billing_account_id=tes
 ## Support
 
 If deployment fails:
+
 1. Check GitHub Actions logs
 2. Verify all secrets are set correctly
 3. Run verification script: `npx tsx scripts/verify-deployment.ts`

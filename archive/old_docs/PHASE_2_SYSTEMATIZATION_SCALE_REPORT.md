@@ -20,6 +20,7 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 8. **Modularization** - Monolithic structure, needs domain isolation
 
 **Estimated Impact:**
+
 - **Support Load Reduction:** 60-70% (automation + self-service)
 - **Performance Improvement:** 30-40% (optimizations + caching)
 - **Reliability Improvement:** 50-60% (hardening + error recovery)
@@ -32,14 +33,17 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 ### A. Workflow Systematization
 
 #### 1.1 Data Ingestion Pipeline
+
 **Current State:** Manual adapter calls, no standardized pipeline  
 **Issues:**
+
 - No retry logic for failed adapter fetches
 - No batching for large datasets
 - No rate limiting per adapter
 - No circuit breaker for failing adapters
 
 **Recommendations:**
+
 - Create `packages/api/src/services/ingestion/pipeline.ts` - Standardized ingestion pipeline
 - Implement adapter circuit breakers (using existing `opossum` library)
 - Add automatic retry with exponential backoff
@@ -52,14 +56,17 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 ---
 
 #### 1.2 Reconciliation Execution Engine
+
 **Current State:** Direct execution, no queue system  
 **Issues:**
+
 - Jobs run synchronously in request handler
 - No job prioritization
 - No job scheduling beyond basic cron
 - No job cancellation mechanism
 
 **Recommendations:**
+
 - Implement BullMQ job queue (library already in dependencies)
 - Create `packages/api/src/services/jobs/queue-manager.ts`
 - Add job priority levels (high/medium/low)
@@ -72,14 +79,17 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 ---
 
 #### 1.3 User Onboarding Flow
+
 **Current State:** Basic WelcomeDashboard component  
 **Issues:**
+
 - No automated email sequences
 - No progress tracking
 - No completion detection
 - No personalized recommendations
 
 **Recommendations:**
+
 - Create `packages/api/src/services/onboarding/engine.ts`
 - Implement onboarding state machine
 - Add progress tracking in database
@@ -92,14 +102,17 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 ---
 
 #### 1.4 Authentication & Entitlements
+
 **Current State:** Basic auth middleware, plan-based limits  
 **Issues:**
+
 - No automatic plan upgrades
 - No usage-based throttling
 - No quota enforcement at API level
 - No grace period handling
 
 **Recommendations:**
+
 - Create `packages/api/src/middleware/quota-enforcement.ts`
 - Add automatic plan upgrade prompts
 - Implement usage-based throttling
@@ -112,14 +125,17 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 ---
 
 #### 1.5 Notification & Alert System
+
 **Current State:** Basic webhook delivery, no alerting  
 **Issues:**
+
 - No internal alerting system
 - No alert aggregation
 - No alert routing (email/Slack/PagerDuty)
 - No alert escalation
 
 **Recommendations:**
+
 - Create `packages/api/src/services/alerts/manager.ts`
 - Implement alert aggregation (deduplication)
 - Add multiple notification channels
@@ -134,14 +150,17 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 ### B. Process Standardization
 
 #### 1.6 Error Recovery Patterns
+
 **Current State:** Some retry logic, not systematic  
 **Issues:**
+
 - Inconsistent retry strategies
 - No retry budget tracking
 - No dead-letter queues
 - No retry visualization
 
 **Recommendations:**
+
 - Create `packages/api/src/utils/retry-strategies.ts`
 - Standardize retry patterns across all services
 - Implement dead-letter queues for failed retries
@@ -154,14 +173,17 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 ---
 
 #### 1.7 Data Validation Pipeline
+
 **Current State:** Zod validation in middleware  
 **Issues:**
+
 - Validation only at API boundary
 - No data sanitization pipeline
 - No validation caching
 - No validation error aggregation
 
 **Recommendations:**
+
 - Create `packages/api/src/services/validation/pipeline.ts`
 - Add data sanitization layer
 - Implement validation caching
@@ -178,14 +200,17 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 ### A. Background Jobs & Scheduling
 
 #### 2.1 Replace setTimeout/setInterval with Proper Scheduler
+
 **Current State:** `data-retention.ts` uses setTimeout/setInterval  
 **Issues:**
+
 - Not resilient to server restarts
 - No job history
 - No failure recovery
 - No distributed coordination
 
 **Recommendations:**
+
 - Migrate to BullMQ with cron jobs
 - Create `packages/api/src/jobs/scheduler.ts`
 - Add job history tracking
@@ -196,46 +221,58 @@ This report identifies **47 systematization opportunities**, **23 automation enh
 **ROI:** HIGH (reliability, observability)
 
 **Code Patch:**
+
 ```typescript
 // packages/api/src/jobs/scheduler.ts
-import { Queue, Worker, QueueScheduler } from 'bullmq';
-import { Redis } from 'ioredis';
+import { Queue, Worker, QueueScheduler } from "bullmq";
+import { Redis } from "ioredis";
 
 const redis = new Redis(process.env.REDIS_URL);
 
-export const jobQueue = new Queue('scheduled-jobs', {
-  connection: { host: process.env.REDIS_HOST, port: 6379 }
+export const jobQueue = new Queue("scheduled-jobs", {
+  connection: { host: process.env.REDIS_HOST, port: 6379 },
 });
 
-export const scheduler = new QueueScheduler('scheduled-jobs', {
-  connection: { host: process.env.REDIS_HOST, port: 6379 }
+export const scheduler = new QueueScheduler("scheduled-jobs", {
+  connection: { host: process.env.REDIS_HOST, port: 6379 },
 });
 
 // Data retention job (daily at 2 AM)
-jobQueue.add('data-retention', {}, {
-  repeat: { pattern: '0 2 * * *' },
-  attempts: 3,
-  backoff: { type: 'exponential', delay: 5000 }
-});
+jobQueue.add(
+  "data-retention",
+  {},
+  {
+    repeat: { pattern: "0 2 * * *" },
+    attempts: 3,
+    backoff: { type: "exponential", delay: 5000 },
+  }
+);
 
 // Email scheduler (daily at 9 AM)
-jobQueue.add('email-lifecycle', {}, {
-  repeat: { pattern: '0 9 * * *' },
-  attempts: 2
-});
+jobQueue.add(
+  "email-lifecycle",
+  {},
+  {
+    repeat: { pattern: "0 9 * * *" },
+    attempts: 2,
+  }
+);
 ```
 
 ---
 
 #### 2.2 Automated Email Sequences
+
 **Current State:** `email-scheduler.ts` is placeholder  
 **Issues:**
+
 - No actual email sending
 - No sequence tracking
 - No personalization
 - No A/B testing
 
 **Recommendations:**
+
 - Implement email sequence engine
 - Create `packages/api/src/services/email/sequences.ts`
 - Add sequence tracking in database
@@ -248,14 +285,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 2.3 Automated Health Monitoring
+
 **Current State:** Basic health checks exist  
 **Issues:**
+
 - No automated alerting
 - No trend analysis
 - No capacity planning
 - No predictive alerts
 
 **Recommendations:**
+
 - Create `packages/api/src/services/monitoring/automated-alerts.ts`
 - Implement trend analysis
 - Add capacity planning metrics
@@ -268,14 +308,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 2.4 Automated Data Cleanup
+
 **Current State:** Basic cleanup in `data-retention.ts`  
 **Issues:**
+
 - No archiving before deletion
 - No soft-delete support
 - No cleanup verification
 - No cleanup metrics
 
 **Recommendations:**
+
 - Create `packages/api/src/services/cleanup/manager.ts`
 - Implement archiving before deletion
 - Add soft-delete support
@@ -290,14 +333,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### B. Operational Automation
 
 #### 2.5 Automated Onboarding Sequences
+
 **Current State:** Static WelcomeDashboard  
 **Issues:**
+
 - No progress tracking
 - No automated emails
 - No completion detection
 - No re-engagement
 
 **Recommendations:**
+
 - Create `packages/api/src/services/onboarding/sequences.ts`
 - Implement progress tracking
 - Add automated email sequences
@@ -310,14 +356,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 2.6 Automated Exception Resolution
+
 **Current State:** Manual exception review  
 **Issues:**
+
 - No auto-resolution rules
 - No confidence-based auto-matching
 - No exception clustering
 - No resolution learning
 
 **Recommendations:**
+
 - Create `packages/api/src/services/exceptions/auto-resolver.ts`
 - Implement auto-resolution rules
 - Add confidence-based auto-matching
@@ -330,14 +379,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 2.7 Automated FX Rate Syncing
+
 **Current State:** Manual sync endpoint  
 **Issues:**
+
 - No automatic daily sync
 - No rate change detection
 - No rate validation
 - No rate history
 
 **Recommendations:**
+
 - Create scheduled job for FX rate sync
 - Add rate change detection
 - Implement rate validation
@@ -353,14 +405,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### A. Error Handling & Recovery
 
 #### 3.1 Standardize Error Responses
+
 **Current State:** Inconsistent error formats  
 **Issues:**
+
 - Some endpoints return different error formats
 - No error code standardization
 - No error categorization
 - No error context preservation
 
 **Recommendations:**
+
 - Create `packages/api/src/utils/error-standardization.ts` (partially exists)
 - Standardize all error responses
 - Implement error code taxonomy
@@ -373,14 +428,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 3.2 Add Missing Validations
+
 **Current State:** Zod validation in middleware  
 **Issues:**
+
 - Not all endpoints validated
 - No business rule validation
 - No cross-field validation
 - No validation error aggregation
 
 **Recommendations:**
+
 - Audit all endpoints for validation
 - Add business rule validation
 - Implement cross-field validation
@@ -392,14 +450,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 3.3 Enforce Timeout Policies
+
 **Current State:** Some timeouts, not systematic  
 **Issues:**
+
 - Inconsistent timeout values
 - No timeout configuration
 - No timeout metrics
 - No timeout recovery
 
 **Recommendations:**
+
 - Create `packages/api/src/config/timeouts.ts`
 - Standardize timeout values
 - Add timeout configuration
@@ -412,14 +473,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 3.4 Add Circuit Breakers
+
 **Current State:** Opossum library available, not used  
 **Issues:**
+
 - No circuit breakers for external calls
 - No adapter circuit breakers
 - No webhook circuit breakers
 - No circuit breaker metrics
 
 **Recommendations:**
+
 - Create `packages/api/src/utils/circuit-breakers.ts`
 - Add circuit breakers for all external calls
 - Implement adapter circuit breakers
@@ -432,14 +496,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 3.5 Remove Silent Failures
+
 **Current State:** Some errors are swallowed  
 **Issues:**
+
 - Some try-catch blocks swallow errors
 - No error logging in some paths
 - No error alerting
 - No error tracking
 
 **Recommendations:**
+
 - Audit all try-catch blocks
 - Add error logging everywhere
 - Implement error alerting
@@ -453,14 +520,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### B. Multi-Tenant Isolation
 
 #### 3.6 Strengthen Tenant Isolation
+
 **Current State:** Basic tenant_id checks  
 **Issues:**
+
 - No tenant isolation verification
 - No tenant data leakage detection
 - No tenant quota isolation
 - No tenant performance isolation
 
 **Recommendations:**
+
 - Create `packages/api/src/middleware/tenant-isolation.ts`
 - Add tenant isolation verification
 - Implement data leakage detection
@@ -473,14 +543,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 3.7 Add Resource Ownership Verification
+
 **Current State:** Some ownership checks  
 **Issues:**
+
 - Not all resources verify ownership
 - No ownership caching
 - No ownership audit trail
 - No ownership metrics
 
 **Recommendations:**
+
 - Audit all resource access
 - Add ownership verification middleware
 - Implement ownership caching
@@ -495,14 +568,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### C. Data Integrity
 
 #### 3.8 Add Database Constraints
+
 **Current State:** Good indexes, some missing constraints  
 **Issues:**
+
 - Some foreign keys missing
 - No check constraints
 - No unique constraints where needed
 - No data integrity checks
 
 **Recommendations:**
+
 - Audit database schema
 - Add missing foreign keys
 - Add check constraints
@@ -515,14 +591,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 3.9 Add Transaction Management
+
 **Current State:** Some transactions, not systematic  
 **Issues:**
+
 - Not all operations use transactions
 - No transaction retry logic
 - No transaction timeout
 - No transaction metrics
 
 **Recommendations:**
+
 - Audit all database operations
 - Add transactions where needed
 - Implement transaction retry
@@ -539,14 +618,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### A. Enhanced Logging
 
 #### 4.1 Add Structured Logging Everywhere
+
 **Current State:** Good logging, some gaps  
 **Issues:**
+
 - Some operations not logged
 - No log correlation
 - No log sampling strategy
 - No log retention policy
 
 **Recommendations:**
+
 - Audit all operations for logging
 - Add log correlation IDs
 - Implement log sampling
@@ -558,14 +640,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 4.2 Add Performance Logging
+
 **Current State:** Some performance metrics  
 **Issues:**
+
 - Not all operations logged
 - No slow query logging
 - No operation timing
 - No performance trends
 
 **Recommendations:**
+
 - Add performance logging middleware
 - Implement slow query logging
 - Add operation timing
@@ -579,14 +664,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### B. Metrics & Monitoring
 
 #### 4.3 Enhance Prometheus Metrics
+
 **Current State:** Good metrics foundation  
 **Issues:**
+
 - Some operations not instrumented
 - No custom business metrics
 - No metric aggregation
 - No metric dashboards
 
 **Recommendations:**
+
 - Audit all operations for metrics
 - Add custom business metrics
 - Implement metric aggregation
@@ -598,14 +686,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 4.4 Add Distributed Tracing
+
 **Current State:** OpenTelemetry configured  
 **Issues:**
+
 - Not all operations traced
 - No trace sampling strategy
 - No trace retention
 - No trace visualization
 
 **Recommendations:**
+
 - Add tracing to all operations
 - Implement trace sampling
 - Create trace retention policy
@@ -617,14 +708,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 4.5 Create Operational Dashboards
+
 **Current State:** No dashboards  
 **Issues:**
+
 - No system health dashboard
 - No business metrics dashboard
 - No error dashboard
 - No performance dashboard
 
 **Recommendations:**
+
 - Create Grafana dashboards
 - Add system health dashboard
 - Create business metrics dashboard
@@ -637,14 +731,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 4.6 Implement Alerting System
+
 **Current State:** No alerting  
 **Issues:**
+
 - No error alerts
 - No performance alerts
 - No capacity alerts
 - No business metric alerts
 
 **Recommendations:**
+
 - Create `packages/api/src/services/alerts/engine.ts`
 - Implement error alerts
 - Add performance alerts
@@ -661,14 +758,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### A. Onboarding Flow Improvements
 
 #### 5.1 Create Onboarding State Machine
+
 **Current State:** Static WelcomeDashboard  
 **Issues:**
+
 - No state tracking
 - No progress persistence
 - No completion detection
 - No re-engagement
 
 **Recommendations:**
+
 - Create `packages/api/src/services/onboarding/state-machine.ts`
 - Implement state tracking
 - Add progress persistence
@@ -681,14 +781,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 5.2 Add Interactive Setup Wizard
+
 **Current State:** Basic quick start steps  
 **Issues:**
+
 - No interactive guidance
 - No step validation
 - No progress saving
 - No skip/resume capability
 
 **Recommendations:**
+
 - Create `packages/web/src/components/OnboardingWizard.tsx`
 - Add interactive guidance
 - Implement step validation
@@ -701,14 +804,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 5.3 Add Sample Data & Demos
+
 **Current State:** No sample data  
 **Issues:**
+
 - No demo mode
 - No sample datasets
 - No tutorial workflows
 - No guided examples
 
 **Recommendations:**
+
 - Create `packages/api/src/services/onboarding/demo-data.ts`
 - Implement demo mode
 - Add sample datasets
@@ -721,14 +827,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 5.4 Add Inline Help & Tooltips
+
 **Current State:** Basic documentation links  
 **Issues:**
+
 - No contextual help
 - No inline tooltips
 - No help search
 - No video tutorials
 
 **Recommendations:**
+
 - Create `packages/web/src/components/HelpSystem.tsx`
 - Add contextual help
 - Implement inline tooltips
@@ -743,14 +852,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### B. Automated Welcome Sequences
 
 #### 5.5 Implement Email Onboarding Sequence
+
 **Current State:** No email sequences  
 **Issues:**
+
 - No welcome emails
 - No feature introduction emails
 - No best practices emails
 - No re-engagement emails
 
 **Recommendations:**
+
 - Create `packages/api/src/services/email/onboarding-sequence.ts`
 - Implement welcome emails
 - Add feature introduction emails
@@ -767,14 +879,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### A. Data Cleanup & Archiving
 
 #### 6.1 Implement Archiving Before Deletion
+
 **Current State:** Direct deletion  
 **Issues:**
+
 - No archiving
 - No recovery capability
 - No compliance retention
 - No audit trail
 
 **Recommendations:**
+
 - Create `packages/api/src/services/archive/manager.ts`
 - Implement archiving before deletion
 - Add recovery capability
@@ -787,14 +902,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 6.2 Add Soft-Delete Support
+
 **Current State:** Hard deletes  
 **Issues:**
+
 - No soft-delete
 - No recovery
 - No deletion audit
 - No cascade handling
 
 **Recommendations:**
+
 - Add soft-delete to all tables
 - Implement recovery mechanism
 - Create deletion audit
@@ -806,14 +924,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 6.3 Implement Data Consistency Checks
+
 **Current State:** No consistency checks  
 **Issues:**
+
 - No orphan detection
 - No referential integrity checks
 - No data validation
 - No consistency metrics
 
 **Recommendations:**
+
 - Create `packages/api/src/services/consistency/checker.ts`
 - Implement orphan detection
 - Add referential integrity checks
@@ -826,14 +947,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 6.4 Add Nightly Consistency Jobs
+
 **Current State:** No scheduled checks  
 **Issues:**
+
 - No automated checks
 - No consistency reporting
 - No alerting on issues
 - No repair automation
 
 **Recommendations:**
+
 - Create scheduled consistency jobs
 - Implement consistency reporting
 - Add alerting on issues
@@ -847,14 +971,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### B. Data Retention & Compliance
 
 #### 6.5 Implement GDPR-Compliant Deletion
+
 **Current State:** Basic deletion  
 **Issues:**
+
 - No GDPR compliance verification
 - No deletion verification
 - No deletion audit
 - No right-to-be-forgotten
 
 **Recommendations:**
+
 - Create `packages/api/src/services/compliance/gdpr-deletion.ts`
 - Implement GDPR compliance verification
 - Add deletion verification
@@ -867,14 +994,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 6.6 Add Data Retention Policies
+
 **Current State:** Basic retention in config  
 **Issues:**
+
 - No per-tenant policies
 - No policy enforcement
 - No policy audit
 - No policy metrics
 
 **Recommendations:**
+
 - Create `packages/api/src/services/retention/policy-manager.ts`
 - Implement per-tenant policies
 - Add policy enforcement
@@ -891,14 +1021,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### A. Query Optimization
 
 #### 7.1 Fix N+1 Query Issues
+
 **Current State:** Some N+1 queries fixed  
 **Issues:**
+
 - Some N+1 queries remain
 - No query analysis
 - No query optimization
 - No query caching
 
 **Recommendations:**
+
 - Audit all queries for N+1
 - Add query analysis tool
 - Implement query optimization
@@ -910,14 +1043,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 7.2 Add Missing Indexes
+
 **Current State:** Good indexing, some gaps  
 **Issues:**
+
 - Some queries not indexed
 - No index usage analysis
 - No index optimization
 - No index maintenance
 
 **Recommendations:**
+
 - Audit all queries for indexes
 - Add index usage analysis
 - Implement index optimization
@@ -929,14 +1065,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 7.3 Implement Query Result Caching
+
 **Current State:** No caching  
 **Issues:**
+
 - No query caching
 - No cache invalidation
 - No cache metrics
 - No cache warming
 
 **Recommendations:**
+
 - Create `packages/api/src/services/cache/query-cache.ts`
 - Implement query caching
 - Add cache invalidation
@@ -951,14 +1090,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### B. API Performance
 
 #### 7.4 Add Response Caching
+
 **Current State:** No response caching  
 **Issues:**
+
 - No API response caching
 - No cache headers
 - No cache invalidation
 - No cache metrics
 
 **Recommendations:**
+
 - Create `packages/api/src/middleware/response-cache.ts`
 - Implement API response caching
 - Add cache headers
@@ -971,14 +1113,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 7.5 Implement Request Batching
+
 **Current State:** No batching  
 **Issues:**
+
 - No request batching
 - No batch processing
 - No batch optimization
 - No batch metrics
 
 **Recommendations:**
+
 - Create `packages/api/src/middleware/request-batching.ts`
 - Implement request batching
 - Add batch processing
@@ -991,14 +1136,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 7.6 Add Pagination Optimization
+
 **Current State:** Basic pagination  
 **Issues:**
+
 - No cursor-based pagination everywhere
 - No pagination caching
 - No pagination metrics
 - No pagination optimization
 
 **Recommendations:**
+
 - Audit all list endpoints
 - Add cursor-based pagination
 - Implement pagination caching
@@ -1013,14 +1161,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### C. Background Job Performance
 
 #### 7.7 Optimize Background Jobs
+
 **Current State:** Sequential processing  
 **Issues:**
+
 - No parallel processing
 - No job prioritization
 - No job batching
 - No job metrics
 
 **Recommendations:**
+
 - Implement parallel processing
 - Add job prioritization
 - Create job batching
@@ -1032,14 +1183,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 7.8 Add Job Queue Optimization
+
 **Current State:** No queue system  
 **Issues:**
+
 - No job queue
 - No queue prioritization
 - No queue metrics
 - No queue optimization
 
 **Recommendations:**
+
 - Implement BullMQ job queue
 - Add queue prioritization
 - Create queue metrics
@@ -1055,14 +1209,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### A. Domain Isolation
 
 #### 8.1 Refactor to Domain-Driven Design
+
 **Current State:** Monolithic structure  
 **Issues:**
+
 - No domain boundaries
 - High coupling
 - No module isolation
 - No plugin architecture
 
 **Recommendations:**
+
 - Create domain modules:
   - `packages/api/src/domains/reconciliation/`
   - `packages/api/src/domains/users/`
@@ -1079,14 +1236,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 8.2 Create Feature Modules
+
 **Current State:** Flat structure  
 **Issues:**
+
 - No feature modules
 - No feature flags
 - No feature isolation
 - No feature metrics
 
 **Recommendations:**
+
 - Create feature modules
 - Implement feature flags
 - Add feature isolation
@@ -1098,14 +1258,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 8.3 Implement Plugin Architecture
+
 **Current State:** No plugin system  
 **Issues:**
+
 - No plugin support
 - No plugin isolation
 - No plugin metrics
 - No plugin management
 
 **Recommendations:**
+
 - Create `packages/api/src/plugins/manager.ts`
 - Implement plugin support
 - Add plugin isolation
@@ -1120,14 +1283,17 @@ jobQueue.add('email-lifecycle', {}, {
 ### B. Multi-Product Support
 
 #### 8.4 Add Product Context
+
 **Current State:** Single product  
 **Issues:**
+
 - No product context
 - No product isolation
 - No product metrics
 - No product routing
 
 **Recommendations:**
+
 - Create `packages/api/src/middleware/product-context.ts`
 - Add product context
 - Implement product isolation
@@ -1140,14 +1306,17 @@ jobQueue.add('email-lifecycle', {}, {
 ---
 
 #### 8.5 Implement Tenant Hierarchy
+
 **Current State:** Flat tenants  
 **Issues:**
+
 - No tenant hierarchy
 - No parent-child relationships
 - No hierarchy metrics
 - No hierarchy routing
 
 **Recommendations:**
+
 - Enhance tenant schema (parent_tenant_id exists)
 - Implement tenant hierarchy
 - Add parent-child relationships
@@ -1178,12 +1347,14 @@ jobQueue.add('email-lifecycle', {}, {
    - Add missing validations
 
 **Deliverables:**
+
 - BullMQ job queue system
 - Automated email sequences
 - Basic alerting
 - Standardized error handling
 
 **Metrics:**
+
 - Support tickets: -30%
 - Error rate: -40%
 - Onboarding completion: +25%
@@ -1207,12 +1378,14 @@ jobQueue.add('email-lifecycle', {}, {
    - Create email sequences
 
 **Deliverables:**
+
 - Full job queue system
 - Complete onboarding engine
 - Sample data & demos
 - Email sequences
 
 **Metrics:**
+
 - Job processing time: -50%
 - Onboarding completion: +40%
 - Time-to-value: -35%
@@ -1236,12 +1409,14 @@ jobQueue.add('email-lifecycle', {}, {
    - Create plugin architecture
 
 **Deliverables:**
+
 - Complete observability stack
 - Performance optimizations
 - Domain-driven structure
 - Plugin architecture
 
 **Metrics:**
+
 - API latency: -40%
 - System reliability: +50%
 - Developer velocity: +30%
@@ -1253,45 +1428,47 @@ jobQueue.add('email-lifecycle', {}, {
 ### Immediate Wins (< 150 lines each)
 
 #### 10.1 Automated FX Rate Sync Job
+
 **File:** `packages/api/src/jobs/fx-rate-sync.ts`  
 **Lines:** ~80  
 **Impact:** Eliminates manual FX rate management
 
 ```typescript
-import { Queue } from 'bullmq';
-import { fxService } from '../application/currency/FXService';
+import { Queue } from "bullmq";
+import { fxService } from "../application/currency/FXService";
 
 export async function syncFXRatesJob() {
   const tenants = await getActiveTenants();
   for (const tenant of tenants) {
-    await fxService.syncFXRates(tenant.id, 'USD');
+    await fxService.syncFXRates(tenant.id, "USD");
   }
 }
 
 // Schedule: Daily at 1 AM
-jobQueue.add('fx-rate-sync', {}, {
-  repeat: { pattern: '0 1 * * *' }
-});
+jobQueue.add(
+  "fx-rate-sync",
+  {},
+  {
+    repeat: { pattern: "0 1 * * *" },
+  }
+);
 ```
 
 ---
 
 #### 10.2 Standardized Error Response Middleware
+
 **File:** `packages/api/src/middleware/error-standardization.ts`  
 **Lines:** ~100  
 **Impact:** Consistent error handling
 
 ```typescript
-export function standardizeErrorResponse(
-  error: unknown,
-  req: Request,
-  res: Response
-) {
+export function standardizeErrorResponse(error: unknown, req: Request, res: Response) {
   const standardized = {
     error: getErrorCode(error),
     message: getErrorMessage(error),
     traceId: req.traceId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
   res.status(getStatusCode(error)).json(standardized);
 }
@@ -1300,16 +1477,13 @@ export function standardizeErrorResponse(
 ---
 
 #### 10.3 Automated Onboarding Progress Tracker
+
 **File:** `packages/api/src/services/onboarding/tracker.ts`  
 **Lines:** ~120  
 **Impact:** Tracks onboarding completion
 
 ```typescript
-export async function trackOnboardingStep(
-  userId: string,
-  step: string,
-  completed: boolean
-) {
+export async function trackOnboardingStep(userId: string, step: string, completed: boolean) {
   await query(
     `INSERT INTO onboarding_progress (user_id, step, completed, updated_at)
      VALUES ($1, $2, $3, NOW())
@@ -1323,6 +1497,7 @@ export async function trackOnboardingStep(
 ---
 
 #### 10.4 Query Result Caching Middleware
+
 **File:** `packages/api/src/middleware/query-cache.ts`  
 **Lines:** ~90  
 **Impact:** Reduces database load
@@ -1345,27 +1520,37 @@ export function queryCache(ttl: number = 300) {
 ## 11. Automated Scripts & Code Patches
 
 ### 11.1 BullMQ Scheduler Migration Script
+
 **File:** `scripts/migrate-to-bullmq.ts`
 
 ```typescript
-import { Queue } from 'bullmq';
+import { Queue } from "bullmq";
 
 // Migrate data retention job
-jobQueue.add('data-retention', {}, {
-  repeat: { pattern: '0 2 * * *' },
-  attempts: 3
-});
+jobQueue.add(
+  "data-retention",
+  {},
+  {
+    repeat: { pattern: "0 2 * * *" },
+    attempts: 3,
+  }
+);
 
 // Migrate email scheduler
-jobQueue.add('email-lifecycle', {}, {
-  repeat: { pattern: '0 9 * * *' },
-  attempts: 2
-});
+jobQueue.add(
+  "email-lifecycle",
+  {},
+  {
+    repeat: { pattern: "0 9 * * *" },
+    attempts: 2,
+  }
+);
 ```
 
 ---
 
 ### 11.2 Database Index Audit Script
+
 **File:** `scripts/audit-indexes.ts`
 
 ```typescript
@@ -1386,6 +1571,7 @@ for (const query of slowQueries) {
 ---
 
 ### 11.3 Onboarding Progress Migration
+
 **File:** `scripts/migrate-onboarding-progress.ts`
 
 ```typescript
@@ -1401,9 +1587,9 @@ await query(`
 `);
 
 // Migrate existing data
-const users = await query('SELECT id FROM users');
+const users = await query("SELECT id FROM users");
 for (const user of users) {
-  await trackOnboardingStep(user.id, 'welcome', true);
+  await trackOnboardingStep(user.id, "welcome", true);
 }
 ```
 
@@ -1412,6 +1598,7 @@ for (const user of users) {
 ## 12. Implementation Priority Matrix
 
 ### High Priority, Low Effort (Do First)
+
 1. ✅ Automated FX rate sync job
 2. ✅ Standardized error responses
 3. ✅ Query result caching
@@ -1419,6 +1606,7 @@ for (const user of users) {
 5. ✅ Basic alerting system
 
 ### High Priority, High Effort (Plan Carefully)
+
 1. BullMQ job queue system
 2. Complete onboarding engine
 3. Observability dashboards
@@ -1426,6 +1614,7 @@ for (const user of users) {
 5. Performance optimizations
 
 ### Medium Priority, Low Effort (Quick Wins)
+
 1. Add missing validations
 2. Implement timeout policies
 3. Add circuit breakers
@@ -1433,6 +1622,7 @@ for (const user of users) {
 5. Add inline help
 
 ### Medium Priority, High Effort (Strategic)
+
 1. Plugin architecture
 2. Multi-product support
 3. Data archiving system
@@ -1444,24 +1634,28 @@ for (const user of users) {
 ## 13. Success Metrics & KPIs
 
 ### Operational Metrics
+
 - **Support Ticket Volume:** Target: -60% in 90 days
 - **Error Rate:** Target: -50% in 90 days
 - **System Uptime:** Target: 99.9%
 - **Mean Time to Recovery (MTTR):** Target: < 15 minutes
 
 ### Product Metrics
+
 - **Onboarding Completion Rate:** Target: +40% in 90 days
 - **Time to First Value:** Target: -35% in 90 days
 - **Activation Rate:** Target: +30% in 90 days
 - **Churn Rate:** Target: -25% in 90 days
 
 ### Performance Metrics
+
 - **API Latency (p95):** Target: < 200ms
 - **Database Query Time (p95):** Target: < 50ms
 - **Job Processing Time:** Target: -50% in 90 days
 - **Cache Hit Rate:** Target: > 80%
 
 ### Business Metrics
+
 - **Revenue per Customer:** Target: +20% in 90 days
 - **Customer Lifetime Value:** Target: +25% in 90 days
 - **Net Promoter Score:** Target: > 50
@@ -1471,6 +1665,7 @@ for (const user of users) {
 ## 14. Risk Assessment & Mitigation
 
 ### High Risk Items
+
 1. **BullMQ Migration** - Could break existing jobs
    - **Mitigation:** Run in parallel, gradual migration
 2. **Database Schema Changes** - Could cause downtime
@@ -1479,6 +1674,7 @@ for (const user of users) {
    - **Mitigation:** Incremental refactoring, comprehensive tests
 
 ### Medium Risk Items
+
 1. **Performance Optimizations** - Could introduce regressions
    - **Mitigation:** A/B testing, gradual rollout
 2. **Onboarding Changes** - Could confuse users
@@ -1489,18 +1685,21 @@ for (const user of users) {
 ## 15. Next Steps
 
 ### Immediate (This Week)
+
 1. Review and approve this report
 2. Prioritize quick wins
 3. Set up BullMQ infrastructure
 4. Create GitHub issues for all items
 
 ### Short-term (This Month)
+
 1. Implement 30-day sprint items
 2. Set up monitoring dashboards
 3. Begin onboarding engine development
 4. Start performance optimizations
 
 ### Long-term (This Quarter)
+
 1. Complete 90-day sprint
 2. Achieve all success metrics
 3. Prepare for next phase

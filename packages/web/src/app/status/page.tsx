@@ -16,7 +16,9 @@ interface SystemStatus {
 
 export default function StatusPage() {
   const [systems, setSystems] = useState<SystemStatus[]>([]);
-  const [overallStatus, setOverallStatus] = useState<"operational" | "degraded" | "down">("operational");
+  const [overallStatus, setOverallStatus] = useState<"operational" | "degraded" | "down">(
+    "operational"
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,10 +43,30 @@ export default function StatusPage() {
   };
 
   const statusConfig = {
-    operational: { color: "text-green-600", bg: "bg-green-100 dark:bg-green-900/30", icon: CheckCircle2, label: "Operational" },
-    degraded: { color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/30", icon: AlertTriangle, label: "Degraded Performance" },
-    down: { color: "text-red-600", bg: "bg-red-100 dark:bg-red-900/30", icon: XCircle, label: "Service Disruption" },
-    maintenance: { color: "text-blue-600", bg: "bg-blue-100 dark:bg-blue-900/30", icon: Clock, label: "Maintenance" },
+    operational: {
+      color: "text-green-600",
+      bg: "bg-green-100 dark:bg-green-900/30",
+      icon: CheckCircle2,
+      label: "Operational",
+    },
+    degraded: {
+      color: "text-amber-600",
+      bg: "bg-amber-100 dark:bg-amber-900/30",
+      icon: AlertTriangle,
+      label: "Degraded Performance",
+    },
+    down: {
+      color: "text-red-600",
+      bg: "bg-red-100 dark:bg-red-900/30",
+      icon: XCircle,
+      label: "Service Disruption",
+    },
+    maintenance: {
+      color: "text-blue-600",
+      bg: "bg-blue-100 dark:bg-blue-900/30",
+      icon: Clock,
+      label: "Maintenance",
+    },
   };
 
   const overall = statusConfig[overallStatus];
@@ -62,7 +84,9 @@ export default function StatusPage() {
                 <CardTitle className="text-3xl mb-2">System Status</CardTitle>
                 <CardDescription>Real-time status of all Settler services</CardDescription>
               </div>
-              <div className={`w-16 h-16 rounded-lg flex items-center justify-center ${overall.bg}`}>
+              <div
+                className={`w-16 h-16 rounded-lg flex items-center justify-center ${overall.bg}`}
+              >
                 <overall.icon className={`w-8 h-8 ${overall.color}`} />
               </div>
             </div>
@@ -90,11 +114,15 @@ export default function StatusPage() {
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${config.bg}`}>
+                        <div
+                          className={`w-12 h-12 rounded-lg flex items-center justify-center ${config.bg}`}
+                        >
                           <Icon className={`w-6 h-6 ${config.color}`} />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-slate-900 dark:text-white">{system.name}</h3>
+                          <h3 className="font-semibold text-slate-900 dark:text-white">
+                            {system.name}
+                          </h3>
                           <p className="text-sm text-slate-500 dark:text-slate-400">
                             Uptime: {system.uptime.toFixed(2)}%
                           </p>

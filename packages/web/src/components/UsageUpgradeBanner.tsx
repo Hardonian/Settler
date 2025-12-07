@@ -42,8 +42,8 @@ export function UsageUpgradeBanner({
     metricType === "reconciliations"
       ? "reconciliations"
       : metricType === "playground_runs"
-      ? "playground runs"
-      : "exports";
+        ? "playground runs"
+        : "exports";
 
   return (
     <Banner
@@ -53,13 +53,11 @@ export function UsageUpgradeBanner({
       <div className="flex items-center justify-between w-full">
         <div className="flex-1">
           <p className="font-semibold text-amber-900 dark:text-amber-100">
-            {percentage >= 95
-              ? "Almost out of " + metricLabel
-              : "Running out of " + metricLabel}
+            {percentage >= 95 ? "Almost out of " + metricLabel : "Running out of " + metricLabel}
           </p>
           <p className="text-sm text-amber-800 dark:text-amber-200 mt-1">
-            You've used {currentUsage.toLocaleString()} of {limit.toLocaleString()}{" "}
-            {metricLabel} this month ({Math.round(percentage)}% used).
+            You've used {currentUsage.toLocaleString()} of {limit.toLocaleString()} {metricLabel}{" "}
+            this month ({Math.round(percentage)}% used).
           </p>
           {percentage >= 95 && (
             <p className="text-sm text-amber-700 dark:text-amber-300 mt-1 font-medium">

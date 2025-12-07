@@ -10,7 +10,7 @@
 ✅ **Stripe integration** fully configured  
 ✅ **All integrations** implemented  
 ✅ **UI components** built  
-✅ **Documentation** complete  
+✅ **Documentation** complete
 
 ---
 
@@ -88,6 +88,7 @@ npx tsx scripts/check-billing-setup.ts
 ```
 
 Or visit:
+
 - `/dashboard/billing`
 - `/dashboard/addons`
 - `/dashboard/usage`

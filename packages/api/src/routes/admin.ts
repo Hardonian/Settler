@@ -17,103 +17,127 @@ export function createAdminRouter(adminService: AdminService): Router {
   const router = Router();
 
   // Get saga status
-  router.get("/sagas/:sagaType/:sagaId", validateRequest(adminSagaParamSchema), async (req, res) => {
-    try {
-      const sagaType = req.params.sagaType;
-      const sagaId = req.params.sagaId;
-      if (!sagaType || !sagaId) {
-        res.status(400).json({ error: "Missing required parameters" });
-        return;
+  router.get(
+    "/sagas/:sagaType/:sagaId",
+    validateRequest(adminSagaParamSchema),
+    async (req, res) => {
+      try {
+        const sagaType = req.params.sagaType;
+        const sagaId = req.params.sagaId;
+        if (!sagaType || !sagaId) {
+          res.status(400).json({ error: "Missing required parameters" });
+          return;
+        }
+        const status = await adminService.getSagaStatus(sagaId, sagaType);
+        if (!status) {
+          res.status(404).json({ error: "Saga not found" });
+          return;
+        }
+        res.json(status);
+      } catch (error: unknown) {
+        handleRouteError(res, error, "Failed to get saga status", 500);
       }
-      const status = await adminService.getSagaStatus(sagaId, sagaType);
-      if (!status) {
-        res.status(404).json({ error: "Saga not found" });
-        return;
-      }
-      res.json(status);
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get saga status", 500);
     }
-  });
+  );
 
   // List events for aggregate
-  router.get("/events/:aggregateType/:aggregateId", validateRequest(adminAggregateParamSchema), async (req, res) => {
-    try {
-      const aggregateType = req.params.aggregateType;
-      const aggregateId = req.params.aggregateId;
-      if (!aggregateType || !aggregateId) {
-        res.status(400).json({ error: "Missing required parameters" });
-        return;
+  router.get(
+    "/events/:aggregateType/:aggregateId",
+    validateRequest(adminAggregateParamSchema),
+    async (req, res) => {
+      try {
+        const aggregateType = req.params.aggregateType;
+        const aggregateId = req.params.aggregateId;
+        if (!aggregateType || !aggregateId) {
+          res.status(400).json({ error: "Missing required parameters" });
+          return;
+        }
+        const events = await adminService.listEventsForAggregate(aggregateId, aggregateType);
+        res.json(events);
+      } catch (error: unknown) {
+        handleRouteError(res, error, "Failed to get saga status", 500);
       }
-      const events = await adminService.listEventsForAggregate(aggregateId, aggregateType);
-      res.json(events);
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get saga status", 500);
     }
-  });
+  );
 
   // List events by correlation ID
-  router.get("/events/correlation/:correlationId", validateRequest(adminCorrelationParamSchema), async (req, res) => {
-    try {
-      const correlationId = req.params.correlationId;
-      if (!correlationId) {
-        res.status(400).json({ error: "Missing required parameters" });
-        return;
+  router.get(
+    "/events/correlation/:correlationId",
+    validateRequest(adminCorrelationParamSchema),
+    async (req, res) => {
+      try {
+        const correlationId = req.params.correlationId;
+        if (!correlationId) {
+          res.status(400).json({ error: "Missing required parameters" });
+          return;
+        }
+        const events = await adminService.listEventsByCorrelationId(correlationId);
+        res.json(events);
+      } catch (error: unknown) {
+        handleRouteError(res, error, "Failed to get saga status", 500);
       }
-      const events = await adminService.listEventsByCorrelationId(correlationId);
-      res.json(events);
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get saga status", 500);
     }
-  });
+  );
 
   // Resume saga
-  router.post("/sagas/:sagaType/:sagaId/resume", validateRequest(adminSagaParamSchema), async (req, res) => {
-    try {
-      const sagaType = req.params.sagaType;
-      const sagaId = req.params.sagaId;
-      if (!sagaType || !sagaId) {
-        res.status(400).json({ error: "Missing required parameters" });
-        return;
+  router.post(
+    "/sagas/:sagaType/:sagaId/resume",
+    validateRequest(adminSagaParamSchema),
+    async (req, res) => {
+      try {
+        const sagaType = req.params.sagaType;
+        const sagaId = req.params.sagaId;
+        if (!sagaType || !sagaId) {
+          res.status(400).json({ error: "Missing required parameters" });
+          return;
+        }
+        await adminService.resumeSaga(sagaId, sagaType);
+        res.json({ message: "Saga resumed" });
+      } catch (error: unknown) {
+        handleRouteError(res, error, "Failed to get saga status", 500);
       }
-      await adminService.resumeSaga(sagaId, sagaType);
-      res.json({ message: "Saga resumed" });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get saga status", 500);
     }
-  });
+  );
 
   // Retry saga
-  router.post("/sagas/:sagaType/:sagaId/retry", validateRequest(adminSagaParamSchema), async (req, res) => {
-    try {
-      const sagaType = req.params.sagaType;
-      const sagaId = req.params.sagaId;
-      if (!sagaType || !sagaId) {
-        res.status(400).json({ error: "Missing required parameters" });
-        return;
+  router.post(
+    "/sagas/:sagaType/:sagaId/retry",
+    validateRequest(adminSagaParamSchema),
+    async (req, res) => {
+      try {
+        const sagaType = req.params.sagaType;
+        const sagaId = req.params.sagaId;
+        if (!sagaType || !sagaId) {
+          res.status(400).json({ error: "Missing required parameters" });
+          return;
+        }
+        await adminService.retrySaga(sagaId, sagaType);
+        res.json({ message: "Saga retry initiated" });
+      } catch (error: unknown) {
+        handleRouteError(res, error, "Failed to get saga status", 500);
       }
-      await adminService.retrySaga(sagaId, sagaType);
-      res.json({ message: "Saga retry initiated" });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get saga status", 500);
     }
-  });
+  );
 
   // Cancel saga
-  router.post("/sagas/:sagaType/:sagaId/cancel", validateRequest(adminSagaParamSchema), async (req, res) => {
-    try {
-      const sagaType = req.params.sagaType;
-      const sagaId = req.params.sagaId;
-      if (!sagaType || !sagaId) {
-        res.status(400).json({ error: "Missing required parameters" });
-        return;
+  router.post(
+    "/sagas/:sagaType/:sagaId/cancel",
+    validateRequest(adminSagaParamSchema),
+    async (req, res) => {
+      try {
+        const sagaType = req.params.sagaType;
+        const sagaId = req.params.sagaId;
+        if (!sagaType || !sagaId) {
+          res.status(400).json({ error: "Missing required parameters" });
+          return;
+        }
+        await adminService.cancelSaga(sagaId, sagaType);
+        res.json({ message: "Saga cancelled" });
+      } catch (error: unknown) {
+        handleRouteError(res, error, "Failed to get saga status", 500);
       }
-      await adminService.cancelSaga(sagaId, sagaType);
-      res.json({ message: "Saga cancelled" });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get saga status", 500);
     }
-  });
+  );
 
   // Get dead letter queue
   router.get("/dead-letter-queue", async (req, res) => {

@@ -104,9 +104,7 @@ export function EnhancedTrustBadges() {
             "shadow-sm transition-all duration-500",
             "hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600",
             "hover:scale-105",
-            isVisible
-              ? "opacity-100 translate-y-0 scale-100"
-              : "opacity-0 translate-y-4 scale-95"
+            isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-95"
           )}
           style={{
             transitionDelay: prefersReducedMotion ? "0ms" : `${index * 100}ms`,

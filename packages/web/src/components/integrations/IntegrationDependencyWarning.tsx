@@ -41,9 +41,7 @@ export function IntegrationDependencyWarning({
                 <div className="flex flex-wrap gap-2">
                   {check.missingRequirements.map((req) => (
                     <Button key={req} asChild size="sm" variant="outline">
-                      <Link href={`/dashboard/integrations?add=${req}`}>
-                        Connect {req}
-                      </Link>
+                      <Link href={`/dashboard/integrations?add=${req}`}>Connect {req}</Link>
                     </Button>
                   ))}
                 </div>

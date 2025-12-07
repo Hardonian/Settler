@@ -11,6 +11,7 @@ Fixed all TypeScript compilation errors in the `@settler/adapters` package that 
 **Problem**: With `exactOptionalPropertyTypes: true`, returning `{ errors: string[] | undefined }` is not compatible with `errors?: string[]`.
 
 **Solution**: Changed all validation methods to conditionally include the `errors` property:
+
 ```typescript
 // Before
 return {
@@ -19,12 +20,11 @@ return {
 };
 
 // After
-return errors.length === 0
-  ? { valid: true }
-  : { valid: false, errors };
+return errors.length === 0 ? { valid: true } : { valid: false, errors };
 ```
 
 **Files Fixed**:
+
 - `ga4-deep-sync.ts`
 - `google-pay.ts`
 - `meta-commerce.ts`
@@ -38,17 +38,20 @@ return errors.length === 0
 **Problem**: TypeScript strict mode flags unused function parameters.
 
 **Solution**: Prefixed unused parameters with `_` to indicate they're intentionally unused:
+
 - `ga4-deep-sync.ts`: `credentials` → `_credentials`
 - `paypal-payouts.ts`: `clientId`, `clientSecret` → `_clientId`, `_clientSecret`
 - `whatsapp-telegram.ts`: `token`, `dateRange`, `url`, `botToken` → `_token`, `_dateRange`, `_url`, `_botToken`
 
 ### 3. TikTok Shop Type Errors
 
-**Problem**: 
+**Problem**:
+
 - `shopBody` object didn't have proper typing for optional properties
 - Date string operations could return `undefined`
 
 **Solution**:
+
 - Added explicit type annotation for `shopBody` with optional properties
 - Added non-null assertions for date string splits
 
@@ -101,6 +104,7 @@ return result;
 ## Verification
 
 All fixes have been applied and verified:
+
 - ✅ No linter errors
 - ✅ All type errors resolved
 - ✅ All unused variable warnings resolved

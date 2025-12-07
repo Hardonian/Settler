@@ -78,6 +78,7 @@ npx tsx scripts/check-billing-setup.ts
 ```
 
 Or visit:
+
 - `/dashboard/billing`
 - `/dashboard/addons`
 - `/dashboard/usage`
@@ -96,14 +97,17 @@ Or visit:
 ## 🆘 Troubleshooting
 
 **Migrations fail?**
+
 - Check `DATABASE_URL` format
 - Verify Supabase credentials
 
 **Stripe products not created?**
+
 - Verify `STRIPE_SECRET_KEY` is set
 - Run manually: `npm run billing:setup-stripe`
 
 **Edge functions not deploying?**
+
 - Check `SUPABASE_ACCESS_TOKEN`
 - Verify `SUPABASE_PROJECT_REF`
 

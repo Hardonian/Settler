@@ -8,6 +8,7 @@
 ## Vulnerabilities Fixed
 
 ### 1. ✅ High Severity: jws Package
+
 **Vulnerability:** CVE - Improperly Verifies HMAC Signature  
 **Package:** `jws` < 3.2.3  
 **Fix:** Added override to force `jws@^3.2.3` in root `package.json`
@@ -23,6 +24,7 @@
 ## Package Upgrades (Non-Breaking)
 
 ### API Package (`packages/api/package.json`)
+
 - ✅ `@supabase/supabase-js`: `^2.39.0` → `^2.47.10` (security updates)
 - ✅ `typescript`: `^5.3.3` → `^5.7.2` (latest stable)
 - ✅ `helmet`: `^7.1.0` → `^8.0.0` (security enhancements)
@@ -32,6 +34,7 @@
 - ✅ `stripe`: `^14.21.0` → `^17.3.1` (latest stable, non-breaking)
 
 ### Web Package (`packages/web/package.json`)
+
 - ✅ `next`: `^14.2.15` → `^14.2.33` (security patches)
 - ✅ `eslint`: `^8.56.0` → `^8.57.1` (latest)
 - ✅ `eslint-config-next`: `^14.2.15` → `^14.2.33` (matches Next.js)
@@ -41,9 +44,11 @@
 ## Security Enhancements
 
 ### 1. Enhanced Helmet Configuration
+
 **File:** `packages/api/src/index.ts`
 
 Added comprehensive security headers:
+
 - ✅ `crossOriginEmbedderPolicy`: true
 - ✅ `crossOriginOpenerPolicy`: same-origin
 - ✅ `crossOriginResourcePolicy`: same-origin
@@ -59,9 +64,11 @@ Added comprehensive security headers:
 - ✅ `xssFilter`: true
 
 ### 2. Enhanced Next.js Security Headers
+
 **File:** `packages/web/next.config.js`
 
 Added:
+
 - ✅ `Content-Security-Policy` (comprehensive)
 - ✅ `X-Permitted-Cross-Domain-Policies`: none
 - ✅ `Cross-Origin-Embedder-Policy`: require-corp
@@ -70,9 +77,11 @@ Added:
 - ✅ Enhanced `Permissions-Policy` (more restrictions)
 
 ### 3. Enhanced Vercel Security Headers
+
 **File:** `packages/web/vercel.json`
 
 Added:
+
 - ✅ `Content-Security-Policy`
 - ✅ `X-Permitted-Cross-Domain-Policies`
 - ✅ `Cross-Origin-Embedder-Policy`
@@ -87,6 +96,7 @@ Added:
 **File:** `.npmrc`
 
 Created with:
+
 - ✅ `audit-level=moderate` (fail on moderate+ vulnerabilities)
 - ✅ `fund=false` (disable funding messages)
 - ✅ `package-lock=true` (ensure lock file)
@@ -97,11 +107,13 @@ Created with:
 ## Verification
 
 ### Before
+
 - ❌ 1 high severity vulnerability (jws)
 - ❌ Outdated packages
 - ❌ Basic security headers
 
 ### After
+
 - ✅ 0 vulnerabilities (jws patched)
 - ✅ All packages upgraded to latest non-breaking versions
 - ✅ Comprehensive security headers (CSP, COEP, COOP, CORP)
@@ -114,6 +126,7 @@ Created with:
 ## Security Headers Summary
 
 ### API (Express + Helmet)
+
 - ✅ Content Security Policy
 - ✅ Cross-Origin Embedder Policy
 - ✅ Cross-Origin Opener Policy
@@ -125,6 +138,7 @@ Created with:
 - ✅ Permissions-Policy (restrictive)
 
 ### Web (Next.js)
+
 - ✅ Content Security Policy (comprehensive)
 - ✅ Cross-Origin Embedder Policy
 - ✅ Cross-Origin Opener Policy

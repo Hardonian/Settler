@@ -39,6 +39,7 @@ This report documents the comprehensive cleanup and reorganization of the Settle
 ### Deprecated Documentation Files (Root Level)
 
 **Completion/Summary/Report Files:**
+
 - `*_COMPLETE*.md` (20+ files)
 - `*_SUMMARY*.md` (15+ files)
 - `*_REPORT*.md` (10+ files)
@@ -56,6 +57,7 @@ This report documents the comprehensive cleanup and reorganization of the Settle
 - `🎉_*.md` (1 file)
 
 **Other Deprecated Files:**
+
 - `DEPLOYMENT_*.md` (3+ files)
 - `DEPLOY_*.md` (2+ files)
 - `MIGRATION_*.md` (3+ files)
@@ -139,7 +141,7 @@ This report documents the comprehensive cleanup and reorganization of the Settle
 5. **strategic/** → `/archive/old_docs/strategic/`
    - 10 files archived
 
-6. **docs/*COMPLETE*.md, docs/*SUMMARY*.md, docs/*REPORT*.md** → `/archive/old_docs/`
+6. **docs/_COMPLETE_.md, docs/_SUMMARY_.md, docs/_REPORT_.md** → `/archive/old_docs/`
    - 20+ files archived
 
 **Total Files Archived:** 295+ files
@@ -178,6 +180,7 @@ This report documents the comprehensive cleanup and reorganization of the Settle
 ### Documentation Organization
 
 **New Structure:**
+
 ```
 /docs/
   /internal/          - Internal business strategy (private)
@@ -188,6 +191,7 @@ This report documents the comprehensive cleanup and reorganization of the Settle
 ```
 
 **Root-Level Markdown Files:**
+
 - Before: 100+ files
 - After: 5 files (README.md, SECURITY.md, CHANGELOG.md, CONTRIBUTING.md, DEVELOPER_GUIDE.md)
 
@@ -266,6 +270,7 @@ This report documents the comprehensive cleanup and reorganization of the Settle
 ### Recommended Actions
 
 **Branches to Delete (merged):**
+
 - `remotes/origin/cursor/ai-co-founder-and-operating-system-gemini-3-pro-preview-84ce`
 - `remotes/origin/cursor/analyze-and-implement-stack-improvements-composer-1-0bb2`
 - `remotes/origin/cursor/analyze-settler-dev-pricing-and-product-alignment-gemini-3-pro-preview-5024`
@@ -308,6 +313,7 @@ This report documents the comprehensive cleanup and reorganization of the Settle
 ### Repository Hygiene Rules
 
 Created `.cursorrules` file with standards for:
+
 - Documentation placement
 - File naming conventions
 - Code organization

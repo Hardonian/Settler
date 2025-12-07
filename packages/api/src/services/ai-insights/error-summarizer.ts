@@ -110,11 +110,9 @@ export async function summarizeError(
     const message = errorData.error_message?.toLowerCase() || "";
 
     if (message.includes("timeout")) {
-      rootCause =
-        "Request timeout - likely due to slow external API or network issues.";
+      rootCause = "Request timeout - likely due to slow external API or network issues.";
     } else if (message.includes("connection")) {
-      rootCause =
-        "Connection error - adapter credentials may be invalid or service unavailable.";
+      rootCause = "Connection error - adapter credentials may be invalid or service unavailable.";
     } else if (message.includes("validation")) {
       rootCause = "Input validation failed - user provided invalid data.";
     } else if (message.includes("permission") || message.includes("unauthorized")) {
@@ -124,8 +122,7 @@ export async function summarizeError(
     } else if (message.includes("not found")) {
       rootCause = "Resource not found - ID may be invalid or resource deleted.";
     } else if (message.includes("database")) {
-      rootCause =
-        "Database error - connection issue or query problem.";
+      rootCause = "Database error - connection issue or query problem.";
     }
 
     // Generate suggested fix

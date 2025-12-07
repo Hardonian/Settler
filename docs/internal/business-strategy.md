@@ -32,7 +32,7 @@
 
 - **Market Size:** $2.3B reconciliation software market (2024), growing 12% YoY
 - **Target Market:** 50K+ SMBs and mid-market companies processing 1,000+ transactions/month
-- **TAM/SAM/SOM:** 
+- **TAM/SAM/SOM:**
   - TAM: $2.3B (total addressable market)
   - SAM: $500M (serviceable addressable market - mid-market e-commerce/SaaS)
   - SOM: $10M (serviceable obtainable market - Year 1-3 target)
@@ -51,13 +51,13 @@
 
 ### Pricing Strategy
 
-| Tier | Price | Target Customer | Key Features |
-|------|-------|----------------|--------------|
-| **Free** | $0/month | Developers, small projects | 1K reconciliations/month, 2 adapters |
-| **Starter** | $29/month | Small e-commerce, early SaaS | 10K reconciliations/month, 5 adapters |
-| **Growth** | $99/month | Mid-market SaaS, growing e-commerce | 100K reconciliations/month, 15 adapters |
-| **Scale** | $299/month | Large e-commerce, enterprise SaaS | 1M reconciliations/month, unlimited adapters |
-| **Enterprise** | Custom ($1K-$10K+/month) | Large enterprises, regulated industries | Unlimited, dedicated support, SSO |
+| Tier           | Price                    | Target Customer                         | Key Features                                 |
+| -------------- | ------------------------ | --------------------------------------- | -------------------------------------------- |
+| **Free**       | $0/month                 | Developers, small projects              | 1K reconciliations/month, 2 adapters         |
+| **Starter**    | $29/month                | Small e-commerce, early SaaS            | 10K reconciliations/month, 5 adapters        |
+| **Growth**     | $99/month                | Mid-market SaaS, growing e-commerce     | 100K reconciliations/month, 15 adapters      |
+| **Scale**      | $299/month               | Large e-commerce, enterprise SaaS       | 1M reconciliations/month, unlimited adapters |
+| **Enterprise** | Custom ($1K-$10K+/month) | Large enterprises, regulated industries | Unlimited, dedicated support, SSO            |
 
 ### Revenue Model
 
@@ -70,6 +70,7 @@
 **Primary ICP:** Mid-market e-commerce and SaaS companies ($1M-$50M ARR) processing 1,000+ transactions/month across multiple platforms.
 
 **Buyer Personas:**
+
 1. **CTO/VP Engineering** (technical buyer) - Wants to eliminate custom reconciliation code
 2. **CFO/Finance Director** (business buyer) - Needs compliance, audit trails, reduced manual work
 3. **Operations Manager** (end user) - Spends hours daily on reconciliation, wants automation
@@ -90,33 +91,37 @@
 ### Key Performance Indicators
 
 **Activation Metrics:**
+
 - Time to First Value: <24 hours (target)
 - Activation Rate: 60%+ (users creating first job within 7 days)
 - Engagement Rate: 80%+ (users running reconciliations weekly)
 
 **Retention Metrics:**
+
 - Monthly Churn Rate: <5%
 - Annual Churn Rate: <30%
 - Net Revenue Retention: 100%+ (target: 120%+)
 
 **Expansion Metrics:**
+
 - Expansion Revenue: 20% of MRR (upsells, upgrades)
 - Average Revenue Per User (ARPU): $50-$100/month
 
 **Product-Market Fit Indicators:**
+
 - NPS: >50
 - Customer Satisfaction: >4.5/5
 - "Would be very disappointed" rate: >40%
 
 ### Financial Projections (3-5 Years)
 
-| Year | Customers | ARR | Team Size | Key Milestones |
-|------|-----------|-----|-----------|----------------|
-| **2026** | 1,000 | $600K | 5 | SOC 2, 10+ adapters, PLG |
-| **2027** | 5,000 | $2.4M | 15 | Enterprise sales, 50+ adapters |
-| **2028** | 20,000 | $12M | 40 | International, new products |
-| **2029** | 50,000 | $50M | 100 | AI/ML, marketplace, ecosystem |
-| **2030** | 100,000 | $100M+ | 200+ | IPO/Exit, global dominance |
+| Year     | Customers | ARR    | Team Size | Key Milestones                 |
+| -------- | --------- | ------ | --------- | ------------------------------ |
+| **2026** | 1,000     | $600K  | 5         | SOC 2, 10+ adapters, PLG       |
+| **2027** | 5,000     | $2.4M  | 15        | Enterprise sales, 50+ adapters |
+| **2028** | 20,000    | $12M   | 40        | International, new products    |
+| **2029** | 50,000    | $50M   | 100       | AI/ML, marketplace, ecosystem  |
+| **2030** | 100,000   | $100M+ | 200+      | IPO/Exit, global dominance     |
 
 ---
 
@@ -127,6 +132,7 @@
 **Goal:** 1,000 beta users → 100 paying customers → $5K MRR
 
 **Channels:**
+
 - Product Hunt launch
 - Technical blog posts and content marketing
 - Developer community engagement (Twitter/X, Hacker News, Indie Hackers)
@@ -138,6 +144,7 @@
 **Goal:** 5,000 users → 1,000 paying customers → $50K MRR
 
 **Channels:**
+
 - Self-service onboarding
 - Comprehensive documentation and tutorials
 - Interactive playground and demos
@@ -149,6 +156,7 @@
 **Goal:** Enterprise customers, higher ACV
 
 **Channels:**
+
 - Enterprise sales team
 - Partner channel (agencies, consultants)
 - Paid acquisition (Google Ads, LinkedIn)
@@ -161,13 +169,13 @@
 
 ### Competitive Landscape
 
-| Competitor | Strengths | Weaknesses | Our Differentiation |
-|------------|-----------|------------|---------------------|
-| **BlackLine** | Comprehensive features, SOC 2 | Expensive ($100K+), slow setup (3-6 months) | 10-100x cheaper, 5-minute setup |
-| **QuickBooks/Xero** | Widely adopted, affordable | Manual process, limited API, batch processing | Real-time, API-first, composable |
-| **Stripe Revenue Recognition** | API-first, real-time | Stripe-only, no multi-platform | Multi-platform, 50+ adapters |
-| **Fivetran** | Data integration | Not purpose-built, expensive | Purpose-built for reconciliation |
-| **Custom Scripts** | Flexible | High maintenance, no compliance | Compliance built-in, maintained |
+| Competitor                     | Strengths                     | Weaknesses                                    | Our Differentiation              |
+| ------------------------------ | ----------------------------- | --------------------------------------------- | -------------------------------- |
+| **BlackLine**                  | Comprehensive features, SOC 2 | Expensive ($100K+), slow setup (3-6 months)   | 10-100x cheaper, 5-minute setup  |
+| **QuickBooks/Xero**            | Widely adopted, affordable    | Manual process, limited API, batch processing | Real-time, API-first, composable |
+| **Stripe Revenue Recognition** | API-first, real-time          | Stripe-only, no multi-platform                | Multi-platform, 50+ adapters     |
+| **Fivetran**                   | Data integration              | Not purpose-built, expensive                  | Purpose-built for reconciliation |
+| **Custom Scripts**             | Flexible                      | High maintenance, no compliance               | Compliance built-in, maintained  |
 
 ### Competitive Moats
 
@@ -182,6 +190,7 @@
 ## Roadmap & Milestones
 
 ### Q1 2026: MVP & Private Beta
+
 - ✅ Core reconciliation engine
 - ✅ Stripe + Shopify adapters
 - ✅ npm SDK (`@settler/sdk`)
@@ -189,6 +198,7 @@
 - ✅ 50 beta users
 
 ### Q2 2026: Public Beta & Launch
+
 - Public signups (waitlist)
 - Free tier launch
 - Product Hunt launch
@@ -196,12 +206,14 @@
 - 1,000 users → 100 paying customers
 
 ### Q3 2026: Scale & Compliance
+
 - SOC 2 Type II certification
 - 10+ adapters (QuickBooks, PayPal, Square, Xero, NetSuite)
 - Enterprise features (SSO, white-label reports)
 - 500 paying customers
 
 ### Q4 2026: Growth & Optimization
+
 - 1,000 paying customers
 - $50K MRR ($600K ARR)
 - Self-service onboarding

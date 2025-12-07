@@ -83,7 +83,7 @@ export default function UsageDashboardPage() {
         ],
         dailyUsage: Array.from({ length: 30 }, (_, i) => {
           const dateObj = subDays(new Date(), 29 - i);
-          const dateStr = dateObj.toISOString().split('T')[0] as string;
+          const dateStr = dateObj.toISOString().split("T")[0] as string;
           return {
             date: dateStr,
             reconciliation_jobs: Math.floor(Math.random() * 300) + 200,
@@ -132,7 +132,16 @@ export default function UsageDashboardPage() {
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-gray-400" />
           <span className="text-sm text-gray-600 dark:text-gray-400">
-            {new Date(data.period.start).toLocaleDateString("en-US", { month: "short", day: "numeric" })} - {new Date(data.period.end).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            {new Date(data.period.start).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            })}{" "}
+            -{" "}
+            {new Date(data.period.end).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
           </span>
         </div>
       </div>
@@ -249,7 +258,8 @@ export default function UsageDashboardPage() {
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{integration.name}</span>
                       <span className="text-sm text-gray-600">
-                        {integration.usage.toLocaleString()} jobs ({integration.percentage.toFixed(1)}%)
+                        {integration.usage.toLocaleString()} jobs (
+                        {integration.percentage.toFixed(1)}%)
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -274,10 +284,11 @@ export default function UsageDashboardPage() {
             <CardContent>
               <div className="space-y-2">
                 {data.dailyUsage.slice(-7).map((day) => (
-                  <div key={day.date} className="flex items-center justify-between py-2 border-b last:border-0">
-                    <span className="text-sm text-gray-600">
-                      {formatDate(new Date(day.date))}
-                    </span>
+                  <div
+                    key={day.date}
+                    className="flex items-center justify-between py-2 border-b last:border-0"
+                  >
+                    <span className="text-sm text-gray-600">{formatDate(new Date(day.date))}</span>
                     <div className="flex gap-4 text-sm">
                       <span>{day.reconciliation_jobs} jobs</span>
                       <span>{day.api_requests.toLocaleString()} API calls</span>

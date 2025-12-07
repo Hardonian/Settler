@@ -57,7 +57,12 @@ export async function aggregateInsights(
       topIssues.push({
         type: "drop_off",
         description: `${Math.round(dropOff.biggestDropOff.dropOffRate)}% drop-off at "${dropOff.biggestDropOff.step}"`,
-        severity: dropOff.biggestDropOff.dropOffRate > 50 ? "high" : dropOff.biggestDropOff.dropOffRate > 30 ? "medium" : "low",
+        severity:
+          dropOff.biggestDropOff.dropOffRate > 50
+            ? "high"
+            : dropOff.biggestDropOff.dropOffRate > 30
+              ? "medium"
+              : "low",
         count: dropOff.biggestDropOff.droppedUsers,
       });
     }
@@ -105,7 +110,9 @@ export async function aggregateInsights(
     // Add friction recommendations
     if (friction.frictionPoints.length > 0 && friction.frictionPoints[0]) {
       const topFriction = friction.frictionPoints[0];
-      recommendations.push(`Fix friction point: ${topFriction.issue} - ${topFriction.suggestedFix}`);
+      recommendations.push(
+        `Fix friction point: ${topFriction.issue} - ${topFriction.suggestedFix}`
+      );
     }
 
     // Add error recommendations

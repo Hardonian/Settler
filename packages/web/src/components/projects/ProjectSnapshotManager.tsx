@@ -88,7 +88,9 @@ export function ProjectSnapshotManager({ projectId, projectType }: ProjectSnapsh
   };
 
   const handleRollback = async (snapshotId: string) => {
-    if (!confirm("Are you sure you want to rollback to this snapshot? This action cannot be undone.")) {
+    if (
+      !confirm("Are you sure you want to rollback to this snapshot? This action cannot be undone.")
+    ) {
       return;
     }
 
@@ -194,18 +196,10 @@ export function ProjectSnapshotManager({ projectId, projectType }: ProjectSnapsh
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleExport(snapshot.id)}
-                  >
+                  <Button size="sm" variant="outline" onClick={() => handleExport(snapshot.id)}>
                     <Download className="w-4 h-4" />
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleRollback(snapshot.id)}
-                  >
+                  <Button size="sm" variant="outline" onClick={() => handleRollback(snapshot.id)}>
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Rollback
                   </Button>

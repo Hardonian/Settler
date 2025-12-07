@@ -46,7 +46,7 @@ export function normalizePagination(
     Math.max(limit || PAGINATION_LIMITS.DEFAULT, PAGINATION_LIMITS.MIN),
     PAGINATION_LIMITS.MAX
   );
-  const normalizedOffset = offset !== undefined ? offset : (page ? (page - 1) * normalizedLimit : 0);
+  const normalizedOffset = offset !== undefined ? offset : page ? (page - 1) * normalizedLimit : 0;
 
   return {
     limit: normalizedLimit,

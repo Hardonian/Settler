@@ -17,9 +17,7 @@ export interface ChurnPrediction {
 /**
  * Predict churn for a user
  */
-export async function predictChurn(
-  userId: string
-): Promise<ChurnPrediction | null> {
+export async function predictChurn(userId: string): Promise<ChurnPrediction | null> {
   try {
     const signals: string[] = [];
     const interventions: string[] = [];
@@ -44,8 +42,7 @@ export async function predictChurn(
 
     const userData = user[0];
     const daysSinceSignup = Math.floor(
-      (Date.now() - new Date(userData.created_at).getTime()) /
-        (1000 * 60 * 60 * 24)
+      (Date.now() - new Date(userData.created_at).getTime()) / (1000 * 60 * 60 * 24)
     );
 
     // Signal 1: Login frequency decline
@@ -159,13 +156,9 @@ export async function predictChurn(
       [userId]
     );
 
-    if (
-      parseInt(isActivated[0]?.count || "0") > 0 &&
-      lastActivity[0]?.last_activity
-    ) {
+    if (parseInt(isActivated[0]?.count || "0") > 0 && lastActivity[0]?.last_activity) {
       const daysSinceActivity = Math.floor(
-        (Date.now() - new Date(lastActivity[0].last_activity).getTime()) /
-          (1000 * 60 * 60 * 24)
+        (Date.now() - new Date(lastActivity[0].last_activity).getTime()) / (1000 * 60 * 60 * 24)
       );
 
       if (daysSinceActivity >= 14) {
