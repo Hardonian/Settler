@@ -165,7 +165,7 @@ function UserDashboardContent() {
                 <CardDescription>Your latest reconciliation results</CardDescription>
               </div>
               <Button asChild variant="outline" size="sm">
-                <Link href="/dashboard/jobs">View All</Link>
+                <Link href="/playground">View All</Link>
               </Button>
             </div>
           </CardHeader>
@@ -184,7 +184,7 @@ function UserDashboardContent() {
                       <Link href="/playground">Start Onboarding</Link>
                     </Button>
                     <Button asChild variant="outline" className="font-medium">
-                      <Link href="/docs/getting-started">View Guide</Link>
+                      <Link href="/docs">View Guide</Link>
                     </Button>
                   </div>
                 </div>
@@ -235,7 +235,7 @@ function UserDashboardContent() {
                         {job.status}
                       </span>
                       <Button asChild variant="ghost" size="sm" className="font-medium">
-                        <Link href={`/dashboard/jobs/${job.id}`}>View</Link>
+                        <Link href="/playground">View</Link>
                       </Button>
                     </div>
                   </div>

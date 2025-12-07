@@ -99,7 +99,7 @@ export default function SupportPage() {
                       {category.articles.map((article) => (
                         <li key={article.id}>
                           <Link
-                            href={article.href}
+                            href={`/support/category/${category.id}`}
                             className="text-sm text-blue-600 dark:text-blue-400 hover:underline leading-relaxed"
                           >
                             {article.title}
@@ -135,7 +135,7 @@ export default function SupportPage() {
                   <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                     <span>{article.views} views</span>
                     <Button asChild variant="ghost" size="sm">
-                      <Link href={`/support/articles/${article.id}`}>Read →</Link>
+                      <Link href={`/support/category/getting-started`}>Read →</Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -161,7 +161,7 @@ export default function SupportPage() {
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="lg" className="flex-1">
-                  <Link href="/support/contact">Contact Support</Link>
+                  <Link href="/community">Contact Support</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="flex-1">
                   <Link href="/community">Ask Community</Link>

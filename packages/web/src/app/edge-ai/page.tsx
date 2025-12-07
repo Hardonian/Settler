@@ -209,7 +209,7 @@ export default function EdgeAIPage() {
               <Link href="/edge-ai/nodes">Deploy Edge Node</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/edge-ai/docs">View Documentation</Link>
+              <Link href="/docs">View Documentation</Link>
             </Button>
           </div>
         </div>
@@ -252,7 +252,7 @@ export default function EdgeAIPage() {
             </Card>
           </a>
 
-          <Link href="/edge-ai/anomalies">
+          <Link href="/edge-ai">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="text-lg">Anomaly Dashboard</CardTitle>
@@ -263,7 +263,7 @@ export default function EdgeAIPage() {
             </Card>
           </Link>
 
-          <Link href="/edge-ai/benchmarks">
+          <Link href="/edge-ai">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="text-lg">Benchmark Results</CardTitle>
