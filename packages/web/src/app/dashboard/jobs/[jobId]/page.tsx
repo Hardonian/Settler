@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Loader2, ArrowLeft, CheckCircle2, Clock, Download, RefreshCw } from "lucide-react";
+import { Loader2, ArrowLeft, CheckCircle2, AlertCircle, Clock, Download, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 interface JobDetail {
