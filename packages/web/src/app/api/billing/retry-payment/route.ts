@@ -41,13 +41,14 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (recovery) {
-      await supabase
-        .from("payment_recovery")
+      const recoveryData = recovery as any;
+      await (supabase
+        .from("payment_recovery") as any)
         .update({
-          recovery_attempts: recovery.recovery_attempts + 1,
+          recovery_attempts: (recoveryData.recovery_attempts || 0) + 1,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", recovery.id);
+        .eq("id", recoveryData.id as string);
     }
 
     return NextResponse.json({ success: true });

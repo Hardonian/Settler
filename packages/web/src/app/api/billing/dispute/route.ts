@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         reason,
         description,
         status: "pending",
-      })
+      } as any)
       .select()
       .single();
 

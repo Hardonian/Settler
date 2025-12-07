@@ -30,13 +30,14 @@ export async function GET(
     }
 
     // Return as JSON file
+    const snapshotData = snapshot as any;
     const exportData = {
-      snapshotId: snapshot.id,
-      projectId: snapshot.project_id,
-      projectType: snapshot.project_type,
-      snapshotName: snapshot.snapshot_name,
-      createdAt: snapshot.created_at,
-      data: snapshot.snapshot_data,
+      snapshotId: snapshotData.id,
+      projectId: snapshotData.project_id,
+      projectType: snapshotData.project_type,
+      snapshotName: snapshotData.snapshot_name,
+      createdAt: snapshotData.created_at,
+      data: snapshotData.snapshot_data,
     };
 
     return new NextResponse(JSON.stringify(exportData, null, 2), {

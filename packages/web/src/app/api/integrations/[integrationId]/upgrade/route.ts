@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { integrationId: string } }
 ) {
   try {
@@ -37,13 +37,14 @@ export async function POST(
     // 5. Rollback on failure
 
     // For now, just update version
-    const { error: updateError } = await supabase
-      .from("integration_credentials")
+    const integrationData = integration as any;
+    const { error: updateError } = await (supabase
+      .from("integration_credentials") as any)
       .update({
         version: "2.1.0",
         updated_at: new Date().toISOString(),
       })
-      .eq("id", integration.id);
+      .eq("id", integrationData.id);
 
     if (updateError) {
       console.error("Error upgrading integration:", updateError);

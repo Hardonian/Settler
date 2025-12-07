@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     const {
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     // Get all users with churn risk > 0.4
     const { data: lifecycleData, error: lifecycleError } = await supabase
       .from("user_lifecycle")
-      .select("*, users(email)")
+      .select("*")
       .gt("churn_risk_score", 0.4)
       .order("churn_risk_score", { ascending: false });
 
@@ -28,18 +28,25 @@ export async function GET(request: NextRequest) {
 
     // Get activity metrics for each user
     const users = await Promise.all(
-      (lifecycleData || []).map(async (lifecycle) => {
+      (lifecycleData || []).map(async (lifecycle: any) => {
         const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
           user_id: lifecycle.user_id,
-        });
+        } as any);
+
+        // Get user email
+        const { data: userData } = await supabase
+          .from("users")
+          .select("email")
+          .eq("id", lifecycle.user_id)
+          .single();
 
         return {
           userId: lifecycle.user_id,
-          email: (lifecycle.users as { email: string })?.email || "unknown",
+          email: (userData as any)?.email || "unknown",
           churnRiskScore: lifecycle.churn_risk_score || 0,
           reasons: lifecycle.churn_risk_reasons || [],
           lifecycleStage: lifecycle.current_stage,
-          daysSinceLastActivity: metrics?.days_since_last_activity || 0,
+          daysSinceLastActivity: (metrics as any)?.days_since_last_activity || 0,
           segment: lifecycle.segment,
         };
       })

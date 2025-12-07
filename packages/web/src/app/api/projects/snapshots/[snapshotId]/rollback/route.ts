@@ -35,7 +35,7 @@ export async function POST(
     if (project_type === "job") {
       const { error: updateError } = await supabase
         .from("reconciliation_jobs")
-        .update(snapshot_data as Record<string, unknown>)
+        .update(snapshot_data as any)
         .eq("id", project_id)
         .eq("user_id", user.id);
 
@@ -46,7 +46,7 @@ export async function POST(
     } else if (project_type === "integration") {
       const { error: updateError } = await supabase
         .from("integration_credentials")
-        .update(snapshot_data as Record<string, unknown>)
+        .update(snapshot_data as any)
         .eq("id", project_id)
         .eq("user_id", user.id);
 

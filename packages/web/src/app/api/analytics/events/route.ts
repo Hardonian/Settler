@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       event_value: value,
       event_properties: properties || {},
       created_at: new Date().toISOString(),
-    });
+    } as any);
 
     if (error) {
       console.error("Error storing event:", error);

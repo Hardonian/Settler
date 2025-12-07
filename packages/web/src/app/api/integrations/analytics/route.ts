@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     const searchParams = request.nextUrl.searchParams;
-    const range = searchParams.get("range") || "30d";
+    const _range = searchParams.get("range") || "30d";
 
     // Mock revenue data (in production, calculate from actual subscription/addon data)
     const revenue: Array<{

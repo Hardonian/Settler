@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     const {
@@ -25,19 +25,18 @@ export async function GET(request: NextRequest) {
 
     // Group by cohort (month)
     const cohortsMap = new Map<string, string[]>();
-    for (const user of users) {
-      const cohort = new Date(user.created_at).toISOString().substring(0, 7); // YYYY-MM
+    for (const user of users || []) {
+      const cohort = new Date((user as any).created_at).toISOString().substring(0, 7); // YYYY-MM
       if (!cohortsMap.has(cohort)) {
         cohortsMap.set(cohort, []);
       }
-      cohortsMap.get(cohort)!.push(user.id);
+      cohortsMap.get(cohort)!.push((user as any).id);
     }
 
     // Calculate retention for each cohort
     const cohorts = await Promise.all(
       Array.from(cohortsMap.entries()).map(async ([cohort, userIds]) => {
         const cohortDate = new Date(cohort + "-01");
-        const now = new Date();
 
         // Calculate retention at different time points
         const week1 = new Date(cohortDate);
@@ -58,7 +57,7 @@ export async function GET(request: NextRequest) {
             .select("user_id")
             .in("user_id", userIds)
             .gte("last_active_at", date.toISOString());
-          return data?.length || 0;
+          return (data as any)?.length || 0;
         };
 
         const [w1, w2, w4, w8, w12] = await Promise.all([

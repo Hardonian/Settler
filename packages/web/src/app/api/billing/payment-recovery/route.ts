@@ -37,13 +37,13 @@ export async function GET(request: NextRequest) {
 
     // Check if grace period has expired
     if (data && data.length > 0) {
-      const recovery = data[0];
+      const recovery = data[0] as any;
       if (recovery.grace_period_ends_at && new Date(recovery.grace_period_ends_at) < new Date()) {
         // Grace period expired, update status
-        await supabase
-          .from("payment_recovery")
+        await (supabase
+          .from("payment_recovery") as any)
           .update({ status: "failed" })
-          .eq("id", recovery.id);
+          .eq("id", (recovery as any).id);
         return NextResponse.json({ recovery: null });
       }
     }
@@ -83,15 +83,16 @@ export async function POST(request: NextRequest) {
       const gracePeriodEnds = new Date();
       gracePeriodEnds.setDate(gracePeriodEnds.getDate() + 7); // 7-day grace period
 
-      const { data, error } = await supabase
-        .from("payment_recovery")
+      const existingData = existing as any;
+      const { data, error } = await (supabase
+        .from("payment_recovery") as any)
         .update({
-          failure_count: existing.failure_count + 1,
+          failure_count: (existingData.failure_count || 0) + 1,
           failure_type: failureType,
           grace_period_ends_at: gracePeriodEnds.toISOString(),
           updated_at: new Date().toISOString(),
         })
-        .eq("id", existing.id)
+        .eq("id", existingData.id)
         .select()
         .single();
 
@@ -107,8 +108,8 @@ export async function POST(request: NextRequest) {
     const gracePeriodEnds = new Date();
     gracePeriodEnds.setDate(gracePeriodEnds.getDate() + 7); // 7-day grace period
 
-    const { data, error } = await supabase
-      .from("payment_recovery")
+    const { data, error } = await (supabase
+      .from("payment_recovery") as any)
       .insert({
         user_id: targetUserId,
         subscription_id: subscriptionId,

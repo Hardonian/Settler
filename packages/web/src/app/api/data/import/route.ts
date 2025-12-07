@@ -13,16 +13,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { jobs, integrations, settings } = body;
+    const { jobs, integrations } = body;
 
     // Import jobs
     if (jobs && Array.isArray(jobs)) {
       for (const job of jobs) {
+        const { id, ...jobData } = job as any;
         await supabase.from("reconciliation_jobs").upsert({
-          ...job,
+          ...jobData,
           user_id: user.id,
-          id: undefined, // Let database generate new ID
-        });
+        } as any);
       }
     }
 
@@ -31,10 +31,10 @@ export async function POST(request: NextRequest) {
       for (const integration of integrations) {
         await supabase.from("integration_credentials").upsert({
           user_id: user.id,
-          integration_id: integration.integration_id,
-          is_connected: integration.is_connected,
+          integration_id: (integration as any).integration_id,
+          is_connected: (integration as any).is_connected,
           // Don't import credentials for security
-        });
+        } as any);
       }
     }
 

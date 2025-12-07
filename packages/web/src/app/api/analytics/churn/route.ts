@@ -42,12 +42,12 @@ export async function GET(request: NextRequest) {
     const churnedCount = churned?.length || 0;
     const totalCount = totalUsers?.length || 0;
     const churnRate = totalCount > 0 ? (churnedCount / totalCount) * 100 : 0;
-    const mrrLost = cancelledSubs?.reduce((sum, s) => sum + (s.amount || 0), 0) || 0;
+    const mrrLost = (cancelledSubs || []).reduce((sum: number, s: any) => sum + (s.amount || 0), 0);
 
     // Aggregate churn reasons
     const reasonsMap = new Map<string, number>();
     for (const user of churned || []) {
-      const reasons = user.churn_risk_reasons || [];
+      const reasons = (user as any).churn_risk_reasons || [];
       for (const reason of reasons) {
         reasonsMap.set(reason, (reasonsMap.get(reason) || 0) + 1);
       }

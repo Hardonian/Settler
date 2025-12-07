@@ -22,11 +22,6 @@ export async function POST(request: NextRequest) {
       .eq("user_id", user.id)
       .single();
 
-    const { data: checklist } = await supabase
-      .from("activation_checklist")
-      .select("checklist_item, completed")
-      .eq("user_id", user.id);
-
     // Simple AI response logic (in production, use actual AI/LLM)
     const lowerMessage = message.toLowerCase();
 
@@ -47,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add contextual suggestions based on user state
-    if (lifecycle && !lifecycle.activated_at) {
+    if (lifecycle && (lifecycle as any).activated_at === null) {
       response += " I notice you haven't completed your first reconciliation yet. Would you like me to guide you through that?";
     }
 

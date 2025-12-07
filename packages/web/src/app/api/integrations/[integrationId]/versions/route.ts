@@ -5,7 +5,7 @@ export async function GET(
   { params }: { params: { integrationId: string } }
 ) {
   try {
-    const { integrationId } = params;
+    const { integrationId: _integrationId } = params;
     const searchParams = request.nextUrl.searchParams;
     const currentVersion = searchParams.get("current") || "1.0.0";
 

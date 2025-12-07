@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      snapshots: (data || []).map((s) => ({
+      snapshots: (data || []).map((s: any) => ({
         id: s.id,
         projectId: s.project_id,
         projectType: s.project_type,

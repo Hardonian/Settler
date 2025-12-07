@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     const {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       .eq("is_connected", true);
 
     // Mock health data (in production, fetch from monitoring system)
-    const integrations = (userIntegrations || []).map((integration) => {
+    const integrations = (userIntegrations || []).map((integration: any) => {
       // Determine status based on last sync and error rates
       const lastSync = integration.last_sync_at
         ? new Date(integration.last_sync_at)
