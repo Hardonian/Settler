@@ -81,12 +81,16 @@ export default function UsageDashboardPage() {
           { integration_id: "shopify", name: "Shopify", usage: 2800, percentage: 37.3 },
           { integration_id: "paypal", name: "PayPal", usage: 1200, percentage: 16.0 },
         ],
-        dailyUsage: Array.from({ length: 30 }, (_, i) => ({
-          date: subDays(new Date(), 29 - i).toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
-          reconciliation_jobs: Math.floor(Math.random() * 300) + 200,
-          api_requests: Math.floor(Math.random() * 3000) + 2000,
-          webhook_events: Math.floor(Math.random() * 2000) + 1000,
-        })),
+        dailyUsage: Array.from({ length: 30 }, (_, i) => {
+          const dateObj = subDays(new Date(), 29 - i);
+          const dateStr = dateObj.toISOString().split('T')[0] as string;
+          return {
+            date: dateStr,
+            reconciliation_jobs: Math.floor(Math.random() * 300) + 200,
+            api_requests: Math.floor(Math.random() * 3000) + 2000,
+            webhook_events: Math.floor(Math.random() * 2000) + 1000,
+          };
+        }),
       });
     } catch (error) {
       console.error("Failed to fetch usage data:", error);
