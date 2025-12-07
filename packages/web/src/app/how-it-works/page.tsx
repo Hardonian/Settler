@@ -5,8 +5,6 @@ import Link from "next/link";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
@@ -18,7 +16,6 @@ import {
   Plug,
   Play,
   CheckCircle2,
-  ArrowRight,
   Code2,
   BarChart3,
   Shield,
@@ -213,13 +210,16 @@ export default function HowItWorksPage() {
                   }}
                 >
                   <div className={cn(index % 2 === 1 && "lg:col-start-2")}>
-                    <SpotlightCard
-                      className={cn(
-                        "p-4 sm:p-6 md:p-8 h-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer",
-                        isActive && "ring-2 ring-blue-500 dark:ring-blue-400 scale-[1.02]"
-                      )}
+                    <div
                       onClick={() => setActiveStep(index)}
+                      className="cursor-pointer"
                     >
+                      <SpotlightCard
+                        className={cn(
+                          "p-4 sm:p-6 md:p-8 h-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02]",
+                          isActive && "ring-2 ring-blue-500 dark:ring-blue-400 scale-[1.02]"
+                        )}
+                      >
                       <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
                         <div
                           className={cn(
@@ -251,6 +251,7 @@ export default function HowItWorksPage() {
                         </div>
                       </div>
                     </SpotlightCard>
+                    </div>
                   </div>
 
                   <div className={cn(index % 2 === 1 && "lg:col-start-1 lg:row-start-1")}>
@@ -296,15 +297,16 @@ export default function HowItWorksPage() {
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon;
               return (
-                <SpotlightCard
+                <div
                   key={index}
-                  className="p-4 sm:p-6 text-center transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  className="transition-all duration-300"
                   style={{
                     opacity: isVisible ? 1 : 0,
                     transform: isVisible ? "translateY(0)" : "translateY(20px)",
                     transition: `opacity 0.6s ease-out ${index * 0.1 + 0.5}s, transform 0.6s ease-out ${index * 0.1 + 0.5}s`,
                   }}
                 >
+                  <SpotlightCard className="p-4 sm:p-6 text-center hover:scale-105 hover:shadow-lg">
                   <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:rotate-3">
                     <Icon className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-300" />
                   </div>
@@ -315,7 +317,8 @@ export default function HowItWorksPage() {
                     {benefit.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 break-words">{benefit.description}</p>
-                </SpotlightCard>
+                  </SpotlightCard>
+                </div>
               );
             })}
           </div>

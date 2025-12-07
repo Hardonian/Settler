@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
@@ -22,7 +21,6 @@ import {
   Award,
   Heart,
   ExternalLink,
-  CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -268,15 +266,16 @@ export default function ContributorsPage() {
 
           <div className="space-y-6">
             {waysToContribute.map((way, index) => (
-              <SpotlightCard
-                key={index}
-                className="p-6 transition-all duration-300 hover:shadow-lg"
-                style={{
-                  opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? "translateX(0)" : "translateX(-20px)",
-                  transition: `opacity 0.6s ease-out ${index * 0.1 + 0.3}s, transform 0.6s ease-out ${index * 0.1 + 0.3}s`,
-                }}
-              >
+            <div
+              key={index}
+              className="transition-all duration-300"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? "translateX(0)" : "translateX(-20px)",
+                transition: `opacity 0.6s ease-out ${index * 0.1 + 0.3}s, transform 0.6s ease-out ${index * 0.1 + 0.3}s`,
+              }}
+            >
+              <SpotlightCard className="p-6 hover:shadow-lg">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold flex-shrink-0">
                     {way.step}
@@ -305,6 +304,7 @@ export default function ContributorsPage() {
                   </div>
                 </div>
               </SpotlightCard>
+            </div>
             ))}
           </div>
         </div>
@@ -332,15 +332,16 @@ export default function ContributorsPage() {
             ].map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <SpotlightCard
+                <div
                   key={index}
-                  className="p-6 text-center transition-all duration-300 hover:scale-105"
+                  className="transition-all duration-300"
                   style={{
                     opacity: isVisible ? 1 : 0,
                     transform: isVisible ? "translateY(0)" : "translateY(20px)",
                     transition: `opacity 0.6s ease-out ${index * 0.1 + 0.5}s, transform 0.6s ease-out ${index * 0.1 + 0.5}s`,
                   }}
                 >
+                  <SpotlightCard className="p-6 text-center hover:scale-105">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
                     <Icon className="w-6 h-6" />
                   </div>
@@ -348,7 +349,8 @@ export default function ContributorsPage() {
                     {stat.value}
                   </div>
                   <div className="text-sm text-slate-600 dark:text-slate-300">{stat.label}</div>
-                </SpotlightCard>
+                  </SpotlightCard>
+                </div>
               );
             })}
           </div>
