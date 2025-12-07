@@ -5,7 +5,7 @@
  * Blocks access to premium features if requirements not met.
  */
 
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { AuthRequest } from "./auth";
 import { supabase } from "../infrastructure/supabase/client";
 import { logError, logWarn } from "../utils/logger";
@@ -112,7 +112,7 @@ const FEATURE_GATES: Record<string, FeatureGate> = {
 /**
  * Get billing account for user
  */
-async function getBillingAccount(userId: string, tenantId?: string) {
+async function getBillingAccount(userId: string, _tenantId?: string) {
   try {
     const query = supabase
       .from("billing_accounts")
@@ -241,8 +241,8 @@ function planMeetsRequirement(userPlan: string, requiredPlan?: string): boolean 
 export function featureGate(featureName: string) {
   return async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const userId = req.user?.id;
-      const tenantId = req.user?.tenantId;
+      const userId = req.userId;
+      const tenantId = req.tenantId;
 
       if (!userId) {
         return res.status(401).json({
@@ -318,6 +318,12 @@ export function featureGate(featureName: string) {
         );
 
         const planLimits = PLAN_LIMITS[subscription.plan_id || "base"] || PLAN_LIMITS.base;
+        if (!planLimits) {
+          return res.status(500).json({
+            error: "Internal Server Error",
+            message: "Plan limits not configured",
+          });
+        }
         const limit = planLimits[gate.requiresUsage.eventType as keyof PlanLimits] as number;
 
         if (limit > 0 && currentUsage >= limit) {
@@ -344,32 +350,22 @@ export function featureGate(featureName: string) {
 }
 
 /**
- * Usage quota checking middleware
- * Checks if usage is within plan limits before allowing operation
+ * Check usage quota for a specific event type
+ * This is a helper function, not middleware
+ * Use the checkUsageQuota middleware from usage-quota.ts for route-level checks
  */
-export async function checkUsageQuota(
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction,
+export async function checkUsageQuotaForEvent(
+  userId: string,
   eventType: string,
   quantity: number = 1
-) {
+): Promise<{ allowed: boolean; currentUsage?: number; limit?: number; reason?: string }> {
   try {
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({
-        error: "Unauthorized",
-        message: "Authentication required",
-      });
-    }
-
     // Get billing account
-    const billingAccount = await getBillingAccount(userId, req.user?.tenantId);
+    const billingAccount = await getBillingAccount(userId);
 
     if (!billingAccount) {
       // Allow operation if no billing account (grace period)
-      return next();
+      return { allowed: true };
     }
 
     // Get active subscription
@@ -377,7 +373,7 @@ export async function checkUsageQuota(
 
     if (!subscription) {
       // Allow operation if no subscription (grace period)
-      return next();
+      return { allowed: true };
     }
 
     // Get current usage
@@ -389,35 +385,28 @@ export async function checkUsageQuota(
 
     // Get plan limits
     const planLimits = PLAN_LIMITS[subscription.plan_id || "base"] || PLAN_LIMITS.base;
+    if (!planLimits) {
+      logError("Plan limits not found", new Error(`Plan limits not configured for plan: ${subscription.plan_id || "base"}`));
+      return { allowed: true }; // Fail open
+    }
     const limit = planLimits[eventType as keyof PlanLimits] as number;
 
     // Check if limit is exceeded
     if (limit > 0 && currentUsage + quantity > limit) {
-      logWarn("Usage quota exceeded", {
-        userId,
-        billingAccountId: billingAccount.id,
-        eventType,
+      return {
+        allowed: false,
         currentUsage,
         limit,
-        requestedQuantity: quantity,
-      });
-
-      return res.status(403).json({
-        error: "Usage Quota Exceeded",
-        message: `You have reached your ${eventType} limit for this billing period`,
-        current_usage: currentUsage,
-        limit: limit,
-        requested: quantity,
-        upgrade_required: true,
-      });
+        reason: `Usage quota exceeded for ${eventType}`,
+      };
     }
 
-    // Within limits, allow operation
-    next();
+    // Within limits
+    return { allowed: true, currentUsage, limit };
   } catch (error) {
     logError("Error checking usage quota", error);
     // On error, allow operation (fail open)
-    next();
+    return { allowed: true };
   }
 }
 
@@ -427,7 +416,7 @@ export async function checkUsageQuota(
 export function checkIntegrationAccess(integrationId: string) {
   return async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const userId = req.user?.id;
+      const userId = req.userId;
 
       if (!userId) {
         return res.status(401).json({
@@ -456,7 +445,7 @@ export function checkIntegrationAccess(integrationId: string) {
       }
 
       // If premium, check if purchased
-      const billingAccount = await getBillingAccount(userId, req.user?.tenantId);
+      const billingAccount = await getBillingAccount(userId, req.tenantId);
 
       if (!billingAccount) {
         return res.status(403).json({

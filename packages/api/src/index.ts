@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, NextFunction, raw } from "express";
+import express, { Express, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -162,7 +162,7 @@ app.use("/api/", ipLimiter);
 app.post(
   "/api/billing/webhook",
   express.raw({ type: "application/json", limit: "1mb" }),
-  (req, res, next) => {
+  (_req, _res, next) => {
     // Continue to billing router
     next();
   }

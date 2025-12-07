@@ -12,13 +12,11 @@ import { Permission } from "../../infrastructure/security/Permissions";
 import { supabase } from "../../infrastructure/supabase/client";
 import { logError, logInfo } from "../../utils/logger";
 import {
-  getAddOnConfig,
   getAllAddOnConfigs,
   createAddOnFromConfig,
   validateAddOnConfig,
 } from "../../config/addon-config";
 import {
-  getBillingTier,
   getAllBillingTiers,
   updateBillingTier,
   getUsagePricingRule,
@@ -34,7 +32,7 @@ router.get(
   "/addons",
   authMiddleware,
   requirePermission(Permission.ADMIN_READ),
-  async (req: AuthRequest, res: Response) => {
+  async (_req: AuthRequest, res: Response) => {
     try {
       const configs = getAllAddOnConfigs();
       return res.json({ addons: configs });
@@ -103,7 +101,7 @@ router.get(
   "/tiers",
   authMiddleware,
   requirePermission(Permission.ADMIN_READ),
-  async (req: AuthRequest, res: Response) => {
+  async (_req: AuthRequest, res: Response) => {
     try {
       const tiers = getAllBillingTiers();
       return res.json({ tiers });
@@ -167,7 +165,7 @@ router.get(
     try {
       // In production, load from database
       // For now, return in-memory rules
-      const eventType = req.query.event_type as string;
+      const eventType = req.query.event_type as string | undefined;
       
       if (eventType) {
         const rule = getUsagePricingRule(eventType);
@@ -192,6 +190,7 @@ router.get(
           // ... other rules
         ],
       });
+
     } catch (error) {
       logError("Failed to get pricing rules", error);
       return res.status(500).json({

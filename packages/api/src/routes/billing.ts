@@ -10,7 +10,7 @@
  * - Handling Stripe webhooks
  */
 
-import express, { Router, Response } from "express";
+import { Router, Response } from "express";
 import { authMiddleware, AuthRequest } from "../middleware/auth";
 import { logError, logInfo } from "../utils/logger";
 import Stripe from "stripe";
@@ -24,14 +24,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
 });
 
 // Stripe product and price IDs (should be configured via environment or database)
-const STRIPE_PRODUCTS = {
-  BASE_PLAN: process.env.STRIPE_PRODUCT_BASE_PLAN || "prod_base_plan",
-  ADDON_TIKTOK: process.env.STRIPE_PRODUCT_ADDON_TIKTOK || "prod_tiktok",
-  ADDON_WIX: process.env.STRIPE_PRODUCT_ADDON_WIX || "prod_wix",
-  ADDON_GA4: process.env.STRIPE_PRODUCT_ADDON_GA4 || "prod_ga4",
-  ADDON_PAYPAL_PAYOUTS: process.env.STRIPE_PRODUCT_ADDON_PAYPAL_PAYOUTS || "prod_paypal_payouts",
-  ADDON_WHATSAPP_TELEGRAM: process.env.STRIPE_PRODUCT_ADDON_WHATSAPP_TELEGRAM || "prod_whatsapp_telegram",
-};
+// Note: These are used in route handlers, not at module level
 
 /**
  * Create or retrieve billing account and Stripe customer
@@ -39,10 +32,10 @@ const STRIPE_PRODUCTS = {
  */
 router.post("/create-customer", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id;
-    const tenantId = req.user?.tenantId;
-    const email = req.user?.email || req.body.email;
-    const name = req.body.name || req.user?.name;
+    const userId = req.userId;
+    const tenantId = req.tenantId;
+    const email = req.body.email;
+    const name = req.body.name;
 
     if (!userId || !email) {
       return res.status(400).json({
@@ -151,7 +144,7 @@ router.post("/create-customer", authMiddleware, async (req: AuthRequest, res: Re
  */
 router.post("/subscribe", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId;
     const billingAccountId = req.body.billing_account_id;
 
     if (!billingAccountId) {
@@ -277,7 +270,7 @@ router.post("/subscribe", authMiddleware, async (req: AuthRequest, res: Response
  */
 router.post("/addon/purchase", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId;
     const { billing_account_id, add_on_id } = req.body;
 
     if (!billing_account_id || !add_on_id) {
@@ -408,7 +401,7 @@ router.post("/addon/purchase", authMiddleware, async (req: AuthRequest, res: Res
  */
 router.post("/usage/report", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId;
     const {
       billing_account_id,
       event_type,
@@ -444,7 +437,7 @@ router.post("/usage/report", authMiddleware, async (req: AuthRequest, res: Respo
     }
 
     // Log usage event via database function
-    const { data: eventId, error: logError } = await supabase.rpc("log_usage_event", {
+    const { data: eventId, error: rpcError } = await supabase.rpc("log_usage_event", {
       p_billing_account_id: billing_account_id,
       p_event_type: event_type,
       p_quantity: quantity || 1,
@@ -457,8 +450,8 @@ router.post("/usage/report", authMiddleware, async (req: AuthRequest, res: Respo
       p_metadata: metadata || {},
     });
 
-    if (logError) {
-      logError("Error logging usage event", logError);
+    if (rpcError) {
+      logError("Error logging usage event", rpcError);
       return res.status(500).json({
         error: "Internal Server Error",
         message: "Failed to log usage event",
@@ -485,7 +478,7 @@ router.post("/usage/report", authMiddleware, async (req: AuthRequest, res: Respo
  */
 router.get("/invoice/estimate", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId;
     const billingAccountId = req.query.billing_account_id as string;
     const startDate = req.query.start_date as string;
     const endDate = req.query.end_date as string;

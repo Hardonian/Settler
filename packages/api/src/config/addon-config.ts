@@ -201,10 +201,9 @@ export function validateAddOnConfig(config: AddOnConfig): { valid: boolean; erro
     errors.push("usage_unit is required when usage_price_per_unit is set");
   }
 
-  return {
-    valid: errors.length === 0,
-    errors: errors.length > 0 ? errors : undefined,
-  };
+  return errors.length === 0
+    ? { valid: true }
+    : { valid: false, errors };
 }
 
 /**
