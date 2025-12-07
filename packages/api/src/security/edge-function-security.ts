@@ -358,12 +358,14 @@ export function getCORSHeaders(origin?: string): Record<string, string> {
     : undefined;
   const allowedOrigins = allowedOriginsEnv?.split(',') || ['*'];
 
-  const corsOrigin =
-    origin && allowedOrigins.includes(origin)
-      ? origin
-      : allowedOrigins.includes('*')
-      ? '*'
-      : allowedOrigins[0];
+  let corsOrigin: string;
+  if (origin && allowedOrigins.includes(origin)) {
+    corsOrigin = origin;
+  } else if (allowedOrigins.includes('*')) {
+    corsOrigin = '*';
+  } else {
+    corsOrigin = allowedOrigins[0] || '*';
+  }
 
   return {
     'Access-Control-Allow-Origin': corsOrigin,
