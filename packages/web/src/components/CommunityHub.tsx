@@ -162,7 +162,6 @@ export function CommunityHub() {
                     variant="outline"
                     className="w-full"
                     asChild={!link.external}
-                    onClick={link.external ? undefined : undefined}
                   >
                     {link.external ? (
                       <a
