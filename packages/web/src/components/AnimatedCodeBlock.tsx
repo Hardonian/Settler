@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CopyButton } from "@/components/ui/CopyButton";
 import { cn } from "@/lib/utils";
 
 interface AnimatedCodeBlockProps {
@@ -89,28 +90,33 @@ export function AnimatedCodeBlock({
       aria-labelledby="code-title"
       aria-describedby="code-description"
     >
-      <CardHeader>
-        <CardTitle id="code-title" className="text-white">
-          {title}
-        </CardTitle>
-        <CardDescription id="code-description" className="text-muted-foreground">
-          {description}
-        </CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between gap-4">
+        <div className="flex-1">
+          <CardTitle id="code-title" className="text-white">
+            {title}
+          </CardTitle>
+          <CardDescription id="code-description" className="text-muted-foreground">
+            {description}
+          </CardDescription>
+        </div>
+        <CopyButton text={code} size="sm" />
       </CardHeader>
       <CardContent>
-        <pre
-          ref={codeRef}
-          className="bg-slate-950 rounded-lg p-6 overflow-x-auto"
-          role="code"
-          aria-label={`${language} code example`}
-        >
-          <code className="text-sm text-green-400 font-mono" aria-live="polite" aria-atomic="true">
-            {displayedCode}
-            {isVisible && displayedCode.length < code.length && (
-              <span className="animate-pulse">|</span>
-            )}
-          </code>
-        </pre>
+        <div className="relative group">
+          <pre
+            ref={codeRef}
+            className="bg-slate-950 rounded-lg p-4 sm:p-6 overflow-x-auto"
+            role="code"
+            aria-label={`${language} code example`}
+          >
+            <code className="text-xs sm:text-sm text-green-400 font-mono" aria-live="polite" aria-atomic="true">
+              {displayedCode}
+              {isVisible && displayedCode.length < code.length && (
+                <span className="animate-pulse">|</span>
+              )}
+            </code>
+          </pre>
+        </div>
       </CardContent>
     </Card>
   );

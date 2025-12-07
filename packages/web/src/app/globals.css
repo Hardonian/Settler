@@ -210,6 +210,15 @@ html {
   }
 }
 
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 .animate-shimmer {
   background: linear-gradient(
     90deg,
@@ -223,9 +232,14 @@ html {
   animation: shimmer 2s linear infinite;
 }
 
+.animate-gradient-shift {
+  animation: gradient-shift 5s ease infinite;
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .animate-shimmer {
+  .animate-shimmer,
+  .animate-gradient-shift {
     animation: none;
   }
 }
