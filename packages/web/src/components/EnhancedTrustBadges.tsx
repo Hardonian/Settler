@@ -121,6 +121,7 @@ export function EnhancedTrustBadges() {
               width={64}
               height={64}
               className="object-contain"
+              unoptimized
             />
             {badge.status === "active" && (
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-800" />

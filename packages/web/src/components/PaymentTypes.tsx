@@ -127,6 +127,7 @@ export function PaymentTypes() {
                   width={60}
                   height={30}
                   className="opacity-90"
+                  unoptimized
                 />
               </div>
               <div>

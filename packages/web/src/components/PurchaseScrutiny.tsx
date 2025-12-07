@@ -154,6 +154,7 @@ export function PurchaseScrutiny() {
                   width={80}
                   height={40}
                   className="opacity-80"
+                  unoptimized
                 />
               </div>
               <div className="text-xs text-slate-500 dark:text-slate-400">

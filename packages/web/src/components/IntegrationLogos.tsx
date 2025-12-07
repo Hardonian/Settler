@@ -169,6 +169,7 @@ export function IntegrationLogos() {
                       width={100}
                       height={40}
                       className="object-contain max-h-10 opacity-80 group-hover:opacity-100 transition-opacity"
+                      unoptimized
                     />
                   </div>
                   <p className="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">
