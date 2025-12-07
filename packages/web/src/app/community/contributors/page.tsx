@@ -8,7 +8,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
-import { Github, Code, BookOpen, MessageCircle, Award, Heart } from "lucide-react";
+import { Github, Code, BookOpen, MessageCircle, Heart } from "lucide-react";
 import Link from "next/link";
 
 export default function ContributorsPage() {
