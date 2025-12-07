@@ -17,12 +17,22 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   transformIgnorePatterns: [
-    "node_modules/(?!(until-async|msw)/)",
+    "node_modules/(?!(until-async|msw|@mswjs|@bundled-es-modules|@open-draft)/)",
   ],
-  extensionsToTreatAsEsm: [".ts"],
-  globals: {
-    "ts-jest": {
-      useESM: true,
-    },
+  transform: {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        useESM: false,
+        isolatedModules: true,
+        tsconfig: {
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+        },
+      },
+    ],
+  },
+  testEnvironmentOptions: {
+    customExportConditions: ["node", "node-addons"],
   },
 };

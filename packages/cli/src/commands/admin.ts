@@ -5,6 +5,34 @@
 
 import { Command } from "commander";
 
+interface SagaOptions {
+  sagaId: string;
+  sagaType: string;
+}
+
+interface AggregateOptions {
+  aggregateId: string;
+  aggregateType: string;
+}
+
+interface DLQListOptions {
+  tenantId?: string;
+  limit: string;
+}
+
+interface DLQResolveOptions {
+  id: string;
+  notes?: string;
+}
+
+interface ProjectionRebuildOptions {
+  reconciliationId?: string;
+}
+
+interface ReconciliationDryRunOptions {
+  reconciliationId: string;
+}
+
 export function createAdminCommands(): Command {
   const admin = new Command("admin");
 
@@ -14,7 +42,7 @@ export function createAdminCommands(): Command {
     .description("Get saga status")
     .requiredOption("--saga-id <id>", "Saga ID")
     .requiredOption("--saga-type <type>", "Saga type")
-    .action(async (options) => {
+    .action((options: SagaOptions) => {
       // Implementation would call AdminService
       console.log(`Getting status for saga ${options.sagaId} of type ${options.sagaType}`);
     });
@@ -25,7 +53,7 @@ export function createAdminCommands(): Command {
     .description("List events for an aggregate")
     .requiredOption("--aggregate-id <id>", "Aggregate ID")
     .requiredOption("--aggregate-type <type>", "Aggregate type")
-    .action(async (options) => {
+    .action((options: AggregateOptions) => {
       console.log(`Listing events for ${options.aggregateType}:${options.aggregateId}`);
     });
 
@@ -35,7 +63,7 @@ export function createAdminCommands(): Command {
     .description("Resume a saga")
     .requiredOption("--saga-id <id>", "Saga ID")
     .requiredOption("--saga-type <type>", "Saga type")
-    .action(async (options) => {
+    .action((options: SagaOptions) => {
       console.log(`Resuming saga ${options.sagaId}`);
     });
 
@@ -45,7 +73,7 @@ export function createAdminCommands(): Command {
     .description("Retry a saga")
     .requiredOption("--saga-id <id>", "Saga ID")
     .requiredOption("--saga-type <type>", "Saga type")
-    .action(async (options) => {
+    .action((options: SagaOptions) => {
       console.log(`Retrying saga ${options.sagaId}`);
     });
 
@@ -55,7 +83,7 @@ export function createAdminCommands(): Command {
     .description("Cancel a saga")
     .requiredOption("--saga-id <id>", "Saga ID")
     .requiredOption("--saga-type <type>", "Saga type")
-    .action(async (options) => {
+    .action((options: SagaOptions) => {
       console.log(`Cancelling saga ${options.sagaId}`);
     });
 
@@ -65,7 +93,7 @@ export function createAdminCommands(): Command {
     .description("List dead letter queue entries")
     .option("--tenant-id <id>", "Filter by tenant ID")
     .option("--limit <n>", "Limit results", "100")
-    .action(async (options) => {
+    .action((options: DLQListOptions) => {
       console.log(`Listing DLQ entries (limit: ${options.limit})`);
     });
 
@@ -75,7 +103,7 @@ export function createAdminCommands(): Command {
     .description("Resolve a dead letter queue entry")
     .requiredOption("--id <id>", "Entry ID")
     .option("--notes <text>", "Resolution notes")
-    .action(async (options) => {
+    .action((options: DLQResolveOptions) => {
       console.log(`Resolving DLQ entry ${options.id}`);
     });
 
@@ -84,7 +112,7 @@ export function createAdminCommands(): Command {
     .command("projections:rebuild")
     .description("Rebuild read model projections")
     .option("--reconciliation-id <id>", "Rebuild specific reconciliation")
-    .action(async (options) => {
+    .action((options: ProjectionRebuildOptions) => {
       if (options.reconciliationId) {
         console.log(`Rebuilding projection for reconciliation ${options.reconciliationId}`);
       } else {
@@ -97,7 +125,7 @@ export function createAdminCommands(): Command {
     .command("reconciliation:dry-run")
     .description("Dry-run reconciliation using historical events")
     .requiredOption("--reconciliation-id <id>", "Reconciliation ID")
-    .action(async (options) => {
+    .action((options: ReconciliationDryRunOptions) => {
       console.log(`Dry-running reconciliation ${options.reconciliationId}`);
     });
 

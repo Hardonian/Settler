@@ -23,7 +23,7 @@ export class MatchingService {
     private _modelManager: ModelManager
   ) {}
 
-  async findCandidates(sourceData: unknown[], targetData: unknown[]): Promise<Candidate[]> {
+  findCandidates(sourceData: unknown[], targetData: unknown[]): Candidate[] {
     logger.info("Finding candidates", {
       sourceCount: sourceData.length,
       targetCount: targetData.length,

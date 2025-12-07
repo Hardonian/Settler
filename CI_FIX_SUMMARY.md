@@ -53,6 +53,7 @@ Added `--passWithNoTests` flag to Jest test scripts for packages that don't have
 ## Verification
 
 ### Before Fix
+
 ```bash
 $ npm run test
 # @settler/adapters:test failed with exit code 1
@@ -60,6 +61,7 @@ $ npm run test
 ```
 
 ### After Fix
+
 ```bash
 $ npm run test
 # @settler/adapters:test passes with exit code 0
@@ -79,6 +81,7 @@ SyntaxError: Unexpected token 'export'
 ```
 
 This is a separate issue from the "no tests found" problem and should be addressed by:
+
 1. Properly configuring Jest for ESM modules
 2. Updating `jest.config.js` to handle ESM dependencies
 3. Or updating the test setup to work with the current module system

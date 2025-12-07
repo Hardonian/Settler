@@ -28,7 +28,7 @@ export class IngestionService {
     private piiRedaction: PIIRedactionService
   ) {}
 
-  async process(data: unknown[], schemaHints?: Record<string, string>): Promise<IngestionResult> {
+  process(data: unknown[], schemaHints?: Record<string, string>): IngestionResult {
     logger.info("Processing ingestion", { recordCount: data.length });
 
     // Infer schema

@@ -21,7 +21,7 @@ export class AnomalyDetectionService {
     private _modelManager: ModelManager
   ) {}
 
-  async detect(data: unknown[]): Promise<Anomaly[]> {
+  detect(data: unknown[]): Anomaly[] {
     logger.info("Detecting anomalies", { recordCount: data.length });
 
     const anomalies: Anomaly[] = [];
@@ -32,7 +32,7 @@ export class AnomalyDetectionService {
       const transaction = record as Record<string, unknown>;
 
       // Check for duplicate transactions
-      const duplicate = await this.checkDuplicate(transaction);
+      const duplicate = this.checkDuplicate(transaction);
       if (duplicate) {
         anomalies.push({
           type: "duplicate",
@@ -79,7 +79,7 @@ export class AnomalyDetectionService {
     return anomalies;
   }
 
-  private async checkDuplicate(transaction: Record<string, unknown>): Promise<boolean> {
+  private checkDuplicate(transaction: Record<string, unknown>): boolean {
     const id = String(transaction.id || transaction.transaction_id || "");
     if (!id) return false;
 

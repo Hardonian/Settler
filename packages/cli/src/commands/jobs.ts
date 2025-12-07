@@ -105,22 +105,33 @@ jobsCommand
     }
   );
 
+interface JobRunOptions {
+  wait?: boolean;
+  parent?: {
+    apiKey?: string;
+    baseUrl?: string;
+  };
+}
+
 jobsCommand
   .command("run <id>")
   .description("Run a reconciliation job")
   .option("--wait", "Wait for job completion")
-  .action(async (id, options) => {
+  .action(async (id: string, options: JobRunOptions) => {
     try {
-      const apiKey = process.env.SETTLER_API_KEY || options.parent.apiKey;
+      const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey;
       if (!apiKey) {
         console.error(chalk.red("Error: API key required"));
         process.exit(1);
       }
 
-      const client = new Settler({
+      const clientConfig: { apiKey: string; baseUrl?: string } = {
         apiKey,
-        baseUrl: options.parent.baseUrl,
-      });
+      };
+      if (options.parent?.baseUrl) {
+        clientConfig.baseUrl = options.parent.baseUrl;
+      }
+      const client = new Settler(clientConfig);
 
       const response = await client.jobs.run(id);
       console.log(chalk.green(`\n✓ Job execution started: ${response.data.id}`));
@@ -162,21 +173,33 @@ jobsCommand
     }
   });
 
+interface JobLogsOptions {
+  tail?: boolean;
+  since?: string;
+  limit?: string;
+  parent?: {
+    parent?: {
+      apiKey?: string;
+      baseUrl?: string;
+    };
+  };
+}
+
 jobsCommand
   .command("logs <id>")
   .description("View job logs")
   .option("--tail", "Follow logs (like tail -f)")
   .option("--since <duration>", "Show logs since duration (e.g., 1h, 30m)")
   .option("--limit <number>", "Limit number of log entries", "100")
-  .action(async (id, options) => {
+  .action(async (id: string, options: JobLogsOptions) => {
     try {
-      const apiKey = process.env.SETTLER_API_KEY || options.parent.parent?.apiKey;
+      const apiKey = process.env.SETTLER_API_KEY || options.parent?.parent?.apiKey;
       if (!apiKey) {
         console.error(chalk.red("Error: API key required"));
         process.exit(1);
       }
 
-      const baseUrl = options.parent.parent?.baseUrl || "https://api.settler.io";
+      const baseUrl = options.parent?.parent?.baseUrl || "https://api.settler.io";
 
       // Fetch logs from API
       const params = new URLSearchParams({
@@ -245,21 +268,33 @@ jobsCommand
     }
   });
 
+interface JobReplayOptions {
+  fromDate?: string;
+  eventId?: string;
+  dryRun?: boolean;
+  parent?: {
+    parent?: {
+      apiKey?: string;
+      baseUrl?: string;
+    };
+  };
+}
+
 jobsCommand
   .command("replay <id>")
   .description("Replay job events")
   .option("--from-date <date>", "Replay from date (ISO format)")
   .option("--event-id <id>", "Replay specific event ID")
   .option("--dry-run", "Dry run (don't actually replay)")
-  .action(async (id, options) => {
+  .action(async (id: string, options: JobReplayOptions) => {
     try {
-      const apiKey = process.env.SETTLER_API_KEY || options.parent.parent?.apiKey;
+      const apiKey = process.env.SETTLER_API_KEY || options.parent?.parent?.apiKey;
       if (!apiKey) {
         console.error(chalk.red("Error: API key required"));
         process.exit(1);
       }
 
-      const baseUrl = options.parent.parent?.baseUrl || "https://api.settler.io";
+      const baseUrl = options.parent?.parent?.baseUrl || "https://api.settler.io";
 
       const body: Record<string, unknown> = {
         dryRun: options.dryRun || false,

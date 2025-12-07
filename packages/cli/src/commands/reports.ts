@@ -6,28 +6,44 @@ const reportsCommand = new Command("reports");
 
 reportsCommand.description("View reconciliation reports").alias("report");
 
+interface ReportGetOptions {
+  start?: string;
+  end?: string;
+  parent?: {
+    apiKey?: string;
+    baseUrl?: string;
+  };
+}
+
 reportsCommand
   .command("get <jobId>")
   .description("Get reconciliation report for a job")
   .option("-s, --start <date>", "Start date (YYYY-MM-DD)")
   .option("-e, --end <date>", "End date (YYYY-MM-DD)")
-  .action(async (jobId, options) => {
+  .action(async (jobId: string, options: ReportGetOptions) => {
     try {
-      const apiKey = process.env.SETTLER_API_KEY || options.parent.apiKey;
+      const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey;
       if (!apiKey) {
         console.error(chalk.red("Error: API key required"));
         process.exit(1);
       }
 
-      const client = new Settler({
+      const clientConfig: { apiKey: string; baseUrl?: string } = {
         apiKey,
-        baseUrl: options.parent.baseUrl,
-      });
+      };
+      if (options.parent?.baseUrl) {
+        clientConfig.baseUrl = options.parent.baseUrl;
+      }
+      const client = new Settler(clientConfig);
 
-      const response = await client.reports.get(jobId, {
-        startDate: options.start,
-        endDate: options.end,
-      });
+      const reportOptions: { startDate?: string; endDate?: string } = {};
+      if (options.start) {
+        reportOptions.startDate = options.start;
+      }
+      if (options.end) {
+        reportOptions.endDate = options.end;
+      }
+      const response = await client.reports.get(jobId, reportOptions);
 
       const { summary } = response.data;
 
