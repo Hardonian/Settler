@@ -4,6 +4,9 @@
  * Provides HMAC validation, API key validation, rate limiting,
  * and fraud detection for Supabase Edge Functions
  * 
+ * Note: This utility is environment-aware and works in both Node.js
+ * (for API package) and Deno (for Edge Functions) contexts.
+ * 
  * Priority: P1 (High - Edge function security)
  */
 
@@ -72,7 +75,7 @@ export async function validateAPIKey(
   apiKey: string,
   supabaseUrl: string,
   supabaseServiceKey: string
-): Promise<{ valid: boolean; userId?: string; tenantId?: string; rateLimit?: number }> {
+): Promise<{ valid: boolean; userId?: string; tenantId?: string; rateLimit?: number | null }> {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   // Query API key from database
@@ -101,9 +104,9 @@ export async function validateAPIKey(
 
   return {
     valid: true,
-    userId: data.user_id,
-    tenantId: data.tenant_id,
-    rateLimit: data.rate_limit,
+    ...(data.user_id !== undefined && { userId: data.user_id }),
+    ...(data.tenant_id !== undefined && { tenantId: data.tenant_id }),
+    ...(data.rate_limit !== undefined && { rateLimit: data.rate_limit }),
   };
 }
 
@@ -114,7 +117,7 @@ export async function validateJWTToken(
   authHeader: string,
   supabaseUrl: string,
   supabaseAnonKey: string
-): Promise<{ valid: boolean; userId?: string; tenantId?: string }> {
+): Promise<{ valid: boolean; userId?: string; tenantId?: string | undefined }> {
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     global: {
       headers: {
@@ -139,7 +142,7 @@ export async function validateJWTToken(
   return {
     valid: true,
     userId: user.id,
-    tenantId,
+    ...(tenantId !== undefined && { tenantId }),
   };
 }
 
@@ -202,9 +205,10 @@ export function validateIPAddress(
   for (const allowedIP of allowedIPs) {
     if (allowedIP.includes('/')) {
       // CIDR notation (simplified - full implementation would require CIDR library)
-      const [network, prefixLength] = allowedIP.split('/');
+      const parts = allowedIP.split('/');
+      const network = parts[0];
       // For now, just check if IP starts with network (simplified)
-      if (ip.startsWith(network.split('.').slice(0, -1).join('.'))) {
+      if (network && ip.startsWith(network.split('.').slice(0, -1).join('.'))) {
         return true;
       }
     } else {
@@ -263,7 +267,8 @@ export async function secureEdgeFunction(
   // HMAC validation (for webhooks)
   if (config.requireHMAC) {
     const signature = request.headers.get('x-signature') || request.headers.get('x-hmac-signature');
-    const secret = Deno.env.get('WEBHOOK_SECRET') || '';
+    // Note: In Node.js environment, use process.env. For Deno Edge Functions, use Deno.env
+    const secret = (typeof process !== 'undefined' ? process.env.WEBHOOK_SECRET : undefined) || '';
 
     if (!signature || !secret) {
       return {
@@ -305,8 +310,8 @@ export async function secureEdgeFunction(
 
     return {
       authorized: true,
-      userId: apiKeyResult.userId,
-      tenantId: apiKeyResult.tenantId,
+      ...(apiKeyResult.userId !== undefined && { userId: apiKeyResult.userId }),
+      ...(apiKeyResult.tenantId !== undefined && { tenantId: apiKeyResult.tenantId }),
     };
   }
 
@@ -332,8 +337,8 @@ export async function secureEdgeFunction(
 
     return {
       authorized: true,
-      userId: jwtResult.userId,
-      tenantId: jwtResult.tenantId,
+      ...(jwtResult.userId !== undefined && { userId: jwtResult.userId }),
+      ...(jwtResult.tenantId !== undefined && { tenantId: jwtResult.tenantId }),
     };
   }
 
@@ -347,7 +352,11 @@ export async function secureEdgeFunction(
  * CORS headers for Edge Functions
  */
 export function getCORSHeaders(origin?: string): Record<string, string> {
-  const allowedOrigins = Deno.env.get('ALLOWED_ORIGINS')?.split(',') || ['*'];
+  // Note: In Node.js environment, use process.env. For Deno Edge Functions, use Deno.env
+  const allowedOriginsEnv = typeof process !== 'undefined' 
+    ? process.env.ALLOWED_ORIGINS 
+    : undefined;
+  const allowedOrigins = allowedOriginsEnv?.split(',') || ['*'];
 
   const corsOrigin =
     origin && allowedOrigins.includes(origin)

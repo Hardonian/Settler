@@ -17,7 +17,7 @@ export interface IntegrationCredential {
   credentialType: 'oauth_token' | 'api_key' | 'webhook_secret' | 'api_secret';
   encryptedCredential: string;
   scopes?: string[];
-  expiresAt?: Date;
+  expiresAt?: Date | undefined;
   status: 'active' | 'expired' | 'revoked' | 'error';
 }
 
@@ -140,7 +140,7 @@ export async function getIntegrationCredential(
     credentialType: data.credential_type,
     encryptedCredential: data.encrypted_credential,
     scopes: data.scopes,
-    expiresAt: data.expires_at ? new Date(data.expires_at) : undefined,
+    ...(data.expires_at && { expiresAt: new Date(data.expires_at) }),
     status: data.status,
   };
 }
