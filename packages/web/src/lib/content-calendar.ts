@@ -48,11 +48,11 @@ export function generateContentCalendar(startDate: Date = new Date()): ContentIt
       const blogDate = new Date(currentDate);
       blogDate.setDate(blogDate.getDate() + i * 15);
       calendar.push({
-        date: blogDate.toISOString().split("T")[0],
+        date: blogDate.toISOString().split("T")[0]!,
         type: "blog",
         platform: "blog",
-        title: topics[(month * 2 + i) % topics.length],
-        description: `Comprehensive guide on ${topics[(month * 2 + i) % topics.length].toLowerCase()}`,
+        title: topics[(month * 2 + i) % topics.length]!,
+        description: `Comprehensive guide on ${topics[(month * 2 + i) % topics.length]!.toLowerCase()}`,
         keywords: ["reconciliation", "API", "financial automation"],
         status: "draft",
       });
@@ -65,10 +65,10 @@ export function generateContentCalendar(startDate: Date = new Date()): ContentIt
         socialDate.setDate(socialDate.getDate() + week * 7 + day * 2);
         const platform = day % 2 === 0 ? "twitter" : "linkedin";
         calendar.push({
-          date: socialDate.toISOString().split("T")[0],
+          date: socialDate.toISOString().split("T")[0]!,
           type: "social",
           platform,
-          title: socialTopics[(month * 12 + week * 3 + day) % socialTopics.length],
+          title: socialTopics[(month * 12 + week * 3 + day) % socialTopics.length]!,
           description: "Social media post",
           status: "draft",
         });
@@ -79,11 +79,11 @@ export function generateContentCalendar(startDate: Date = new Date()): ContentIt
     const seoDate = new Date(currentDate);
     seoDate.setDate(seoDate.getDate() + 10);
     calendar.push({
-      date: seoDate.toISOString().split("T")[0],
+      date: seoDate.toISOString().split("T")[0]!,
       type: "seo",
       platform: "blog",
-      title: `Reconciliation Guide: ${topics[month % topics.length]}`,
-      description: `SEO-optimized landing page for ${topics[month % topics.length].toLowerCase()}`,
+      title: `Reconciliation Guide: ${topics[month % topics.length]!}`,
+      description: `SEO-optimized landing page for ${topics[month % topics.length]!.toLowerCase()}`,
       keywords: ["reconciliation", "guide", "tutorial"],
       status: "draft",
     });

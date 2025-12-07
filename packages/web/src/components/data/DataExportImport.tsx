@@ -141,8 +141,8 @@ export function DataExportImport() {
                 className="hidden"
                 id="import-file"
               />
-              <label htmlFor="import-file">
-                <Button as="span" disabled={importing} variant="outline">
+              <label htmlFor="import-file" className="cursor-pointer">
+                <Button disabled={importing} variant="outline" type="button">
                   {importing ? "Importing..." : "Choose File"}
                 </Button>
               </label>

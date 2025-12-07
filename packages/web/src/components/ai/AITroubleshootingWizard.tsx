@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface TroubleshootingStep {
   question: string;
@@ -110,6 +111,10 @@ export function AITroubleshootingWizard() {
   }
 
   const step = TROUBLESHOOTING_FLOW[currentStep];
+
+  if (!step) {
+    return null;
+  }
 
   return (
     <Card>

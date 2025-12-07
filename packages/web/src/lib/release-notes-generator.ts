@@ -50,10 +50,10 @@ export function generateReleaseNotes(
 
     const note: ReleaseNote = {
       type,
-      title,
-      description: commit.message,
-      prNumber: commit.pr,
-      author: commit.author,
+      title: title || "Untitled",
+      description: commit.message || "",
+      prNumber: commit.pr || undefined,
+      author: commit.author || "Unknown",
     };
 
     notes.push(note);
@@ -68,7 +68,7 @@ export function generateReleaseNotes(
 
   return {
     version,
-    date: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().split("T")[0]!,
     notes,
     breaking,
     security,

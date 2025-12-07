@@ -81,7 +81,7 @@ export function ActivationChecklist({ userId, onItemComplete, onAllComplete }: A
       const response = await fetch(`/api/user/checklist?userId=${userId}`);
       if (response.ok) {
         const data = await response.json();
-        const completed = new Set(data.completedItems || []);
+        const completed = new Set((data.completedItems || []) as string[]);
         setCompletedItems(completed);
       }
     } catch (error) {

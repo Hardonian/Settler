@@ -37,8 +37,8 @@ export function FunnelDashboard() {
   };
 
   const conversionRate =
-    funnel.length > 0
-      ? (funnel[funnel.length - 1].count / funnel[0].count) * 100
+    funnel.length > 0 && funnel[0] && funnel[funnel.length - 1]
+      ? (funnel[funnel.length - 1]!.count / funnel[0]!.count) * 100
       : 0;
 
   return (

@@ -46,7 +46,7 @@ export async function checkAndEscalateTickets(): Promise<void> {
 
       if (matchesSeverity && matchesAge && matchesStatus) {
         // Escalate
-        await escalateTicket(ticket.id, rule.id, rule.target_user_id);
+        await escalateTicket(ticket.id, rule.id, rule.target_user_id, rule.action);
       }
     }
   }
@@ -58,7 +58,8 @@ export async function checkAndEscalateTickets(): Promise<void> {
 async function escalateTicket(
   ticketId: string,
   ruleId: string,
-  targetUserId?: string
+  targetUserId?: string,
+  action?: "assign" | "notify" | "escalate"
 ): Promise<void> {
   const supabase = createClient();
 
@@ -73,11 +74,11 @@ async function escalateTicket(
 
   // Update ticket
   const updates: Record<string, any> = {
-    priority: Math.min(ticket.priority + 1, 10), // Increase priority
+    priority: Math.min((ticket.priority as number) + 1, 10), // Increase priority
     updated_at: new Date().toISOString(),
   };
 
-  if (targetUserId && rule.action === "assign") {
+  if (targetUserId && action === "assign") {
     updates.assigned_to = targetUserId;
   }
 
@@ -93,7 +94,7 @@ async function escalateTicket(
   });
 
   // Send alert (in production, use notification system)
-  if (rule.action === "notify" && targetUserId) {
+  if (action === "notify" && targetUserId) {
     // Send notification to target user
     console.log(`Escalation alert: Ticket ${ticketId} escalated to ${targetUserId}`);
   }

@@ -69,10 +69,13 @@ export function PersonalizedCTA({
     );
   }
 
+  // Map "primary" variant to "default" for Button component
+  const buttonVariant = cta.variant === "primary" ? "default" : cta.variant;
+  
   return (
     <Button
       asChild
-      variant={cta.variant}
+      variant={buttonVariant}
       className={className}
     >
       <Link href={cta.href}>{cta.text}</Link>

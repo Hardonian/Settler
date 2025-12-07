@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { ipAddress } = body;
+    const { ipAddress: _ipAddress } = body;
 
     // In production, insert into ip_allowlists table
     return NextResponse.json({ success: true });
