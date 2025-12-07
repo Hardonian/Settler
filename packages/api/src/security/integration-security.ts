@@ -212,20 +212,32 @@ export async function recordIntegrationQuotaUsage(
       ? 'webhook_events'
       : 'data_synced_mb';
 
+  // Get existing record to increment, or create new
+  const { data: existing } = await supabase
+    .from('integration_quota_usage')
+    .select('*')
+    .eq('tenant_id', tenantId)
+    .eq('integration_id', integrationId)
+    .eq('date', today)
+    .single();
+
+  const currentValue = (existing?.[updateField as keyof typeof existing] as number) || 0;
+  const newValue = currentValue + amount;
+
   // Use upsert to create or update quota usage
+  const updateData: Record<string, unknown> = {
+    tenant_id: tenantId,
+    integration_id: integrationId,
+    date: today,
+    updated_at: new Date().toISOString(),
+  };
+  updateData[updateField] = newValue;
+
   const { error } = await supabase
     .from('integration_quota_usage')
-    .upsert(
-      {
-        tenant_id: tenantId,
-        integration_id: integrationId,
-        date: today,
-        [updateField]: amount,
-      },
-      {
-        onConflict: 'tenant_id,integration_id,date',
-      }
-    );
+    .upsert(updateData, {
+      onConflict: 'tenant_id,integration_id,date',
+    });
 
   if (error) {
     console.error('Error recording quota usage:', error);
