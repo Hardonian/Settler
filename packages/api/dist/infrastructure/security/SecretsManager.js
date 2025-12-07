@@ -93,6 +93,9 @@ class SecretsManager {
 exports.SecretsManager = SecretsManager;
 // Required secrets configuration
 exports.REQUIRED_SECRETS = [
+    // Stripe secrets are optional (billing works without them initially)
+    // { name: "STRIPE_SECRET_KEY", required: false },
+    // { name: "STRIPE_WEBHOOK_SECRET", required: false },
     {
         name: "JWT_SECRET",
         required: true,

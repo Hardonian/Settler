@@ -1,14 +1,15 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type ScrollOffsetType =
-  | ["start" | "end" | "center", "start" | "end" | "center"]
   | string
+  | [string, string]
   | number
-  | (() => number);
+  | [number, number]
+  | (() => number | [number, number]);
 
 interface ParallaxBackgroundProps {
   children?: React.ReactNode;
@@ -28,7 +29,8 @@ export function ParallaxBackground({
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: offset as any,
+    // @ts-expect-error - framer-motion's ScrollOffset type is not exported, but our type is compatible
+    offset: offset,
   });
 
   const y = useTransform(
@@ -96,7 +98,7 @@ function ParallaxBlob({
   speed: number;
   size: number;
   color: "electric-cyan" | "electric-purple" | "electric-neon";
-  scrollYProgress: any;
+  scrollYProgress: MotionValue<number>;
 }) {
   const y = useTransform(scrollYProgress, [0, 1], [0, -200 * speed]);
   const x = useTransform(scrollYProgress, [0, 1], [0, 50 * (index % 2 === 0 ? 1 : -1)]);

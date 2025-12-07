@@ -14,6 +14,8 @@ const api_response_1 = require("../utils/api-response");
 const error_handler_1 = require("../utils/error-handler");
 const event_tracker_1 = require("../utils/event-tracker");
 const adapter_config_validator_1 = require("../utils/adapter-config-validator");
+const usage_tracker_1 = require("../utils/usage-tracker");
+const billing_helpers_1 = require("../utils/billing-helpers");
 const router = (0, express_1.Router)();
 exports.jobsRouter = router;
 const jobService = new JobRouteService_1.JobRouteService();
@@ -99,6 +101,29 @@ router.post("/", (0, authorization_1.requirePermission)(Permissions_1.Permission
             targetAdapter: req.body.target.adapter,
             hasSchedule: !!req.body.schedule,
         });
+        // Log usage for billing
+        try {
+            const billingAccount = await (0, billing_helpers_1.getBillingAccount)(userId, req.tenantId);
+            if (billingAccount) {
+                await (0, usage_tracker_1.logUsageEvent)({
+                    billingAccountId: billingAccount.id,
+                    eventType: "reconciliation_job",
+                    quantity: 1,
+                    userId: userId,
+                    ...(req.tenantId && { tenantId: req.tenantId }),
+                    integrationId: req.body.source.adapter,
+                    metadata: {
+                        job_id: job.id,
+                        source_adapter: req.body.source.adapter,
+                        target_adapter: req.body.target.adapter,
+                    },
+                });
+            }
+        }
+        catch (usageError) {
+            // Don't fail the request if usage logging fails
+            (0, logger_1.logError)("Failed to log usage for job creation", usageError);
+        }
         (0, api_response_1.sendCreated)(res, job, "Reconciliation job created successfully");
     }
     catch (error) {
@@ -223,6 +248,26 @@ router.post("/:id/run", (0, authorization_1.requirePermission)(Permissions_1.Per
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`, ["job_executed", userId, JSON.stringify({ jobId: id, executionId })]);
+        // Log usage for billing (job execution)
+        try {
+            const billingAccount = await (0, billing_helpers_1.getBillingAccount)(userId, req.tenantId);
+            if (billingAccount) {
+                await (0, usage_tracker_1.logUsageEvent)({
+                    billingAccountId: billingAccount.id,
+                    eventType: "reconciliation_job",
+                    quantity: 1,
+                    userId: userId,
+                    ...(req.tenantId && { tenantId: req.tenantId }),
+                    metadata: {
+                        job_id: id,
+                        execution_id: executionId,
+                    },
+                });
+            }
+        }
+        catch (usageError) {
+            (0, logger_1.logError)("Failed to log usage for job execution", usageError);
+        }
         // Queue job execution (async)
         // In production, this would use a job queue like Bull
         setTimeout(async () => {

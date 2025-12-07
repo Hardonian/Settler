@@ -98,18 +98,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         "focus-visible:ring-ring",
       ],
       link: [
-        "text-primary-600 underline-offset-4",
-        "hover:underline hover:text-primary-700",
-        "active:text-primary-800",
+        "text-primary-600 dark:text-primary-400 underline-offset-4",
+        "hover:underline hover:text-primary-700 dark:hover:text-primary-300",
+        "active:text-primary-800 dark:active:text-primary-200",
         "focus-visible:ring-ring focus-visible:underline",
       ],
     };
 
     const sizes = {
-      sm: "h-9 rounded-md px-3 text-sm",
-      default: "h-10 px-4 py-2",
-      lg: "h-11 rounded-md px-8 text-base",
-      icon: "h-10 w-10",
+      sm: "h-9 min-h-[36px] rounded-md px-3 text-sm", // 36px - acceptable for secondary actions
+      default: "h-10 min-h-[40px] px-4 py-2", // 40px - acceptable
+      lg: "h-11 min-h-[44px] rounded-md px-8 text-base", // 44px - recommended tap target
+      icon: "h-10 w-10 min-h-[40px] min-w-[40px]", // 40px - acceptable for icon buttons
     };
 
     const classes = cn(

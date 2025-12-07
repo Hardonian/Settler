@@ -8,4 +8,11 @@ export * from "./square-enhanced";
 export * from "./shopify";
 export * from "./quickbooks";
 export * from "./xero";
+export * from "./google-pay";
+export * from "./meta-commerce";
+export * from "./tiktok-shop";
+export * from "./wix-stores";
+export * from "./ga4-deep-sync";
+export * from "./paypal-payouts";
+export * from "./whatsapp-telegram";
 //# sourceMappingURL=index.d.ts.map

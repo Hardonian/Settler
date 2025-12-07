@@ -2,6 +2,9 @@
 /**
  * Pricing Configuration
  * Defines pricing tiers, feature gates, and revenue calculations
+ *
+ * NOTE: This file is for Edge AI pricing tiers only.
+ * Main reconciliation pricing is defined in config/plans.ts
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FINANCIAL_MODEL = exports.PRICING_TIERS = exports.PricingTier = void 0;
