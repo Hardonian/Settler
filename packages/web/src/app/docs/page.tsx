@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
@@ -13,7 +14,17 @@ import { AnimatedSidebar } from "@/components/AnimatedSidebar";
 import Link from "next/link";
 
 export default function Docs() {
-  const [activeSection, setActiveSection] = useState("getting-started");
+  const searchParams = useSearchParams();
+  const sectionParam = searchParams.get("section");
+  const [activeSection, setActiveSection] = useState(
+    sectionParam || "getting-started"
+  );
+
+  useEffect(() => {
+    if (sectionParam) {
+      setActiveSection(sectionParam);
+    }
+  }, [sectionParam]);
 
   const sections = [
     {

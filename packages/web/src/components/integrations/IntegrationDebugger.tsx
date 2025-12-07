@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Bug, Search, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -102,9 +103,9 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
                 <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Documentation</h4>
                 <p className="text-sm text-slate-600 dark:text-slate-400">{debugResult.documentation}</p>
                 <Button asChild size="sm" variant="outline" className="mt-3">
-                  <a href={`/docs/integrations/${integrationId}`} target="_blank">
+                  <Link href={`/docs/integrations/${integrationId}`}>
                     View Full Docs
-                  </a>
+                  </Link>
                 </Button>
               </div>
             </TabsContent>

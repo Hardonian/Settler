@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface Integration {
@@ -198,12 +199,12 @@ export function IntegrationLogos() {
         <div className="text-center mt-12">
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
             Don't see your platform?{" "}
-            <a
+            <Link
               href="/integrations/request"
               className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
               Request an integration
-            </a>
+            </Link>
           </p>
         </div>
       </div>

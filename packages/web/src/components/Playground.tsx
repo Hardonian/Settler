@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -208,9 +209,9 @@ export function Playground() {
             <CardContent>
               <p className="text-muted-foreground text-center py-8">
                 Custom playground builder coming soon. Try the examples above or{" "}
-                <a href="/signup" className="text-primary underline">
+                <Link href="/signup" className="text-primary underline">
                   sign up
-                </a>{" "}
+                </Link>{" "}
                 to create your own reconciliations.
               </p>
             </CardContent>
@@ -352,9 +353,9 @@ export function Playground() {
                     <p className="text-sm text-muted-foreground">
                       This was a simulation. Sign up to run real reconciliations with your data.
                     </p>
-                    <a href="/signup">
+                    <Link href="/signup">
                       <Button>Get Started Free</Button>
-                    </a>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
