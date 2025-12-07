@@ -41,6 +41,13 @@ const SocialProofCounter = dynamic(
     })),
   { ssr: true }
 );
+const IntegrationLogos = dynamic(
+  () =>
+    import("@/components/IntegrationLogos").then((mod) => ({
+      default: mod.IntegrationLogos,
+    })),
+  { ssr: true }
+);
 const CustomerLogos = dynamic(
   () => import("@/components/CustomerLogos").then((mod) => ({ default: mod.CustomerLogos })),
   { ssr: true }
@@ -291,8 +298,8 @@ const report = await client.jobs.run(job.id);
           </div>
         </section>
 
-        {/* Customer Logos */}
-        <CustomerLogos />
+        {/* Integration Logos */}
+        <IntegrationLogos />
 
         {/* Code Example Section */}
         <section
