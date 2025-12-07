@@ -100,7 +100,7 @@ export function IntegrationLogos() {
   const prefersReducedMotion =
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const categories = {
+  const categories: Record<string, string> = {
     payment: "Payment Processors",
     ecommerce: "E-commerce Platforms",
     accounting: "Accounting Systems",
@@ -111,7 +111,7 @@ export function IntegrationLogos() {
       if (!acc[integration.category]) {
         acc[integration.category] = [];
       }
-      acc[integration.category].push(integration);
+      acc[integration.category]!.push(integration);
       return acc;
     },
     {} as Record<string, Integration[]>
@@ -135,13 +135,13 @@ export function IntegrationLogos() {
         </div>
 
         {Object.entries(groupedIntegrations).map(([category, items], categoryIndex) => {
-          const categoryInfo = categories[category as keyof typeof categories];
-          if (!categoryInfo) return null;
+          const categoryLabel = categories[category];
+          if (!categoryLabel || !items) return null;
           
           return (
           <div key={category} className="mb-12 last:mb-0">
             <h3 className="text-lg font-semibold mb-6 text-slate-900 dark:text-white text-center">
-              {categoryInfo.label}
+              {categoryLabel}
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {items.map((integration, index) => (
