@@ -41,6 +41,20 @@ const IntegrationLogos = dynamic(
     })),
   { ssr: true }
 );
+const CommunityHub = dynamic(
+  () =>
+    import("@/components/CommunityHub").then((mod) => ({
+      default: mod.CommunityHub,
+    })),
+  { ssr: true }
+);
+const DeveloperResources = dynamic(
+  () =>
+    import("@/components/DeveloperResources").then((mod) => ({
+      default: mod.DeveloperResources,
+    })),
+  { ssr: true }
+);
 const CustomerLogos = dynamic(
   () => import("@/components/CustomerLogos").then((mod) => ({ default: mod.CustomerLogos })),
   { ssr: true }
@@ -462,6 +476,12 @@ const report = await client.jobs.run(job.id);
 
         {/* Edge AI Section */}
         <EdgeAIMarketingSection variant="featured" />
+
+        {/* Developer Resources */}
+        <DeveloperResources />
+
+        {/* Community Hub */}
+        <CommunityHub />
 
         {/* Newsletter Signup */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
