@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="moneyBackGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="12" fill="url(#moneyBackGradient)"/>
+  <circle cx="60" cy="50" r="20" stroke="white" stroke-width="3" fill="none"/>
+  <text x="60" y="58" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">$</text>
+  <path d="M 40 75 L 60 90 L 80 75" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="60" y="100" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">30-Day</text>
+  <text x="60" y="112" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle" opacity="0.9">Guarantee</text>
+</svg>

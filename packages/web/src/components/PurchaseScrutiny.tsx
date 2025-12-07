@@ -1,0 +1,173 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { Shield, Lock, CreditCard, CheckCircle2, Clock, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface TrustIndicator {
+  icon: React.ReactNode;
+  label: string;
+  description?: string;
+  badge?: string;
+}
+
+export function PurchaseScrutiny() {
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        observer.unobserve(containerRef.current);
+      }
+    };
+  }, []);
+
+  const trustIndicators: TrustIndicator[] = [
+    {
+      icon: <Shield className="w-6 h-6" />,
+      label: "30-Day Money-Back Guarantee",
+      description: "Not satisfied? Get a full refund, no questions asked",
+      badge: "Risk-Free",
+    },
+    {
+      icon: <Lock className="w-6 h-6" />,
+      label: "Bank-Level Security",
+      description: "AES-256 encryption, SOC 2 Type II in progress",
+      badge: "Secure",
+    },
+    {
+      icon: <CreditCard className="w-6 h-6" />,
+      label: "PCI-DSS Compliant",
+      description: "Your payment data is handled with industry-leading security",
+      badge: "PCI-DSS",
+    },
+    {
+      icon: <CheckCircle2 className="w-6 h-6" />,
+      label: "No Credit Card Required",
+      description: "Start your free trial with full access to all features",
+      badge: "Free Trial",
+    },
+    {
+      icon: <Clock className="w-6 h-6" />,
+      label: "Cancel Anytime",
+      description: "No long-term contracts or cancellation fees",
+      badge: "Flexible",
+    },
+    {
+      icon: <Users className="w-6 h-6" />,
+      label: "500+ Companies Trust Us",
+      description: "Processing millions of transactions monthly",
+      badge: "Trusted",
+    },
+  ];
+
+  const prefersReducedMotion =
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  return (
+    <div
+      ref={containerRef}
+      className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800"
+      role="region"
+      aria-label="Purchase security and trust indicators"
+    >
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+            Your Purchase is Protected
+          </h2>
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            We take your security and satisfaction seriously. Here's how we protect you:
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {trustIndicators.map((indicator, index) => (
+            <div
+              key={index}
+              className={cn(
+                "bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6 shadow-sm",
+                "transition-all duration-500 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600",
+                "flex flex-col gap-4",
+                isVisible
+                  ? "opacity-100 translate-y-0 scale-100"
+                  : "opacity-0 translate-y-4 scale-95"
+              )}
+              style={{
+                transitionDelay: prefersReducedMotion ? "0ms" : `${index * 100}ms`,
+              }}
+              role="listitem"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 flex items-center justify-center text-white">
+                  {indicator.icon}
+                </div>
+                <div className="flex-grow">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+                      {indicator.label}
+                    </h3>
+                    {indicator.badge && (
+                      <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 rounded">
+                        {indicator.badge}
+                      </span>
+                    )}
+                  </div>
+                  {indicator.description && (
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      {indicator.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Payment Methods */}
+        <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700">
+          <div className="text-center">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Secure payments powered by Stripe
+            </p>
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                <Image
+                  src="/assets/icons/stripe-badge.svg"
+                  alt="Stripe"
+                  width={80}
+                  height={40}
+                  className="opacity-80"
+                />
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                <Lock className="w-4 h-4 inline mr-1" />
+                SSL Encrypted
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                <Shield className="w-4 h-4 inline mr-1" />
+                PCI-DSS Compliant
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
