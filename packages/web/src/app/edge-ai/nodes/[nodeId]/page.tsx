@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Loader2, ArrowLeft, Server, Activity, Zap, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Loader2, ArrowLeft, Server, Activity, Zap, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 interface NodeDetail {
@@ -29,7 +29,6 @@ interface NodeDetail {
 
 export default function NodeDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const nodeId = params.nodeId as string;
   const [node, setNode] = useState<NodeDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
