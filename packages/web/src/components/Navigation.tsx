@@ -11,6 +11,7 @@ const navigationItems = [
   { href: "/docs", label: "Docs" },
   { href: "/cookbooks", label: "Cookbooks" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/comparison", label: "Compare" },
   { href: "/enterprise", label: "Enterprise" },
   { href: "/community", label: "Community" },
   { href: "/support", label: "Support" },
