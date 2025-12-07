@@ -57,9 +57,9 @@ export default function SupportPage() {
       <Navigation />
 
       {/* Hero */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
+          <h1 className="text-4xl md:text-5xl font-bold mb-8 text-slate-900 dark:text-white">
             How can we help you?
           </h1>
           <div className="relative max-w-2xl mx-auto">
@@ -78,10 +78,10 @@ export default function SupportPage() {
       {/* Categories */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-slate-900 dark:text-white">
+          <h2 className="text-3xl font-bold text-center mb-16 text-slate-900 dark:text-white">
             Browse by Category
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {CATEGORIES.map((category) => {
               const Icon = category.icon;
               return (
@@ -95,19 +95,19 @@ export default function SupportPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2.5">
                       {category.articles.map((article) => (
                         <li key={article.id}>
                           <Link
-                            href={article.href}
-                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                            href={`/support/category/${category.id}`}
+                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline leading-relaxed"
                           >
                             {article.title}
                           </Link>
                         </li>
                       ))}
                     </ul>
-                    <Button asChild variant="outline" className="w-full mt-4" size="sm">
+                    <Button asChild variant="outline" className="w-full mt-5" size="sm">
                       <Link href={`/support/category/${category.id}`}>View All</Link>
                     </Button>
                   </CardContent>
@@ -121,10 +121,10 @@ export default function SupportPage() {
       {/* Popular Articles */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-slate-900 dark:text-white">
+          <h2 className="text-3xl font-bold text-center mb-16 text-slate-900 dark:text-white">
             Popular Articles
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {POPULAR_ARTICLES.map((article) => (
               <Card key={article.id} className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader>
@@ -135,7 +135,7 @@ export default function SupportPage() {
                   <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                     <span>{article.views} views</span>
                     <Button asChild variant="ghost" size="sm">
-                      <Link href={`/support/articles/${article.id}`}>Read →</Link>
+                      <Link href={`/support/category/getting-started`}>Read →</Link>
                     </Button>
                   </div>
                 </CardContent>

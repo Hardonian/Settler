@@ -81,7 +81,7 @@ export default function Enterprise() {
       />
 
       {/* Hero CTA Buttons */}
-      <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-8" aria-label="Call to action">
+      <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-12" aria-label="Call to action">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -110,14 +110,14 @@ export default function Enterprise() {
       {/* Features Grid */}
       <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="enterprise-features-heading">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-20">
             <h2
               id="enterprise-features-heading"
-              className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
+              className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
             >
               Everything You Need
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4">
               Enterprise features designed for scale, security, and compliance
             </p>
           </div>
@@ -146,11 +146,11 @@ export default function Enterprise() {
         aria-labelledby="benefits-heading"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>
               <h2
                 id="benefits-heading"
-                className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
+                className="text-3xl md:text-4xl font-bold mb-8 text-slate-900 dark:text-white"
               >
                 Why Enterprise?
               </h2>
@@ -196,10 +196,10 @@ export default function Enterprise() {
                       </svg>
                     </div>
                     <div className="ml-4">
-                      <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
+                      <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
                         {benefit.title}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-300">{benefit.description}</p>
+                      <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{benefit.description}</p>
                     </div>
                   </div>
                 ))}
@@ -223,11 +223,11 @@ export default function Enterprise() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4" aria-label="Demo request form">
+                <form onSubmit={handleSubmit} className="space-y-5" aria-label="Demo request form">
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2.5"
                     >
                       Name
                     </label>
@@ -244,7 +244,7 @@ export default function Enterprise() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2.5"
                     >
                       Email
                     </label>
@@ -261,7 +261,7 @@ export default function Enterprise() {
                   <div>
                     <label
                       htmlFor="company"
-                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2.5"
                     >
                       Company
                     </label>
@@ -278,7 +278,7 @@ export default function Enterprise() {
                   <div>
                     <label
                       htmlFor="message"
-                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2.5"
                     >
                       Message
                     </label>
@@ -345,14 +345,14 @@ export default function Enterprise() {
       {/* Coming Soon Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="coming-soon-heading">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2
               id="coming-soon-heading"
-              className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
+              className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
             >
               Coming Soon
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4">
               Enterprise features in development
             </p>
           </div>
@@ -413,11 +413,11 @@ export default function Enterprise() {
       {/* Trust Indicators */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white">
               Enterprise-Grade Security & Compliance
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4">
               Join leading companies using Settler for mission-critical reconciliation
             </p>
           </div>

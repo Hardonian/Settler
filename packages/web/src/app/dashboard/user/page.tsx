@@ -184,7 +184,7 @@ function UserDashboardContent() {
                       <Link href="/playground">Start Onboarding</Link>
                     </Button>
                     <Button asChild variant="outline" className="font-medium">
-                      <Link href="/docs/getting-started">View Guide</Link>
+                      <Link href="/docs">View Guide</Link>
                     </Button>
                   </div>
                 </div>

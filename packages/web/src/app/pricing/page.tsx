@@ -143,9 +143,9 @@ export default function Pricing() {
       />
 
       {/* Billing Toggle */}
-      <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-12" aria-label="Billing cycle selector">
+      <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-16" aria-label="Billing cycle selector">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-4 flex-wrap">
             <span
               className={`text-sm ${
                 billingCycle === "monthly"
@@ -189,13 +189,13 @@ export default function Pricing() {
       </section>
 
       {/* Pricing Cards */}
-      <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="pricing-heading">
+      <section className="py-20 md:py-24 px-4 sm:px-6 lg:px-8" aria-labelledby="pricing-heading">
         <div className="max-w-7xl mx-auto">
           <h2 id="pricing-heading" className="sr-only">
             Pricing Plans
           </h2>
           <div
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10"
             role="list"
             aria-label="Pricing plans"
           >
@@ -224,7 +224,7 @@ export default function Pricing() {
       <AnimatedFAQ faqs={faqs} />
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <ConversionCTA
             title="Ready to Get Started?"

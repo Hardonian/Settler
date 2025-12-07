@@ -165,7 +165,7 @@ export default function BillingDashboardPage() {
           title="Usage Warning"
           message={`Approaching limits for ${data.warnings.length} feature${data.warnings.length > 1 ? "s" : ""}. Consider upgrading.`}
           severity="warning"
-          onUpgrade={() => router.push("/dashboard/billing/upgrade")}
+          onUpgrade={() => router.push("/pricing")}
         />
       )}
 
