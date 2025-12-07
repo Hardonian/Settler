@@ -10,7 +10,7 @@
  * - Handling Stripe webhooks
  */
 
-import { Router, Response } from "express";
+import express, { Router, Response } from "express";
 import { authMiddleware, AuthRequest } from "../middleware/auth";
 import { logError, logInfo } from "../utils/logger";
 import Stripe from "stripe";
@@ -542,6 +542,7 @@ router.get("/invoice/estimate", authMiddleware, async (req: AuthRequest, res: Re
 /**
  * Handle Stripe webhooks
  * POST /api/billing/webhook
+ * Note: Raw body middleware is applied in index.ts before this router
  */
 router.post("/webhook", async (req: AuthRequest, res: Response) => {
   try {
@@ -559,9 +560,9 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
     let event: Stripe.Event;
 
     try {
-      // req.body is already a Buffer from express.raw() middleware
-      const body = req.body instanceof Buffer ? req.body : Buffer.from(JSON.stringify(req.body));
-      event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+      // Get raw body (set by middleware or use req.body if Buffer)
+      const rawBody = (req as any).rawBody || (req.body instanceof Buffer ? req.body : Buffer.from(JSON.stringify(req.body)));
+      event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
     } catch (err) {
       logError("Webhook signature verification failed", err);
       return res.status(400).json({

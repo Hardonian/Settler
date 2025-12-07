@@ -116,6 +116,9 @@ export class SecretsManager {
 
 // Required secrets configuration
 export const REQUIRED_SECRETS: SecretConfig[] = [
+  // Stripe secrets are optional (billing works without them initially)
+  // { name: "STRIPE_SECRET_KEY", required: false },
+  // { name: "STRIPE_WEBHOOK_SECRET", required: false },
   {
     name: "JWT_SECRET",
     required: true,

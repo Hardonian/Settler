@@ -1,0 +1,51 @@
+name: Deploy Edge Functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'supabase/functions/**'
+      - '.github/workflows/deploy-edge-functions.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy-functions:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Deploy Edge Functions
+        run: |
+          supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          
+          # Deploy all billing-related edge functions
+          supabase functions deploy log-usage --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          supabase functions deploy compute-bill --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          supabase functions deploy trigger-upgrade-alert --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          supabase functions deploy sync-usage-to-stripe --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          supabase functions deploy integration-sync-stripe --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          supabase functions deploy integration-sync-shopify --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          supabase functions deploy integration-sync-paypal --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          supabase functions deploy integration-sync-tiktok --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+
+      - name: Verify Functions
+        run: |
+          supabase functions list --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}

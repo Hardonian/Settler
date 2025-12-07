@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, NextFunction } from "express";
+import express, { Express, Request, Response, NextFunction, raw } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -158,10 +158,14 @@ const ipLimiter = rateLimit({
 app.use("/api/", ipLimiter);
 
 // Stripe webhook needs raw body for signature verification
-// Register it BEFORE JSON parser
-app.use(
+// Apply raw body middleware specifically for webhook route
+app.post(
   "/api/billing/webhook",
-  express.raw({ type: "application/json", limit: "1mb" })
+  express.raw({ type: "application/json", limit: "1mb" }),
+  (req, res, next) => {
+    // Continue to billing router
+    next();
+  }
 );
 
 // Body parsing with size and depth limits
@@ -327,7 +331,8 @@ app.use("/api/v2/notifications", authMiddleware, notificationsRouter);
 app.use("/api/v1/usage", authMiddleware, usageRouter);
 app.use("/api/v2/usage", authMiddleware, usageRouter);
 
-// Billing routes (requires auth, except webhook endpoint)
+// Billing routes
+// Note: /api/billing/webhook is handled above with raw body middleware
 app.use("/api/billing", billingRouter);
 
 // Admin billing configuration routes
