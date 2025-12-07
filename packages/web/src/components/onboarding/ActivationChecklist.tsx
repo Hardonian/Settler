@@ -62,7 +62,7 @@ const DEFAULT_CHECKLIST: ChecklistItem[] = [
   },
 ];
 
-export function ActivationChecklist({ userId, onItemComplete, onAllComplete }: ActivationChecklistProps) {
+export function ActivationChecklist({ userId, onItemComplete: _onItemComplete, onAllComplete: _onAllComplete }: ActivationChecklistProps) {
   const [items, _setItems] = useState<ChecklistItem[]>(DEFAULT_CHECKLIST);
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
