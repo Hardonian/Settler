@@ -139,14 +139,14 @@ export function SocialProofCounter() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((stat, index) => (
             <div
               key={index}
               className={cn(
-                "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm",
-                "transition-all duration-500 hover:shadow-lg hover:scale-105",
-                "text-center",
+                "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 shadow-sm",
+                "transition-all duration-500 hover:shadow-xl hover:scale-105 hover:-translate-y-1",
+                "text-center relative overflow-hidden group",
                 isVisible
                   ? "opacity-100 translate-y-0 scale-100"
                   : "opacity-0 translate-y-4 scale-95"
@@ -156,25 +156,29 @@ export function SocialProofCounter() {
               }}
               role="listitem"
             >
+              <div className={cn(
+                "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-500",
+                stat.color.replace("from-", "").replace("to-", "").split(" ")[0]
+              )} />
               <div
                 className={cn(
-                  "w-12 h-12 rounded-lg bg-gradient-to-br mx-auto mb-4 flex items-center justify-center text-white",
+                  "w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br mx-auto mb-3 sm:mb-4 flex items-center justify-center text-white transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3",
                   stat.color
                 )}
               >
                 {stat.icon}
               </div>
-              <div className="mb-2">
-                <span className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
+              <div className="mb-2 relative z-10">
+                <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
                   {stat.value}
                 </span>
                 {stat.suffix && (
-                  <span className="text-xl text-slate-600 dark:text-slate-400 ml-1">
+                  <span className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 ml-1">
                     {stat.suffix}
                   </span>
                 )}
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium relative z-10">
                 {stat.label}
               </p>
             </div>

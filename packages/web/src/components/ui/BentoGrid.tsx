@@ -23,21 +23,6 @@ const gapClasses = {
   xl: "gap-8",
 };
 
-const colSpanClasses = {
-  1: "col-span-1",
-  2: "col-span-2",
-  3: "col-span-3",
-  4: "col-span-4",
-  5: "col-span-5",
-  6: "col-span-6",
-};
-
-const rowSpanClasses = {
-  1: "row-span-1",
-  2: "row-span-2",
-  3: "row-span-3",
-  4: "row-span-4",
-};
 
 export function BentoGrid({ children, className, columns = 3, gap = "md" }: BentoGridProps) {
   // Tailwind doesn't support dynamic class names, so we use inline styles
@@ -74,8 +59,19 @@ export function BentoGridItem({
   return (
     <div
       className={cn(
-        colSpanClasses[colSpan],
-        rowSpanClasses[rowSpan],
+        // Mobile: always span 1 column
+        "col-span-1",
+        // Desktop: apply colSpan
+        colSpan === 2 && "md:col-span-2",
+        colSpan === 3 && "md:col-span-3",
+        colSpan === 4 && "md:col-span-4",
+        colSpan === 5 && "md:col-span-5",
+        colSpan === 6 && "md:col-span-6",
+        // Row span (only on desktop)
+        rowSpan === 1 && "md:row-span-1",
+        rowSpan === 2 && "md:row-span-2",
+        rowSpan === 3 && "md:row-span-3",
+        rowSpan === 4 && "md:row-span-4",
         "min-h-[200px]",
         "w-full",
         "overflow-hidden",

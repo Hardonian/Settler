@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import {
   OrganizationSchema,
   WebSiteSchema,
@@ -129,6 +130,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeInitializer />
         <SkipToMainContent />
+        <ScrollProgress />
         <ErrorBoundary componentName="RootLayout">
           <QueryProvider>
             <SmoothScroll>{children}</SmoothScroll>

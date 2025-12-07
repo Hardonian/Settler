@@ -1,45 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, useScroll, useSpring } from "framer-motion";
 
-interface ScrollProgressProps {
-  className?: string;
-}
-
-export function ScrollProgress({ className }: ScrollProgressProps) {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const updateProgress = () => {
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-      const scrollableHeight = documentHeight - windowHeight;
-      const progressPercent = scrollableHeight > 0 
-        ? (scrollTop / scrollableHeight) * 100 
-        : 0;
-      setProgress(progressPercent);
-    };
-
-    window.addEventListener("scroll", updateProgress);
-    updateProgress();
-
-    return () => window.removeEventListener("scroll", updateProgress);
-  }, []);
+export function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
   return (
-    <div
-      className={className}
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: `${progress}%`,
-        height: "2px",
-        backgroundColor: "rgb(59, 130, 246)",
-        zIndex: 9999,
-        transition: "width 0.1s ease-out",
-      }}
+    <motion.div
+      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 origin-left z-[9999]"
+      style={{ scaleX }}
     />
   );
 }
