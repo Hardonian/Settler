@@ -13,6 +13,8 @@ import { AnimatedPricingCard } from "@/components/AnimatedPricingCard";
 import { AnimatedFAQ } from "@/components/AnimatedFAQ";
 import { EdgeAIMarketingSection } from "@/components/EdgeAIMarketingSection";
 import { FAQSchema } from "@/components/StructuredData";
+import { PurchaseScrutiny } from "@/components/PurchaseScrutiny";
+import { PaymentTypes } from "@/components/PaymentTypes";
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
@@ -207,17 +209,11 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* Trust Badges */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
-              Trusted & Secure
-            </h2>
-          </div>
-          <TrustBadges />
-        </div>
-      </section>
+      {/* Purchase Scrutiny & Trust */}
+      <PurchaseScrutiny />
+
+      {/* Payment Types */}
+      <PaymentTypes />
 
       {/* Feature Comparison Table */}
       <FeatureComparison />

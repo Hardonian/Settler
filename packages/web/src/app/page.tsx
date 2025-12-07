@@ -20,6 +20,27 @@ const TrustBadges = dynamic(
   () => import("@/components/TrustBadges").then((mod) => ({ default: mod.TrustBadges })),
   { ssr: true }
 );
+const EnhancedTrustBadges = dynamic(
+  () =>
+    import("@/components/EnhancedTrustBadges").then((mod) => ({
+      default: mod.EnhancedTrustBadges,
+    })),
+  { ssr: true }
+);
+const PurchaseScrutiny = dynamic(
+  () =>
+    import("@/components/PurchaseScrutiny").then((mod) => ({
+      default: mod.PurchaseScrutiny,
+    })),
+  { ssr: true }
+);
+const SocialProofCounter = dynamic(
+  () =>
+    import("@/components/SocialProofCounter").then((mod) => ({
+      default: mod.SocialProofCounter,
+    })),
+  { ssr: true }
+);
 const CustomerLogos = dynamic(
   () => import("@/components/CustomerLogos").then((mod) => ({ default: mod.CustomerLogos })),
   { ssr: true }
@@ -252,38 +273,21 @@ const report = await client.jobs.run(job.id);
           </div>
         </section>
 
-        {/* Secondary Stats Section */}
-        <section className="py-20 glass-subtle" aria-labelledby="secondary-stats-heading">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <TextRevealHeading
-              as="h2"
-              id="secondary-stats-heading"
-              text="Trusted by Industry Leaders"
-              className="text-2xl md:text-3xl font-bold text-center mb-12 text-slate-900 dark:text-white"
-              delay={0}
-              staggerDelay={0.02}
-            />
-            <BentoGrid columns={4} gap="md">
-              {secondaryStats.map((stat, index) => (
-                <BentoGridItem key={index} colSpan={1}>
-                  <SpotlightCard className="h-full p-6">
-                    <AnimatedStatCard
-                      value={stat.value}
-                      label={stat.label}
-                      description={stat.description}
-                      index={index}
-                    />
-                  </SpotlightCard>
-                </BentoGridItem>
-              ))}
-            </BentoGrid>
-          </div>
-        </section>
+        {/* Social Proof Counter */}
+        <SocialProofCounter />
 
-        {/* Trust Badges */}
+        {/* Enhanced Trust Badges */}
         <section className="py-12 px-4 sm:px-6 lg:px-8 glass-subtle">
           <div className="max-w-7xl mx-auto">
-            <TrustBadges />
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+                Enterprise-Grade Security & Compliance
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Your data is protected with industry-leading security standards
+              </p>
+            </div>
+            <EnhancedTrustBadges />
           </div>
         </section>
 
@@ -483,6 +487,9 @@ const report = await client.jobs.run(job.id);
             <NewsletterSignup />
           </div>
         </section>
+
+        {/* Purchase Scrutiny Before Final CTA */}
+        <PurchaseScrutiny />
 
         {/* Final CTA Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
