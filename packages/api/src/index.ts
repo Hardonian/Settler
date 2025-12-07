@@ -81,7 +81,7 @@ initializeSentry();
 app.use(sentryRequestHandler());
 app.use(sentryTracingHandler());
 
-// Security middleware - Enhanced configuration
+// Security middleware - Enhanced configuration (helmet 7.x compatible)
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -113,7 +113,6 @@ app.use(
     },
     ieNoOpen: true,
     noSniff: true,
-    originAgentCluster: true,
     permittedCrossDomainPolicies: false,
     referrerPolicy: { policy: "strict-origin-when-cross-origin" },
     xssFilter: true,
