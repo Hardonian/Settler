@@ -42,18 +42,18 @@ export class WhatsAppTelegramAdapter implements Adapter {
     return results;
   }
 
-  async fetchWhatsAppPayments(token: string, dateRange?: { start: Date; end: Date }): Promise<NormalizedData[]> {
+  async fetchWhatsAppPayments(_token: string, _dateRange?: { start: Date; end: Date }): Promise<NormalizedData[]> {
     // WhatsApp Business API doesn't have a direct payments endpoint
     // Payments are typically handled through payment links or external processors
     // This would integrate with payment link reconciliation
-    const url = `https://graph.facebook.com/v18.0/me/messages`;
+    // const url = `https://graph.facebook.com/v18.0/me/messages`;
     
     // In production, this would query payment link transactions
     // For now, return empty array as WhatsApp payments are typically processed externally
     return [];
   }
 
-  async fetchTelegramPayments(botToken: string, dateRange?: { start: Date; end: Date }): Promise<NormalizedData[]> {
+  async fetchTelegramPayments(_botToken: string, _dateRange?: { start: Date; end: Date }): Promise<NormalizedData[]> {
     // Telegram Bot API doesn't provide payment history directly
     // Payments are handled through Telegram Payments API
     // This would integrate with payment provider webhooks
@@ -74,7 +74,7 @@ export class WhatsAppTelegramAdapter implements Adapter {
       payment_link_id?: string;
     };
 
-    return {
+    const result: NormalizedData = {
       id: payment.id,
       amount: payment.amount,
       currency: payment.currency.toUpperCase(),
@@ -86,8 +86,14 @@ export class WhatsAppTelegramAdapter implements Adapter {
         source: `${payment.platform}_messaging`,
       },
       sourceId: payment.id,
-      referenceId: payment.payment_link_id || payment.message_id,
     };
+    
+    const refId = payment.payment_link_id || payment.message_id;
+    if (refId) {
+      result.referenceId = refId;
+    }
+    
+    return result;
   }
 
   validate(data: NormalizedData): ValidationResult {
@@ -106,9 +112,8 @@ export class WhatsAppTelegramAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return {
-      valid: errors.length === 0,
-      errors: errors.length > 0 ? errors : undefined,
-    };
+    return errors.length === 0
+      ? { valid: true }
+      : { valid: false, errors };
   }
 }

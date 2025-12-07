@@ -70,7 +70,7 @@ export class GA4DeepSyncAdapter implements Adapter {
     return rows.map((row: unknown) => this.normalize(row));
   }
 
-  async getAccessToken(credentials: string): Promise<string> {
+  async getAccessToken(_credentials: string): Promise<string> {
     // In production, implement OAuth2 flow with service account
     // For now, return a placeholder
     // This would use google-auth-library in Node.js
@@ -118,9 +118,8 @@ export class GA4DeepSyncAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return {
-      valid: errors.length === 0,
-      errors: errors.length > 0 ? errors : undefined,
-    };
+    return errors.length === 0
+      ? { valid: true }
+      : { valid: false, errors };
   }
 }

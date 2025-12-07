@@ -87,9 +87,8 @@ export class GooglePayAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return {
-      valid: errors.length === 0,
-      errors: errors.length > 0 ? errors : undefined,
-    };
+    return errors.length === 0
+      ? { valid: true }
+      : { valid: false, errors };
   }
 }

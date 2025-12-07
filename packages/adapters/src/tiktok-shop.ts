@@ -23,7 +23,13 @@ export class TikTokShopAdapter implements Adapter {
     // Fetch TikTok Shop orders
     try {
       const shopUrl = "https://open-api.tiktokglobalshop.com/order/orders/search";
-      const shopBody = {
+      const shopBody: {
+        app_key: string;
+        access_token: string;
+        timestamp: number;
+        create_time_from?: number;
+        create_time_to?: number;
+      } = {
         app_key: appKey,
         access_token: accessToken,
         timestamp: Math.floor(Date.now() / 1000),
@@ -65,8 +71,8 @@ export class TikTokShopAdapter implements Adapter {
       });
 
       if (dateRange?.start && dateRange?.end) {
-        adsParams.append("start_date", dateRange.start.toISOString().split("T")[0]);
-        adsParams.append("end_date", dateRange.end.toISOString().split("T")[0]);
+        adsParams.append("start_date", dateRange.start.toISOString().split("T")[0]!);
+        adsParams.append("end_date", dateRange.end.toISOString().split("T")[0]!);
       }
 
       const adsResponse = await fetch(`${adsUrl}?${adsParams.toString()}`);
@@ -167,9 +173,8 @@ export class TikTokShopAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return {
-      valid: errors.length === 0,
-      errors: errors.length > 0 ? errors : undefined,
-    };
+    return errors.length === 0
+      ? { valid: true }
+      : { valid: false, errors };
   }
 }

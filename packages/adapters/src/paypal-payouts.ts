@@ -48,7 +48,7 @@ export class PayPalPayoutsAdapter implements Adapter {
     return payouts.map((payout: unknown) => this.normalize(payout));
   }
 
-  async getAccessToken(clientId: string, clientSecret: string): Promise<string> {
+  async getAccessToken(_clientId: string, _clientSecret: string): Promise<string> {
     const response = await fetch("https://api-m.paypal.com/v1/oauth2/token", {
       method: "POST",
       headers: {
@@ -117,9 +117,8 @@ export class PayPalPayoutsAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return {
-      valid: errors.length === 0,
-      errors: errors.length > 0 ? errors : undefined,
-    };
+    return errors.length === 0
+      ? { valid: true }
+      : { valid: false, errors };
   }
 }
