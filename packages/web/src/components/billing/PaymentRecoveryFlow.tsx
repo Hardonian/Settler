@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { AlertTriangle, CreditCard, Clock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -215,9 +216,9 @@ export function PaymentRecoveryFlow({ userId, subscriptionId }: PaymentRecoveryF
         {recovery.status === "grace_period" && (
           <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
             Need help? Contact{" "}
-            <a href="/support" className="text-blue-600 dark:text-blue-400 hover:underline">
+            <Link href="/support" className="text-blue-600 dark:text-blue-400 hover:underline">
               support
-            </a>
+            </Link>
             .
           </p>
         )}
