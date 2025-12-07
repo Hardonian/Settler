@@ -12,6 +12,8 @@ import { sendSuccess, sendError, sendCreated, sendNoContent } from "../utils/api
 import { handleRouteError } from "../utils/error-handler";
 import { trackEventAsync } from "../utils/event-tracker";
 import { validateAdapterConfig } from "../utils/adapter-config-validator";
+import { logUsageEvent } from "../utils/usage-tracker";
+import { getBillingAccount } from "../utils/billing-helpers";
 
 const router = Router();
 const jobService = new JobRouteService();
@@ -119,6 +121,29 @@ router.post(
         targetAdapter: req.body.target.adapter,
         hasSchedule: !!req.body.schedule,
       });
+
+      // Log usage for billing
+      try {
+        const billingAccount = await getBillingAccount(userId, req.tenantId);
+        if (billingAccount) {
+          await logUsageEvent({
+            billingAccountId: billingAccount.id,
+            eventType: "reconciliation_job",
+            quantity: 1,
+            userId: userId,
+            ...(req.tenantId && { tenantId: req.tenantId }),
+            integrationId: req.body.source.adapter,
+            metadata: {
+              job_id: job.id,
+              source_adapter: req.body.source.adapter,
+              target_adapter: req.body.target.adapter,
+            },
+          });
+        }
+      } catch (usageError) {
+        // Don't fail the request if usage logging fails
+        logError("Failed to log usage for job creation", usageError);
+      }
 
       sendCreated(res, job, "Reconciliation job created successfully");
     } catch (error: unknown) {
@@ -336,6 +361,26 @@ router.post(
          VALUES ($1, $2, $3)`,
         ["job_executed", userId, JSON.stringify({ jobId: id, executionId })]
       );
+
+      // Log usage for billing (job execution)
+      try {
+        const billingAccount = await getBillingAccount(userId, req.tenantId);
+        if (billingAccount) {
+          await logUsageEvent({
+            billingAccountId: billingAccount.id,
+            eventType: "reconciliation_job",
+            quantity: 1,
+            userId: userId,
+            ...(req.tenantId && { tenantId: req.tenantId }),
+            metadata: {
+              job_id: id,
+              execution_id: executionId,
+            },
+          });
+        }
+      } catch (usageError) {
+        logError("Failed to log usage for job execution", usageError);
+      }
 
       // Queue job execution (async)
       // In production, this would use a job queue like Bull

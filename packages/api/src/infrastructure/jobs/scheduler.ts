@@ -13,6 +13,7 @@ import { processPendingWebhooks } from "../../utils/webhook-queue";
 import { processLifecycleEmails } from "../../services/email/lifecycle-sequences";
 import { aggregateInsights } from "../../services/ai-insights/insight-aggregator";
 import { suggestImprovements, saveImprovementSuggestions } from "../../services/ai-insights/improvement-suggester";
+import { runDailyUsageAggregation } from "../../jobs/usage-aggregation";
 
 // Redis connection for BullMQ
 const redisConnection = new Redis({
@@ -91,6 +92,11 @@ const jobHandlers: Record<string, () => Promise<void>> = {
     logInfo("Starting lifecycle email sequence");
     await processLifecycleEmails();
     logInfo("Lifecycle email sequence completed");
+  },
+  "usage-aggregation": async () => {
+    logInfo("Starting daily usage aggregation");
+    await runDailyUsageAggregation();
+    logInfo("Daily usage aggregation completed");
   },
   "ai-insights": async () => {
     logInfo("Starting AI insights aggregation");
@@ -204,6 +210,19 @@ export async function initializeScheduledJobs(): Promise<void> {
       }
     );
 
+    // Usage aggregation: Daily at 3 AM UTC (after data retention)
+    await jobQueue.add(
+      "usage-aggregation",
+      {},
+      {
+        repeat: {
+          pattern: "0 3 * * *", // Daily at 3 AM
+          tz: "UTC",
+        },
+        jobId: "usage-aggregation-daily",
+      }
+    );
+
     // Webhook retry: Every 5 minutes
     await jobQueue.add(
       "webhook-retry",
@@ -272,6 +291,7 @@ export async function initializeScheduledJobs(): Promise<void> {
     logInfo("Scheduled jobs initialized", {
       jobs: [
         "data-retention (daily 2 AM)",
+        "usage-aggregation (daily 3 AM)",
         "email-lifecycle (daily 9 AM)",
         "email-monthly (1st of month 9 AM)",
         "fx-rate-sync (daily 1 AM)",

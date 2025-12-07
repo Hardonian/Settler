@@ -30,6 +30,7 @@ import { notificationsRouter } from "./routes/notifications";
 import { usageRouter } from "./routes/usage";
 import { batchRouter } from "./routes/batch";
 import { exportsRouter } from "./routes/exports";
+import { billingRouter } from "./routes/billing";
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
 import { featureFlagsMiddleware } from "./middleware/feature-flags";
 import { usageTrackingMiddleware } from "./middleware/usage-tracking";
@@ -155,6 +156,17 @@ const ipLimiter = rateLimit({
 });
 
 app.use("/api/", ipLimiter);
+
+// Stripe webhook needs raw body for signature verification
+// Apply raw body middleware specifically for webhook route
+app.post(
+  "/api/billing/webhook",
+  express.raw({ type: "application/json", limit: "1mb" }),
+  (_req, _res, next) => {
+    // Continue to billing router
+    next();
+  }
+);
 
 // Body parsing with size and depth limits
 function countDepth(obj: unknown, current = 0): number {
@@ -318,6 +330,14 @@ app.use("/api/v2/notifications", authMiddleware, notificationsRouter);
 // Usage tracking routes (requires auth)
 app.use("/api/v1/usage", authMiddleware, usageRouter);
 app.use("/api/v2/usage", authMiddleware, usageRouter);
+
+// Billing routes
+// Note: /api/billing/webhook is handled above with raw body middleware
+app.use("/api/billing", billingRouter);
+
+// Admin billing configuration routes
+import { adminBillingConfigRouter } from "./routes/admin/billing-config";
+app.use("/api/admin/billing", authMiddleware, adminBillingConfigRouter);
 
 // User routes (requires auth)
 import userRouter from "./routes/user";

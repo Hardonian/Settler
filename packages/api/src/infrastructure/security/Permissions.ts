@@ -86,6 +86,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.USERS_WRITE,
     Permission.TENANT_READ,
     Permission.TENANT_WRITE,
+    Permission.ADMIN_READ,
+    Permission.ADMIN_WRITE,
     Permission.EDGE_NODES_READ,
     Permission.EDGE_NODES_WRITE,
     Permission.EDGE_MODELS_READ,
