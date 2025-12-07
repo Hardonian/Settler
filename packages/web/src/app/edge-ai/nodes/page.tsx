@@ -129,7 +129,12 @@ export default function EdgeNodesPage() {
                   <p className="font-medium">{node.jobsProcessed.toLocaleString()}</p>
                 </div>
                 <div>
-                  <Button asChild variant="outline" size="sm">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push(`/edge-ai/nodes/${node.id}`)}
+                  >
                     <Link href={`/edge-ai/nodes/${node.id}`}>View Details</Link>
                   </Button>
                 </div>

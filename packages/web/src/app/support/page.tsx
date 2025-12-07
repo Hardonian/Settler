@@ -161,7 +161,7 @@ export default function SupportPage() {
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="lg" className="flex-1">
-                  <Link href="/community">Contact Support</Link>
+                  <Link href="/support/contact">Contact Support</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="flex-1">
                   <Link href="/community">Ask Community</Link>

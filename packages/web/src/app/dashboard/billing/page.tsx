@@ -149,11 +149,11 @@ export default function BillingDashboardPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Button variant="outline" onClick={() => router.push("/dashboard/billing")} className="font-medium">
+          <Button variant="outline" onClick={() => router.push("/dashboard/billing/invoices")} className="font-medium">
             <Download className="mr-2 h-4 w-4" />
             Download Invoice
           </Button>
-          <Button onClick={() => router.push("/dashboard/billing")} className="font-medium">
+          <Button onClick={() => router.push("/dashboard/billing/payment-methods")} className="font-medium">
             <CreditCard className="mr-2 h-4 w-4" />
             Payment Methods
           </Button>
