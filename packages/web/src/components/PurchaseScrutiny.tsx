@@ -60,8 +60,8 @@ export function PurchaseScrutiny() {
     {
       icon: <CheckCircle2 className="w-6 h-6" />,
       label: "No Credit Card Required",
-      description: "Start your free trial with full access to all features",
-      badge: "Free Trial",
+      description: "Start your 30-day free trial with full access—cancel anytime",
+      badge: "Zero Risk",
     },
     {
       icon: <Clock className="w-6 h-6" />,
@@ -90,10 +90,10 @@ export function PurchaseScrutiny() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900 dark:text-white">
-            Your Purchase is Protected
+            Try Risk-Free. Buy with Confidence.
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            We take your security and satisfaction seriously. Here's how we protect you:
+            We partner with industry leaders and protect you with enterprise-grade security. Start free, no credit card required.
           </p>
         </div>
 
@@ -168,46 +168,6 @@ export function PurchaseScrutiny() {
           </div>
         </div>
 
-        {/* Payment Types */}
-        <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
-          <div className="text-center mb-6">
-            <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
-              Accepted Payment Methods
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Credit cards, ACH transfers, and wire transfers (Enterprise)
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-            <div className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-              <CreditCard className="w-5 h-5 text-blue-600" />
-              <div className="text-left">
-                <p className="text-sm font-medium text-slate-900 dark:text-white">
-                  Credit & Debit Cards
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Visa, Mastercard, Amex, Discover
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-              <Building2 className="w-5 h-5 text-green-600" />
-              <div className="text-left">
-                <p className="text-sm font-medium text-slate-900 dark:text-white">ACH Transfer</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Direct bank transfer (US)
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-              <ArrowRightLeft className="w-5 h-5 text-purple-600" />
-              <div className="text-left">
-                <p className="text-sm font-medium text-slate-900 dark:text-white">Wire Transfer</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Enterprise only</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

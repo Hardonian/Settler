@@ -47,10 +47,10 @@ export function PaymentTypes() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10">
           <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
-            Accepted Payment Methods
+            Secure Payment Options
           </h3>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Choose the payment method that works best for you
+            Multiple payment methods available. All transactions secured by Stripe.
           </p>
         </div>
 

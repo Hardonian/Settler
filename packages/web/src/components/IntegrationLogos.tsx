@@ -127,10 +127,10 @@ export function IntegrationLogos() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900 dark:text-white">
-            Connect Your Favorite Platforms
+            Trusted by Industry Leaders
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Pre-built adapters for 10+ platforms. Set up in 5 minutes with secure API key storage.
+            We integrate with the platforms you already use. Pre-built adapters for 10+ platforms—set up in 5 minutes.
           </p>
         </div>
 

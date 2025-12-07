@@ -20,13 +20,6 @@ const TrustBadges = dynamic(
   () => import("@/components/TrustBadges").then((mod) => ({ default: mod.TrustBadges })),
   { ssr: true }
 );
-const EnhancedTrustBadges = dynamic(
-  () =>
-    import("@/components/EnhancedTrustBadges").then((mod) => ({
-      default: mod.EnhancedTrustBadges,
-    })),
-  { ssr: true }
-);
 const PurchaseScrutiny = dynamic(
   () =>
     import("@/components/PurchaseScrutiny").then((mod) => ({
@@ -280,25 +273,10 @@ const report = await client.jobs.run(job.id);
           </div>
         </section>
 
-        {/* Social Proof Counter */}
+        {/* Social Proof Counter - FOMO & Trust */}
         <SocialProofCounter />
 
-        {/* Enhanced Trust Badges */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 glass-subtle">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900 dark:text-white">
-                Enterprise-Grade Security & Compliance
-              </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                Your data is protected with industry-leading security standards
-              </p>
-            </div>
-            <EnhancedTrustBadges />
-          </div>
-        </section>
-
-        {/* Integration Logos */}
+        {/* Integration Logos - Partnerships with Trusted Brands */}
         <IntegrationLogos />
 
         {/* Code Example Section */}
@@ -495,8 +473,12 @@ const report = await client.jobs.run(job.id);
           </div>
         </section>
 
-        {/* Purchase Scrutiny Before Final CTA */}
-        <PurchaseScrutiny />
+        {/* Trust & Security - Reaffirm Before Purchase Decision */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto">
+            <PurchaseScrutiny />
+          </div>
+        </section>
 
         {/* Final CTA Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">

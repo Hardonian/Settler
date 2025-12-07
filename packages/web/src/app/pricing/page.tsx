@@ -209,10 +209,10 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* Purchase Scrutiny & Trust */}
+      {/* Trust & Security - Right Before Purchase Decision */}
       <PurchaseScrutiny />
 
-      {/* Payment Types */}
+      {/* Payment Methods - Show Options Before Checkout */}
       <PaymentTypes />
 
       {/* Feature Comparison Table */}
