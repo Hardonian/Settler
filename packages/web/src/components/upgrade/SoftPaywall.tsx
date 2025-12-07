@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 interface SoftPaywallProps {
   feature: string;
@@ -23,7 +22,7 @@ export function SoftPaywall({
   feature,
   description,
   upgradeMessage,
-  currentPlan,
+  currentPlan: _currentPlan,
   requiredPlan,
   onUpgrade,
   onDismiss,

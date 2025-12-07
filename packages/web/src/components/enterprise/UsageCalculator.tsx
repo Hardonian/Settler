@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calculator, TrendingUp } from "lucide-react";
+import { Calculator } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ export function UsageCalculator() {
   const calculate = () => {
     const transactions = parseInt(inputs.transactionsPerMonth) || 0;
     const integrations = parseInt(inputs.integrations) || 0;
-    const jobs = parseInt(inputs.jobsPerDay) || 0;
+    const _jobs = parseInt(inputs.jobsPerDay) || 0;
     const retention = parseInt(inputs.dataRetention) || 12;
 
     // Base enterprise plan

@@ -63,7 +63,7 @@ const DEFAULT_CHECKLIST: ChecklistItem[] = [
 ];
 
 export function ActivationChecklist({ userId, onItemComplete, onAllComplete }: ActivationChecklistProps) {
-  const [items, setItems] = useState<ChecklistItem[]>(DEFAULT_CHECKLIST);
+  const [items, _setItems] = useState<ChecklistItem[]>(DEFAULT_CHECKLIST);
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
@@ -91,7 +91,7 @@ export function ActivationChecklist({ userId, onItemComplete, onAllComplete }: A
     }
   };
 
-  const markItemComplete = async (itemId: string) => {
+  const _markItemComplete = async (itemId: string) => {
     if (!userId) return;
 
     try {
@@ -127,7 +127,7 @@ export function ActivationChecklist({ userId, onItemComplete, onAllComplete }: A
     (item) => item.required && completedItems.has(item.id)
   ).length;
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
-  const requiredProgress = requiredCount > 0 ? (completedRequiredCount / requiredCount) * 100 : 0;
+  const _requiredProgress = requiredCount > 0 ? (completedRequiredCount / requiredCount) * 100 : 0;
   const allRequiredComplete = requiredCount === completedRequiredCount;
 
   if (loading) {

@@ -186,23 +186,23 @@ export async function detectPerformanceAnomalies(userId: string): Promise<Anomal
   if (!jobs) return anomalies;
 
   // Check for slow jobs
-  const recentJobs = jobs.filter((j) => {
-    const report = j.reconciliation_reports?.[0];
-    return report && new Date(report.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const recentJobs = jobs.filter((j: any) => {
+    const report = (j as any).reconciliation_reports?.[0];
+    return report && new Date((report as any).created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   });
 
   const avgDuration =
-    recentJobs.reduce((sum, j) => {
-      const report = j.reconciliation_reports?.[0];
-      return sum + (report?.duration_ms || 0);
+    recentJobs.reduce((sum: number, j: any) => {
+      const report = (j as any).reconciliation_reports?.[0];
+      return sum + ((report as any)?.duration_ms || 0);
     }, 0) / recentJobs.length;
 
   // Flag jobs taking > 2x average
   for (const job of recentJobs) {
-    const report = job.reconciliation_reports?.[0];
-    if (report && report.duration_ms > avgDuration * 2) {
+    const report = (job as any).reconciliation_reports?.[0];
+    if (report && (report as any).duration_ms > avgDuration * 2) {
       anomalies.push({
-        id: `performance-slow-${job.id}`,
+        id: `performance-slow-${(job as any).id}`,
         type: "performance",
         severity: "low",
         title: "Slow Reconciliation Detected",

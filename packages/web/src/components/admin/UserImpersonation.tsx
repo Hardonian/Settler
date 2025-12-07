@@ -6,13 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 
 export function UserImpersonation() {
   const [searchQuery, setSearchQuery] = useState("");
   const [impersonating, setImpersonating] = useState<string | null>(null);
 
-  const handleImpersonate = async (userId: string) => {
+  const _handleImpersonate = async (userId: string) => {
     try {
       const response = await fetch("/api/admin/impersonate", {
         method: "POST",

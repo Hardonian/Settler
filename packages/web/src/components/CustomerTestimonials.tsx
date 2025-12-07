@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { Star, Quote } from "lucide-react";
 

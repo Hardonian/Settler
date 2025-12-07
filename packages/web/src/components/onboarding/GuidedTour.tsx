@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { X, ChevronRight, ChevronLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface TourStep {

@@ -25,7 +25,7 @@ export interface CompetitorUpdate {
   detectedAt: Date;
 }
 
-const COMPETITORS: Competitor[] = [
+const _COMPETITORS: Competitor[] = [
   {
     name: "Supabase",
     category: "Backend-as-a-Service",

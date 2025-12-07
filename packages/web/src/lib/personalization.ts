@@ -20,7 +20,7 @@ export interface PersonalizedCTA {
 export async function getPersonalizedCTA(
   userId: string | null,
   source: TrafficSource,
-  page: string
+  _page: string
 ): Promise<PersonalizedCTA> {
   const supabase = createClient();
 
@@ -124,7 +124,7 @@ export async function getPersonalizedCTA(
  */
 export async function getPersonalizedContent(
   userId: string | null,
-  contentType: "hero" | "features" | "testimonials"
+  _contentType: "hero" | "features" | "testimonials"
 ): Promise<string> {
   if (!userId) {
     return "default"; // Return default content for anonymous users

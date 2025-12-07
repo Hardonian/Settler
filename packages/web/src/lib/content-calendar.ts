@@ -19,7 +19,6 @@ export interface ContentItem {
 export function generateContentCalendar(startDate: Date = new Date()): ContentItem[] {
   const calendar: ContentItem[] = [];
   const months = 3;
-  const daysPerMonth = 30;
 
   const topics = [
     "Payment Reconciliation Best Practices",
