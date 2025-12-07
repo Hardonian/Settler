@@ -28,7 +28,7 @@ export function UsageBar({
   const percentage = limit > 0 ? Math.min((current / limit) * 100, 100) : 0;
   const isUnlimited = limit === -1;
 
-  const getColorClass = () => {
+  const getProgressColor = () => {
     if (isUnlimited) return "bg-green-500";
     if (percentage >= dangerThreshold) return "bg-red-500";
     if (percentage >= warningThreshold) return "bg-yellow-500";
@@ -62,7 +62,7 @@ export function UsageBar({
         <Progress
           value={percentage}
           className="h-2"
-          indicatorClassName={getColorClass()}
+          indicatorClassName={getProgressColor()}
         />
       )}
       {percentage >= warningThreshold && !isUnlimited && (

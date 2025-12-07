@@ -79,3 +79,23 @@ export type { DataLoaderProps } from "./data-loader";
 
 export { ErrorBoundary } from "./error-boundary";
 export type { ErrorBoundaryProps, ErrorFallbackProps } from "./error-boundary";
+
+export { Progress } from "./progress";
+export type { ProgressProps } from "./progress";
+
+export {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "./dialog";
+export type {
+  DialogProps,
+  DialogContentProps,
+  DialogHeaderProps,
+  DialogTitleProps,
+  DialogDescriptionProps,
+  DialogFooterProps,
+} from "./dialog";

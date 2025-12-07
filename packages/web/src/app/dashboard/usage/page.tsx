@@ -82,7 +82,7 @@ export default function UsageDashboardPage() {
           { integration_id: "paypal", name: "PayPal", usage: 1200, percentage: 16.0 },
         ],
         dailyUsage: Array.from({ length: 30 }, (_, i) => ({
-          date: format(subDays(new Date(), 29 - i), "yyyy-MM-dd"),
+          date: subDays(new Date(), 29 - i).toISOString().split('T')[0],
           reconciliation_jobs: Math.floor(Math.random() * 300) + 200,
           api_requests: Math.floor(Math.random() * 3000) + 2000,
           webhook_events: Math.floor(Math.random() * 2000) + 1000,
@@ -128,7 +128,7 @@ export default function UsageDashboardPage() {
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-gray-400" />
           <span className="text-sm text-gray-600 dark:text-gray-400">
-            {format(new Date(data.period.start), "MMM d")} - {format(new Date(data.period.end), "MMM d, yyyy")}
+            {new Date(data.period.start).toLocaleDateString("en-US", { month: "short", day: "numeric" })} - {new Date(data.period.end).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
           </span>
         </div>
       </div>
