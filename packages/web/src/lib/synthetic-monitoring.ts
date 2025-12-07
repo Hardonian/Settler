@@ -65,7 +65,7 @@ export const CRITICAL_PATH_TESTS: SyntheticTest[] = [
 /**
  * Run synthetic test
  */
-export async function runSyntheticTest(test: SyntheticTest): Promise<{
+export async function runSyntheticTest(_test: SyntheticTest): Promise<{
   passed: boolean;
   duration: number;
   errors: string[];

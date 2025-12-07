@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { X, ChevronRight, ChevronLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface TourStep {
@@ -36,6 +35,8 @@ export function GuidedTour({ steps, onComplete, onSkip, tourId }: GuidedTourProp
     if (steps.length === 0) return;
 
     const step = steps[currentStep];
+    if (!step) return;
+    
     const element = document.querySelector(step.target);
 
     if (element) {
@@ -104,6 +105,8 @@ export function GuidedTour({ steps, onComplete, onSkip, tourId }: GuidedTourProp
   if (!isVisible || steps.length === 0) return null;
 
   const step = steps[currentStep];
+  if (!step) return null;
+  
   const isFirst = currentStep === 0;
   const isLast = currentStep === steps.length - 1;
 

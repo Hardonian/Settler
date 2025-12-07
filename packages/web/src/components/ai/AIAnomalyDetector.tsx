@@ -59,7 +59,6 @@ export function AIAnomalyDetector({ userId }: { userId?: string }) {
   }
 
   const criticalAnomalies = anomalies.filter((a) => a.severity === "critical");
-  const highAnomalies = anomalies.filter((a) => a.severity === "high");
 
   return (
     <div className="space-y-4">

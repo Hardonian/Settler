@@ -27,12 +27,12 @@ export async function generateReferralCode(userId: string): Promise<string> {
     .single();
 
   if (existing) {
-    return existing.referral_code;
+    return (existing as any).referral_code;
   }
 
   // Generate new code (user initials + random)
   const { data: user } = await supabase.from("users").select("email").eq("id", userId).single();
-  const initials = user?.email?.substring(0, 2).toUpperCase() || "US";
+  const initials = (user as any)?.email?.substring(0, 2).toUpperCase() || "US";
   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
   const code = `${initials}${random}`;
 
@@ -41,7 +41,7 @@ export async function generateReferralCode(userId: string): Promise<string> {
     referrer_user_id: userId,
     referral_code: code,
     status: "pending",
-  });
+  } as any);
 
   return code;
 }
@@ -68,7 +68,7 @@ export async function applyReferralCode(
   }
 
   // Check if user is referring themselves
-  if (referral.referrer_user_id === newUserId) {
+  if ((referral as any).referrer_user_id === newUserId) {
     return { success: false, error: "Cannot use your own referral code" };
   }
 
@@ -79,8 +79,8 @@ export async function applyReferralCode(
       referred_user_id: newUserId,
       status: "completed",
       completed_at: new Date().toISOString(),
-    })
-    .eq("id", referral.id);
+    } as any as never)
+    .eq("id", (referral as any).id);
 
   if (updateError) {
     return { success: false, error: "Failed to apply referral code" };
@@ -89,7 +89,7 @@ export async function applyReferralCode(
   // Award reward (when referred user upgrades to paid)
   // This will be triggered when the referred user upgrades
 
-  return { success: true, referrerUserId: referral.referrer_user_id };
+  return { success: true, referrerUserId: (referral as any).referrer_user_id };
 }
 
 /**
@@ -122,8 +122,8 @@ export async function awardReferralReward(
       reward_amount: rewardAmount,
       reward_currency: rewardCurrency,
       updated_at: new Date().toISOString(),
-    })
-    .eq("id", referral.id);
+    } as any as never)
+    .eq("id", (referral as any).id);
 
   // TODO: Send reward to referrer (credit account, send gift card, etc.)
 }
@@ -150,9 +150,9 @@ export async function getReferralStats(userId: string): Promise<{
 
   const totalReferrals = referrals?.length || 0;
   const completedReferrals =
-    referrals?.filter((r) => r.status === "completed" || r.status === "rewarded").length || 0;
+    referrals?.filter((r: any) => r.status === "completed" || r.status === "rewarded").length || 0;
   const totalRewards =
-    referrals?.reduce((sum, r) => sum + (r.reward_amount || 0), 0) || 0;
+    referrals?.reduce((sum: number, r: any) => sum + (r.reward_amount || 0), 0) || 0;
 
   return {
     referralCode: code,

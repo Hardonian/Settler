@@ -39,16 +39,16 @@ export async function triggerEmailSequence(
 
   // Get user email
   const { data: user } = await supabase.from("users").select("email").eq("id", userId).single();
-  if (!user?.email) {
+  if (!(user as any)?.email) {
     console.warn(`User ${userId} has no email`);
     return;
   }
 
   // Get templates for this sequence
   const { data: templates } = await supabase
-    .from("email_templates")
+    .from("email_templates" as any)
     .select("*")
-    .eq("sequence_id", sequence.id)
+    .eq("sequence_id", (sequence as any).id)
     .eq("enabled", true)
     .order("order_index", { ascending: true });
 
@@ -59,36 +59,36 @@ export async function triggerEmailSequence(
 
   // Check user email preferences
   const { data: preferences } = await supabase
-    .from("user_email_preferences")
+    .from("user_email_preferences" as any)
     .select("*")
     .eq("user_id", userId)
     .single();
 
   // Check if user has opted out
   if (preferences) {
-    if (sequenceType === "onboarding" && !preferences.onboarding_emails) return;
-    if (sequenceType === "upgrade_prompt" && !preferences.upgrade_prompts) return;
-    if (sequenceType === "churn_save" && !preferences.churn_save_emails) return;
-    if (sequenceType === "expansion" && !preferences.marketing_emails) return;
+    if (sequenceType === "onboarding" && !(preferences as any).onboarding_emails) return;
+    if (sequenceType === "upgrade_prompt" && !(preferences as any).upgrade_prompts) return;
+    if (sequenceType === "churn_save" && !(preferences as any).churn_save_emails) return;
+    if (sequenceType === "expansion" && !(preferences as any).marketing_emails) return;
   }
 
   // Schedule emails
   let cumulativeDelay = 0;
   for (const template of templates) {
     const sendAt = new Date();
-    sendAt.setHours(sendAt.getHours() + cumulativeDelay + template.delay_hours);
+    sendAt.setHours(sendAt.getHours() + cumulativeDelay + ((template as any).delay_hours || 0));
 
     await supabase.from("email_sends").insert({
       user_id: userId,
-      sequence_id: sequence.id,
-      template_id: template.id,
-      email_address: user.email,
-      subject: template.subject,
+      sequence_id: (sequence as any).id,
+      template_id: (template as any).id,
+      email_address: (user as any).email,
+      subject: (template as any).subject,
       status: "pending",
       metadata: metadata || {},
-    });
+    } as any);
 
-    cumulativeDelay += template.delay_hours;
+    cumulativeDelay += ((template as any).delay_hours || 0);
   }
 }
 

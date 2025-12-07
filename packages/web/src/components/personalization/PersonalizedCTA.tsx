@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getPersonalizedCTA, type TrafficSource } from "@/lib/personalization";
+import { getPersonalizedCTA, type TrafficSource, type PersonalizedCTA } from "@/lib/personalization";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
@@ -19,7 +19,12 @@ export function PersonalizedCTA({
   defaultHref = "/signup",
   className,
 }: PersonalizedCTAProps) {
-  const [cta, setCta] = useState({ text: defaultText, href: defaultHref, variant: "primary" as const });
+  const [cta, setCta] = useState<PersonalizedCTA>({ 
+    text: defaultText, 
+    href: defaultHref, 
+    variant: "primary",
+    priority: 1
+  });
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
 
@@ -69,10 +74,13 @@ export function PersonalizedCTA({
     );
   }
 
+  // Map "primary" variant to "default" for Button component
+  const buttonVariant = cta.variant === "primary" ? "default" : cta.variant;
+  
   return (
     <Button
       asChild
-      variant={cta.variant}
+      variant={buttonVariant}
       className={className}
     >
       <Link href={cta.href}>{cta.text}</Link>

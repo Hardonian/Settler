@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Copy, CheckCircle2, Users, DollarSign, Gift } from "lucide-react";
+import { Copy, CheckCircle2, Users, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { getReferralStats } from "@/lib/referrals";
-import { cn } from "@/lib/utils";
 
 export function ReferralProgram() {
   const [referralCode, setReferralCode] = useState<string>("");

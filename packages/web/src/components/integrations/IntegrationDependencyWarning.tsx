@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, XCircle, Info } from "lucide-react";
+import { AlertTriangle, XCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { checkIntegrationDependencies } from "@/lib/integration-dependencies";
@@ -15,7 +15,7 @@ interface IntegrationDependencyWarningProps {
 export function IntegrationDependencyWarning({
   currentIntegrations,
   newIntegration,
-  onDismiss,
+  onDismiss: _onDismiss,
 }: IntegrationDependencyWarningProps) {
   const check = checkIntegrationDependencies(currentIntegrations, newIntegration);
 

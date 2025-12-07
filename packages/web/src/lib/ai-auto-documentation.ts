@@ -52,7 +52,7 @@ export interface IntegrationDocumentation {
 export function generateAPIDocumentation(
   endpoint: string,
   method: string,
-  handler: any
+  _handler: any
 ): APIDocumentation {
   // In production, analyze handler code to extract:
   // - Parameters

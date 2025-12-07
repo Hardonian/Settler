@@ -20,7 +20,7 @@ export interface PersonalizedCTA {
 export async function getPersonalizedCTA(
   userId: string | null,
   source: TrafficSource,
-  page: string
+  _page: string
 ): Promise<PersonalizedCTA> {
   const supabase = createClient();
 
@@ -74,7 +74,7 @@ export async function getPersonalizedCTA(
 
     if (lifecycle) {
       // High churn risk → retention CTA
-      if (lifecycle.churn_risk_score > 0.7) {
+      if ((lifecycle as any).churn_risk_score > 0.7) {
         return {
           text: "Need Help? Contact Support",
           href: "/support",
@@ -84,7 +84,7 @@ export async function getPersonalizedCTA(
       }
 
       // Expansion opportunity → upgrade CTA
-      if (lifecycle.expansion_opportunity_score > 0.6) {
+      if ((lifecycle as any).expansion_opportunity_score > 0.6) {
         return {
           text: "Unlock Enterprise Features",
           href: "/enterprise",
@@ -94,7 +94,7 @@ export async function getPersonalizedCTA(
       }
 
       // Not activated → activation CTA
-      if (!lifecycle.activated_at) {
+      if (!(lifecycle as any).activated_at) {
         return {
           text: "Complete Your First Reconciliation",
           href: "/playground",
@@ -104,7 +104,7 @@ export async function getPersonalizedCTA(
       }
 
       // Trial ending → upgrade CTA
-      if (lifecycle.current_stage === "trial") {
+      if ((lifecycle as any).current_stage === "trial") {
         return {
           text: "Upgrade to Keep Your Features",
           href: "/pricing",
@@ -124,7 +124,7 @@ export async function getPersonalizedCTA(
  */
 export async function getPersonalizedContent(
   userId: string | null,
-  contentType: "hero" | "features" | "testimonials"
+  _contentType: "hero" | "features" | "testimonials"
 ): Promise<string> {
   if (!userId) {
     return "default"; // Return default content for anonymous users
@@ -132,11 +132,11 @@ export async function getPersonalizedContent(
 
   const supabase = createClient();
   const { data: segments } = await supabase
-    .from("customer_segments")
+    .from("user_segments")
     .select("segment_name")
     .eq("user_id", userId);
 
-  const segmentNames = segments?.map((s) => s.segment_name) || [];
+  const segmentNames = segments?.map((s: any) => s.segment_name) || [];
 
   // Personalize based on segments
   if (segmentNames.includes("at_risk")) {

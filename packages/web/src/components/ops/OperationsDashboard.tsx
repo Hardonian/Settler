@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Activity, AlertTriangle, Server, Database, Zap, TrendingUp } from "lucide-react";
+import { Activity, Zap } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,7 +37,7 @@ export function OperationsDashboard() {
   const [systemHealth, setSystemHealth] = useState<SystemHealth[]>([]);
   const [edgeFunctions, setEdgeFunctions] = useState<EdgeFunctionHealth[]>([]);
   const [retryQueues, setRetryQueues] = useState<RetryQueue[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchOpsData();

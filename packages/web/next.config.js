@@ -13,7 +13,7 @@ const nextConfig = {
 
   // Bundle optimization
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Disabled - requires critters package
   },
 
   // Headers for performance

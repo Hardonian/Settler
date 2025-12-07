@@ -25,13 +25,13 @@ export async function assignSegment(
 ): Promise<void> {
   const supabase = createClient();
 
-  await supabase.from("customer_segments").upsert({
+  await supabase.from("user_segments").upsert({
     user_id: userId,
     segment_type: segmentType,
     segment_name: segmentName,
     segment_metadata: metadata || {},
     assigned_at: new Date().toISOString(),
-  });
+  } as any);
 }
 
 /**
@@ -41,17 +41,16 @@ export async function getUserSegments(userId: string): Promise<CustomerSegment[]
   const supabase = createClient();
 
   const { data, error } = await supabase
-    .from("customer_segments")
+    .from("user_segments")
     .select("*")
-    .eq("user_id", userId)
-    .is("expires_at", null); // Only active segments
+    .eq("user_id", userId);
 
   if (error) {
     console.error("Error fetching segments:", error);
     return [];
   }
 
-  return (data || []).map((s) => ({
+  return (data || []).map((s: any) => ({
     userId: s.user_id,
     segmentType: s.segment_type as SegmentType,
     segmentName: s.segment_name,
@@ -72,59 +71,61 @@ export async function autoSegmentUser(userId: string): Promise<void> {
     .select("*")
     .eq("user_id", userId)
     .single();
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId });
+  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId } as any);
 
   if (!user || !lifecycle || !metrics) return;
 
   // Billing segments
-  const billingSegment = user.plan_type || "free_tier";
+  const billingSegment = (user as any).plan_type || "free_tier";
   await assignSegment(userId, "billing", billingSegment);
 
   // Behavioral segments
-  if (!lifecycle.activated_at) {
+  if (!(lifecycle as any).activated_at) {
     await assignSegment(userId, "behavioral", "inactive", {
       reason: "never_activated",
     });
-  } else if (lifecycle.churn_risk_score > 0.7) {
+  } else if ((lifecycle as any).churn_risk_score > 0.7) {
     await assignSegment(userId, "behavioral", "at_risk", {
-      churn_score: lifecycle.churn_risk_score,
-      reasons: lifecycle.churn_risk_reasons,
+      churn_score: (lifecycle as any).churn_risk_score,
+      reasons: (lifecycle as any).churn_risk_reasons,
     });
-  } else if (lifecycle.expansion_opportunity_score > 0.6) {
+  } else if ((lifecycle as any).expansion_opportunity_score > 0.6) {
     await assignSegment(userId, "behavioral", "expansion_ready", {
-      opportunity_score: lifecycle.expansion_opportunity_score,
+      opportunity_score: (lifecycle as any).expansion_opportunity_score,
     });
-  } else if (lifecycle.current_stage === "retention" || lifecycle.current_stage === "expansion") {
+  } else if ((lifecycle as any).current_stage === "retention" || (lifecycle as any).current_stage === "expansion") {
     await assignSegment(userId, "behavioral", "engaged", {
-      stage: lifecycle.current_stage,
+      stage: (lifecycle as any).current_stage,
     });
   }
 
   // Usage segments
-  if (metrics.total_jobs_created === 0) {
+  const totalJobs = (metrics as any)?.total_jobs_created || 0;
+  if (totalJobs === 0) {
     await assignSegment(userId, "usage", "no_usage", {});
-  } else if (metrics.total_jobs_created < 5) {
+  } else if (totalJobs < 5) {
     await assignSegment(userId, "usage", "light_usage", {
-      jobs_created: metrics.total_jobs_created,
+      jobs_created: totalJobs,
     });
-  } else if (metrics.total_jobs_created < 20) {
+  } else if (totalJobs < 20) {
     await assignSegment(userId, "usage", "moderate_usage", {
-      jobs_created: metrics.total_jobs_created,
+      jobs_created: totalJobs,
     });
   } else {
     await assignSegment(userId, "usage", "heavy_usage", {
-      jobs_created: metrics.total_jobs_created,
+      jobs_created: totalJobs,
     });
   }
 
   // Usage percentage segments
-  if (metrics.usage_percentage > 90) {
+  const usagePercentage = (metrics as any)?.usage_percentage || 0;
+  if (usagePercentage > 90) {
     await assignSegment(userId, "usage", "near_limit", {
-      usage_percentage: metrics.usage_percentage,
+      usage_percentage: usagePercentage,
     });
-  } else if (metrics.usage_percentage > 70) {
+  } else if (usagePercentage > 70) {
     await assignSegment(userId, "usage", "approaching_limit", {
-      usage_percentage: metrics.usage_percentage,
+      usage_percentage: usagePercentage,
     });
   }
 }

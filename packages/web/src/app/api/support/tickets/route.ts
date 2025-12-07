@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      tickets: (data || []).map((t) => ({
+      tickets: (data || []).map((t: any) => ({
         id: t.id,
         subject: t.subject,
         status: t.status,
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         category,
         severity: severity || "medium",
         status: "open",
-      })
+      } as any)
       .select()
       .single();
 

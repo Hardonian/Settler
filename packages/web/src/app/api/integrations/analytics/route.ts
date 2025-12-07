@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(request: NextRequest) {
+export const dynamic = "force-dynamic";
+
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -13,8 +15,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const searchParams = request.nextUrl.searchParams;
-    const _range = searchParams.get("range") || "30d";
+    // const searchParams = request.nextUrl.searchParams;
+    // const _range = searchParams.get("range") || "30d";
 
     // Mock revenue data (in production, calculate from actual subscription/addon data)
     const revenue: Array<{

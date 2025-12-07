@@ -6,29 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 
 export function UserImpersonation() {
   const [searchQuery, setSearchQuery] = useState("");
   const [impersonating, setImpersonating] = useState<string | null>(null);
 
-  const handleImpersonate = async (userId: string) => {
-    try {
-      const response = await fetch("/api/admin/impersonate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
-      });
+  // const _handleImpersonate = async (userId: string) => {
+  //   try {
+  //     const response = await fetch("/api/admin/impersonate", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ userId }),
+  //     });
 
-      if (response.ok) {
-        setImpersonating(userId);
-        // In production, redirect to user's dashboard
-        window.location.href = "/dashboard";
-      }
-    } catch (error) {
-      console.error("Failed to impersonate user:", error);
-    }
-  };
+  //     if (response.ok) {
+  //       setImpersonating(userId);
+  //       // In production, redirect to user's dashboard
+  //       window.location.href = "/dashboard";
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to impersonate user:", error);
+  //   }
+  // };
 
   const handleStopImpersonating = async () => {
     try {

@@ -78,7 +78,7 @@ export async function impersonateUser(
         target_email: targetEmail,
         admin_user_id: adminUserId,
       },
-    } as never);
+    } as any);
 
     return success(
       {
@@ -105,7 +105,7 @@ export async function stopImpersonation(adminUserId: string): Promise<ActionResu
       entity_id: adminUserId,
       action: "impersonation_ended",
       user_id: adminUserId,
-    } as never);
+    } as any);
 
     return success(null, "Impersonation ended");
   } catch (err) {

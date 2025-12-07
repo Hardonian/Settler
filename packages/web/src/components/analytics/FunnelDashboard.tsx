@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TrendingUp, Users, CheckCircle2, DollarSign } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 
 interface FunnelStep {
@@ -37,8 +36,8 @@ export function FunnelDashboard() {
   };
 
   const conversionRate =
-    funnel.length > 0
-      ? (funnel[funnel.length - 1].count / funnel[0].count) * 100
+    funnel.length > 0 && funnel[0] && funnel[funnel.length - 1]
+      ? (funnel[funnel.length - 1]!.count / funnel[0]!.count) * 100
       : 0;
 
   return (
