@@ -59,7 +59,7 @@ export default function BillingDashboardPage() {
       setIsLoading(true);
       // In production, this would fetch from your API
       // For now, using mock data structure
-      const response = await fetch("/api/billing/invoice/estimate?billing_account_id=current");
+      await fetch("/api/billing/invoice/estimate?billing_account_id=current");
       // Handle response...
       
       // Mock data for now

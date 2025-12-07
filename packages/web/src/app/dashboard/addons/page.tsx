@@ -3,10 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { AddOnCard } from "@/components/billing/AddOnCard";
 import { AddOnPurchaseModal } from "@/components/billing/AddOnPurchaseModal";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 interface AddOn {
   id: string;
@@ -22,7 +20,6 @@ interface AddOn {
 }
 
 export default function AddOnsMarketplacePage() {
-  const router = useRouter();
   const [addOns, setAddOns] = useState<AddOn[]>([]);
   const [filteredAddOns, setFilteredAddOns] = useState<AddOn[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -228,7 +225,9 @@ export default function AddOnsMarketplacePage() {
             isPurchased={addOn.is_purchased}
             isStandard={addOn.is_standard}
             features={addOn.features}
-            onPurchase={() => openPurchaseModal(addOn)}
+            onPurchase={async () => {
+              openPurchaseModal(addOn);
+            }}
             onCancel={() => handleCancel(addOn.id)}
             isLoading={isProcessing}
           />
@@ -247,7 +246,15 @@ export default function AddOnsMarketplacePage() {
           setIsModalOpen(false);
           setSelectedAddOn(null);
         }}
-        addOn={selectedAddOn}
+        addOn={selectedAddOn ? {
+          id: selectedAddOn.id,
+          name: selectedAddOn.name,
+          description: selectedAddOn.description,
+          basePrice: selectedAddOn.base_price_monthly,
+          usagePrice: selectedAddOn.usage_price_per_unit,
+          usageUnit: selectedAddOn.usage_unit,
+          features: selectedAddOn.features,
+        } : null}
         onPurchase={handlePurchase}
         isLoading={isProcessing}
       />

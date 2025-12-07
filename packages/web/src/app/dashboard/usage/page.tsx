@@ -53,7 +53,7 @@ interface UsageData {
 export default function UsageDashboardPage() {
   const [data, setData] = useState<UsageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedPeriod, setSelectedPeriod] = useState<"current" | "last-month" | "last-7-days">("current");
+  const [selectedPeriod] = useState<"current" | "last-month" | "last-7-days">("current");
 
   useEffect(() => {
     fetchUsageData();
@@ -82,7 +82,7 @@ export default function UsageDashboardPage() {
           { integration_id: "paypal", name: "PayPal", usage: 1200, percentage: 16.0 },
         ],
         dailyUsage: Array.from({ length: 30 }, (_, i) => ({
-          date: subDays(new Date(), 29 - i).toISOString().split('T')[0],
+          date: subDays(new Date(), 29 - i).toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
           reconciliation_jobs: Math.floor(Math.random() * 300) + 200,
           api_requests: Math.floor(Math.random() * 3000) + 2000,
           webhook_events: Math.floor(Math.random() * 2000) + 1000,
