@@ -25,7 +25,7 @@ export default function Pricing() {
       period: "forever",
       description: "Basic features for small transaction volumes",
       features: [
-        { text: "Up to 1,000 transactions/month (perfect for small businesses)" },
+        { text: "Up to 1,000 transactions/month" },
         { text: "Connect 2 platforms (e.g., Shopify + Stripe)" },
         { text: "Basic matching and reports" },
         { text: "7-day transaction history" },
@@ -45,18 +45,18 @@ export default function Pricing() {
       originalPrice: billingCycle === "annual" ? "$1,188" : null,
       description: "Everything you need to scale your operations",
       features: [
-        { text: "Up to 100,000 transactions/month (handles most businesses)" },
-        { text: "Connect unlimited platforms (7+ adapters available)" },
+        { text: "Up to 100,000 transactions/month" },
+        { text: "Connect unlimited platforms" },
         { text: "All advanced features unlocked" },
         { text: "Event-driven webhook reconciliation" },
         { text: "Advanced analytics and dashboards" },
-        { text: "Full cookbook library (10+ workflows)" },
+        { text: "Full cookbook library" },
         { text: "30-day transaction history" },
         { text: "Email support with priority response" },
         { text: "Scheduled reconciliation jobs" },
         { text: "Edge AI available (add-on)" },
       ],
-      cta: "Start Free Trial—No Credit Card",
+      cta: "Start Free Trial",
       ctaLink: "/signup",
       popular: true,
       badge: "Most Popular",
@@ -137,12 +137,12 @@ export default function Pricing() {
       {/* Hero Section */}
       <AnimatedHero
         badge="Simple, Transparent Pricing"
-        title="Start Your 30-Day Free Trial—No Credit Card Required"
-        description="Try everything free for 30 days. Full access to all features, unlimited transactions, and all platform adapters. Cancel anytime."
+        title="Start Your 30-Day Free Trial"
+        description="Full access to all features, unlimited transactions, and all platform adapters. No credit card required."
       />
 
       {/* Billing Toggle */}
-      <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-8" aria-label="Billing cycle selector">
+      <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-12" aria-label="Billing cycle selector">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center gap-4">
             <span
@@ -188,13 +188,13 @@ export default function Pricing() {
       </section>
 
       {/* Pricing Cards */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="pricing-heading">
+      <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="pricing-heading">
         <div className="max-w-7xl mx-auto">
           <h2 id="pricing-heading" className="sr-only">
             Pricing Plans
           </h2>
           <div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8"
             role="list"
             aria-label="Pricing plans"
           >

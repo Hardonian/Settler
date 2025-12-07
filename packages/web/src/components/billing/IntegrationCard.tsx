@@ -69,45 +69,45 @@ export function IntegrationCard({
       )}
     >
       <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-lg">{name}</CardTitle>
-            <div className="flex items-center gap-2 mt-2">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <CardTitle className="text-base md:text-lg mb-3">{name}</CardTitle>
+            <div className="flex flex-wrap items-center gap-2">
               {getStatusBadge()}
               {isStandard && (
-                <Badge variant="secondary">Included</Badge>
+                <Badge variant="secondary" className="text-xs">Included</Badge>
               )}
               {!isPurchased && !isStandard && (
-                <Badge variant="outline" className="text-yellow-600 border-yellow-600">
+                <Badge variant="outline" className="text-yellow-600 border-yellow-600 text-xs">
                   Add-On Required
                 </Badge>
               )}
             </div>
           </div>
         </div>
-        <CardDescription className="mt-2">{description}</CardDescription>
+        <CardDescription className="mt-3 text-sm leading-relaxed">{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
           {lastSync && (
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
               Last synced: {lastSync.toLocaleDateString()} {lastSync.toLocaleTimeString()}
             </p>
           )}
           {!isPurchased && !isStandard && (
-            <p className="text-sm text-yellow-600 dark:text-yellow-400">
+            <p className="text-xs md:text-sm text-yellow-600 dark:text-yellow-400">
               Purchase the add-on to enable this integration
             </p>
           )}
         </div>
       </CardContent>
-      <CardFooter className="flex gap-2">
+      <CardFooter className="flex flex-col sm:flex-row gap-2">
         {isConnected && onConfigure && (
           <Button
             onClick={() => onConfigure(id)}
             variant="outline"
             size="sm"
-            className="flex-1"
+            className="flex-1 font-medium"
           >
             <Settings className="mr-2 h-4 w-4" />
             Configure
@@ -118,7 +118,7 @@ export function IntegrationCard({
           disabled={isLoading || (!isPurchased && !isStandard)}
           variant={isConnected ? "outline" : "default"}
           size="sm"
-          className="flex-1"
+          className="flex-1 font-medium"
         >
           {isLoading ? (
             <>

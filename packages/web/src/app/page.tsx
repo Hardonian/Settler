@@ -70,42 +70,42 @@ export default function Home() {
   const features = [
     {
       icon: Zap,
-      title: "Save 10+ Hours Per Week on Manual Reconciliation",
+      title: "Save 10+ Hours Per Week",
       description:
-        "What takes your team 10+ hours of manual matching takes Settler 5 minutes. Our API automatically matches transactions across platforms with 99.7% accuracy. No spreadsheets, no manual work, no errors.",
+        "Automate transaction matching across platforms with 99.7% accuracy. No spreadsheets, no manual work.",
       gradient: "from-electric-cyan to-electric-blue",
     },
     {
       icon: Lock,
-      title: "Enterprise-Grade Security & Compliance",
+      title: "Enterprise Security",
       description:
-        "Bank-level encryption (AES-256), secure API key storage, and audit trails. GDPR compliant with SOC 2 Type II certification in progress (Q2 2026). Your financial data is protected with the same security standards as major banks.",
+        "Bank-level encryption, secure API key storage, and audit trails. GDPR compliant with SOC 2 Type II in progress.",
       gradient: "from-electric-purple to-electric-indigo",
     },
     {
       icon: Rocket,
-      title: "Process Millions of Transactions in Minutes",
-      description: "Cloud reconciliation handles unlimited scale. Edge AI processes locally with <10ms latency. Event-driven webhooks for real-time matching. Scheduled jobs for batch processing. Choose the right approach for your use case.",
+      title: "Process Millions in Minutes",
+      description: "Cloud reconciliation at unlimited scale. Edge AI with <10ms latency. Real-time webhooks or scheduled batch processing.",
       gradient: "from-electric-neon to-electric-cyan",
     },
     {
       icon: Target,
-      title: "99.7% Accuracy with Advanced Matching",
-      description: "Intelligent matching rules catch transactions automatically with 99.7% accuracy. Eliminate human error and reduce reconciliation discrepancies. Full audit trail for compliance and debugging.",
+      title: "99.7% Accuracy",
+      description: "Intelligent matching rules catch transactions automatically. Eliminate human error with full audit trails.",
       gradient: "from-electric-blue to-electric-purple",
     },
     {
       icon: Plug,
-      title: "Connect 10+ Platforms in Minutes",
+      title: "Connect 10+ Platforms",
       description:
-        "Pre-built adapters for Shopify, Stripe, QuickBooks, PayPal, Square, Xero, TikTok Shop, Meta Commerce, and more. Set up in 5 minutes with our secure API key storage. No custom code required.",
+        "Pre-built adapters for Shopify, Stripe, QuickBooks, PayPal, Square, Xero, and more. Set up in 5 minutes with secure API key storage.",
       gradient: "from-electric-indigo to-electric-neon",
     },
     {
       icon: BarChart3,
-      title: "Complete Visibility & Audit Trail",
+      title: "Complete Visibility",
       description:
-        "Full visibility into all matches, mismatches, and insights. Complete audit trail included for compliance. Export reports, track reconciliation history, and monitor performance with detailed analytics.",
+        "Full visibility into matches, mismatches, and insights. Complete audit trail for compliance. Export reports and track history.",
       gradient: "from-electric-cyan to-electric-purple",
     },
   ];
@@ -160,7 +160,7 @@ const report = await client.jobs.run(job.id);
 
         {/* Hero Section with Parallax Background */}
         <section
-          className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[90vh] flex items-center"
+          className="relative pt-32 pb-24 md:pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[90vh] flex items-center"
           aria-labelledby="hero-heading"
         >
           {/* Parallax Background with Blobs */}
@@ -177,7 +177,7 @@ const report = await client.jobs.run(job.id);
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center">
               <Badge
-                className="mb-6 glass-strong text-blue-600 dark:text-electric-cyan border-blue-300 dark:border-electric-cyan/30 hover:border-blue-400 dark:hover:border-electric-cyan/50 transition-all duration-200"
+                className="mb-8 glass-strong text-blue-600 dark:text-electric-cyan border-blue-300 dark:border-electric-cyan/30 hover:border-blue-400 dark:hover:border-electric-cyan/50 transition-all duration-200 px-4 py-1.5"
                 aria-label="Product category"
               >
                 API-First Financial Reconciliation
@@ -187,56 +187,56 @@ const report = await client.jobs.run(job.id);
                 as="h1"
                 id="hero-heading"
                 text="Stop Wasting 10+ Hours Per Week on Manual Reconciliation"
-                className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent"
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent leading-tight"
                 delay={0.1}
                 staggerDelay={0.02}
                 splitBy="words"
               />
 
               <TextReveal
-                text="What takes your team 10+ hours of manual matching takes Settler 5 minutes. Automatically match transactions across Shopify, Stripe, PayPal, and 10+ platforms with 99.7% accuracy. Start your 30-day free trial—no credit card required."
-                className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-3xl mx-auto"
+                text="Automate transaction matching across Shopify, Stripe, PayPal, and 10+ platforms with 99.7% accuracy. Start your free trial—no credit card required."
+                className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed"
                 delay={0.4}
                 staggerDelay={0.01}
                 splitBy="words"
               />
 
               <div
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
                 role="group"
                 aria-label="Call to action buttons"
               >
                 <Button
                   size="lg"
                   asChild
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-electric-cyan dark:to-electric-blue dark:hover:from-electric-cyan/90 dark:hover:to-electric-blue/90 text-white px-8 py-6 text-lg shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-electric-cyan/50 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-blue-500 dark:focus:ring-electric-cyan focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
-                  onClick={() => trackCTA("Start 30-Day Free Trial", { location: "hero" })}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-electric-cyan dark:to-electric-blue dark:hover:from-electric-cyan/90 dark:hover:to-electric-blue/90 text-white px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-electric-cyan/50 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-blue-500 dark:focus:ring-electric-cyan focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+                  onClick={() => trackCTA("Start Free Trial", { location: "hero" })}
                 >
-                  <Link href="/signup" aria-label="Start 30-day free trial of Settler">
-                    Start Free Trial—No Credit Card Required
+                  <Link href="/signup" aria-label="Start free trial of Settler">
+                    Start Free Trial
                   </Link>
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
                   asChild
-                  className="px-8 py-6 text-lg border-2 border-slate-300 dark:border-white/20 glass hover:border-indigo-500 dark:hover:border-electric-purple/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-electric-purple focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+                  className="px-8 py-6 text-lg font-medium border-2 border-slate-300 dark:border-white/20 glass hover:border-indigo-500 dark:hover:border-electric-purple/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-electric-purple focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
                 >
                   <Link href="/docs" aria-label="View Settler documentation">
-                    See How It Works
+                    View Docs
                   </Link>
                 </Button>
               </div>
 
               {/* Hero Stats */}
               <div
-                className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto"
+                className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto"
                 role="list"
                 aria-label="Key performance metrics"
               >
                 {heroStats.map((stat, index) => (
                   <div key={index} role="listitem">
-                    <SpotlightCard className="p-4 h-full">
+                    <SpotlightCard className="p-5 md:p-6 h-full">
                       <AnimatedStatCard
                         value={stat.value}
                         label={stat.label}
@@ -253,7 +253,7 @@ const report = await client.jobs.run(job.id);
         </section>
 
         {/* Secondary Stats Section */}
-        <section className="py-16 glass-subtle" aria-labelledby="secondary-stats-heading">
+        <section className="py-20 glass-subtle" aria-labelledby="secondary-stats-heading">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <TextRevealHeading
               as="h2"
@@ -266,7 +266,7 @@ const report = await client.jobs.run(job.id);
             <BentoGrid columns={4} gap="md">
               {secondaryStats.map((stat, index) => (
                 <BentoGridItem key={index} colSpan={1}>
-                  <SpotlightCard className="h-full">
+                  <SpotlightCard className="h-full p-6">
                     <AnimatedStatCard
                       value={stat.value}
                       label={stat.label}
@@ -309,8 +309,8 @@ const report = await client.jobs.run(job.id);
                 staggerDelay={0.02}
               />
               <TextReveal
-                text="Connect any platform in minutes. Process millions of transactions with 99.7% accuracy. One API, unlimited integrations. Try it free—no credit card required."
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto"
+                text="Connect any platform in minutes. Process millions of transactions with 99.7% accuracy."
+                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed"
                 delay={0.2}
                 staggerDelay={0.01}
               />
@@ -343,7 +343,7 @@ const report = await client.jobs.run(job.id);
               />
               <TextReveal
                 text="Built for developers, designed for scale"
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto"
+                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed"
                 delay={0.2}
                 staggerDelay={0.01}
               />
@@ -360,20 +360,20 @@ const report = await client.jobs.run(job.id);
                       className="w-full"
                     >
                       <SpotlightCard
-                        className="h-full flex flex-col p-6 w-full"
+                        className="h-full flex flex-col p-6 md:p-8 w-full"
                         spotlightColor={
                           index % 2 === 0 ? "rgba(6, 182, 212, 0.3)" : "rgba(168, 85, 247, 0.3)"
                         }
                       >
                         <div
-                          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${feature.gradient} p-3 mb-4 flex items-center justify-center`}
+                          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${feature.gradient} p-3 mb-5 flex items-center justify-center flex-shrink-0`}
                         >
                           <Icon className="w-6 h-6 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                        <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-white leading-tight">
                           {feature.title}
                         </h3>
-                        <p className="text-slate-700 dark:text-slate-300 flex-grow">
+                        <p className="text-slate-700 dark:text-slate-300 flex-grow leading-relaxed">
                           {feature.description}
                         </p>
                       </SpotlightCard>
@@ -407,8 +407,8 @@ const report = await client.jobs.run(job.id);
                 staggerDelay={0.02}
               />
               <TextReveal
-                text="Building reconciliation in-house takes 3-6 months and requires ongoing maintenance. Settler gets you up and running in 5 minutes."
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-3xl mx-auto"
+                text="Skip 3-6 months of development. Get started in 5 minutes."
+                className="text-lg text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed"
                 delay={0.2}
                 staggerDelay={0.01}
               />
@@ -454,17 +454,17 @@ const report = await client.jobs.run(job.id);
               ))}
             </div>
             <div className="text-center">
-              <p className="text-lg text-slate-700 dark:text-slate-300 mb-6">
+              <p className="text-lg text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">
                 <strong className="text-slate-900 dark:text-white">ROI:</strong> Most customers see
                 payback in the first month
               </p>
               <Button
                 size="lg"
                 asChild
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg font-semibold"
               >
                 <Link href="/pricing" aria-label="View pricing plans">
-                  Compare Plans
+                  View Pricing
                 </Link>
               </Button>
             </div>
@@ -490,11 +490,11 @@ const report = await client.jobs.run(job.id);
             <ParallaxBlobs count={4} />
           </ParallaxBackground>
           <div className="max-w-4xl mx-auto relative z-10">
-            <SpotlightCard className="p-12 text-center">
+            <SpotlightCard className="p-10 md:p-12 text-center">
               <ConversionCTA
-                title="Ready to Automate Your Reconciliation Workflow?"
-                description="Join 500+ companies using Settler to process millions of transactions with 99.7% accuracy. Start your 30-day free trial—no credit card required."
-                primaryAction="Start Free Trial—No Credit Card Required"
+                title="Ready to Automate Reconciliation?"
+                description="Join 500+ companies processing millions of transactions with 99.7% accuracy. Start your free trial—no credit card required."
+                primaryAction="Start Free Trial"
                 primaryLink="/signup"
                 secondaryAction="View Pricing"
                 secondaryLink="/pricing"

@@ -55,7 +55,7 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>(
           />
         )}
         {text && (
-          <p className="text-sm text-muted-foreground" aria-live="polite">
+          <p className="text-sm text-muted-foreground leading-relaxed" aria-live="polite">
             {text}
           </p>
         )}

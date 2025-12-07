@@ -217,15 +217,15 @@ export default function IntegrationsPage() {
   const addOnIntegrations = filteredIntegrations.filter((i) => !i.is_standard);
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Integrations</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Connect 10+ platforms in minutes. Pre-built adapters for payment processors, e-commerce platforms, and accounting systems. Set up in 5 minutes with secure API key storage.
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-6 md:space-y-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">Integrations</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1.5 text-sm md:text-base leading-relaxed max-w-2xl">
+            Connect 10+ platforms in minutes. Pre-built adapters for payment processors, e-commerce platforms, and accounting systems.
           </p>
         </div>
-        <Button onClick={() => router.push("/dashboard/addons")}>
+        <Button onClick={() => router.push("/dashboard/addons")} className="font-medium flex-shrink-0">
           <Plus className="mr-2 h-4 w-4" />
           Browse Add-Ons
         </Button>
@@ -244,11 +244,11 @@ export default function IntegrationsPage() {
       </div>
 
       {standardIntegrations.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Standard Integrations (Included)
+        <div className="space-y-4 md:space-y-6">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Standard Integrations
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {standardIntegrations.map((integration) => (
               <IntegrationCard
                 key={integration.id}
@@ -271,11 +271,11 @@ export default function IntegrationsPage() {
       )}
 
       {addOnIntegrations.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <div className="space-y-4 md:space-y-6">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
             Premium Add-Ons
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {addOnIntegrations.map((integration) => (
               <IntegrationCard
                 key={integration.id}
@@ -298,8 +298,8 @@ export default function IntegrationsPage() {
       )}
 
       {filteredIntegrations.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No integrations found matching your search.</p>
+        <div className="text-center py-12 md:py-16">
+          <p className="text-gray-500 dark:text-gray-400">No integrations found matching your search.</p>
         </div>
       )}
     </div>

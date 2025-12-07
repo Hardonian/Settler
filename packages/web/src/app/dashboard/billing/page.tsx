@@ -140,20 +140,20 @@ export default function BillingDashboardPage() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-6 md:space-y-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Billing</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">Billing</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1.5 text-sm md:text-base">
             Manage your subscription and view usage
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => router.push("/dashboard/billing/invoices")}>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button variant="outline" onClick={() => router.push("/dashboard/billing/invoices")} className="font-medium">
             <Download className="mr-2 h-4 w-4" />
             Download Invoice
           </Button>
-          <Button onClick={() => router.push("/dashboard/billing/payment-methods")}>
+          <Button onClick={() => router.push("/dashboard/billing/payment-methods")} className="font-medium">
             <CreditCard className="mr-2 h-4 w-4" />
             Payment Methods
           </Button>
@@ -163,7 +163,7 @@ export default function BillingDashboardPage() {
       {data.warnings.length > 0 && (
         <ThresholdWarningBanner
           title="Usage Warning"
-          message={`You're approaching your limits for ${data.warnings.length} feature(s). Consider upgrading your plan.`}
+          message={`Approaching limits for ${data.warnings.length} feature${data.warnings.length > 1 ? "s" : ""}. Consider upgrading.`}
           severity="warning"
           onUpgrade={() => router.push("/dashboard/billing/upgrade")}
         />

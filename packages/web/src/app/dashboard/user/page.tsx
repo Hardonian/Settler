@@ -100,16 +100,16 @@ function UserDashboardContent() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
           <Card>
             <CardHeader className="pb-3">
-              <CardDescription>Total Reconciliations</CardDescription>
-              <CardTitle className="text-3xl">
+              <CardDescription className="text-xs md:text-sm">Total Reconciliations</CardDescription>
+              <CardTitle className="text-2xl md:text-3xl">
                 {data.metrics.totalReconciliations.toLocaleString()}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">
                 <Activity className="w-4 h-4" />
                 <span>All time</span>
               </div>
@@ -118,11 +118,11 @@ function UserDashboardContent() {
 
           <Card>
             <CardHeader className="pb-3">
-              <CardDescription>Average Accuracy</CardDescription>
-              <CardTitle className="text-3xl">{data.metrics.averageAccuracy}%</CardTitle>
+              <CardDescription className="text-xs md:text-sm">Average Accuracy</CardDescription>
+              <CardTitle className="text-2xl md:text-3xl">{data.metrics.averageAccuracy}%</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+              <div className="flex items-center gap-2 text-xs md:text-sm text-green-600 dark:text-green-400">
                 <TrendingUp className="w-4 h-4" />
                 <span>Excellent</span>
               </div>
@@ -131,11 +131,11 @@ function UserDashboardContent() {
 
           <Card>
             <CardHeader className="pb-3">
-              <CardDescription>Time Saved</CardDescription>
-              <CardTitle className="text-3xl">{data.metrics.timeSaved}h</CardTitle>
+              <CardDescription className="text-xs md:text-sm">Time Saved</CardDescription>
+              <CardTitle className="text-2xl md:text-3xl">{data.metrics.timeSaved}h</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">
                 <Clock className="w-4 h-4" />
                 <span>This month</span>
               </div>
@@ -144,11 +144,11 @@ function UserDashboardContent() {
 
           <Card>
             <CardHeader className="pb-3">
-              <CardDescription>Jobs Created</CardDescription>
-              <CardTitle className="text-3xl">{data.metrics.jobsCreated}</CardTitle>
+              <CardDescription className="text-xs md:text-sm">Jobs Created</CardDescription>
+              <CardTitle className="text-2xl md:text-3xl">{data.metrics.jobsCreated}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Active</span>
               </div>
@@ -172,18 +172,18 @@ function UserDashboardContent() {
           <CardContent>
             {data.recentJobs.length === 0 ? (
               <div className="space-y-4">
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-                  <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
-                    🚀 Get Started with Your First Reconciliation
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 md:p-8">
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-3 text-lg">
+                    Get Started with Your First Reconciliation
                   </h3>
-                  <p className="text-sm text-blue-800 dark:text-blue-400 mb-4">
-                    Create your first reconciliation job in just a few minutes. Our step-by-step guide will walk you through the process.
+                  <p className="text-sm md:text-base text-blue-800 dark:text-blue-400 mb-6 leading-relaxed">
+                    Create your first reconciliation job in minutes. Our step-by-step guide will walk you through the process.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                    <Button asChild className="bg-blue-600 hover:bg-blue-700 font-medium">
                       <Link href="/playground">Start Onboarding</Link>
                     </Button>
-                    <Button asChild variant="outline">
+                    <Button asChild variant="outline" className="font-medium">
                       <Link href="/docs/getting-started">View Guide</Link>
                     </Button>
                   </div>
@@ -193,7 +193,9 @@ function UserDashboardContent() {
                   description="Create your first reconciliation job to get started"
                   action={{
                     label: "Create Job",
-                    onClick: () => (window.location.href = "/playground"),
+                    onClick: () => {
+                      window.location.href = "/playground";
+                    },
                   }}
                 />
               </div>
@@ -202,27 +204,27 @@ function UserDashboardContent() {
                 {data.recentJobs.map((job) => (
                   <div
                     key={job.id}
-                    className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 md:p-5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors gap-4"
                   >
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 dark:text-white mb-2 text-base md:text-lg">
                         {job.name}
                       </h3>
-                      <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                        <span className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
                           {job.matchedCount} matched
                         </span>
-                        <span className="flex items-center gap-1">
-                          <AlertCircle className="w-4 h-4 text-amber-600" />
+                        <span className="flex items-center gap-1.5">
+                          <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
                           {job.unmatchedCount} unmatched
                         </span>
                         <span>{job.accuracy}% accuracy</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium ${
                           job.status === "completed"
                             ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                             : job.status === "running"
@@ -232,7 +234,7 @@ function UserDashboardContent() {
                       >
                         {job.status}
                       </span>
-                      <Button asChild variant="ghost" size="sm">
+                      <Button asChild variant="ghost" size="sm" className="font-medium">
                         <Link href={`/dashboard/jobs/${job.id}`}>View</Link>
                       </Button>
                     </div>
@@ -250,26 +252,26 @@ function UserDashboardContent() {
             <CardDescription>Get started quickly</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Button asChild variant="outline" className="h-auto py-4 flex-col">
-                <Link href="/playground">
-                  <span className="text-lg mb-2">🚀</span>
-                  <span className="font-semibold">Create New Job</span>
-                  <span className="text-xs text-slate-500 mt-1">Set up a reconciliation</span>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Button asChild variant="outline" className="h-auto py-5 md:py-6 flex-col items-center">
+                <Link href="/playground" className="flex flex-col items-center">
+                  <span className="text-xl mb-2">🚀</span>
+                  <span className="font-semibold text-sm md:text-base mb-1">Create New Job</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">Set up a reconciliation</span>
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="h-auto py-4 flex-col">
-                <Link href="/cookbooks">
-                  <span className="text-lg mb-2">📚</span>
-                  <span className="font-semibold">Browse Cookbooks</span>
-                  <span className="text-xs text-slate-500 mt-1">Ready-to-use workflows</span>
+              <Button asChild variant="outline" className="h-auto py-5 md:py-6 flex-col items-center">
+                <Link href="/cookbooks" className="flex flex-col items-center">
+                  <span className="text-xl mb-2">📚</span>
+                  <span className="font-semibold text-sm md:text-base mb-1">Browse Cookbooks</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">Ready-to-use workflows</span>
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="h-auto py-4 flex-col">
-                <Link href="/docs">
-                  <span className="text-lg mb-2">📖</span>
-                  <span className="font-semibold">View Documentation</span>
-                  <span className="text-xs text-slate-500 mt-1">Learn how to use Settler</span>
+              <Button asChild variant="outline" className="h-auto py-5 md:py-6 flex-col items-center sm:col-span-2 lg:col-span-1">
+                <Link href="/docs" className="flex flex-col items-center">
+                  <span className="text-xl mb-2">📖</span>
+                  <span className="font-semibold text-sm md:text-base mb-1">View Documentation</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">Learn how to use Settler</span>
                 </Link>
               </Button>
             </div>
@@ -288,7 +290,7 @@ export default function UserDashboardPage() {
       fallback={
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
           <Navigation />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 pt-20 md:pt-24">
             {/* Usage Limits Skeleton */}
             <div className="grid md:grid-cols-2 gap-4 mb-8">
               <SkeletonCard showFooter={false} />
@@ -296,7 +298,7 @@ export default function UserDashboardPage() {
             </div>
 
             {/* Quick Stats Skeleton */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
               {Array.from({ length: 4 }).map((_, i) => (
                 <SkeletonCard key={i} showFooter={false} />
               ))}
