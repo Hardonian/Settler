@@ -29,15 +29,15 @@ export function CustomerLogos() {
     };
   }, []);
 
-  // Placeholder logos - in production, these would be actual customer logos
-  const logos = [
-    { name: "TechCorp", logo: "🏢" },
-    { name: "StartupXYZ", logo: "🚀" },
-    { name: "EcomPlus", logo: "🛒" },
-    { name: "FinanceApp", logo: "💰" },
-    { name: "RetailPro", logo: "🏪" },
-    { name: "SaaSCo", logo: "☁️" },
-  ];
+  // Customer logos - using text-based representation until real logos are available
+  // In production, replace with actual customer logo images
+  const logos: Array<{ name: string; logo?: string }> = [];
+  
+  // Temporarily hide customer logos section until real logos are available
+  // This prevents credibility issues from placeholder content
+  if (logos.length === 0) {
+    return null;
+  }
 
   const prefersReducedMotion =
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;

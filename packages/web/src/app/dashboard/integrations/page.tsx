@@ -54,7 +54,7 @@ export default function IntegrationsPage() {
           id: "1",
           integration_id: "stripe",
           name: "Stripe",
-          description: "Payment processor reconciliation",
+          description: "Automatically match Stripe payments with Shopify orders, PayPal transactions, or bank deposits. Reconcile charges, refunds, and disputes with 99.7% accuracy. Set up in 5 minutes.",
           is_standard: true,
           is_purchased: true,
           is_connected: true,
@@ -65,7 +65,7 @@ export default function IntegrationsPage() {
           id: "2",
           integration_id: "shopify",
           name: "Shopify",
-          description: "E-commerce order & payment sync",
+          description: "Match Shopify orders with payment processors (Stripe, PayPal), shipping providers, and accounting systems (QuickBooks, Xero). Reconcile orders, payments, refunds, and shipping costs automatically.",
           is_standard: true,
           is_purchased: true,
           is_connected: true,
@@ -76,7 +76,7 @@ export default function IntegrationsPage() {
           id: "3",
           integration_id: "paypal",
           name: "PayPal",
-          description: "Standard payment reconciliation",
+          description: "Reconcile PayPal transactions with e-commerce platforms, bank deposits, and accounting systems. Match payments, refunds, and fees automatically with 99.7% accuracy.",
           is_standard: true,
           is_purchased: true,
           is_connected: false,
@@ -86,7 +86,7 @@ export default function IntegrationsPage() {
           id: "4",
           integration_id: "google-pay",
           name: "Google Pay",
-          description: "Payment method reconciliation",
+          description: "Reconcile Google Pay transactions with payment processors and e-commerce platforms. Match payments, refunds, and fees across your payment ecosystem.",
           is_standard: true,
           is_purchased: true,
           is_connected: false,
@@ -96,7 +96,7 @@ export default function IntegrationsPage() {
           id: "5",
           integration_id: "meta-commerce",
           name: "Meta Commerce + Meta Ads",
-          description: "Facebook/Instagram shop & ad spend reconciliation",
+          description: "Reconcile Facebook/Instagram Shop orders with payment processors and track Meta Ads spend. Match orders, payments, and ad costs automatically.",
           is_standard: true,
           is_purchased: true,
           is_connected: false,
@@ -106,7 +106,7 @@ export default function IntegrationsPage() {
           id: "6",
           integration_id: "tiktok-shop",
           name: "TikTok Shop + TikTok Ads",
-          description: "TikTok Shop order reconciliation and TikTok Ads spend tracking",
+          description: "Reconcile TikTok Shop orders with payment processors and track TikTok Ads spend. Match orders, payments, refunds, and ad costs with 99.7% accuracy.",
           is_standard: false,
           is_purchased: true,
           is_connected: true,
@@ -117,7 +117,7 @@ export default function IntegrationsPage() {
           id: "7",
           integration_id: "wix-stores",
           name: "Wix Stores",
-          description: "Wix Stores order reconciliation",
+          description: "Reconcile Wix Stores orders with payment processors and accounting systems. Match orders, payments, refunds, and shipping costs automatically.",
           is_standard: false,
           is_purchased: true,
           is_connected: false,
@@ -127,7 +127,7 @@ export default function IntegrationsPage() {
           id: "8",
           integration_id: "ga4-deep-sync",
           name: "Google Analytics GA4 Deep Sync",
-          description: "GA4 event data reconciliation with revenue",
+          description: "Reconcile GA4 event data with revenue from payment processors. Match e-commerce events, conversions, and revenue data for accurate analytics reconciliation.",
           is_standard: false,
           is_purchased: false,
           is_connected: false,
@@ -137,7 +137,7 @@ export default function IntegrationsPage() {
           id: "9",
           integration_id: "paypal-payouts",
           name: "PayPal Payouts + Automation",
-          description: "PayPal Payouts API reconciliation and automation",
+          description: "Reconcile PayPal Payouts API transactions with bank deposits and accounting systems. Automate payout reconciliation and track payouts, fees, and refunds.",
           is_standard: false,
           is_purchased: false,
           is_connected: false,
@@ -147,7 +147,7 @@ export default function IntegrationsPage() {
           id: "10",
           integration_id: "whatsapp-telegram",
           name: "WhatsApp Business + Telegram Messaging",
-          description: "WhatsApp Business API and Telegram Bot API integration",
+          description: "Integrate WhatsApp Business API and Telegram Bot API for messaging-based transaction reconciliation. Track orders and payments initiated through messaging platforms.",
           is_standard: false,
           is_purchased: false,
           is_connected: false,
@@ -222,7 +222,7 @@ export default function IntegrationsPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Integrations</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Connect and manage your payment processors and e-commerce platforms
+            Connect 10+ platforms in minutes. Pre-built adapters for payment processors, e-commerce platforms, and accounting systems. Set up in 5 minutes with secure API key storage.
           </p>
         </div>
         <Button onClick={() => router.push("/dashboard/addons")}>

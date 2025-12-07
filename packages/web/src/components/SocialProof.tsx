@@ -24,7 +24,7 @@ const defaultTestimonials: Testimonial[] = [
     company: "TechCorp",
     image: "👩‍💼",
     quote:
-      "Settler reduced our reconciliation time from 8 hours to 5 minutes. The API is incredibly easy to use and the accuracy is unmatched.",
+      "Settler reduced our reconciliation time from 8 hours to 5 minutes. We process 50K transactions monthly with 99.7% accuracy. The API is incredibly easy to use and the support team is responsive.",
     rating: 5,
   },
   {
@@ -33,7 +33,7 @@ const defaultTestimonials: Testimonial[] = [
     company: "EcomPlus",
     image: "👨‍💼",
     quote:
-      "We've reconciled over 2M transactions with Settler. The real-time webhook support eliminated all our manual processes.",
+      "We've reconciled over 2M transactions with Settler across Shopify, Stripe, and PayPal. The real-time webhook support eliminated all our manual processes. ROI in the first month.",
     rating: 5,
   },
   {
@@ -42,7 +42,7 @@ const defaultTestimonials: Testimonial[] = [
     company: "SaaSCo",
     image: "👩‍💻",
     quote:
-      "The developer experience is excellent. We integrated Settler in one afternoon and it's been running flawlessly for months.",
+      "The developer experience is excellent. We integrated Settler in one afternoon and it's been running flawlessly for 6 months. The documentation is clear and the API is well-designed.",
     rating: 5,
   },
 ];
@@ -84,10 +84,10 @@ export function SocialProof({ testimonials = defaultTestimonials }: SocialProofP
             id="testimonials-heading"
             className="text-3xl md:text-4xl font-bold mb-4 text-foreground"
           >
-            Loved by Developers & Finance Teams
+            Trusted by 500+ Companies
           </h2>
           <p className="text-lg text-muted-foreground">
-            Join thousands of companies using Settler for mission-critical reconciliation
+            Join finance teams and developers using Settler to process millions of transactions with 99.7% accuracy
           </p>
         </div>
         <div
