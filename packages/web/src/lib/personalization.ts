@@ -104,7 +104,7 @@ export async function getPersonalizedCTA(
       }
 
       // Trial ending → upgrade CTA
-      if (lifecycle.current_stage === "trial") {
+      if ((lifecycle as any).current_stage === "trial") {
         return {
           text: "Upgrade to Keep Your Features",
           href: "/pricing",
@@ -132,11 +132,11 @@ export async function getPersonalizedContent(
 
   const supabase = createClient();
   const { data: segments } = await supabase
-    .from("customer_segments")
+    .from("user_segments")
     .select("segment_name")
     .eq("user_id", userId);
 
-  const segmentNames = segments?.map((s) => s.segment_name) || [];
+  const segmentNames = segments?.map((s: any) => s.segment_name) || [];
 
   // Personalize based on segments
   if (segmentNames.includes("at_risk")) {

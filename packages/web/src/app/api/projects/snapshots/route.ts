@@ -95,10 +95,10 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         project_id: projectId,
         project_type: projectType,
-        snapshot_name: snapshotName,
+        snapshot_name: snapshotName || "Untitled Snapshot",
         snapshot_data: projectData,
         created_by: user.id,
-      })
+      } as any)
       .select()
       .single();
 

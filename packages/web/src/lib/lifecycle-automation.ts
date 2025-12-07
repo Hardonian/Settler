@@ -32,7 +32,7 @@ export async function transitionLifecycleStage(
     .eq("user_id", userId)
     .single();
 
-  const fromStage = (current?.current_stage as LifecycleStage) || "signup";
+  const fromStage = ((current as any)?.current_stage as LifecycleStage) || "signup";
 
   // Update lifecycle
   const updateData: Record<string, unknown> = {
@@ -53,7 +53,7 @@ export async function transitionLifecycleStage(
   await supabase.from("user_lifecycle").upsert({
     user_id: userId,
     ...updateData,
-  });
+  } as any);
 
   // Log transition
   console.log(`Lifecycle transition: ${userId} ${fromStage} → ${newStage} (trigger: ${trigger})`);
@@ -77,27 +77,27 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
     await supabase.from("user_lifecycle").insert({
       user_id: userId,
       current_stage: "signup",
-    });
+    } as any);
     return "signup";
   }
 
-  const currentStage = lifecycle.current_stage as LifecycleStage;
+  const currentStage = ((lifecycle as any).current_stage as LifecycleStage) || "signup";
 
   // Get user activity metrics
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId });
+  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId } as any);
 
   // Determine new stage based on metrics
   let newStage: LifecycleStage = currentStage;
 
   // Activation: First successful setup
-  if (currentStage === "signup" && lifecycle.first_successful_setup_at) {
+  if (currentStage === "signup" && (lifecycle as any).first_successful_setup_at) {
     newStage = "activation";
   }
 
   // Engaged: Active usage in last 7 days
   if (
     (currentStage === "activation" || currentStage === "engaged") &&
-    metrics?.active_last_7_days
+    (metrics as any)?.active_last_7_days
   ) {
     newStage = "engaged";
   }
@@ -105,7 +105,7 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
   // Retention: Consistent usage over 30 days
   if (
     (currentStage === "engaged" || currentStage === "retention") &&
-    metrics?.active_days_last_30 >= 20
+    ((metrics as any)?.active_days_last_30 || 0) >= 20
   ) {
     newStage = "retention";
   }
@@ -113,7 +113,7 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
   // Expansion: Upgraded or using premium features
   if (
     (currentStage === "retention" || currentStage === "expansion") &&
-    (metrics?.has_upgraded || metrics?.using_premium_features)
+    ((metrics as any)?.has_upgraded || (metrics as any)?.using_premium_features)
   ) {
     newStage = "expansion";
   }
@@ -121,13 +121,13 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
   // At Risk: Low activity or high churn score
   if (
     currentStage !== "churned" &&
-    (lifecycle.churn_risk_score > 0.7 || metrics?.days_since_last_activity > 30)
+    (((lifecycle as any).churn_risk_score || 0) > 0.7 || ((metrics as any)?.days_since_last_activity || 0) > 30)
   ) {
     newStage = "at_risk";
   }
 
   // Churned: No activity for 90+ days or explicit cancellation
-  if (metrics?.days_since_last_activity > 90 || metrics?.explicitly_cancelled) {
+  if (((metrics as any)?.days_since_last_activity || 0) > 90 || (metrics as any)?.explicitly_cancelled) {
     newStage = "churned";
   }
 
@@ -146,7 +146,7 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
   const supabase = createClient();
 
   // Get user metrics
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId });
+  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId } as any);
   const { data: lifecycle } = await supabase
     .from("user_lifecycle")
     .select("*")
@@ -159,7 +159,7 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
   const reasons: string[] = [];
 
   // Days since last activity (0-0.4)
-  const daysSinceActivity = metrics.days_since_last_activity || 0;
+  const daysSinceActivity = (metrics as any).days_since_last_activity || 0;
   if (daysSinceActivity > 30) {
     riskScore += 0.4;
     reasons.push(`No activity for ${daysSinceActivity} days`);
@@ -169,19 +169,19 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
   }
 
   // Never activated (0-0.3)
-  if (!lifecycle.activated_at) {
+  if (!(lifecycle as any).activated_at) {
     riskScore += 0.3;
     reasons.push("Never completed activation");
   }
 
   // Low usage (0-0.2)
-  if (metrics.total_jobs_created < 3) {
+  if ((metrics as any).total_jobs_created < 3) {
     riskScore += 0.2;
     reasons.push("Low job creation");
   }
 
   // Payment issues (0-0.1)
-  if (metrics.has_payment_issues) {
+  if ((metrics as any).has_payment_issues) {
     riskScore += 0.1;
     reasons.push("Payment issues");
   }
@@ -193,7 +193,7 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
       churn_risk_score: Math.min(riskScore, 1.0),
       churn_risk_reasons: reasons,
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq("user_id", userId);
 
   return Math.min(riskScore, 1.0);
@@ -205,31 +205,32 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
 export async function calculateExpansionOpportunity(userId: string): Promise<number> {
   const supabase = createClient();
 
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId });
+  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId } as any);
 
   if (!metrics) return 0;
 
   let opportunityScore = 0;
 
   // High usage (approaching limits)
-  if (metrics.usage_percentage > 80) {
+  const usagePercentage = (metrics as any).usage_percentage || 0;
+  if (usagePercentage > 80) {
     opportunityScore += 0.4;
-  } else if (metrics.usage_percentage > 60) {
+  } else if (usagePercentage > 60) {
     opportunityScore += 0.2;
   }
 
   // Consistent usage
-  if (metrics.active_days_last_30 >= 20) {
+  if (((metrics as any).active_days_last_30 || 0) >= 20) {
     opportunityScore += 0.3;
   }
 
   // Multiple integrations
-  if (metrics.integration_count >= 3) {
+  if (((metrics as any).integration_count || 0) >= 3) {
     opportunityScore += 0.2;
   }
 
   // Enterprise features interest
-  if (metrics.viewed_enterprise_features) {
+  if ((metrics as any).viewed_enterprise_features) {
     opportunityScore += 0.1;
   }
 
@@ -239,7 +240,7 @@ export async function calculateExpansionOpportunity(userId: string): Promise<num
     .update({
       expansion_opportunity_score: Math.min(opportunityScore, 1.0),
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq("user_id", userId);
 
   return Math.min(opportunityScore, 1.0);

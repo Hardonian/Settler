@@ -27,11 +27,12 @@ export async function GET(_request: NextRequest) {
       },
     ];
 
-    const overallStatus = systems.every((s) => s.status === "operational")
-      ? "operational"
-      : systems.some((s) => s.status === "down" || s.status === "degraded")
-        ? "degraded"
-        : "operational";
+    // Determine overall status based on system statuses
+    const hasDown = systems.some((s) => s.status === "down");
+    const hasDegraded = systems.some((s) => s.status === "degraded");
+    const allOperational = systems.every((s) => s.status === "operational");
+    
+    const overallStatus = hasDown ? "down" : hasDegraded ? "degraded" : allOperational ? "operational" : "degraded";
 
     return NextResponse.json({ systems, overallStatus });
   } catch (error) {

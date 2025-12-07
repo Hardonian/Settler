@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get("userId") || user.id;
 
     const { data, error } = await supabase
-      .from("activation_checklist")
+      .from("user_checklist")
       .select("checklist_item, completed")
       .eq("user_id", userId);
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Failed to fetch checklist" }, { status: 500 });
     }
 
-    const completedItems = (data || []).filter((item) => item.completed).map((item) => item.checklist_item);
+    const completedItems = (data || []).filter((item: any) => item.completed).map((item: any) => item.checklist_item);
 
     return NextResponse.json({ completedItems });
   } catch (error) {
@@ -50,14 +50,14 @@ export async function POST(request: NextRequest) {
     const targetUserId = userId || user.id;
 
     const { data, error } = await supabase
-      .from("activation_checklist")
+      .from("user_checklist")
       .upsert({
         user_id: targetUserId,
         checklist_item: itemId,
         completed: true,
         completed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      })
+      } as any)
       .select()
       .single();
 

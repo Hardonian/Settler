@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const searchParams = request.nextUrl.searchParams;
-    const _range = searchParams.get("range") || "30d";
+    // const searchParams = request.nextUrl.searchParams;
+    // const _range = searchParams.get("range") || "30d";
 
     // Mock revenue data (in production, calculate from actual subscription/addon data)
     const revenue: Array<{

@@ -34,7 +34,7 @@ export async function POST(
     // Restore project data based on type
     if (project_type === "job") {
       const { error: updateError } = await supabase
-        .from("reconciliation_jobs")
+        .from("reconciliation_jobs" as any)
         .update(snapshot_data as any)
         .eq("id", project_id)
         .eq("user_id", user.id);
