@@ -32,7 +32,8 @@ if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const now = Date.now();
     Object.keys(rateLimitStore).forEach((key) => {
-      if (rateLimitStore[key].resetTime < now) {
+      const entry = rateLimitStore[key];
+      if (entry && entry.resetTime < now) {
         delete rateLimitStore[key];
       }
     });
@@ -169,9 +170,10 @@ export const rateLimiters = {
  * Get rate limit configuration from API key (if exists)
  */
 export async function getRateLimitFromApiKey(
-  apiKey: string
+  _apiKey: string
 ): Promise<RateLimitConfig | null> {
   // TODO: Query database for API key rate limit
   // For now, return null (use default)
+  // Parameter prefixed with _ to indicate intentionally unused
   return null;
 }
