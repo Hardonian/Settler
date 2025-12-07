@@ -140,14 +140,14 @@ export function PurchaseScrutiny() {
           ))}
         </div>
 
-        {/* Payment Methods */}
+        {/* Payment Processors - Trusted Partners */}
         <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700">
           <div className="text-center">
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-              Secure payments powered by Stripe
+              Secure payments through trusted partners
             </p>
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+            <div className="flex items-center justify-center gap-6 flex-wrap">
+              <div className="flex flex-col items-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                 <Image
                   src="/assets/icons/stripe-badge.svg"
                   alt="Stripe"
@@ -156,14 +156,24 @@ export function PurchaseScrutiny() {
                   className="opacity-80"
                   unoptimized
                 />
+                <p className="text-xs text-slate-600 dark:text-slate-400">Credit Cards</p>
               </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">
-                <Lock className="w-4 h-4 inline mr-1" />
-                SSL Encrypted
+              <div className="flex flex-col items-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                <Image
+                  src="/assets/icons/paypal-payment-badge.svg"
+                  alt="PayPal"
+                  width={80}
+                  height={40}
+                  className="opacity-80"
+                  unoptimized
+                />
+                <p className="text-xs text-slate-600 dark:text-slate-400">PayPal</p>
               </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">
-                <Shield className="w-4 h-4 inline mr-1" />
-                PCI-DSS Compliant
+              <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                <Lock className="w-4 h-4" />
+                <span>SSL Encrypted</span>
+                <Shield className="w-4 h-4 ml-2" />
+                <span>PCI-DSS Compliant</span>
               </div>
             </div>
           </div>
