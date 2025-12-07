@@ -15,10 +15,10 @@ serve(async (req) => {
     // Only allow service role
     const authHeader = req.headers.get("Authorization");
     if (!authHeader || !authHeader.includes(Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "")) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const supabase = createClient(
@@ -27,16 +27,14 @@ serve(async (req) => {
     );
 
     // Get pending notifications
-    const { data: notifications, error } = await supabase.rpc(
-      "send_pending_alert_notifications"
-    );
+    const { data: notifications, error } = await supabase.rpc("send_pending_alert_notifications");
 
     if (error) {
       console.error("Error getting pending notifications:", error);
-      return new Response(
-        JSON.stringify({ error: "Failed to get notifications" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Failed to get notifications" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const results = [];
@@ -63,17 +61,11 @@ serve(async (req) => {
             break;
 
           case "whatsapp":
-            sent = await sendWhatsApp(
-              notification.recipient,
-              notification.message || ""
-            );
+            sent = await sendWhatsApp(notification.recipient, notification.message || "");
             break;
 
           case "telegram":
-            sent = await sendTelegram(
-              notification.recipient,
-              notification.message || ""
-            );
+            sent = await sendTelegram(notification.recipient, notification.message || "");
             break;
         }
 
@@ -101,10 +93,7 @@ serve(async (req) => {
           status: sent ? "delivered" : "failed",
         });
       } catch (error) {
-        console.error(
-          `Error sending notification ${notification.notification_id}:`,
-          error
-        );
+        console.error(`Error sending notification ${notification.notification_id}:`, error);
         await supabase
           .from("alert_notifications")
           .update({
@@ -157,7 +146,7 @@ async function sendEmail(to: string, subject: string, body: string): Promise<boo
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -214,19 +203,16 @@ async function sendTelegram(chatId: string, message: string): Promise<boolean> {
   }
 
   try {
-    const response = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message,
-        }),
-      }
-    );
+    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+      }),
+    });
 
     return response.ok;
   } catch (error) {

@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { integrationId: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { integrationId: string } }) {
   try {
     const { integrationId: _integrationId } = params;
     const searchParams = request.nextUrl.searchParams;
@@ -20,10 +17,7 @@ export async function GET(
         "Performance optimizations",
       ],
       breakingChanges: currentVersion.startsWith("1.")
-        ? [
-            "API response format changed (migration required)",
-            "Webhook signature format updated",
-          ]
+        ? ["API response format changed (migration required)", "Webhook signature format updated"]
         : [],
       requiresMigration: currentVersion.startsWith("1."),
     };

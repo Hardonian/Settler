@@ -42,6 +42,7 @@ Settler.dev's billing system is a comprehensive subscription and usage-based bil
 ### Core Tables
 
 #### billing_accounts
+
 Stores customer billing information and links to Stripe customers.
 
 - `id` (UUID) - Primary key
@@ -53,6 +54,7 @@ Stores customer billing information and links to Stripe customers.
 - `currency` (VARCHAR) - Default currency (default: usd)
 
 #### subscriptions
+
 Tracks active subscriptions to base plans.
 
 - `id` (UUID) - Primary key
@@ -65,6 +67,7 @@ Tracks active subscriptions to base plans.
 - `current_period_end` (TIMESTAMPTZ) - Billing period end
 
 #### add_ons
+
 Catalog of available add-ons (both standard and premium).
 
 - `id` (UUID) - Primary key
@@ -77,6 +80,7 @@ Catalog of available add-ons (both standard and premium).
 - `is_active` (BOOLEAN) - Available for purchase
 
 #### add_on_purchases
+
 Tracks purchased add-ons for each billing account.
 
 - `id` (UUID) - Primary key
@@ -86,6 +90,7 @@ Tracks purchased add-ons for each billing account.
 - `status` (VARCHAR) - active, cancelled, expired
 
 #### usage_events
+
 Individual usage events logged in real-time.
 
 - `id` (UUID) - Primary key
@@ -98,6 +103,7 @@ Individual usage events logged in real-time.
 - `aggregated` (BOOLEAN) - Whether event has been aggregated
 
 #### usage_aggregate_daily
+
 Daily aggregated usage for billing calculations.
 
 - `id` (UUID) - Primary key
@@ -113,9 +119,11 @@ Daily aggregated usage for billing calculations.
 ### Billing Account Management
 
 #### POST /api/billing/create-customer
+
 Creates or retrieves a billing account and Stripe customer.
 
 **Request:**
+
 ```json
 {
   "email": "user@example.com",
@@ -124,6 +132,7 @@ Creates or retrieves a billing account and Stripe customer.
 ```
 
 **Response:**
+
 ```json
 {
   "billing_account_id": "uuid",
@@ -136,9 +145,11 @@ Creates or retrieves a billing account and Stripe customer.
 ### Subscription Management
 
 #### POST /api/billing/subscribe
+
 Subscribes a billing account to the base plan.
 
 **Request:**
+
 ```json
 {
   "billing_account_id": "uuid"
@@ -146,6 +157,7 @@ Subscribes a billing account to the base plan.
 ```
 
 **Response:**
+
 ```json
 {
   "subscription_id": "uuid",
@@ -158,9 +170,11 @@ Subscribes a billing account to the base plan.
 ### Add-On Management
 
 #### POST /api/billing/addon/purchase
+
 Purchases a premium add-on.
 
 **Request:**
+
 ```json
 {
   "billing_account_id": "uuid",
@@ -169,6 +183,7 @@ Purchases a premium add-on.
 ```
 
 **Response:**
+
 ```json
 {
   "purchase_id": "uuid",
@@ -182,9 +197,11 @@ Purchases a premium add-on.
 ### Usage Reporting
 
 #### POST /api/billing/usage/report
+
 Logs a usage event for billing.
 
 **Request:**
+
 ```json
 {
   "billing_account_id": "uuid",
@@ -200,14 +217,17 @@ Logs a usage event for billing.
 ### Invoice Estimation
 
 #### GET /api/billing/invoice/estimate
+
 Gets estimated bill for current or specified period.
 
 **Query Parameters:**
+
 - `billing_account_id` (required)
 - `start_date` (optional)
 - `end_date` (optional)
 
 **Response:**
+
 ```json
 {
   "billing_account_id": "uuid",
@@ -215,8 +235,8 @@ Gets estimated bill for current or specified period.
   "period_end": "2025-01-31",
   "base_subscription_cost": 49.95,
   "add_on_costs": 39.95,
-  "usage_costs": 15.00,
-  "total_cost": 104.90,
+  "usage_costs": 15.0,
+  "total_cost": 104.9,
   "currency": "usd"
 }
 ```
@@ -224,9 +244,11 @@ Gets estimated bill for current or specified period.
 ### Stripe Webhooks
 
 #### POST /api/billing/webhook
+
 Handles Stripe webhook events.
 
 **Supported Events:**
+
 - `customer.subscription.updated`
 - `customer.subscription.deleted`
 - `invoice.paid`
@@ -236,9 +258,11 @@ Handles Stripe webhook events.
 ## Database Functions
 
 ### log_usage_event()
+
 Logs a usage event for billing and analytics.
 
 **Parameters:**
+
 - `p_billing_account_id` (UUID)
 - `p_event_type` (VARCHAR)
 - `p_quantity` (DECIMAL, default: 1)
@@ -253,18 +277,22 @@ Logs a usage event for billing and analytics.
 **Returns:** UUID (event ID)
 
 ### aggregate_daily_usage()
+
 Aggregates usage events into daily aggregates.
 
 **Parameters:**
+
 - `p_start_date` (DATE, default: yesterday)
 - `p_end_date` (DATE, default: yesterday)
 
 **Returns:** INTEGER (number of aggregates created)
 
 ### compute_estimated_bill()
+
 Computes estimated bill for a billing period.
 
 **Parameters:**
+
 - `p_billing_account_id` (UUID)
 - `p_start_date` (DATE)
 - `p_end_date` (DATE)
@@ -272,9 +300,11 @@ Computes estimated bill for a billing period.
 **Returns:** JSONB with cost breakdown
 
 ### check_upgrade_requirement()
+
 Checks if a billing account should be prompted to upgrade.
 
 **Parameters:**
+
 - `p_billing_account_id` (UUID)
 
 **Returns:** JSONB with upgrade recommendations
@@ -282,6 +312,7 @@ Checks if a billing account should be prompted to upgrade.
 ## Edge Functions
 
 ### log-usage
+
 Logs usage events via HTTP API.
 
 **Endpoint:** `/functions/v1/log-usage`
@@ -289,9 +320,11 @@ Logs usage events via HTTP API.
 **Method:** POST
 
 **Headers:**
+
 - `Authorization: Bearer <token>`
 
 **Body:**
+
 ```json
 {
   "billing_account_id": "uuid",
@@ -302,6 +335,7 @@ Logs usage events via HTTP API.
 ```
 
 ### compute-bill
+
 Computes estimated bill for a billing account.
 
 **Endpoint:** `/functions/v1/compute-bill`
@@ -309,11 +343,13 @@ Computes estimated bill for a billing account.
 **Method:** GET
 
 **Query Parameters:**
+
 - `billing_account_id` (required)
 - `start_date` (optional)
 - `end_date` (optional)
 
 ### sync-usage-to-stripe
+
 Syncs usage aggregates to Stripe for metered billing.
 
 **Endpoint:** `/functions/v1/sync-usage-to-stripe`
@@ -321,6 +357,7 @@ Syncs usage aggregates to Stripe for metered billing.
 **Method:** POST
 
 **Body:**
+
 ```json
 {
   "billing_account_id": "uuid",
@@ -328,10 +365,12 @@ Syncs usage aggregates to Stripe for metered billing.
 }
 ```
 
-### integration-sync-*
+### integration-sync-\*
+
 Integration-specific sync functions that log usage events.
 
 **Endpoints:**
+
 - `/functions/v1/integration-sync-stripe`
 - `/functions/v1/integration-sync-shopify`
 - `/functions/v1/integration-sync-paypal`
@@ -341,6 +380,7 @@ Integration-specific sync functions that log usage events.
 ## Feature Gating
 
 The system includes middleware for feature gating based on:
+
 - Plan tier (base, pro, enterprise)
 - Add-on purchases
 - Usage limits
@@ -350,7 +390,8 @@ The system includes middleware for feature gating based on:
 ```typescript
 import { featureGate } from "../middleware/billing-gating";
 
-router.post("/premium-feature",
+router.post(
+  "/premium-feature",
   authMiddleware,
   featureGate("advanced_analytics"), // Requires Pro plan
   async (req, res) => {
@@ -378,7 +419,9 @@ await logUsageEvent({
 ## Scheduled Jobs
 
 ### Daily Usage Aggregation
+
 Runs nightly at 3 AM UTC to:
+
 1. Aggregate usage events into daily totals
 2. Sync usage to Stripe for metered billing
 
@@ -390,17 +433,20 @@ Runs nightly at 3 AM UTC to:
 ### Products & Prices
 
 Products are created via setup script:
+
 ```bash
 tsx scripts/setup-stripe-products.ts
 ```
 
 This creates:
+
 - Base plan product ($49.95/month)
 - 5 premium add-on products with monthly + usage pricing
 
 ### Webhook Configuration
 
 Configure webhook endpoint in Stripe Dashboard:
+
 - URL: `https://your-domain.com/api/billing/webhook`
 - Events: `customer.subscription.*`, `invoice.*`
 

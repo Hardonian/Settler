@@ -24,12 +24,7 @@ export async function analyzeErrorPatterns(
   timeWindow: "hour" | "day" | "week" = "day"
 ): Promise<ErrorPattern[]> {
   try {
-    const interval =
-      timeWindow === "hour"
-        ? "1 hour"
-        : timeWindow === "day"
-        ? "1 day"
-        : "7 days";
+    const interval = timeWindow === "hour" ? "1 hour" : timeWindow === "day" ? "1 day" : "7 days";
 
     // Get errors grouped by similar messages
     const errors = await query<{
@@ -71,24 +66,21 @@ export async function analyzeErrorPatterns(
 
       if (message.toLowerCase().includes("timeout")) {
         pattern = "timeout";
-        suggestedFix =
-          "Increase timeout settings or add retry logic with exponential backoff.";
+        suggestedFix = "Increase timeout settings or add retry logic with exponential backoff.";
         severity = count > 20 ? "high" : "medium";
       } else if (
         message.toLowerCase().includes("connection") ||
         message.toLowerCase().includes("connect")
       ) {
         pattern = "connection_error";
-        suggestedFix =
-          "Check adapter connection health and credentials. Add connection pooling.";
+        suggestedFix = "Check adapter connection health and credentials. Add connection pooling.";
         severity = count > 20 ? "high" : "medium";
       } else if (
         message.toLowerCase().includes("validation") ||
         message.toLowerCase().includes("invalid")
       ) {
         pattern = "validation_error";
-        suggestedFix =
-          "Improve input validation and provide clearer error messages to users.";
+        suggestedFix = "Improve input validation and provide clearer error messages to users.";
         severity = "medium";
       } else if (
         message.toLowerCase().includes("permission") ||
@@ -96,16 +88,14 @@ export async function analyzeErrorPatterns(
         message.toLowerCase().includes("forbidden")
       ) {
         pattern = "authorization_error";
-        suggestedFix =
-          "Review permission checks and ensure proper authorization middleware.";
+        suggestedFix = "Review permission checks and ensure proper authorization middleware.";
         severity = "medium";
       } else if (
         message.toLowerCase().includes("quota") ||
         message.toLowerCase().includes("limit")
       ) {
         pattern = "quota_exceeded";
-        suggestedFix =
-          "Review quota limits and provide clearer upgrade paths for users.";
+        suggestedFix = "Review quota limits and provide clearer upgrade paths for users.";
         severity = "low";
       } else if (message.toLowerCase().includes("not found")) {
         pattern = "not_found";
@@ -113,8 +103,7 @@ export async function analyzeErrorPatterns(
         severity = "low";
       } else if (message.toLowerCase().includes("database")) {
         pattern = "database_error";
-        suggestedFix =
-          "Check database connection, query performance, and connection pooling.";
+        suggestedFix = "Check database connection, query performance, and connection pooling.";
         severity = count > 10 ? "high" : "medium";
       } else {
         // Try to extract a pattern from the message

@@ -76,17 +76,14 @@ serve(async (req) => {
 
     // Rate limiting: 50 requests per minute per IP
     if (!checkRateLimit(ip, 60 * 1000, 50)) {
-      return new Response(
-        JSON.stringify({ error: "Rate limit exceeded", retryAfter: 60 }),
-        {
-          status: 429,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-            "Retry-After": "60",
-          },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Rate limit exceeded", retryAfter: 60 }), {
+        status: 429,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          "Retry-After": "60",
+        },
+      });
     }
 
     // Get authorization
@@ -101,47 +98,35 @@ serve(async (req) => {
       const webhookSecret = Deno.env.get("SHOPIFY_WEBHOOK_SECRET") || "";
 
       if (!webhookSecret) {
-        return new Response(
-          JSON.stringify({ error: "Webhook secret not configured" }),
-          {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
+        return new Response(JSON.stringify({ error: "Webhook secret not configured" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       const isValid = await validateShopifyWebhook(body, shopifyHmac, webhookSecret);
 
       if (!isValid) {
-        return new Response(
-          JSON.stringify({ error: "Invalid webhook signature" }),
-          {
-            status: 401,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
+        return new Response(JSON.stringify({ error: "Invalid webhook signature" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       // Webhook validated, process it
       // TODO: Process Shopify webhook
-      return new Response(
-        JSON.stringify({ success: true, message: "Webhook processed" }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ success: true, message: "Webhook processed" }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // For API calls, require authentication
     if (!authHeader && !apiKey) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing authorization" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const supabaseClient = createClient(
@@ -165,13 +150,10 @@ serve(async (req) => {
       } = await supabaseClient.auth.getUser();
 
       if (userError || !user) {
-        return new Response(
-          JSON.stringify({ error: "Unauthorized" }),
-          {
-            status: 401,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       userId = user.id;
@@ -183,13 +165,10 @@ serve(async (req) => {
     const { billing_account_id, project_id, tenant_id: bodyTenantId, sync_count } = body;
 
     if (!billing_account_id) {
-      return new Response(
-        JSON.stringify({ error: "Missing billing_account_id" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing billing_account_id" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Check integration quota
@@ -242,20 +221,17 @@ serve(async (req) => {
     }
 
     // Log usage event
-    const { data: eventId, error: logError } = await supabaseClient.rpc(
-      "log_usage_event",
-      {
-        p_billing_account_id: billing_account_id,
-        p_event_type: "integration_sync",
-        p_quantity: sync_count || 1,
-        p_project_id: project_id || null,
-        p_user_id: userId,
-        p_tenant_id: tenantId || bodyTenantId,
-        p_integration_id: "shopify",
-        p_unit: "sync",
-        p_metadata: { integration: "shopify", sync_type: "full" },
-      }
-    );
+    const { data: eventId, error: logError } = await supabaseClient.rpc("log_usage_event", {
+      p_billing_account_id: billing_account_id,
+      p_event_type: "integration_sync",
+      p_quantity: sync_count || 1,
+      p_project_id: project_id || null,
+      p_user_id: userId,
+      p_tenant_id: tenantId || bodyTenantId,
+      p_integration_id: "shopify",
+      p_unit: "sync",
+      p_metadata: { integration: "shopify", sync_type: "full" },
+    });
 
     if (logError) {
       console.error("Error logging usage:", logError);

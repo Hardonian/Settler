@@ -109,7 +109,11 @@ export function AnimatedCodeBlock({
             role="code"
             aria-label={`${language} code example`}
           >
-            <code className="text-xs sm:text-sm text-green-400 font-mono" aria-live="polite" aria-atomic="true">
+            <code
+              className="text-xs sm:text-sm text-green-400 font-mono"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               {displayedCode}
               {isVisible && displayedCode.length < code.length && (
                 <span className="animate-pulse">|</span>

@@ -24,11 +24,7 @@ interface FeatureLockModalProps {
   currentPlan?: string;
 }
 
-export function FeatureLockModal({
-  open,
-  onOpenChange,
-  feature,
-}: FeatureLockModalProps) {
+export function FeatureLockModal({ open, onOpenChange, feature }: FeatureLockModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
@@ -63,9 +59,7 @@ export function FeatureLockModal({
           </div>
 
           <div>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-              {feature.description}
-            </p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">{feature.description}</p>
             <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
               <p className="text-sm font-semibold mb-2">Upgrade to Commercial includes:</p>
               <ul className="text-sm space-y-1 text-slate-600 dark:text-slate-400">

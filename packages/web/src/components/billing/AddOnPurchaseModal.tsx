@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check } from "lucide-react";
 
@@ -86,7 +93,8 @@ export function AddOnPurchaseModal({
           )}
           <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3">
             <p className="text-sm text-blue-800 dark:text-blue-200">
-              This add-on will be added to your subscription and billed monthly. You can cancel anytime.
+              This add-on will be added to your subscription and billed monthly. You can cancel
+              anytime.
             </p>
           </div>
         </div>

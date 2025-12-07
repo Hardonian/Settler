@@ -1,16 +1,16 @@
 /**
  * Edge Function Security Utilities
- * 
+ *
  * Provides HMAC validation, API key validation, rate limiting,
  * and fraud detection for Supabase Edge Functions
- * 
+ *
  * Note: This utility is environment-aware and works in both Node.js
  * (for API package) and Deno (for Edge Functions) contexts.
- * 
+ *
  * Priority: P1 (High - Edge function security)
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 export interface EdgeFunctionSecurityConfig {
   requireHMAC?: boolean;
@@ -30,7 +30,7 @@ export async function validateHMACSignature(
   payload: string,
   signature: string,
   secret: string,
-  algorithm: 'sha256' | 'sha512' = 'sha256'
+  algorithm: "sha256" | "sha512" = "sha256"
 ): Promise<boolean> {
   const encoder = new TextEncoder();
   const keyData = encoder.encode(secret);
@@ -39,21 +39,21 @@ export async function validateHMACSignature(
   let cryptoKey: CryptoKey;
   try {
     cryptoKey = await crypto.subtle.importKey(
-      'raw',
+      "raw",
       keyData,
-      { name: 'HMAC', hash: algorithm },
+      { name: "HMAC", hash: algorithm },
       false,
-      ['sign']
+      ["sign"]
     );
   } catch (error) {
-    console.error('Failed to import HMAC key:', error);
+    console.error("Failed to import HMAC key:", error);
     return false;
   }
 
-  const signatureBuffer = await crypto.subtle.sign('HMAC', cryptoKey, payloadData);
+  const signatureBuffer = await crypto.subtle.sign("HMAC", cryptoKey, payloadData);
   const computedSignature = Array.from(new Uint8Array(signatureBuffer))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
   // Constant-time comparison to prevent timing attacks
   if (computedSignature.length !== signature.length) {
@@ -80,9 +80,9 @@ export async function validateAPIKey(
 
   // Query API key from database
   const { data, error } = await supabase
-    .from('api_keys')
-    .select('id, user_id, tenant_id, rate_limit, revoked_at, expires_at')
-    .eq('key_prefix', apiKey.substring(0, 20))
+    .from("api_keys")
+    .select("id, user_id, tenant_id, rate_limit, revoked_at, expires_at")
+    .eq("key_prefix", apiKey.substring(0, 20))
     .single();
 
   if (error || !data) {
@@ -193,22 +193,19 @@ export function checkRateLimit(
 /**
  * Validate IP address against allowlist
  */
-export function validateIPAddress(
-  ip: string,
-  allowedIPs: string[]
-): boolean {
+export function validateIPAddress(ip: string, allowedIPs: string[]): boolean {
   if (allowedIPs.length === 0) {
     return true; // No restrictions
   }
 
   // Support CIDR notation (basic implementation)
   for (const allowedIP of allowedIPs) {
-    if (allowedIP.includes('/')) {
+    if (allowedIP.includes("/")) {
       // CIDR notation (simplified - full implementation would require CIDR library)
-      const parts = allowedIP.split('/');
+      const parts = allowedIP.split("/");
       const network = parts[0];
       // For now, just check if IP starts with network (simplified)
-      if (network && ip.startsWith(network.split('.').slice(0, -1).join('.'))) {
+      if (network && ip.startsWith(network.split(".").slice(0, -1).join("."))) {
         return true;
       }
     } else {
@@ -234,16 +231,16 @@ export async function secureEdgeFunction(
 ): Promise<{ authorized: boolean; error?: string; userId?: string; tenantId?: string }> {
   // Get IP address
   const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0] ||
-    request.headers.get('x-real-ip') ||
-    'unknown';
+    request.headers.get("x-forwarded-for")?.split(",")[0] ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
 
   // IP allowlist check
   if (config.allowedIPs && config.allowedIPs.length > 0) {
     if (!validateIPAddress(ip, config.allowedIPs)) {
       return {
         authorized: false,
-        error: 'IP address not allowed',
+        error: "IP address not allowed",
       };
     }
   }
@@ -259,21 +256,21 @@ export async function secureEdgeFunction(
     if (!rateLimitResult.allowed) {
       return {
         authorized: false,
-        error: 'Rate limit exceeded',
+        error: "Rate limit exceeded",
       };
     }
   }
 
   // HMAC validation (for webhooks)
   if (config.requireHMAC) {
-    const signature = request.headers.get('x-signature') || request.headers.get('x-hmac-signature');
+    const signature = request.headers.get("x-signature") || request.headers.get("x-hmac-signature");
     // Note: In Node.js environment, use process.env. For Deno Edge Functions, use Deno.env
-    const secret = (typeof process !== 'undefined' ? process.env.WEBHOOK_SECRET : undefined) || '';
+    const secret = (typeof process !== "undefined" ? process.env.WEBHOOK_SECRET : undefined) || "";
 
     if (!signature || !secret) {
       return {
         authorized: false,
-        error: 'Missing HMAC signature or secret',
+        error: "Missing HMAC signature or secret",
       };
     }
 
@@ -283,19 +280,19 @@ export async function secureEdgeFunction(
     if (!isValid) {
       return {
         authorized: false,
-        error: 'Invalid HMAC signature',
+        error: "Invalid HMAC signature",
       };
     }
   }
 
   // API key validation
   if (config.requireAPIKey) {
-    const apiKey = request.headers.get('x-api-key') || '';
+    const apiKey = request.headers.get("x-api-key") || "";
 
     if (!apiKey) {
       return {
         authorized: false,
-        error: 'Missing API key',
+        error: "Missing API key",
       };
     }
 
@@ -304,7 +301,7 @@ export async function secureEdgeFunction(
     if (!apiKeyResult.valid) {
       return {
         authorized: false,
-        error: 'Invalid API key',
+        error: "Invalid API key",
       };
     }
 
@@ -317,12 +314,12 @@ export async function secureEdgeFunction(
 
   // JWT authentication
   if (config.requireAuth) {
-    const authHeader = request.headers.get('authorization') || '';
+    const authHeader = request.headers.get("authorization") || "";
 
     if (!authHeader) {
       return {
         authorized: false,
-        error: 'Missing authorization header',
+        error: "Missing authorization header",
       };
     }
 
@@ -331,7 +328,7 @@ export async function secureEdgeFunction(
     if (!jwtResult.valid) {
       return {
         authorized: false,
-        error: 'Invalid JWT token',
+        error: "Invalid JWT token",
       };
     }
 
@@ -353,25 +350,24 @@ export async function secureEdgeFunction(
  */
 export function getCORSHeaders(origin?: string): Record<string, string> {
   // Note: In Node.js environment, use process.env. For Deno Edge Functions, use Deno.env
-  const allowedOriginsEnv = typeof process !== 'undefined' 
-    ? process.env.ALLOWED_ORIGINS 
-    : undefined;
-  const allowedOrigins = allowedOriginsEnv?.split(',') || ['*'];
+  const allowedOriginsEnv =
+    typeof process !== "undefined" ? process.env.ALLOWED_ORIGINS : undefined;
+  const allowedOrigins = allowedOriginsEnv?.split(",") || ["*"];
 
   let corsOrigin: string;
   if (origin && allowedOrigins.includes(origin)) {
     corsOrigin = origin;
-  } else if (allowedOrigins.includes('*')) {
-    corsOrigin = '*';
+  } else if (allowedOrigins.includes("*")) {
+    corsOrigin = "*";
   } else {
-    corsOrigin = allowedOrigins[0] || '*';
+    corsOrigin = allowedOrigins[0] || "*";
   }
 
   return {
-    'Access-Control-Allow-Origin': corsOrigin,
-    'Access-Control-Allow-Headers':
-      'authorization, x-client-info, apikey, content-type, x-api-key, x-signature, x-hmac-signature',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Max-Age': '86400',
+    "Access-Control-Allow-Origin": corsOrigin,
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type, x-api-key, x-signature, x-hmac-signature",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Max-Age": "86400",
   };
 }

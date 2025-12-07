@@ -42,13 +42,15 @@ export function IssueTracker() {
   };
 
   const filteredTickets =
-    selectedStatus === "all"
-      ? tickets
-      : tickets.filter((t) => t.status === selectedStatus);
+    selectedStatus === "all" ? tickets : tickets.filter((t) => t.status === selectedStatus);
 
   const severityConfig = {
     critical: { color: "text-red-600", bg: "bg-red-100 dark:bg-red-900/30", icon: AlertCircle },
-    high: { color: "text-orange-600", bg: "bg-orange-100 dark:bg-orange-900/30", icon: AlertCircle },
+    high: {
+      color: "text-orange-600",
+      bg: "bg-orange-100 dark:bg-orange-900/30",
+      icon: AlertCircle,
+    },
     medium: { color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/30", icon: Clock },
     low: { color: "text-blue-600", bg: "bg-blue-100 dark:bg-blue-900/30", icon: Clock },
   };
@@ -102,7 +104,12 @@ export function IssueTracker() {
                   className="flex items-start justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
                   <div className="flex items-start gap-3 flex-1">
-                    <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", severity.bg)}>
+                    <div
+                      className={cn(
+                        "w-10 h-10 rounded-lg flex items-center justify-center",
+                        severity.bg
+                      )}
+                    >
                       <SeverityIcon className={cn("w-5 h-5", severity.color)} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -111,7 +118,11 @@ export function IssueTracker() {
                           {ticket.subject}
                         </h4>
                         <Badge
-                          variant={ticket.severity === "critical" || ticket.severity === "high" ? "destructive" : "default"}
+                          variant={
+                            ticket.severity === "critical" || ticket.severity === "high"
+                              ? "destructive"
+                              : "default"
+                          }
                           className={cn(
                             ticket.severity === "critical" && "bg-red-600",
                             ticket.severity === "high" && "bg-orange-600"

@@ -59,11 +59,7 @@ export function UsageBar({
         </span>
       </div>
       {!isUnlimited && (
-        <Progress
-          value={percentage}
-          className="h-2"
-          indicatorClassName={getProgressColor()}
-        />
+        <Progress value={percentage} className="h-2" indicatorClassName={getProgressColor()} />
       )}
       {percentage >= warningThreshold && !isUnlimited && (
         <p className="text-xs text-yellow-600 dark:text-yellow-400">

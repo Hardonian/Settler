@@ -30,16 +30,19 @@ export async function checkUsageQuota(
 
   try {
     // Get user plan
-    const users = await query<{ plan_type: string }>(
-      `SELECT plan_type FROM users WHERE id = $1`,
-      [userId]
-    );
+    const users = await query<{ plan_type: string }>(`SELECT plan_type FROM users WHERE id = $1`, [
+      userId,
+    ]);
 
     if (users.length === 0) {
       return next();
     }
 
-    const planType = (users[0]?.plan_type || "free") as "free" | "trial" | "commercial" | "enterprise";
+    const planType = (users[0]?.plan_type || "free") as
+      | "free"
+      | "trial"
+      | "commercial"
+      | "enterprise";
     const limits = getPlanLimits(planType);
     const planFeatures = getPlanFeatures(planType);
 
@@ -87,7 +90,10 @@ export async function checkUsageQuota(
 
     // Check playground runs limit
     if (req.path.includes("/playground") && req.method === "POST") {
-      const playgroundLimit = planFeatures.playground?.runsPerDay === "unlimited" ? Infinity : (planFeatures.playground?.runsPerDay || 3);
+      const playgroundLimit =
+        planFeatures.playground?.runsPerDay === "unlimited"
+          ? Infinity
+          : planFeatures.playground?.runsPerDay || 3;
       if (playgroundLimit !== Infinity) {
         const quota = await checkQuotaExceeded(userId, "playground_runs", playgroundLimit);
 
@@ -153,13 +159,15 @@ export async function trackUsageAfterOperation(
 
         // Track export creation (fire and forget)
         if (req.path.includes("/exports") && req.method === "POST") {
-          import("../services/usage/tracker").then(({ trackExportCreation }) => {
-            trackExportCreation(userId, tenantId).catch(() => {
-              // Silent fail
+          import("../services/usage/tracker")
+            .then(({ trackExportCreation }) => {
+              trackExportCreation(userId, tenantId).catch(() => {
+                // Silent fail
+              });
+            })
+            .catch(() => {
+              // Silent fail on import
             });
-          }).catch(() => {
-            // Silent fail on import
-          });
         }
       }
     }

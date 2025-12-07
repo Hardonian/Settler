@@ -1,11 +1,13 @@
 # GTM Channel Playbook
 
 ## Overview
+
 Multi-channel go-to-market strategy to acquire customers efficiently.
 
 ## Channels
 
 ### 1. Content Marketing (Primary)
+
 - **Target:** Developers, technical teams
 - **Tactics:**
   - Blog posts (2x/week)
@@ -16,6 +18,7 @@ Multi-channel go-to-market strategy to acquire customers efficiently.
 - **Goal:** 50% of new signups
 
 ### 2. Product-Led Growth
+
 - **Target:** Self-service users
 - **Tactics:**
   - Free tier with limits
@@ -26,6 +29,7 @@ Multi-channel go-to-market strategy to acquire customers efficiently.
 - **Goal:** 30% of new signups
 
 ### 3. Developer Relations
+
 - **Target:** Developer community
 - **Tactics:**
   - Open source contributions
@@ -36,6 +40,7 @@ Multi-channel go-to-market strategy to acquire customers efficiently.
 - **Goal:** 10% of new signups
 
 ### 4. Partnerships
+
 - **Target:** Through partners
 - **Tactics:**
   - Integration partnerships
@@ -46,6 +51,7 @@ Multi-channel go-to-market strategy to acquire customers efficiently.
 - **Goal:** 5% of new signups
 
 ### 5. Paid Advertising
+
 - **Target:** Targeted audiences
 - **Tactics:**
   - Google Ads (search)
@@ -56,6 +62,7 @@ Multi-channel go-to-market strategy to acquire customers efficiently.
 - **Goal:** 3% of new signups
 
 ### 6. Sales (Enterprise)
+
 - **Target:** Enterprise customers
 - **Tactics:**
   - Outbound prospecting
@@ -68,16 +75,19 @@ Multi-channel go-to-market strategy to acquire customers efficiently.
 ## Channel Prioritization
 
 ### Phase 1 (Months 1-3): Foundation
+
 1. Content Marketing
 2. Product-Led Growth
 3. Developer Relations
 
 ### Phase 2 (Months 4-6): Scale
+
 1. Content Marketing (scale)
 2. Partnerships
 3. Paid Advertising (test)
 
 ### Phase 3 (Months 7-12): Optimize
+
 1. Content Marketing (optimize)
 2. Product-Led Growth (optimize)
 3. Sales (enterprise focus)
@@ -85,36 +95,42 @@ Multi-channel go-to-market strategy to acquire customers efficiently.
 ## Metrics by Channel
 
 ### Content Marketing
+
 - **CAC:** $150
 - **Conversion:** 2%
 - **LTV:** $1,800
 - **ROI:** 12:1
 
 ### Product-Led Growth
+
 - **CAC:** $50
 - **Conversion:** 5%
 - **LTV:** $1,800
 - **ROI:** 36:1
 
 ### Developer Relations
+
 - **CAC:** $200
 - **Conversion:** 1.5%
 - **LTV:** $1,800
 - **ROI:** 9:1
 
 ### Partnerships
+
 - **CAC:** $100
 - **Conversion:** 3%
 - **LTV:** $1,800
 - **ROI:** 18:1
 
 ### Paid Advertising
+
 - **CAC:** $300
 - **Conversion:** 1%
 - **LTV:** $1,800
 - **ROI:** 6:1
 
 ### Sales
+
 - **CAC:** $2,000
 - **Conversion:** 20%
 - **LTV:** $10,000

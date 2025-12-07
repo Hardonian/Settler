@@ -5,25 +5,30 @@ Overview of all integrations available in Settler.dev, including standard and pr
 ## Integration Categories
 
 ### Payment Processors
+
 - Stripe (Standard)
 - PayPal (Standard)
 - PayPal Payouts (Premium Add-On)
 - Google Pay (Standard)
 
 ### E-Commerce Platforms
+
 - Shopify (Standard)
 - Wix Stores (Premium Add-On)
 - Meta Commerce (Standard)
 - TikTok Shop (Premium Add-On)
 
 ### Advertising Platforms
+
 - Meta Ads (Standard)
 - TikTok Ads (Premium Add-On)
 
 ### Analytics
+
 - Google Analytics GA4 (Premium Add-On)
 
 ### Messaging & Payments
+
 - WhatsApp Business (Premium Add-On)
 - Telegram (Premium Add-On)
 
@@ -32,6 +37,7 @@ Overview of all integrations available in Settler.dev, including standard and pr
 ### Active Integrations
 
 All integrations support:
+
 - ✅ OAuth or API key authentication
 - ✅ Real-time data synchronization
 - ✅ Error handling and retry logic
@@ -42,6 +48,7 @@ All integrations support:
 ### Integration Capabilities
 
 Each integration provides:
+
 1. **Data Fetching**: Pull transaction/order data from source
 2. **Normalization**: Convert to Settler's canonical format
 3. **Reconciliation**: Match with other data sources
@@ -55,6 +62,7 @@ Each integration provides:
 Standard integrations are available immediately after subscribing to the base plan.
 
 **Setup Steps:**
+
 1. Navigate to `/dashboard/integrations`
 2. Click "Connect" on desired integration
 3. Enter API credentials
@@ -66,6 +74,7 @@ Standard integrations are available immediately after subscribing to the base pl
 Premium add-ons require purchase before use.
 
 **Setup Steps:**
+
 1. Navigate to `/dashboard/addons`
 2. Purchase desired add-on
 3. Navigate to `/dashboard/integrations`
@@ -81,40 +90,49 @@ Premium add-ons require purchase before use.
 Each integration requires specific credentials:
 
 #### Stripe
-- API Key (sk_live_... or sk_test_...)
+
+- API Key (sk*live*... or sk*test*...)
 
 #### Shopify
+
 - Store URL
 - API Key
 - API Secret
 
 #### PayPal
+
 - Client ID
 - Client Secret
 
 #### Meta Commerce + Ads
+
 - Access Token
 - Business ID
 
 #### TikTok Shop + Ads
+
 - Access Token
 - App Key
 - App Secret
 - Advertiser ID
 
 #### Wix Stores
+
 - API Key
 - Site ID
 
 #### GA4 Deep Sync
+
 - Property ID
 - Service Account Credentials (JSON)
 
 #### PayPal Payouts
+
 - Client ID
 - Client Secret
 
 #### WhatsApp + Telegram
+
 - WhatsApp Business API Token
 - Telegram Bot Token
 
@@ -137,6 +155,7 @@ POST /api/integrations/{integrationId}/test
 Integrations can be synced manually or automatically:
 
 ### Manual Sync
+
 ```bash
 POST /api/integrations/{integrationId}/sync
 {
@@ -148,7 +167,9 @@ POST /api/integrations/{integrationId}/sync
 ```
 
 ### Automatic Sync
+
 Configure automatic sync schedules:
+
 - Daily
 - Weekly
 - Monthly
@@ -157,7 +178,9 @@ Configure automatic sync schedules:
 ## Integration Limits
 
 ### Rate Limits
+
 Each integration has API rate limits:
+
 - Stripe: 100 requests/second
 - Shopify: 2 requests/second (leaky bucket)
 - PayPal: Varies by endpoint
@@ -169,6 +192,7 @@ Each integration has API rate limits:
 - Telegram: 30 messages/second
 
 ### Data Limits
+
 - Maximum date range: 1 year
 - Maximum records per sync: 10,000
 - Pagination: Automatic
@@ -176,6 +200,7 @@ Each integration has API rate limits:
 ## Integration Status Monitoring
 
 Monitor integration health:
+
 - Connection status
 - Last sync time
 - Sync success rate
@@ -210,6 +235,7 @@ Monitor integration health:
 ## Future Integrations
 
 Planned integrations:
+
 - Amazon Seller Central
 - Square Payments
 - QuickBooks Online
@@ -225,6 +251,7 @@ Planned integrations:
 Long-term goal: Allow third-party developers to build integrations.
 
 **Features:**
+
 - Developer SDK
 - Integration marketplace UI
 - Revenue sharing (70% Settler, 30% developer)

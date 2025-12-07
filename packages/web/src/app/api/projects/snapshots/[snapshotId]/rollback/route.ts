@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function POST(
-  _request: NextRequest,
-  { params }: { params: { snapshotId: string } }
-) {
+export async function POST(_request: NextRequest, { params }: { params: { snapshotId: string } }) {
   try {
     const supabase = await createClient();
     const {

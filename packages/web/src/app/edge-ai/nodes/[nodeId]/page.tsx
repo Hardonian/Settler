@@ -156,7 +156,9 @@ export default function NodeDetailPage() {
           <Card>
             <CardHeader className="pb-3">
               <CardDescription className="text-xs md:text-sm">Total Requests</CardDescription>
-              <CardTitle className="text-2xl md:text-3xl">{node.requests.toLocaleString()}</CardTitle>
+              <CardTitle className="text-2xl md:text-3xl">
+                {node.requests.toLocaleString()}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">
@@ -203,25 +205,33 @@ export default function NodeDetailPage() {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Model:</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Model:
+                  </span>
                   <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
                     {node.config.model}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Version:</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Version:
+                  </span>
                   <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
                     {node.config.version}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Endpoint:</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Endpoint:
+                  </span>
                   <span className="ml-2 text-sm text-slate-600 dark:text-slate-400 font-mono">
                     {node.config.endpoint}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Created:</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Created:
+                  </span>
                   <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">
                     {new Date(node.createdAt).toLocaleDateString()}
                   </span>
@@ -250,13 +260,17 @@ export default function NodeDetailPage() {
                   <Badge className={getStatusBadge(node.status)}>{node.status}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Average Latency</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    Average Latency
+                  </span>
                   <span className="text-sm font-medium text-slate-900 dark:text-white">
                     {node.latency}ms
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Request Accuracy</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    Request Accuracy
+                  </span>
                   <span className="text-sm font-medium text-green-600 dark:text-green-400">
                     {node.accuracy}%
                   </span>

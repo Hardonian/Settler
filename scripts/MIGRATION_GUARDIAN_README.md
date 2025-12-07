@@ -22,12 +22,14 @@ npm run migration:guardian
 You can set this up to run automatically via:
 
 1. **Cron Job** (Linux/Mac):
+
    ```bash
    # Run every hour
    0 * * * * cd /path/to/workspace && npm run migration:guardian
    ```
 
 2. **GitHub Actions** (CI/CD):
+
    ```yaml
    - name: Run Migration Guardian
      run: npm run migration:guardian
@@ -97,22 +99,27 @@ The script creates/updates `MIGRATION_LOG.md` in the repository root with:
 ## Troubleshooting
 
 ### "Prisma is not installed"
+
 ```bash
 npm install prisma @prisma/client
 ```
 
 ### "No DATABASE_URL found"
+
 Ensure your `.env` file contains either:
+
 - `DATABASE_URL=postgresql://...`
 - `SUPABASE_DB_URL=postgresql://...`
 - Or `SUPABASE_URL` + `SUPABASE_DB_PASSWORD` (will construct URL automatically)
 
 ### "Database connection failed"
+
 - Check Supabase password is correct
 - Verify IP allowlist settings in Supabase dashboard
 - Ensure `sslmode=require` is set for Supabase connections
 
 ### "Schema verification failed"
+
 - Ensure Prisma schema matches your database
 - Run `npx prisma db pull` to sync schema from database
 - Or run `npx prisma migrate dev` to create missing migrations
@@ -120,6 +127,7 @@ Ensure your `.env` file contains either:
 ## Archive Location
 
 Applied migrations are archived to:
+
 ```
 prisma/_archive/YYYY-MM-DD_HH-MM-SS/migration-id/
 ```

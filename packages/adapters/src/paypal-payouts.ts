@@ -33,7 +33,7 @@ export class PayPalPayoutsAdapter implements Adapter {
 
     const response = await fetch(`${url}?${params.toString()}`, {
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
     });
@@ -52,7 +52,7 @@ export class PayPalPayoutsAdapter implements Adapter {
     const response = await fetch("https://api-m.paypal.com/v1/oauth2/token", {
       method: "POST",
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
         "Accept-Language": "en_US",
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -117,8 +117,6 @@ export class PayPalPayoutsAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return errors.length === 0
-      ? { valid: true }
-      : { valid: false, errors };
+    return errors.length === 0 ? { valid: true } : { valid: false, errors };
   }
 }

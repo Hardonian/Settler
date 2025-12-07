@@ -68,9 +68,7 @@ export function BillingDisputeFlow() {
           <AlertCircle className="w-5 h-5" />
           Billing Dispute
         </CardTitle>
-        <CardDescription>
-          Submit a dispute for incorrect charges or billing issues
-        </CardDescription>
+        <CardDescription>Submit a dispute for incorrect charges or billing issues</CardDescription>
       </CardHeader>
       <CardContent>
         <Alert className="mb-6">

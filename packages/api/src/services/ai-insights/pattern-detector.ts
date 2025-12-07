@@ -24,9 +24,7 @@ export interface UserCluster {
 /**
  * Detect feature dependencies (which features users use together)
  */
-export async function detectFeatureDependencies(
-  days: number = 30
-): Promise<FeatureDependency[]> {
+export async function detectFeatureDependencies(days: number = 30): Promise<FeatureDependency[]> {
   try {
     // Extract feature usage from analytics events
     // Features are identified by event names like: feature.accessed, usage.metric, etc.
@@ -94,14 +92,14 @@ export async function detectFeatureDependencies(
 
         // Only include correlations > 0.5
         if (correlation > 0.5 && coOccurrence >= 5) {
-        if (featureA && featureB) {
-          dependencies.push({
-            featureA,
-            featureB,
-            correlation: Math.round(correlation * 1000) / 1000,
-            sampleSize: coOccurrence,
-          });
-        }
+          if (featureA && featureB) {
+            dependencies.push({
+              featureA,
+              featureB,
+              correlation: Math.round(correlation * 1000) / 1000,
+              sampleSize: coOccurrence,
+            });
+          }
         }
       }
     }
@@ -207,11 +205,7 @@ export async function clusterUsersByBehavior(): Promise<UserCluster[]> {
           "Low completion rate",
           "High exploration, low execution",
         ],
-        recommendations: [
-          "Provide guided tutorials",
-          "Add demo mode",
-          "Send activation emails",
-        ],
+        recommendations: ["Provide guided tutorials", "Add demo mode", "Send activation emails"],
         size: explorers.length,
       });
     }
@@ -220,11 +214,7 @@ export async function clusterUsersByBehavior(): Promise<UserCluster[]> {
       clusters.push({
         clusterName: "Minimalists",
         userIds: minimalists,
-        characteristics: [
-          "Single adapter usage",
-          "Basic features only",
-          "Focused workflow",
-        ],
+        characteristics: ["Single adapter usage", "Basic features only", "Focused workflow"],
         recommendations: [
           "Show value of additional adapters",
           "Highlight advanced features",
@@ -238,11 +228,7 @@ export async function clusterUsersByBehavior(): Promise<UserCluster[]> {
       clusters.push({
         clusterName: "Stuck Users",
         userIds: stuckUsers,
-        characteristics: [
-          "High error rate",
-          "Low success rate (<50%)",
-          "Needs help",
-        ],
+        characteristics: ["High error rate", "Low success rate (<50%)", "Needs help"],
         recommendations: [
           "Send troubleshooting guide",
           "Offer support call",
@@ -264,14 +250,14 @@ export async function clusterUsersByBehavior(): Promise<UserCluster[]> {
 /**
  * Detect incomplete workflows
  */
-export async function detectIncompleteWorkflows(
-  userId?: string
-): Promise<Array<{
-  userId: string;
-  workflowType: string;
-  dropOffStep: string;
-  completionRate: number;
-}>> {
+export async function detectIncompleteWorkflows(userId?: string): Promise<
+  Array<{
+    userId: string;
+    workflowType: string;
+    dropOffStep: string;
+    completionRate: number;
+  }>
+> {
   try {
     const incomplete: Array<{
       userId: string;

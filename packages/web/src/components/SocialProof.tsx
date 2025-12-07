@@ -87,7 +87,8 @@ export function SocialProof({ testimonials = defaultTestimonials }: SocialProofP
             Trusted by 500+ Companies
           </h2>
           <p className="text-lg text-muted-foreground">
-            Join finance teams and developers using Settler to process millions of transactions with 99.7% accuracy
+            Join finance teams and developers using Settler to process millions of transactions with
+            99.7% accuracy
           </p>
         </div>
         <div

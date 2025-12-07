@@ -63,6 +63,7 @@ const settler = new Settler({
 ## Step 4: Create Your First Reconciliation Job
 
 A reconciliation job defines:
+
 - **Source platform** (e.g., Shopify orders)
 - **Target platform** (e.g., Stripe payments)
 - **Matching rules** (how to match transactions)
@@ -157,7 +158,7 @@ if (report.data.summary.unmatched > 0) {
   });
 
   console.log(`Found ${exceptions.data.length} exceptions to review`);
-  
+
   // Review and resolve exceptions
   for (const exception of exceptions.data) {
     console.log(`Exception: ${exception.id}`);
@@ -177,11 +178,7 @@ Receive notifications when reconciliation completes or exceptions occur:
 ```typescript
 const webhook = await settler.webhooks.create({
   url: "https://your-app.com/webhooks/settler",
-  events: [
-    "reconciliation.completed",
-    "reconciliation.mismatch",
-    "reconciliation.error",
-  ],
+  events: ["reconciliation.completed", "reconciliation.mismatch", "reconciliation.error"],
   secret: process.env.WEBHOOK_SECRET, // For signature verification
 });
 
@@ -226,15 +223,15 @@ const job = await settler.jobs.create({
 ```typescript
 try {
   const execution = await settler.jobs.run(job.data.id);
-  
+
   // Poll for completion (or use webhooks)
   let status = "running";
   while (status === "running") {
-    await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+    await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait 5 seconds
     const executionStatus = await settler.jobs.getExecutionStatus(execution.data.id);
     status = executionStatus.data.status;
   }
-  
+
   if (status === "failed") {
     const errors = await settler.exceptions.list({
       jobId: job.data.id,

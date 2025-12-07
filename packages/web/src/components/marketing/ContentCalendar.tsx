@@ -5,7 +5,11 @@ import { Calendar, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { generateContentCalendar, exportCalendarAsCSV, type ContentItem } from "@/lib/content-calendar";
+import {
+  generateContentCalendar,
+  exportCalendarAsCSV,
+  type ContentItem,
+} from "@/lib/content-calendar";
 import { cn } from "@/lib/utils";
 
 export function ContentCalendar() {
@@ -18,9 +22,7 @@ export function ContentCalendar() {
   }, []);
 
   const filteredCalendar =
-    selectedType === "all"
-      ? calendar
-      : calendar.filter((item) => item.type === selectedType);
+    selectedType === "all" ? calendar : calendar.filter((item) => item.type === selectedType);
 
   const handleExport = () => {
     const csv = exportCalendarAsCSV(filteredCalendar);
@@ -96,7 +98,9 @@ export function ContentCalendar() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">{item.description}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                  {item.description}
+                </p>
                 <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
                   <span>{new Date(item.date).toLocaleDateString()}</span>
                   <span className="capitalize">{item.status}</span>

@@ -20,7 +20,7 @@ export class ModelManager {
     }
   }
 
-  async loadModels(): Promise<void> {
+  loadModels(): void {
     logger.info("Loading models", { modelDir: this.modelDir });
 
     // In production, this would:
@@ -32,12 +32,12 @@ export class ModelManager {
     logger.info("Models loaded (placeholder)");
   }
 
-  async getModel(modelName: string): Promise<unknown> {
+  getModel(modelName: string): unknown {
     return this.models.get(modelName) || null;
   }
 
-  async runInference(modelName: string, _input: unknown): Promise<unknown> {
-    const model = await this.getModel(modelName);
+  runInference(modelName: string, _input: unknown): unknown {
+    const model = this.getModel(modelName);
     if (!model) {
       throw new Error(`Model not found: ${modelName}`);
     }

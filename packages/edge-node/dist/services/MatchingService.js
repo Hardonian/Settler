@@ -18,24 +18,25 @@ class MatchingService {
         this._modelManager = _modelManager;
     }
     async findCandidates(sourceData, targetData) {
-        logger_1.logger.info('Finding candidates', {
+        logger_1.logger.info("Finding candidates", {
             sourceCount: sourceData.length,
             targetCount: targetData.length,
         });
         const candidates = [];
         // Simple fuzzy matching (can be enhanced with ML models)
         for (const source of sourceData) {
-            if (typeof source !== 'object' || source === null)
+            if (typeof source !== "object" || source === null)
                 continue;
             const sourceRecord = source;
             const sourceId = this.extractId(sourceRecord);
             for (const target of targetData) {
-                if (typeof target !== 'object' || target === null)
+                if (typeof target !== "object" || target === null)
                     continue;
                 const targetRecord = target;
                 const targetId = this.extractId(targetRecord);
                 const score = this.calculateMatchScore(sourceRecord, targetRecord);
-                if (score > 0.5) { // Threshold for candidate
+                if (score > 0.5) {
+                    // Threshold for candidate
                     candidates.push({
                         sourceId,
                         targetId,
@@ -43,7 +44,7 @@ class MatchingService {
                         scoreMatrix: {
                             amount: this.compareAmount(sourceRecord, targetRecord),
                             date: this.compareDate(sourceRecord, targetRecord),
-                            description: this.compareString(sourceRecord, targetRecord, 'description'),
+                            description: this.compareString(sourceRecord, targetRecord, "description"),
                         },
                     });
                 }
@@ -55,7 +56,7 @@ class MatchingService {
         return candidates.slice(0, 100);
     }
     extractId(record) {
-        return String(record.id || record.transaction_id || record.order_id || '');
+        return String(record.id || record.transaction_id || record.order_id || "");
     }
     calculateMatchScore(source, target) {
         let totalScore = 0;
@@ -69,8 +70,7 @@ class MatchingService {
         totalScore += dateScore * 0.3;
         weightSum += 0.3;
         // Description/ID matching (medium weight)
-        const descScore = this.compareString(source, target, 'description') ||
-            this.compareString(source, target, 'id');
+        const descScore = this.compareString(source, target, "description") || this.compareString(source, target, "id");
         totalScore += descScore * 0.3;
         weightSum += 0.3;
         return weightSum > 0 ? totalScore / weightSum : 0;
@@ -91,11 +91,11 @@ class MatchingService {
     }
     extractAmount(record) {
         const amount = record.amount || record.total || record.value;
-        if (typeof amount === 'number') {
+        if (typeof amount === "number") {
             return amount;
         }
-        if (typeof amount === 'string') {
-            const parsed = parseFloat(amount.replace(/[^0-9.-]/g, ''));
+        if (typeof amount === "string") {
+            const parsed = parseFloat(amount.replace(/[^0-9.-]/g, ""));
             return isNaN(parsed) ? null : parsed;
         }
         return null;
@@ -116,18 +116,18 @@ class MatchingService {
         if (dateField instanceof Date) {
             return dateField;
         }
-        if (typeof dateField === 'string') {
+        if (typeof dateField === "string") {
             const parsed = new Date(dateField);
             return isNaN(parsed.getTime()) ? null : parsed;
         }
-        if (typeof dateField === 'number') {
+        if (typeof dateField === "number") {
             return new Date(dateField);
         }
         return null;
     }
     compareString(source, target, field) {
-        const sourceValue = String(source[field] || '').toLowerCase();
-        const targetValue = String(target[field] || '').toLowerCase();
+        const sourceValue = String(source[field] || "").toLowerCase();
+        const targetValue = String(target[field] || "").toLowerCase();
         if (!sourceValue || !targetValue) {
             return 0;
         }
@@ -167,7 +167,7 @@ class MatchingService {
                 const prevRow = matrix[prevI];
                 const currRow = matrix[i];
                 if (!prevRow || !currRow) {
-                    throw new Error('Matrix initialization error');
+                    throw new Error("Matrix initialization error");
                 }
                 if (str2.charAt(prevI) === str1.charAt(prevJ)) {
                     currRow[j] = prevRow[prevJ] ?? 0;

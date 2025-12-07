@@ -32,7 +32,7 @@ export function CustomerLogos() {
   // Customer logos - using text-based representation until real logos are available
   // In production, replace with actual customer logo images
   const logos: Array<{ name: string; logo?: string }> = [];
-  
+
   // Temporarily hide customer logos section until real logos are available
   // This prevents credibility issues from placeholder content
   if (logos.length === 0) {

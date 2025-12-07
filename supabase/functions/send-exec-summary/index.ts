@@ -33,7 +33,9 @@ serve(async (req) => {
       .gte("created_at", yesterday.toISOString())
       .lt("created_at", today.toISOString());
 
-    const { data: totalUsers } = await supabase.from("users").select("id", { count: "exact", head: true });
+    const { data: totalUsers } = await supabase
+      .from("users")
+      .select("id", { count: "exact", head: true });
 
     const { data: subscriptions } = await supabase
       .from("subscriptions")
@@ -57,7 +59,9 @@ serve(async (req) => {
         atRiskUsers: atRisk?.length || 0,
       },
       insights: [
-        newUsers && newUsers.length > 10 ? "🚀 Strong signup growth today" : "📊 Normal signup volume",
+        newUsers && newUsers.length > 10
+          ? "🚀 Strong signup growth today"
+          : "📊 Normal signup volume",
         atRisk && atRisk.length > 20 ? "⚠️ High churn risk detected" : "✅ Churn risk normal",
       ],
     };

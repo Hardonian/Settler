@@ -65,9 +65,7 @@ export async function trackOnboardingStep(
 /**
  * Get onboarding progress for user
  */
-export async function getOnboardingProgress(
-  userId: string
-): Promise<OnboardingProgress | null> {
+export async function getOnboardingProgress(userId: string): Promise<OnboardingProgress | null> {
   try {
     const results = await query<{
       step: string;
@@ -98,16 +96,14 @@ export async function getOnboardingProgress(
     });
 
     const completedSteps = steps.filter((s) => s.completed).length;
-    const completionPercentage = Math.round(
-      (completedSteps / ONBOARDING_STEPS.length) * 100
-    );
+    const completionPercentage = Math.round((completedSteps / ONBOARDING_STEPS.length) * 100);
 
     const result: OnboardingProgress = {
       userId,
       steps,
       completionPercentage,
     };
-    
+
     if (completionPercentage === 100 && results.length > 0) {
       const lastResult = results[results.length - 1];
       if (lastResult && lastResult.updated_at) {
@@ -136,9 +132,7 @@ export async function isOnboardingComplete(userId: string): Promise<boolean> {
 /**
  * Get next onboarding step
  */
-export async function getNextOnboardingStep(
-  userId: string
-): Promise<OnboardingStepType | null> {
+export async function getNextOnboardingStep(userId: string): Promise<OnboardingStepType | null> {
   const progress = await getOnboardingProgress(userId);
   if (!progress) {
     return ONBOARDING_STEPS[0];

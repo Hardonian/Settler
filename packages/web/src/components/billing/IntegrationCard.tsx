@@ -1,7 +1,14 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, X, Settings, Loader2 } from "lucide-react";
@@ -41,7 +48,11 @@ export function IntegrationCard({
   const getStatusBadge = () => {
     switch (status) {
       case "active":
-        return <Badge variant="default" className="bg-green-500">Active</Badge>;
+        return (
+          <Badge variant="default" className="bg-green-500">
+            Active
+          </Badge>
+        );
       case "error":
         return <Badge variant="destructive">Error</Badge>;
       case "pending":
@@ -75,7 +86,9 @@ export function IntegrationCard({
             <div className="flex flex-wrap items-center gap-2">
               {getStatusBadge()}
               {isStandard && (
-                <Badge variant="secondary" className="text-xs">Included</Badge>
+                <Badge variant="secondary" className="text-xs">
+                  Included
+                </Badge>
               )}
               {!isPurchased && !isStandard && (
                 <Badge variant="outline" className="text-yellow-600 border-yellow-600 text-xs">

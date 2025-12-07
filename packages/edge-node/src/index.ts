@@ -18,12 +18,17 @@ program
   .description("Settler Edge Node - Local reconciliation with AI")
   .version("1.0.0");
 
+interface StartOptions {
+  config?: string;
+  nodeKey?: string;
+}
+
 program
   .command("start")
   .description("Start the edge node service")
   .option("-c, --config <path>", "Path to config file")
   .option("-k, --node-key <key>", "Node authentication key")
-  .action(async (options) => {
+  .action((options: StartOptions) => {
     try {
       logger.info("Starting Settler Edge Node...");
 
@@ -41,21 +46,23 @@ program
         dataDir: config.dataDir,
       });
 
-      await service.start();
+      service.start();
 
       logger.info(chalk.green("Edge node started successfully"));
 
       // Graceful shutdown
-      process.on("SIGINT", async () => {
+      process.on("SIGINT", () => {
         logger.info("Shutting down edge node...");
-        await service.stop();
-        process.exit(0);
+        void service.stop().then(() => {
+          process.exit(0);
+        });
       });
 
-      process.on("SIGTERM", async () => {
+      process.on("SIGTERM", () => {
         logger.info("Shutting down edge node...");
-        await service.stop();
-        process.exit(0);
+        void service.stop().then(() => {
+          process.exit(0);
+        });
       });
     } catch (error) {
       logger.error("Failed to start edge node", error);
@@ -63,13 +70,19 @@ program
     }
   });
 
+interface EnrollOptions {
+  enrollmentKey: string;
+  name?: string;
+  type?: string;
+}
+
 program
   .command("enroll")
   .description("Enroll this edge node with Settler Cloud")
   .requiredOption("-e, --enrollment-key <key>", "Enrollment key from Settler dashboard")
   .option("-n, --name <name>", "Node name")
   .option("-t, --type <type>", "Device type (server|embedded|mobile|edge_gateway)")
-  .action(async (options) => {
+  .action(async (options: EnrollOptions) => {
     try {
       logger.info("Enrolling edge node...");
 
@@ -91,7 +104,7 @@ program
       logger.info(chalk.yellow("Save this node key securely - it will not be shown again"));
 
       // Save node key to config
-      await service.saveNodeKey(result.nodeKey);
+      service.saveNodeKey(result.nodeKey);
     } catch (error) {
       logger.error("Enrollment failed", error);
       process.exit(1);
@@ -101,7 +114,7 @@ program
 program
   .command("status")
   .description("Show edge node status")
-  .action(async () => {
+  .action(() => {
     try {
       const service = new EdgeNodeService({
         nodeKey: process.env.SETTLER_NODE_KEY || "",
@@ -109,7 +122,7 @@ program
         dataDir: config.dataDir,
       });
 
-      const status = await service.getStatus();
+      const status = service.getStatus();
 
       console.log(chalk.bold("Edge Node Status:"));
       console.log(`  Node ID: ${status.nodeId || "Not enrolled"}`);

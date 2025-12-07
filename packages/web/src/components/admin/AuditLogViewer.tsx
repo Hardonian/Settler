@@ -95,7 +95,9 @@ export function AuditLogViewer() {
                   User: {log.userId} • IP: {log.ipAddress}
                 </div>
                 {log.details && (
-                  <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">{log.details}</div>
+                  <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                    {log.details}
+                  </div>
                 )}
               </div>
             ))}

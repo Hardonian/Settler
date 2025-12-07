@@ -63,7 +63,8 @@ export function PaymentTypes() {
             Secure Payment Options
           </h3>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Choose from credit cards (via Stripe) or PayPal. All payments processed securely through trusted partners.
+            Choose from credit cards (via Stripe) or PayPal. All payments processed securely through
+            trusted partners.
           </p>
         </div>
 
@@ -214,7 +215,8 @@ export function PaymentTypes() {
           </div>
 
           <p className="text-xs text-slate-500 dark:text-slate-400 text-center mt-4">
-            All payments are processed securely through Stripe and PayPal. We never store your payment details. PCI-DSS compliant. SSL encrypted.
+            All payments are processed securely through Stripe and PayPal. We never store your
+            payment details. PCI-DSS compliant. SSL encrypted.
           </p>
         </div>
       </div>

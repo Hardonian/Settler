@@ -1,11 +1,13 @@
 # Community Strategy
 
 ## Overview
+
 Build a thriving developer community around Settler through Discord/Slack, content, and engagement.
 
 ## Platform Setup
 
 ### Discord (Primary)
+
 - **Channels:**
   - #general - Community chat
   - #showcase - User projects
@@ -16,6 +18,7 @@ Build a thriving developer community around Settler through Discord/Slack, conte
 - **Bots:** Welcome bot, FAQ bot, GitHub integration
 
 ### Slack (Enterprise)
+
 - **Workspace:** settler-community.slack.com
 - **Channels:** Similar to Discord
 - **Access:** Invite-only for active users
@@ -23,12 +26,14 @@ Build a thriving developer community around Settler through Discord/Slack, conte
 ## Content Strategy
 
 ### Auto-Seeding Content
+
 - **Daily:** Product tips and tricks
 - **Weekly:** Integration spotlights
 - **Monthly:** Community highlights
 - **Quarterly:** Roadmap updates
 
 ### Content Types
+
 1. **Tutorials:** Step-by-step guides
 2. **Case Studies:** User success stories
 3. **API Examples:** Code snippets
@@ -37,16 +42,19 @@ Build a thriving developer community around Settler through Discord/Slack, conte
 ## Engagement Tactics
 
 ### Onboarding
+
 - Welcome message with resources
 - First project showcase opportunity
 - Community mentor assignment
 
 ### Recognition
+
 - Community contributor badges
 - Monthly spotlight on top contributors
 - Swag for active members
 
 ### Events
+
 - **Monthly:** Virtual meetup
 - **Quarterly:** Office hours with founders
 - **Annually:** Community conference
@@ -54,18 +62,21 @@ Build a thriving developer community around Settler through Discord/Slack, conte
 ## Growth Strategy
 
 ### Phase 1 (Months 1-3)
+
 - Launch Discord server
 - Seed initial content
 - Invite beta users
 - Establish moderation
 
 ### Phase 2 (Months 4-6)
+
 - Launch Slack workspace
 - Regular content schedule
 - Community events
 - Contributor program
 
 ### Phase 3 (Months 7-12)
+
 - Self-sustaining community
 - User-generated content
 - Community-led events

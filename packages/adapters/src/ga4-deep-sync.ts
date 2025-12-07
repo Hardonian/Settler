@@ -23,20 +23,12 @@ export class GA4DeepSyncAdapter implements Adapter {
     const requestBody: any = {
       dateRanges: [
         {
-          startDate: dateRange?.start
-            ? dateRange.start.toISOString().split("T")[0]
-            : "30daysAgo",
-          endDate: dateRange?.end
-            ? dateRange.end.toISOString().split("T")[0]
-            : "today",
+          startDate: dateRange?.start ? dateRange.start.toISOString().split("T")[0] : "30daysAgo",
+          endDate: dateRange?.end ? dateRange.end.toISOString().split("T")[0] : "today",
         },
       ],
       dimensions: [{ name: "date" }, { name: "transactionId" }],
-      metrics: [
-        { name: "purchaseRevenue" },
-        { name: "transactions" },
-        { name: "totalRevenue" },
-      ],
+      metrics: [{ name: "purchaseRevenue" }, { name: "transactions" }, { name: "totalRevenue" }],
       dimensionFilter: {
         filter: {
           fieldName: "eventName",
@@ -54,7 +46,7 @@ export class GA4DeepSyncAdapter implements Adapter {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(requestBody),
@@ -118,8 +110,6 @@ export class GA4DeepSyncAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return errors.length === 0
-      ? { valid: true }
-      : { valid: false, errors };
+    return errors.length === 0 ? { valid: true } : { valid: false, errors };
   }
 }

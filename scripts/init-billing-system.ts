@@ -34,10 +34,7 @@ async function initializeBillingSystem() {
   // 1. Verify database tables exist
   console.log("1. Verifying database tables...");
   try {
-    const { data: tables, error } = await supabase
-      .from("billing_accounts")
-      .select("id")
-      .limit(1);
+    const { data: tables, error } = await supabase.from("billing_accounts").select("id").limit(1);
 
     if (error && error.code === "42P01") {
       errors.push("billing_accounts table does not exist. Run migrations first.");
@@ -45,7 +42,9 @@ async function initializeBillingSystem() {
       console.log("   ✅ Database tables verified");
     }
   } catch (error) {
-    errors.push(`Database verification failed: ${error instanceof Error ? error.message : String(error)}`);
+    errors.push(
+      `Database verification failed: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 
   // 2. Verify add-ons are seeded
@@ -60,12 +59,11 @@ async function initializeBillingSystem() {
       warnings.push("Could not verify add-ons. They may need to be seeded.");
     } else if (!addOns || addOns.length === 0) {
       console.log("   ⚠️  No add-ons found. Seeding add-ons...");
-      
+
       const configs = getAllAddOnConfigs();
       for (const config of configs) {
-        const { error: insertError } = await supabase
-          .from("add_ons")
-          .upsert({
+        const { error: insertError } = await supabase.from("add_ons").upsert(
+          {
             integration_id: config.integration_id,
             name: config.name,
             description: config.description,
@@ -76,9 +74,11 @@ async function initializeBillingSystem() {
             is_standard: config.is_standard,
             is_active: true,
             metadata: config.metadata || {},
-          }, {
+          },
+          {
             onConflict: "integration_id",
-          });
+          }
+        );
 
         if (insertError) {
           warnings.push(`Failed to seed add-on ${config.integration_id}: ${insertError.message}`);
@@ -90,7 +90,9 @@ async function initializeBillingSystem() {
       console.log("   ✅ Add-ons verified");
     }
   } catch (error) {
-    warnings.push(`Add-on verification failed: ${error instanceof Error ? error.message : String(error)}`);
+    warnings.push(
+      `Add-on verification failed: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 
   // 3. Verify Stripe products (if Stripe is configured)
@@ -98,7 +100,7 @@ async function initializeBillingSystem() {
     console.log("\n3. Verifying Stripe products...");
     try {
       const products = await stripe.products.list({ limit: 100 });
-      const productNames = products.data.map(p => p.name);
+      const productNames = products.data.map((p) => p.name);
 
       const requiredProducts = [
         "Settler Core",
@@ -109,16 +111,20 @@ async function initializeBillingSystem() {
         "WhatsApp Business + Telegram Messaging",
       ];
 
-      const missingProducts = requiredProducts.filter(name => !productNames.includes(name));
+      const missingProducts = requiredProducts.filter((name) => !productNames.includes(name));
 
       if (missingProducts.length > 0) {
         warnings.push(`Missing Stripe products: ${missingProducts.join(", ")}`);
-        console.log("   ⚠️  Some Stripe products are missing. Run: tsx scripts/setup-stripe-products.ts");
+        console.log(
+          "   ⚠️  Some Stripe products are missing. Run: tsx scripts/setup-stripe-products.ts"
+        );
       } else {
         console.log("   ✅ Stripe products verified");
       }
     } catch (error) {
-      warnings.push(`Stripe verification failed: ${error instanceof Error ? error.message : String(error)}`);
+      warnings.push(
+        `Stripe verification failed: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   } else {
     warnings.push("Stripe not configured. Set STRIPE_SECRET_KEY to verify products.");
@@ -150,12 +156,12 @@ async function initializeBillingSystem() {
 
   if (errors.length > 0) {
     console.log("\n❌ Errors:");
-    errors.forEach(err => console.log(`   - ${err}`));
+    errors.forEach((err) => console.log(`   - ${err}`));
   }
 
   if (warnings.length > 0) {
     console.log("\n⚠️  Warnings:");
-    warnings.forEach(warn => console.log(`   - ${warn}`));
+    warnings.forEach((warn) => console.log(`   - ${warn}`));
   }
 
   if (errors.length === 0 && warnings.length === 0) {

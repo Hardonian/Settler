@@ -26,10 +26,7 @@ export function ChatWidget() {
 
   return (
     <div
-      className={cn(
-        "fixed bottom-6 right-6 z-50 transition-all",
-        isMinimized ? "w-64" : "w-96"
-      )}
+      className={cn("fixed bottom-6 right-6 z-50 transition-all", isMinimized ? "w-64" : "w-96")}
     >
       <Card className="shadow-2xl">
         <CardHeader className="flex flex-row items-center justify-between pb-3">

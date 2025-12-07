@@ -377,16 +377,15 @@ export async function checkUsageQuotaForEvent(
     }
 
     // Get current usage
-    const currentUsage = await getCurrentUsage(
-      billingAccount.id,
-      eventType,
-      subscription
-    );
+    const currentUsage = await getCurrentUsage(billingAccount.id, eventType, subscription);
 
     // Get plan limits
     const planLimits = PLAN_LIMITS[subscription.plan_id || "base"] || PLAN_LIMITS.base;
     if (!planLimits) {
-      logError("Plan limits not found", new Error(`Plan limits not configured for plan: ${subscription.plan_id || "base"}`));
+      logError(
+        "Plan limits not found",
+        new Error(`Plan limits not configured for plan: ${subscription.plan_id || "base"}`)
+      );
       return { allowed: true }; // Fail open
     }
     const limit = planLimits[eventType as keyof PlanLimits] as number;
@@ -475,6 +474,6 @@ export function checkIntegrationAccess(integrationId: string) {
         error: "Internal Server Error",
         message: "Failed to verify integration access",
       });
-  }
-};
+    }
+  };
 }

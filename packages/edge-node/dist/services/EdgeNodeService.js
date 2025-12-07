@@ -78,14 +78,14 @@ class EdgeNodeService {
             fs.mkdirSync(this.dataDir, { recursive: true });
         }
         // Initialize SQLite database
-        const dbPath = path.join(this.dataDir, 'settler-edge.db');
+        const dbPath = path.join(this.dataDir, "settler-edge.db");
         this.db = new better_sqlite3_1.default(dbPath);
         this.initializeDatabase();
         // Initialize cloud API client
         this.cloudApi = axios_1.default.create({
             baseURL: config.cloudApiUrl,
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             timeout: 30000,
         });
@@ -148,14 +148,14 @@ class EdgeNodeService {
     async enroll(request) {
         try {
             const deviceInfo = this.getDeviceInfo();
-            const response = await this.cloudApi.post('/api/edge-ai/nodes/enroll', {
+            const response = await this.cloudApi.post("/api/edge-ai/nodes/enroll", {
                 enrollment_key: request.enrollmentKey,
                 name: request.name,
                 device_type: request.deviceType,
                 device_os: deviceInfo.os,
                 device_arch: deviceInfo.arch,
                 capabilities: deviceInfo.capabilities,
-                version: '1.0.0',
+                version: "1.0.0",
             });
             const result = {
                 nodeId: response.data.node_id,
@@ -165,38 +165,38 @@ class EdgeNodeService {
             this.nodeKey = result.nodeKey;
             // Save node key to file
             await this.saveNodeKey(result.nodeKey);
-            logger_1.logger.info('Node enrolled successfully', { nodeId: result.nodeId });
+            logger_1.logger.info("Node enrolled successfully", { nodeId: result.nodeId });
             return result;
         }
         catch (error) {
-            logger_1.logger.error('Enrollment failed', error);
+            logger_1.logger.error("Enrollment failed", error);
             throw error;
         }
     }
     async start() {
         if (this.isRunning) {
-            logger_1.logger.warn('Edge node is already running');
+            logger_1.logger.warn("Edge node is already running");
             return;
         }
         if (!this.nodeKey) {
-            throw new Error('Node key is required. Please enroll the node first.');
+            throw new Error("Node key is required. Please enroll the node first.");
         }
         this.isRunning = true;
-        logger_1.logger.info('Starting edge node service...');
+        logger_1.logger.info("Starting edge node service...");
         // Start heartbeat
         this.startHeartbeat();
         // Start sync service
         this.startSync();
         // Load models
         await this.modelManager.loadModels();
-        logger_1.logger.info('Edge node service started');
+        logger_1.logger.info("Edge node service started");
     }
     async stop() {
         if (!this.isRunning) {
             return;
         }
         this.isRunning = false;
-        logger_1.logger.info('Stopping edge node service...');
+        logger_1.logger.info("Stopping edge node service...");
         if (this.heartbeatInterval) {
             clearInterval(this.heartbeatInterval);
         }
@@ -205,7 +205,7 @@ class EdgeNodeService {
         }
         await this.syncService.flush();
         this.db.close();
-        logger_1.logger.info('Edge node service stopped');
+        logger_1.logger.info("Edge node service stopped");
     }
     startHeartbeat() {
         this.sendHeartbeat();
@@ -215,15 +215,15 @@ class EdgeNodeService {
     }
     async sendHeartbeat() {
         try {
-            await this.cloudApi.post('/api/edge-ai/heartbeat', {
+            await this.cloudApi.post("/api/edge-ai/heartbeat", {
                 node_key: this.nodeKey,
-                status: 'healthy',
-                version: '1.0.0',
+                status: "healthy",
+                version: "1.0.0",
             });
-            logger_1.logger.debug('Heartbeat sent');
+            logger_1.logger.debug("Heartbeat sent");
         }
         catch (error) {
-            logger_1.logger.error('Heartbeat failed', error);
+            logger_1.logger.error("Heartbeat failed", error);
         }
     }
     startSync() {
@@ -232,7 +232,7 @@ class EdgeNodeService {
                 await this.syncService.sync();
             }
             catch (error) {
-                logger_1.logger.error('Sync failed', error);
+                logger_1.logger.error("Sync failed", error);
             }
         }, config_1.config.syncInterval);
     }
@@ -244,7 +244,7 @@ class EdgeNodeService {
         INSERT INTO local_jobs (id, job_type, status, input_data, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?)
       `);
-            stmt.run(jobId, 'ingestion', 'running', JSON.stringify(data), Date.now(), Date.now());
+            stmt.run(jobId, "ingestion", "running", JSON.stringify(data), Date.now(), Date.now());
             // Process ingestion
             const result = await this.ingestionService.process(data, schemaHints);
             // Update job
@@ -253,9 +253,9 @@ class EdgeNodeService {
         SET status = ?, output_data = ?, updated_at = ?
         WHERE id = ?
       `);
-            updateStmt.run('completed', JSON.stringify(result), Date.now(), jobId);
+            updateStmt.run("completed", JSON.stringify(result), Date.now(), jobId);
             // Queue for sync
-            await this.syncService.queueSync('batch_ingestion', {
+            await this.syncService.queueSync("batch_ingestion", {
                 job_id: jobId,
                 data: result.processedData,
                 schema: result.inferredSchema,
@@ -263,13 +263,13 @@ class EdgeNodeService {
             return jobId;
         }
         catch (error) {
-            logger_1.logger.error('Ingestion processing failed', error);
+            logger_1.logger.error("Ingestion processing failed", error);
             const errorStmt = this.db.prepare(`
         UPDATE local_jobs 
         SET status = ?, output_data = ?, updated_at = ?
         WHERE id = ?
       `);
-            errorStmt.run('failed', JSON.stringify({ error: String(error) }), Date.now(), jobId);
+            errorStmt.run("failed", JSON.stringify({ error: String(error) }), Date.now(), jobId);
             throw error;
         }
     }
@@ -287,7 +287,7 @@ class EdgeNodeService {
             stmt.run(id, candidate.sourceId, candidate.targetId, candidate.confidenceScore, JSON.stringify(candidate.scoreMatrix), Date.now());
         }
         // Queue for sync
-        await this.syncService.queueSync('candidate_scores', {
+        await this.syncService.queueSync("candidate_scores", {
             candidates: candidates.map((c, i) => ({
                 ...c,
                 id: candidateIds[i],
@@ -309,7 +309,7 @@ class EdgeNodeService {
             stmt.run(id, anomaly.type, anomaly.severity, JSON.stringify(anomaly.transactionData), Date.now());
         }
         // Queue for sync
-        await this.syncService.queueSync('anomalies', {
+        await this.syncService.queueSync("anomalies", {
             anomalies: anomalies.map((a, i) => ({
                 ...a,
                 id: anomalyIds[i],
@@ -318,9 +318,9 @@ class EdgeNodeService {
         return anomalyIds;
     }
     async getStatus() {
-        const jobCount = this.db.prepare('SELECT COUNT(*) as count FROM local_jobs').get();
+        const jobCount = this.db.prepare("SELECT COUNT(*) as count FROM local_jobs").get();
         const status = {
-            status: this.isRunning ? 'running' : 'stopped',
+            status: this.isRunning ? "running" : "stopped",
             lastHeartbeat: new Date().toISOString(), // TODO: Track actual last heartbeat
             jobsProcessed: jobCount?.count || 0,
             localStorageUsed: this.getStorageSize(),
@@ -332,7 +332,7 @@ class EdgeNodeService {
     }
     getStorageSize() {
         try {
-            const stats = fs.statSync(path.join(this.dataDir, 'settler-edge.db'));
+            const stats = fs.statSync(path.join(this.dataDir, "settler-edge.db"));
             return Math.round(stats.size / 1024 / 1024); // MB
         }
         catch {
@@ -356,9 +356,9 @@ class EdgeNodeService {
         };
     }
     async saveNodeKey(nodeKey) {
-        const keyPath = path.join(this.dataDir, '.node-key');
+        const keyPath = path.join(this.dataDir, ".node-key");
         fs.writeFileSync(keyPath, nodeKey, { mode: 0o600 }); // Read/write for owner only
-        logger_1.logger.info('Node key saved', { path: keyPath });
+        logger_1.logger.info("Node key saved", { path: keyPath });
     }
 }
 exports.EdgeNodeService = EdgeNodeService;

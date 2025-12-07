@@ -75,10 +75,7 @@ export async function generateRouteDocs(): Promise<DocumentationReport> {
 /**
  * Find all route files recursively
  */
-async function findRouteFiles(
-  dir: string,
-  files: string[] = []
-): Promise<string[]> {
+async function findRouteFiles(dir: string, files: string[] = []): Promise<string[]> {
   try {
     const entries = await fs.readdir(dir, { withFileTypes: true });
 
@@ -108,8 +105,7 @@ async function parseRouteFile(filePath: string): Promise<RouteDoc[]> {
     const routes: RouteDoc[] = [];
 
     // Look for router patterns: router.get, router.post, router.put, router.delete, router.patch
-    const routePattern =
-      /router\.(get|post|put|delete|patch)\s*\(\s*['"`]([^'"`]+)['"`]/g;
+    const routePattern = /router\.(get|post|put|delete|patch)\s*\(\s*['"`]([^'"`]+)['"`]/g;
     let match;
 
     while ((match = routePattern.exec(content)) !== null) {
@@ -173,9 +169,7 @@ async function parseRouteFile(filePath: string): Promise<RouteDoc[]> {
 /**
  * Generate markdown documentation from route docs
  */
-export async function generateMarkdownDocs(
-  report: DocumentationReport
-): Promise<string> {
+export async function generateMarkdownDocs(report: DocumentationReport): Promise<string> {
   const outputLines: string[] = [];
 
   outputLines.push("# Auto-Generated API Route Documentation");

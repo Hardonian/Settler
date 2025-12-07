@@ -5,7 +5,14 @@
 
 import { createClient } from "@/lib/supabase/client";
 
-export type LifecycleStage = "signup" | "activation" | "engaged" | "retention" | "expansion" | "at_risk" | "churned";
+export type LifecycleStage =
+  | "signup"
+  | "activation"
+  | "engaged"
+  | "retention"
+  | "expansion"
+  | "at_risk"
+  | "churned";
 
 export interface LifecycleTransition {
   from: LifecycleStage;
@@ -84,7 +91,9 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
   const currentStage = ((lifecycle as any).current_stage as LifecycleStage) || "signup";
 
   // Get user activity metrics
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId } as any);
+  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
+    user_id: userId,
+  } as any);
 
   // Determine new stage based on metrics
   let newStage: LifecycleStage = currentStage;
@@ -121,13 +130,17 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
   // At Risk: Low activity or high churn score
   if (
     currentStage !== "churned" &&
-    (((lifecycle as any).churn_risk_score || 0) > 0.7 || ((metrics as any)?.days_since_last_activity || 0) > 30)
+    (((lifecycle as any).churn_risk_score || 0) > 0.7 ||
+      ((metrics as any)?.days_since_last_activity || 0) > 30)
   ) {
     newStage = "at_risk";
   }
 
   // Churned: No activity for 90+ days or explicit cancellation
-  if (((metrics as any)?.days_since_last_activity || 0) > 90 || (metrics as any)?.explicitly_cancelled) {
+  if (
+    ((metrics as any)?.days_since_last_activity || 0) > 90 ||
+    (metrics as any)?.explicitly_cancelled
+  ) {
     newStage = "churned";
   }
 
@@ -146,7 +159,9 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
   const supabase = createClient();
 
   // Get user metrics
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId } as any);
+  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
+    user_id: userId,
+  } as any);
   const { data: lifecycle } = await supabase
     .from("user_lifecycle")
     .select("*")
@@ -205,7 +220,9 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
 export async function calculateExpansionOpportunity(userId: string): Promise<number> {
   const supabase = createClient();
 
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", { user_id: userId } as any);
+  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
+    user_id: userId,
+  } as any);
 
   if (!metrics) return 0;
 

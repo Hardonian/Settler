@@ -51,7 +51,9 @@ export async function aggregateUsageEvents(
 /**
  * Sync usage to Stripe for metered billing
  */
-export async function syncUsageToStripe(date: Date = new Date(Date.now() - 24 * 60 * 60 * 1000)): Promise<void> {
+export async function syncUsageToStripe(
+  date: Date = new Date(Date.now() - 24 * 60 * 60 * 1000)
+): Promise<void> {
   try {
     logInfo("Starting Stripe usage sync", { date: date.toISOString() });
 
@@ -83,7 +85,7 @@ export async function syncUsageToStripe(date: Date = new Date(Date.now() - 24 * 
           {
             method: "POST",
             headers: {
-              "Authorization": `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+              Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -123,13 +125,13 @@ export async function syncUsageToStripe(date: Date = new Date(Date.now() - 24 * 
 export async function runDailyUsageAggregation(): Promise<void> {
   try {
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    
+
     // Aggregate usage events
     await aggregateUsageEvents(yesterday, yesterday);
-    
+
     // Sync to Stripe
     await syncUsageToStripe(yesterday);
-    
+
     logInfo("Daily usage aggregation job completed");
   } catch (error) {
     logError("Daily usage aggregation job failed", error);

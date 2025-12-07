@@ -207,9 +207,7 @@ export const kv = {
 /**
  * Cache helper with TTL
  */
-export async function cacheGet<T>(
-  key: string
-): Promise<{ value: T | null; cached: boolean }> {
+export async function cacheGet<T>(key: string): Promise<{ value: T | null; cached: boolean }> {
   const cacheKey = `cache:${key}`;
   const cached = await kv.get<{ value: T; expires: number }>(cacheKey);
 

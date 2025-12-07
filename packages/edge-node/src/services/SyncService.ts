@@ -62,7 +62,7 @@ export class SyncService {
         source_id: c.source_id,
         target_id: c.target_id,
         confidence_score: c.confidence_score,
-        score_matrix: JSON.parse(c.score_matrix || "{}"),
+        score_matrix: JSON.parse(c.score_matrix || "{}") as Record<string, unknown>,
       }));
 
       await this.cloudApi.post("/api/edge-ai/candidate-scores", {
@@ -112,7 +112,7 @@ export class SyncService {
       const anomalies = unsynced.map((a) => ({
         anomaly_type: a.anomaly_type,
         severity: a.severity as "low" | "medium" | "high" | "critical",
-        transaction_data: JSON.parse(a.transaction_data || "{}"),
+        transaction_data: JSON.parse(a.transaction_data || "{}") as Record<string, unknown>,
       }));
 
       await this.cloudApi.post("/api/edge-ai/anomalies", {
@@ -138,7 +138,7 @@ export class SyncService {
     }
   }
 
-  async queueSync(entityType: string, payload: Record<string, unknown>): Promise<void> {
+  queueSync(entityType: string, payload: Record<string, unknown>): void {
     const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     const stmt = this.db.prepare(`
@@ -177,7 +177,7 @@ export class SyncService {
 
     for (const item of queue) {
       try {
-        const payload = JSON.parse(item.payload);
+        const payload = JSON.parse(item.payload) as Record<string, unknown>;
 
         // Route to appropriate sync endpoint
         switch (item.entity_type) {

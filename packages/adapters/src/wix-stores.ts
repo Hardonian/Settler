@@ -18,7 +18,7 @@ export class WixStoresAdapter implements Adapter {
     }
 
     const url = `https://www.wixapis.com/stores/v1/orders/query`;
-    
+
     const query: any = {
       query: {},
       sort: [{ fieldName: "number", order: "DESC" }],
@@ -37,7 +37,7 @@ export class WixStoresAdapter implements Adapter {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Authorization": apiKey,
+        Authorization: apiKey,
         "Content-Type": "application/json",
         "wix-site-id": siteId,
       },
@@ -101,8 +101,6 @@ export class WixStoresAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return errors.length === 0
-      ? { valid: true }
-      : { valid: false, errors };
+    return errors.length === 0 ? { valid: true } : { valid: false, errors };
   }
 }

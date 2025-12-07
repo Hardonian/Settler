@@ -95,9 +95,7 @@ export function OnboardingProgress({ progress, nextStep }: OnboardingProgressPro
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>Get Started</CardTitle>
-            <CardDescription>
-              Complete your setup to unlock all features
-            </CardDescription>
+            <CardDescription>Complete your setup to unlock all features</CardDescription>
           </div>
           <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">
             {progress.completionPercentage}% complete
@@ -144,9 +142,7 @@ export function OnboardingProgress({ progress, nextStep }: OnboardingProgressPro
 
         {nextStep && (
           <Button asChild className="w-full" size="sm">
-            <Link href={getStepLink(nextStep)}>
-              Continue: {getStepLabel(nextStep)}
-            </Link>
+            <Link href={getStepLink(nextStep)}>Continue: {getStepLabel(nextStep)}</Link>
           </Button>
         )}
       </CardContent>

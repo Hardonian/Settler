@@ -29,9 +29,7 @@ export interface ChangeReport {
  * Detect API changes by comparing current routes with last known state
  * This is a simplified version - in production, you'd store last state in DB/file
  */
-export async function detectAPIChanges(
-  lastKnownRoutes?: RouteDoc[]
-): Promise<ChangeReport> {
+export async function detectAPIChanges(lastKnownRoutes?: RouteDoc[]): Promise<ChangeReport> {
   try {
     const currentRoutes = await generateRouteDocs();
     const lastRoutes = lastKnownRoutes || [];
@@ -142,9 +140,7 @@ export async function detectAPIChanges(
 /**
  * Generate a summary report of API changes
  */
-export async function generateChangeReport(
-  report: ChangeReport
-): Promise<string> {
+export async function generateChangeReport(report: ChangeReport): Promise<string> {
   const lines: string[] = [];
 
   lines.push("# API Change Detection Report");
@@ -221,10 +217,7 @@ export async function generateChangeReport(
 /**
  * Save change report to file
  */
-export async function saveChangeReport(
-  outputPath: string,
-  report: ChangeReport
-): Promise<void> {
+export async function saveChangeReport(outputPath: string, report: ChangeReport): Promise<void> {
   try {
     const markdown = await generateChangeReport(report);
     await fs.writeFile(outputPath, markdown, "utf-8");

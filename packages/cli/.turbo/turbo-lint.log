@@ -1,0 +1,12 @@
+
+> @settler/cli@1.0.0 lint
+> eslint src --ext .ts --max-warnings 100
+
+
+/workspace/packages/cli/src/commands/debug.ts
+   48:13  warning  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+  117:9   warning  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+  119:9   warning  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+
+✖ 3 problems (0 errors, 3 warnings)
+

@@ -92,7 +92,9 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
                     <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
                       Recommended Solution
                     </h4>
-                    <p className="text-sm text-blue-800 dark:text-blue-400">{debugResult.solution}</p>
+                    <p className="text-sm text-blue-800 dark:text-blue-400">
+                      {debugResult.solution}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -101,11 +103,11 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
             <TabsContent value="documentation" className="mt-4">
               <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
                 <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Documentation</h4>
-                <p className="text-sm text-slate-600 dark:text-slate-400">{debugResult.documentation}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {debugResult.documentation}
+                </p>
                 <Button asChild size="sm" variant="outline" className="mt-3">
-                  <Link href={`/docs/integrations/${integrationId}`}>
-                    View Full Docs
-                  </Link>
+                  <Link href={`/docs/integrations/${integrationId}`}>View Full Docs</Link>
                 </Button>
               </div>
             </TabsContent>

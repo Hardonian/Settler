@@ -1,0 +1,60 @@
+# Settler Repository Hygiene Rules
+
+## Documentation Standards
+
+- **No markdown files outside `/docs/`** - All documentation must be in the docs folder
+- **No markdown files in `/src/`** - Code documentation should use JSDoc comments
+- **No scratchpad files** - Temporary notes, ideas, or drafts should not be committed
+- **Archive deprecated content** - Move old docs to `/archive/old_docs/`
+
+## File Naming Conventions
+
+- **kebab-case** for files (e.g., `api-quick-start.md`, `user-service.ts`)
+- **PascalCase** for components (e.g., `UserProfile.tsx`, `PaymentForm.tsx`)
+- **Numbered prefixes** for sequential docs (e.g., `00-intro.md`, `01-architecture.md`)
+- **Meaningful names** - Avoid cryptic or abbreviated filenames
+
+## Code Organization
+
+- **No dead code** - Remove unused components, functions, and imports
+- **No commented-out code** - Remove unless explicitly marked "preserve"
+- **Consistent formatting** - Use Prettier and ESLint
+- **Clear comments** - Comments should explain "why", not "what"
+
+## Business Documents
+
+- **Internal docs** - `/docs/internal/business-strategy.md` (single canonical file)
+- **External docs** - `/docs/external/product-overview.md` (single canonical file)
+- **No duplicates** - Archive or merge duplicate business documents
+
+## Archive Structure
+
+- `/archive/deprecated_code/` - Unused code modules
+- `/archive/old_docs/` - Deprecated documentation
+- `/archive/legacy_designs/` - Old design files
+- `/archive/experiments/` - Experimental code
+- `/archive/unused_assets/` - Unused assets
+
+## Branch Management
+
+- **Delete merged branches** - Clean up merged feature branches
+- **Delete abandoned branches** - Remove WIP branches older than 90 days
+- **Keep active branches** - Only preserve branches with real work-in-progress
+
+## Security
+
+- **No secrets in code** - Use environment variables
+- **No API keys** - Store in `.env` files (gitignored)
+- **Encrypt sensitive docs** - Use git-crypt for internal business documents
+
+## Build & Quality
+
+- **All builds must pass** - Type checks, linting, tests
+- **No broken imports** - Ensure all imports resolve after restructuring
+- **Documentation links** - All links in docs must work
+
+## Enforcement
+
+- **Pre-commit hooks** - Run linting and formatting
+- **CI/CD checks** - Enforce standards in GitHub Actions
+- **Regular audits** - Monthly cleanup of deprecated content

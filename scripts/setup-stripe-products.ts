@@ -138,7 +138,9 @@ async function createStripeProducts() {
         });
 
         usagePriceId = usagePrice.id;
-        console.log(`  ✅ Usage price created: ${usagePrice.id} (${productConfig.usagePricePerUnit} per ${productConfig.usageUnit})`);
+        console.log(
+          `  ✅ Usage price created: ${usagePrice.id} (${productConfig.usagePricePerUnit} per ${productConfig.usageUnit})`
+        );
       }
 
       results.push({

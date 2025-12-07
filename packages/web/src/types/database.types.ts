@@ -249,7 +249,10 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["canned_responses"]["Row"], "id" | "created_at" | "updated_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["canned_responses"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["canned_responses"]["Insert"]>;
       };
       support_tickets: {
@@ -265,7 +268,10 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["support_tickets"]["Row"], "id" | "created_at" | "updated_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["support_tickets"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["support_tickets"]["Insert"]>;
       };
       user_checklist: {
@@ -292,7 +298,10 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["integration_credentials"]["Row"], "id" | "created_at" | "updated_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["integration_credentials"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["integration_credentials"]["Insert"]>;
       };
       reconciliation_jobs: {
@@ -317,7 +326,10 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["referrals"]["Row"], "id" | "created_at" | "updated_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["referrals"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["referrals"]["Insert"]>;
       };
       user_segments: {
@@ -356,7 +368,10 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["user_lifecycle"]["Row"], "id" | "created_at" | "updated_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["user_lifecycle"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["user_lifecycle"]["Insert"]>;
       };
       email_sequences: {
@@ -370,7 +385,10 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["email_sequences"]["Row"], "id" | "created_at" | "updated_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["email_sequences"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["email_sequences"]["Insert"]>;
       };
       email_sends: {
@@ -400,7 +418,10 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["escalation_rules"]["Row"], "id" | "created_at" | "updated_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["escalation_rules"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["escalation_rules"]["Insert"]>;
       };
       escalation_history: {
@@ -413,7 +434,10 @@ export interface Database {
           reason: string;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["escalation_history"]["Row"], "id" | "created_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["escalation_history"]["Row"],
+          "id" | "created_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["escalation_history"]["Insert"]>;
       };
       alerts: {
@@ -442,7 +466,10 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["affiliate_programs"]["Row"], "id" | "created_at" | "updated_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["affiliate_programs"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["affiliate_programs"]["Insert"]>;
       };
       affiliate_conversions: {
@@ -457,7 +484,10 @@ export interface Database {
           paid_at: string | null;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["affiliate_conversions"]["Row"], "id" | "created_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["affiliate_conversions"]["Row"],
+          "id" | "created_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["affiliate_conversions"]["Insert"]>;
       };
       reconciliation_reports: {
@@ -468,7 +498,10 @@ export interface Database {
           failure_type: string | null;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["reconciliation_reports"]["Row"], "id" | "created_at">;
+        Insert: Omit<
+          Database["public"]["Tables"]["reconciliation_reports"]["Row"],
+          "id" | "created_at"
+        >;
         Update: Partial<Database["public"]["Tables"]["reconciliation_reports"]["Insert"]>;
       };
       // Add other tables as needed

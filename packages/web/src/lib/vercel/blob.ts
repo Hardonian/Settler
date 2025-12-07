@@ -35,9 +35,17 @@ export const blob = {
       addRandomSuffix?: boolean;
       cacheControlMaxAge?: number;
     }
-  ): Promise<{ url: string; downloadUrl: string; pathname: string; contentType?: string; size?: number }> {
+  ): Promise<{
+    url: string;
+    downloadUrl: string;
+    pathname: string;
+    contentType?: string;
+    size?: number;
+  }> {
     if (!isBlobConfigured()) {
-      throw new Error("Blob storage is not configured. Set BLOB_READ_WRITE_TOKEN environment variable.");
+      throw new Error(
+        "Blob storage is not configured. Set BLOB_READ_WRITE_TOKEN environment variable."
+      );
     }
 
     try {

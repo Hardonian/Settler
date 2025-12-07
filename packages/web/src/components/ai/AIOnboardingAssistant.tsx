@@ -19,7 +19,8 @@ export function AIOnboardingAssistant() {
     {
       id: "1",
       role: "assistant",
-      content: "Hi! I'm your Settler onboarding assistant. I can help you set up your first reconciliation, connect integrations, or answer any questions. What would you like to do?",
+      content:
+        "Hi! I'm your Settler onboarding assistant. I can help you set up your first reconciliation, connect integrations, or answer any questions. What would you like to do?",
       timestamp: new Date(),
     },
   ]);
@@ -103,9 +104,7 @@ export function AIOnboardingAssistant() {
                 )}
               >
                 <p className="text-sm">{message.content}</p>
-                <p className="text-xs mt-1 opacity-70">
-                  {message.timestamp.toLocaleTimeString()}
-                </p>
+                <p className="text-xs mt-1 opacity-70">{message.timestamp.toLocaleTimeString()}</p>
               </div>
               {message.role === "user" && (
                 <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">

@@ -43,39 +43,40 @@ export interface Event {
 /**
  * Event taxonomy definitions
  */
-export const EVENT_TAXONOMY: Record<EventAction, { category: EventCategory; description: string }> = {
-  // User events
-  signup: { category: "user", description: "User signed up for account" },
-  login: { category: "user", description: "User logged in" },
-  logout: { category: "user", description: "User logged out" },
-  page_view: { category: "user", description: "User viewed a page" },
-  button_click: { category: "user", description: "User clicked a button" },
-  form_submit: { category: "user", description: "User submitted a form" },
+export const EVENT_TAXONOMY: Record<EventAction, { category: EventCategory; description: string }> =
+  {
+    // User events
+    signup: { category: "user", description: "User signed up for account" },
+    login: { category: "user", description: "User logged in" },
+    logout: { category: "user", description: "User logged out" },
+    page_view: { category: "user", description: "User viewed a page" },
+    button_click: { category: "user", description: "User clicked a button" },
+    form_submit: { category: "user", description: "User submitted a form" },
 
-  // Integration events
-  integration_connected: { category: "integration", description: "Integration connected" },
-  integration_disconnected: { category: "integration", description: "Integration disconnected" },
+    // Integration events
+    integration_connected: { category: "integration", description: "Integration connected" },
+    integration_disconnected: { category: "integration", description: "Integration disconnected" },
 
-  // Job events
-  job_created: { category: "job", description: "Reconciliation job created" },
-  job_completed: { category: "job", description: "Reconciliation job completed" },
-  job_failed: { category: "job", description: "Reconciliation job failed" },
+    // Job events
+    job_created: { category: "job", description: "Reconciliation job created" },
+    job_completed: { category: "job", description: "Reconciliation job completed" },
+    job_failed: { category: "job", description: "Reconciliation job failed" },
 
-  // Billing events
-  subscription_created: { category: "billing", description: "Subscription created" },
-  subscription_updated: { category: "billing", description: "Subscription updated" },
-  subscription_cancelled: { category: "billing", description: "Subscription cancelled" },
-  payment_succeeded: { category: "billing", description: "Payment succeeded" },
-  payment_failed: { category: "billing", description: "Payment failed" },
-  upgrade: { category: "billing", description: "User upgraded plan" },
-  downgrade: { category: "billing", description: "User downgraded plan" },
-  trial_started: { category: "billing", description: "Trial started" },
-  trial_ended: { category: "billing", description: "Trial ended" },
+    // Billing events
+    subscription_created: { category: "billing", description: "Subscription created" },
+    subscription_updated: { category: "billing", description: "Subscription updated" },
+    subscription_cancelled: { category: "billing", description: "Subscription cancelled" },
+    payment_succeeded: { category: "billing", description: "Payment succeeded" },
+    payment_failed: { category: "billing", description: "Payment failed" },
+    upgrade: { category: "billing", description: "User upgraded plan" },
+    downgrade: { category: "billing", description: "User downgraded plan" },
+    trial_started: { category: "billing", description: "Trial started" },
+    trial_ended: { category: "billing", description: "Trial ended" },
 
-  // System events
-  churn_risk_detected: { category: "system", description: "Churn risk detected for user" },
-  milestone_achieved: { category: "system", description: "User milestone achieved" },
-};
+    // System events
+    churn_risk_detected: { category: "system", description: "Churn risk detected for user" },
+    milestone_achieved: { category: "system", description: "User milestone achieved" },
+  };
 
 /**
  * Track event
@@ -105,13 +106,19 @@ export function getEventTaxonomyDoc(): string {
   let doc = "# Event Taxonomy\n\n";
   doc += "Complete list of all events tracked in Settler.\n\n";
 
-  const byCategory = Object.entries(EVENT_TAXONOMY).reduce((acc, [action, data]) => {
-    if (!acc[data.category]) {
-      acc[data.category] = [];
-    }
-    acc[data.category].push({ action, ...data });
-    return acc;
-  }, {} as Record<EventCategory, Array<{ action: string; category: EventCategory; description: string }>>);
+  const byCategory = Object.entries(EVENT_TAXONOMY).reduce(
+    (acc, [action, data]) => {
+      if (!acc[data.category]) {
+        acc[data.category] = [];
+      }
+      acc[data.category].push({ action, ...data });
+      return acc;
+    },
+    {} as Record<
+      EventCategory,
+      Array<{ action: string; category: EventCategory; description: string }>
+    >
+  );
 
   for (const [category, events] of Object.entries(byCategory)) {
     doc += `## ${category.charAt(0).toUpperCase() + category.slice(1)} Events\n\n`;

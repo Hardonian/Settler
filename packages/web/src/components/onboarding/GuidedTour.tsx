@@ -36,7 +36,7 @@ export function GuidedTour({ steps, onComplete, onSkip, tourId }: GuidedTourProp
 
     const step = steps[currentStep];
     if (!step) return;
-    
+
     const element = document.querySelector(step.target);
 
     if (element) {
@@ -106,7 +106,7 @@ export function GuidedTour({ steps, onComplete, onSkip, tourId }: GuidedTourProp
 
   const step = steps[currentStep];
   if (!step) return null;
-  
+
   const isFirst = currentStep === 0;
   const isLast = currentStep === steps.length - 1;
 
@@ -138,7 +138,9 @@ export function GuidedTour({ steps, onComplete, onSkip, tourId }: GuidedTourProp
       >
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{step.title}</h3>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+              {step.title}
+            </h3>
             <p className="text-sm text-slate-600 dark:text-slate-300">{step.content}</p>
           </div>
           <button
@@ -161,9 +163,7 @@ export function GuidedTour({ steps, onComplete, onSkip, tourId }: GuidedTourProp
                   key={index}
                   className={cn(
                     "w-1.5 h-1.5 rounded-full",
-                    index === currentStep
-                      ? "bg-blue-600"
-                      : "bg-slate-300 dark:bg-slate-600"
+                    index === currentStep ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-600"
                   )}
                 />
               ))}

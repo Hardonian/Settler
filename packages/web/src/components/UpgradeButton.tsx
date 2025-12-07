@@ -27,9 +27,7 @@ export function UpgradeButton({
   return (
     <Button variant={variant} size={size} asChild>
       <Link href="/pricing" className="flex items-center gap-2">
-        {showIcon && (
-          <ArrowUp className="w-4 h-4" />
-        )}
+        {showIcon && <ArrowUp className="w-4 h-4" />}
         {isTrial ? "Upgrade to Keep Access" : "Upgrade"}
       </Link>
     </Button>

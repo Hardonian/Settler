@@ -42,7 +42,9 @@ export default function DocsCliPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">yarn</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                    yarn
+                  </h3>
                   <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>yarn global add @settler/cli</code>
@@ -50,7 +52,9 @@ export default function DocsCliPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">pnpm</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                    pnpm
+                  </h3>
                   <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>pnpm add -g @settler/cli</code>
@@ -140,9 +144,7 @@ settler reports export <job-id> --format json`}</code>
                       settler adapters
                     </h3>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300 mb-2">
-                    List available adapters
-                  </p>
+                  <p className="text-slate-600 dark:text-slate-300 mb-2">List available adapters</p>
                   <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>settler adapters list</code>
@@ -181,7 +183,10 @@ settler webhooks delete <webhook-id>`}</code>
                 main documentation
               </Link>{" "}
               or explore the{" "}
-              <Link href="/cookbooks" className="underline hover:text-blue-600 dark:hover:text-blue-300">
+              <Link
+                href="/cookbooks"
+                className="underline hover:text-blue-600 dark:hover:text-blue-300"
+              >
                 cookbooks
               </Link>{" "}
               for examples.

@@ -5,6 +5,18 @@ const debugCommand = new Command("debug");
 
 debugCommand.description("Debugging and diagnostic tools");
 
+interface TestConnectionOptions {
+  adapter: string;
+  apiKey?: string;
+  config?: string;
+  parent?: {
+    parent?: {
+      apiKey?: string;
+      baseUrl?: string;
+    };
+  };
+}
+
 // Test connection to an adapter
 debugCommand
   .command("test-connection")
@@ -12,9 +24,9 @@ debugCommand
   .requiredOption("-a, --adapter <adapter>", "Adapter name (stripe, shopify, etc.)")
   .option("-k, --api-key <key>", "Adapter API key")
   .option("--config <config>", "Adapter config JSON")
-  .action(async (options) => {
+  .action(async (options: TestConnectionOptions) => {
     try {
-      const settlerApiKey = process.env.SETTLER_API_KEY || options.parent.parent?.apiKey;
+      const settlerApiKey = process.env.SETTLER_API_KEY || options.parent?.parent?.apiKey;
       if (!settlerApiKey) {
         console.error(chalk.red("Error: SETTLER_API_KEY required"));
         process.exit(1);
@@ -24,7 +36,7 @@ debugCommand
 
       // Use the playground endpoint to test adapter connection
       const response = await fetch(
-        `${options.parent.parent?.baseUrl || "https://api.settler.io"}/api/v1/playground/test-adapter`,
+        `${options.parent?.parent?.baseUrl || "https://api.settler.io"}/api/v1/playground/test-adapter`,
         {
           method: "POST",
           headers: {
@@ -68,12 +80,29 @@ debugCommand
     }
   });
 
+interface JobConfig {
+  name?: string;
+  source?: {
+    adapter?: string;
+  };
+  target?: {
+    adapter?: string;
+  };
+  rules?: {
+    matching?: unknown[];
+  };
+}
+
+interface ValidateConfigOptions {
+  file: string;
+}
+
 // Validate config file
 debugCommand
   .command("validate-config")
   .description("Validate a job configuration file")
   .requiredOption("-f, --file <file>", "Config file path (YAML or JSON)")
-  .action(async (options) => {
+  .action(async (options: ValidateConfigOptions) => {
     try {
       const fs = await import("fs/promises");
       const path = await import("path");
@@ -82,7 +111,7 @@ debugCommand
       const content = await fs.readFile(filePath, "utf-8");
       const ext = path.extname(filePath).toLowerCase();
 
-      let config: any;
+      let config: JobConfig;
       if (ext === ".yaml" || ext === ".yml") {
         const yaml = await import("yaml");
         config = yaml.parse(content);
@@ -122,9 +151,9 @@ debugCommand
 
       console.log(chalk.green("✅ Config file is valid!"));
       console.log(chalk.gray(`   Name: ${config.name}`));
-      console.log(chalk.gray(`   Source: ${config.source.adapter}`));
-      console.log(chalk.gray(`   Target: ${config.target.adapter}`));
-      console.log(chalk.gray(`   Matching rules: ${config.rules.matching.length}`));
+      console.log(chalk.gray(`   Source: ${config.source?.adapter || "N/A"}`));
+      console.log(chalk.gray(`   Target: ${config.target?.adapter || "N/A"}`));
+      console.log(chalk.gray(`   Matching rules: ${config.rules?.matching?.length || 0}`));
     } catch (error) {
       console.error(
         chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
@@ -133,6 +162,18 @@ debugCommand
     }
   });
 
+interface TraceOptions {
+  method: string;
+  path: string;
+  data?: string;
+  parent?: {
+    parent?: {
+      apiKey?: string;
+      baseUrl?: string;
+    };
+  };
+}
+
 // Trace API request
 debugCommand
   .command("trace")
@@ -140,15 +181,15 @@ debugCommand
   .requiredOption("-m, --method <method>", "HTTP method (GET, POST, etc.)")
   .requiredOption("-p, --path <path>", "API path (e.g., /api/v1/jobs)")
   .option("-d, --data <data>", "Request body (JSON)")
-  .action(async (options) => {
+  .action(async (options: TraceOptions) => {
     try {
-      const settlerApiKey = process.env.SETTLER_API_KEY || options.parent.parent?.apiKey;
+      const settlerApiKey = process.env.SETTLER_API_KEY || options.parent?.parent?.apiKey;
       if (!settlerApiKey) {
         console.error(chalk.red("Error: SETTLER_API_KEY required"));
         process.exit(1);
       }
 
-      const baseUrl = options.parent.parent?.baseUrl || "https://api.settler.io";
+      const baseUrl = options.parent?.parent?.baseUrl || "https://api.settler.io";
       const url = `${baseUrl}${options.path}`;
 
       console.log(chalk.blue("Tracing API request..."));
@@ -187,7 +228,7 @@ debugCommand
       });
 
       const body = await response.text();
-      let parsedBody: any;
+      let parsedBody: unknown;
       try {
         parsedBody = JSON.parse(body);
         console.log(chalk.gray(`   Response body:`));

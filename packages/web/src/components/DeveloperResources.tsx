@@ -138,7 +138,8 @@ export function DeveloperResources() {
             Everything You Need to Build with Settler
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Complete documentation, interactive playground, code examples, and active community. Get started in 5 minutes.
+            Complete documentation, interactive playground, code examples, and active community. Get
+            started in 5 minutes.
           </p>
         </div>
 

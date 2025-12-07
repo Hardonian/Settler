@@ -24,9 +24,7 @@ export async function GET() {
     // Mock health data (in production, fetch from monitoring system)
     const integrations = (userIntegrations || []).map((integration: any) => {
       // Determine status based on last sync and error rates
-      const lastSync = integration.last_sync_at
-        ? new Date(integration.last_sync_at)
-        : null;
+      const lastSync = integration.last_sync_at ? new Date(integration.last_sync_at) : null;
       const hoursSinceSync = lastSync
         ? (Date.now() - lastSync.getTime()) / (1000 * 60 * 60)
         : Infinity;
@@ -47,7 +45,8 @@ export async function GET() {
 
       return {
         integrationId: integration.integration_id,
-        name: integration.integration_id.charAt(0).toUpperCase() + integration.integration_id.slice(1),
+        name:
+          integration.integration_id.charAt(0).toUpperCase() + integration.integration_id.slice(1),
         status,
         lastSync: integration.last_sync_at || new Date().toISOString(),
         successRate,

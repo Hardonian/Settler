@@ -173,7 +173,7 @@ router.get(
       // In production, load from database
       // For now, return in-memory rules
       const eventType = req.query.event_type as string | undefined;
-      
+
       if (eventType) {
         const rule = getUsagePricingRule(eventType);
         if (!rule) {
@@ -197,7 +197,6 @@ router.get(
           // ... other rules
         ],
       });
-
     } catch (error) {
       logError("Failed to get pricing rules", error);
       return res.status(500).json({

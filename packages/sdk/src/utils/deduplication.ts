@@ -37,7 +37,7 @@ function cleanupStaleRequests(): void {
 export async function withDeduplication<T>(
   method: string,
   path: string,
-  body: unknown | undefined,
+  body: unknown,
   fn: () => Promise<T>
 ): Promise<T> {
   cleanupStaleRequests();

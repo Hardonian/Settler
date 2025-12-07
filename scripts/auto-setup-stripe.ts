@@ -20,10 +20,12 @@ async function autoSetup() {
   try {
     console.log("🔧 Auto-setting up Stripe products...\n");
     await createStripeProducts();
-    
+
     // In CI/CD, you might want to output the IDs for environment variables
     if (process.env.CI) {
-      console.log("\n📝 Add the product/price IDs above to your GitHub Secrets or environment variables.");
+      console.log(
+        "\n📝 Add the product/price IDs above to your GitHub Secrets or environment variables."
+      );
     }
   } catch (error) {
     console.error("❌ Failed to setup Stripe products:", error);

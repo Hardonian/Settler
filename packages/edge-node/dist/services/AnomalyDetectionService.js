@@ -16,18 +16,18 @@ class AnomalyDetectionService {
         this._modelManager = _modelManager;
     }
     async detect(data) {
-        logger_1.logger.info('Detecting anomalies', { recordCount: data.length });
+        logger_1.logger.info("Detecting anomalies", { recordCount: data.length });
         const anomalies = [];
         for (const record of data) {
-            if (typeof record !== 'object' || record === null)
+            if (typeof record !== "object" || record === null)
                 continue;
             const transaction = record;
             // Check for duplicate transactions
             const duplicate = await this.checkDuplicate(transaction);
             if (duplicate) {
                 anomalies.push({
-                    type: 'duplicate',
-                    severity: 'medium',
+                    type: "duplicate",
+                    severity: "medium",
                     transactionData: transaction,
                     score: 0.8,
                 });
@@ -36,7 +36,7 @@ class AnomalyDetectionService {
             const amountAnomaly = this.checkAmountAnomaly(transaction);
             if (amountAnomaly) {
                 anomalies.push({
-                    type: 'amount_mismatch',
+                    type: "amount_mismatch",
                     severity: amountAnomaly.severity,
                     transactionData: transaction,
                     score: amountAnomaly.score,
@@ -46,8 +46,8 @@ class AnomalyDetectionService {
             const missingFields = this.checkMissingFields(transaction);
             if (missingFields.length > 0) {
                 anomalies.push({
-                    type: 'missing_fields',
-                    severity: missingFields.length > 2 ? 'high' : 'medium',
+                    type: "missing_fields",
+                    severity: missingFields.length > 2 ? "high" : "medium",
                     transactionData: transaction,
                     score: 0.6,
                 });
@@ -56,8 +56,8 @@ class AnomalyDetectionService {
             const patternDeviation = this.checkPatternDeviation(transaction);
             if (patternDeviation) {
                 anomalies.push({
-                    type: 'pattern_deviation',
-                    severity: 'low',
+                    type: "pattern_deviation",
+                    severity: "low",
                     transactionData: transaction,
                     score: patternDeviation.score,
                 });
@@ -66,14 +66,16 @@ class AnomalyDetectionService {
         return anomalies;
     }
     async checkDuplicate(transaction) {
-        const id = String(transaction.id || transaction.transaction_id || '');
+        const id = String(transaction.id || transaction.transaction_id || "");
         if (!id)
             return false;
-        const result = this.db.prepare(`
+        const result = this.db
+            .prepare(`
       SELECT COUNT(*) as count 
       FROM local_anomalies 
       WHERE transaction_data LIKE ?
-    `).get(`%"${id}"%`);
+    `)
+            .get(`%"${id}"%`);
         return (result?.count || 0) > 1;
     }
     checkAmountAnomaly(transaction) {
@@ -83,31 +85,31 @@ class AnomalyDetectionService {
         // Check for negative amounts (might be refunds, but flag for review)
         if (amount < 0) {
             return {
-                severity: 'medium',
+                severity: "medium",
                 score: 0.7,
             };
         }
         // Check for unusually large amounts (simplified - would use statistical analysis)
         if (amount > 100000) {
             return {
-                severity: 'high',
+                severity: "high",
                 score: 0.8,
             };
         }
         // Check for zero amounts
         if (amount === 0) {
             return {
-                severity: 'low',
+                severity: "low",
                 score: 0.5,
             };
         }
         return null;
     }
     checkMissingFields(transaction) {
-        const requiredFields = ['id', 'amount', 'date'];
+        const requiredFields = ["id", "amount", "date"];
         const missing = [];
         for (const field of requiredFields) {
-            if (!(field in transaction) || transaction[field] === null || transaction[field] === '') {
+            if (!(field in transaction) || transaction[field] === null || transaction[field] === "") {
                 missing.push(field);
             }
         }
@@ -130,11 +132,11 @@ class AnomalyDetectionService {
     }
     extractAmount(record) {
         const amount = record.amount || record.total || record.value;
-        if (typeof amount === 'number') {
+        if (typeof amount === "number") {
             return amount;
         }
-        if (typeof amount === 'string') {
-            const parsed = parseFloat(amount.replace(/[^0-9.-]/g, ''));
+        if (typeof amount === "string") {
+            const parsed = parseFloat(amount.replace(/[^0-9.-]/g, ""));
             return isNaN(parsed) ? null : parsed;
         }
         return null;
@@ -144,11 +146,11 @@ class AnomalyDetectionService {
         if (dateField instanceof Date) {
             return dateField;
         }
-        if (typeof dateField === 'string') {
+        if (typeof dateField === "string") {
             const parsed = new Date(dateField);
             return isNaN(parsed.getTime()) ? null : parsed;
         }
-        if (typeof dateField === 'number') {
+        if (typeof dateField === "number") {
             return new Date(dateField);
         }
         return null;

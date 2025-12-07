@@ -44,9 +44,7 @@ export async function sendDay7FirstValueEmail(userId: string): Promise<void> {
     if (!user) return;
 
     const progress = await getOnboardingProgress(userId);
-    const hasCompletedFirstJob = progress?.steps.find(
-      (s) => s.step === "first_job" && s.completed
-    );
+    const hasCompletedFirstJob = progress?.steps.find((s) => s.step === "first_job" && s.completed);
 
     logInfo("Sending Day 7 first value email", {
       userId: user.id,
@@ -54,12 +52,11 @@ export async function sendDay7FirstValueEmail(userId: string): Promise<void> {
       hasCompletedFirstJob: !!hasCompletedFirstJob,
     });
 
-    const template = hasCompletedFirstJob
-      ? getDay7SuccessTemplate()
-      : getDay7ReminderTemplate();
+    const template = hasCompletedFirstJob ? getDay7SuccessTemplate() : getDay7ReminderTemplate();
 
     const nextStep = progress?.steps.find((s) => !s.completed)?.step || "first_job";
-    const frontendUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
+    const frontendUrl =
+      process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
 
     await sendEmail({
       to: user.email,
@@ -104,7 +101,8 @@ export async function sendDay14ProgressEmail(userId: string): Promise<void> {
       reconciliations: usage.reconciliations,
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
+    const frontendUrl =
+      process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
 
     await sendEmail({
       to: user.email,
@@ -143,7 +141,8 @@ export async function sendDay21FeatureEmail(userId: string): Promise<void> {
       email: user.email,
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
+    const frontendUrl =
+      process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
 
     await sendEmail({
       to: user.email,
@@ -183,7 +182,8 @@ export async function sendDay27ExpirationWarning(userId: string): Promise<void> 
       reconciliations: usage.reconciliations,
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
+    const frontendUrl =
+      process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
 
     await sendEmail({
       to: user.email,
@@ -223,7 +223,8 @@ export async function sendDay29FinalReminder(userId: string): Promise<void> {
       email: user.email,
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
+    const frontendUrl =
+      process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
 
     await sendEmail({
       to: user.email,
@@ -261,7 +262,8 @@ export async function sendDay30TrialEnded(userId: string): Promise<void> {
       email: user.email,
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
+    const frontendUrl =
+      process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
 
     await sendEmail({
       to: user.email,

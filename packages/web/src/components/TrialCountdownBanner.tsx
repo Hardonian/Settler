@@ -7,7 +7,7 @@ function formatDistanceToNow(date: Date): string {
   const now = new Date();
   const diffMs = date.getTime() - now.getTime();
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays < 0) return "past";
   if (diffDays === 0) return "today";
   if (diffDays === 1) return "1 day";
@@ -24,19 +24,14 @@ interface TrialCountdownBannerProps {
   userPlan: string;
 }
 
-export function TrialCountdownBanner({
-  trialEndDate,
-  userPlan,
-}: TrialCountdownBannerProps) {
+export function TrialCountdownBanner({ trialEndDate, userPlan }: TrialCountdownBannerProps) {
   if (userPlan !== "trial") {
     return null;
   }
 
   const endDate = new Date(trialEndDate);
   const now = new Date();
-  const daysRemaining = Math.ceil(
-    (endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-  );
+  const daysRemaining = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
   if (daysRemaining < 0) {
     return (
@@ -45,9 +40,7 @@ export function TrialCountdownBanner({
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-5 h-5 text-red-600" />
             <div>
-              <p className="font-semibold text-red-900 dark:text-red-100">
-                Your trial has ended
-              </p>
+              <p className="font-semibold text-red-900 dark:text-red-100">Your trial has ended</p>
               <p className="text-sm text-red-800 dark:text-red-200">
                 Upgrade now to keep access to all features
               </p>
@@ -64,10 +57,7 @@ export function TrialCountdownBanner({
   // Show upgrade CTA at 7 days or less
   if (daysRemaining <= 7) {
     return (
-      <Banner
-        variant="warning"
-        className="border-amber-500 bg-amber-50 dark:bg-amber-900/20 mb-6"
-      >
+      <Banner variant="warning" className="border-amber-500 bg-amber-50 dark:bg-amber-900/20 mb-6">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-600" />

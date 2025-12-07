@@ -146,7 +146,10 @@ export class EdgeNodeService {
     try {
       const deviceInfo = this.getDeviceInfo();
 
-      const response = await this.cloudApi.post("/api/edge-ai/nodes/enroll", {
+      const response = await this.cloudApi.post<{
+        node_id: string;
+        node_key: string;
+      }>("/api/edge-ai/nodes/enroll", {
         enrollment_key: request.enrollmentKey,
         name: request.name,
         device_type: request.deviceType,
@@ -165,7 +168,7 @@ export class EdgeNodeService {
       this.nodeKey = result.nodeKey;
 
       // Save node key to file
-      await this.saveNodeKey(result.nodeKey);
+      this.saveNodeKey(result.nodeKey);
 
       logger.info("Node enrolled successfully", { nodeId: result.nodeId });
       return result;
@@ -175,7 +178,7 @@ export class EdgeNodeService {
     }
   }
 
-  async start(): Promise<void> {
+  start(): void {
     if (this.isRunning) {
       logger.warn("Edge node is already running");
       return;
@@ -195,7 +198,7 @@ export class EdgeNodeService {
     this.startSync();
 
     // Load models
-    await this.modelManager.loadModels();
+    this.modelManager.loadModels();
 
     logger.info("Edge node service started");
   }
@@ -223,10 +226,10 @@ export class EdgeNodeService {
   }
 
   private startHeartbeat(): void {
-    this.sendHeartbeat();
+    void this.sendHeartbeat();
 
     this.heartbeatInterval = setInterval(() => {
-      this.sendHeartbeat();
+      void this.sendHeartbeat();
     }, config.heartbeatInterval);
   }
 
@@ -244,16 +247,18 @@ export class EdgeNodeService {
   }
 
   private startSync(): void {
-    this.syncInterval = setInterval(async () => {
-      try {
-        await this.syncService.sync();
-      } catch (error) {
-        logger.error("Sync failed", error);
-      }
+    this.syncInterval = setInterval(() => {
+      void (async () => {
+        try {
+          await this.syncService.sync();
+        } catch (error) {
+          logger.error("Sync failed", error);
+        }
+      })();
     }, config.syncInterval);
   }
 
-  async processIngestion(data: unknown[], schemaHints?: Record<string, string>): Promise<string> {
+  processIngestion(data: unknown[], schemaHints?: Record<string, string>): string {
     const jobId = uuidv4();
 
     try {
@@ -265,7 +270,7 @@ export class EdgeNodeService {
       stmt.run(jobId, "ingestion", "running", JSON.stringify(data), Date.now(), Date.now());
 
       // Process ingestion
-      const result = await this.ingestionService.process(data, schemaHints);
+      const result = this.ingestionService.process(data, schemaHints);
 
       // Update job
       const updateStmt = this.db.prepare(`
@@ -276,7 +281,7 @@ export class EdgeNodeService {
       updateStmt.run("completed", JSON.stringify(result), Date.now(), jobId);
 
       // Queue for sync
-      await this.syncService.queueSync("batch_ingestion", {
+      this.syncService.queueSync("batch_ingestion", {
         job_id: jobId,
         data: result.processedData,
         schema: result.inferredSchema,
@@ -297,8 +302,8 @@ export class EdgeNodeService {
     }
   }
 
-  async processMatching(sourceData: unknown[], targetData: unknown[]): Promise<string[]> {
-    const candidates = await this.matchingService.findCandidates(sourceData, targetData);
+  processMatching(sourceData: unknown[], targetData: unknown[]): string[] {
+    const candidates = this.matchingService.findCandidates(sourceData, targetData);
     const candidateIds: string[] = [];
 
     for (const candidate of candidates) {
@@ -321,7 +326,7 @@ export class EdgeNodeService {
     }
 
     // Queue for sync
-    await this.syncService.queueSync("candidate_scores", {
+    this.syncService.queueSync("candidate_scores", {
       candidates: candidates.map((c, i) => ({
         ...c,
         id: candidateIds[i],
@@ -331,8 +336,8 @@ export class EdgeNodeService {
     return candidateIds;
   }
 
-  async detectAnomalies(data: unknown[]): Promise<string[]> {
-    const anomalies = await this.anomalyDetectionService.detect(data);
+  detectAnomalies(data: unknown[]): string[] {
+    const anomalies = this.anomalyDetectionService.detect(data);
     const anomalyIds: string[] = [];
 
     for (const anomaly of anomalies) {
@@ -354,7 +359,7 @@ export class EdgeNodeService {
     }
 
     // Queue for sync
-    await this.syncService.queueSync("anomalies", {
+    this.syncService.queueSync("anomalies", {
       anomalies: anomalies.map((a, i) => ({
         ...a,
         id: anomalyIds[i],
@@ -364,7 +369,7 @@ export class EdgeNodeService {
     return anomalyIds;
   }
 
-  async getStatus(): Promise<NodeStatus> {
+  getStatus(): NodeStatus {
     const jobCount = this.db.prepare("SELECT COUNT(*) as count FROM local_jobs").get() as {
       count: number;
     };
@@ -413,7 +418,7 @@ export class EdgeNodeService {
     };
   }
 
-  async saveNodeKey(nodeKey: string): Promise<void> {
+  saveNodeKey(nodeKey: string): void {
     const keyPath = path.join(this.dataDir, ".node-key");
     fs.writeFileSync(keyPath, nodeKey, { mode: 0o600 }); // Read/write for owner only
     logger.info("Node key saved", { path: keyPath });

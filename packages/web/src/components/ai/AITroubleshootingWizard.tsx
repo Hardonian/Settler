@@ -73,7 +73,9 @@ export function AITroubleshootingWizard() {
       setSolution(data.solution);
     } catch (error) {
       console.error("Failed to generate solution:", error);
-      setSolution("I'm having trouble generating a solution. Please contact support for assistance.");
+      setSolution(
+        "I'm having trouble generating a solution. Please contact support for assistance."
+      );
     }
   };
 
@@ -123,9 +125,7 @@ export function AITroubleshootingWizard() {
           <Wand2 className="w-5 h-5" />
           Troubleshooting Wizard
         </CardTitle>
-        <CardDescription>
-          Answer a few questions and I'll help you solve the issue
-        </CardDescription>
+        <CardDescription>Answer a few questions and I'll help you solve the issue</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
@@ -176,7 +176,11 @@ export function AITroubleshootingWizard() {
         </div>
 
         {currentStep > 0 && (
-          <Button onClick={() => setCurrentStep(currentStep - 1)} variant="outline" className="w-full">
+          <Button
+            onClick={() => setCurrentStep(currentStep - 1)}
+            variant="outline"
+            className="w-full"
+          >
             Previous
           </Button>
         )}

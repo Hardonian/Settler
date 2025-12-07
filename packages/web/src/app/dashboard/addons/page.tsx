@@ -51,7 +51,7 @@ export default function AddOnsMarketplacePage() {
       // In production, fetch from API
       // const response = await fetch("/api/billing/addons");
       // const data = await response.json();
-      
+
       // Mock data
       const mockAddOns: AddOn[] = [
         {
@@ -246,15 +246,19 @@ export default function AddOnsMarketplacePage() {
           setIsModalOpen(false);
           setSelectedAddOn(null);
         }}
-        addOn={selectedAddOn ? {
-          id: selectedAddOn.id,
-          name: selectedAddOn.name,
-          description: selectedAddOn.description,
-          basePrice: selectedAddOn.base_price_monthly,
-          usagePrice: selectedAddOn.usage_price_per_unit,
-          usageUnit: selectedAddOn.usage_unit,
-          features: selectedAddOn.features,
-        } : null}
+        addOn={
+          selectedAddOn
+            ? {
+                id: selectedAddOn.id,
+                name: selectedAddOn.name,
+                description: selectedAddOn.description,
+                basePrice: selectedAddOn.base_price_monthly,
+                usagePrice: selectedAddOn.usage_price_per_unit,
+                usageUnit: selectedAddOn.usage_unit,
+                features: selectedAddOn.features,
+              }
+            : null
+        }
         onPurchase={handlePurchase}
         isLoading={isProcessing}
       />

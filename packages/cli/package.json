@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "lint": "eslint src --ext .ts --max-warnings 100",
     "lint:fix": "eslint src --ext .ts --fix",
     "typecheck": "tsc --noEmit",

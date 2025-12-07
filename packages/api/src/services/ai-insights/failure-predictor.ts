@@ -17,9 +17,7 @@ export interface FailurePrediction {
 /**
  * Predict if a job is likely to fail
  */
-export async function predictJobFailure(
-  jobId: string
-): Promise<FailurePrediction | null> {
+export async function predictJobFailure(jobId: string): Promise<FailurePrediction | null> {
   try {
     // Get job details
     const job = await query<{
@@ -58,12 +56,7 @@ export async function predictJobFailure(
         AND j.target_adapter = $2
         AND j.user_id = $3
         AND j.id != $4`,
-      [
-        jobData.source_adapter,
-        jobData.target_adapter,
-        jobData.user_id,
-        jobId,
-      ]
+      [jobData.source_adapter, jobData.target_adapter, jobData.user_id, jobId]
     );
 
     if (similarJobs.length > 0) {

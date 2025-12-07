@@ -98,7 +98,8 @@ export function CommunityHub() {
             Join 500+ Developers Building with Settler
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Open source SDK and adapters. Active Discord community. Contribute code, build adapters, or get help from fellow developers.
+            Open source SDK and adapters. Active Discord community. Contribute code, build adapters,
+            or get help from fellow developers.
           </p>
         </div>
 
@@ -158,11 +159,7 @@ export function CommunityHub() {
                   <CardDescription>{link.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    asChild={!link.external}
-                  >
+                  <Button variant="outline" className="w-full" asChild={!link.external}>
                     {link.external ? (
                       <a
                         href={link.href}

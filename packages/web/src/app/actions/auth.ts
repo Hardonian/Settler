@@ -135,7 +135,9 @@ export async function signUpUser(
     logger.error("Sign-up error", error as Error, { email });
     return {
       success: false,
-      error: getAuthErrorMessage(error instanceof Error ? error : new Error("An unexpected error occurred")),
+      error: getAuthErrorMessage(
+        error instanceof Error ? error : new Error("An unexpected error occurred")
+      ),
     };
   }
 }

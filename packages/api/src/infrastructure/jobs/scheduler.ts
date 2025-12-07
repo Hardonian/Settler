@@ -7,12 +7,19 @@ import { Queue, Worker, QueueEvents } from "bullmq";
 import { Redis } from "ioredis";
 import { logInfo, logError } from "../../utils/logger";
 import { cleanupOldData } from "../../jobs/data-retention";
-import { processTrialLifecycleEmails, processMonthlySummaryEmails, processLowActivityEmails } from "../../jobs/email-scheduler";
+import {
+  processTrialLifecycleEmails,
+  processMonthlySummaryEmails,
+  processLowActivityEmails,
+} from "../../jobs/email-scheduler";
 import { syncFXRatesJob } from "../../jobs/fx-rate-sync";
 import { processPendingWebhooks } from "../../utils/webhook-queue";
 import { processLifecycleEmails } from "../../services/email/lifecycle-sequences";
 import { aggregateInsights } from "../../services/ai-insights/insight-aggregator";
-import { suggestImprovements, saveImprovementSuggestions } from "../../services/ai-insights/improvement-suggester";
+import {
+  suggestImprovements,
+  saveImprovementSuggestions,
+} from "../../services/ai-insights/improvement-suggester";
 import { runDailyUsageAggregation } from "../../jobs/usage-aggregation";
 
 // Redis connection for BullMQ
@@ -102,7 +109,7 @@ const jobHandlers: Record<string, () => Promise<void>> = {
     logInfo("Starting AI insights aggregation");
     const insights = await aggregateInsights("week");
     logInfo("AI insights aggregated", { summary: insights.summary });
-    
+
     // Generate improvement suggestions
     const suggestions = await suggestImprovements();
     if (suggestions.length > 0) {

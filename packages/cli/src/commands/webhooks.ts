@@ -6,21 +6,31 @@ const webhooksCommand = new Command("webhooks");
 
 webhooksCommand.description("Manage webhooks").alias("webhook");
 
+interface WebhookListOptions {
+  parent?: {
+    apiKey?: string;
+    baseUrl?: string;
+  };
+}
+
 webhooksCommand
   .command("list")
   .description("List all webhooks")
-  .action(async (options) => {
+  .action(async (options: WebhookListOptions) => {
     try {
-      const apiKey = process.env.SETTLER_API_KEY || options.parent.apiKey;
+      const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey;
       if (!apiKey) {
         console.error(chalk.red("Error: API key required"));
         process.exit(1);
       }
 
-      const client = new Settler({
+      const clientConfig: { apiKey: string; baseUrl?: string } = {
         apiKey,
-        baseUrl: options.parent.baseUrl,
-      });
+      };
+      if (options.parent?.baseUrl) {
+        clientConfig.baseUrl = options.parent.baseUrl;
+      }
+      const client = new Settler(clientConfig);
 
       const response = await client.webhooks.list();
 

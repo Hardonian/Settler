@@ -89,9 +89,7 @@ export function generateAPIDocumentation(
 /**
  * Generate integration documentation
  */
-export function generateIntegrationDocumentation(
-  integrationId: string
-): IntegrationDocumentation {
+export function generateIntegrationDocumentation(integrationId: string): IntegrationDocumentation {
   // In production, analyze integration adapter code to extract:
   // - Configuration requirements
   // - API endpoints used
@@ -154,43 +152,49 @@ export function generateOpenAPISpec(routes: APIDocumentation[]): Record<string, 
       version: "1.0.0",
       description: "Reconciliation-as-a-Service API",
     },
-    paths: routes.reduce((paths, route) => {
-      paths[route.endpoint] = {
-        [route.method.toLowerCase()]: {
-          summary: route.description,
-          parameters: route.parameters.map((param) => ({
-            name: param.name,
-            in: "query",
-            required: param.required,
-            schema: { type: param.type },
-            description: param.description,
-          })),
-          requestBody: route.requestBody
-            ? {
-                content: {
-                  "application/json": {
-                    schema: route.requestBody.schema,
-                    example: route.requestBody.example,
-                  },
-                },
-              }
-            : undefined,
-          responses: route.responses.reduce((responses, res) => {
-            responses[res.status] = {
-              description: res.description,
-              content: res.schema
-                ? {
+    paths: routes.reduce(
+      (paths, route) => {
+        paths[route.endpoint] = {
+          [route.method.toLowerCase()]: {
+            summary: route.description,
+            parameters: route.parameters.map((param) => ({
+              name: param.name,
+              in: "query",
+              required: param.required,
+              schema: { type: param.type },
+              description: param.description,
+            })),
+            requestBody: route.requestBody
+              ? {
+                  content: {
                     "application/json": {
-                      schema: res.schema,
+                      schema: route.requestBody.schema,
+                      example: route.requestBody.example,
                     },
-                  }
-                : undefined,
-            };
-            return responses;
-          }, {} as Record<string, any>),
-        },
-      };
-      return paths;
-    }, {} as Record<string, any>),
+                  },
+                }
+              : undefined,
+            responses: route.responses.reduce(
+              (responses, res) => {
+                responses[res.status] = {
+                  description: res.description,
+                  content: res.schema
+                    ? {
+                        "application/json": {
+                          schema: res.schema,
+                        },
+                      }
+                    : undefined,
+                };
+                return responses;
+              },
+              {} as Record<string, any>
+            ),
+          },
+        };
+        return paths;
+      },
+      {} as Record<string, any>
+    ),
   };
 }

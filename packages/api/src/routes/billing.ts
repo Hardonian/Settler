@@ -121,7 +121,10 @@ router.post("/create-customer", authMiddleware, async (req: AuthRequest, res: Re
       billingAccount = updatedAccount;
     }
 
-    logInfo("Billing account created/retrieved", { billingAccountId: billingAccount.id, stripeCustomerId });
+    logInfo("Billing account created/retrieved", {
+      billingAccountId: billingAccount.id,
+      stripeCustomerId,
+    });
 
     return res.json({
       billing_account_id: billingAccount.id,
@@ -409,15 +412,8 @@ router.post("/addon/purchase", authMiddleware, async (req: AuthRequest, res: Res
 router.post("/usage/report", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
-    const {
-      billing_account_id,
-      event_type,
-      quantity,
-      integration_id,
-      add_on_id,
-      unit,
-      metadata,
-    } = req.body;
+    const { billing_account_id, event_type, quantity, integration_id, add_on_id, unit, metadata } =
+      req.body;
 
     if (!billing_account_id || !event_type) {
       return res.status(400).json({
@@ -561,7 +557,9 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
 
     try {
       // Get raw body (set by middleware or use req.body if Buffer)
-      const rawBody = (req as any).rawBody || (req.body instanceof Buffer ? req.body : Buffer.from(JSON.stringify(req.body)));
+      const rawBody =
+        (req as any).rawBody ||
+        (req.body instanceof Buffer ? req.body : Buffer.from(JSON.stringify(req.body)));
       event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
     } catch (err) {
       logError("Webhook signature verification failed", err);
@@ -632,9 +630,7 @@ async function handleSubscriptionUpdate(supabase: any, subscription: Stripe.Subs
       current_period_start: new Date(subscription.current_period_start * 1000),
       current_period_end: new Date(subscription.current_period_end * 1000),
       cancel_at_period_end: subscription.cancel_at_period_end,
-      cancelled_at: subscription.canceled_at
-        ? new Date(subscription.canceled_at * 1000)
-        : null,
+      cancelled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : null,
       updated_at: new Date().toISOString(),
     })
     .eq("stripe_subscription_id", subscription.id);

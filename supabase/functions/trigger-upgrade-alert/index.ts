@@ -7,8 +7,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
@@ -21,13 +20,10 @@ serve(async (req) => {
     // Get authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing authorization header" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Initialize Supabase client
@@ -48,13 +44,10 @@ serve(async (req) => {
     } = await supabaseClient.auth.getUser();
 
     if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized", details: userError?.message }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Unauthorized", details: userError?.message }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Parse query parameters or request body
@@ -62,13 +55,10 @@ serve(async (req) => {
     const billingAccountId = url.searchParams.get("billing_account_id");
 
     if (!billingAccountId) {
-      return new Response(
-        JSON.stringify({ error: "Missing billing_account_id parameter" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing billing_account_id parameter" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Verify billing account belongs to user
@@ -79,23 +69,17 @@ serve(async (req) => {
       .single();
 
     if (billingError || !billingAccount) {
-      return new Response(
-        JSON.stringify({ error: "Billing account not found" }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Billing account not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     if (billingAccount.user_id !== user.id) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized access to billing account" }),
-        {
-          status: 403,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Unauthorized access to billing account" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Check upgrade requirement
@@ -127,7 +111,7 @@ serve(async (req) => {
       // 1. Create a notification in the alerts table
       // 2. Send an email to the user
       // 3. Optionally send WhatsApp/Telegram message if enabled
-      
+
       console.log("Upgrade alert triggered for billing account:", billingAccountId);
     }
 

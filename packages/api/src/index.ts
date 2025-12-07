@@ -446,7 +446,7 @@ async function startServer() {
       clearInterval(webhookInterval);
       logInfo("Webhook processing stopped");
     });
-    
+
     // Register scheduler shutdown
     registerShutdownHandler(async () => {
       await shutdownScheduler();

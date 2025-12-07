@@ -48,11 +48,12 @@ export function CostBreakdownCard({
       <CardContent className="space-y-4">
         <div className="space-y-3">
           {items.map((item, index) => (
-            <div key={index} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-0">
+            <div
+              key={index}
+              className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-0"
+            >
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {item.label}
-                </p>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.label}</p>
                 {item.description && (
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {item.description}

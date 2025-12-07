@@ -41,11 +41,12 @@
 ### 6. DATA SUBJECT RIGHTS
 
 6.1. Processor will assist Controller in responding to:
-   - Right to access
-   - Right to rectification
-   - Right to erasure
-   - Right to data portability
-   - Right to object
+
+- Right to access
+- Right to rectification
+- Right to erasure
+- Right to data portability
+- Right to object
 
 ### 7. DATA BREACH
 

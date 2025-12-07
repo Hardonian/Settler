@@ -14,13 +14,14 @@ class PIIRedactionService {
     tokenMap = new Map();
     redact(value, piiType) {
         // Generate deterministic token based on value and type
-        const hash = crypto_1.default.createHash('sha256')
+        const hash = crypto_1.default
+            .createHash("sha256")
             .update(`${piiType}:${value}`)
-            .digest('hex')
+            .digest("hex")
             .substring(0, 16);
         const token = `[REDACTED_${piiType.toUpperCase()}_${hash}]`;
         this.tokenMap.set(token, value);
-        logger_1.logger.debug('PII redacted', { piiType, token });
+        logger_1.logger.debug("PII redacted", { piiType, token });
         return token;
     }
     restore(token) {

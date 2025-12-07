@@ -120,9 +120,7 @@ export function PaymentRecoveryFlow({ userId, subscriptionId }: PaymentRecoveryF
           <div
             className={cn(
               "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
-              isUrgent
-                ? "bg-red-500 dark:bg-red-600"
-                : "bg-amber-500 dark:bg-amber-600"
+              isUrgent ? "bg-red-500 dark:bg-red-600" : "bg-amber-500 dark:bg-amber-600"
             )}
           >
             {recovery.status === "grace_period" ? (
@@ -133,9 +131,7 @@ export function PaymentRecoveryFlow({ userId, subscriptionId }: PaymentRecoveryF
           </div>
           <div className="flex-1">
             <CardTitle className="text-lg">
-              {recovery.status === "grace_period"
-                ? "Payment Issue Detected"
-                : "Payment Failed"}
+              {recovery.status === "grace_period" ? "Payment Issue Detected" : "Payment Failed"}
             </CardTitle>
             <CardDescription className="mt-1">
               {recovery.failure_type === "declined"
@@ -165,7 +161,9 @@ export function PaymentRecoveryFlow({ userId, subscriptionId }: PaymentRecoveryF
           <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-2 mb-2">
               <Clock className="w-4 h-4 text-slate-500" />
-              <span className="text-sm font-medium text-slate-900 dark:text-white">Grace Period</span>
+              <span className="text-sm font-medium text-slate-900 dark:text-white">
+                Grace Period
+              </span>
             </div>
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Your service will continue until{" "}

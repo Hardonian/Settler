@@ -18,13 +18,17 @@ export default function () {
   const baseUrl = __ENV.BASE_URL || "http://localhost:3000";
 
   // Stress test critical endpoints
-  const res = http.post(`${baseUrl}/api/reconcile`, JSON.stringify({
-    source: "shopify",
-    target: "stripe",
-    dateRange: { start: "2026-01-01", end: "2026-01-31" },
-  }), {
-    headers: { "Content-Type": "application/json" },
-  });
+  const res = http.post(
+    `${baseUrl}/api/reconcile`,
+    JSON.stringify({
+      source: "shopify",
+      target: "stripe",
+      dateRange: { start: "2026-01-01", end: "2026-01-31" },
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 
   check(res, {
     "status is 200 or 429": (r) => r.status === 200 || r.status === 429, // Rate limit OK

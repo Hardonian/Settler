@@ -33,8 +33,16 @@ export function AIAnomalyDetector({ userId }: { userId?: string }) {
 
   const severityConfig = {
     critical: { color: "text-red-600", bg: "bg-red-100 dark:bg-red-900/30", icon: AlertTriangle },
-    high: { color: "text-orange-600", bg: "bg-orange-100 dark:bg-orange-900/30", icon: AlertTriangle },
-    medium: { color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/30", icon: TrendingDown },
+    high: {
+      color: "text-orange-600",
+      bg: "bg-orange-100 dark:bg-orange-900/30",
+      icon: AlertTriangle,
+    },
+    medium: {
+      color: "text-amber-600",
+      bg: "bg-amber-100 dark:bg-amber-900/30",
+      icon: TrendingDown,
+    },
     low: { color: "text-blue-600", bg: "bg-blue-100 dark:bg-blue-900/30", icon: Activity },
   };
 
@@ -81,7 +89,8 @@ export function AIAnomalyDetector({ userId }: { userId?: string }) {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Critical Issues Detected</AlertTitle>
               <AlertDescription>
-                {criticalAnomalies.length} critical anomaly{criticalAnomalies.length === 1 ? "" : "ies"} require immediate attention.
+                {criticalAnomalies.length} critical anomaly
+                {criticalAnomalies.length === 1 ? "" : "ies"} require immediate attention.
               </AlertDescription>
             </Alert>
           )}
@@ -94,14 +103,16 @@ export function AIAnomalyDetector({ userId }: { userId?: string }) {
               const TypeIcon = typeIcons[anomaly.type];
 
               return (
-                <Card
-                  key={anomaly.id}
-                  className={cn("border-2", config.bg, "border-current")}
-                >
+                <Card key={anomaly.id} className={cn("border-2", config.bg, "border-current")}>
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3">
-                        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", config.bg)}>
+                        <div
+                          className={cn(
+                            "w-10 h-10 rounded-lg flex items-center justify-center",
+                            config.bg
+                          )}
+                        >
                           <Icon className={cn("w-5 h-5", config.color)} />
                         </div>
                         <div className="flex-1">

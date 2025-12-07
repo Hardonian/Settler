@@ -131,67 +131,68 @@ export function IntegrationLogos() {
             Connect Your Favorite Platforms in Minutes
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Pre-built adapters for Stripe, Shopify, PayPal, QuickBooks, and more. Secure API key storage. Set up your first reconciliation in 5 minutes.
+            Pre-built adapters for Stripe, Shopify, PayPal, QuickBooks, and more. Secure API key
+            storage. Set up your first reconciliation in 5 minutes.
           </p>
         </div>
 
         {Object.entries(groupedIntegrations).map(([category, items], categoryIndex) => {
           const categoryLabel = categories[category];
           if (!categoryLabel || !items) return null;
-          
+
           return (
-          <div key={category} className="mb-12 last:mb-0">
-            <h3 className="text-lg font-semibold mb-6 text-slate-900 dark:text-white text-center">
-              {categoryLabel}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {items.map((integration, index) => (
-                <div
-                  key={integration.name}
-                  className={cn(
-                    "group relative flex flex-col items-center justify-center p-6",
-                    "bg-white dark:bg-slate-800 rounded-xl border-2 border-slate-200 dark:border-slate-700",
-                    "shadow-sm transition-all duration-300",
-                    "hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600",
-                    "hover:scale-105",
-                    isVisible
-                      ? "opacity-100 translate-y-0 scale-100"
-                      : "opacity-0 translate-y-4 scale-95",
-                    integration.status === "coming-soon" && "opacity-60"
-                  )}
-                  style={{
-                    transitionDelay: prefersReducedMotion
-                      ? "0ms"
-                      : `${categoryIndex * 200 + index * 100}ms`,
-                  }}
-                  role="listitem"
-                  aria-label={`${integration.name} integration`}
-                >
-                  <div className="relative w-full h-12 mb-2 flex items-center justify-center">
-                    <Image
-                      src={integration.logo}
-                      alt={integration.name}
-                      width={100}
-                      height={40}
-                      className="object-contain max-h-10 opacity-80 group-hover:opacity-100 transition-opacity"
-                      unoptimized
-                    />
+            <div key={category} className="mb-12 last:mb-0">
+              <h3 className="text-lg font-semibold mb-6 text-slate-900 dark:text-white text-center">
+                {categoryLabel}
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {items.map((integration, index) => (
+                  <div
+                    key={integration.name}
+                    className={cn(
+                      "group relative flex flex-col items-center justify-center p-6",
+                      "bg-white dark:bg-slate-800 rounded-xl border-2 border-slate-200 dark:border-slate-700",
+                      "shadow-sm transition-all duration-300",
+                      "hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600",
+                      "hover:scale-105",
+                      isVisible
+                        ? "opacity-100 translate-y-0 scale-100"
+                        : "opacity-0 translate-y-4 scale-95",
+                      integration.status === "coming-soon" && "opacity-60"
+                    )}
+                    style={{
+                      transitionDelay: prefersReducedMotion
+                        ? "0ms"
+                        : `${categoryIndex * 200 + index * 100}ms`,
+                    }}
+                    role="listitem"
+                    aria-label={`${integration.name} integration`}
+                  >
+                    <div className="relative w-full h-12 mb-2 flex items-center justify-center">
+                      <Image
+                        src={integration.logo}
+                        alt={integration.name}
+                        width={100}
+                        height={40}
+                        className="object-contain max-h-10 opacity-80 group-hover:opacity-100 transition-opacity"
+                        unoptimized
+                      />
+                    </div>
+                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">
+                      {integration.name}
+                    </p>
+                    {integration.status === "available" && (
+                      <span className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full" />
+                    )}
+                    {integration.status === "coming-soon" && (
+                      <span className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
+                        Coming Soon
+                      </span>
+                    )}
                   </div>
-                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">
-                    {integration.name}
-                  </p>
-                  {integration.status === "available" && (
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full" />
-                  )}
-                  {integration.status === "coming-soon" && (
-                    <span className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
-                      Coming Soon
-                    </span>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
           );
         })}
 

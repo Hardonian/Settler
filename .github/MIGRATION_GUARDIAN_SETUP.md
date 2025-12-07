@@ -77,15 +77,18 @@ After setting up secrets, the workflow will:
 ## Troubleshooting
 
 ### "No DATABASE_URL found"
+
 - Ensure `DATABASE_URL` secret is set in GitHub repository secrets
 - Check the secret name matches exactly (case-sensitive)
 
 ### "Database connection failed"
+
 - Verify the connection string is correct
 - Check Supabase IP allowlist (should allow GitHub Actions IPs or use connection pooling)
 - Ensure password doesn't contain special characters that need URL encoding
 
 ### "Prisma is not installed"
+
 - The workflow installs dependencies automatically
 - If this fails, check the `npm ci` step in the workflow
 

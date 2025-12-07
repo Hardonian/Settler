@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { SettlerClient } from "../client";
-import { NetworkError, AuthError, ValidationError, RateLimitError } from "../errors";
-import { mockCreateJobRequest, mockJob } from "./fixtures";
+import { AuthError, ValidationError, RateLimitError } from "../errors";
+import { mockCreateJobRequest } from "./fixtures";
 
 describe("SettlerClient", () => {
   let client: SettlerClient;

@@ -109,8 +109,12 @@ export function IPAllowlistManager() {
             >
               <div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="font-mono">{item.ipAddress}</Badge>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">{item.description}</span>
+                  <Badge variant="outline" className="font-mono">
+                    {item.ipAddress}
+                  </Badge>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    {item.description}
+                  </span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Added: {new Date(item.createdAt).toLocaleDateString()}

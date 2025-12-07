@@ -154,9 +154,7 @@ export default function SupportPage() {
                 <MessageCircle className="w-6 h-6" />
                 Still Need Help?
               </CardTitle>
-              <CardDescription>
-                Our support team is here to help you 24/7
-              </CardDescription>
+              <CardDescription>Our support team is here to help you 24/7</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-4">

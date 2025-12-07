@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+*.test.js.snap
 
 # next.js
 /.next/
@@ -14,6 +15,7 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -23,6 +25,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
 
 # local env files
 .env
@@ -33,6 +36,7 @@ yarn-error.log*
 .env*.local
 .env.connection
 .env.template
+.env.*.local
 
 # vercel
 .vercel
@@ -50,6 +54,7 @@ build/
 .next/
 out/
 *.log
+build-output*.txt
 
 # IDE
 .vscode/
@@ -62,4 +67,14 @@ out/
 .DS_Store
 Thumbs.db
 
+# generated files
 /generated/prisma
+
+# temporary files
+*.tmp
+*.temp
+.cache/
+
+# archive (keep structure but ignore large files)
+archive/**/*.log
+archive/**/*.tmp

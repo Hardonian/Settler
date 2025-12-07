@@ -1,16 +1,19 @@
 # 3-5 Year Financial Projection Model
 
 ## Executive Summary
+
 This document outlines Settler's financial projections for the next 3-5 years, including revenue, costs, and key assumptions.
 
 ## Key Assumptions
 
 ### Market Assumptions
+
 - Total Addressable Market (TAM): $2.5B (payment reconciliation software)
 - Serviceable Addressable Market (SAM): $500M
 - Serviceable Obtainable Market (SOM): $50M (10% of SAM)
 
 ### Growth Assumptions
+
 - Year 1: 500 customers, $50K MRR
 - Year 2: 2,000 customers, $200K MRR
 - Year 3: 5,000 customers, $500K MRR
@@ -18,12 +21,14 @@ This document outlines Settler's financial projections for the next 3-5 years, i
 - Year 5: 20,000 customers, $2M MRR
 
 ### Pricing Assumptions
+
 - Free Tier: $0 (1,000 transactions/month)
 - Commercial: $99/month (10,000 transactions/month)
 - Enterprise: Custom pricing ($500-$5,000/month)
 - Average Revenue Per User (ARPU): $150/month
 
 ### Cost Assumptions
+
 - Infrastructure: 20% of revenue
 - Personnel: 50% of revenue
 - Marketing: 20% of revenue
@@ -32,6 +37,7 @@ This document outlines Settler's financial projections for the next 3-5 years, i
 ## 3-Year Projection
 
 ### Year 1 (2026)
+
 - **Revenue:** $600K ARR
 - **Customers:** 500
 - **MRR Growth:** $50K → $100K
@@ -41,6 +47,7 @@ This document outlines Settler's financial projections for the next 3-5 years, i
 - **Runway:** 18 months (with $1M seed)
 
 ### Year 2 (2027)
+
 - **Revenue:** $2.4M ARR
 - **Customers:** 2,000
 - **MRR Growth:** $200K → $300K
@@ -49,6 +56,7 @@ This document outlines Settler's financial projections for the next 3-5 years, i
 - **Break-even:** Q4 2027
 
 ### Year 3 (2028)
+
 - **Revenue:** $6M ARR
 - **Customers:** 5,000
 - **MRR Growth:** $500K → $600K
@@ -59,12 +67,14 @@ This document outlines Settler's financial projections for the next 3-5 years, i
 ## 5-Year Projection
 
 ### Year 4 (2029)
+
 - **Revenue:** $12M ARR
 - **Customers:** 10,000
 - **MRR:** $1M
 - **Net:** $3.6M
 
 ### Year 5 (2030)
+
 - **Revenue:** $24M ARR
 - **Customers:** 20,000
 - **MRR:** $2M
@@ -73,12 +83,14 @@ This document outlines Settler's financial projections for the next 3-5 years, i
 ## Key Metrics
 
 ### Unit Economics
+
 - **Customer Acquisition Cost (CAC):** $200
 - **Lifetime Value (LTV):** $1,800
 - **LTV:CAC Ratio:** 9:1
 - **Payback Period:** 1.3 months
 
 ### Growth Metrics
+
 - **Month-over-Month Growth:** 10-15%
 - **Annual Growth Rate:** 200-300%
 - **Churn Rate:** <5% monthly
@@ -87,16 +99,19 @@ This document outlines Settler's financial projections for the next 3-5 years, i
 ## Funding Requirements
 
 ### Seed Round (2026)
+
 - **Amount:** $1M
 - **Use:** Product development, initial marketing
 - **Runway:** 18 months
 
 ### Series A (2027)
+
 - **Amount:** $5M
 - **Use:** Team expansion, market expansion
 - **Runway:** 24 months
 
 ### Series B (2029)
+
 - **Amount:** $15M
 - **Use:** Scale operations, international expansion
 - **Runway:** 36 months

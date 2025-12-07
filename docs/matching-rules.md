@@ -24,12 +24,14 @@ Matches when field values are exactly equal.
 ```
 
 **Use Cases:**
+
 - Order IDs
 - Transaction IDs
 - Invoice numbers
 - Unique identifiers
 
 **Example:**
+
 - Source: `order_id: "ORD-12345"`
 - Target: `order_id: "ORD-12345"`
 - Result: ✅ Match
@@ -49,12 +51,14 @@ Matches when field values are similar (using string similarity).
 ```
 
 **Use Cases:**
+
 - Customer names
 - Product descriptions
 - Addresses
 - Any text fields with potential variations
 
 **Example:**
+
 - Source: `customer_name: "John Smith"`
 - Target: `customer_name: "John A. Smith"`
 - Similarity: 0.85
@@ -77,11 +81,13 @@ Matches when numeric values are within a specified range or tolerance.
 ```
 
 **Use Cases:**
+
 - Transaction amounts (handles fees, rounding)
 - Quantities
 - Any numeric fields with expected variance
 
 **Example:**
+
 - Source: `amount: 99.99`
 - Target: `amount: 100.00`
 - Tolerance: 0.01
@@ -99,11 +105,13 @@ Matches when numeric values are within a specified range or tolerance.
 ```
 
 **Use Cases:**
+
 - Transaction dates (handles timezone differences)
 - Settlement dates
 - Processing delays
 
 **Example:**
+
 - Source: `date: "2026-01-15"`
 - Target: `date: "2026-01-16"`
 - Tolerance: 2 days
@@ -121,12 +129,13 @@ rules: {
   matching: [
     { field: "order_id", type: "exact" },
     { field: "amount", type: "range", tolerance: 0.01 },
-    { field: "date", type: "range", days: 1 }
-  ]
+    { field: "date", type: "range", days: 1 },
+  ];
 }
 ```
 
 **Match Logic:**
+
 - ✅ All rules must pass for a match
 - If any rule fails, transaction is unmatched
 - Order of rules doesn't matter
@@ -178,9 +187,9 @@ rules: {
           // Fallback to amount match
           return Math.abs(source.amount - target.amount) < 0.01;
         }
-      `
-    }
-  ]
+      `,
+    },
+  ];
 }
 ```
 
@@ -213,13 +222,13 @@ Match transactions in different currencies:
 rules: {
   matching: [
     { field: "transaction_id", type: "exact" },
-    { 
-      field: "amount", 
-      type: "range", 
+    {
+      field: "amount",
+      type: "range",
       tolerance: 0.01,
-      currencyConversion: true  // Convert to base currency first
-    }
-  ]
+      currencyConversion: true, // Convert to base currency first
+    },
+  ];
 }
 ```
 
@@ -232,8 +241,8 @@ rules: {
   matching: [
     { field: "customer_name", type: "fuzzy", threshold: 0.8 },
     { field: "amount", type: "range", tolerance: 0.01 },
-    { field: "date", type: "range", days: 7 }
-  ]
+    { field: "date", type: "range", days: 7 },
+  ];
 }
 ```
 
@@ -258,12 +267,12 @@ rules: {
 
 Different platforms may use different field names. Settler automatically maps common fields:
 
-| Common Field | Shopify | Stripe | QuickBooks |
-|-------------|---------|--------|------------|
-| Order ID | `order_id` | `metadata.order_id` | `ref_number` |
-| Amount | `total_price` | `amount` | `amount` |
-| Date | `created_at` | `created` | `txn_date` |
-| Customer | `customer.email` | `customer.email` | `customer.email` |
+| Common Field | Shopify          | Stripe              | QuickBooks       |
+| ------------ | ---------------- | ------------------- | ---------------- |
+| Order ID     | `order_id`       | `metadata.order_id` | `ref_number`     |
+| Amount       | `total_price`    | `amount`            | `amount`         |
+| Date         | `created_at`     | `created`           | `txn_date`       |
+| Customer     | `customer.email` | `customer.email`    | `customer.email` |
 
 **Custom Mapping:** If your platforms use different field names, specify mappings in adapter config:
 
@@ -292,15 +301,14 @@ Settler assigns a confidence score (0.0 to 1.0) to each match:
 - **<0.6** - Low confidence (review recommended)
 
 Use confidence scores to:
+
 - Filter matches by quality
 - Prioritize manual review
 - Set up alerts for low-confidence matches
 
 ```typescript
 const report = await settler.reports.get(jobId);
-const lowConfidenceMatches = report.data.matches.filter(
-  match => match.confidence < 0.7
-);
+const lowConfidenceMatches = report.data.matches.filter((match) => match.confidence < 0.7);
 ```
 
 ---
@@ -312,9 +320,7 @@ const lowConfidenceMatches = report.data.matches.filter(
 Begin with exact matches on unique identifiers:
 
 ```typescript
-matching: [
-  { field: "order_id", type: "exact" }
-]
+matching: [{ field: "order_id", type: "exact" }];
 ```
 
 ### 2. Add Tolerance for Amounts
@@ -340,8 +346,8 @@ Use multiple rules to reduce false matches:
 ```typescript
 matching: [
   { field: "order_id", type: "exact" },
-  { field: "amount", type: "range", tolerance: 0.01 }
-]
+  { field: "amount", type: "range", tolerance: 0.01 },
+];
 ```
 
 ### 5. Test Matching Rules
@@ -352,7 +358,7 @@ Test rules with sample data before production:
 const testResult = await settler.jobs.testMatchingRules({
   source: sampleSourceTransaction,
   target: sampleTargetTransaction,
-  rules: yourMatchingRules
+  rules: yourMatchingRules,
 });
 
 console.log(`Match: ${testResult.data.matched}`);
@@ -368,6 +374,7 @@ console.log(`Confidence: ${testResult.data.confidence}`);
 **Problem:** High number of unmatched transactions
 
 **Solutions:**
+
 - Increase date range tolerance
 - Increase amount tolerance
 - Add fuzzy matching for text fields
@@ -378,6 +385,7 @@ console.log(`Confidence: ${testResult.data.confidence}`);
 **Problem:** Incorrect transactions being matched
 
 **Solutions:**
+
 - Add more specific matching rules
 - Use exact match on unique identifiers
 - Reduce tolerance values
@@ -388,6 +396,7 @@ console.log(`Confidence: ${testResult.data.confidence}`);
 **Problem:** Many matches with low confidence scores
 
 **Solutions:**
+
 - Improve data quality at source
 - Use exact matches where possible
 - Adjust fuzzy matching thresholds

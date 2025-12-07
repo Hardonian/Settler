@@ -34,7 +34,9 @@ serve(async (req) => {
       .gte("created_at", yesterday.toISOString())
       .lt("created_at", today.toISOString());
 
-    const { data: totalUsers } = await supabase.from("users").select("id", { count: "exact", head: true });
+    const { data: totalUsers } = await supabase
+      .from("users")
+      .select("id", { count: "exact", head: true });
 
     // Revenue metrics
     const { data: subscriptions } = await supabase
@@ -64,12 +66,16 @@ serve(async (req) => {
     if (newUserCount > 10) {
       insights.push(`🚀 Strong growth: ${newUserCount} new users today (above average)`);
     } else if (newUserCount < 3) {
-      insights.push(`⚠️ Low signups: Only ${newUserCount} new users today. Consider marketing push.`);
+      insights.push(
+        `⚠️ Low signups: Only ${newUserCount} new users today. Consider marketing push.`
+      );
     }
 
     const atRiskCount = atRiskUsers?.length || 0;
     if (atRiskCount > 20) {
-      insights.push(`⚠️ High churn risk: ${atRiskCount} users at risk. Consider retention campaign.`);
+      insights.push(
+        `⚠️ High churn risk: ${atRiskCount} users at risk. Consider retention campaign.`
+      );
     }
 
     const jobCount = jobs?.length || 0;

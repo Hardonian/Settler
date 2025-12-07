@@ -44,17 +44,14 @@ serve(async (req) => {
 
     // Rate limiting: 100 requests per minute per IP
     if (!checkRateLimit(ip, 60 * 1000, 100)) {
-      return new Response(
-        JSON.stringify({ error: "Rate limit exceeded", retryAfter: 60 }),
-        {
-          status: 429,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-            "Retry-After": "60",
-          },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Rate limit exceeded", retryAfter: 60 }), {
+        status: 429,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          "Retry-After": "60",
+        },
+      });
     }
 
     // Get authorization header
@@ -62,13 +59,10 @@ serve(async (req) => {
     const apiKey = req.headers.get("x-api-key");
 
     if (!authHeader && !apiKey) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization header or API key" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing authorization header or API key" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Initialize Supabase client
@@ -146,24 +140,18 @@ serve(async (req) => {
       .single();
 
     if (billingError || !billingAccount) {
-      return new Response(
-        JSON.stringify({ error: "Billing account not found" }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Billing account not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Check billing account is active
     if (billingAccount.status !== "active") {
-      return new Response(
-        JSON.stringify({ error: "Billing account is not active" }),
-        {
-          status: 403,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Billing account is not active" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Check authorization (user must own billing account or be in same tenant)
@@ -206,26 +194,22 @@ serve(async (req) => {
     }
 
     // Generate idempotency key if not provided
-    const finalIdempotencyKey =
-      idempotency_key || crypto.randomUUID();
+    const finalIdempotencyKey = idempotency_key || crypto.randomUUID();
 
     // Log usage event via database function (with idempotency and fraud detection)
-    const { data: eventId, error: logError } = await supabaseClient.rpc(
-      "log_usage_event",
-      {
-        p_billing_account_id: billing_account_id,
-        p_event_type: event_type,
-        p_quantity: quantity,
-        p_project_id: project_id || null,
-        p_user_id: user_id || userId,
-        p_tenant_id: tenant_id || billingAccount.tenant_id,
-        p_integration_id: integration_id || null,
-        p_add_on_id: add_on_id || null,
-        p_unit: unit || null,
-        p_metadata: metadata,
-        p_idempotency_key: finalIdempotencyKey,
-      }
-    );
+    const { data: eventId, error: logError } = await supabaseClient.rpc("log_usage_event", {
+      p_billing_account_id: billing_account_id,
+      p_event_type: event_type,
+      p_quantity: quantity,
+      p_project_id: project_id || null,
+      p_user_id: user_id || userId,
+      p_tenant_id: tenant_id || billingAccount.tenant_id,
+      p_integration_id: integration_id || null,
+      p_add_on_id: add_on_id || null,
+      p_unit: unit || null,
+      p_metadata: metadata,
+      p_idempotency_key: finalIdempotencyKey,
+    });
 
     if (logError) {
       console.error("Error logging usage event:", logError);

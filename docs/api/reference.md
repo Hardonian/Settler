@@ -43,13 +43,14 @@ X-API-Key: sk_live_your_api_key_here
 
 ## Rate Limits
 
-| Plan | Limit | Window |
-|------|-------|--------|
-| Free | 100 requests | 15 minutes |
+| Plan       | Limit          | Window     |
+| ---------- | -------------- | ---------- |
+| Free       | 100 requests   | 15 minutes |
 | Commercial | 2,000 requests | 15 minutes |
-| Enterprise | Custom | Custom |
+| Enterprise | Custom         | Custom     |
 
 Rate limit information is included in response headers:
+
 - `X-RateLimit-Limit`: Maximum requests
 - `X-RateLimit-Remaining`: Remaining requests
 - `X-RateLimit-Reset`: Reset time (Unix timestamp)
@@ -82,6 +83,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `POST /api/v1/jobs`
 
 **Request:**
+
 ```json
 {
   "name": "Shopify-Stripe Reconciliation",
@@ -111,6 +113,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -129,15 +132,22 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/jobs/:id`
 
 **Response:**
+
 ```json
 {
   "data": {
     "id": "job_123",
     "name": "Shopify-Stripe Reconciliation",
     "status": "completed",
-    "source": { /* ... */ },
-    "target": { /* ... */ },
-    "rules": { /* ... */ },
+    "source": {
+      /* ... */
+    },
+    "target": {
+      /* ... */
+    },
+    "rules": {
+      /* ... */
+    },
     "createdAt": "2026-01-15T10:30:00Z",
     "updatedAt": "2026-01-15T11:00:00Z"
   }
@@ -151,10 +161,12 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/jobs?page=1&limit=20`
 
 **Query Parameters:**
+
 - `page` (integer, default: 1) - Page number
 - `limit` (integer, default: 20, max: 100) - Items per page
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -181,6 +193,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `POST /api/v1/jobs/:id/run`
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -198,6 +211,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `DELETE /api/v1/jobs/:id`
 
 **Response:**
+
 ```json
 {
   "message": "Job deleted successfully"
@@ -213,6 +227,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/reports/:jobId?startDate=2026-01-01&endDate=2026-01-31&format=json&page=1&limit=100`
 
 **Query Parameters:**
+
 - `startDate` (string, ISO 8601) - Start date for report
 - `endDate` (string, ISO 8601) - End date for report
 - `format` (string, enum: "json", "csv") - Response format
@@ -220,6 +235,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 - `limit` (integer, default: 100) - Items per page
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -282,6 +298,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/reports?page=1&limit=20`
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -313,6 +330,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `POST /api/v1/exports`
 
 **Request:**
+
 ```json
 {
   "jobId": "job_123",
@@ -321,16 +339,19 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 ```
 
 **Supported Formats:**
+
 - `csv` - CSV export
 - `json` - JSON export
 - `pdf` - PDF report (includes summary, matches, unmatched, errors)
 
 **Response (PDF/CSV - streamed directly):**
+
 - Content-Type: `application/pdf` or `text/csv`
 - Content-Disposition: `attachment; filename="reconciliation_job_123_1234567890.pdf"`
 - Body: File stream
 
 **Response (JSON):**
+
 ```json
 {
   "data": {
@@ -352,19 +373,17 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `POST /api/v1/webhooks`
 
 **Request:**
+
 ```json
 {
   "url": "https://your-app.com/webhooks/settler",
-  "events": [
-    "reconciliation.completed",
-    "reconciliation.mismatch",
-    "reconciliation.error"
-  ],
+  "events": ["reconciliation.completed", "reconciliation.mismatch", "reconciliation.error"],
   "secret": "your_webhook_secret"
 }
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -384,6 +403,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/webhooks`
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -405,6 +425,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `DELETE /api/v1/webhooks/:id`
 
 **Response:**
+
 ```json
 {
   "message": "Webhook deleted successfully"
@@ -420,12 +441,14 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/exceptions?jobId=job_123&resolution_status=open&page=1&limit=100`
 
 **Query Parameters:**
+
 - `jobId` (string, UUID) - Filter by job ID
 - `resolution_status` (string, enum: "open", "resolved", "escalated") - Filter by status
 - `page` (integer, default: 1) - Page number
 - `limit` (integer, default: 100) - Items per page
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -458,6 +481,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `POST /api/v1/exceptions/:id/resolve`
 
 **Request:**
+
 ```json
 {
   "resolution": "auto-match",
@@ -466,6 +490,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -485,11 +510,13 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/currency/fx-rate?fromCurrency=EUR&toCurrency=USD&date=2026-01-15`
 
 **Query Parameters:**
+
 - `fromCurrency` (string, required) - Source currency (ISO 4217)
 - `toCurrency` (string, required) - Target currency (ISO 4217)
 - `date` (string, ISO 8601, optional) - Historical date
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -509,6 +536,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `POST /api/v1/currency/convert`
 
 **Request:**
+
 ```json
 {
   "amount": {
@@ -521,6 +549,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -545,6 +574,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/currency/base-currency`
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -560,6 +590,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/currency/fx-rates?date=2026-01-15`
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -583,6 +614,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `POST /api/v1/currency/sync-rates`
 
 **Request:**
+
 ```json
 {
   "baseCurrency": "USD",
@@ -591,6 +623,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -611,6 +644,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `POST /api/v1/adapters/test`
 
 **Request:**
+
 ```json
 {
   "adapter": "stripe",
@@ -621,6 +655,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -640,6 +675,7 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
 **Endpoint:** `GET /api/v1/health`
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -699,18 +735,32 @@ curl https://api.settler.io/api/v1/reports/job_123 \
 ### TypeScript/JavaScript SDK
 
 ```typescript
-import Settler from '@settler/sdk';
+import Settler from "@settler/sdk";
 
 const settler = new Settler({
-  apiKey: process.env.SETTLER_API_KEY
+  apiKey: process.env.SETTLER_API_KEY,
 });
 
 // Create job
 const job = await settler.jobs.create({
   name: "Daily Reconciliation",
-  source: { adapter: "shopify", config: { /* ... */ } },
-  target: { adapter: "stripe", config: { /* ... */ } },
-  rules: { matching: [ /* ... */ ] }
+  source: {
+    adapter: "shopify",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
+  rules: {
+    matching: [
+      /* ... */
+    ],
+  },
 });
 
 // Run job
@@ -755,25 +805,18 @@ const report = await settler.reports.get(job.data.id);
 ### Webhook Signature Verification
 
 ```typescript
-import crypto from 'crypto';
+import crypto from "crypto";
 
-function verifyWebhookSignature(
-  signature: string,
-  payload: string,
-  secret: string
-): boolean {
-  const [timestamp, hash] = signature.split(',');
-  const [t, v1] = hash.split('=');
-  
+function verifyWebhookSignature(signature: string, payload: string, secret: string): boolean {
+  const [timestamp, hash] = signature.split(",");
+  const [t, v1] = hash.split("=");
+
   const expected = crypto
-    .createHmac('sha256', secret)
-    .update(`${timestamp.split('=')[1]}.${payload}`)
-    .digest('hex');
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(v1),
-    Buffer.from(expected)
-  );
+    .createHmac("sha256", secret)
+    .update(`${timestamp.split("=")[1]}.${payload}`)
+    .digest("hex");
+
+  return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expected));
 }
 ```
 
@@ -784,13 +827,17 @@ function verifyWebhookSignature(
 All list endpoints support pagination:
 
 **Query Parameters:**
+
 - `page` (integer, default: 1) - Page number (1-indexed)
 - `limit` (integer, default: 20, max: 1000) - Items per page
 
 **Response:**
+
 ```json
 {
-  "data": [ /* ... */ ],
+  "data": [
+    /* ... */
+  ],
   "pagination": {
     "page": 1,
     "limit": 20,
@@ -826,6 +873,7 @@ Most endpoints support date range filtering:
 When rate limit is exceeded:
 
 **Response:**
+
 ```json
 {
   "error": "RATE_LIMIT_EXCEEDED",
@@ -840,6 +888,7 @@ When rate limit is exceeded:
 ```
 
 **Headers:**
+
 - `Retry-After: 900` (seconds until reset)
 
 ---

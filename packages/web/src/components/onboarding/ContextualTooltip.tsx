@@ -71,8 +71,14 @@ export function ContextualTooltip({
 
       // Keep tooltip within viewport
       const padding = 16;
-      top = Math.max(padding, Math.min(top, window.innerHeight + scrollY - tooltipRect.height - padding));
-      left = Math.max(padding, Math.min(left, window.innerWidth + scrollX - tooltipRect.width - padding));
+      top = Math.max(
+        padding,
+        Math.min(top, window.innerHeight + scrollY - tooltipRect.height - padding)
+      );
+      left = Math.max(
+        padding,
+        Math.min(left, window.innerWidth + scrollX - tooltipRect.width - padding)
+      );
 
       setTooltipPosition({ top, left });
     }

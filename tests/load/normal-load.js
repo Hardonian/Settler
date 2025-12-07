@@ -17,11 +17,7 @@ export default function () {
   const baseUrl = __ENV.BASE_URL || "http://localhost:3000";
 
   // Test API endpoints
-  const endpoints = [
-    "/api/health",
-    "/api/reconcile",
-    "/api/integrations",
-  ];
+  const endpoints = ["/api/health", "/api/reconcile", "/api/integrations"];
 
   for (const endpoint of endpoints) {
     const res = http.get(`${baseUrl}${endpoint}`);

@@ -9,9 +9,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const sdk_1 = __importDefault(require("@settler/sdk"));
 const webhooksCommand = new commander_1.Command("webhooks");
 exports.webhooksCommand = webhooksCommand;
-webhooksCommand
-    .description("Manage webhooks")
-    .alias("webhook");
+webhooksCommand.description("Manage webhooks").alias("webhook");
 webhooksCommand
     .command("list")
     .description("List all webhooks")

@@ -6,21 +6,29 @@
 /**
  * Gets the crypto implementation (Node.js or Web Crypto API)
  */
-function getCrypto(): {
+interface CryptoModule {
   createHmac: (
     algorithm: string,
     secret: string
   ) => {
-    update: (data: string) => void;
+    update: (data: string) => CryptoHmac;
     digest: (encoding: string) => string;
   };
   timingSafeEqual?: (a: Buffer, b: Buffer) => boolean;
-} {
+}
+
+interface CryptoHmac {
+  update: (data: string) => CryptoHmac;
+  digest: (encoding: string) => string;
+}
+
+function getCrypto(): CryptoModule {
   // Node.js environment
   if (typeof require !== "undefined") {
     try {
-      const crypto = require("crypto");
-      return crypto;
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+      const cryptoModule = require("crypto") as CryptoModule;
+      return cryptoModule;
     } catch {
       // Fall through to Web Crypto API
     }
@@ -86,8 +94,8 @@ export function verifyWebhookSignature(
       payloadString = String(payload);
     }
 
-    hmac.update(payloadString);
-    const calculatedSignature = hmac.digest("hex");
+    const updatedHmac = hmac.update(payloadString);
+    const calculatedSignature = updatedHmac.digest("hex");
 
     // Use constant-time comparison to prevent timing attacks (Node.js only)
     if (crypto.timingSafeEqual) {

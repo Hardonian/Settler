@@ -30,7 +30,7 @@ export class GooglePayAdapter implements Adapter {
 
     const response = await fetch(`${url}?${params.toString()}`, {
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
     });
@@ -87,8 +87,6 @@ export class GooglePayAdapter implements Adapter {
       errors.push("Date is required");
     }
 
-    return errors.length === 0
-      ? { valid: true }
-      : { valid: false, errors };
+    return errors.length === 0 ? { valid: true } : { valid: false, errors };
   }
 }

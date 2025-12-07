@@ -36,7 +36,9 @@ export class PluginManager {
       if (plugin.metadata.dependencies) {
         for (const dep of plugin.metadata.dependencies) {
           if (!this.plugins.has(dep)) {
-            throw new Error(`Plugin ${plugin.metadata.id} requires dependency ${dep} which is not registered`);
+            throw new Error(
+              `Plugin ${plugin.metadata.id} requires dependency ${dep} which is not registered`
+            );
           }
         }
       }

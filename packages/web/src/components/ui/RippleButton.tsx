@@ -34,11 +34,7 @@ export function RippleButton({
   };
 
   return (
-    <button
-      className={cn("relative overflow-hidden", className)}
-      onClick={handleClick}
-      {...props}
-    >
+    <button className={cn("relative overflow-hidden", className)} onClick={handleClick} {...props}>
       {children}
       <AnimatePresence>
         {ripples.map((ripple) => (

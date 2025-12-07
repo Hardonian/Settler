@@ -140,7 +140,8 @@ export function UpgradeNudge({
     },
     expansion_opportunity: {
       title: "Ready to scale?",
-      description: "You're using Settler regularly. Upgrade to unlock more features and higher limits.",
+      description:
+        "You're using Settler regularly. Upgrade to unlock more features and higher limits.",
       icon: Zap,
     },
   };

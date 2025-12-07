@@ -44,32 +44,28 @@ export class PaginatedIterator<T> implements AsyncIterableIterator<T> {
     }
 
     // Fetch the next page
-    try {
-      const options: PaginationOptions = {};
-      if (this.currentCursor !== undefined) {
-        options.cursor = this.currentCursor;
-      }
-      const response = await this.fetchPage(options);
-
-      this.currentPage = response.data;
-      this.currentIndex = 0;
-      if (response.nextCursor !== undefined) {
-        this.currentCursor = response.nextCursor;
-      }
-      this.hasMore = response.hasMore ?? response.nextCursor !== undefined;
-
-      if (this.currentPage.length === 0) {
-        return { done: true, value: undefined as T };
-      }
-
-      const value = this.currentPage[this.currentIndex++];
-      if (value !== undefined) {
-        return { done: false, value };
-      }
-      return { done: true, value: undefined as T };
-    } catch (error) {
-      throw error;
+    const options: PaginationOptions = {};
+    if (this.currentCursor !== undefined) {
+      options.cursor = this.currentCursor;
     }
+    const response = await this.fetchPage(options);
+
+    this.currentPage = response.data;
+    this.currentIndex = 0;
+    if (response.nextCursor !== undefined) {
+      this.currentCursor = response.nextCursor;
+    }
+    this.hasMore = response.hasMore ?? response.nextCursor !== undefined;
+
+    if (this.currentPage.length === 0) {
+      return { done: true, value: undefined as T };
+    }
+
+    const value = this.currentPage[this.currentIndex++];
+    if (value !== undefined) {
+      return { done: false, value };
+    }
+    return { done: true, value: undefined as T };
   }
 
   [Symbol.asyncIterator](): AsyncIterableIterator<T> {

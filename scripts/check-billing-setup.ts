@@ -95,7 +95,7 @@ async function checkSetup() {
 
   // Summary
   console.log("\n" + "=".repeat(50));
-  const allGood = Object.values(checks).every(v => v);
+  const allGood = Object.values(checks).every((v) => v);
   const criticalGood = checks.supabase && checks.database;
 
   if (allGood) {

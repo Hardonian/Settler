@@ -61,7 +61,7 @@ export default function BillingDashboardPage() {
       // For now, using mock data structure
       await fetch("/api/billing/invoice/estimate?billing_account_id=current");
       // Handle response...
-      
+
       // Mock data for now
       setData({
         billingAccount: {
@@ -84,8 +84,8 @@ export default function BillingDashboardPage() {
         estimatedBill: {
           base_subscription_cost: 49.95,
           add_on_costs: 39.95,
-          usage_costs: 15.00,
-          total_cost: 104.90,
+          usage_costs: 15.0,
+          total_cost: 104.9,
           period_start: new Date().toISOString(),
           period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         },
@@ -143,17 +143,26 @@ export default function BillingDashboardPage() {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-6 md:space-y-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">Billing</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Billing
+          </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1.5 text-sm md:text-base">
             Manage your subscription and view usage
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Button variant="outline" onClick={() => router.push("/dashboard/billing/invoices")} className="font-medium">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/dashboard/billing/invoices")}
+            className="font-medium"
+          >
             <Download className="mr-2 h-4 w-4" />
             Download Invoice
           </Button>
-          <Button onClick={() => router.push("/dashboard/billing/payment-methods")} className="font-medium">
+          <Button
+            onClick={() => router.push("/dashboard/billing/payment-methods")}
+            className="font-medium"
+          >
             <CreditCard className="mr-2 h-4 w-4" />
             Payment Methods
           </Button>

@@ -14,33 +14,25 @@ const router = Router();
  * GET /api/user/onboarding-progress
  * Get onboarding progress for current user
  */
-router.get(
-  "/",
-  authMiddleware,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const userId = req.userId!;
-      if (!userId) {
-        return sendError(res, 401, "UNAUTHORIZED", "User ID required");
-      }
-
-      const progress = await getOnboardingProgress(userId);
-      const nextStep = await getNextOnboardingStep(userId);
-
-      return sendSuccess(res, {
-        progress,
-        nextStep,
-      });
-    } catch (error) {
-      return sendError(
-        res,
-        500,
-        "INTERNAL_ERROR",
-        "Failed to get onboarding progress",
-        { error: error instanceof Error ? error.message : String(error) }
-      );
+router.get("/", authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId!;
+    if (!userId) {
+      return sendError(res, 401, "UNAUTHORIZED", "User ID required");
     }
+
+    const progress = await getOnboardingProgress(userId);
+    const nextStep = await getNextOnboardingStep(userId);
+
+    return sendSuccess(res, {
+      progress,
+      nextStep,
+    });
+  } catch (error) {
+    return sendError(res, 500, "INTERNAL_ERROR", "Failed to get onboarding progress", {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
-);
+});
 
 export default router;

@@ -5,22 +5,26 @@ This directory contains integrations for Vercel's Next.js SDKs, providing enhanc
 ## Available SDKs
 
 ### ✅ @vercel/analytics
+
 - **Status**: Already integrated
 - **Location**: `src/app/layout.tsx`
 - **Usage**: Automatic page view and event tracking
 
 ### ✅ @vercel/speed-insights
+
 - **Status**: Already integrated
 - **Location**: `src/app/layout.tsx`
 - **Usage**: Real-time performance monitoring
 
 ### ✅ @vercel/kv
+
 - **Status**: Integrated
 - **Location**: `src/lib/vercel/kv.ts`
 - **Usage**: Serverless Redis for caching and data storage
 - **Environment Variables**: `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`
 
 ### ✅ @vercel/edge-config
+
 - **Status**: Integrated
 - **Location**: `src/lib/vercel/edge-config.ts`
 - **Usage**: Edge configuration for feature flags and A/B testing
@@ -28,6 +32,7 @@ This directory contains integrations for Vercel's Next.js SDKs, providing enhanc
 - **Integration**: Automatically used by feature flag resolver
 
 ### ✅ @vercel/blob
+
 - **Status**: Integrated
 - **Location**: `src/lib/vercel/blob.ts`
 - **Usage**: Serverless file storage
@@ -38,36 +43,36 @@ This directory contains integrations for Vercel's Next.js SDKs, providing enhanc
 ### KV (Redis) Storage
 
 ```typescript
-import { kv, cacheGet, cacheSet } from '@/lib/vercel/kv';
+import { kv, cacheGet, cacheSet } from "@/lib/vercel/kv";
 
 // Simple get/set
-await kv.set('user:123', { name: 'John', email: 'john@example.com' });
-const user = await kv.get('user:123');
+await kv.set("user:123", { name: "John", email: "john@example.com" });
+const user = await kv.get("user:123");
 
 // With expiration
-await kv.set('session:abc', sessionData, { ex: 3600 }); // 1 hour
+await kv.set("session:abc", sessionData, { ex: 3600 }); // 1 hour
 
 // Caching helper
-const { value, cached } = await cacheGet('expensive-query', 3600);
+const { value, cached } = await cacheGet("expensive-query", 3600);
 if (!cached) {
   const data = await expensiveQuery();
-  await cacheSet('expensive-query', data, 3600);
+  await cacheSet("expensive-query", data, 3600);
 }
 ```
 
 ### Edge Config (Feature Flags)
 
 ```typescript
-import { edgeConfig, getFeatureFlagFromEdgeConfig } from '@/lib/vercel/edge-config';
+import { edgeConfig, getFeatureFlagFromEdgeConfig } from "@/lib/vercel/edge-config";
 
 // Get feature flag
-const flagValue = await getFeatureFlagFromEdgeConfig('new_dashboard');
+const flagValue = await getFeatureFlagFromEdgeConfig("new_dashboard");
 
 // Get any config value
-const configValue = await edgeConfig.get('api_endpoint');
+const configValue = await edgeConfig.get("api_endpoint");
 
 // Check if key exists
-const exists = await edgeConfig.has('feature_enabled');
+const exists = await edgeConfig.has("feature_enabled");
 ```
 
 The feature flag system automatically uses Edge Config if configured. See `src/lib/flags/resolver.ts`.
@@ -75,12 +80,12 @@ The feature flag system automatically uses Edge Config if configured. See `src/l
 ### Blob Storage
 
 ```typescript
-import { blob, uploadFileFromForm } from '@/lib/vercel/blob';
+import { blob, uploadFileFromForm } from "@/lib/vercel/blob";
 
 // Upload a file
-const result = await blob.put('documents/report.pdf', file, {
-  access: 'public',
-  contentType: 'application/pdf',
+const result = await blob.put("documents/report.pdf", file, {
+  access: "public",
+  contentType: "application/pdf",
 });
 
 // Delete a file
@@ -90,10 +95,10 @@ await blob.del(result.url);
 const metadata = await blob.head(result.url);
 
 // List files
-const { blobs } = await blob.list({ prefix: 'documents/', limit: 10 });
+const { blobs } = await blob.list({ prefix: "documents/", limit: 10 });
 
 // Upload from form
-const { url, pathname, size } = await uploadFileFromForm(formData, 'file');
+const { url, pathname, size } = await uploadFileFromForm(formData, "file");
 ```
 
 ## Configuration
@@ -123,6 +128,7 @@ const { url, pathname, size } = await uploadFileFromForm(formData, 'file');
 ## Fallback Behavior
 
 All SDKs are designed to gracefully degrade if not configured:
+
 - **KV**: Returns `null` for get operations, logs warnings for write operations
 - **Edge Config**: Returns `null` if not configured, feature flags fall back to environment variables
 - **Blob**: Throws errors if not configured (since file uploads require it)
@@ -143,11 +149,11 @@ If you're currently using Upstash Redis, you can gradually migrate:
 
 ```typescript
 // Old way
-import { Redis } from '@upstash/redis';
+import { Redis } from "@upstash/redis";
 const redis = new Redis({ url: process.env.REDIS_URL, token: process.env.REDIS_TOKEN });
 
 // New way (Vercel KV)
-import { kv } from '@/lib/vercel/kv';
+import { kv } from "@/lib/vercel/kv";
 // Same API, but uses Vercel KV if configured
 ```
 

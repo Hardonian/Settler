@@ -75,7 +75,10 @@ export function CustomerTestimonials() {
     <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="testimonials-heading">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 id="testimonials-heading" className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+          <h2
+            id="testimonials-heading"
+            className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
+          >
             Trusted by 500+ Companies
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
@@ -84,8 +87,8 @@ export function CustomerTestimonials() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {testimonials.map((testimonial, index) => (
-            <SpotlightCard 
-              key={index} 
+            <SpotlightCard
+              key={index}
               className="h-full flex flex-col p-4 sm:p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
             >
               <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
@@ -93,7 +96,9 @@ export function CustomerTestimonials() {
                   {testimonial.name.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white truncate">{testimonial.name}</h3>
+                  <h3 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white truncate">
+                    {testimonial.name}
+                  </h3>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">
                     {testimonial.role}, {testimonial.company}
                   </p>
@@ -101,16 +106,27 @@ export function CustomerTestimonials() {
               </div>
               <div className="flex items-center gap-1 mb-2 sm:mb-3">
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star key={i} className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400 transition-transform duration-200 hover:scale-125" aria-hidden="true" />
+                  <Star
+                    key={i}
+                    className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400 transition-transform duration-200 hover:scale-125"
+                    aria-hidden="true"
+                  />
                 ))}
               </div>
               <div className="flex-1">
-                <Quote className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500 mb-2 opacity-50" aria-hidden="true" />
-                <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 italic mb-2 sm:mb-3 leading-relaxed break-words">{testimonial.quote}</p>
+                <Quote
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500 mb-2 opacity-50"
+                  aria-hidden="true"
+                />
+                <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 italic mb-2 sm:mb-3 leading-relaxed break-words">
+                  {testimonial.quote}
+                </p>
               </div>
               {testimonial.metric && (
                 <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <p className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 break-words">{testimonial.metric}</p>
+                  <p className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 break-words">
+                    {testimonial.metric}
+                  </p>
                 </div>
               )}
             </SpotlightCard>

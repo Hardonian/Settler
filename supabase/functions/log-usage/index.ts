@@ -7,8 +7,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 interface UsageEventRequest {
@@ -34,13 +33,10 @@ serve(async (req) => {
     // Get authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing authorization header" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Initialize Supabase client
@@ -61,13 +57,10 @@ serve(async (req) => {
     } = await supabaseClient.auth.getUser();
 
     if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized", details: userError?.message }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Unauthorized", details: userError?.message }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Parse request body
@@ -94,13 +87,10 @@ serve(async (req) => {
       .single();
 
     if (billingError || !billingAccount) {
-      return new Response(
-        JSON.stringify({ error: "Billing account not found" }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Billing account not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Check authorization (user must own billing account or be in same tenant)
@@ -108,31 +98,25 @@ serve(async (req) => {
       billingAccount.user_id !== user.id &&
       (!body.tenant_id || billingAccount.tenant_id !== body.tenant_id)
     ) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized access to billing account" }),
-        {
-          status: 403,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Unauthorized access to billing account" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Log usage event via database function
-    const { data: eventId, error: logError } = await supabaseClient.rpc(
-      "log_usage_event",
-      {
-        p_billing_account_id: body.billing_account_id,
-        p_event_type: body.event_type,
-        p_quantity: body.quantity ?? 1,
-        p_project_id: body.project_id ?? null,
-        p_user_id: body.user_id ?? user.id,
-        p_tenant_id: body.tenant_id ?? billingAccount.tenant_id,
-        p_integration_id: body.integration_id ?? null,
-        p_add_on_id: body.add_on_id ?? null,
-        p_unit: body.unit ?? null,
-        p_metadata: body.metadata ?? {},
-      }
-    );
+    const { data: eventId, error: logError } = await supabaseClient.rpc("log_usage_event", {
+      p_billing_account_id: body.billing_account_id,
+      p_event_type: body.event_type,
+      p_quantity: body.quantity ?? 1,
+      p_project_id: body.project_id ?? null,
+      p_user_id: body.user_id ?? user.id,
+      p_tenant_id: body.tenant_id ?? billingAccount.tenant_id,
+      p_integration_id: body.integration_id ?? null,
+      p_add_on_id: body.add_on_id ?? null,
+      p_unit: body.unit ?? null,
+      p_metadata: body.metadata ?? {},
+    });
 
     if (logError) {
       console.error("Error logging usage event:", logError);

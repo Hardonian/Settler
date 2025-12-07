@@ -138,8 +138,16 @@ export default function ContributorsPage() {
           />
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-            <Button size="lg" asChild className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
-              <a href="https://github.com/shardie-github/Settler-API" target="_blank" rel="noopener noreferrer">
+            <Button
+              size="lg"
+              asChild
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+            >
+              <a
+                href="https://github.com/shardie-github/Settler-API"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 View on GitHub <ExternalLink className="w-4 h-4 ml-2" />
               </a>
             </Button>
@@ -181,9 +189,7 @@ export default function ContributorsPage() {
                 <SpotlightCard
                   className={cn(
                     "p-6 h-full transition-all duration-300 hover:shadow-xl hover:scale-105",
-                    isVisible
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-4"
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                   )}
                   style={{
                     transitionDelay: `${index * 0.1}s`,
@@ -232,7 +238,13 @@ export default function ContributorsPage() {
               );
 
               return type.external ? (
-                <a key={index} href={type.href} target="_blank" rel="noopener noreferrer" className="block">
+                <a
+                  key={index}
+                  href={type.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
                   {content}
                 </a>
               ) : (
@@ -266,45 +278,45 @@ export default function ContributorsPage() {
 
           <div className="space-y-6">
             {waysToContribute.map((way, index) => (
-            <div
-              key={index}
-              className="transition-all duration-300"
-              style={{
-                opacity: isVisible ? 1 : 0,
-                transform: isVisible ? "translateX(0)" : "translateX(-20px)",
-                transition: `opacity 0.6s ease-out ${index * 0.1 + 0.3}s, transform 0.6s ease-out ${index * 0.1 + 0.3}s`,
-              }}
-            >
-              <SpotlightCard className="p-6 hover:shadow-lg">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold flex-shrink-0">
-                    {way.step}
+              <div
+                key={index}
+                className="transition-all duration-300"
+                style={{
+                  opacity: isVisible ? 1 : 0,
+                  transform: isVisible ? "translateX(0)" : "translateX(-20px)",
+                  transition: `opacity 0.6s ease-out ${index * 0.1 + 0.3}s, transform 0.6s ease-out ${index * 0.1 + 0.3}s`,
+                }}
+              >
+                <SpotlightCard className="p-6 hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                      {way.step}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                        {way.title}
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
+                        {way.description}
+                      </p>
+                      <Button variant="outline" size="sm" asChild={!way.external}>
+                        {way.external ? (
+                          <a
+                            href={way.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2"
+                          >
+                            {way.action} <ExternalLink className="w-4 h-4" />
+                          </a>
+                        ) : (
+                          <Link href={way.href}>{way.action}</Link>
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
-                      {way.title}
-                    </h3>
-                    <p className="text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
-                      {way.description}
-                    </p>
-                    <Button variant="outline" size="sm" asChild={!way.external}>
-                      {way.external ? (
-                        <a
-                          href={way.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2"
-                        >
-                          {way.action} <ExternalLink className="w-4 h-4" />
-                        </a>
-                      ) : (
-                        <Link href={way.href}>{way.action}</Link>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </SpotlightCard>
-            </div>
+                </SpotlightCard>
+              </div>
             ))}
           </div>
         </div>
@@ -342,13 +354,13 @@ export default function ContributorsPage() {
                   }}
                 >
                   <SpotlightCard className="p-6 text-center hover:scale-105">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-300">{stat.label}</div>
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
+                      {stat.value}
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-300">{stat.label}</div>
                   </SpotlightCard>
                 </div>
               );
@@ -372,8 +384,16 @@ export default function ContributorsPage() {
               Join our open source community and help build the future of financial reconciliation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
-                <a href="https://github.com/shardie-github/Settler-API" target="_blank" rel="noopener noreferrer">
+              <Button
+                size="lg"
+                asChild
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+              >
+                <a
+                  href="https://github.com/shardie-github/Settler-API"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View on GitHub <ExternalLink className="w-4 h-4 ml-2" />
                 </a>
               </Button>
