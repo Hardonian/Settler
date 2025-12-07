@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400" fill="none">
+  <defs>
+    <linearGradient id="manualGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="settlerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Title -->
+  <text x="350" y="30" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#1f2937" text-anchor="middle">Time Savings Comparison</text>
+  
+  <!-- Manual Process -->
+  <g id="manual">
+    <rect x="50" y="80" width="250" height="250" rx="12" fill="url(#manualGradient)" opacity="0.1"/>
+    <text x="175" y="110" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#dc2626" text-anchor="middle">Manual Process</text>
+    
+    <rect x="70" y="140" width="210" height="40" rx="6" fill="#dc2626" opacity="0.2"/>
+    <text x="175" y="165" font-family="Arial, sans-serif" font-size="14" fill="#1f2937" text-anchor="middle">10+ hours/week</text>
+    
+    <rect x="70" y="200" width="210" height="40" rx="6" fill="#dc2626" opacity="0.2"/>
+    <text x="175" y="225" font-family="Arial, sans-serif" font-size="14" fill="#1f2937" text-anchor="middle">Human errors</text>
+    
+    <rect x="70" y="260" width="210" height="40" rx="6" fill="#dc2626" opacity="0.2"/>
+    <text x="175" y="285" font-family="Arial, sans-serif" font-size="14" fill="#1f2937" text-anchor="middle">Revenue leakage</text>
+    
+    <rect x="70" y="320" width="210" height="40" rx="6" fill="#dc2626" opacity="0.2"/>
+    <text x="175" y="345" font-family="Arial, sans-serif" font-size="14" fill="#1f2937" text-anchor="middle">Compliance risks</text>
+  </g>
+  
+  <!-- Arrow -->
+  <path d="M 320 200 L 380 200" stroke="#6b7280" stroke-width="4" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="350" y="195" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#6b7280" text-anchor="middle">vs</text>
+  
+  <!-- Settler Process -->
+  <g id="settler">
+    <rect x="400" y="80" width="250" height="250" rx="12" fill="url(#settlerGradient)" opacity="0.1"/>
+    <text x="525" y="110" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#059669" text-anchor="middle">With Settler</text>
+    
+    <rect x="420" y="140" width="210" height="40" rx="6" fill="#10b981" opacity="0.2"/>
+    <text x="525" y="165" font-family="Arial, sans-serif" font-size="14" fill="#1f2937" text-anchor="middle">5 minutes setup</text>
+    
+    <rect x="420" y="200" width="210" height="40" rx="6" fill="#10b981" opacity="0.2"/>
+    <text x="525" y="225" font-family="Arial, sans-serif" font-size="14" fill="#1f2937" text-anchor="middle">99.7% accuracy</text>
+    
+    <rect x="420" y="260" width="210" height="40" rx="6" fill="#10b981" opacity="0.2"/>
+    <text x="525" y="285" font-family="Arial, sans-serif" font-size="14" fill="#1f2937" text-anchor="middle">Zero errors</text>
+    
+    <rect x="420" y="320" width="210" height="40" rx="6" fill="#10b981" opacity="0.2"/>
+    <text x="525" y="345" font-family="Arial, sans-serif" font-size="14" fill="#1f2937" text-anchor="middle">Full audit trail</text>
+  </g>
+  
+  <!-- ROI Calculation -->
+  <rect x="150" y="360" width="400" height="30" rx="6" fill="#fef3c7"/>
+  <text x="350" y="380" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#92400e" text-anchor="middle">ROI: Save 40+ hours/month = $2,000+ value (at $50/hr)</text>
+  
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#6b7280"/>
+    </marker>
+  </defs>
+</svg>

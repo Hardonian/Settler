@@ -14,8 +14,8 @@ interface ConversionCTAProps {
 }
 
 export function ConversionCTA({
-  title = "Ready to Get Started?",
-  description = "Start reconciling your data in minutes. No credit card required.",
+  title = "Ready to Automate Your Reconciliation?",
+  description = "Join 500+ companies saving 10+ hours per week. Start your 30-day free trial—full access, no credit card required.",
   primaryAction = "Start Free Trial",
   primaryLink = "/playground",
   secondaryAction = "View Pricing",

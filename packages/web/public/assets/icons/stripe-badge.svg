@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="stripeBadgeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#635bff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="12" fill="url(#stripeBadgeGradient)"/>
+  <text x="60" y="50" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Stripe</text>
+  <text x="60" y="70" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle" opacity="0.9">Powered</text>
+  <path d="M 30 85 L 90 85" stroke="white" stroke-width="2" stroke-dasharray="2 2"/>
+  <text x="60" y="105" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle" opacity="0.9">Secure</text>
+  <text x="60" y="117" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle" opacity="0.9">Payments</text>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="uptimeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="12" fill="url(#uptimeGradient)"/>
+  <circle cx="60" cy="50" r="20" stroke="white" stroke-width="3" fill="none"/>
+  <path d="M 60 40 L 60 50 L 70 55" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <text x="60" y="90" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">99.9%</text>
+  <text x="60" y="105" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle" opacity="0.9">Uptime SLA</text>
+</svg>

@@ -16,12 +16,39 @@ import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 
 // Dynamic imports for heavy components
-const TrustBadges = dynamic(
-  () => import("@/components/TrustBadges").then((mod) => ({ default: mod.TrustBadges })),
+const PurchaseScrutiny = dynamic(
+  () =>
+    import("@/components/PurchaseScrutiny").then((mod) => ({
+      default: mod.PurchaseScrutiny,
+    })),
   { ssr: true }
 );
-const CustomerLogos = dynamic(
-  () => import("@/components/CustomerLogos").then((mod) => ({ default: mod.CustomerLogos })),
+const SocialProofCounter = dynamic(
+  () =>
+    import("@/components/SocialProofCounter").then((mod) => ({
+      default: mod.SocialProofCounter,
+    })),
+  { ssr: true }
+);
+const IntegrationLogos = dynamic(
+  () =>
+    import("@/components/IntegrationLogos").then((mod) => ({
+      default: mod.IntegrationLogos,
+    })),
+  { ssr: true }
+);
+const CommunityHub = dynamic(
+  () =>
+    import("@/components/CommunityHub").then((mod) => ({
+      default: mod.CommunityHub,
+    })),
+  { ssr: true }
+);
+const DeveloperResources = dynamic(
+  () =>
+    import("@/components/DeveloperResources").then((mod) => ({
+      default: mod.DeveloperResources,
+    })),
   { ssr: true }
 );
 const SocialProof = dynamic(
@@ -117,12 +144,6 @@ export default function Home() {
     { value: "5 min", label: "Setup Time", description: "Get started in minutes" },
   ];
 
-  const secondaryStats = [
-    { value: "10M+", label: "Transactions Reconciled", description: "Total processed" },
-    { value: "24/7", label: "Uptime", description: "Service availability" },
-    { value: "99.9%", label: "Reliability", description: "SLA guarantee" },
-    { value: "<1s", label: "Processing Speed", description: "Per transaction" },
-  ];
 
   const codeExample = `npm install @settler/sdk
 
@@ -186,7 +207,7 @@ const report = await client.jobs.run(job.id);
               <TextRevealHeading
                 as="h1"
                 id="hero-heading"
-                text="Stop Wasting 10+ Hours Per Week on Manual Reconciliation"
+                text="Reconcile Millions of Transactions Automatically—In Minutes, Not Hours"
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent leading-tight"
                 delay={0.1}
                 staggerDelay={0.02}
@@ -194,7 +215,7 @@ const report = await client.jobs.run(job.id);
               />
 
               <TextReveal
-                text="Automate transaction matching across Shopify, Stripe, PayPal, and 10+ platforms with 99.7% accuracy. Start your free trial—no credit card required."
+                text="The API-first reconciliation platform trusted by 500+ companies. Connect Shopify, Stripe, PayPal, and 10+ platforms in 5 minutes. 99.7% accuracy. Start free—no credit card required."
                 className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed"
                 delay={0.4}
                 staggerDelay={0.01}
@@ -213,7 +234,7 @@ const report = await client.jobs.run(job.id);
                   onClick={() => trackCTA("Start Free Trial", { location: "hero" })}
                 >
                   <Link href="/signup" aria-label="Start free trial of Settler">
-                    Start Free Trial
+                    Start Free Trial — No Credit Card
                   </Link>
                 </Button>
                 <Button
@@ -223,7 +244,7 @@ const report = await client.jobs.run(job.id);
                   className="px-8 py-6 text-lg font-medium border-2 border-slate-300 dark:border-white/20 glass hover:border-indigo-500 dark:hover:border-electric-purple/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-electric-purple focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
                 >
                   <Link href="/docs" aria-label="View Settler documentation">
-                    View Docs
+                    See How It Works
                   </Link>
                 </Button>
               </div>
@@ -252,43 +273,11 @@ const report = await client.jobs.run(job.id);
           </div>
         </section>
 
-        {/* Secondary Stats Section */}
-        <section className="py-20 glass-subtle" aria-labelledby="secondary-stats-heading">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <TextRevealHeading
-              as="h2"
-              id="secondary-stats-heading"
-              text="Trusted by Industry Leaders"
-              className="text-2xl md:text-3xl font-bold text-center mb-12 text-slate-900 dark:text-white"
-              delay={0}
-              staggerDelay={0.02}
-            />
-            <BentoGrid columns={4} gap="md">
-              {secondaryStats.map((stat, index) => (
-                <BentoGridItem key={index} colSpan={1}>
-                  <SpotlightCard className="h-full p-6">
-                    <AnimatedStatCard
-                      value={stat.value}
-                      label={stat.label}
-                      description={stat.description}
-                      index={index}
-                    />
-                  </SpotlightCard>
-                </BentoGridItem>
-              ))}
-            </BentoGrid>
-          </div>
-        </section>
+        {/* Social Proof Counter - FOMO & Trust */}
+        <SocialProofCounter />
 
-        {/* Trust Badges */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 glass-subtle">
-          <div className="max-w-7xl mx-auto">
-            <TrustBadges />
-          </div>
-        </section>
-
-        {/* Customer Logos */}
-        <CustomerLogos />
+        {/* Integration Logos - Partnerships with Trusted Brands */}
+        <IntegrationLogos />
 
         {/* Code Example Section */}
         <section
@@ -474,6 +463,12 @@ const report = await client.jobs.run(job.id);
         {/* Edge AI Section */}
         <EdgeAIMarketingSection variant="featured" />
 
+        {/* Developer Resources */}
+        <DeveloperResources />
+
+        {/* Community Hub */}
+        <CommunityHub />
+
         {/* Newsletter Signup */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
           <ParallaxBackground speed={0.2}>
@@ -481,6 +476,13 @@ const report = await client.jobs.run(job.id);
           </ParallaxBackground>
           <div className="max-w-4xl mx-auto relative z-10">
             <NewsletterSignup />
+          </div>
+        </section>
+
+        {/* Trust & Security - Reaffirm Before Purchase Decision */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto">
+            <PurchaseScrutiny />
           </div>
         </section>
 
@@ -492,11 +494,11 @@ const report = await client.jobs.run(job.id);
           <div className="max-w-4xl mx-auto relative z-10">
             <SpotlightCard className="p-10 md:p-12 text-center">
               <ConversionCTA
-                title="Ready to Automate Reconciliation?"
-                description="Join 500+ companies processing millions of transactions with 99.7% accuracy. Start your free trial—no credit card required."
-                primaryAction="Start Free Trial"
+                title="Ready to Save 10+ Hours Per Week?"
+                description="Join 500+ companies automating reconciliation with 99.7% accuracy. 30-day free trial with full access—no credit card required, cancel anytime."
+                primaryAction="Start Free Trial — No Credit Card"
                 primaryLink="/signup"
-                secondaryAction="View Pricing"
+                secondaryAction="See Pricing & Plans"
                 secondaryLink="/pricing"
                 variant="gradient"
               />
