@@ -79,7 +79,7 @@ export async function applyReferralCode(
       referred_user_id: newUserId,
       status: "completed",
       completed_at: new Date().toISOString(),
-    } as any)
+    } as any as never)
     .eq("id", (referral as any).id);
 
   if (updateError) {
@@ -122,7 +122,7 @@ export async function awardReferralReward(
       reward_amount: rewardAmount,
       reward_currency: rewardCurrency,
       updated_at: new Date().toISOString(),
-    } as any)
+    } as any as never)
     .eq("id", (referral as any).id);
 
   // TODO: Send reward to referrer (credit account, send gift card, etc.)

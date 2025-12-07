@@ -82,7 +82,7 @@ async function escalateTicket(
     updates.assigned_to = targetUserId;
   }
 
-  await supabase.from("support_tickets").update(updates as any).eq("id", ticketId);
+  await supabase.from("support_tickets").update(updates as any as never).eq("id", ticketId);
 
   // Log escalation
   await supabase.from("escalation_history").insert({

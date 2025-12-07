@@ -21,7 +21,7 @@ export async function transitionLifecycleStage(
   userId: string,
   newStage: LifecycleStage,
   trigger: string,
-  metadata?: Record<string, unknown>
+  _metadata?: Record<string, unknown>
 ): Promise<void> {
   const supabase = createClient();
 
@@ -193,7 +193,7 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
       churn_risk_score: Math.min(riskScore, 1.0),
       churn_risk_reasons: reasons,
       updated_at: new Date().toISOString(),
-    } as any)
+    } as any as never)
     .eq("user_id", userId);
 
   return Math.min(riskScore, 1.0);
@@ -240,7 +240,7 @@ export async function calculateExpansionOpportunity(userId: string): Promise<num
     .update({
       expansion_opportunity_score: Math.min(opportunityScore, 1.0),
       updated_at: new Date().toISOString(),
-    } as any)
+    } as any as never)
     .eq("user_id", userId);
 
   return Math.min(opportunityScore, 1.0);

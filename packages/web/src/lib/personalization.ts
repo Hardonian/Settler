@@ -74,7 +74,7 @@ export async function getPersonalizedCTA(
 
     if (lifecycle) {
       // High churn risk → retention CTA
-      if (lifecycle.churn_risk_score > 0.7) {
+      if ((lifecycle as any).churn_risk_score > 0.7) {
         return {
           text: "Need Help? Contact Support",
           href: "/support",
@@ -84,7 +84,7 @@ export async function getPersonalizedCTA(
       }
 
       // Expansion opportunity → upgrade CTA
-      if (lifecycle.expansion_opportunity_score > 0.6) {
+      if ((lifecycle as any).expansion_opportunity_score > 0.6) {
         return {
           text: "Unlock Enterprise Features",
           href: "/enterprise",
@@ -94,7 +94,7 @@ export async function getPersonalizedCTA(
       }
 
       // Not activated → activation CTA
-      if (!lifecycle.activated_at) {
+      if (!(lifecycle as any).activated_at) {
         return {
           text: "Complete Your First Reconciliation",
           href: "/playground",

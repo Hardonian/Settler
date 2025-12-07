@@ -25,34 +25,34 @@ export interface CompetitorUpdate {
   detectedAt: Date;
 }
 
-const _COMPETITORS: Competitor[] = [
-  {
-    name: "Supabase",
-    category: "Backend-as-a-Service",
-    pricing: {
-      free: true,
-      startingPrice: 25,
-      pricingModel: "usage-based",
-    },
-    features: ["Database", "Auth", "Storage", "Realtime"],
-    strengths: ["Developer experience", "Open source", "Strong community"],
-    weaknesses: ["No reconciliation features", "Requires custom development"],
-    lastUpdated: new Date(),
-  },
-  {
-    name: "Zapier",
-    category: "Automation Platform",
-    pricing: {
-      free: true,
-      startingPrice: 20,
-      pricingModel: "task-based",
-    },
-    features: ["Workflow automation", "1000+ integrations", "No-code"],
-    strengths: ["Ease of use", "Many integrations", "No-code"],
-    weaknesses: ["Not specialized for reconciliation", "Limited matching logic"],
-    lastUpdated: new Date(),
-  },
-];
+// const _COMPETITORS: Competitor[] = [
+//   {
+//     name: "Supabase",
+//     category: "Backend-as-a-Service",
+//     pricing: {
+//       free: true,
+//       startingPrice: 25,
+//       pricingModel: "usage-based",
+//     },
+//     features: ["Database", "Auth", "Storage", "Realtime"],
+//     strengths: ["Developer experience", "Open source", "Strong community"],
+//     weaknesses: ["No reconciliation features", "Requires custom development"],
+//     lastUpdated: new Date(),
+//   },
+//   {
+//     name: "Zapier",
+//     category: "Automation Platform",
+//     pricing: {
+//       free: true,
+//       startingPrice: 20,
+//       pricingModel: "task-based",
+//     },
+//     features: ["Workflow automation", "1000+ integrations", "No-code"],
+//     strengths: ["Ease of use", "Many integrations", "No-code"],
+//     weaknesses: ["Not specialized for reconciliation", "Limited matching logic"],
+//     lastUpdated: new Date(),
+//   },
+// ];
 
 /**
  * Monitor competitor changes

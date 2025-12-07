@@ -23,7 +23,7 @@ export function UsageCalculator() {
   const calculate = () => {
     const transactions = parseInt(inputs.transactionsPerMonth) || 0;
     const integrations = parseInt(inputs.integrations) || 0;
-    const _jobs = parseInt(inputs.jobsPerDay) || 0;
+    // const _jobs = parseInt(inputs.jobsPerDay) || 0;
     const retention = parseInt(inputs.dataRetention) || 12;
 
     // Base enterprise plan
