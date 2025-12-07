@@ -23,11 +23,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
   title: {
-    default: "Settler - Reconciliation as a Service API",
+    default: "Settler - Stop Wasting 10+ Hours Per Week on Manual Reconciliation",
     template: "%s | Settler",
   },
   description:
-    "Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. Multiple Platforms. Fast processing with flexible scheduling.",
+    "Stop wasting 10+ hours per week on manual reconciliation. Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. Multiple Platforms. 99.7% accuracy. Start free—no credit card required.",
   keywords: [
     "reconciliation API",
     "financial reconciliation",
@@ -38,6 +38,8 @@ export const metadata: Metadata = {
     "Shopify reconciliation",
     "API integration",
     "financial automation",
+    "payment reconciliation",
+    "transaction matching",
   ],
   authors: [{ name: "Settler" }],
   creator: "Settler",
@@ -64,9 +66,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://settler.dev",
     siteName: "Settler",
-    title: "Settler - Reconciliation as a Service API",
+    title: "Settler - Stop Wasting 10+ Hours Per Week on Manual Reconciliation",
     description:
-      "Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. Multiple Platforms. Fast processing.",
+      "Stop wasting 10+ hours per week on manual reconciliation. Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. Multiple Platforms. 99.7% accuracy.",
     images: [
       {
         url: "/og-image.png",
@@ -78,9 +80,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Settler - Reconciliation as a Service API",
+    title: "Settler - Stop Wasting 10+ Hours Per Week on Manual Reconciliation",
     description:
-      "Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems.",
+      "Stop wasting 10+ hours per week on manual reconciliation. Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems.",
     images: ["/og-image.png"],
     creator: "@settler_io",
   },

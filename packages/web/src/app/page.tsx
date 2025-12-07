@@ -28,6 +28,10 @@ const SocialProof = dynamic(
   () => import("@/components/SocialProof").then((mod) => ({ default: mod.SocialProof })),
   { ssr: false }
 );
+const CustomerTestimonials = dynamic(
+  () => import("@/components/CustomerTestimonials").then((mod) => ({ default: mod.CustomerTestimonials })),
+  { ssr: true }
+);
 const NewsletterSignup = dynamic(
   () => import("@/components/NewsletterSignup").then((mod) => ({ default: mod.NewsletterSignup })),
   { ssr: false }
@@ -182,7 +186,7 @@ const report = await client.jobs.run(job.id);
               <TextRevealHeading
                 as="h1"
                 id="hero-heading"
-                text="The Only Reconciliation API with Edge AI and Real-Time Webhooks"
+                text="Stop Wasting 10+ Hours Per Week on Manual Reconciliation"
                 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent"
                 delay={0.1}
                 staggerDelay={0.02}
@@ -190,7 +194,7 @@ const report = await client.jobs.run(job.id);
               />
 
               <TextReveal
-                text="Process transactions locally with &lt;10ms latency, or use cloud reconciliation for unlimited scale. One API, 10+ platform adapters, 99.7% accuracy. Start free—no credit card required."
+                text="What takes your team 10+ hours of manual matching takes Settler 5 minutes. Automatically match transactions across Shopify, Stripe, PayPal, and 10+ platforms with 99.7% accuracy. Start your 30-day free trial—no credit card required."
                 className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-3xl mx-auto"
                 delay={0.4}
                 staggerDelay={0.01}
@@ -381,7 +385,10 @@ const report = await client.jobs.run(job.id);
           </div>
         </section>
 
-        {/* Social Proof / Testimonials */}
+        {/* Customer Testimonials */}
+        <CustomerTestimonials />
+
+        {/* Social Proof */}
         <SocialProof />
 
         {/* Why Settler Section */}

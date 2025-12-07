@@ -12,6 +12,7 @@ import { AnimatedHero } from "@/components/AnimatedHero";
 import { AnimatedPricingCard } from "@/components/AnimatedPricingCard";
 import { AnimatedFAQ } from "@/components/AnimatedFAQ";
 import { EdgeAIMarketingSection } from "@/components/EdgeAIMarketingSection";
+import { FAQSchema } from "@/components/StructuredData";
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
@@ -106,10 +107,31 @@ export default function Pricing() {
       answer:
         "Yes! Start your 30-day free trial with full access to all features. No credit card required. Cancel anytime during the trial.",
     },
+    {
+      question: "What happens if I exceed my transaction limit?",
+      answer:
+        "If you exceed your plan's transaction limit, we'll notify you and offer options to upgrade or purchase additional capacity. Overage pricing is $0.001 per additional transaction, or you can upgrade to a higher plan.",
+    },
+    {
+      question: "How does the 30-day free trial work?",
+      answer:
+        "Your 30-day free trial gives you full access to all features, unlimited transactions, and all platform adapters. No credit card required. After 30 days, your account automatically converts to the Free plan (1,000 transactions/month) unless you upgrade to a paid plan.",
+    },
+    {
+      question: "Can I cancel anytime?",
+      answer:
+        "Yes, you can cancel your subscription at any time. There are no cancellation fees or long-term contracts. You'll continue to have access until the end of your billing period.",
+    },
+    {
+      question: "Do you offer discounts for annual plans?",
+      answer:
+        "Yes! Annual plans save you 17% compared to monthly billing. You can switch between monthly and annual billing at any time.",
+    },
   ];
 
   return (
     <AnimatedPageWrapper aria-label="Pricing page">
+      <FAQSchema faqs={faqs} />
       <Navigation />
 
       {/* Hero Section */}
