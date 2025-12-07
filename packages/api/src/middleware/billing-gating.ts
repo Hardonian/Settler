@@ -8,7 +8,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "./auth";
 import { supabase } from "../infrastructure/supabase/client";
-import { logError, logWarn } from "../utils/logger";
+import { logError } from "../utils/logger";
 
 interface PlanLimits {
   reconciliation_jobs: number;

@@ -128,6 +128,13 @@ router.put(
       const { tierId } = req.params;
       const updates = req.body;
 
+      if (!tierId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "tierId is required",
+        });
+      }
+
       const success = await updateBillingTier(tierId, updates, supabase);
 
       if (!success) {

@@ -147,6 +147,13 @@ router.post("/subscribe", authMiddleware, async (req: AuthRequest, res: Response
     const userId = req.userId;
     const billingAccountId = req.body.billing_account_id;
 
+    if (!userId) {
+      return res.status(401).json({
+        error: "Unauthorized",
+        message: "Authentication required",
+      });
+    }
+
     if (!billingAccountId) {
       return res.status(400).json({
         error: "Bad Request",
@@ -197,7 +204,7 @@ router.post("/subscribe", authMiddleware, async (req: AuthRequest, res: Response
 
     // Get or create Stripe price for base plan
     // In production, you'd fetch this from Stripe or database
-    const basePriceId = process.env.STRIPE_PRICE_BASE_PLAN || "price_base_plan";
+    const basePriceId: string = process.env.STRIPE_PRICE_BASE_PLAN || "price_base_plan";
 
     // Create Stripe subscription
     const stripeSubscription = await stripe.subscriptions.create({
@@ -638,7 +645,7 @@ async function handleSubscriptionUpdate(supabase: any, subscription: Stripe.Subs
 }
 
 // Helper function to handle invoice events
-async function handleInvoiceEvent(supabase: any, invoice: Stripe.Invoice) {
+async function handleInvoiceEvent(_supabase: any, invoice: Stripe.Invoice) {
   // In a real implementation, you'd:
   // 1. Update invoice status in database
   // 2. Send email notifications
@@ -651,7 +658,7 @@ async function handleInvoiceEvent(supabase: any, invoice: Stripe.Invoice) {
 }
 
 // Helper function to handle upcoming invoices
-async function handleInvoiceUpcoming(supabase: any, invoice: Stripe.Invoice) {
+async function handleInvoiceUpcoming(_supabase: any, invoice: Stripe.Invoice) {
   // In a real implementation, you'd:
   // 1. Send email notification about upcoming invoice
   // 2. Check for usage overages

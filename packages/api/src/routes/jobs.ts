@@ -124,14 +124,14 @@ router.post(
 
       // Log usage for billing
       try {
-        const billingAccount = await getBillingAccount(userId, req.user?.tenantId);
+        const billingAccount = await getBillingAccount(userId, req.tenantId);
         if (billingAccount) {
           await logUsageEvent({
             billingAccountId: billingAccount.id,
             eventType: "reconciliation_job",
             quantity: 1,
             userId: userId,
-            tenantId: req.user?.tenantId,
+            tenantId: req.tenantId,
             integrationId: req.body.source.adapter,
             metadata: {
               job_id: job.id,
@@ -364,14 +364,14 @@ router.post(
 
       // Log usage for billing (job execution)
       try {
-        const billingAccount = await getBillingAccount(userId, req.user?.tenantId);
+        const billingAccount = await getBillingAccount(userId, req.tenantId);
         if (billingAccount) {
           await logUsageEvent({
             billingAccountId: billingAccount.id,
             eventType: "reconciliation_job",
             quantity: 1,
             userId: userId,
-            tenantId: req.user?.tenantId,
+            tenantId: req.tenantId,
             metadata: {
               job_id: id,
               execution_id: executionId,

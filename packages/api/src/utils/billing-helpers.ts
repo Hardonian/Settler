@@ -10,7 +10,7 @@ import { logError } from "./logger";
 /**
  * Get billing account for user
  */
-export async function getBillingAccount(userId: string, tenantId?: string) {
+export async function getBillingAccount(userId: string, _tenantId?: string) {
   try {
     const query = supabase
       .from("billing_accounts")
