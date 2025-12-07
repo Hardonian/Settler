@@ -156,25 +156,25 @@ export default function Enterprise() {
               </h2>
               <div className="space-y-6" role="list" aria-label="Enterprise benefits">
                 {[
-                  {
-                    title: "99.99% Uptime SLA",
-                    description:
-                      "Guaranteed availability with financial penalties if we don't meet our SLA.",
-                  },
-                  {
-                    title: "Custom Contracts",
-                    description:
-                      "Flexible terms, custom pricing, and dedicated account management.",
-                  },
-                  {
-                    title: "Priority Support",
-                    description:
-                      "24/7 support with under 4 hour response time for critical issues.",
-                  },
-                  {
-                    title: "Compliance Ready",
-                    description: "GDPR compliant with audit trails. SOC 2 Type II certification in progress (Q2 2026).",
-                  },
+                {
+                  title: "99.99% Uptime SLA",
+                  description:
+                    "Guaranteed availability with financial penalties if we don't meet our SLA. Enterprise-grade infrastructure with redundancy and failover.",
+                },
+                {
+                  title: "Custom Contracts & Pricing",
+                  description:
+                    "Flexible terms, custom pricing based on your volume, and dedicated account management. Annual contracts with volume discounts available.",
+                },
+                {
+                  title: "24/7 Priority Support",
+                  description:
+                    "Dedicated support team with under 4 hour response time for critical issues. Direct line to engineering for urgent matters.",
+                },
+                {
+                  title: "Enterprise Compliance",
+                  description: "GDPR compliant with full audit trails. SOC 2 Type II certification in progress (Q2 2026). PCI-DSS Level 1 planned for Q3 2026.",
+                },
                 ].map((benefit, index) => (
                   <div key={index} className="flex items-start" role="listitem">
                     <div

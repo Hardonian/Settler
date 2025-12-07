@@ -262,10 +262,13 @@ export default function SignUpPage() {
               Start Your 30-Day Free Trial 🎉
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400 mb-2">
-              Create your account and get full access for 30 days.
+              Get full access to all features for 30 days. Process unlimited transactions, connect all platforms, and access all cookbooks.
             </p>
-            <p className="text-sm font-semibold text-green-600 dark:text-green-400">
-              ✓ No credit card required
+            <p className="text-sm font-semibold text-green-600 dark:text-green-400 mb-2">
+              ✓ No credit card required • ✓ Cancel anytime • ✓ Full access to all features
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Join 500+ companies using Settler to automate reconciliation
             </p>
           </div>
 
@@ -292,31 +295,36 @@ export default function SignUpPage() {
           <ul className="text-sm text-blue-800 dark:text-blue-400 space-y-2">
             <li className="flex items-start gap-2">
               <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>Full access to all features (no limits)</span>
+              <span><strong>Full access to all features</strong> — no limits, no restrictions</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>Unlimited transaction matching</span>
+              <span><strong>Unlimited transaction matching</strong> — process as many as you need</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>All cookbooks and workflows (10+ ready-to-use templates)</span>
+              <span><strong>All 10+ platform adapters</strong> — connect Shopify, Stripe, PayPal, and more</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>Comprehensive onboarding guide and step-by-step tutorials</span>
+              <span><strong>Complete cookbook library</strong> — 10+ ready-to-use workflows and templates</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>Priority email support</span>
+              <span><strong>Priority email support</strong> — get help when you need it</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
               <span className="font-semibold">
-                No credit card required - start free, upgrade only if you love it
+                <strong>No credit card required</strong> — start free, upgrade only if you love it
               </span>
             </li>
           </ul>
+          <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800">
+            <p className="text-xs text-blue-700 dark:text-blue-300">
+              <strong>What happens after 30 days?</strong> Your trial converts to the Free plan (1,000 transactions/month) unless you upgrade. No charges, no surprises.
+            </p>
+          </div>
         </div>
       </div>
 

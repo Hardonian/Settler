@@ -137,8 +137,8 @@ export function Navigation() {
             ))}
             <DarkModeToggle />
             <Button asChild variant="default" size="default">
-              <Link href="/playground" aria-label="Get started with Settler">
-                Get Started
+              <Link href="/signup" aria-label="Start free trial of Settler">
+                Start Free Trial
               </Link>
             </Button>
           </nav>
@@ -204,8 +204,8 @@ export function Navigation() {
                 </Link>
               ))}
               <Button asChild variant="default" size="default" className="w-full" role="menuitem">
-                <Link href="/playground" aria-label="Get started with Settler">
-                  Get Started
+                <Link href="/signup" aria-label="Start free trial of Settler">
+                  Start Free Trial
                 </Link>
               </Button>
             </nav>

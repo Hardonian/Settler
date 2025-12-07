@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
+interface Badge {
+  name: string;
+  icon: string;
+  status: "active" | "in-progress";
+  note?: string;
+}
+
 export function TrustBadges() {
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -28,11 +35,11 @@ export function TrustBadges() {
     };
   }, []);
 
-  const badges = [
-    { name: "SOC 2 Type II", icon: "🔒" },
-    { name: "GDPR Compliant", icon: "🛡️" },
-    { name: "PCI-DSS Ready", icon: "💳" },
-    { name: "99.99% Uptime", icon: "⚡" },
+  const badges: Badge[] = [
+    { name: "SOC 2 Type II", icon: "🔒", status: "in-progress", note: "Q2 2026" },
+    { name: "GDPR Compliant", icon: "🛡️", status: "active" },
+    { name: "AES-256 Encryption", icon: "🔐", status: "active" },
+    { name: "99.9% Uptime SLA", icon: "⚡", status: "active" },
   ];
 
   const prefersReducedMotion =
@@ -65,9 +72,16 @@ export function TrustBadges() {
           <span className="text-2xl" aria-hidden="true">
             {badge.icon}
           </span>
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            {badge.name}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              {badge.name}
+            </span>
+            {badge.status === "in-progress" && badge.note && (
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                {badge.note}
+              </span>
+            )}
+          </div>
         </div>
       ))}
     </div>

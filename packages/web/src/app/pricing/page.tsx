@@ -55,7 +55,7 @@ export default function Pricing() {
         { text: "Scheduled reconciliation jobs" },
         { text: "Edge AI available (add-on)" },
       ],
-      cta: "Start 30-Day Free Trial",
+      cta: "Start Free Trial—No Credit Card",
       ctaLink: "/signup",
       popular: true,
       badge: "Most Popular",
@@ -115,8 +115,8 @@ export default function Pricing() {
       {/* Hero Section */}
       <AnimatedHero
         badge="Simple, Transparent Pricing"
-        title="Start Your 30-Day Free Trial"
-        description="Try everything free for 30 days. No credit card required. Cancel anytime."
+        title="Start Your 30-Day Free Trial—No Credit Card Required"
+        description="Try everything free for 30 days. Full access to all features, unlimited transactions, and all platform adapters. Cancel anytime."
       />
 
       {/* Billing Toggle */}
