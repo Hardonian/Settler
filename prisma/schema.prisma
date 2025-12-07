@@ -60,7 +60,7 @@ model Subscription {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  billingAccount        BillingAccount @relation(fields: [billingAccountId], references: [id])
+  billingAccount        BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
 
   @@index([billingAccountId])
   @@index([stripeSubscriptionId])
@@ -106,8 +106,8 @@ model AddOnPurchase {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id])
-  addOn             AddOn @relation(fields: [addOnId], references: [id])
+  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
+  addOn             AddOn @relation(fields: [addOnId], references: [id], onDelete: Restrict)
 
   @@index([billingAccountId])
   @@index([addOnId])
@@ -130,7 +130,7 @@ model UsageEvent {
   timestamp         DateTime  @default(now())
   aggregated        Boolean   @default(false) // true once aggregated into daily table
 
-  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id])
+  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
 
   @@index([billingAccountId])
   @@index([projectId])
@@ -159,7 +159,7 @@ model UsageAggregateDaily {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id])
+  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
 
   @@unique([billingAccountId, projectId, date, eventType, integrationId, addOnId])
   @@index([billingAccountId])
