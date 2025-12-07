@@ -22,13 +22,13 @@ export default function Docs() {
       content: (
         <div className="space-y-6">
           <div>
-            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Introduction</h3>
-            <p className="text-slate-600 dark:text-slate-300 mb-4">
+            <h3 className="text-2xl font-bold mb-5 text-slate-900 dark:text-white">Introduction</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">
               Settler automatically matches transactions between any two platforms—Shopify to
               Stripe, QuickBooks to PayPal, and more. No manual work required. Get accurate results
               in minutes, not hours.
             </p>
-            <p className="text-slate-600 dark:text-slate-300 mb-4">
+            <p className="text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">
               Our simple API lets you connect your existing tools and start matching transactions
               immediately. No complex setup or custom infrastructure needed.
             </p>
@@ -53,9 +53,9 @@ export default function Docs() {
             </div>
           </div>
           <div>
-            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Quick Start</h3>
-            <p className="text-slate-600 dark:text-slate-300 mb-4">Get started in 5 minutes:</p>
-            <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-6 overflow-x-auto mb-4">
+            <h3 className="text-2xl font-bold mb-5 text-slate-900 dark:text-white">Quick Start</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">Get started in 5 minutes:</p>
+            <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-6 overflow-x-auto mb-5">
               <pre className="text-green-400 text-sm">
                 <code>{`# Install the SDK
 npm install @settler/sdk
@@ -67,7 +67,7 @@ yarn add @settler/sdk
 pnpm add @settler/sdk`}</code>
               </pre>
             </div>
-            <p className="text-slate-600 dark:text-slate-300 text-sm">
+            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
               Need help? Check out our{" "}
               <Link href="/support" className="text-blue-600 dark:text-blue-400 hover:underline">
                 support page
@@ -88,10 +88,10 @@ pnpm add @settler/sdk`}</code>
       content: (
         <div className="space-y-6">
           <div>
-            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+            <h3 className="text-2xl font-bold mb-5 text-slate-900 dark:text-white">
               Node.js / TypeScript
             </h3>
-            <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-6 overflow-x-auto mb-4">
+            <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-6 overflow-x-auto mb-5">
               <pre className="text-green-400 text-sm">
                 <code>{`import { Settler } from '@settler/sdk';
 
@@ -102,8 +102,8 @@ const client = new Settler({
             </div>
           </div>
           <div>
-            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">React</h3>
-            <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-6 overflow-x-auto mb-4">
+            <h3 className="text-2xl font-bold mb-5 text-slate-900 dark:text-white">React</h3>
+            <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-6 overflow-x-auto mb-5">
               <pre className="text-green-400 text-sm">
                 <code>{`import { useSettler } from '@settler/react-settler';
 
@@ -126,8 +126,8 @@ function MyComponent() {
       content: (
         <div className="space-y-6">
           <div>
-            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Jobs API</h3>
-            <div className="space-y-4">
+            <h3 className="text-2xl font-bold mb-5 text-slate-900 dark:text-white">Jobs API</h3>
+            <div className="space-y-5">
               <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
                 <CardHeader>
                   <div className="flex items-center gap-2">
@@ -218,7 +218,7 @@ console.log(report.summary);
       content: (
         <div className="space-y-6">
           <div>
-            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+            <h3 className="text-2xl font-bold mb-5 text-slate-900 dark:text-white">
               E-commerce Reconciliation
             </h3>
             <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-6 overflow-x-auto">
@@ -274,12 +274,12 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
       />
 
       {/* Documentation Content */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8" aria-labelledby="docs-content-heading">
+      <section className="py-16 px-4 sm:px-6 lg:px-8" aria-labelledby="docs-content-heading">
         <div className="max-w-7xl mx-auto">
           <h2 id="docs-content-heading" className="sr-only">
             Documentation Content
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-10">
             {/* Sidebar */}
             <AnimatedSidebar
               items={sections.map((s) => ({ id: s.id, title: s.title }))}
@@ -294,7 +294,7 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
                 role="article"
                 aria-labelledby={`section-${activeSection}`}
               >
-                <CardContent className="p-8">{activeContent}</CardContent>
+                <CardContent className="p-8 md:p-10">{activeContent}</CardContent>
               </Card>
             </div>
           </div>

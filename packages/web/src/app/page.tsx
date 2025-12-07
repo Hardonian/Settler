@@ -216,14 +216,14 @@ const report = await client.jobs.run(job.id);
 
               <TextReveal
                 text="The API-first reconciliation platform trusted by 500+ companies. Connect Shopify, Stripe, PayPal, and 10+ platforms in 5 minutes. 99.7% accuracy. Start free—no credit card required."
-                className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed"
+                className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed px-4"
                 delay={0.4}
                 staggerDelay={0.01}
                 splitBy="words"
               />
 
               <div
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20 px-4"
                 role="group"
                 aria-label="Call to action buttons"
               >
@@ -251,7 +251,7 @@ const report = await client.jobs.run(job.id);
 
               {/* Hero Stats */}
               <div
-                className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto"
+                className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto px-4"
                 role="list"
                 aria-label="Key performance metrics"
               >
@@ -288,18 +288,18 @@ const report = await client.jobs.run(job.id);
             <ParallaxBlobs count={3} />
           </ParallaxBackground>
           <div className="max-w-7xl mx-auto relative z-10">
-            <div className="text-center mb-12">
+            <div className="text-center mb-16">
               <TextRevealHeading
                 as="h2"
                 id="code-example-heading"
                 text="Get Started in Minutes"
-                className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
+                className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
                 delay={0}
                 staggerDelay={0.02}
               />
               <TextReveal
                 text="Connect any platform in minutes. Process millions of transactions with 99.7% accuracy."
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed"
+                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4"
                 delay={0.2}
                 staggerDelay={0.01}
               />
@@ -321,18 +321,18 @@ const report = await client.jobs.run(job.id);
           aria-labelledby="features-heading"
         >
           <div className="max-w-7xl mx-auto w-full">
-            <div className="text-center mb-16">
+            <div className="text-center mb-20">
               <TextRevealHeading
                 as="h2"
                 id="features-heading"
                 text="Everything You Need"
-                className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
+                className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
                 delay={0}
                 staggerDelay={0.02}
               />
               <TextReveal
                 text="Built for developers, designed for scale"
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed"
+                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4"
                 delay={0.2}
                 staggerDelay={0.01}
               />
@@ -359,10 +359,10 @@ const report = await client.jobs.run(job.id);
                         >
                           <Icon className="w-6 h-6 text-white" />
                         </div>
-                        <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-white leading-tight">
+                        <h3 className="text-xl md:text-2xl font-bold mb-4 text-slate-900 dark:text-white leading-tight">
                           {feature.title}
                         </h3>
-                        <p className="text-slate-700 dark:text-slate-300 flex-grow leading-relaxed">
+                        <p className="text-slate-700 dark:text-slate-300 flex-grow leading-relaxed text-base">
                           {feature.description}
                         </p>
                       </SpotlightCard>
@@ -386,18 +386,18 @@ const report = await client.jobs.run(job.id);
           aria-labelledby="why-settler-heading"
         >
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-20">
               <TextRevealHeading
                 as="h2"
                 id="why-settler-heading"
                 text="Why Choose Settler Over Building In-House?"
-                className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
+                className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
                 delay={0}
                 staggerDelay={0.02}
               />
               <TextReveal
                 text="Skip 3-6 months of development. Get started in 5 minutes."
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed"
+                className="text-lg text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed px-4"
                 delay={0.2}
                 staggerDelay={0.01}
               />
@@ -443,7 +443,7 @@ const report = await client.jobs.run(job.id);
               ))}
             </div>
             <div className="text-center">
-              <p className="text-lg text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">
+              <p className="text-lg text-slate-700 dark:text-slate-300 mb-10 leading-relaxed px-4">
                 <strong className="text-slate-900 dark:text-white">ROI:</strong> Most customers see
                 payback in the first month
               </p>
