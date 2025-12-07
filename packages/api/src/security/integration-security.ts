@@ -212,13 +212,20 @@ export async function recordIntegrationQuotaUsage(
       ? 'webhook_events'
       : 'data_synced_mb';
 
-  const { error } = await supabase.rpc('upsert_integration_quota_usage', {
-    p_tenant_id: tenantId,
-    p_integration_id: integrationId,
-    p_date: today,
-    p_field: updateField,
-    p_amount: amount,
-  });
+  // Use upsert to create or update quota usage
+  const { error } = await supabase
+    .from('integration_quota_usage')
+    .upsert(
+      {
+        tenant_id: tenantId,
+        integration_id: integrationId,
+        date: today,
+        [updateField]: amount,
+      },
+      {
+        onConflict: 'tenant_id,integration_id,date',
+      }
+    );
 
   if (error) {
     console.error('Error recording quota usage:', error);
@@ -261,7 +268,17 @@ export async function updateIntegrationHealth(
       ? 'degraded'
       : 'healthy';
 
-  const updateData: any = {
+  const updateData: {
+    health_score: number;
+    status: string;
+    consecutive_failures: number;
+    updated_at: string;
+    last_successful_sync?: string;
+    last_failed_sync?: string;
+    error_message?: string | null;
+    error_count?: number;
+    auto_disabled?: boolean;
+  } = {
     health_score: healthScore,
     status,
     consecutive_failures: consecutiveFailures,
