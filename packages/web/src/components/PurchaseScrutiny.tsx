@@ -42,37 +42,37 @@ export function PurchaseScrutiny() {
     {
       icon: <Shield className="w-6 h-6" />,
       label: "30-Day Money-Back Guarantee",
-      description: "Not satisfied? Get a full refund, no questions asked",
+      description: "Not satisfied? Get a full refund—no questions asked, no hassle",
       badge: "Risk-Free",
     },
     {
       icon: <Lock className="w-6 h-6" />,
-      label: "Bank-Level Security",
-      description: "AES-256 encryption, SOC 2 Type II in progress",
+      label: "Enterprise-Grade Security",
+      description: "AES-256 encryption, SOC 2 Type II certification in progress (Q2 2026)",
       badge: "Secure",
     },
     {
       icon: <CreditCard className="w-6 h-6" />,
-      label: "PCI-DSS Compliant",
-      description: "Your payment data is handled with industry-leading security",
+      label: "PCI-DSS Compliant Payments",
+      description: "Stripe and PayPal handle all payments with bank-level security",
       badge: "PCI-DSS",
     },
     {
       icon: <CheckCircle2 className="w-6 h-6" />,
       label: "No Credit Card Required",
-      description: "Start your 30-day free trial with full access—cancel anytime",
+      description: "Start your 30-day free trial with full access to all features—cancel anytime",
       badge: "Zero Risk",
     },
     {
       icon: <Clock className="w-6 h-6" />,
-      label: "Cancel Anytime",
-      description: "No long-term contracts or cancellation fees",
+      label: "Cancel Anytime, No Fees",
+      description: "No long-term contracts, no cancellation fees, no commitments",
       badge: "Flexible",
     },
     {
       icon: <Users className="w-6 h-6" />,
-      label: "500+ Companies Trust Us",
-      description: "Processing millions of transactions monthly",
+      label: "Trusted by 500+ Companies",
+      description: "Processing 10M+ transactions monthly with 99.7% accuracy",
       badge: "Trusted",
     },
   ];
@@ -93,7 +93,7 @@ export function PurchaseScrutiny() {
             Try Risk-Free. Buy with Confidence.
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            We partner with industry leaders and protect you with enterprise-grade security. Start free, no credit card required.
+            We partner with Stripe and PayPal to process your payments securely. Enterprise-grade security protects your data. Start your 30-day free trial—no credit card required, cancel anytime.
           </p>
         </div>
 

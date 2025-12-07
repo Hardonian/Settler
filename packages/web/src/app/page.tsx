@@ -221,7 +221,7 @@ const report = await client.jobs.run(job.id);
               <TextRevealHeading
                 as="h1"
                 id="hero-heading"
-                text="Stop Wasting 10+ Hours Per Week on Manual Reconciliation"
+                text="Reconcile Millions of Transactions Automatically—In Minutes, Not Hours"
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent leading-tight"
                 delay={0.1}
                 staggerDelay={0.02}
@@ -229,7 +229,7 @@ const report = await client.jobs.run(job.id);
               />
 
               <TextReveal
-                text="Automate transaction matching across Shopify, Stripe, PayPal, and 10+ platforms with 99.7% accuracy. Start your free trial—no credit card required."
+                text="The API-first reconciliation platform trusted by 500+ companies. Connect Shopify, Stripe, PayPal, and 10+ platforms in 5 minutes. 99.7% accuracy. Start free—no credit card required."
                 className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed"
                 delay={0.4}
                 staggerDelay={0.01}
@@ -248,7 +248,7 @@ const report = await client.jobs.run(job.id);
                   onClick={() => trackCTA("Start Free Trial", { location: "hero" })}
                 >
                   <Link href="/signup" aria-label="Start free trial of Settler">
-                    Start Free Trial
+                    Start Free Trial — No Credit Card
                   </Link>
                 </Button>
                 <Button
@@ -258,7 +258,7 @@ const report = await client.jobs.run(job.id);
                   className="px-8 py-6 text-lg font-medium border-2 border-slate-300 dark:border-white/20 glass hover:border-indigo-500 dark:hover:border-electric-purple/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-electric-purple focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
                 >
                   <Link href="/docs" aria-label="View Settler documentation">
-                    View Docs
+                    See How It Works
                   </Link>
                 </Button>
               </div>
@@ -508,11 +508,11 @@ const report = await client.jobs.run(job.id);
           <div className="max-w-4xl mx-auto relative z-10">
             <SpotlightCard className="p-10 md:p-12 text-center">
               <ConversionCTA
-                title="Ready to Automate Reconciliation?"
-                description="Join 500+ companies processing millions of transactions with 99.7% accuracy. Start your free trial—no credit card required."
-                primaryAction="Start Free Trial"
+                title="Ready to Save 10+ Hours Per Week?"
+                description="Join 500+ companies automating reconciliation with 99.7% accuracy. 30-day free trial with full access—no credit card required, cancel anytime."
+                primaryAction="Start Free Trial — No Credit Card"
                 primaryLink="/signup"
-                secondaryAction="View Pricing"
+                secondaryAction="See Pricing & Plans"
                 secondaryLink="/pricing"
                 variant="gradient"
               />

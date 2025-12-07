@@ -95,10 +95,10 @@ export function CommunityHub() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
-            Join Our Developer Community
+            Join 500+ Developers Building with Settler
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Open source SDK, adapters, and documentation. Built by developers, for developers.
+            Open source SDK and adapters. Active Discord community. Contribute code, build adapters, or get help from fellow developers.
           </p>
         </div>
 

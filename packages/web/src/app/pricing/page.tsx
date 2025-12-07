@@ -139,8 +139,8 @@ export default function Pricing() {
       {/* Hero Section */}
       <AnimatedHero
         badge="Simple, Transparent Pricing"
-        title="Start Your 30-Day Free Trial"
-        description="Full access to all features, unlimited transactions, and all platform adapters. No credit card required."
+        title="Start Your 30-Day Free Trial Today"
+        description="Full access to all features, unlimited transactions, and all platform adapters. No credit card required. Cancel anytime during your trial."
       />
 
       {/* Billing Toggle */}
@@ -228,11 +228,11 @@ export default function Pricing() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <ConversionCTA
-            title="Still have questions?"
-            description="Our team is here to help you choose the right plan for your needs."
-            primaryAction="Contact Support"
-            primaryLink="/support"
-            secondaryAction="Talk to Sales"
+            title="Ready to Get Started?"
+            description="Start your 30-day free trial with full access to all features. No credit card required. Or talk to our team about enterprise plans."
+            primaryAction="Start Free Trial"
+            primaryLink="/signup"
+            secondaryAction="Contact Sales"
             secondaryLink="/enterprise"
             variant="gradient"
           />
