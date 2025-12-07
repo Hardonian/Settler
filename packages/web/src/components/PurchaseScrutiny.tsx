@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Shield, Lock, CreditCard, CheckCircle2, Clock, Users, Building2, ArrowRightLeft } from "lucide-react";
+import { Shield, Lock, CreditCard, CheckCircle2, Clock, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TrustIndicator {

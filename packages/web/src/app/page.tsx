@@ -16,10 +16,6 @@ import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 
 // Dynamic imports for heavy components
-const TrustBadges = dynamic(
-  () => import("@/components/TrustBadges").then((mod) => ({ default: mod.TrustBadges })),
-  { ssr: true }
-);
 const PurchaseScrutiny = dynamic(
   () =>
     import("@/components/PurchaseScrutiny").then((mod) => ({
@@ -53,10 +49,6 @@ const DeveloperResources = dynamic(
     import("@/components/DeveloperResources").then((mod) => ({
       default: mod.DeveloperResources,
     })),
-  { ssr: true }
-);
-const CustomerLogos = dynamic(
-  () => import("@/components/CustomerLogos").then((mod) => ({ default: mod.CustomerLogos })),
   { ssr: true }
 );
 const SocialProof = dynamic(
@@ -152,12 +144,6 @@ export default function Home() {
     { value: "5 min", label: "Setup Time", description: "Get started in minutes" },
   ];
 
-  const secondaryStats = [
-    { value: "10M+", label: "Transactions Reconciled", description: "Total processed" },
-    { value: "24/7", label: "Uptime", description: "Service availability" },
-    { value: "99.9%", label: "Reliability", description: "SLA guarantee" },
-    { value: "<1s", label: "Processing Speed", description: "Per transaction" },
-  ];
 
   const codeExample = `npm install @settler/sdk
 

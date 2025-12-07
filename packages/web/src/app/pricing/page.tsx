@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { TrustBadges } from "@/components/TrustBadges";
 import { FeatureComparison } from "@/components/FeatureComparison";
 import { ConversionCTA } from "@/components/ConversionCTA";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";

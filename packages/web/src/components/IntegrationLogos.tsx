@@ -134,10 +134,14 @@ export function IntegrationLogos() {
           </p>
         </div>
 
-        {Object.entries(groupedIntegrations).map(([category, items], categoryIndex) => (
+        {Object.entries(groupedIntegrations).map(([category, items], categoryIndex) => {
+          const categoryInfo = categories[category as keyof typeof categories];
+          if (!categoryInfo) return null;
+          
+          return (
           <div key={category} className="mb-12 last:mb-0">
             <h3 className="text-lg font-semibold mb-6 text-slate-900 dark:text-white text-center">
-              {categories[category as keyof typeof categories]}
+              {categoryInfo.label}
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {items.map((integration, index) => (
@@ -187,7 +191,8 @@ export function IntegrationLogos() {
               ))}
             </div>
           </div>
-        ))}
+          );
+        })}
 
         {/* CTA */}
         <div className="text-center mt-12">
