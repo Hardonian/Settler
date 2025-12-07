@@ -131,7 +131,7 @@ router.post(
             eventType: "reconciliation_job",
             quantity: 1,
             userId: userId,
-            tenantId: req.tenantId,
+            ...(req.tenantId && { tenantId: req.tenantId }),
             integrationId: req.body.source.adapter,
             metadata: {
               job_id: job.id,
@@ -371,7 +371,7 @@ router.post(
             eventType: "reconciliation_job",
             quantity: 1,
             userId: userId,
-            tenantId: req.tenantId,
+            ...(req.tenantId && { tenantId: req.tenantId }),
             metadata: {
               job_id: id,
               execution_id: executionId,
