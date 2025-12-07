@@ -138,13 +138,13 @@ export function ErrorState({
         aria-hidden="true"
       />
       <HeadingTag
-        className={cn("font-semibold text-foreground mb-2 text-center", currentSize.title)}
+        className={cn("font-semibold text-foreground mb-3 text-center leading-tight", currentSize.title)}
       >
         {title}
       </HeadingTag>
       <p
         className={cn(
-          "text-muted-foreground text-center mb-6 max-w-md mx-auto",
+          "text-muted-foreground text-center mb-6 max-w-md mx-auto leading-relaxed",
           currentSize.description
         )}
       >
@@ -157,6 +157,7 @@ export function ErrorState({
             variant="default"
             size={size === "sm" ? "sm" : "default"}
             aria-label={retryText}
+            className="font-medium"
           >
             <RefreshCw className="w-4 h-4 mr-2" aria-hidden="true" />
             {retryText}
@@ -168,6 +169,7 @@ export function ErrorState({
             variant="outline"
             size={size === "sm" ? "sm" : "default"}
             aria-label="Contact Support"
+            className="font-medium"
           >
             <HelpCircle className="w-4 h-4 mr-2" aria-hidden="true" />
             Contact Support

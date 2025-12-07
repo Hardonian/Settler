@@ -7,7 +7,7 @@ export function Footer() {
       role="contentinfo"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-8">
           {/* Brand */}
           <div>
             <Link
@@ -25,9 +25,8 @@ export function Footer() {
                 Settler
               </span>
             </Link>
-            <p className="text-sm text-muted-foreground">
-              Reconciliation-as-a-Service API. Automate financial data reconciliation across all
-              platforms.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Reconciliation-as-a-Service API. Automate financial data reconciliation across all platforms.
             </p>
           </div>
 
@@ -163,11 +162,11 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
-          <div className="text-sm text-muted-foreground mb-4 md:mb-0">
+        <div className="pt-6 md:pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-sm text-muted-foreground">
             © 2026 Settler. All rights reserved.
           </div>
-          <nav className="flex space-x-6 text-sm" aria-label="Social media links">
+          <nav className="flex flex-wrap gap-4 md:gap-6 text-sm" aria-label="Social media links">
             <a
               href="https://twitter.com/settler_io"
               target="_blank"

@@ -199,21 +199,21 @@ const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between border-b p-6">
-            <div>
+          <div className="flex items-center justify-between border-b p-5 md:p-6">
+            <div className="flex-1 min-w-0 pr-4">
               {title && (
-                <h2 id="modal-title" className="text-2xl font-semibold">
+                <h2 id="modal-title" className="text-xl md:text-2xl font-semibold">
                   {title}
                 </h2>
               )}
               {description && (
-                <p id="modal-description" className="mt-1 text-sm text-muted-foreground">
+                <p id="modal-description" className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
                   {description}
                 </p>
               )}
             </div>
             {showCloseButton && (
-              <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close modal">
+              <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close modal" className="flex-shrink-0">
                 <X className="h-4 w-4" />
               </Button>
             )}
@@ -221,7 +221,7 @@ const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Content */}
-        <div className="p-6">{children}</div>
+        <div className="p-5 md:p-6">{children}</div>
       </div>
     </div>
   );

@@ -255,31 +255,31 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
       <Navigation />
 
-      <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 border border-slate-200 dark:border-slate-700">
+      <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 md:p-8 border border-slate-200 dark:border-slate-700">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-              Start Your 30-Day Free Trial 🎉
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-3">
+              Start Your 30-Day Free Trial
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 mb-2">
+            <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
               Get full access to all features for 30 days. Process unlimited transactions, connect all platforms, and access all cookbooks.
             </p>
-            <p className="text-sm font-semibold text-green-600 dark:text-green-400 mb-2">
-              ✓ No credit card required • ✓ Cancel anytime • ✓ Full access to all features
+            <p className="text-xs md:text-sm font-semibold text-green-600 dark:text-green-400 mb-3">
+              ✓ No credit card required • ✓ Cancel anytime • ✓ Full access
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Join 500+ companies using Settler to automate reconciliation
+              Join 500+ companies using Settler
             </p>
           </div>
 
           <SignUpForm />
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 md:mt-8 text-center">
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Already have an account?{" "}
               <Link
                 href="/dashboard"
-                className="text-blue-600 dark:text-electric-cyan hover:underline"
+                className="text-blue-600 dark:text-electric-cyan hover:underline font-medium"
               >
                 Go to Dashboard
               </Link>
@@ -288,41 +288,39 @@ export default function SignUpPage() {
         </div>
 
         {/* Trial Benefits Info */}
-        <div className="mt-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border-2 border-blue-200 dark:border-blue-800">
-          <h3 className="text-base font-bold text-blue-900 dark:text-blue-300 mb-3">
-            ✨ What You Get in Your 30-Day Free Trial
+        <div className="mt-6 md:mt-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-5 md:p-6 border-2 border-blue-200 dark:border-blue-800">
+          <h3 className="text-sm md:text-base font-bold text-blue-900 dark:text-blue-300 mb-4">
+            What You Get in Your 30-Day Free Trial
           </h3>
-          <ul className="text-sm text-blue-800 dark:text-blue-400 space-y-2">
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
+          <ul className="text-xs md:text-sm text-blue-800 dark:text-blue-400 space-y-2.5">
+            <li className="flex items-start gap-2.5">
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
               <span><strong>Full access to all features</strong> — no limits, no restrictions</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
+            <li className="flex items-start gap-2.5">
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
               <span><strong>Unlimited transaction matching</strong> — process as many as you need</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
+            <li className="flex items-start gap-2.5">
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
               <span><strong>All 10+ platform adapters</strong> — connect Shopify, Stripe, PayPal, and more</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span><strong>Complete cookbook library</strong> — 10+ ready-to-use workflows and templates</span>
+            <li className="flex items-start gap-2.5">
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
+              <span><strong>Complete cookbook library</strong> — 10+ ready-to-use workflows</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
+            <li className="flex items-start gap-2.5">
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
               <span><strong>Priority email support</strong> — get help when you need it</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span className="font-semibold">
-                <strong>No credit card required</strong> — start free, upgrade only if you love it
-              </span>
+            <li className="flex items-start gap-2.5">
+              <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0 mt-0.5">✓</span>
+              <span><strong>No credit card required</strong> — start free, upgrade only if you love it</span>
             </li>
           </ul>
           <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800">
-            <p className="text-xs text-blue-700 dark:text-blue-300">
-              <strong>What happens after 30 days?</strong> Your trial converts to the Free plan (1,000 transactions/month) unless you upgrade. No charges, no surprises.
+            <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+              <strong>After 30 days:</strong> Your trial converts to the Free plan (1,000 transactions/month) unless you upgrade. No charges, no surprises.
             </p>
           </div>
         </div>
