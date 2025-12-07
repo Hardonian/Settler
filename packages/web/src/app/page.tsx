@@ -208,7 +208,7 @@ const report = await client.jobs.run(job.id);
                 as="h1"
                 id="hero-heading"
                 text="Reconcile Millions of Transactions Automatically—In Minutes, Not Hours"
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent leading-tight"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent leading-tight px-2 sm:px-0"
                 delay={0.1}
                 staggerDelay={0.02}
                 splitBy="words"
@@ -216,24 +216,24 @@ const report = await client.jobs.run(job.id);
 
               <TextReveal
                 text="The API-first reconciliation platform trusted by 500+ companies. Connect Shopify, Stripe, PayPal, and 10+ platforms in 5 minutes. 99.7% accuracy. Start free—no credit card required."
-                className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed px-4"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-700 dark:text-slate-300 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-4"
                 delay={0.4}
                 staggerDelay={0.01}
                 splitBy="words"
               />
 
               <div
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20 px-4"
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-12 sm:mb-20 px-4 w-full sm:w-auto"
                 role="group"
                 aria-label="Call to action buttons"
               >
                 <Button
                   size="lg"
                   asChild
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-electric-cyan dark:to-electric-blue dark:hover:from-electric-cyan/90 dark:hover:to-electric-blue/90 text-white px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-electric-cyan/50 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-blue-500 dark:focus:ring-electric-cyan focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-electric-cyan dark:to-electric-blue dark:hover:from-electric-cyan/90 dark:hover:to-electric-blue/90 text-white px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-electric-cyan/50 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-blue-500 dark:focus:ring-electric-cyan focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
                   onClick={() => trackCTA("Start Free Trial", { location: "hero" })}
                 >
-                  <Link href="/signup" aria-label="Start free trial of Settler">
+                  <Link href="/signup" aria-label="Start free trial of Settler" className="text-center">
                     Start Free Trial — No Credit Card
                   </Link>
                 </Button>
@@ -241,9 +241,9 @@ const report = await client.jobs.run(job.id);
                   size="lg"
                   variant="outline"
                   asChild
-                  className="px-8 py-6 text-lg font-medium border-2 border-slate-300 dark:border-white/20 glass hover:border-indigo-500 dark:hover:border-electric-purple/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-electric-purple focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-medium border-2 border-slate-300 dark:border-white/20 glass hover:border-indigo-500 dark:hover:border-electric-purple/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-electric-purple focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
                 >
-                  <Link href="/docs" aria-label="View Settler documentation">
+                  <Link href="/how-it-works" aria-label="See how Settler works" className="text-center">
                     See How It Works
                   </Link>
                 </Button>
@@ -251,13 +251,13 @@ const report = await client.jobs.run(job.id);
 
               {/* Hero Stats */}
               <div
-                className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto px-4"
+                className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-5xl mx-auto px-2 sm:px-4"
                 role="list"
                 aria-label="Key performance metrics"
               >
                 {heroStats.map((stat, index) => (
-                  <div key={index} role="listitem">
-                    <SpotlightCard className="p-5 md:p-6 h-full">
+                  <div key={index} role="listitem" className="w-full">
+                    <SpotlightCard className="p-4 sm:p-5 md:p-6 h-full">
                       <AnimatedStatCard
                         value={stat.value}
                         label={stat.label}
@@ -321,18 +321,18 @@ const report = await client.jobs.run(job.id);
           aria-labelledby="features-heading"
         >
           <div className="max-w-7xl mx-auto w-full">
-            <div className="text-center mb-20">
+            <div className="text-center mb-12 sm:mb-16 md:mb-20">
               <TextRevealHeading
                 as="h2"
                 id="features-heading"
                 text="Everything You Need"
-                className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
+                className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white px-2 sm:px-0"
                 delay={0}
                 staggerDelay={0.02}
               />
               <TextReveal
                 text="Built for developers, designed for scale"
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4"
+                className="text-base sm:text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4"
                 delay={0.2}
                 staggerDelay={0.01}
               />
@@ -349,20 +349,20 @@ const report = await client.jobs.run(job.id);
                       className="w-full"
                     >
                       <SpotlightCard
-                        className="h-full flex flex-col p-6 md:p-8 w-full"
+                        className="h-full flex flex-col p-4 sm:p-6 md:p-8 w-full overflow-hidden"
                         spotlightColor={
                           index % 2 === 0 ? "rgba(6, 182, 212, 0.3)" : "rgba(168, 85, 247, 0.3)"
                         }
                       >
                         <div
-                          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${feature.gradient} p-3 mb-5 flex items-center justify-center flex-shrink-0`}
+                          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br ${feature.gradient} p-2 sm:p-3 mb-3 sm:mb-5 flex items-center justify-center flex-shrink-0`}
                         >
-                          <Icon className="w-6 h-6 text-white" />
+                          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
-                        <h3 className="text-xl md:text-2xl font-bold mb-4 text-slate-900 dark:text-white leading-tight">
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 text-slate-900 dark:text-white leading-tight break-words">
                           {feature.title}
                         </h3>
-                        <p className="text-slate-700 dark:text-slate-300 flex-grow leading-relaxed text-base">
+                        <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 flex-grow leading-relaxed break-words">
                           {feature.description}
                         </p>
                       </SpotlightCard>
@@ -386,23 +386,23 @@ const report = await client.jobs.run(job.id);
           aria-labelledby="why-settler-heading"
         >
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-20">
+            <div className="text-center mb-12 sm:mb-16 md:mb-20">
               <TextRevealHeading
                 as="h2"
                 id="why-settler-heading"
                 text="Why Choose Settler Over Building In-House?"
-                className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
+                className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white px-2 sm:px-0"
                 delay={0}
                 staggerDelay={0.02}
               />
               <TextReveal
                 text="Skip 3-6 months of development. Get started in 5 minutes."
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed px-4"
+                className="text-base sm:text-lg text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed px-4"
                 delay={0.2}
                 staggerDelay={0.01}
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
               {[
                 {
                   metric: "5 minutes",
@@ -429,28 +429,28 @@ const report = await client.jobs.run(job.id);
                   gradient: "from-orange-500 to-red-500",
                 },
               ].map((item, index) => (
-                <SpotlightCard key={index} className="p-6 text-center">
+                <SpotlightCard key={index} className="p-4 sm:p-6 text-center">
                   <div
-                    className={`w-16 h-16 rounded-lg bg-gradient-to-br ${item.gradient} mx-auto mb-4 flex items-center justify-center`}
+                    className={`w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-gradient-to-br ${item.gradient} mx-auto mb-3 sm:mb-4 flex items-center justify-center`}
                   >
-                    <span className="text-2xl font-bold text-white">{item.metric}</span>
+                    <span className="text-xl sm:text-2xl font-bold text-white break-words">{item.metric}</span>
                   </div>
-                  <h3 className="text-lg font-bold mb-2 text-slate-900 dark:text-white">
+                  <h3 className="text-base sm:text-lg font-bold mb-2 text-slate-900 dark:text-white break-words">
                     {item.label}
                   </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{item.comparison}</p>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 break-words">{item.comparison}</p>
                 </SpotlightCard>
               ))}
             </div>
             <div className="text-center">
-              <p className="text-lg text-slate-700 dark:text-slate-300 mb-10 leading-relaxed px-4">
+              <p className="text-base sm:text-lg text-slate-700 dark:text-slate-300 mb-6 sm:mb-10 leading-relaxed px-4 break-words">
                 <strong className="text-slate-900 dark:text-white">ROI:</strong> Most customers see
                 payback in the first month
               </p>
               <Button
                 size="lg"
                 asChild
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg font-semibold"
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold"
               >
                 <Link href="/pricing" aria-label="View pricing plans">
                   View Pricing
