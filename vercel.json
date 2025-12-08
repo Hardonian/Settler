@@ -1,13 +1,14 @@
 {
-  "buildCommand": "npx turbo run build --filter=@settler/web...",
+  "buildCommand": "cd packages/web && npm run build:vercel",
   "installCommand": "npm ci",
   "framework": "nextjs",
   "regions": ["iad1"],
   "build": {
     "env": {
-      "NODE_OPTIONS": "--max-old-space-size=8192",
-      "PRISMA_CLIENT_ENGINE_TYPE": "binary",
-      "NEXT_TELEMETRY_DISABLED": "1"
+      "NODE_OPTIONS": "--max-old-space-size=4096",
+      "PRISMA_CLIENT_ENGINE_TYPE": "library",
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "NODE_VERSION": "20.19.6"
     }
   },
   "functions": {

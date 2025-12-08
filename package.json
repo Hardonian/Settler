@@ -38,7 +38,7 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",
-    "postinstall": "prisma generate 2>/dev/null || true"
+    "postinstall": "node scripts/vercel-prisma-postinstall.js"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -63,7 +63,7 @@
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=20.19.6",
+    "node": "20.19.6",
     "npm": ">=10.0.0"
   },
   "packageManager": "npm@10.2.4",

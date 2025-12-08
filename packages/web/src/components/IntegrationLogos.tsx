@@ -109,10 +109,14 @@ export function IntegrationLogos() {
 
   const groupedIntegrations = integrations.reduce(
     (acc, integration) => {
-      if (!acc[integration.category]) {
-        acc[integration.category] = [];
+      const category = integration.category;
+      if (!acc[category]) {
+        acc[category] = [];
       }
-      acc[integration.category]!.push(integration);
+      const categoryArray = acc[category];
+      if (categoryArray) {
+        categoryArray.push(integration);
+      }
       return acc;
     },
     {} as Record<string, Integration[]>
