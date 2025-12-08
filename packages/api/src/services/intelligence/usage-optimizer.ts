@@ -49,9 +49,9 @@ export class UsageOptimizer {
     });
 
     // Analyze AI token usage
-    const aiUsage = usageEvents.filter((e) => e.eventType === 'ai_tokens');
-    const totalTokens = aiUsage.reduce((sum: number, e) => sum + Number(e.quantity), 0);
-    const avgCost = aiUsage.length > 0 ? aiUsage.reduce((sum: number, e) => {
+    const aiUsage = usageEvents.filter((e: { eventType: string }) => e.eventType === 'ai_tokens');
+    const totalTokens = aiUsage.reduce((sum: number, e: { quantity: unknown }) => sum + Number(e.quantity), 0);
+    const avgCost = aiUsage.length > 0 ? aiUsage.reduce((sum: number, e: { metadata?: Record<string, unknown> }) => {
       const model = e.metadata?.['model'] as string | undefined;
       if (model) {
         // Validate model is a valid AIModel before using
@@ -74,7 +74,7 @@ export class UsageOptimizer {
     }
 
     // Analyze reconciliation patterns
-    const reconUsage = usageEvents.filter((e) => e.eventType === 'recon_comparison');
+    const reconUsage = usageEvents.filter((e: { eventType: string }) => e.eventType === 'recon_comparison');
     const peakHours = this.identifyPeakHours(reconUsage);
 
     if (peakHours.length > 0) {

@@ -31,7 +31,7 @@ export class AIConfigManager {
   /**
    * Get AI config for tenant
    */
-  async getConfig(tenantId: string): Promise<AIConfig> {
+  async getConfig(_tenantId: string): Promise<AIConfig> {
     // TODO: Store in database or config table
     // For now, return defaults
     return {

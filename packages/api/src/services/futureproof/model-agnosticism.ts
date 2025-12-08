@@ -109,7 +109,7 @@ export class ModelAgnosticism {
    * Support multimodal recon
    */
   async multimodalRecon(
-    data: {
+    _data: {
       text?: string;
       image?: ArrayBuffer;
       audio?: ArrayBuffer;
@@ -135,8 +135,8 @@ export class ModelAgnosticism {
    * Portable embeddings architecture
    */
   async generateEmbedding(
-    text: string,
-    provider?: string
+    _text: string,
+    _provider?: string
   ): Promise<number[]> {
     // TODO: Implement embedding generation
     // This would work with any embedding provider

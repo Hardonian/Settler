@@ -9,8 +9,6 @@
 // @ts-ignore - PrismaClient is generated at build time
 import type { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
-import { PatternExtractor } from '../intelligence/pattern-extractor';
-import { ProductEvolutionAI } from '../intelligence/product-evolution';
 
 export interface EvolutionProposal {
   type: 'architectural' | 'template' | 'configuration' | 'api' | 'pipeline' | 'cost';

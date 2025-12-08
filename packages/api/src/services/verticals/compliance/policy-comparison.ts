@@ -26,10 +26,10 @@ export interface PolicyDiff {
 }
 
 export class PolicyComparisonService {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**
@@ -37,8 +37,8 @@ export class PolicyComparisonService {
    */
   async comparePrivacyPolicies(
     tenantId: string,
-    policy1: string,
-    policy2: string
+    _policy1: string,
+    _policy2: string
   ): Promise<PolicyDiff> {
     // TODO: Implement policy comparison using AI
     // Detect changes, compliance violations, etc.
@@ -58,9 +58,9 @@ export class PolicyComparisonService {
    * Detect privacy drift
    */
   async detectPrivacyDrift(
-    tenantId: string,
-    currentPolicy: string,
-    baselinePolicy: string
+    _tenantId: string,
+    _currentPolicy: string,
+    _baselinePolicy: string
   ): Promise<{
     driftDetected: boolean;
     changes: string[];
@@ -78,9 +78,9 @@ export class PolicyComparisonService {
    * Audit data retention compliance
    */
   async auditDataRetention(
-    tenantId: string,
-    retentionPolicy: RetentionPolicy,
-    actualData: Array<Record<string, unknown>>
+    _tenantId: string,
+    _retentionPolicy: unknown,
+    _actualData: Array<Record<string, unknown>>
   ): Promise<{
     compliant: boolean;
     violations: Array<{
@@ -101,10 +101,10 @@ export class PolicyComparisonService {
    * Generate DPIA (Data Protection Impact Assessment) helper
    */
   async generateDPIA(
-    tenantId: string,
-    processingActivity: ProcessingActivity
+    _tenantId: string,
+    _processingActivity: unknown
   ): Promise<{
-    riskAssessment: RiskAssessment;
+    riskAssessment: unknown;
     recommendations: string[];
     requiredSafeguards: string[];
   }> {

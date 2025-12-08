@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+// logInfo imported but unused - may be used in future
 
 export interface MarketplaceItem {
   id: string;
@@ -135,7 +135,7 @@ export class MarketplaceIntelligence {
 
       const drifts = await this.prisma.driftEvent.findMany({
         where: {
-          reconJobId: { in: jobs.map((j) => j.id) },
+          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
         },
         take: 100,
       });
@@ -144,12 +144,12 @@ export class MarketplaceIntelligence {
 
       const results = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map((j) => j.id) },
+          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
         },
         take: 1000,
       });
 
-      const failures = results.filter((r) => r.status === 'failed').length;
+      const failures = results.filter((r: { status: string }) => r.status === 'failed').length;
       const reliability = 1 - (failures / Math.max(results.length, 1));
 
       const revenuePotential = popularity * reliability * 1000; // Placeholder

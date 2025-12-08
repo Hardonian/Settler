@@ -191,8 +191,8 @@ export class DriftDetector {
    * Detect value drifts
    */
   private async detectValueDrifts(
-    sourceData: Record<string, unknown>[],
-    targetData: Record<string, unknown>[]
+    _sourceData: Record<string, unknown>[],
+    _targetData: Record<string, unknown>[]
   ): Promise<DriftDetection[]> {
     // TODO: Implement statistical drift detection
     // Compare distributions, detect outliers, etc.

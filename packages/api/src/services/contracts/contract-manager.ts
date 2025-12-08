@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient, Prisma } from '@prisma/client';
-import { logInfo, logError } from '../../utils/logger';
+import { logInfo } from '../../utils/logger';
 
 export interface ContractSchema {
   type: 'object' | 'array';

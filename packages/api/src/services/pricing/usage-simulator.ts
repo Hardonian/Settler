@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+// logInfo imported but unused - may be used in future
 
 export interface UsageSimulation {
   period: 'daily' | 'weekly' | 'monthly';
@@ -132,7 +132,7 @@ export class UsageSimulator {
    */
   private projectUsage(
     historical: HistoricalUsage,
-    period: 'daily' | 'weekly' | 'monthly'
+    _period: 'daily' | 'weekly' | 'monthly'
   ): HistoricalUsage {
     // Simple projection: assume 10% growth
     const growthFactor = 1.1;

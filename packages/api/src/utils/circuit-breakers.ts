@@ -31,7 +31,7 @@ export function createCircuitBreaker<
   } = options;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const breaker = new CircuitBreaker(fn as any, {
+  const breaker = new CircuitBreaker<TReturn>(fn as any, {
     timeout,
     errorThresholdPercentage,
     resetTimeout,
@@ -58,7 +58,7 @@ export function createCircuitBreaker<
     logError("Circuit breaker failure", error instanceof Error ? error : new Error(String(error)), { name });
   });
 
-  return breaker;
+  return breaker as CircuitBreaker<TReturn>;
 }
 
 /**

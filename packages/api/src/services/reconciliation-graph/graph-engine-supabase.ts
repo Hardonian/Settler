@@ -245,7 +245,9 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       jobId: n.job_id,
       ...(n.source_id && { sourceId: n.source_id }),
       ...(n.target_id && { targetId: n.target_id }),
-      data: n.data,
+      data: (n.data && typeof n.data === 'object' && !Array.isArray(n.data)) 
+        ? n.data as Record<string, unknown>
+        : (typeof n.data === 'object' ? { value: n.data } : { value: String(n.data) }),
       ...(n.amount !== undefined && { amount: n.amount }),
       ...(n.currency && { currency: n.currency }),
       timestamp: new Date(n.timestamp),

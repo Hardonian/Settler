@@ -23,11 +23,11 @@ export interface TemplateImprovement {
 
 export class TemplateImprover {
   private prisma: PrismaClient;
-  private patternExtractor: PatternExtractor;
+  private _patternExtractor: PatternExtractor;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
-    this.patternExtractor = new PatternExtractor(prisma);
+    this._patternExtractor = new PatternExtractor(prisma);
   }
 
   /**

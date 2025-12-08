@@ -5,8 +5,8 @@
  * Part 9: Predictive Ops, Meta-Models & Next-Gen Pipelines
  */
 
-import { logInfo } from '../../utils/logger';
-import { PredictiveRouter, RoutingDecision } from '../intelligence/predictive-router';
+// logInfo and RoutingDecision imported but unused - may be used in future
+import { PredictiveRouter } from '../intelligence/predictive-router';
 import { MetaModels } from './meta-models';
 import { AIModel } from '../ai-mesh/ai-router';
 
@@ -27,11 +27,11 @@ export interface Pipeline {
 }
 
 export class AdaptivePipelines {
-  private router: PredictiveRouter;
+  private _router: PredictiveRouter;
   private metaModels: MetaModels;
 
   constructor() {
-    this.router = new PredictiveRouter();
+    this._router = new PredictiveRouter();
     this.metaModels = new MetaModels();
   }
 

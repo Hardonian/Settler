@@ -29,10 +29,10 @@ interface Obligation {
 }
 
 export class ContractDiffService {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**
@@ -40,8 +40,8 @@ export class ContractDiffService {
    */
   async diffContracts(
     tenantId: string,
-    contract1: string,
-    contract2: string
+    _contract1: string,
+    _contract2: string
   ): Promise<ContractDiff> {
     // TODO: Implement contract diffing logic
     // This would use NLP/AI to identify:
@@ -63,7 +63,7 @@ export class ContractDiffService {
   /**
    * Extract obligations from contract
    */
-  async extractObligations(contract: string): Promise<Array<{
+  async extractObligations(_contract: string): Promise<Array<{
     party: string;
     obligation: string;
     deadline?: string;
@@ -77,8 +77,8 @@ export class ContractDiffService {
    * Map obligations between contracts
    */
   async mapObligations(
-    sourceObligations: Obligation[],
-    targetObligations: Obligation[]
+    _sourceObligations: unknown[],
+    _targetObligations: unknown[]
   ): Promise<Array<{
     source: Obligation;
     target: Obligation;

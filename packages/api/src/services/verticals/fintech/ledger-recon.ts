@@ -31,10 +31,10 @@ export interface LedgerReconResult {
 }
 
 export class LedgerReconService {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**
@@ -62,7 +62,7 @@ export class LedgerReconService {
    * Detect accounting drift
    */
   async detectAccountingDrift(
-    tenantId: string,
+    _tenantId: string,
     expectedBalance: number,
     actualBalance: number
   ): Promise<{

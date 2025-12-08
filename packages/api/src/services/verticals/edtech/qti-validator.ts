@@ -31,7 +31,7 @@ export class QTIValidator {
   /**
    * Validate QTI (Question and Test Interoperability) format
    */
-  async validateQTI(qtiContent: string): Promise<QTIValidationResult> {
+  async validateQTI(_qtiContent: string): Promise<QTIValidationResult> {
     // TODO: Implement QTI validation
     // Check XML structure, required elements, etc.
 
@@ -48,8 +48,8 @@ export class QTIValidator {
    * Validate learning outcome mapping
    */
   async validateLearningOutcomes(
-    syllabus: Syllabus,
-    outcomes: LearningOutcome[]
+    _syllabus: unknown,
+    _outcomes: unknown[]
   ): Promise<{
     valid: boolean;
     missing: string[];
@@ -67,8 +67,8 @@ export class QTIValidator {
    * Check LMS compatibility
    */
   async checkLMSCompatibility(
-    qtiContent: string,
-    lms: 'canvas' | 'blackboard' | 'moodle' | 'brightspace'
+    _qtiContent: string,
+    _lms: 'canvas' | 'blackboard' | 'moodle' | 'brightspace'
   ): Promise<{
     compatible: boolean;
     issues: string[];

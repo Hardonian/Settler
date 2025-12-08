@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+// logInfo imported but unused - may be used in future
 import { MetaModels } from '../predictive/meta-models';
 
 export interface PricingAnalysis {
@@ -135,7 +135,7 @@ export class ValueBasedPricing {
 
     const results = await this.prisma.reconResult.findMany({
       where: {
-        reconJobId: { in: jobs.map((j) => j.id) },
+        reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
       },
       take: 10000,
     });
@@ -148,7 +148,7 @@ export class ValueBasedPricing {
       take: 10000,
     });
 
-    const totalTokens = usageEvents.reduce((sum: number, event) => {
+    const totalTokens = usageEvents.reduce((sum: number, event: { quantity: unknown }) => {
       return sum + Number(event.quantity);
     }, 0);
 
@@ -195,14 +195,14 @@ export class ValueBasedPricing {
 
     const results = await this.prisma.reconResult.findMany({
       where: {
-        reconJobId: { in: jobs.map((j) => j.id) },
+        reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
       },
       take: 1000,
     });
 
     // Calculate difficulty based on failure rate and mismatch rate
-    const failures = results.filter((r) => r.status === 'failed').length;
-    const mismatches = results.filter((r) => r.status === 'unmatched').length;
+    const failures = results.filter((r: { status: string }) => r.status === 'failed').length;
+    const mismatches = results.filter((r: { status: string }) => r.status === 'unmatched').length;
     const total = results.length;
 
     if (total === 0) return 0;
@@ -228,7 +228,7 @@ export class ValueBasedPricing {
       take: 10000,
     });
 
-    return usageEvents.reduce((sum: number, event) => {
+    return usageEvents.reduce((sum: number, event: { quantity: unknown }) => {
       return sum + (Number(event.quantity) * 0.002 / 1000); // $0.002 per 1K tokens
     }, 0);
   }
@@ -237,7 +237,7 @@ export class ValueBasedPricing {
    * Estimate customer ROI
    */
   private async estimateCustomerROI(
-    tenantId: string,
+    _tenantId: string,
     usage: { totalJobs: number; [key: string]: unknown }
   ): Promise<number> {
     // Estimate ROI based on:
@@ -255,7 +255,7 @@ export class ValueBasedPricing {
   /**
    * Estimate market willingness
    */
-  private async estimateMarketWillingness(tenantId: string): Promise<number> {
+  private async estimateMarketWillingness(_tenantId: string): Promise<number> {
     // TODO: Implement market analysis
     // This would analyze:
     // - Industry benchmarks
@@ -306,7 +306,7 @@ export class ValueBasedPricing {
    */
   private determinePricingTier(
     price: number,
-    usage: { totalJobs?: number; [key: string]: unknown }
+    _usage: { totalJobs?: number; [key: string]: unknown }
   ): 'starter' | 'professional' | 'enterprise' | 'custom' {
     if (price < 500) return 'starter';
     if (price < 2000) return 'professional';
@@ -319,7 +319,7 @@ export class ValueBasedPricing {
    */
   private suggestUsageTier(
     usage: { totalJobs?: number; [key: string]: unknown },
-    analysis: PricingAnalysis
+    _analysis: PricingAnalysis
   ): string {
     const totalJobs = usage.totalJobs ?? 0;
     if (totalJobs < 100) return 'starter';

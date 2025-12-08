@@ -30,12 +30,12 @@ export interface EvolutionEvent {
 }
 
 export class GovernanceLayer {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
   private rules: Map<string, GovernanceRule[]> = new Map();
   private evolutionEvents: EvolutionEvent[] = [];
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**
@@ -102,7 +102,7 @@ export class GovernanceLayer {
    * Check if change is allowed
    */
   async isChangeAllowed(
-    resourceType: ResourceType,
+    _resourceType: ResourceType,
     resourceId: string,
     proposedChange: Record<string, unknown>
   ): Promise<{

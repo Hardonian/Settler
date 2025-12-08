@@ -5,7 +5,7 @@
  * Part of Phase III: Self-Healing AI Mesh
  */
 
-import { logInfo, logError } from '../../utils/logger';
+import { logInfo } from '../../utils/logger';
 
 export type AIModel = 'gpt-4' | 'gpt-3.5-turbo' | 'claude-3-opus' | 'claude-3-sonnet' | 'claude-3-haiku' | 'local-llm';
 

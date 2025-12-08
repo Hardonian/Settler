@@ -100,7 +100,7 @@ export class HardwareFlexibility {
    * Support for Secure AI Function Enclaves (SAFEs)
    */
   async executeInSAFE(
-    code: string,
+    _code: string,
     input: Record<string, unknown>
   ): Promise<{ success: boolean; result: Record<string, unknown> }> {
     // TODO: Implement SAFE execution
@@ -115,7 +115,7 @@ export class HardwareFlexibility {
    * Local inference
    */
   async executeLocalInference(
-    model: string,
+    _model: string,
     input: Record<string, unknown>
   ): Promise<{ success: boolean; result: Record<string, unknown> }> {
     // TODO: Implement local inference
