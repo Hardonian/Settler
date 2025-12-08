@@ -162,7 +162,8 @@ export class DriftDetector {
     for (const field of allFields) {
       const sourceType = source[field];
       const targetType = target[field];
-      const contractType = contract?.properties?.[field]?.type;
+      const contractProps = contract && typeof contract === 'object' && 'properties' in contract ? contract.properties as Record<string, { type?: string }> : undefined;
+      const contractType = contractProps?.[field]?.type;
 
       if (sourceType && targetType && sourceType !== targetType) {
         drifts.push({

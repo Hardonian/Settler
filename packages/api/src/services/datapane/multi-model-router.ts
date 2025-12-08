@@ -106,10 +106,10 @@ export class MultiModelRouter {
         // TODO: Implement actual AI model execution
         // This should call the actual AI service with the selected model
         // For now, we return a placeholder result
-        const result = { model, request, executed: true };
+        const result = { model: model!, request, executed: true };
         return {
           result,
-          model,
+          model: model!,
           attempts: i + 1,
         };
       } catch (error: unknown) {

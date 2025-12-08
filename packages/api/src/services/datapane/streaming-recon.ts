@@ -144,7 +144,9 @@ export class StreamingRecon extends EventEmitter {
 
     for (let i = 0; i < Math.min(sourceData.length, targetData.length); i++) {
       // Match logic
-      if (this.match(sourceData[i], targetData[i])) {
+      const sourceItem = sourceData[i];
+      const targetItem = targetData[i];
+      if (sourceItem && targetItem && this.match(sourceItem, targetItem)) {
         matched++;
       } else {
         unmatched++;

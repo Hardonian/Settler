@@ -149,10 +149,11 @@ export class GovernanceLayer {
         };
       }
 
-      if (proposedChange.versionJump && proposedChange.versionJump > guardrail.maxVersionJump) {
+      const maxVersionJump = typeof guardrail.maxVersionJump === 'number' ? guardrail.maxVersionJump : 0;
+      if (proposedChange.versionJump && proposedChange.versionJump > maxVersionJump) {
         return {
           allowed: false,
-          reason: `Version jump exceeds maximum (${guardrail.maxVersionJump})`,
+          reason: `Version jump exceeds maximum (${maxVersionJump})`,
         };
       }
     }

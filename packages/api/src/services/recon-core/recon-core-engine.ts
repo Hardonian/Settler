@@ -447,7 +447,7 @@ export class ReconCoreEngine {
           unmatched: totalAmountUnmatched,
           total: totalAmountSource || totalAmountTarget || null,
         },
-        ...(sourceData[0]?.currency || targetData[0]?.currency ? { currency: sourceData[0]?.currency || targetData[0]?.currency || '' } : {}),
+        ...(sourceData[0]?.currency || targetData[0]?.currency ? { currency: String(sourceData[0]?.currency || targetData[0]?.currency || '') } : {}),
       },
     };
   }

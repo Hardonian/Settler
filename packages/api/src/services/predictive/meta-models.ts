@@ -60,7 +60,8 @@ export class MetaModels {
     let estimatedTime = 1000; // Base
 
     // Check data size
-    if (job.sourceDataSize && job.sourceDataSize > 1000000) {
+    const sourceDataSize = typeof job.sourceDataSize === 'number' ? job.sourceDataSize : 0;
+    if (sourceDataSize > 1000000) {
       factors.push('large_data_size');
       estimatedTokens += 5000;
       estimatedCost += 0.01;
@@ -68,7 +69,8 @@ export class MetaModels {
     }
 
     // Check number of fields
-    if (job.fieldCount && job.fieldCount > 50) {
+    const fieldCount = typeof job.fieldCount === 'number' ? job.fieldCount : 0;
+    if (fieldCount > 50) {
       factors.push('many_fields');
       estimatedTokens += 2000;
       estimatedCost += 0.004;
