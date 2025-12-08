@@ -40,9 +40,10 @@ export async function GET(request: NextRequest) {
       const recovery = data[0] as any;
       if (recovery.grace_period_ends_at && new Date(recovery.grace_period_ends_at) < new Date()) {
         // Grace period expired, update status
-        await (supabase.from("payment_recovery") as any)
+        const updateQuery = supabase.from("payment_recovery") as any;
+        await updateQuery
           .update({ status: "failed" })
-          .eq("id", (recovery as any).id);
+          .eq("id", recovery.id);
         return NextResponse.json({ recovery: null });
       }
     }

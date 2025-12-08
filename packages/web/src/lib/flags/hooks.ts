@@ -4,7 +4,7 @@
  * Easy-to-use hooks for accessing feature flags and experiment variants in components.
  */
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   resolveFlag,
   isFeatureEnabled,
@@ -56,15 +56,16 @@ export function useFeatureFlag(key: FlagKey): boolean {
   const [enabled, setEnabled] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const userContext = useMemo(() => getCurrentUserContext(), []);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
 
     async function checkFlag() {
       try {
         // Try async resolution first (for remote config, etc.)
         const result = await resolveFlag(key, userContext);
-        if (mounted) {
+        if (mountedRef.current) {
           const value = typeof result.value === "boolean" ? result.value : false;
           setEnabled(value);
           setLoading(false);
@@ -80,7 +81,7 @@ export function useFeatureFlag(key: FlagKey): boolean {
         }
       } catch (_error) {
         // Fallback to synchronous check
-        if (mounted) {
+        if (mountedRef.current) {
           const fallbackValue = isFeatureEnabled(key, userContext);
           setEnabled(fallbackValue);
           setLoading(false);
@@ -97,7 +98,7 @@ export function useFeatureFlag(key: FlagKey): boolean {
     checkFlag();
 
     return () => {
-      mounted = false;
+      mountedRef.current = false;
     };
   }, [key, userContext]);
 
