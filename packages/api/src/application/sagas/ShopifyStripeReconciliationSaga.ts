@@ -55,8 +55,8 @@ interface UnmatchedRecord {
 }
 
 export class ShopifyStripeReconciliationSaga {
-  private shopifyCircuitBreaker: CircuitBreaker<[AdapterFetchOptions], Order[]>;
-  private stripeCircuitBreaker: CircuitBreaker<[AdapterFetchOptions], Payment[]>;
+  private shopifyCircuitBreaker: CircuitBreaker<Order[]>;
+  private stripeCircuitBreaker: CircuitBreaker<Payment[]>;
 
   constructor(
     private eventStore: IEventStore,

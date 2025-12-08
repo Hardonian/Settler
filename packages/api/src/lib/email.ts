@@ -47,15 +47,24 @@ export async function sendEmail(template: EmailTemplate): Promise<{ id: string }
   }
 
   try {
-    const result = await resendClient.emails.send({
+    const emailOptions: {
+      from: string;
+      to: string[];
+      subject: string;
+      html: string;
+      text?: string;
+      reply_to?: string;
+      tags?: Array<{ name: string; value: string }>;
+    } = {
       from: template.from || `${resendFromName} <${resendFromEmail}>`,
       to: Array.isArray(template.to) ? template.to : [template.to],
       subject: template.subject,
       html: template.html,
-      text: template.text,
+      ...(template.text && { text: template.text }),
       ...(template.replyTo && { reply_to: template.replyTo }),
-      tags: template.tags,
-    });
+      ...(template.tags && { tags: template.tags }),
+    };
+    const result = await resendClient.emails.send(emailOptions);
 
     logInfo("Email sent successfully", {
       emailId: result.data?.id || "unknown",

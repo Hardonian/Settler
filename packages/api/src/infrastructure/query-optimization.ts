@@ -66,7 +66,7 @@ export async function getReconciliationSummary(
 
     const result = await query(viewQuery, params);
     logDebug("Used materialized view for reconciliation summary", { jobId });
-    return result;
+    return result as ReconciliationSummaryRow[];
   }
 
   // Fallback to regular query
@@ -133,11 +133,11 @@ export async function getJobPerformance(
       [jobId]
     );
     logDebug("Used materialized view for job performance", { jobId });
-    return result[0] || null;
+    return (result[0] as JobPerformanceRow) || null;
   }
 
   // Fallback to regular query
-  return query(
+  const fallbackResult = await query(
     `
     SELECT 
       job_id,
@@ -152,7 +152,8 @@ export async function getJobPerformance(
     GROUP BY job_id
     `,
     [jobId]
-  ).then((results: unknown[]) => results[0] || null);
+  );
+  return (fallbackResult[0] as JobPerformanceRow) || null;
 }
 
 /**
@@ -206,7 +207,7 @@ export async function getTenantUsage(
       [tenantId]
     );
     logDebug("Used materialized view for tenant usage", { tenantId, timeRange });
-    return result;
+    return result as TenantUsageRow[];
   }
 
   // Fallback to regular query
@@ -227,7 +228,7 @@ export async function getTenantUsage(
     LIMIT 100
     `,
     [tenantId]
-  );
+  ) as TenantUsageRow[];
 }
 
 /**
@@ -281,7 +282,7 @@ export async function getMatchAccuracy(
     const params = jobId ? [jobId] : [];
     const result = await query(queryStr, params);
     logDebug("Used materialized view for match accuracy", { jobId });
-    return jobId ? result[0] || null : result;
+    return jobId ? ((result[0] as MatchAccuracyRow) || null) : (result as MatchAccuracyRow[]);
   }
 
   // Fallback to regular query
@@ -313,9 +314,8 @@ export async function getMatchAccuracy(
     `;
 
   const params = jobId ? [jobId] : [];
-  return query(fallbackQuery, params).then((results: unknown[]) =>
-    jobId ? results[0] || null : results
-  );
+  const fallbackResult = await query(fallbackQuery, params);
+  return jobId ? ((fallbackResult[0] as MatchAccuracyRow) || null) : (fallbackResult as MatchAccuracyRow[]);
 }
 
 /**

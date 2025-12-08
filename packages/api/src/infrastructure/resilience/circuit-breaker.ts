@@ -59,15 +59,15 @@ export function createCircuitBreaker<T extends unknown[], R>(
     });
   });
 
-  breaker.on("reject", (error: Error) => {
+  breaker.on("reject", (error: unknown) => {
     logWarn("Circuit breaker rejected request", {
       name: opts.name,
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
     });
   });
 
-  breaker.on("failure", (error: Error) => {
-    logError("Circuit breaker failure", error, {
+  breaker.on("failure", (error: unknown) => {
+    logError("Circuit breaker failure", error instanceof Error ? error : new Error(String(error)), {
       name: opts.name,
     });
   });

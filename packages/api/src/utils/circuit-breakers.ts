@@ -22,7 +22,7 @@ export function createCircuitBreaker<
 >(
   fn: (...args: TArgs) => Promise<TReturn>,
   options: CircuitBreakerOptions = {}
-): CircuitBreaker<TArgs, TReturn> {
+): CircuitBreaker<TReturn> {
   const {
     timeout = 10000,
     errorThresholdPercentage = 50,
@@ -53,8 +53,8 @@ export function createCircuitBreaker<
     logWarn("Circuit breaker closed", { name });
   });
 
-  breaker.on("failure", (error: Error) => {
-    logError("Circuit breaker failure", error, { name });
+  breaker.on("failure", (error: unknown) => {
+    logError("Circuit breaker failure", error instanceof Error ? error : new Error(String(error)), { name });
   });
 
   return breaker;
@@ -69,7 +69,7 @@ export function createAdapterCircuitBreaker<
 >(
   adapterName: string,
   fn: (...args: TArgs) => Promise<TReturn>
-): CircuitBreaker<TArgs, TReturn> {
+): CircuitBreaker<TReturn> {
   return createCircuitBreaker(fn, {
     name: `adapter-${adapterName}`,
     timeout: 30000, // 30s timeout for adapters
@@ -86,7 +86,7 @@ export function createWebhookCircuitBreaker<
   TReturn
 >(
   fn: (...args: TArgs) => Promise<TReturn>
-): CircuitBreaker<TArgs, TReturn> {
+): CircuitBreaker<TReturn> {
   return createCircuitBreaker(fn, {
     name: "webhook-delivery",
     timeout: 10000, // 10s timeout for webhooks
@@ -103,7 +103,7 @@ export function createFXRateCircuitBreaker<
   TReturn
 >(
   fn: (...args: TArgs) => Promise<TReturn>
-): CircuitBreaker<TArgs, TReturn> {
+): CircuitBreaker<TReturn> {
   return createCircuitBreaker(fn, {
     name: "fx-rate-provider",
     timeout: 5000, // 5s timeout for FX rates

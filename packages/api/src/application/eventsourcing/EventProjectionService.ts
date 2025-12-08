@@ -54,7 +54,7 @@ export class EventProjectionService {
   async processEvent(eventEnvelope: EventEnvelope): Promise<void> {
     switch (eventEnvelope.event_type) {
       case "ReconciliationStarted":
-        await this.projectionHandlers.handleReconciliationStarted(eventEnvelope as DomainEvent);
+        await this.projectionHandlers.handleReconciliationStarted(eventEnvelope as unknown as DomainEvent);
         break;
       case "OrdersFetched":
         await this.projectionHandlers.handleOrdersFetched(eventEnvelope);

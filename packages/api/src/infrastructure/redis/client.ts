@@ -32,12 +32,14 @@ export const redis =
 /**
  * Fallback Redis client using ioredis (for local development)
  */
-let ioredisClient: Redis | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let ioredisClient: any = null;
 
 if (!redis && process.env.REDIS_HOST) {
   try {
-    const Redis = require("ioredis");
-    ioredisClient = new Redis({
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const IORedis = require("ioredis");
+    ioredisClient = new IORedis({
       host: process.env.REDIS_HOST || "localhost",
       port: parseInt(process.env.REDIS_PORT || "6379"),
       password: process.env.REDIS_PASSWORD,
@@ -48,9 +50,11 @@ if (!redis && process.env.REDIS_HOST) {
       },
     });
 
-    ioredisClient.on("error", (err: Error) => {
-      console.error("Redis connection error:", err);
-    });
+    if (ioredisClient && typeof ioredisClient.on === "function") {
+      ioredisClient.on("error", (err: Error) => {
+        console.error("Redis connection error:", err);
+      });
+    }
   } catch (error) {
     console.warn("Failed to initialize Redis client:", error);
   }
@@ -59,7 +63,8 @@ if (!redis && process.env.REDIS_HOST) {
 /**
  * Get Redis client (Upstash or ioredis fallback)
  */
-export function getRedisClient(): Redis | typeof ioredisClient {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getRedisClient(): Redis | any {
   return redis || ioredisClient;
 }
 

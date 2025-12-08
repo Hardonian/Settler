@@ -248,5 +248,5 @@ export async function createAddOnFromConfig(
     return null;
   }
 
-  return data.id;
+  return data?.id ?? null;
 }

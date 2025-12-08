@@ -163,8 +163,8 @@ export function featureFlagsMiddleware() {
     try {
       const reqWithUser = req as RequestWithUser;
       const context: FeatureFlagContext = {
-        tenantId: reqWithUser.tenantId || reqWithUser.user?.tenantId,
-        userId: reqWithUser.userId || reqWithUser.user?.id,
+        ...(reqWithUser.tenantId || reqWithUser.user?.tenantId ? { tenantId: reqWithUser.tenantId || reqWithUser.user?.tenantId } : {}),
+        ...(reqWithUser.userId || reqWithUser.user?.id ? { userId: reqWithUser.userId || reqWithUser.user?.id } : {}),
         environment: process.env.NODE_ENV || "development",
       };
 

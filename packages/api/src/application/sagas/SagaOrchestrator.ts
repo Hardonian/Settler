@@ -195,7 +195,7 @@ export class SagaOrchestrator {
       const errorMessage = error instanceof Error ? error.message : String(error);
       await this.markSagaFailed(state, errorMessage);
       if (saga.onFailure) {
-        await saga.onFailure(state, error);
+        await saga.onFailure(state, error instanceof Error ? error : new Error(String(error)));
       }
     }
   }
