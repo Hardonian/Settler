@@ -155,7 +155,7 @@ export class PatternExtractor {
       take: 10,
     });
 
-    return mappings.map(mapping => ({
+    return mappings.map((mapping) => ({
       type: 'mapping_template' as const,
       pattern: mapping,
       frequency: mapping.usageCount,
@@ -179,7 +179,7 @@ export class PatternExtractor {
       take: 10,
     });
 
-    return transforms.map(transform => ({
+    return transforms.map((transform) => ({
       type: 'transform_recipe' as const,
       pattern: transform,
       frequency: transform.usageCount,

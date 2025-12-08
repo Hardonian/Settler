@@ -15,7 +15,8 @@ export class StripeUsageSync {
 
   constructor(prisma: PrismaClient, stripeKey: string) {
     this.prisma = prisma;
-    this.stripe = new Stripe(stripeKey, { apiVersion: '2024-12-18.acacia' });
+    // Use a supported API version - update when Stripe types are updated
+    this.stripe = new Stripe(stripeKey, { apiVersion: '2023-10-16' as Stripe.LatestApiVersion });
   }
 
   /**

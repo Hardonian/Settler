@@ -133,7 +133,7 @@ export class MarketplaceIntelligence {
 
       const drifts = await this.prisma.driftEvent.findMany({
         where: {
-          reconJobId: { in: jobs.map(j => j.id) },
+          reconJobId: { in: jobs.map((j) => j.id) },
         },
         take: 100,
       });
@@ -142,12 +142,12 @@ export class MarketplaceIntelligence {
 
       const results = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map(j => j.id) },
+          reconJobId: { in: jobs.map((j) => j.id) },
         },
         take: 1000,
       });
 
-      const failures = results.filter(r => r.status === 'failed').length;
+      const failures = results.filter((r) => r.status === 'failed').length;
       const reliability = 1 - (failures / Math.max(results.length, 1));
 
       const revenuePotential = popularity * reliability * 1000; // Placeholder

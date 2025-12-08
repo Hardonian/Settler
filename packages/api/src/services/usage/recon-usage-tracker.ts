@@ -243,13 +243,18 @@ export class ReconUsageTracker {
     const summary: Record<string, { quantity: number; unit: string }> = {};
 
     for (const event of events) {
-      if (!summary[event.eventType]) {
-        summary[event.eventType] = {
+      const eventType = event.eventType;
+      if (!summary[eventType]) {
+        summary[eventType] = {
           quantity: 0,
           unit: event.unit || 'unit',
         };
       }
-      summary[event.eventType].quantity += Number(event.quantity);
+      // TypeScript now knows summary[eventType] is defined after the check
+      const summaryEntry = summary[eventType];
+      if (summaryEntry) {
+        summaryEntry.quantity += Number(event.quantity);
+      }
     }
 
     return summary;

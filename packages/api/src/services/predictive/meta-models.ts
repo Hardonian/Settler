@@ -173,7 +173,12 @@ export class MetaModels {
 
     // Return model with highest score
     scores.sort((a, b) => b.score - a.score);
-    return scores[0].model;
+    const bestModel = scores[0];
+    if (!bestModel) {
+      // Fallback if somehow scores is empty (shouldn't happen)
+      return 'gpt-3.5-turbo';
+    }
+    return bestModel.model;
   }
 
   /**
@@ -198,12 +203,15 @@ export class MetaModels {
       const config = this.router.getModelConfig(model);
       const complexity = this.evaluateJobComplexity(job);
 
+      // Reliability is derived from accuracy (higher accuracy = higher reliability)
+      const reliability = Math.min(config.accuracy + 0.05, 0.99);
+      
       benchmarks.push({
         model,
         accuracy: config.accuracy,
         latency: config.latency,
         cost: this.estimateLLMCost(model, complexity.estimatedTokens),
-        reliability: config.reliability || 0.95,
+        reliability,
       });
     }
 

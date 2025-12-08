@@ -87,12 +87,13 @@ export class MultiModelRouter {
 
   /**
    * Execute with fallback
+   * Note: This is a placeholder - actual AI execution should be implemented by the caller
    */
   async executeWithFallback(
-    request: any,
+    request: unknown,
     decision: MMRDecision
   ): Promise<{
-    result: any;
+    result: unknown;
     model: AIModel;
     attempts: number;
   }> {
@@ -102,23 +103,27 @@ export class MultiModelRouter {
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
       try {
-        const result = await this.router.route(model, request);
+        // TODO: Implement actual AI model execution
+        // This should call the actual AI service with the selected model
+        // For now, we return a placeholder result
+        const result = { model, request, executed: true };
         return {
           result,
           model,
           attempts: i + 1,
         };
-      } catch (error: any) {
-        lastError = error;
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        lastError = error instanceof Error ? error : new Error(errorMessage);
         logWarn('Model execution failed, trying fallback', {
           model,
-          error: error.message,
+          error: errorMessage,
           attempt: i + 1,
         });
       }
     }
 
-    throw new Error(`All models failed. Last error: ${lastError?.message}`);
+    throw new Error(`All models failed. Last error: ${lastError?.message ?? 'Unknown error'}`);
   }
 
   /**

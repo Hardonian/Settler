@@ -147,7 +147,7 @@ export class PredictiveOps {
         // High usage - check for issues
         const failures = await this.prisma.reconResult.findMany({
           where: {
-            reconJobId: { in: jobs.map(j => j.id) },
+            reconJobId: { in: jobs.map((j) => j.id) },
             status: 'failed',
           },
           take: 10,
@@ -199,9 +199,9 @@ export class PredictiveOps {
       });
 
       const avgDuration = results
-        .filter(r => r.completedAt && r.startedAt)
-        .map(r => r.completedAt!.getTime() - r.startedAt!.getTime())
-        .reduce((a, b, _, arr) => a + b / arr.length, 0);
+        .filter((r) => r.completedAt && r.startedAt)
+        .map((r) => r.completedAt!.getTime() - r.startedAt!.getTime())
+        .reduce((a: number, b: number, _: number, arr: typeof results) => a + b / arr.length, 0);
 
       if (avgDuration > 30000) { // > 30 seconds
         predictions.push({

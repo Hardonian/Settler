@@ -149,14 +149,12 @@ export class BehavioralAdaptation {
     }
 
     // Adapt template choice to most popular
-    if (usageData.popularTemplates.length > 0) {
-      const mostPopular = usageData.popularTemplates[0];
-      if (mostPopular !== this.defaults.pipelineTemplateChoice) {
-        this.adaptPipelineTemplate(
-          mostPopular,
-          'Most popular template - switching default'
-        );
-      }
+    const mostPopular = usageData.popularTemplates[0];
+    if (mostPopular && mostPopular !== this.defaults.pipelineTemplateChoice) {
+      this.adaptPipelineTemplate(
+        mostPopular,
+        'Most popular template - switching default'
+      );
     }
 
     // Adapt accuracy heuristic
