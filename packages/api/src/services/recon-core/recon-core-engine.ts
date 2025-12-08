@@ -421,6 +421,10 @@ export class ReconCoreEngine {
     const confidenceMin = confidences.length > 0 ? Math.min(...confidences) : null;
     const confidenceMax = confidences.length > 0 ? Math.max(...confidences) : null;
 
+    // Extract currency from data
+    const currency = (sourceData[0]?.currency || targetData[0]?.currency || matches[0]?.currency) as string | undefined;
+    const currencyValue = currency ? String(currency) : null;
+
     return {
       matchedCount,
       unmatchedSourceCount,
@@ -430,6 +434,7 @@ export class ReconCoreEngine {
       totalAmountTarget,
       totalAmountMatched,
       totalAmountUnmatched,
+      currency: currencyValue,
       confidenceAvg,
       confidenceMin,
       confidenceMax,
@@ -447,7 +452,7 @@ export class ReconCoreEngine {
           unmatched: totalAmountUnmatched,
           total: totalAmountSource || totalAmountTarget || null,
         },
-        ...(sourceData[0]?.currency || targetData[0]?.currency ? { currency: String(sourceData[0]?.currency || targetData[0]?.currency || '') } : {}),
+        ...(currencyValue ? { currency: currencyValue } : {}),
       },
     };
   }

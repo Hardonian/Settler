@@ -139,7 +139,7 @@ export class ReconRateLimiter {
 
       try {
         const tier = await this.getTenantTier(tenantId);
-        const limits: RateLimitConfig = TIER_LIMITS[tier] ?? TIER_LIMITS.free;
+        const limits: RateLimitConfig = TIER_LIMITS[tier] || TIER_LIMITS.free;
 
         // Check RPM limit (token bucket)
         const rpmKey = `rpm:${tenantId}`;
