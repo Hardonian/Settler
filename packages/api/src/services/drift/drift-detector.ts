@@ -14,8 +14,8 @@ export interface DriftDetection {
   fieldPath: string;
   expectedType: string;
   actualType: string;
-  expectedValue?: any;
-  actualValue?: any;
+  expectedValue?: unknown;
+  actualValue?: unknown;
   severity: 'warning' | 'error';
   confidence: number;
 }
@@ -38,13 +38,13 @@ export class DriftDetector {
     tenantId: string,
     reconJobId: string,
     contractVersionId: string | null,
-    sourceData: any[],
-    targetData: any[]
+    sourceData: Record<string, unknown>[],
+    targetData: Record<string, unknown>[]
   ): Promise<DriftDetection[]> {
     const drifts: DriftDetection[] = [];
 
     // Get contract schema if available
-    let contractSchema: any = null;
+    let contractSchema: Record<string, unknown> | null = null;
     if (contractVersionId) {
       const contract = await this.prisma.contractVersion.findUnique({
         where: { id: contractVersionId },
@@ -118,15 +118,19 @@ export class DriftDetector {
   /**
    * Infer schema from data
    */
-  private inferSchema(data: any[]): Record<string, string> {
+  private inferSchema(data: Record<string, unknown>[]): Record<string, string> {
     if (data.length === 0) return {};
 
     const schema: Record<string, string> = {};
     const sample = data[0];
 
-    for (const key in sample) {
-      const value = sample[key];
-      schema[key] = this.getType(value);
+    if (sample && typeof sample === 'object') {
+      for (const key in sample) {
+        if (Object.prototype.hasOwnProperty.call(sample, key)) {
+          const value = sample[key];
+          schema[key] = this.getType(value);
+        }
+      }
     }
 
     return schema;
@@ -135,7 +139,7 @@ export class DriftDetector {
   /**
    * Get type of value
    */
-  private getType(value: any): string {
+  private getType(value: unknown): string {
     if (value === null || value === undefined) return 'null';
     if (Array.isArray(value)) return 'array';
     if (typeof value === 'object') return 'object';
@@ -148,7 +152,7 @@ export class DriftDetector {
   private compareSchemas(
     source: Record<string, string>,
     target: Record<string, string>,
-    contract?: any
+    contract?: Record<string, unknown> | null
   ): DriftDetection[] {
     const drifts: DriftDetection[] = [];
     const allFields = new Set([...Object.keys(source), ...Object.keys(target)]);
@@ -183,7 +187,10 @@ export class DriftDetector {
   /**
    * Detect value drifts
    */
-  private async detectValueDrifts(sourceData: any[], targetData: any[]): Promise<DriftDetection[]> {
+  private async detectValueDrifts(
+    sourceData: Record<string, unknown>[],
+    targetData: Record<string, unknown>[]
+  ): Promise<DriftDetection[]> {
     // TODO: Implement statistical drift detection
     // Compare distributions, detect outliers, etc.
     return [];
@@ -224,7 +231,7 @@ export class DriftDetector {
     tenantId: string,
     reconJobId: string,
     drift: DriftDetection,
-    repairAction: any
+    repairAction: Record<string, unknown>
   ): Promise<void> {
     // Update mapping template or transformation recipe
     // This would modify the appropriate template/recipe to handle the drift

@@ -18,6 +18,14 @@ export interface CodeEvolution {
   validated: boolean;
 }
 
+export interface CodeModule {
+  id: string;
+  name?: string;
+  type?: string;
+  code?: string;
+  [key: string]: unknown;
+}
+
 export class AgentCodeEvolution {
   private validator: SelfValidator;
 
@@ -28,7 +36,7 @@ export class AgentCodeEvolution {
   /**
    * Evolve code modules
    */
-  async evolveCode(module: any): Promise<CodeEvolution | null> {
+  async evolveCode(module: CodeModule): Promise<CodeEvolution | null> {
     // Determine evolution type
     const evolutionType = this.determineEvolutionType(module);
 
@@ -82,7 +90,9 @@ export class AgentCodeEvolution {
   /**
    * Determine evolution type
    */
-  private determineEvolutionType(module: any): 'helper' | 'transform' | 'metadata' | 'index' | 'migration' | null {
+  private determineEvolutionType(
+    module: CodeModule
+  ): 'helper' | 'transform' | 'metadata' | 'index' | 'migration' | null {
     if (module.type === 'helper' || module.name?.includes('helper')) {
       return 'helper';
     }
@@ -104,7 +114,7 @@ export class AgentCodeEvolution {
   /**
    * Evolve helper function
    */
-  private async evolveHelperFunction(module: any): Promise<{ code: string; changes: string[] }> {
+  private async evolveHelperFunction(module: CodeModule): Promise<{ code: string; changes: string[] }> {
     // TODO: Implement AI-powered code evolution
     // This would use LLM to improve helper functions
     const changes = [
@@ -122,7 +132,7 @@ export class AgentCodeEvolution {
   /**
    * Evolve transform logic
    */
-  private async evolveTransformLogic(module: any): Promise<{ code: string; changes: string[] }> {
+  private async evolveTransformLogic(module: CodeModule): Promise<{ code: string; changes: string[] }> {
     const changes = [
       'Optimize transformation performance',
       'Add caching for repeated operations',
@@ -138,7 +148,7 @@ export class AgentCodeEvolution {
   /**
    * Evolve metadata
    */
-  private async evolveMetadata(module: any): Promise<{ code: string; changes: string[] }> {
+  private async evolveMetadata(module: CodeModule): Promise<{ code: string; changes: string[] }> {
     const changes = [
       'Reorganize metadata structure',
       'Add versioning information',
@@ -154,7 +164,7 @@ export class AgentCodeEvolution {
   /**
    * Evolve database index
    */
-  private async evolveIndex(module: any): Promise<{ code: string; changes: string[] }> {
+  private async evolveIndex(module: CodeModule): Promise<{ code: string; changes: string[] }> {
     const changes = [
       'Optimize index columns',
       'Add composite indexes',
@@ -170,7 +180,7 @@ export class AgentCodeEvolution {
   /**
    * Evolve migration
    */
-  private async evolveMigration(module: any): Promise<{ code: string; changes: string[] }> {
+  private async evolveMigration(module: CodeModule): Promise<{ code: string; changes: string[] }> {
     const changes = [
       'Add rollback logic',
       'Improve migration safety',
@@ -186,7 +196,10 @@ export class AgentCodeEvolution {
   /**
    * Calculate confidence score
    */
-  private calculateConfidence(changes: string[], validation: any): number {
+  private calculateConfidence(
+    changes: string[],
+    validation: { overallStatus: 'pass' | 'fail' | 'warning'; results: unknown[] }
+  ): number {
     let confidence = 0.5; // Base confidence
 
     // Increase confidence if validation passes

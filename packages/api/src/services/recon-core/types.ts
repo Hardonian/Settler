@@ -12,6 +12,13 @@ export type ReconStrategy =
   | 'ml_based'
   | 'hybrid';
 
+export interface ValidationRule {
+  field: string;
+  operator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'contains' | 'regex';
+  value: unknown;
+  severity?: 'warning' | 'error';
+}
+
 export interface ReconJobInput {
   name: string;
   description?: string;
@@ -22,18 +29,18 @@ export interface ReconJobInput {
   targetConfigEncrypted: string;
   mappingTemplateId?: string;
   transformRecipeId?: string;
-  validationRules?: any[];
+  validationRules?: ValidationRule[];
   reconStrategy?: ReconStrategy;
   scheduleCron?: string;
   scheduleTimezone?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface ReconExecutionOptions {
   dryRun?: boolean;
   skipValidation?: boolean;
   skipTransformation?: boolean;
-  customRules?: any[];
+  customRules?: ValidationRule[];
 }
 
 export interface ReconMatch {
@@ -43,8 +50,8 @@ export interface ReconMatch {
   confidence: number;
   amount?: number;
   currency?: string;
-  matchedFields: Record<string, any>;
-  metadata?: Record<string, any>;
+  matchedFields: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface ReconUnmatched {
@@ -55,7 +62,7 @@ export interface ReconUnmatched {
   amount?: number;
   currency?: string;
   reason?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface ReconConflict {
@@ -63,11 +70,32 @@ export interface ReconConflict {
   sourceId: string;
   targetId: string;
   field: string;
-  sourceValue: any;
-  targetValue: any;
+  sourceValue: unknown;
+  targetValue: unknown;
   severity: 'warning' | 'error';
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export type ReconJob = PrismaReconJob;
 export type ReconResult = PrismaReconResult;
+
+// Data record type for reconciliation
+export type ReconDataRecord = Record<string, unknown>;
+
+// Summary type for reconciliation results
+export interface ReconSummary {
+  totalRecords: number;
+  matchedRecords: number;
+  unmatchedRecords: number;
+  confidenceDistribution: {
+    high: number; // >= 0.9
+    medium: number; // >= 0.7
+    low: number; // < 0.7
+  };
+  amountBreakdown: {
+    matched: number | null;
+    unmatched: number | null;
+    total: number | null;
+  };
+  currency?: string;
+}

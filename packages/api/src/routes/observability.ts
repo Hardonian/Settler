@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { query } from "../db";
 import { logError } from "../utils/logger";
+import { AuthRequest } from "../middleware/auth";
 
 /**
  * Observability Routes
@@ -19,8 +20,9 @@ export const observabilityRouter = Router();
  */
 observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
-    const tenantId = (req as any).tenantId;
+    const authReq = req as AuthRequest;
+    const userId = authReq.userId;
+    const tenantId = authReq.tenantId;
 
     // Get job metrics
     const jobStats = await query<{
@@ -134,8 +136,9 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
  */
 observabilityRouter.get("/logs", async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
-    const tenantId = (req as any).tenantId;
+    const authReq = req as AuthRequest;
+    const userId = authReq.userId;
+    const tenantId = authReq.tenantId;
     const { level, jobId, startDate, endDate, limit = "100", offset = "0" } = req.query;
 
     let queryStr = `

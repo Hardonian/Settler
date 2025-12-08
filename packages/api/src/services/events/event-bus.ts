@@ -25,8 +25,8 @@ export interface PlatformEvent {
   type: EventType;
   tenantId: string;
   timestamp: Date;
-  data: Record<string, any>;
-  metadata?: Record<string, any>;
+  data: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
 }
 
 export type EventHandler = (event: PlatformEvent) => Promise<void> | void;
@@ -95,8 +95,8 @@ export class EventBus extends EventEmitter {
   async emitEvent(
     type: EventType,
     tenantId: string,
-    data: Record<string, any>,
-    metadata?: Record<string, any>
+    data: Record<string, unknown>,
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     const event: PlatformEvent = {
       id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,

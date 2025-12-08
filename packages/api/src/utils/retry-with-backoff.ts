@@ -10,12 +10,12 @@ export interface RetryOptions {
   initialDelayMs?: number;
   maxDelayMs?: number;
   backoffMultiplier?: number;
-  retryableErrors?: Array<new (...args: any[]) => Error>;
+  retryableErrors?: Array<new (...args: unknown[]) => Error>;
   onRetry?: (attempt: number, error: Error) => void;
 }
 
 const DEFAULT_OPTIONS: Required<Omit<RetryOptions, "retryableErrors" | "onRetry">> & {
-  retryableErrors: Array<new (...args: any[]) => Error>;
+  retryableErrors: Array<new (...args: unknown[]) => Error>;
   onRetry?: (attempt: number, error: Error) => void;
 } = {
   maxAttempts: 3,

@@ -17,7 +17,7 @@ const SENSITIVE_FIELDS = [
   "webhookSecret",
 ];
 
-export function redact(obj: any, additionalFields: string[] = []): any {
+export function redact<T>(obj: T, additionalFields: string[] = []): T {
   if (obj === null || obj === undefined) {
     return obj;
   }
@@ -27,13 +27,13 @@ export function redact(obj: any, additionalFields: string[] = []): any {
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => redact(item, additionalFields));
+    return obj.map((item) => redact(item, additionalFields)) as T;
   }
 
   const sensitiveFields = [...SENSITIVE_FIELDS, ...additionalFields];
-  const redacted: any = {};
+  const redacted = {} as Record<string, unknown>;
 
-  for (const [key, value] of Object.entries(obj)) {
+  for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
     const keyLower = key.toLowerCase();
     const isSensitive = sensitiveFields.some((field) => keyLower.includes(field.toLowerCase()));
 
@@ -46,5 +46,5 @@ export function redact(obj: any, additionalFields: string[] = []): any {
     }
   }
 
-  return redacted;
+  return redacted as T;
 }

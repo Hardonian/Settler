@@ -23,6 +23,9 @@ import type {
   ReconExecutionOptions,
   ReconMatch,
   ReconUnmatched,
+  ReconDataRecord,
+  ReconSummary,
+  ValidationRule,
 } from './types';
 
 export class ReconCoreEngine {
@@ -136,7 +139,7 @@ export class ReconCoreEngine {
       const validationResults = await this.validateData(
         transformedSource,
         transformedTarget,
-        reconJob.validationRules as any[],
+        (reconJob.validationRules as ValidationRule[]) || [],
         tenantId
       );
 
@@ -277,8 +280,8 @@ export class ReconCoreEngine {
    * Ingest data from source and target adapters
    */
   private async ingestData(reconJob: ReconJob): Promise<{
-    sourceData: any[];
-    targetData: any[];
+    sourceData: ReconDataRecord[];
+    targetData: ReconDataRecord[];
   }> {
     // TODO: Integrate with adapter system
     // For now, return empty arrays
@@ -293,10 +296,10 @@ export class ReconCoreEngine {
    * Transform data using a transform recipe
    */
   private async transformData(
-    data: any[],
+    data: ReconDataRecord[],
     transformRecipeId: string,
     tenantId: string
-  ): Promise<any[]> {
+  ): Promise<ReconDataRecord[]> {
     const recipe = await this.prisma.transformRecipe.findFirst({
       where: {
         id: transformRecipeId,
@@ -320,11 +323,11 @@ export class ReconCoreEngine {
    * Validate data using validation rules
    */
   private async validateData(
-    sourceData: any[],
-    targetData: any[],
-    validationRules: any[],
+    sourceData: ReconDataRecord[],
+    targetData: ReconDataRecord[],
+    validationRules: ValidationRule[],
     tenantId: string
-  ): Promise<any[]> {
+  ): Promise<ReconDataRecord[]> {
     // TODO: Implement validation logic
     // Apply validation rules
     return [];
@@ -334,10 +337,10 @@ export class ReconCoreEngine {
    * Apply mapping template to data
    */
   private async applyMapping(
-    data: any[],
+    data: ReconDataRecord[],
     mappingTemplateId: string,
     tenantId: string
-  ): Promise<any[]> {
+  ): Promise<ReconDataRecord[]> {
     const template = await this.prisma.mappingTemplate.findFirst({
       where: {
         id: mappingTemplateId,
@@ -361,8 +364,8 @@ export class ReconCoreEngine {
    * Perform reconciliation matching
    */
   private async performReconciliation(
-    sourceData: any[],
-    targetData: any[],
+    sourceData: ReconDataRecord[],
+    targetData: ReconDataRecord[],
     strategy: ReconStrategy,
     reconJob: ReconJob
   ): Promise<ReconMatch[]> {
@@ -376,8 +379,8 @@ export class ReconCoreEngine {
    */
   private calculateResults(
     matches: ReconMatch[],
-    sourceData: any[],
-    targetData: any[]
+    sourceData: ReconDataRecord[],
+    targetData: ReconDataRecord[]
   ): {
     matchedCount: number;
     unmatchedSourceCount: number;
@@ -391,7 +394,7 @@ export class ReconCoreEngine {
     confidenceAvg: number | null;
     confidenceMin: number | null;
     confidenceMax: number | null;
-    summary: any;
+    summary: ReconSummary;
   } {
     const matchedCount = matches.length;
     const matchedSourceIds = new Set(matches.map(m => m.sourceId));
@@ -430,10 +433,24 @@ export class ReconCoreEngine {
       confidenceMin,
       confidenceMax,
       summary: {
-        totalSource: sourceData.length,
-        totalTarget: targetData.length,
-        matchRate: sourceData.length > 0 ? matchedCount / sourceData.length : 0,
-        conflictRate: matches.length > 0 ? conflictCount / matches.length : 0,
+        totalRecords: sourceData.length + targetData.length,
+        matchedRecords: matchedCount,
+        unmatchedRecords: unmatchedSourceCount + unmatchedTargetCount,
+        confidenceDistribution: {
+          high: matches.filter(m => m.confidence >= 0.9).length,
+          medium: matches.filter(m => m.confidence >= 0.7 && m.confidence < 0.9).length,
+          low: matches.filter(m => m.confidence < 0.7).length,
+        },
+        amountBreakdown: {
+          matched: totalAmountMatched,
+          unmatched: totalAmountUnmatched,
+          total: totalAmountSource || totalAmountTarget || null,
+        },
+        currency: sourceData[0] && typeof sourceData[0] === 'object' && 'currency' in sourceData[0]
+          ? String(sourceData[0].currency)
+          : targetData[0] && typeof targetData[0] === 'object' && 'currency' in targetData[0]
+          ? String(targetData[0].currency)
+          : undefined,
       },
     };
   }
@@ -441,12 +458,15 @@ export class ReconCoreEngine {
   /**
    * Calculate total amount from data array
    */
-  private calculateTotalAmount(data: any[]): number | null {
+  private calculateTotalAmount(data: ReconDataRecord[]): number | null {
     if (data.length === 0) return null;
     
     const amounts = data
-      .map(item => item.amount || item.total || item.value)
-      .filter(amount => typeof amount === 'number');
+      .map((item) => {
+        const amount = item.amount ?? item.total ?? item.value;
+        return typeof amount === 'number' ? amount : null;
+      })
+      .filter((amount): amount is number => amount !== null);
     
     if (amounts.length === 0) return null;
     
@@ -465,10 +485,10 @@ export class ReconCoreEngine {
     action: string;
     entityType?: string;
     entityId?: string;
-    beforeState?: any;
-    afterState?: any;
-    changes?: any;
-    metadata?: any;
+    beforeState?: Record<string, unknown>;
+    afterState?: Record<string, unknown>;
+    changes?: Record<string, unknown>;
+    metadata?: Record<string, unknown>;
   }): Promise<void> {
     try {
       await this.prisma.reconAudit.create({

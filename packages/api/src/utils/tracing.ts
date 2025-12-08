@@ -74,8 +74,9 @@ export async function trace<T>(
     });
 
     return result;
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = Date.now() - startTime;
+    const errorMessage = error instanceof Error ? error.message : String(error);
 
     logInfo("Trace failed", {
       traceId,
@@ -83,7 +84,7 @@ export async function trace<T>(
       name,
       duration,
       status: "error",
-      error: error.message,
+      error: errorMessage,
     });
 
     throw error;

@@ -234,7 +234,10 @@ export class ValueBasedPricing {
   /**
    * Estimate customer ROI
    */
-  private async estimateCustomerROI(tenantId: string, usage: any): Promise<number> {
+  private async estimateCustomerROI(
+    tenantId: string,
+    usage: { totalJobs: number; [key: string]: unknown }
+  ): Promise<number> {
     // Estimate ROI based on:
     // - Time saved (automation)
     // - Error reduction
@@ -299,7 +302,10 @@ export class ValueBasedPricing {
   /**
    * Determine pricing tier
    */
-  private determinePricingTier(price: number, usage: any): 'starter' | 'professional' | 'enterprise' | 'custom' {
+  private determinePricingTier(
+    price: number,
+    usage: { totalJobs?: number; [key: string]: unknown }
+  ): 'starter' | 'professional' | 'enterprise' | 'custom' {
     if (price < 500) return 'starter';
     if (price < 2000) return 'professional';
     if (price < 10000) return 'enterprise';
@@ -309,7 +315,10 @@ export class ValueBasedPricing {
   /**
    * Suggest usage tier
    */
-  private suggestUsageTier(usage: any, analysis: PricingAnalysis): string {
+  private suggestUsageTier(
+    usage: { totalJobs?: number; [key: string]: unknown },
+    analysis: PricingAnalysis
+  ): string {
     if (usage.totalJobs < 100) return 'starter';
     if (usage.totalJobs < 1000) return 'professional';
     if (usage.totalJobs < 10000) return 'enterprise';

@@ -65,8 +65,9 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
       });
 
       return;
-    } catch (error: any) {
+    } catch (error: unknown) {
       attempt++;
+      const errorMessage = error instanceof Error ? error.message : String(error);
 
       if (attempt > maxRetries) {
         // Max retries exceeded - mark as failed
@@ -76,7 +77,7 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
                error = $1,
                attempts = $2
            WHERE id = $3`,
-          [error.message, attempt, delivery.id]
+          [errorMessage, attempt, delivery.id]
         );
 
         logError("Webhook delivery failed after max retries", error, {
@@ -101,14 +102,14 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
              attempts = $2,
              next_retry_at = $3
          WHERE id = $4`,
-        [error.message, attempt, nextRetryAt, delivery.id]
+        [errorMessage, attempt, nextRetryAt, delivery.id]
       );
 
       logWarn("Webhook delivery failed, will retry", {
         deliveryId: delivery.id,
         attempt,
         nextRetryAt: nextRetryAt.toISOString(),
-        error: error.message,
+        error: errorMessage,
       });
     }
   }
@@ -134,7 +135,10 @@ export async function processPendingWebhooks(): Promise<void> {
 }
 
 // Queue webhook for delivery
-export async function queueWebhookDelivery(webhookId: string, payload: any): Promise<string> {
+export async function queueWebhookDelivery(
+  webhookId: string,
+  payload: WebhookPayload | Record<string, unknown>
+): Promise<string> {
   const webhooks = await query<{ url: string; secret: string }>(
     `SELECT url, secret FROM webhooks WHERE id = $1 AND status = 'active'`,
     [webhookId]

@@ -37,7 +37,7 @@ export class MultiModelRouter {
    * Route request to optimal model
    */
   async route(
-    request: any,
+    request: Record<string, unknown>,
     complexity: 'low' | 'medium' | 'high'
   ): Promise<MMRDecision> {
     // Start with primary model
@@ -129,7 +129,7 @@ export class MultiModelRouter {
   /**
    * Estimate cost
    */
-  private estimateCost(model: AIModel, request: any): number {
+  private estimateCost(model: AIModel, request: Record<string, unknown>): number {
     const config = this.router.getModelConfig(model);
     const estimatedTokens = this.estimateTokens(request);
     return (estimatedTokens / 1000) * config.costPer1kTokens;
@@ -138,7 +138,7 @@ export class MultiModelRouter {
   /**
    * Estimate latency
    */
-  private estimateLatency(model: AIModel, request: any): number {
+  private estimateLatency(model: AIModel, _request: Record<string, unknown>): number {
     const config = this.router.getModelConfig(model);
     return config.latency;
   }
@@ -146,7 +146,7 @@ export class MultiModelRouter {
   /**
    * Estimate tokens
    */
-  private estimateTokens(request: any): number {
+  private estimateTokens(request: Record<string, unknown>): number {
     // Simple estimation based on request size
     const requestSize = JSON.stringify(request).length;
     return Math.ceil(requestSize / 4); // Rough estimate: 4 chars per token

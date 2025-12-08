@@ -8,9 +8,14 @@
 import { PrismaClient } from '@prisma/client';
 import { logInfo, logError } from '../../utils/logger';
 
+export interface CheckpointState {
+  state: Record<string, unknown>;
+  timestamp: Date;
+}
+
 export interface ReplayableJob {
   jobId: string;
-  checkpoint: any;
+  checkpoint: CheckpointState;
   canReplay: boolean;
   replayStrategy: 'full' | 'incremental' | 'from_checkpoint';
 }
@@ -26,7 +31,7 @@ export interface RollbackPlan {
 
 export class FaultTolerantRecon {
   private prisma: PrismaClient;
-  private checkpoints: Map<string, any> = new Map();
+  private checkpoints: Map<string, CheckpointState> = new Map();
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
@@ -35,7 +40,7 @@ export class FaultTolerantRecon {
   /**
    * Create checkpoint
    */
-  async createCheckpoint(jobId: string, state: any): Promise<void> {
+  async createCheckpoint(jobId: string, state: Record<string, unknown>): Promise<void> {
     this.checkpoints.set(jobId, {
       state,
       timestamp: new Date(),
@@ -46,7 +51,10 @@ export class FaultTolerantRecon {
   /**
    * Make transform idempotent
    */
-  async makeIdempotent(transformId: string, input: any): Promise<any> {
+  async makeIdempotent(
+    transformId: string,
+    input: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     // Check if transform already executed with same input
     const existingResult = await this.prisma.reconResult.findFirst({
       where: {
@@ -112,7 +120,7 @@ export class FaultTolerantRecon {
    */
   async fixForward(jobId: string, error: Error): Promise<{
     fixed: boolean;
-    newState: any;
+    newState: Record<string, unknown> | null;
   }> {
     // Attempt to fix error and continue
     const checkpoint = this.checkpoints.get(jobId);
@@ -157,7 +165,7 @@ export class FaultTolerantRecon {
   /**
    * Hash input for idempotency
    */
-  private hashInput(input: any): string {
+  private hashInput(input: Record<string, unknown>): string {
     // Simple hash function
     const str = JSON.stringify(input);
     let hash = 0;

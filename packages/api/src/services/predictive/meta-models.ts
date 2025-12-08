@@ -33,6 +33,16 @@ export interface ModelBenchmark {
   reliability: number;
 }
 
+export interface ReconJobInput {
+  id?: string;
+  name?: string;
+  sourceAdapter?: string;
+  targetAdapter?: string;
+  validationRules?: unknown[];
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export class MetaModels {
   private router: AIRouter;
 
@@ -43,7 +53,7 @@ export class MetaModels {
   /**
    * Evaluate job complexity
    */
-  evaluateJobComplexity(job: any): JobComplexity {
+  evaluateJobComplexity(job: ReconJobInput): JobComplexity {
     const factors: string[] = [];
     let estimatedTokens = 1000; // Base
     let estimatedCost = 0.002; // Base
@@ -106,7 +116,7 @@ export class MetaModels {
    * Recommend best model
    */
   recommendModel(
-    job: any,
+    job: ReconJobInput,
     complexity: JobComplexity,
     accuracyRequired: number,
     budget?: number
@@ -195,7 +205,7 @@ export class MetaModels {
   /**
    * Benchmark models
    */
-  async benchmarkModels(job: any): Promise<ModelBenchmark[]> {
+  async benchmarkModels(job: ReconJobInput): Promise<ModelBenchmark[]> {
     const models: AIModel[] = ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet'];
     const benchmarks: ModelBenchmark[] = [];
 

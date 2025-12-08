@@ -263,7 +263,14 @@ router.post("/subscribe", authMiddleware, async (req: AuthRequest, res: Response
       subscription_id: subscription.id,
       stripe_subscription_id: stripeSubscription.id,
       status: subscription.status,
-      client_secret: (stripeSubscription.latest_invoice as any)?.payment_intent?.client_secret,
+      client_secret: stripeSubscription.latest_invoice && 
+        typeof stripeSubscription.latest_invoice === 'object' &&
+        'payment_intent' in stripeSubscription.latest_invoice &&
+        stripeSubscription.latest_invoice.payment_intent &&
+        typeof stripeSubscription.latest_invoice.payment_intent === 'object' &&
+        'client_secret' in stripeSubscription.latest_invoice.payment_intent
+        ? String(stripeSubscription.latest_invoice.payment_intent.client_secret)
+        : undefined,
     });
   } catch (error) {
     logError("Failed to create subscription", error);
@@ -558,7 +565,7 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
     try {
       // Get raw body (set by middleware or use req.body if Buffer)
       const rawBody =
-        (req as any).rawBody ||
+        (req as Request & { rawBody?: Buffer }).rawBody ||
         (req.body instanceof Buffer ? req.body : Buffer.from(JSON.stringify(req.body)));
       event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
     } catch (err) {
@@ -575,7 +582,7 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
     await supabase.from("stripe_event_log").insert({
       stripe_event_id: event.id,
       event_type: event.type,
-      payload: event.data.object as any,
+      payload: event.data.object as Record<string, unknown>,
       processed: false,
     });
 
@@ -622,7 +629,10 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
 });
 
 // Helper function to handle subscription updates
-async function handleSubscriptionUpdate(supabase: any, subscription: Stripe.Subscription) {
+async function handleSubscriptionUpdate(
+  supabase: { from: (table: string) => { update: (data: Record<string, unknown>) => { eq: (col: string, val: string) => Promise<{ error: unknown }> } } },
+  subscription: Stripe.Subscription
+) {
   const { error } = await supabase
     .from("subscriptions")
     .update({
@@ -641,7 +651,10 @@ async function handleSubscriptionUpdate(supabase: any, subscription: Stripe.Subs
 }
 
 // Helper function to handle invoice events
-async function handleInvoiceEvent(_supabase: any, invoice: Stripe.Invoice) {
+async function handleInvoiceEvent(
+  _supabase: unknown,
+  invoice: Stripe.Invoice
+) {
   // In a real implementation, you'd:
   // 1. Update invoice status in database
   // 2. Send email notifications
@@ -654,7 +667,10 @@ async function handleInvoiceEvent(_supabase: any, invoice: Stripe.Invoice) {
 }
 
 // Helper function to handle upcoming invoices
-async function handleInvoiceUpcoming(_supabase: any, invoice: Stripe.Invoice) {
+async function handleInvoiceUpcoming(
+  _supabase: unknown,
+  invoice: Stripe.Invoice
+) {
   // In a real implementation, you'd:
   // 1. Send email notification about upcoming invoice
   // 2. Check for usage overages

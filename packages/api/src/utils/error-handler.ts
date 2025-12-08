@@ -69,7 +69,9 @@ export function handleRouteError(
   logError(defaultMessage, error, context);
 
   // Extract traceId from request if available
-  const traceId = (res.req as any).traceId;
+  const traceId = res.req && typeof res.req === 'object' && 'traceId' in res.req
+    ? (res.req as { traceId?: string }).traceId
+    : undefined;
 
   sendError(res, statusCode, errorCode, message, details, traceId);
 }

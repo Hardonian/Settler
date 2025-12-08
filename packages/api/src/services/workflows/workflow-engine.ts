@@ -24,7 +24,7 @@ export type WorkflowStepType =
 export interface WorkflowStep {
   id: string;
   type: WorkflowStepType;
-  config: Record<string, any>;
+  config: Record<string, unknown>;
   onSuccess?: string; // Next step ID
   onFailure?: string; // Next step ID
   retry?: {
@@ -33,15 +33,17 @@ export interface WorkflowStep {
   };
 }
 
+export interface WorkflowTrigger {
+  type: 'schedule' | 'event' | 'manual';
+  config: Record<string, unknown>;
+}
+
 export interface WorkflowDefinition {
   id: string;
   name: string;
   version: string;
   steps: WorkflowStep[];
-  triggers: Array<{
-    type: 'schedule' | 'event' | 'manual';
-    config: any;
-  }>;
+  triggers: WorkflowTrigger[];
 }
 
 export class WorkflowEngine {
@@ -57,11 +59,11 @@ export class WorkflowEngine {
   async executeWorkflow(
     tenantId: string,
     workflowId: string,
-    input?: any
+    input?: Record<string, unknown>
   ): Promise<{
     workflowRunId: string;
     status: 'running' | 'completed' | 'failed';
-    results: Record<string, any>;
+    results: Record<string, unknown>;
   }> {
     // Create workflow run
     const workflowRun = await this.prisma.workflowRun.create({
