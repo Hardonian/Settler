@@ -17,7 +17,7 @@ interface RateLimitConfig {
   monthlyRecons: number;
 }
 
-const TIER_LIMITS: Record<string, RateLimitConfig> = {
+const TIER_LIMITS = {
   free: {
     rpm: 100,
     concurrentJobs: 1,
@@ -43,11 +43,11 @@ const TIER_LIMITS: Record<string, RateLimitConfig> = {
     concurrentJobs: 1000,
     monthlyRecons: -1, // Unlimited
   },
-};
+} as const satisfies Record<string, RateLimitConfig>;
 
 function getTierLimits(tier: string): RateLimitConfig {
   if (tier in TIER_LIMITS) {
-    return TIER_LIMITS[tier]!;
+    return TIER_LIMITS[tier as keyof typeof TIER_LIMITS];
   }
   return TIER_LIMITS.free;
 }
