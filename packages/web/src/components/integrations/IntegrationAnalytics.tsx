@@ -21,7 +21,8 @@ export function IntegrationAnalytics() {
   const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
 
   useEffect(() => {
-    fetchAnalytics();
+    void fetchAnalytics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange]);
 
   const fetchAnalytics = async () => {

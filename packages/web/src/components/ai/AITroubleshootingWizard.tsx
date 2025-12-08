@@ -57,7 +57,7 @@ export function AITroubleshootingWizard() {
     } else if (currentStep < TROUBLESHOOTING_FLOW.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      generateSolution();
+      void generateSolution();
     }
   };
 
@@ -90,7 +90,7 @@ export function AITroubleshootingWizard() {
       <Card>
         <CardHeader>
           <CardTitle>Recommended Solution</CardTitle>
-          <CardDescription>Based on your answers, here's what we recommend:</CardDescription>
+          <CardDescription>Based on your answers, here&apos;s what we recommend:</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
@@ -125,7 +125,7 @@ export function AITroubleshootingWizard() {
           <Wand2 className="w-5 h-5" />
           Troubleshooting Wizard
         </CardTitle>
-        <CardDescription>Answer a few questions and I'll help you solve the issue</CardDescription>
+        <CardDescription>Answer a few questions and I&apos;ll help you solve the issue</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>

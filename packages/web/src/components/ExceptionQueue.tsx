@@ -47,8 +47,9 @@ export function ExceptionQueue({ jobId }: { jobId?: string }) {
   });
 
   useEffect(() => {
-    loadExceptions();
-    loadStats();
+    void loadExceptions();
+    void loadStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobId, filters]);
 
   const loadExceptions = async () => {
@@ -95,8 +96,8 @@ export function ExceptionQueue({ jobId }: { jobId?: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resolution, notes }),
       });
-      loadExceptions();
-      loadStats();
+      void loadExceptions();
+      void loadStats();
     } catch (error) {
       console.error("Failed to resolve exception:", error);
     }
@@ -115,8 +116,8 @@ export function ExceptionQueue({ jobId }: { jobId?: string }) {
         }),
       });
       setSelectedExceptions(new Set());
-      loadExceptions();
-      loadStats();
+      void loadExceptions();
+      void loadStats();
     } catch (error) {
       console.error("Failed to bulk resolve:", error);
     }

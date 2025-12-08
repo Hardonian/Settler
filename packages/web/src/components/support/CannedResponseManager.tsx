@@ -24,7 +24,7 @@ export function CannedResponseManager() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchResponses();
+    void fetchResponses();
   }, []);
 
   const fetchResponses = async () => {
@@ -40,7 +40,7 @@ export function CannedResponseManager() {
   };
 
   const handleCopy = (content: string, id: string) => {
-    navigator.clipboard.writeText(content);
+    void navigator.clipboard.writeText(content);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };

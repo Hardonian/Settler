@@ -32,7 +32,7 @@ export function ChatWidget() {
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white">Support Chat</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">We're here to help</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">We&apos;re here to help</p>
           </div>
           <div className="flex items-center gap-2">
             <Button

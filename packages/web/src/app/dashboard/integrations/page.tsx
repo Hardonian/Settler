@@ -28,7 +28,7 @@ export default function IntegrationsPage() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    fetchIntegrations();
+    void fetchIntegrations();
   }, []);
 
   useEffect(() => {

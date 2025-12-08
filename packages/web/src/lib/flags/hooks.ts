@@ -231,6 +231,7 @@ export function useFeatureFlags(keys: FlagKey[]): Record<FlagKey, boolean> {
     }
 
     checkFlags();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keys.join(","), userContext]);
 
   // Fallback to synchronous checks if still loading

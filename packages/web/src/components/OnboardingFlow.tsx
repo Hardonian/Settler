@@ -76,6 +76,7 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
         totalSteps: steps.length,
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Track step changes
@@ -93,6 +94,7 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
     });
 
     stepStartTimeRef.current = Date.now();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   async function handleSubmit() {

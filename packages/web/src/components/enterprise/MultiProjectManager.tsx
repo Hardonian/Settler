@@ -19,7 +19,7 @@ export function MultiProjectManager() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProjects();
+    void fetchProjects();
   }, []);
 
   const fetchProjects = async () => {

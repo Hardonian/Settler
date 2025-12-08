@@ -51,7 +51,7 @@ export default function BillingDashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBillingData();
+    void fetchBillingData();
   }, []);
 
   const fetchBillingData = async () => {

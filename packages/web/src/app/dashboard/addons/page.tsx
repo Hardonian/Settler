@@ -29,7 +29,7 @@ export default function AddOnsMarketplacePage() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    fetchAddOns();
+    void fetchAddOns();
   }, []);
 
   useEffect(() => {

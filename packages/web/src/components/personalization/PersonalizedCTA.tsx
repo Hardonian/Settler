@@ -71,7 +71,7 @@ export function PersonalizedCTA({
       }
     };
 
-    loadCTA();
+    void loadCTA();
   }, [userId, searchParams]);
 
   if (loading) {

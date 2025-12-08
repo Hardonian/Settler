@@ -82,7 +82,7 @@ export function OnboardingProgress({ progress, nextStep }: OnboardingProgressPro
             Onboarding Complete! 🎉
           </CardTitle>
           <CardDescription>
-            You've completed all setup steps. You're ready to use all features!
+            You&apos;ve completed all setup steps. You&apos;re ready to use all features!
           </CardDescription>
         </CardHeader>
       </Card>

@@ -21,7 +21,7 @@ export function IPAllowlistManager() {
   const [description, setDescription] = useState("");
 
   useEffect(() => {
-    fetchAllowlist();
+    void fetchAllowlist();
   }, []);
 
   const fetchAllowlist = async () => {

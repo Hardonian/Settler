@@ -58,8 +58,9 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
   const [aiSuggestions, setAiSuggestions] = useState<MatchingRule[]>([]);
 
   useEffect(() => {
-    loadTemplates();
-    loadAISuggestions();
+    void loadTemplates();
+    void loadAISuggestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobId]);
 
   const loadTemplates = async () => {

@@ -19,7 +19,7 @@ export function ReferralProgram() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchReferralStats();
+    void fetchReferralStats();
   }, []);
 
   const fetchReferralStats = async () => {

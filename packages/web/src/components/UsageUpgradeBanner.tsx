@@ -56,7 +56,7 @@ export function UsageUpgradeBanner({
             {percentage >= 95 ? "Almost out of " + metricLabel : "Running out of " + metricLabel}
           </p>
           <p className="text-sm text-amber-800 dark:text-amber-200 mt-1">
-            You've used {currentUsage.toLocaleString()} of {limit.toLocaleString()} {metricLabel}{" "}
+            You&apos;ve used {currentUsage.toLocaleString()} of {limit.toLocaleString()} {metricLabel}{" "}
             this month ({Math.round(percentage)}% used).
           </p>
           {percentage >= 95 && (

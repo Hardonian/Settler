@@ -56,7 +56,7 @@ export default function UsageDashboardPage() {
   const [selectedPeriod] = useState<"current" | "last-month" | "last-7-days">("current");
 
   useEffect(() => {
-    fetchUsageData();
+    void fetchUsageData();
   }, [selectedPeriod]);
 
   const fetchUsageData = async () => {

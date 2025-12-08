@@ -126,7 +126,7 @@ export function SocialProof({ testimonials = defaultTestimonials }: SocialProofP
                   ))}
                 </div>
                 <blockquote className="text-muted-foreground mb-6 italic">
-                  <p>"{testimonial.quote}"</p>
+                  <p>&quot;{testimonial.quote}&quot;</p>
                 </blockquote>
                 <div className="flex items-center gap-3">
                   <div

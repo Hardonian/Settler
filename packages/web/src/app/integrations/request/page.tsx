@@ -54,7 +54,7 @@ export default function IntegrationRequestPage() {
                   Request Submitted!
                 </h3>
                 <p className="text-slate-600 dark:text-slate-300 mb-6">
-                  Thank you for your request. We'll review it and get back to you soon.
+                  Thank you for your request. We&apos;ll review it and get back to you soon.
                 </p>
                 <div className="flex gap-4 justify-center">
                   <Button asChild>
@@ -71,7 +71,7 @@ export default function IntegrationRequestPage() {
               <CardHeader>
                 <CardTitle className="text-2xl">Integration Request Form</CardTitle>
                 <CardDescription>
-                  Tell us about the platform or service you'd like to integrate with Settler
+                  Tell us about the platform or service you&apos;d like to integrate with Settler
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -157,10 +157,10 @@ export default function IntegrationRequestPage() {
               What happens next?
             </h3>
             <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-              <li>• We'll review your request and assess feasibility</li>
+              <li>• We&apos;ll review your request and assess feasibility</li>
               <li>• Our team will reach out within 2-3 business days</li>
-              <li>• We'll discuss timeline and requirements</li>
-              <li>• Once approved, we'll prioritize development</li>
+              <li>• We&apos;ll discuss timeline and requirements</li>
+              <li>• Once approved, we&apos;ll prioritize development</li>
             </ul>
           </div>
 

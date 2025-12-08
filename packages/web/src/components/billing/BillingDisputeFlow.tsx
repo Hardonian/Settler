@@ -53,7 +53,7 @@ export function BillingDisputeFlow() {
               Dispute Submitted
             </h3>
             <p className="text-slate-600 dark:text-slate-400">
-              We've received your dispute and will review it within 5 business days.
+              We&apos;ve received your dispute and will review it within 5 business days.
             </p>
           </div>
         </CardContent>
@@ -73,7 +73,7 @@ export function BillingDisputeFlow() {
       <CardContent>
         <Alert className="mb-6">
           <AlertDescription>
-            Please review your invoice carefully before submitting a dispute. We'll respond within 5
+            Please review your invoice carefully before submitting a dispute. We&apos;ll respond within 5
             business days.
           </AlertDescription>
         </Alert>

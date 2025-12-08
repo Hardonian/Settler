@@ -21,7 +21,7 @@ export function PricingExperimentEngine() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchExperiments();
+    void fetchExperiments();
   }, []);
 
   const fetchExperiments = async () => {

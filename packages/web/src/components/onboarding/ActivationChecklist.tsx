@@ -72,7 +72,7 @@ export function ActivationChecklist({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchChecklistStatus();
+    void fetchChecklistStatus();
   }, [userId]);
 
   const fetchChecklistStatus = async () => {
@@ -238,10 +238,10 @@ export function ActivationChecklist({
         {allRequiredComplete && (
           <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
             <p className="text-sm font-medium text-green-900 dark:text-green-300 mb-2">
-              🎉 Congratulations! You're all set up.
+              🎉 Congratulations! You&apos;re all set up.
             </p>
             <p className="text-xs text-green-800 dark:text-green-400">
-              You've completed all required activation steps. Start reconciling your transactions
+              You&apos;ve completed all required activation steps. Start reconciling your transactions
               now!
             </p>
           </div>

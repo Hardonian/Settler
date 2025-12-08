@@ -24,7 +24,7 @@ export default function PaymentMethodsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchPaymentMethods();
+    void fetchPaymentMethods();
   }, []);
 
   const fetchPaymentMethods = async () => {

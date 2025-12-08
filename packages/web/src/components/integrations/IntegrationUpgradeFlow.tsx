@@ -29,7 +29,8 @@ export function IntegrationUpgradeFlow({
   const [upgrading, setUpgrading] = useState(false);
 
   useEffect(() => {
-    fetchVersionInfo();
+    void fetchVersionInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [integrationId, currentVersion]);
 
   const fetchVersionInfo = async () => {
@@ -138,7 +139,7 @@ export function IntegrationUpgradeFlow({
         )}
 
         <div>
-          <h4 className="font-semibold text-slate-900 dark:text-white mb-2">What's New:</h4>
+          <h4 className="font-semibold text-slate-900 dark:text-white mb-2">What&apos;s New:</h4>
           <ul className="list-disc list-inside space-y-1 text-sm text-slate-600 dark:text-slate-400">
             {version.changelog.map((item, index) => (
               <li key={index}>{item}</li>

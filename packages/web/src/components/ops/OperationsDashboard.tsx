@@ -40,8 +40,10 @@ export function OperationsDashboard() {
   const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOpsData();
-    const interval = setInterval(fetchOpsData, 30000); // Refresh every 30s
+    void fetchOpsData();
+    const interval = setInterval(() => {
+      void fetchOpsData();
+    }, 30000); // Refresh every 30s
     return () => clearInterval(interval);
   }, []);
 

@@ -18,7 +18,8 @@ export function FunnelDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchFunnelData();
+    void fetchFunnelData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange]);
 
   const fetchFunnelData = async () => {

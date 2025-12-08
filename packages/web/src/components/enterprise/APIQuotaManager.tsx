@@ -19,7 +19,7 @@ export function APIQuotaManager() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchQuotas();
+    void fetchQuotas();
   }, []);
 
   const fetchQuotas = async () => {

@@ -23,8 +23,10 @@ export function IntegrationHealthDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchIntegrationHealth();
-    const interval = setInterval(fetchIntegrationHealth, 30000); // Refresh every 30s
+    void fetchIntegrationHealth();
+    const interval = setInterval(() => {
+      void fetchIntegrationHealth();
+    }, 30000); // Refresh every 30s
     return () => clearInterval(interval);
   }, []);
 
