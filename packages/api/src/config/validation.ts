@@ -65,7 +65,7 @@ const skipValidation =
   (process.env.NODE_ENV === "production" && !process.env.VERCEL);
 
 const env = skipValidation
-  ? (Object.assign({
+  ? ({
       NODE_ENV: (process.env.NODE_ENV || "development") as UnvalidatedEnv["NODE_ENV"],
       PORT: Number(process.env.PORT || 3000),
       HOST: process.env.HOST || "0.0.0.0",
