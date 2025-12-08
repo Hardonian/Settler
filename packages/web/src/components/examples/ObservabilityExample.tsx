@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTrackCTA, useTrackForm } from '@/lib/telemetry/hooks';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { defensiveFetch, fetchJSON, fetchWithFallback } from '@/lib/api/client';
+import { fetchJSON, fetchWithFallback } from '@/lib/api/client';
 import { logger } from '@/lib/logging/logger';
 import { ErrorFallback, LoadingFallback } from '@/lib/resilience/fallbacks';
 import { ErrorBoundary } from '@/components/ui/error-boundary';

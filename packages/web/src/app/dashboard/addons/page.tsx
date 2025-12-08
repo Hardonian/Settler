@@ -145,7 +145,7 @@ export default function AddOnsMarketplacePage() {
     }
   };
 
-  const handlePurchase = (id: string) => {
+  const handlePurchase = async (id: string): Promise<void> => {
     try {
       setIsProcessing(true);
       // In production: await fetch(`/api/billing/addon/purchase`, { method: "POST", body: JSON.stringify({ add_on_id: id }) });

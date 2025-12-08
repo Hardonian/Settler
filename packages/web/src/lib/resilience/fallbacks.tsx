@@ -7,9 +7,8 @@
 'use client';
 
 import React from 'react';
-import { Loading, Skeleton } from '@/components/ui/loading';
+import { Skeleton } from '@/components/ui/loading';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { logger } from '../logging/logger';
 import { telemetry } from '../telemetry/events';
