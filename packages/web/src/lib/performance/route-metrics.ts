@@ -63,7 +63,10 @@ class RouteMetricsCollector {
     const metric = this.metrics.get(route);
     if (!metric) {
       this.startTransition(route);
-      this.metrics.get(route)!.hydrationStart = performance.now();
+      const newMetric = this.metrics.get(route);
+      if (newMetric) {
+        newMetric.hydrationStart = performance.now();
+      }
       return;
     }
 
@@ -102,9 +105,11 @@ class RouteMetricsCollector {
     const metric = this.metrics.get(route);
     if (!metric) {
       this.startTransition(route);
-      const newMetric = this.metrics.get(route)!;
-      newMetric.bundleLoadStart = startTime;
-      newMetric.bundleLoadEnd = endTime;
+      const newMetric = this.metrics.get(route);
+      if (newMetric) {
+        newMetric.bundleLoadStart = startTime;
+        newMetric.bundleLoadEnd = endTime;
+      }
       return;
     }
 

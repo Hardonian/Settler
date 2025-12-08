@@ -154,7 +154,6 @@ export function Footer() {
               </li>
             </ul>
           </nav>
-          </div>
         </div>
 
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">

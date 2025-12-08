@@ -5,7 +5,20 @@
     "build": {
       "dependsOn": ["^build", "typecheck"],
       "outputs": ["dist/**", ".next/**", "build/**"],
-      "env": ["NODE_ENV"]
+      "env": [
+        "NODE_ENV",
+        "NEXT_PUBLIC_SITE_URL",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "POSTGRES_URL",
+        "POSTGRES_PRISMA_URL",
+        "POSTGRES_URL_NON_POOLING",
+        "POSTGRES_PASSWORD",
+        "DATABASE_URL"
+      ]
     },
     "dev": {
       "cache": false,

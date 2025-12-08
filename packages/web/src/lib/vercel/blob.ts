@@ -49,13 +49,13 @@ export const blob = {
     }
 
     try {
-      const result = await put(pathname, body as any, options as any);
+      const result = await put(pathname, body, options);
       return {
         url: result.url,
-        downloadUrl: result.downloadUrl || result.url,
+        downloadUrl: result.downloadUrl ?? result.url,
         pathname: result.pathname,
         contentType: result.contentType,
-        size: (result as any).size,
+        size: result.size,
       };
     } catch (error) {
       console.error(`[Blob] Error uploading file "${pathname}":`, error);

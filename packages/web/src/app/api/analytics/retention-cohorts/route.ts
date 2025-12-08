@@ -28,11 +28,23 @@ export async function GET() {
     // Group by cohort (month)
     const cohortsMap = new Map<string, string[]>();
     for (const user of users || []) {
-      const cohort = new Date((user as any).created_at).toISOString().substring(0, 7); // YYYY-MM
+      if (!user || typeof user !== 'object') continue;
+      
+      const createdAt = 'created_at' in user ? user.created_at : null;
+      const userId = 'id' in user ? user.id : null;
+      
+      if (!createdAt || !userId || typeof createdAt !== 'string' || typeof userId !== 'string') {
+        continue;
+      }
+      
+      const cohort = new Date(createdAt).toISOString().substring(0, 7); // YYYY-MM
       if (!cohortsMap.has(cohort)) {
         cohortsMap.set(cohort, []);
       }
-      cohortsMap.get(cohort)!.push((user as any).id);
+      const cohortArray = cohortsMap.get(cohort);
+      if (cohortArray) {
+        cohortArray.push(userId);
+      }
     }
 
     // Calculate retention for each cohort
@@ -53,13 +65,18 @@ export async function GET() {
         week12.setDate(week12.getDate() + 84);
 
         // Get active users at each time point
-        const getActiveCount = async (date: Date) => {
+        const getActiveCount = async (date: Date): Promise<number> => {
           const { data } = await supabase
             .from("user_lifecycle")
             .select("user_id")
             .in("user_id", userIds)
             .gte("last_active_at", date.toISOString());
-          return (data as any)?.length || 0;
+          
+          if (!data || !Array.isArray(data)) {
+            return 0;
+          }
+          
+          return data.length;
         };
 
         const [w1, w2, w4, w8, w12] = await Promise.all([

@@ -15,9 +15,15 @@ const nextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
   reactStrictMode: true,
   swcMinify: true,
+  // Optimize build output
+  output: 'standalone',
+  // Reduce memory footprint during build
+  compress: true,
   // Enable instrumentation
   experimental: {
     instrumentationHook: true,
+    // Optimize memory usage
+    optimizeCss: true,
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if

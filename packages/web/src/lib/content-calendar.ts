@@ -46,12 +46,19 @@ export function generateContentCalendar(startDate: Date = new Date()): ContentIt
     for (let i = 0; i < 2; i++) {
       const blogDate = new Date(currentDate);
       blogDate.setDate(blogDate.getDate() + i * 15);
+      const topicIndex = (month * 2 + i) % topics.length;
+      const topic = topics[topicIndex];
+      if (!topic) continue;
+      
+      const dateStr = blogDate.toISOString().split("T")[0];
+      if (!dateStr) continue;
+      
       calendar.push({
-        date: blogDate.toISOString().split("T")[0]!,
+        date: dateStr,
         type: "blog",
         platform: "blog",
-        title: topics[(month * 2 + i) % topics.length]!,
-        description: `Comprehensive guide on ${topics[(month * 2 + i) % topics.length]!.toLowerCase()}`,
+        title: topic,
+        description: `Comprehensive guide on ${topic.toLowerCase()}`,
         keywords: ["reconciliation", "API", "financial automation"],
         status: "draft",
       });
@@ -63,11 +70,18 @@ export function generateContentCalendar(startDate: Date = new Date()): ContentIt
         const socialDate = new Date(currentDate);
         socialDate.setDate(socialDate.getDate() + week * 7 + day * 2);
         const platform = day % 2 === 0 ? "twitter" : "linkedin";
+        const socialIndex = (month * 12 + week * 3 + day) % socialTopics.length;
+        const socialTopic = socialTopics[socialIndex];
+        if (!socialTopic) continue;
+        
+        const socialDateStr = socialDate.toISOString().split("T")[0];
+        if (!socialDateStr) continue;
+        
         calendar.push({
-          date: socialDate.toISOString().split("T")[0]!,
+          date: socialDateStr,
           type: "social",
           platform,
-          title: socialTopics[(month * 12 + week * 3 + day) % socialTopics.length]!,
+          title: socialTopic,
           description: "Social media post",
           status: "draft",
         });
@@ -77,15 +91,22 @@ export function generateContentCalendar(startDate: Date = new Date()): ContentIt
     // SEO landing pages (1 per month)
     const seoDate = new Date(currentDate);
     seoDate.setDate(seoDate.getDate() + 10);
-    calendar.push({
-      date: seoDate.toISOString().split("T")[0]!,
-      type: "seo",
-      platform: "blog",
-      title: `Reconciliation Guide: ${topics[month % topics.length]!}`,
-      description: `SEO-optimized landing page for ${topics[month % topics.length]!.toLowerCase()}`,
-      keywords: ["reconciliation", "guide", "tutorial"],
-      status: "draft",
-    });
+    const seoTopicIndex = month % topics.length;
+    const seoTopic = topics[seoTopicIndex];
+    if (seoTopic) {
+      const seoDateStr = seoDate.toISOString().split("T")[0];
+      if (seoDateStr) {
+        calendar.push({
+          date: seoDateStr,
+          type: "seo",
+          platform: "blog",
+          title: `Reconciliation Guide: ${seoTopic}`,
+          description: `SEO-optimized landing page for ${seoTopic.toLowerCase()}`,
+          keywords: ["reconciliation", "guide", "tutorial"],
+          status: "draft",
+        });
+      }
+    }
 
     // Move to next month
     currentDate.setMonth(currentDate.getMonth() + 1);
