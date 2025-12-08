@@ -7,6 +7,14 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 
+interface ExecutionSummary {
+  matched?: number;
+  unmatched?: number;
+  errors?: number;
+  accuracy?: number;
+  totalTransactions?: number;
+}
+
 const router = Router();
 
 const getReportSchema = z.object({
@@ -65,14 +73,6 @@ router.get(
       const dateEnd = endDate || new Date().toISOString();
 
       // Get execution summary
-      interface ExecutionSummary {
-        matched?: number;
-        unmatched?: number;
-        errors?: number;
-        accuracy?: number;
-        totalTransactions?: number;
-      }
-
       const executions = await query<{
         id: string;
         summary: ExecutionSummary | null;

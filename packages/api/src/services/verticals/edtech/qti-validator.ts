@@ -16,6 +16,17 @@ export interface QTIValidationResult {
   warnings: string[];
 }
 
+interface Syllabus {
+  outcomes?: string[];
+  [key: string]: unknown;
+}
+
+interface LearningOutcome {
+  id: string;
+  description: string;
+  [key: string]: unknown;
+}
+
 export class QTIValidator {
   /**
    * Validate QTI (Question and Test Interoperability) format
@@ -31,17 +42,6 @@ export class QTIValidator {
       errors: [],
       warnings: [],
     };
-  }
-
-  interface Syllabus {
-    outcomes?: string[];
-    [key: string]: unknown;
-  }
-
-  interface LearningOutcome {
-    id: string;
-    description: string;
-    [key: string]: unknown;
   }
 
   /**

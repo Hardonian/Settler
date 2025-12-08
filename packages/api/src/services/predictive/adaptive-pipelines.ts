@@ -18,6 +18,14 @@ export interface AdaptivePipelineConfig {
   observedErrors?: string[];
 }
 
+export interface Pipeline {
+  usesAI?: boolean;
+  model?: string;
+  engine?: string;
+  route?: string;
+  [key: string]: unknown;
+}
+
 export class AdaptivePipelines {
   private router: PredictiveRouter;
   private metaModels: MetaModels;
@@ -25,14 +33,6 @@ export class AdaptivePipelines {
   constructor() {
     this.router = new PredictiveRouter();
     this.metaModels = new MetaModels();
-  }
-
-  interface Pipeline {
-    usesAI?: boolean;
-    model?: string;
-    engine?: string;
-    route?: string;
-    [key: string]: unknown;
   }
 
   /**

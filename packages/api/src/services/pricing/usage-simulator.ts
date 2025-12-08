@@ -21,6 +21,17 @@ export interface UsageSimulation {
   estimatedCost: number;
 }
 
+interface HistoricalUsage {
+  reconComparisons: number;
+  validations: number;
+  transformations: number;
+  mappings: number;
+  workflowSteps: number;
+  aiTokens: number;
+  storageBytes: number;
+  webhookTriggers: number;
+}
+
 export class UsageSimulator {
   private prisma: PrismaClient;
 
@@ -112,17 +123,6 @@ export class UsageSimulator {
     }
 
     return usage;
-  }
-
-  interface HistoricalUsage {
-    reconComparisons: number;
-    validations: number;
-    transformations: number;
-    mappings: number;
-    workflowSteps: number;
-    aiTokens: number;
-    storageBytes: number;
-    webhookTriggers: number;
   }
 
   /**

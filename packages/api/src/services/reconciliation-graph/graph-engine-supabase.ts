@@ -15,6 +15,30 @@ interface GraphUpdate {
   timestamp: Date;
 }
 
+interface NodeRow {
+  id: string;
+  node_type: string;
+  job_id: string;
+  source_id: string | null;
+  target_id: string | null;
+  data: unknown;
+  amount: number;
+  currency: string;
+  timestamp: string | Date;
+  confidence: number;
+  metadata: Record<string, unknown> | null;
+}
+
+interface EdgeRow {
+  id: string;
+  source_node_id: string;
+  target_node_id: string;
+  edge_type: string;
+  confidence: number;
+  metadata: Record<string, unknown> | null;
+  created_at: string | Date;
+}
+
 export class ReconciliationGraphEngineSupabase extends EventEmitter {
   private updateSubscribers: Map<string, Set<(update: GraphUpdate) => void>> = new Map();
 
@@ -215,20 +239,6 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       throw new Error(`Failed to query nodes: ${nodesError.message}`);
     }
 
-    interface NodeRow {
-      id: string;
-      node_type: string;
-      job_id: string;
-      source_id: string | null;
-      target_id: string | null;
-      data: unknown;
-      amount: number;
-      currency: string;
-      timestamp: string | Date;
-      confidence: number;
-      metadata: Record<string, unknown> | null;
-    }
-
     const nodes: ReconciliationNode[] = (nodesData || []).map((n: NodeRow) => ({
       id: n.id,
       type: n.node_type,
@@ -253,16 +263,6 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
 
     if (edgesError) {
       throw new Error(`Failed to query edges: ${edgesError.message}`);
-    }
-
-    interface EdgeRow {
-      id: string;
-      source_node_id: string;
-      target_node_id: string;
-      edge_type: string;
-      confidence: number;
-      metadata: Record<string, unknown> | null;
-      created_at: string | Date;
     }
 
     const edges: ReconciliationEdge[] = (edgesData || []).map((e: EdgeRow) => ({

@@ -9,6 +9,10 @@ import { ReconciliationProjectionHandlers } from "../cqrs/projections/Reconcilia
 import { EventEnvelope } from "../../domain/eventsourcing/EventEnvelope";
 import { DomainEvent } from "../../domain/events/DomainEvent";
 
+interface ReconciliationEvent extends DomainEvent {
+  reconciliationId?: string;
+}
+
 export class EventProjectionService {
   private projectionHandlers: ReconciliationProjectionHandlers;
 
@@ -24,10 +28,6 @@ export class EventProjectionService {
     // Subscribe to domain events from event bus
     this.eventBus.subscribe("reconciliation.started", async (event: DomainEvent) => {
       // Fetch full event from event store
-      interface ReconciliationEvent extends DomainEvent {
-        reconciliationId?: string;
-      }
-
       const reconciliationEvent = event as ReconciliationEvent;
       const reconciliationId = reconciliationEvent.reconciliationId;
       if (!reconciliationId) {

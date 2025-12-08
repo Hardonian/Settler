@@ -25,6 +25,26 @@ export interface PipelineChange {
   newLogic: Record<string, unknown>;
 }
 
+interface OutdatedPattern {
+  type: 'outdated_node' | 'incompatible_node' | 'inefficient_logic';
+  nodeId: string;
+  oldLogic: Record<string, unknown>;
+  newLogic: Record<string, unknown>;
+}
+
+interface WorkflowStep {
+  id: string;
+  type: string;
+  config?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+interface WorkflowRun {
+  workflowId: string;
+  steps?: WorkflowStep[];
+  [key: string]: unknown;
+}
+
 export class PipelineRewriter {
   private prisma: PrismaClient;
 
@@ -110,26 +130,6 @@ export class PipelineRewriter {
       backwardCompatible: true,
       risk: changes.length > 5 ? 'medium' : 'low',
     };
-  }
-
-  interface OutdatedPattern {
-    type: 'outdated_node' | 'incompatible_node' | 'inefficient_logic';
-    nodeId: string;
-    oldLogic: Record<string, unknown>;
-    newLogic: Record<string, unknown>;
-  }
-
-  interface WorkflowStep {
-    id: string;
-    type: string;
-    config?: Record<string, unknown>;
-    [key: string]: unknown;
-  }
-
-  interface WorkflowRun {
-    workflowId: string;
-    steps?: WorkflowStep[];
-    [key: string]: unknown;
   }
 
   /**

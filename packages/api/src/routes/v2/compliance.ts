@@ -10,6 +10,10 @@ import { EdgeAgent } from "../../services/privacy-preserving/edge-agent";
 import { handleRouteError } from "../../utils/error-handler";
 import { AuthRequest } from "../../middleware/auth";
 
+interface RequestWithUser extends Request {
+  user?: { id?: string };
+}
+
 const router = Router();
 
 /**
@@ -51,10 +55,6 @@ router.post("/exports", async (req: Request, res: Response) => {
  */
 router.get("/exports", async (req: Request, res: Response) => {
   try {
-    interface RequestWithUser extends Request {
-      user?: { id?: string };
-    }
-
     const reqWithUser = req as RequestWithUser;
     const customerId = reqWithUser.user?.id || (req.query.customerId as string);
 

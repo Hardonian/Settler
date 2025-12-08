@@ -12,6 +12,12 @@ const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 16;
 const AUTH_TAG_LENGTH = 16;
 
+interface EncryptedDataFormat {
+  iv: string;
+  encrypted: string;
+  authTag: string;
+}
+
 /**
  * Get encryption key from SecretsManager or config (backward compatibility)
  */
@@ -79,12 +85,6 @@ export function encrypt(data: string, keyName: string = "ENCRYPTION_KEY"): strin
  */
 export function decrypt(encryptedData: string, keyName: string = "ENCRYPTION_KEY"): string {
   const key = getEncryptionKey(keyName);
-
-  interface EncryptedDataFormat {
-    iv: string;
-    encrypted: string;
-    authTag: string;
-  }
 
   let parsed: EncryptedDataFormat | null = null;
   let iv: Buffer;

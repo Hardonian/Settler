@@ -6,6 +6,14 @@
 import PDFDocument from "pdfkit";
 import { query } from "../../db";
 
+interface ExecutionSummary {
+  matched?: number;
+  unmatched?: number;
+  errors?: number;
+  accuracy?: number;
+  totalTransactions?: number;
+}
+
 export interface ReconciliationReportData {
   jobId: string;
   jobName: string;
@@ -264,14 +272,6 @@ export class PDFGenerator {
     const dateEnd = endDate || new Date();
 
     // Get latest execution
-    interface ExecutionSummary {
-      matched?: number;
-      unmatched?: number;
-      errors?: number;
-      accuracy?: number;
-      totalTransactions?: number;
-    }
-
     const executions = await query<{
       id: string;
       summary: ExecutionSummary | null;

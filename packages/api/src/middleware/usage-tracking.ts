@@ -28,6 +28,11 @@ export interface UsageTrackingRequest extends Request {
   usageMetrics?: UsageMetrics;
 }
 
+interface RequestWithUser extends Request {
+  tenantId?: string;
+  user?: { tenantId?: string };
+}
+
 /**
  * Usage tracking service interface
  */
@@ -117,11 +122,6 @@ export function setUsageTrackingService(service: UsageTrackingService): void {
 export function usageTrackingMiddleware() {
   return async (req: UsageTrackingRequest, res: Response, next: NextFunction) => {
     const startTime = Date.now();
-    interface RequestWithUser extends Request {
-      tenantId?: string;
-      user?: { tenantId?: string };
-    }
-
     const reqWithUser = req as RequestWithUser;
     const tenantId = reqWithUser.tenantId || reqWithUser.user?.tenantId || "anonymous";
 
@@ -174,11 +174,6 @@ export async function getCurrentUsage(
   req: UsageTrackingRequest,
   period: "day" | "week" | "month" = "day"
 ) {
-  interface RequestWithUser extends Request {
-    tenantId?: string;
-    user?: { tenantId?: string };
-  }
-
   const reqWithUser = req as RequestWithUser;
   const tenantId = reqWithUser.tenantId || reqWithUser.user?.tenantId;
   if (!tenantId) {
