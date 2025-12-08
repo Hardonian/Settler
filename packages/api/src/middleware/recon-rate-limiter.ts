@@ -45,6 +45,10 @@ const TIER_LIMITS: Record<string, RateLimitConfig> = {
   },
 };
 
+function getTierLimits(tier: string): RateLimitConfig {
+  return TIER_LIMITS[tier] ?? TIER_LIMITS.free;
+}
+
 export class ReconRateLimiter {
   private prisma: PrismaClient;
   private tokenBuckets: Map<string, { tokens: number; lastRefill: number }> = new Map();
@@ -139,7 +143,7 @@ export class ReconRateLimiter {
 
       try {
         const tier = await this.getTenantTier(tenantId);
-        const limits: RateLimitConfig = TIER_LIMITS[tier] || TIER_LIMITS.free;
+        const limits = getTierLimits(tier);
 
         // Check RPM limit (token bucket)
         const rpmKey = `rpm:${tenantId}`;
