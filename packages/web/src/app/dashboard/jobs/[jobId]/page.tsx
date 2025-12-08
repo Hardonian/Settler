@@ -48,7 +48,7 @@ interface JobDetail {
 
 export default function JobDetailPage() {
   const params = useParams();
-  const jobId = params.jobId as string;
+  const jobId = params?.jobId as string | undefined;
   const [job, setJob] = useState<JobDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -107,6 +107,27 @@ export default function JobDetailPage() {
     };
     return variants[status];
   };
+
+  if (!jobId) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-12">
+                <p className="text-slate-600 dark:text-slate-400 mb-4">Invalid job ID</p>
+                <Button asChild>
+                  <Link href="/dashboard/jobs">Back to Jobs</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
