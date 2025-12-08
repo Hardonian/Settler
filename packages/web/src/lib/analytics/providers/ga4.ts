@@ -13,7 +13,7 @@ declare global {
       targetId: string | Date,
       config?: Record<string, any>
     ) => void;
-    dataLayer?: any[];
+    dataLayer?: unknown[];
   }
 }
 
@@ -40,7 +40,9 @@ class GA4Provider implements AnalyticsProvider {
 
     // Initialize gtag
     window.gtag = function() {
-      window.dataLayer.push(arguments);
+      if (window.dataLayer) {
+        window.dataLayer.push(arguments);
+      }
     };
 
     window.gtag('js', new Date());
@@ -82,7 +84,7 @@ class GA4Provider implements AnalyticsProvider {
   identify(userId: string, traits?: Record<string, any>) {
     if (typeof window === 'undefined' || !window.gtag) return;
     
-    window.gtag('set', 'user_id', userId);
+    window.gtag('set', 'user_id', { user_id: userId });
     if (traits) {
       window.gtag('set', 'user_properties', traits);
     }

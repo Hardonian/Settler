@@ -7,14 +7,11 @@
 import type { AnalyticsProvider } from '../types';
 
 class VercelAnalyticsProvider implements AnalyticsProvider {
-  private initialized = false;
-
   init() {
     if (typeof window === 'undefined') return;
     
     // Vercel Analytics is initialized via the Analytics component in layout
     // This provider just wraps the API
-    this.initialized = true;
   }
 
   trackPageView(route: string, properties?: Record<string, any>) {

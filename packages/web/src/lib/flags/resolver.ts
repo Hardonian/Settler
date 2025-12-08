@@ -188,12 +188,12 @@ function resolveExperiment(
   const split = metadata.experimentSplit || {};
   const defaultVariant = typeof metadata.defaultValue === 'string' 
     ? metadata.defaultValue 
-    : variants[0];
+    : (variants[0] || 'control');
 
   if (!userContext?.userId) {
     // No user context, return default variant
     return {
-      value: defaultVariant,
+      value: defaultVariant as string | boolean,
       source: 'default',
       metadata,
     };

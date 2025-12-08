@@ -89,5 +89,5 @@ export async function triggerAnomalyAlert(anomaly: SystemAnomaly): Promise<void>
     component: anomaly.component,
     metadata: anomaly.metadata,
     status: "active",
-  } as any);
+  });
 }

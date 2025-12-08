@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTrackCTA, useTrackForm } from '@/lib/telemetry/hooks';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { defensiveFetch, fetchJSON, fetchWithFallback } from '@/lib/api/client';
+import { fetchJSON, fetchWithFallback } from '@/lib/api/client';
 import { logger } from '@/lib/logging/logger';
 import { ErrorFallback, LoadingFallback } from '@/lib/resilience/fallbacks';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -21,7 +21,7 @@ export function ObservabilityExample() {
   const trackCTA = useTrackCTA();
   const { start, submit } = useTrackForm('example_form');
   const { trackEvent, trackError } = useAnalytics();
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -113,7 +113,11 @@ export function ObservabilityExample() {
               error={error}
               retry={() => {
                 setError(null);
-                handleSubmit(new Event('submit') as any);
+                const form = document.querySelector('form');
+                if (form) {
+                  const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                  form.dispatchEvent(submitEvent);
+                }
               }}
             />
           )}

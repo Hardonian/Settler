@@ -24,7 +24,7 @@ interface WorkflowStep {
   id: string;
   type: WorkflowStepType;
   label: string;
-  config: Record<string, any>;
+  config: Record<string, unknown>;
   position: { x: number; y: number };
   connections?: string[];
 }

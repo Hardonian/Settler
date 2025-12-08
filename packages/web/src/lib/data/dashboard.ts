@@ -43,7 +43,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   try {
     const result = await supabase.rpc('get_kpi_health_status').single() as {
       data: KpiHealthData | null;
-      error: any;
+      error: Error | null;
     };
     if (result.data) {
       kpiData = result.data;
@@ -89,11 +89,14 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 
     if (posts && posts.length > 0) {
       const typedPosts = posts as TopPost[];
-      topPost = typedPosts.reduce<TopPost>((max, post) => {
-        const engagement = (post.views || 0) + (post.upvotes || 0) * 2;
-        const maxEngagement = (max.views || 0) + (max.upvotes || 0) * 2;
-        return engagement > maxEngagement ? post : max;
-      }, typedPosts[0]);
+      const firstPost = typedPosts[0];
+      if (firstPost) {
+        topPost = typedPosts.reduce<TopPost>((max, post) => {
+          const engagement = (post.views || 0) + (post.upvotes || 0) * 2;
+          const maxEngagement = (max.views || 0) + (max.upvotes || 0) * 2;
+          return engagement > maxEngagement ? post : max;
+        }, firstPost);
+      }
     }
   } catch (err) {
     console.warn('Error fetching posts:', err);

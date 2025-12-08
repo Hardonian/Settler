@@ -7,6 +7,17 @@ import { createClient } from "@/lib/supabase/client";
 
 export type TrafficSource = "organic" | "paid" | "referral" | "direct" | "social" | "email";
 
+interface UserLifecycle {
+  churn_risk_score?: number;
+  expansion_opportunity_score?: number;
+  activated_at?: string | null;
+  current_stage?: string;
+}
+
+interface UserSegment {
+  segment_name: string;
+}
+
 export interface PersonalizedCTA {
   text: string;
   href: string;
@@ -73,8 +84,10 @@ export async function getPersonalizedCTA(
       .single();
 
     if (lifecycle) {
+      const lifecycleData = lifecycle as UserLifecycle;
+      
       // High churn risk → retention CTA
-      if ((lifecycle as any).churn_risk_score > 0.7) {
+      if (lifecycleData.churn_risk_score && lifecycleData.churn_risk_score > 0.7) {
         return {
           text: "Need Help? Contact Support",
           href: "/support",
@@ -84,7 +97,7 @@ export async function getPersonalizedCTA(
       }
 
       // Expansion opportunity → upgrade CTA
-      if ((lifecycle as any).expansion_opportunity_score > 0.6) {
+      if (lifecycleData.expansion_opportunity_score && lifecycleData.expansion_opportunity_score > 0.6) {
         return {
           text: "Unlock Enterprise Features",
           href: "/enterprise",
@@ -94,7 +107,7 @@ export async function getPersonalizedCTA(
       }
 
       // Not activated → activation CTA
-      if (!(lifecycle as any).activated_at) {
+      if (!lifecycleData.activated_at) {
         return {
           text: "Complete Your First Reconciliation",
           href: "/playground",
@@ -104,7 +117,7 @@ export async function getPersonalizedCTA(
       }
 
       // Trial ending → upgrade CTA
-      if ((lifecycle as any).current_stage === "trial") {
+      if (lifecycleData.current_stage === "trial") {
         return {
           text: "Upgrade to Keep Your Features",
           href: "/pricing",
@@ -136,7 +149,7 @@ export async function getPersonalizedContent(
     .select("segment_name")
     .eq("user_id", userId);
 
-  const segmentNames = segments?.map((s: any) => s.segment_name) || [];
+  const segmentNames = segments?.map((s: UserSegment) => s.segment_name) || [];
 
   // Personalize based on segments
   if (segmentNames.includes("at_risk")) {

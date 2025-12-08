@@ -7,6 +7,26 @@ import { createClient } from "@/lib/supabase/client";
 
 export type Severity = "low" | "medium" | "high" | "critical";
 
+interface SupportTicket {
+  id: string;
+  created_at: string;
+  severity?: Severity;
+  status: string;
+  priority?: number;
+  assigned_to?: string;
+}
+
+interface EscalationRule {
+  id: string;
+  trigger_condition: {
+    severity?: Severity;
+    age_hours?: number;
+    status?: string;
+  };
+  target_user_id?: string;
+  action: "assign" | "notify" | "escalate";
+}
+
 /**
  * Check and escalate tickets based on rules
  */
@@ -26,30 +46,26 @@ export async function checkAndEscalateTickets(): Promise<void> {
 
   if (!tickets) return;
 
-  for (const ticket of tickets) {
+  for (const ticket of tickets as SupportTicket[]) {
     const ageHours =
-      (Date.now() - new Date((ticket as any).created_at).getTime()) / (1000 * 60 * 60);
+      (Date.now() - new Date(ticket.created_at).getTime()) / (1000 * 60 * 60);
 
-    for (const rule of rules) {
-      const condition = (rule as any).trigger_condition as {
-        severity?: Severity;
-        age_hours?: number;
-        status?: string;
-      };
+    for (const rule of rules as EscalationRule[]) {
+      const condition = rule.trigger_condition;
 
       // Check if rule matches
       const matchesSeverity =
-        !condition.severity || (ticket as any).severity === condition.severity;
+        !condition.severity || ticket.severity === condition.severity;
       const matchesAge = !condition.age_hours || ageHours >= condition.age_hours;
-      const matchesStatus = !condition.status || (ticket as any).status === condition.status;
+      const matchesStatus = !condition.status || ticket.status === condition.status;
 
       if (matchesSeverity && matchesAge && matchesStatus) {
         // Escalate
         await escalateTicket(
-          (ticket as any).id,
-          (rule as any).id,
-          (rule as any).target_user_id,
-          (rule as any).action
+          ticket.id,
+          rule.id,
+          rule.target_user_id,
+          rule.action
         );
       }
     }
@@ -76,9 +92,15 @@ async function escalateTicket(
 
   if (!ticket) return;
 
+  const ticketData = ticket as SupportTicket;
+
   // Update ticket
-  const updates: Record<string, any> = {
-    priority: Math.min(((ticket as any).priority as number) + 1, 10), // Increase priority
+  const updates: {
+    priority?: number;
+    updated_at: string;
+    assigned_to?: string;
+  } = {
+    priority: Math.min((ticketData.priority || 0) + 1, 10), // Increase priority
     updated_at: new Date().toISOString(),
   };
 
@@ -88,17 +110,17 @@ async function escalateTicket(
 
   await supabase
     .from("support_tickets")
-    .update(updates as any as never)
+    .update(updates)
     .eq("id", ticketId);
 
   // Log escalation
   await supabase.from("escalation_history").insert({
     ticket_id: ticketId,
     rule_id: ruleId,
-    from_user_id: (ticket as any).assigned_to,
+    from_user_id: ticketData.assigned_to,
     to_user_id: targetUserId,
     reason: "Automatic escalation based on rule",
-  } as any);
+  });
 
   // Send alert (in production, use notification system)
   if (action === "notify" && targetUserId) {
@@ -112,7 +134,11 @@ async function escalateTicket(
  */
 export async function createEscalationRule(
   name: string,
-  triggerCondition: Record<string, any>,
+  triggerCondition: {
+    severity?: Severity;
+    age_hours?: number;
+    status?: string;
+  },
   action: "assign" | "notify" | "escalate",
   targetUserId?: string
 ): Promise<void> {
@@ -124,5 +150,5 @@ export async function createEscalationRule(
     action,
     target_user_id: targetUserId,
     enabled: true,
-  } as any);
+  });
 }

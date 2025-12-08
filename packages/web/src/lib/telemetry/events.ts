@@ -38,7 +38,6 @@ export interface TelemetryEvent {
 class Telemetry {
   private scrollDepthTracked: Set<number> = new Set();
   private formStartTimes: Map<string, number> = new Map();
-  private clickTimestamps: Map<string, number[]> = new Map();
 
   /**
    * Track button click
@@ -258,7 +257,6 @@ export const telemetry = new Telemetry();
 
 // Initialize scroll depth tracking
 if (typeof window !== 'undefined') {
-  let lastScrollY = 0;
   let ticking = false;
 
   const handleScroll = () => {

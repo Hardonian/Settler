@@ -7,12 +7,11 @@
 'use client';
 
 import React from 'react';
-import { Loading, Skeleton } from '@/components/ui/loading';
+import { Skeleton } from '@/components/ui/loading';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { logger } from '../logging/logger';
-import { telemetry } from '../telemetry/events';
+import { analytics } from '../analytics';
 
 export interface FallbackProps {
   error?: Error;
@@ -42,7 +41,7 @@ export function LoadingFallback({ count = 3 }: { count?: number }) {
 export function ErrorFallback({ error, retry, message }: FallbackProps) {
   const handleRetry = () => {
     if (retry) {
-      telemetry.trackEvent('error_retry', {
+      analytics.trackEvent('error_retry', {
         error_message: error?.message,
         error_name: error?.name,
       });
@@ -52,7 +51,6 @@ export function ErrorFallback({ error, retry, message }: FallbackProps) {
 
   return (
     <EmptyState
-      iconVariant="alert"
       title="Something went wrong"
       description={message || error?.message || 'An error occurred while loading this content.'}
       action={
@@ -60,7 +58,6 @@ export function ErrorFallback({ error, retry, message }: FallbackProps) {
           ? {
               label: 'Try again',
               onClick: handleRetry,
-              variant: 'default',
             }
           : undefined
       }
@@ -85,7 +82,6 @@ export function EmptyFallback({
 }) {
   return (
     <EmptyState
-      iconVariant="inbox"
       title={title}
       description={description}
       action={action}
@@ -123,14 +119,13 @@ export function PartialDataFallback({
 export function TimeoutFallback({ retry }: { retry?: () => void }) {
   const handleRetry = () => {
     if (retry) {
-      telemetry.trackEvent('timeout_retry');
+      analytics.trackEvent('timeout_retry');
       retry();
     }
   };
 
   return (
     <EmptyState
-      iconVariant="alert"
       title="Request timed out"
       description="The request took too long to complete. Please check your connection and try again."
       action={
@@ -138,7 +133,6 @@ export function TimeoutFallback({ retry }: { retry?: () => void }) {
           ? {
               label: 'Retry',
               onClick: handleRetry,
-              variant: 'default',
             }
           : undefined
       }
@@ -152,14 +146,13 @@ export function TimeoutFallback({ retry }: { retry?: () => void }) {
 export function NetworkErrorFallback({ retry }: { retry?: () => void }) {
   const handleRetry = () => {
     if (retry) {
-      telemetry.trackEvent('network_error_retry');
+      analytics.trackEvent('network_error_retry');
       retry();
     }
   };
 
   return (
     <EmptyState
-      iconVariant="alert"
       title="Connection error"
       description="Unable to connect to the server. Please check your internet connection and try again."
       action={
@@ -167,7 +160,6 @@ export function NetworkErrorFallback({ retry }: { retry?: () => void }) {
           ? {
               label: 'Retry',
               onClick: handleRetry,
-              variant: 'default',
             }
           : undefined
       }

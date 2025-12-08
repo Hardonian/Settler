@@ -7,3 +7,10 @@ npm warn config       Default value does install optional deps unless otherwise 
 > tsc --noEmit
 
 sh: 1: tsc: not found
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 127
+npm error path /workspace/packages/edge-ai-core
+npm error workspace @settler/edge-ai-core@1.0.0
+npm error location /workspace/packages/edge-ai-core
+npm error command failed
+npm error command sh -c tsc --noEmit

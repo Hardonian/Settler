@@ -159,14 +159,17 @@ if (typeof window !== 'undefined') {
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         // Only count if the entry doesn't have recent user input
-        if (!(entry as any).hadRecentInput) {
+        const entryWithInput = entry as PerformanceEntry & { hadRecentInput?: boolean };
+        if (!entryWithInput.hadRecentInput) {
           const firstSessionEntry = clsEntries[0];
           const lastSessionEntry = clsEntries[clsEntries.length - 1];
 
           // If the entry is the first one, or if it's been more than 1 second since the last entry
+          const lastEntry = clsEntries[clsEntries.length - 1];
           if (
             !firstSessionEntry ||
-            entry.startTime - lastSessionEntry.startTime > 1000
+            !lastEntry ||
+            entry.startTime - lastEntry.startTime > 1000
           ) {
             clsEntries = [entry];
           } else {
@@ -176,7 +179,8 @@ if (typeof window !== 'undefined') {
           // Calculate CLS
           let sessionValue = 0;
           for (const e of clsEntries) {
-            sessionValue += (e as any).value;
+            const layoutShift = e as PerformanceEntry & { value?: number };
+            sessionValue += layoutShift.value || 0;
           }
 
           if (sessionValue > clsValue) {

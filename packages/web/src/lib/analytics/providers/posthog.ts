@@ -82,8 +82,9 @@ class PostHogProvider implements AnalyticsProvider {
     if (typeof window === 'undefined' || !window.posthog) return;
     
     // PostHog uses identify for setting user properties
+    // PostHog identify requires a userId, so we use a placeholder if none exists
     if (window.posthog.identify) {
-      window.posthog.identify(undefined, properties);
+      window.posthog.identify('anonymous', properties);
     }
   }
 
