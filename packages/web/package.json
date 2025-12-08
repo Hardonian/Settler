@@ -59,7 +59,6 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "cd ../.. && npx turbo run build --filter=^@settler/web",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

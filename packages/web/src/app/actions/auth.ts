@@ -9,6 +9,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+import type { Database } from '@/types/database.types';
 
 export interface SignUpResult {
   success: boolean;
@@ -55,15 +56,24 @@ export async function signUpUser(
     }
 
     // 2. Create profile in profiles table (RLS will enforce user_id match)
+    if (!authData.user.email) {
+      return {
+        success: false,
+        error: 'User email is required',
+      };
+    }
+
+    const profileData: Database['public']['Tables']['profiles']['Insert'] = {
+      id: authData.user.id,
+      user_id: authData.user.id,
+      email: authData.user.email,
+      name: name || authData.user.email.split('@')[0] ?? null,
+      impact_score: 0,
+    };
+
     const { error: profileError } = await supabase
       .from('profiles')
-      .insert({
-        id: authData.user.id,
-        user_id: authData.user.id,
-        email: authData.user.email!,
-        name: name || authData.user.email!.split('@')[0],
-        impact_score: 0,
-      } as any);
+      .insert(profileData);
 
     if (profileError) {
       // If profile creation fails, we should handle it gracefully
@@ -72,18 +82,20 @@ export async function signUpUser(
     }
 
     // 3. Log sign-up activity
+    const activityData: Database['public']['Tables']['activity_log']['Insert'] = {
+      user_id: authData.user.id,
+      activity_type: 'signup',
+      entity_type: 'profile',
+      entity_id: authData.user.id,
+      metadata: {
+        source: 'web_signup',
+        timestamp: new Date().toISOString(),
+      },
+    };
+
     const { error: activityError } = await supabase
       .from('activity_log')
-      .insert({
-        user_id: authData.user.id,
-        activity_type: 'signup',
-        entity_type: 'profile',
-        entity_id: authData.user.id,
-        metadata: {
-          source: 'web_signup',
-          timestamp: new Date().toISOString(),
-        },
-      } as any);
+      .insert(activityData);
 
     if (activityError) {
       console.error('Activity log error:', activityError);
@@ -116,21 +128,23 @@ export async function logActivity(
   activityType: string,
   entityType?: string,
   entityId?: string,
-  metadata?: Record<string, any>
+  metadata?: Database['public']['Tables']['activity_log']['Row']['metadata']
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    const activityData: Database['public']['Tables']['activity_log']['Insert'] = {
+      user_id: user?.id ?? null, // Allow anonymous activity
+      activity_type: activityType,
+      entity_type: entityType ?? null,
+      entity_id: entityId ?? null,
+      metadata: metadata ?? {},
+    };
+
     const { error } = await supabase
       .from('activity_log')
-      .insert({
-        user_id: user?.id || null, // Allow anonymous activity
-        activity_type: activityType,
-        entity_type: entityType,
-        entity_id: entityId,
-        metadata: metadata || {},
-      } as any);
+      .insert(activityData);
 
     if (error) {
       console.error('Activity log error:', error);
