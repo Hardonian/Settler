@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
           firstName: user.name?.split(" ")[0],
           industry: user.industry,
           companyName: user.company_name,
-          planType: user.plan_type as any,
+          planType: user.plan_type,
         };
 
         await sendMonthlySummaryEmail(lifecycleUser, metrics);

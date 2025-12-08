@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, { params }: { params: { integrationId: string } }) {
+export function GET(request: NextRequest, { params }: { params: { integrationId: string } }) {
   try {
     const { integrationId: _integrationId } = params;
     const searchParams = request.nextUrl.searchParams;

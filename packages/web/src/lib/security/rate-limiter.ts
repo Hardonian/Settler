@@ -167,7 +167,7 @@ export const rateLimiters = {
 /**
  * Get rate limit configuration from API key (if exists)
  */
-export async function getRateLimitFromApiKey(_apiKey: string): Promise<RateLimitConfig | null> {
+export function getRateLimitFromApiKey(_apiKey: string): RateLimitConfig | null {
   // TODO: Query database for API key rate limit
   // For now, return null (use default)
   // Parameter prefixed with _ to indicate intentionally unused

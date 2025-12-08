@@ -36,7 +36,7 @@ export function generateReleaseNotes(
   for (const commit of commits) {
     const message = commit.message.toLowerCase();
     let type: ReleaseNote["type"] = "improvement";
-    let title = commit.message.split("\n")[0];
+    const title = commit.message.split("\n")[0];
 
     if (message.includes("feat:") || message.includes("feature:")) {
       type = "feature";

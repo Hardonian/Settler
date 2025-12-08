@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
             firstName: user.name?.split(" ")[0],
             industry: user.industry,
             companyName: user.company_name,
-            planType: user.plan_type as any,
+            planType: user.plan_type,
           };
 
           await sendTrialGatedFeaturesEmail(lifecycleUser, trialData);
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
             firstName: user.name?.split(" ")[0],
             industry: user.industry,
             companyName: user.company_name,
-            planType: user.plan_type as any,
+            planType: user.plan_type,
           };
 
           await sendTrialCaseStudyEmail(lifecycleUser, trialData, {
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
             firstName: user.name?.split(" ")[0],
             industry: user.industry,
             companyName: user.company_name,
-            planType: user.plan_type as any,
+            planType: user.plan_type,
           };
 
           await sendTrialComparisonEmail(lifecycleUser, trialData);
@@ -182,7 +182,7 @@ export async function GET(request: NextRequest) {
               firstName: user.name?.split(" ")[0],
               industry: user.industry,
               companyName: user.company_name,
-              planType: user.plan_type as any,
+              planType: user.plan_type,
             };
 
             await sendTrialUrgencyEmail(lifecycleUser, trialData, day as 27 | 28 | 29);
@@ -214,7 +214,7 @@ export async function GET(request: NextRequest) {
             firstName: user.name?.split(" ")[0],
             industry: user.industry,
             companyName: user.company_name,
-            planType: user.plan_type as any,
+            planType: user.plan_type,
           };
 
           await sendTrialEndedEmail(lifecycleUser);

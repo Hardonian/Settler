@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
           .from("profiles")
           .select("last_email_sent_at, last_email_type")
           .eq("id", user.id)
-          .single()) as { data: any | null; error: any };
+          .single()) as { data: any; error: any };
 
         if (profile?.last_email_type === "low_activity" && profile?.last_email_sent_at) {
           const daysSinceLastEmail = Math.floor(
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
           firstName: user.name?.split(" ")[0],
           industry: user.industry,
           companyName: user.company_name,
-          planType: user.plan_type as any,
+          planType: user.plan_type,
         };
 
         await sendLowActivityEmail(lifecycleUser);

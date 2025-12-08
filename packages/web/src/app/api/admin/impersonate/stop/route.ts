@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function POST() {
+export function POST() {
   try {
     // Clear impersonation cookie
     const response = NextResponse.json({ success: true });

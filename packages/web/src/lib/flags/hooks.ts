@@ -58,7 +58,7 @@ export function useFeatureFlag(key: FlagKey): boolean {
   const userContext = useMemo(() => getCurrentUserContext(), []);
 
   useEffect(() => {
-    let mounted = true;
+    const mounted = true;
 
     async function checkFlag() {
       try {
@@ -126,7 +126,7 @@ export function useExperimentVariant(experimentKey: FlagKey): string {
   const userContext = useMemo(() => getCurrentUserContext(), []);
 
   useEffect(() => {
-    let mounted = true;
+    const mounted = true;
 
     async function getVariant() {
       try {
@@ -187,7 +187,7 @@ export function useFeatureFlags(keys: FlagKey[]): Record<FlagKey, boolean> {
   const userContext = useMemo(() => getCurrentUserContext(), []);
 
   useEffect(() => {
-    let mounted = true;
+    const mounted = true;
 
     async function checkFlags() {
       try {

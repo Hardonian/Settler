@@ -45,7 +45,7 @@ export default function AddOnsMarketplacePage() {
     }
   }, [searchQuery, addOns]);
 
-  const fetchAddOns = async () => {
+  const fetchAddOns = () => {
     try {
       setIsLoading(true);
       // In production, fetch from API
@@ -145,7 +145,7 @@ export default function AddOnsMarketplacePage() {
     }
   };
 
-  const handlePurchase = async (id: string) => {
+  const handlePurchase = (id: string) => {
     try {
       setIsProcessing(true);
       // In production: await fetch(`/api/billing/addon/purchase`, { method: "POST", body: JSON.stringify({ add_on_id: id }) });
@@ -163,7 +163,7 @@ export default function AddOnsMarketplacePage() {
     }
   };
 
-  const handleCancel = async (id: string) => {
+  const handleCancel = (id: string) => {
     try {
       setIsProcessing(true);
       // In production: await fetch(`/api/billing/addon/cancel`, { method: "POST", body: JSON.stringify({ add_on_id: id }) });
@@ -225,7 +225,7 @@ export default function AddOnsMarketplacePage() {
             isPurchased={addOn.is_purchased}
             isStandard={addOn.is_standard}
             features={addOn.features}
-            onPurchase={async () => {
+            onPurchase={() => {
               openPurchaseModal(addOn);
             }}
             onCancel={() => handleCancel(addOn.id)}
