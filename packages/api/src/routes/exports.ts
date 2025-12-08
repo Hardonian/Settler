@@ -15,6 +15,14 @@ import { PDFGenerator } from "../services/export/pdf-generator";
 import { query } from "../db";
 import { sendError } from "../utils/api-response";
 
+interface ExecutionSummary {
+  matched?: number;
+  unmatched?: number;
+  errors?: number;
+  accuracy?: number;
+  totalTransactions?: number;
+}
+
 const router = Router();
 const pdfGenerator = new PDFGenerator();
 
@@ -93,14 +101,6 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
     if (format === "csv") {
       try {
         // Get report data
-        interface ExecutionSummary {
-          matched?: number;
-          unmatched?: number;
-          errors?: number;
-          accuracy?: number;
-          totalTransactions?: number;
-        }
-
         const executions = await query<{ summary: ExecutionSummary | null }>(
           `SELECT summary FROM executions WHERE job_id = $1 ORDER BY completed_at DESC LIMIT 1`,
           [jobId]

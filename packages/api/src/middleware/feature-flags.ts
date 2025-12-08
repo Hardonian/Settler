@@ -38,6 +38,12 @@ export interface FeatureFlagRequest extends Request {
   featureFlagContext?: FeatureFlagContext;
 }
 
+interface RequestWithUser extends Request {
+  tenantId?: string;
+  userId?: string;
+  user?: { tenantId?: string; id?: string };
+}
+
 /**
  * Feature flag service interface
  */
@@ -155,12 +161,6 @@ export function getFeatureFlagService(): FeatureFlagService {
 export function featureFlagsMiddleware() {
   return async (req: FeatureFlagRequest, _res: Response, next: NextFunction) => {
     try {
-      interface RequestWithUser extends Request {
-        tenantId?: string;
-        userId?: string;
-        user?: { tenantId?: string; id?: string };
-      }
-
       const reqWithUser = req as RequestWithUser;
       const context: FeatureFlagContext = {
         tenantId: reqWithUser.tenantId || reqWithUser.user?.tenantId,

@@ -18,6 +18,13 @@ import {
 import { IEventBus } from "../../../infrastructure/events/IEventBus";
 import { DomainEvent } from "../../../domain/events/DomainEvent";
 
+interface EventData {
+  job_id?: string;
+  source_adapter?: string;
+  target_adapter?: string;
+  date_range?: { start: string; end: string };
+}
+
 export class ReconciliationCommandHandlers {
   constructor(
     private eventStore: IEventStore,
@@ -79,13 +86,6 @@ export class ReconciliationCommandHandlers {
     const correlationId = command.correlation_id || lastEvent.metadata.correlation_id;
 
     // Create retry event (could be a new event type)
-    interface EventData {
-      job_id?: string;
-      source_adapter?: string;
-      target_adapter?: string;
-      date_range?: { start: string; end: string };
-    }
-
     const eventData = lastEvent.data as EventData;
     const retryEventData: ReconciliationStartedData = {
       reconciliation_id: command.reconciliation_id,
