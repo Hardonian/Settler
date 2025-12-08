@@ -16,23 +16,26 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Handle null pathname (shouldn't happen in practice, but TypeScript types it as nullable)
+    const route = pathname ?? "/";
+
     // Track page view
-    analytics.trackPageView(pathname, {
+    analytics.trackPageView(route, {
       title: document.title,
       referrer: document.referrer,
     });
 
     // Track route transition
-    routeMetrics.startTransition(pathname);
-    routeMetrics.startHydration(pathname);
+    routeMetrics.startTransition(route);
+    routeMetrics.startHydration(route);
 
     // Reset scroll depth tracking for new page
     telemetry.resetScrollDepth();
 
     // Mark hydration complete after a short delay
     const hydrationTimer = setTimeout(() => {
-      routeMetrics.endHydration(pathname);
-      routeMetrics.endTransition(pathname);
+      routeMetrics.endHydration(route);
+      routeMetrics.endTransition(route);
     }, 100);
 
     return () => {
