@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,18 +20,16 @@ interface IntegrationConfig {
 export default function IntegrationConfigurationPage() {
   const params = useParams();
   const router = useRouter();
-  const integrationId = params.integrationId as string;
+  const integrationId = params?.integrationId as string | undefined;
   const [config, setConfig] = useState<IntegrationConfig | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
 
-  useEffect(() => {
-    fetchIntegrationConfig();
-  }, [integrationId]);
-
-  const fetchIntegrationConfig = async () => {
+  const fetchIntegrationConfig = useCallback(async () => {
+    if (!integrationId) return;
+    
     try {
       setIsLoading(true);
       // In production, fetch from API
@@ -51,7 +49,19 @@ export default function IntegrationConfigurationPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [integrationId]);
+
+  useEffect(() => {
+    if (!integrationId) {
+      router.push('/dashboard/integrations');
+      return;
+    }
+    fetchIntegrationConfig();
+  }, [integrationId, router, fetchIntegrationConfig]);
+
+  if (!integrationId) {
+    return null;
+  }
 
   const handleSave = async () => {
     try {
