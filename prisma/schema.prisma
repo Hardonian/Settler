@@ -170,3 +170,300 @@ model UsageAggregateDaily {
   @@index([integrationId])
   @@map("usage_aggregate_daily")
 }
+
+// ============================================================================
+// RECON CORE ENGINE MODELS
+// Phase I: Foundational Recon Core Engine
+// ============================================================================
+
+model ReconJob {
+  id                String    @id @default(uuid())
+  tenantId           String    @db.Uuid
+  userId             String    @db.Uuid
+  name               String
+  description        String?
+  templateId         String?   @db.Uuid
+  sourceAdapter      String
+  sourceConfigEncrypted String @db.Text
+  targetAdapter      String
+  targetConfigEncrypted String @db.Text
+  mappingTemplateId  String?   @db.Uuid
+  transformRecipeId  String?   @db.Uuid
+  validationRules    Json      @default("[]")
+  reconStrategy      String    @default("deterministic")
+  scheduleCron       String?
+  scheduleTimezone   String    @default("UTC")
+  status             String    @default("active")
+  version            Int       @default(1)
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  template           ReconTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  mappingTemplate    MappingTemplate? @relation(fields: [mappingTemplateId], references: [id], onDelete: SetNull)
+  transformRecipe    TransformRecipe? @relation(fields: [transformRecipeId], references: [id], onDelete: SetNull)
+  results            ReconResult[]
+  audits             ReconAudit[]
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status])
+  @@index([templateId])
+  @@map("recon_jobs")
+}
+
+model ReconResult {
+  id                    String    @id @default(uuid())
+  reconJobId            String    @db.Uuid
+  tenantId              String    @db.Uuid
+  executionId           String?   @db.Uuid
+  status                String    @default("running")
+  startedAt             DateTime  @default(now())
+  completedAt           DateTime?
+  sourceCount           Int       @default(0)
+  targetCount           Int       @default(0)
+  matchedCount          Int       @default(0)
+  unmatchedSourceCount  Int       @default(0)
+  unmatchedTargetCount  Int       @default(0)
+  conflictCount         Int       @default(0)
+  totalAmountSource     Decimal?  @db.Decimal(15, 2)
+  totalAmountTarget     Decimal?  @db.Decimal(15, 2)
+  totalAmountMatched    Decimal?  @db.Decimal(15, 2)
+  totalAmountUnmatched  Decimal?  @db.Decimal(15, 2)
+  currency              String?
+  confidenceAvg         Decimal?  @db.Decimal(5, 4)
+  confidenceMin         Decimal?  @db.Decimal(5, 4)
+  confidenceMax         Decimal?  @db.Decimal(5, 4)
+  durationMs            BigInt?
+  errorMessage          String?   @db.Text
+  errorStack            String?   @db.Text
+  summary               Json      @default("{}")
+  metadata              Json      @default("{}")
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  reconJob              ReconJob @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
+  audits                ReconAudit[]
+
+  @@index([reconJobId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([startedAt(sort: Desc)])
+  @@map("recon_results")
+}
+
+model ReconTemplate {
+  id                String    @id @default(uuid())
+  tenantId          String?   @db.Uuid
+  name              String
+  description       String?
+  category          String?
+  sourceAdapterType String?
+  targetAdapterType String?
+  reconStrategy     String    @default("deterministic")
+  matchingRules     Json      @default("[]")
+  validationRules   Json      @default("[]")
+  transformRules    Json      @default("[]")
+  isPublic          Boolean   @default(false)
+  isSystem          Boolean   @default(false)
+  usageCount        Int       @default(0)
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  jobs              ReconJob[]
+
+  @@index([tenantId])
+  @@index([category])
+  @@index([isPublic])
+  @@map("recon_templates")
+}
+
+model ReconAudit {
+  id            String    @id @default(uuid())
+  reconJobId    String?   @db.Uuid
+  reconResultId String?   @db.Uuid
+  tenantId      String    @db.Uuid
+  userId        String?   @db.Uuid
+  auditType     String
+  action        String
+  entityType    String?
+  entityId      String?   @db.Uuid
+  changes       Json?
+  beforeState   Json?
+  afterState    Json?
+  ipAddress     String?
+  userAgent     String?   @db.Text
+  metadata      Json      @default("{}")
+  createdAt     DateTime  @default(now())
+
+  reconJob      ReconJob? @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
+  reconResult   ReconResult? @relation(fields: [reconResultId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([reconJobId])
+  @@index([reconResultId])
+  @@index([auditType])
+  @@index([createdAt(sort: Desc)])
+  @@map("recon_audits")
+}
+
+model MappingTemplate {
+  id                String    @id @default(uuid())
+  tenantId           String?   @db.Uuid
+  name               String
+  description        String?
+  sourceSchema       Json
+  targetSchema       Json
+  fieldMappings      Json      @default("{}")
+  transformationRules Json     @default("[]")
+  validationRules    Json      @default("[]")
+  isPublic           Boolean   @default(false)
+  isSystem           Boolean   @default(false)
+  usageCount         Int       @default(0)
+  version            Int       @default(1)
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  jobs               ReconJob[]
+
+  @@index([tenantId])
+  @@index([isPublic])
+  @@map("mapping_templates")
+}
+
+model ValidationRule {
+  id          String    @id @default(uuid())
+  tenantId    String?   @db.Uuid
+  name        String
+  description String?
+  ruleType    String
+  ruleConfig  Json
+  severity    String    @default("error")
+  isActive    Boolean   @default(true)
+  isPublic    Boolean   @default(false)
+  isSystem    Boolean   @default(false)
+  usageCount  Int       @default(0)
+  metadata    Json      @default("{}")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId])
+  @@index([ruleType])
+  @@index([isActive])
+  @@index([isPublic])
+  @@map("validation_rules")
+}
+
+model TransformRecipe {
+  id                String    @id @default(uuid())
+  tenantId          String?   @db.Uuid
+  name              String
+  description       String?
+  recipeType        String
+  inputSchema       Json
+  outputSchema      Json
+  transformationSteps Json    @default("[]")
+  validationRules   Json      @default("[]")
+  isPublic          Boolean   @default(false)
+  isSystem          Boolean   @default(false)
+  usageCount        Int       @default(0)
+  version           Int       @default(1)
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  jobs              ReconJob[]
+
+  @@index([tenantId])
+  @@index([recipeType])
+  @@index([isPublic])
+  @@map("transform_recipes")
+}
+
+model ContractVersion {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  contractName      String
+  version           String
+  schemaDefinition  Json
+  isActive          Boolean   @default(true)
+  isDeprecated      Boolean   @default(false)
+  deprecatedAt      DateTime?
+  breakingChanges   Json      @default("[]")
+  migrationGuide    String?   @db.Text
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  driftEvents       DriftEvent[]
+
+  @@unique([tenantId, contractName, version])
+  @@index([tenantId])
+  @@index([contractName])
+  @@index([isActive])
+  @@map("contract_versions")
+}
+
+model DriftEvent {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  reconJobId        String?   @db.Uuid
+  contractVersionId String?   @db.Uuid
+  driftType         String
+  severity          String    @default("warning")
+  fieldPath         String?
+  expectedValue     Json?
+  actualValue       Json?
+  driftMetrics      Json      @default("{}")
+  autoRepaired      Boolean   @default(false)
+  repairAction      Json?
+  acknowledged      Boolean   @default(false)
+  acknowledgedBy    String?   @db.Uuid
+  acknowledgedAt     DateTime?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+
+  contractVersion   ContractVersion? @relation(fields: [contractVersionId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([reconJobId])
+  @@index([driftType])
+  @@index([severity])
+  @@index([createdAt(sort: Desc)])
+  @@index([acknowledged])
+  @@map("drift_events")
+}
+
+model WorkflowRun {
+  id            String    @id @default(uuid())
+  tenantId      String    @db.Uuid
+  workflowId    String
+  workflowName  String?
+  workflowVersion String?
+  status        String    @default("running")
+  startedAt     DateTime  @default(now())
+  completedAt   DateTime?
+  triggeredBy   String?
+  triggerEvent  Json?
+  executionGraph Json?
+  stepResults   Json      @default("{}")
+  errorMessage  String?   @db.Text
+  errorStack    String?   @db.Text
+  durationMs    BigInt?
+  metadata      Json      @default("{}")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([workflowId])
+  @@index([status])
+  @@index([startedAt(sort: Desc)])
+  @@map("workflow_runs")
+}
