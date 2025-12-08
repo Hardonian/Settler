@@ -47,7 +47,7 @@ const TIER_LIMITS: Record<string, RateLimitConfig> = {
 
 function getTierLimits(tier: string): RateLimitConfig {
   if (tier in TIER_LIMITS) {
-    return TIER_LIMITS[tier];
+    return TIER_LIMITS[tier]!;
   }
   return TIER_LIMITS.free;
 }
