@@ -18,6 +18,11 @@ interface SecurityHeaders {
   "Permissions-Policy": string;
 }
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
 /**
  * Secure Mobile-First Component
  *
@@ -119,11 +124,6 @@ export default function SecureMobileApp({
 
     try {
       // Type assertion for BeforeInstallPromptEvent
-      interface BeforeInstallPromptEvent extends Event {
-        prompt: () => Promise<void>;
-        userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-      }
-
       const promptEvent = installPrompt as unknown as BeforeInstallPromptEvent;
       if (promptEvent.prompt) {
         await promptEvent.prompt();
