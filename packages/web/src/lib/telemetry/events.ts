@@ -259,6 +259,8 @@ export const telemetry = new Telemetry();
 if (typeof window !== 'undefined') {
   let ticking = false;
 
+  let lastScrollY = 0;
+
   const handleScroll = () => {
     if (!ticking) {
       window.requestAnimationFrame(() => {

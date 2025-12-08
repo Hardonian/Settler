@@ -110,7 +110,7 @@ async function escalateTicket(
 
   await supabase
     .from("support_tickets")
-    .update(updates)
+    .update(updates as never)
     .eq("id", ticketId);
 
   // Log escalation
@@ -120,7 +120,7 @@ async function escalateTicket(
     from_user_id: ticketData.assigned_to,
     to_user_id: targetUserId,
     reason: "Automatic escalation based on rule",
-  });
+  } as never);
 
   // Send alert (in production, use notification system)
   if (action === "notify" && targetUserId) {
@@ -150,5 +150,5 @@ export async function createEscalationRule(
     action,
     target_user_id: targetUserId,
     enabled: true,
-  });
+  } as never);
 }
