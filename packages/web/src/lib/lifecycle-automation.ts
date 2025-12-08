@@ -121,7 +121,7 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
   // Get user activity metrics
   const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
     user_id: userId,
-  } as { user_id: string });
+  } as never);
 
   // Determine new stage based on metrics
   let newStage: LifecycleStage = currentStage;
@@ -191,7 +191,7 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
   // Get user metrics
   const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
     user_id: userId,
-  } as { user_id: string });
+  } as never);
   const { data: lifecycle } = await supabase
     .from("user_lifecycle")
     .select("*")
@@ -255,7 +255,7 @@ export async function calculateExpansionOpportunity(userId: string): Promise<num
 
   const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
     user_id: userId,
-  } as { user_id: string });
+  } as never);
 
   const metricsData = metrics as UserActivityMetrics | null;
   if (!metricsData) return 0;

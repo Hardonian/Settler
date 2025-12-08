@@ -155,6 +155,7 @@ if (typeof window !== 'undefined') {
   try {
     let clsValue = 0;
     let clsEntries: PerformanceEntry[] = [];
+    let firstSessionEntry = true;
 
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
@@ -164,11 +165,12 @@ if (typeof window !== 'undefined') {
           // If the entry is the first one, or if it's been more than 1 second since the last entry
           const lastEntry = clsEntries[clsEntries.length - 1];
           if (
-            !firstSessionEntry ||
+            firstSessionEntry ||
             !lastEntry ||
             entry.startTime - lastEntry.startTime > 1000
           ) {
             clsEntries = [entry];
+            firstSessionEntry = false;
           } else {
             clsEntries.push(entry);
           }

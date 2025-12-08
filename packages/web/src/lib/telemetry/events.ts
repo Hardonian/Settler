@@ -259,8 +259,6 @@ export const telemetry = new Telemetry();
 if (typeof window !== 'undefined') {
   let ticking = false;
 
-  let lastScrollY = 0;
-
   const handleScroll = () => {
     if (!ticking) {
       window.requestAnimationFrame(() => {
@@ -269,7 +267,6 @@ if (typeof window !== 'undefined') {
         const scrollPercentage = documentHeight > 0 ? (scrollY / documentHeight) * 100 : 0;
 
         telemetry.trackScrollDepth(scrollPercentage);
-        lastScrollY = scrollY;
         ticking = false;
       });
 
