@@ -73,7 +73,7 @@ router.post(
       );
 
       // Track event
-      trackEventAsync(userId, "TestModeToggled", {
+      trackEventAsync(userId, 'TestModeToggled', {
         enabled,
       });
 
@@ -81,7 +81,7 @@ router.post(
         data: {
           enabled,
         },
-        message: `Test mode ${enabled ? "enabled" : "disabled"}`,
+        message: `Test mode ${enabled ? 'enabled' : 'disabled'}`,
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to toggle test mode", 500, { userId: req.userId });

@@ -1,15 +1,15 @@
 /**
  * Jobs Hooks
- *
+ * 
  * React Query hooks for reconciliation jobs.
  */
 
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/data/queryKeys";
-import { getJobs } from "@/lib/data/jobs";
-import type { Job } from "@/lib/data/jobs";
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/data/queryKeys';
+import { getJobs } from '@/lib/data/jobs';
+import type { Job } from '@/lib/data/jobs';
 
 export interface UseJobsOptions {
   apiKey: string;

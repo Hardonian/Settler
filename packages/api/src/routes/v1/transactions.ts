@@ -1,26 +1,26 @@
 /**
  * Transactions API Routes
- *
+ * 
  * REST API endpoints for transaction management
  */
 
-import { Router, Response } from "express";
-import { z } from "zod";
-import { validateRequest } from "../../middleware/validation";
-import { AuthRequest } from "../../middleware/auth";
-import { requirePermission } from "../../middleware/authorization";
-import { Permission } from "../../infrastructure/security/Permissions";
-import { query } from "../../db";
-import { sendSuccess, sendError, sendPaginated } from "../../utils/api-response";
-import { handleRouteError } from "../../utils/error-handler";
+import { Router, Response } from 'express';
+import { z } from 'zod';
+import { validateRequest } from '../../middleware/validation';
+import { AuthRequest } from '../../middleware/auth';
+import { requirePermission } from '../../middleware/authorization';
+import { Permission } from '../../infrastructure/security/Permissions';
+import { query } from '../../db';
+import { sendSuccess, sendError, sendPaginated } from '../../utils/api-response';
+import { handleRouteError } from '../../utils/error-handler';
 
 const router = Router();
 
 // Validation schemas
 const getTransactionsSchema = z.object({
   query: z.object({
-    page: z.string().regex(/^\d+$/).transform(Number).optional().default("1"),
-    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("100"),
+    page: z.string().regex(/^\d+$/).transform(Number).optional().default('1'),
+    limit: z.string().regex(/^\d+$/).transform(Number).optional().default('100'),
     provider: z.string().optional(),
     status: z.string().optional(),
     type: z.string().optional(),
@@ -41,18 +41,17 @@ const getTransactionSchema = z.object({
  * List transactions with filtering and pagination
  */
 router.get(
-  "/",
+  '/',
   requirePermission(Permission.REPORTS_READ),
   validateRequest(getTransactionsSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const queryParams = getTransactionsSchema.parse({ query: req.query });
-      const { page, limit, provider, status, type, paymentId, startDate, endDate } =
-        queryParams.query;
+      const { page, limit, provider, status, type, paymentId, startDate, endDate } = queryParams.query;
       const tenantId = req.tenantId!;
       const offset = (page - 1) * limit;
 
-      let whereClause = "tenant_id = $1";
+      let whereClause = 'tenant_id = $1';
       const params: (string | number)[] = [tenantId];
       let paramIndex = 2;
 
@@ -98,7 +97,7 @@ router.get(
         params
       );
       if (!countResult[0]) {
-        throw new Error("Failed to get transaction count");
+        throw new Error('Failed to get transaction count');
       }
       const total = parseInt(countResult[0].count, 10);
 
@@ -129,7 +128,7 @@ router.get(
       sendPaginated(res, transactions, { page, limit, total });
       return;
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to fetch transactions", 500);
+      handleRouteError(res, error, 'Failed to fetch transactions', 500);
       return;
     }
   }
@@ -140,7 +139,7 @@ router.get(
  * Get transaction by ID
  */
 router.get(
-  "/:id",
+  '/:id',
   requirePermission(Permission.REPORTS_READ),
   validateRequest(getTransactionSchema),
   async (req: AuthRequest, res: Response) => {
@@ -166,17 +165,17 @@ router.get(
           updated_at as "updatedAt"
         FROM transactions 
         WHERE id = $1 AND tenant_id = $2`,
-        [id || "", tenantId]
+        [id || '', tenantId]
       );
 
       if (transactions.length === 0 || !transactions[0]) {
-        return sendError(res, 404, "NOT_FOUND", "Transaction not found");
+        return sendError(res, 404, 'NOT_FOUND', 'Transaction not found');
       }
 
       sendSuccess(res, transactions[0]);
       return;
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to fetch transaction", 500);
+      handleRouteError(res, error, 'Failed to fetch transaction', 500);
     }
   }
 );

@@ -3,7 +3,7 @@
  * CQRS Command for creating a reconciliation job
  */
 
-import { ReconciliationRules } from "../../domain/entities/Job";
+import { ReconciliationRules } from '../../domain/entities/Job';
 
 export interface CreateJobCommand {
   userId: string;

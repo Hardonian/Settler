@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface ConversionCTAProps {
   title?: string;
@@ -10,19 +10,19 @@ interface ConversionCTAProps {
   primaryLink?: string;
   secondaryAction?: string;
   secondaryLink?: string;
-  variant?: "default" | "gradient" | "minimal";
+  variant?: 'default' | 'gradient' | 'minimal';
 }
 
 export function ConversionCTA({
-  title = "Ready to Automate Your Reconciliation?",
-  description = "Join 500+ companies saving 10+ hours per week. Start your 30-day free trial—full access, no credit card required.",
-  primaryAction = "Start Free Trial",
-  primaryLink = "/playground",
-  secondaryAction = "View Pricing",
-  secondaryLink = "/pricing",
-  variant = "gradient",
+  title = 'Ready to Get Started?',
+  description = 'Start reconciling your data in minutes. No credit card required.',
+  primaryAction = 'Start Free Trial',
+  primaryLink = '/playground',
+  secondaryAction = 'View Pricing',
+  secondaryLink = '/pricing',
+  variant = 'gradient',
 }: ConversionCTAProps) {
-  if (variant === "minimal") {
+  if (variant === 'minimal') {
     return (
       <div className="text-center py-12" role="region" aria-labelledby="cta-title">
         <h3 id="cta-title" className="text-2xl font-bold mb-4 text-foreground">
@@ -34,13 +34,21 @@ export function ConversionCTA({
           role="group"
           aria-label="Call to action buttons"
         >
-          <Button asChild size="lg" variant="default">
+          <Button
+            asChild
+            size="lg"
+            variant="default"
+          >
             <Link href={primaryLink} aria-label={primaryAction}>
               {primaryAction}
             </Link>
           </Button>
           {secondaryAction && (
-            <Button asChild size="lg" variant="outline">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+            >
               <Link href={secondaryLink} aria-label={secondaryAction}>
                 {secondaryAction}
               </Link>
@@ -51,13 +59,13 @@ export function ConversionCTA({
     );
   }
 
-  if (variant === "gradient") {
+  if (variant === 'gradient') {
     return (
       <Card
         className={cn(
-          "bg-gradient-to-r from-primary-600 to-electric-indigo",
-          "border-0 shadow-2xl",
-          "transition-all duration-500 hover:shadow-3xl"
+          'bg-gradient-to-r from-primary-600 to-electric-indigo',
+          'border-0 shadow-2xl',
+          'transition-all duration-500 hover:shadow-3xl'
         )}
         elevation="lg"
         role="region"
@@ -104,7 +112,12 @@ export function ConversionCTA({
   }
 
   return (
-    <Card elevation="lg" hover role="region" aria-labelledby="cta-title">
+    <Card
+      elevation="lg"
+      hover
+      role="region"
+      aria-labelledby="cta-title"
+    >
       <CardHeader className="text-center">
         <CardTitle id="cta-title" className="text-2xl md:text-3xl mb-2">
           {title}
@@ -117,13 +130,21 @@ export function ConversionCTA({
           role="group"
           aria-label="Call to action buttons"
         >
-          <Button size="lg" asChild variant="default">
+          <Button
+            size="lg"
+            asChild
+            variant="default"
+          >
             <Link href={primaryLink} aria-label={primaryAction}>
               {primaryAction}
             </Link>
           </Button>
           {secondaryAction && (
-            <Button size="lg" variant="outline" asChild>
+            <Button
+              size="lg"
+              variant="outline"
+              asChild
+            >
               <Link href={secondaryLink} aria-label={secondaryAction}>
                 {secondaryAction}
               </Link>

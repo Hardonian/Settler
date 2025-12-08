@@ -3,7 +3,7 @@
  * Defines the contract for user data persistence
  */
 
-import { User } from "../entities/User";
+import { User } from '../entities/User';
 
 export interface IUserRepository {
   findById(id: string): Promise<User | null>;

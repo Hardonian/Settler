@@ -1,6 +1,6 @@
 /**
  * Notification Routes
- *
+ * 
  * Integrates with Slack, Discord, PagerDuty, and email for alerts
  * Supports:
  * - Reconciliation alerts
@@ -9,9 +9,9 @@
  * - System status updates
  */
 
-import { Router, Response } from "express";
-import { authMiddleware, AuthRequest } from "../middleware/auth";
-import { logInfo, logError } from "../utils/logger";
+import { Router, Request, Response } from 'express';
+import { authMiddleware, AuthRequest } from '../middleware/auth';
+import { logInfo, logError } from '../utils/logger';
 
 const router = Router();
 
@@ -23,7 +23,7 @@ export interface NotificationService {
   sendDiscord(message: string, webhookUrl: string): Promise<void>;
   sendPagerDuty(incident: {
     summary: string;
-    severity: "critical" | "error" | "warning" | "info";
+    severity: 'critical' | 'error' | 'warning' | 'info';
     source?: string;
   }): Promise<void>;
   sendEmail(to: string, subject: string, body: string): Promise<void>;
@@ -33,14 +33,14 @@ export interface NotificationService {
  * Test notification endpoint
  * POST /api/v1/notifications/test
  */
-router.post("/test", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/test', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { type } = req.body;
+    const { type, config } = req.body;
 
     // In production, this would send actual notifications
-    logInfo("Test notification requested", {
+    logInfo('Test notification requested', {
       type,
-      tenantId: req.tenantId,
+      tenantId: req.user?.tenantId,
     });
 
     return res.json({
@@ -50,10 +50,10 @@ router.post("/test", authMiddleware, async (req: AuthRequest, res: Response) => 
       sentAt: new Date().toISOString(),
     });
   } catch (error) {
-    logError("Test notification failed", error);
+    logError('Test notification failed', error);
     return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to send test notification",
+      error: 'Internal Server Error',
+      message: 'Failed to send test notification',
     });
   }
 });
@@ -62,14 +62,14 @@ router.post("/test", authMiddleware, async (req: AuthRequest, res: Response) => 
  * Configure notification channels
  * POST /api/v1/notifications/channels
  */
-router.post("/channels", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/channels', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { channel } = req.body;
+    const { channel, config } = req.body;
 
     // In production, save to database
-    logInfo("Notification channel configured", {
+    logInfo('Notification channel configured', {
       channel,
-      tenantId: req.tenantId,
+      tenantId: req.user?.tenantId,
     });
 
     return res.json({
@@ -78,10 +78,10 @@ router.post("/channels", authMiddleware, async (req: AuthRequest, res: Response)
       configuredAt: new Date().toISOString(),
     });
   } catch (error) {
-    logError("Failed to configure notification channel", error);
+    logError('Failed to configure notification channel', error);
     return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to configure notification channel",
+      error: 'Internal Server Error',
+      message: 'Failed to configure notification channel',
     });
   }
 });
@@ -90,7 +90,7 @@ router.post("/channels", authMiddleware, async (req: AuthRequest, res: Response)
  * Get notification preferences
  * GET /api/v1/notifications/preferences
  */
-router.get("/preferences", authMiddleware, async (_req: AuthRequest, res: Response) => {
+router.get('/preferences', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     // In production, fetch from database
     return res.json({
@@ -101,10 +101,10 @@ router.get("/preferences", authMiddleware, async (_req: AuthRequest, res: Respon
       channels: [],
     });
   } catch (error) {
-    logError("Failed to get notification preferences", error);
+    logError('Failed to get notification preferences', error);
     return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to get notification preferences",
+      error: 'Internal Server Error',
+      message: 'Failed to get notification preferences',
     });
   }
 });

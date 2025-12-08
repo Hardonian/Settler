@@ -4,18 +4,18 @@
  */
 
 export enum TenantTier {
-  FREE = "free",
-  STARTER = "starter",
-  GROWTH = "growth",
-  SCALE = "scale",
-  ENTERPRISE = "enterprise",
+  FREE = 'free',
+  STARTER = 'starter',
+  GROWTH = 'growth',
+  SCALE = 'scale',
+  ENTERPRISE = 'enterprise',
 }
 
 export enum TenantStatus {
-  ACTIVE = "active",
-  SUSPENDED = "suspended",
-  TRIAL = "trial",
-  CANCELLED = "cancelled",
+  ACTIVE = 'active',
+  SUSPENDED = 'suspended',
+  TRIAL = 'trial',
+  CANCELLED = 'cancelled',
 }
 
 export interface TenantQuotas {
@@ -34,7 +34,7 @@ export interface TenantConfig {
   enableMLFeatures: boolean;
   webhookTimeout: number; // milliseconds
   maxRetries: number;
-  [key: string]: unknown; // Allow extensible config
+  [key: string]: any; // Allow extensible config
 }
 
 export interface TenantProps {
@@ -46,7 +46,7 @@ export interface TenantProps {
   status: TenantStatus;
   quotas: TenantQuotas;
   config: TenantConfig;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -55,7 +55,7 @@ export interface TenantProps {
 export class Tenant {
   private constructor(private props: TenantProps) {}
 
-  static create(props: Omit<TenantProps, "id" | "createdAt" | "updatedAt">): Tenant {
+  static create(props: Omit<TenantProps, 'id' | 'createdAt' | 'updatedAt'>): Tenant {
     return new Tenant({
       ...props,
       id: crypto.randomUUID(),
@@ -100,7 +100,7 @@ export class Tenant {
     return { ...this.props.config };
   }
 
-  get metadata(): Record<string, unknown> {
+  get metadata(): Record<string, any> {
     return { ...this.props.metadata };
   }
 
@@ -148,7 +148,7 @@ export class Tenant {
     this.props.updatedAt = new Date();
   }
 
-  updateMetadata(metadata: Record<string, unknown>): void {
+  updateMetadata(metadata: Record<string, any>): void {
     this.props.metadata = { ...this.props.metadata, ...metadata };
     this.props.updatedAt = new Date();
   }

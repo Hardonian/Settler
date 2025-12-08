@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Analytics API Endpoint
- *
+ * 
  * Receives analytics events from the onboarding flow and other components.
  * In production, this would forward to your APM system (Sentry, Datadog, etc.)
- *
+ * 
  * CTO Mode: Force dynamic rendering for API routes
  */
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 interface AnalyticsEvent {
   event: string;
@@ -27,16 +27,16 @@ export async function POST(request: NextRequest) {
     // Validate event structure
     if (!event.event || !event.timestamp) {
       return NextResponse.json(
-        { error: "Invalid event structure. Missing required fields." },
+        { error: 'Invalid event structure. Missing required fields.' },
         { status: 400 }
       );
     }
 
     // Log event (in production, send to APM system)
-    console.log("[Analytics]", {
+    console.log('[Analytics]', {
       event: event.event,
       timestamp: new Date(event.timestamp).toISOString(),
-      userId: event.userId || "anonymous",
+      userId: event.userId || 'anonymous',
       sessionId: event.sessionId,
       step: event.step,
       duration: event.duration,
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     // 1. Send to Sentry, Datadog, or your APM system
     // 2. Store in database for analysis
     // 3. Trigger alerts for critical events
-
+    
     // Example: Send to external service
     // await fetch('https://your-apm-endpoint.com/events', {
     //   method: 'POST',
@@ -57,20 +57,20 @@ export async function POST(request: NextRequest) {
 
     // For now, we'll just acknowledge receipt
     return NextResponse.json(
-      {
+      { 
         success: true,
-        message: "Event received",
+        message: 'Event received',
         eventId: crypto.randomUUID(),
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("[Analytics Error]", error);
-
+    console.error('[Analytics Error]', error);
+    
     return NextResponse.json(
-      {
-        error: "Failed to process analytics event",
-        message: error instanceof Error ? error.message : "Unknown error",
+      { 
+        error: 'Failed to process analytics event',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -80,10 +80,10 @@ export async function POST(request: NextRequest) {
 // Allow GET for health checks
 export function GET() {
   return NextResponse.json(
-    {
-      status: "ok",
-      service: "analytics",
-      version: "1.0.0",
+    { 
+      status: 'ok',
+      service: 'analytics',
+      version: '1.0.0',
     },
     { status: 200 }
   );

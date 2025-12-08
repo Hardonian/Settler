@@ -3,21 +3,21 @@
  * Common utilities for writing tests
  */
 
-import { Request, Response } from "express";
-import { AuthRequest } from "../../middleware/auth";
+import { Request, Response } from 'express';
+import { AuthRequest } from '../../middleware/auth';
 
 /**
  * Create a mock Express request
  */
 export function createMockRequest(overrides: Partial<Request> = {}): Partial<AuthRequest> {
   return {
-    method: "GET",
-    path: "/",
+    method: 'GET',
+    path: '/',
     headers: {},
     query: {},
     params: {},
     body: {},
-    ip: "127.0.0.1",
+    ip: '127.0.0.1',
     ...overrides,
   };
 }
@@ -53,19 +53,17 @@ export function wait(ms: number): Promise<void> {
 /**
  * Create test user data
  */
-export function createTestUser(
-  overrides: Partial<{
-    id: string;
-    email: string;
-    password: string;
-    role: string;
-  }> = {}
-) {
+export function createTestUser(overrides: Partial<{
+  id: string;
+  email: string;
+  password: string;
+  role: string;
+}> = {}) {
   return {
-    id: "test-user-id",
-    email: "test@example.com",
-    password: "test-password",
-    role: "developer",
+    id: 'test-user-id',
+    email: 'test@example.com',
+    password: 'test-password',
+    role: 'developer',
     ...overrides,
   };
 }
@@ -73,22 +71,20 @@ export function createTestUser(
 /**
  * Create test job data
  */
-export function createTestJob(
-  overrides: Partial<{
-    id: string;
-    userId: string;
-    name: string;
-    source: Record<string, unknown>;
-    target: Record<string, unknown>;
-    rules: Record<string, unknown>;
-  }> = {}
-) {
+export function createTestJob(overrides: Partial<{
+  id: string;
+  userId: string;
+  name: string;
+  source: Record<string, unknown>;
+  target: Record<string, unknown>;
+  rules: Record<string, unknown>;
+}> = {}) {
   return {
-    id: "test-job-id",
-    userId: "test-user-id",
-    name: "Test Job",
-    source: { adapter: "stripe", config: {} },
-    target: { adapter: "shopify", config: {} },
+    id: 'test-job-id',
+    userId: 'test-user-id',
+    name: 'Test Job',
+    source: { adapter: 'stripe', config: {} },
+    target: { adapter: 'shopify', config: {} },
     rules: { matching: [] },
     ...overrides,
   };

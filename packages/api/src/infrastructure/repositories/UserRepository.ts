@@ -3,18 +3,18 @@
  * PostgreSQL implementation of IUserRepository
  */
 
-import { User, UserRole, UserProps } from "../../domain/entities/User";
-import { IUserRepository } from "../../domain/repositories/IUserRepository";
-import { query } from "../../db";
+import { User, UserRole, UserProps } from '../../domain/entities/User';
+import { IUserRepository } from '../../domain/repositories/IUserRepository';
+import { query } from '../../db';
 
 export class UserRepository implements IUserRepository {
   async findById(id: string): Promise<User | null> {
-    const rows = await query(
+    const rows = await query<UserProps>(
       `SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL`,
       [id]
     );
 
-    if (rows.length === 0 || !rows[0]) {
+    if (rows.length === 0) {
       return null;
     }
 
@@ -22,12 +22,12 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const rows = await query(
+    const rows = await query<UserProps>(
       `SELECT * FROM users WHERE email = $1 AND deleted_at IS NULL`,
       [email]
     );
 
-    if (rows.length === 0 || !rows[0]) {
+    if (rows.length === 0) {
       return null;
     }
 
@@ -97,7 +97,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async findAll(limit: number, offset: number): Promise<User[]> {
-    const rows = await query(
+    const rows = await query<UserProps>(
       `SELECT * FROM users WHERE deleted_at IS NULL
        ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
       [limit, offset]
@@ -116,26 +116,26 @@ export class UserRepository implements IUserRepository {
     return parseInt(rows[0].count, 10);
   }
 
-  private mapRowToProps(row: Record<string, unknown>): UserProps {
+  private mapRowToProps(row: any): UserProps {
     const props: UserProps = {
-      id: row.id as string,
-      tenantId: row.tenant_id as string,
-      email: row.email as string,
-      passwordHash: row.password_hash as string,
+      id: row.id,
+      tenantId: row.tenant_id,
+      email: row.email,
+      passwordHash: row.password_hash,
       role: row.role as UserRole,
-      dataResidencyRegion: row.data_residency_region as string,
-      dataRetentionDays: row.data_retention_days as number,
-      createdAt: new Date(row.created_at as string | number | Date),
-      updatedAt: new Date(row.updated_at as string | number | Date),
+      dataResidencyRegion: row.data_residency_region,
+      dataRetentionDays: row.data_retention_days,
+      createdAt: new Date(row.created_at),
+      updatedAt: new Date(row.updated_at),
     };
     if (row.name !== null && row.name !== undefined) {
-      props.name = row.name as string;
+      props.name = row.name;
     }
     if (row.deleted_at) {
-      props.deletedAt = new Date(row.deleted_at as string | number | Date);
+      props.deletedAt = new Date(row.deleted_at);
     }
     if (row.deletion_scheduled_at) {
-      props.deletionScheduledAt = new Date(row.deletion_scheduled_at as string | number | Date);
+      props.deletionScheduledAt = new Date(row.deletion_scheduled_at);
     }
     return props;
   }

@@ -30,7 +30,6 @@ import { notificationsRouter } from "./routes/notifications";
 import { usageRouter } from "./routes/usage";
 import { batchRouter } from "./routes/batch";
 import { exportsRouter } from "./routes/exports";
-import { billingRouter } from "./routes/billing";
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
 import { featureFlagsMiddleware } from "./middleware/feature-flags";
 import { usageTrackingMiddleware } from "./middleware/usage-tracking";
@@ -42,14 +41,10 @@ import { v4 as uuidv4 } from "uuid";
 import { startDataRetentionJob } from "./jobs/data-retention";
 import { startMaterializedViewRefreshJob } from "./jobs/materialized-view-refresh";
 import { processPendingWebhooks } from "./utils/webhook-queue";
-import { initializeScheduledJobs, shutdownScheduler } from "./infrastructure/jobs/scheduler";
-import { checkUsageQuota } from "./middleware/usage-quota";
 import { versionMiddleware } from "./middleware/versioning";
 import { v1Router } from "./routes/v1";
 import { v2Router } from "./routes/v2";
 import { reconciliationSummaryRouter } from "./routes/reconciliation-summary";
-import { edgeAiRouter } from "./routes/edge-ai";
-import { aiasRouter } from "./routes/aias";
 import { SecretsManager, REQUIRED_SECRETS } from "./infrastructure/security/SecretsManager";
 import { initializeTracing } from "./infrastructure/observability/tracing";
 import { compressionMiddleware, brotliCompressionMiddleware } from "./middleware/compression";
@@ -57,12 +52,7 @@ import { observabilityMiddleware } from "./middleware/observability";
 import { eventTrackingMiddleware } from "./middleware/event-tracking";
 import { setupSignalHandlers, registerShutdownHandler } from "./utils/graceful-shutdown";
 import { requestTimeoutMiddleware, getRequestTimeout } from "./middleware/request-timeout";
-import {
-  initializeSentry,
-  sentryRequestHandler,
-  sentryTracingHandler,
-  sentryErrorHandler,
-} from "./middleware/sentry";
+import { initializeSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler } from "./middleware/sentry";
 import { profilingMiddleware } from "./infrastructure/observability/profiling";
 import { setCsrfToken, csrfProtection, getCsrfToken } from "./middleware/csrf";
 import { sanitizeInput, sanitizeUrlParams } from "./middleware/input-sanitization";
@@ -81,50 +71,22 @@ initializeSentry();
 app.use(sentryRequestHandler());
 app.use(sentryTracingHandler());
 
-// Security middleware - Enhanced configuration (helmet 7.x compatible)
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
-        imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'"],
-        fontSrc: ["'self'"],
-        objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
-        frameSrc: ["'none'"],
-        baseUri: ["'self'"],
-        formAction: ["'self'"],
-        upgradeInsecureRequests: [],
-      },
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
     },
-    crossOriginEmbedderPolicy: true,
-    crossOriginOpenerPolicy: { policy: "same-origin" },
-    crossOriginResourcePolicy: { policy: "same-origin" },
-    dnsPrefetchControl: true,
-    frameguard: { action: "deny" },
-    hidePoweredBy: true,
-    hsts: {
-      maxAge: 63072000,
-      includeSubDomains: true,
-      preload: true,
-    },
-    ieNoOpen: true,
-    noSniff: true,
-    permittedCrossDomainPolicies: false,
-    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
-    xssFilter: true,
-  })
-);
+  },
+}));
 
-app.use(
-  cors({
-    origin: config.allowedOrigins,
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: config.allowedOrigins,
+  credentials: true,
+}));
 
 // Compression middleware (Gzip and Brotli)
 app.use(compressionMiddleware);
@@ -164,9 +126,9 @@ if (config.features.enableRequestTimeout) {
 
 // Trace ID middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const traceId = (req.headers["x-trace-id"] as string) || uuidv4();
+  const traceId = (req.headers['x-trace-id'] as string) || uuidv4();
   (req as AuthRequest).traceId = traceId;
-  res.setHeader("X-Trace-Id", traceId);
+  res.setHeader('X-Trace-Id', traceId);
   next();
 });
 
@@ -181,45 +143,32 @@ const ipLimiter = rateLimit({
 
 app.use("/api/", ipLimiter);
 
-// Stripe webhook needs raw body for signature verification
-// Apply raw body middleware specifically for webhook route
-app.post(
-  "/api/billing/webhook",
-  express.raw({ type: "application/json", limit: "1mb" }),
-  (_req, _res, next) => {
-    // Continue to billing router
-    next();
-  }
-);
-
 // Body parsing with size and depth limits
 function countDepth(obj: unknown, current = 0): number {
-  if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
     return current;
   }
-  const depths = Object.values(obj).map((v) => countDepth(v, current + 1));
+  const depths = Object.values(obj).map(v => countDepth(v, current + 1));
   return Math.max(current, ...depths);
 }
 
-app.use(
-  express.json({
-    limit: "1mb", // Reduced from 10mb
-    verify: (_req, _res, buf) => {
-      try {
-        const parsed = JSON.parse(buf.toString());
-        const depth = countDepth(parsed);
-        if (depth > 20) {
-          throw new Error("JSON depth exceeds maximum of 20 levels");
-        }
-      } catch (error: unknown) {
-        if (error instanceof Error && error.message.includes("depth")) {
-          throw error;
-        }
-        // Ignore JSON parse errors, let express handle them
+app.use(express.json({
+  limit: "1mb", // Reduced from 10mb
+  verify: (_req, _res, buf) => {
+    try {
+      const parsed = JSON.parse(buf.toString());
+      const depth = countDepth(parsed);
+      if (depth > 20) {
+        throw new Error('JSON depth exceeds maximum of 20 levels');
       }
-    },
-  })
-);
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message.includes('depth')) {
+        throw error;
+      }
+      // Ignore JSON parse errors, let express handle them
+    }
+  },
+}));
 
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
@@ -231,13 +180,12 @@ app.use(sanitizeInput);
 app.use(sanitizeUrlParams);
 
 // Validate secrets at startup (production and preview)
-if (config.nodeEnv === "production" || config.nodeEnv === "preview") {
+if (config.nodeEnv === 'production' || config.nodeEnv === 'preview') {
   try {
     SecretsManager.validateSecrets(REQUIRED_SECRETS);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    // eslint-disable-next-line no-console
-    console.error("Secret validation failed:", message);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Secret validation failed:', message);
     process.exit(1);
   }
 }
@@ -257,10 +205,6 @@ app.use("/api", versionMiddleware);
 // Idempotency middleware for state-changing operations
 app.use("/api/v1", idempotencyMiddleware());
 app.use("/api/v2", idempotencyMiddleware());
-
-// Usage quota checking (before rate limiting)
-app.use("/api/v1", authMiddleware, checkUsageQuota);
-app.use("/api/v2", authMiddleware, checkUsageQuota);
 
 // Rate limiting per API key
 app.use("/api/v1", authMiddleware, rateLimitMiddleware());
@@ -355,18 +299,6 @@ app.use("/api/v2/notifications", authMiddleware, notificationsRouter);
 app.use("/api/v1/usage", authMiddleware, usageRouter);
 app.use("/api/v2/usage", authMiddleware, usageRouter);
 
-// Billing routes
-// Note: /api/billing/webhook is handled above with raw body middleware
-app.use("/api/billing", billingRouter);
-
-// Admin billing configuration routes
-import { adminBillingConfigRouter } from "./routes/admin/billing-config";
-app.use("/api/admin/billing", authMiddleware, adminBillingConfigRouter);
-
-// User routes (requires auth)
-import userRouter from "./routes/user";
-app.use("/api/user", authMiddleware, userRouter);
-
 // Batch processing routes (requires auth)
 app.use("/api/v1/batch", authMiddleware, batchRouter);
 app.use("/api/v2/batch", authMiddleware, batchRouter);
@@ -381,16 +313,6 @@ app.use("/api/v2", authMiddleware, v2Router);
 
 // Optimized reconciliation summary endpoint
 app.use("/api/v1/reconciliations", authMiddleware, reconciliationSummaryRouter);
-
-// Edge AI routes (public endpoints for node operations, authenticated by node_key)
-app.use("/api/edge-ai", edgeAiRouter);
-// Edge AI routes (requires auth for management)
-app.use("/api/v1/edge-ai", authMiddleware, edgeAiRouter);
-app.use("/api/v2/edge-ai", authMiddleware, edgeAiRouter);
-
-// AIAS Edge AI Accelerator Studio routes (requires auth)
-app.use("/api/v1/aias", authMiddleware, aiasRouter);
-app.use("/api/v2/aias", authMiddleware, aiasRouter);
 
 // Sentry error handler (before custom error handler)
 app.use(sentryErrorHandler());
@@ -412,66 +334,54 @@ async function startServer() {
     // Run startup validations
     const validation = await validateStartup();
     if (!validation.passed) {
-      logError("Startup validation failed", undefined, { validation });
-      if (config.nodeEnv === "production") {
+      logError('Startup validation failed', undefined, { validation });
+      if (config.nodeEnv === 'production') {
         process.exit(1);
       } else {
-        logWarn("Continuing despite validation failures (non-production mode)");
+        logWarn('Continuing despite validation failures (non-production mode)');
       }
     }
 
     await initDatabase();
-    logInfo("Database initialized");
-
-    // Initialize BullMQ scheduled jobs (replaces setTimeout/setInterval)
-    try {
-      await initializeScheduledJobs();
-      logInfo("Scheduled jobs initialized");
-    } catch (error) {
-      logError("Failed to initialize scheduled jobs", error);
-      // Fallback to old system if BullMQ fails
-      startDataRetentionJob();
-      startMaterializedViewRefreshJob();
-    }
-
-    // Process pending webhooks (now handled by BullMQ, but keep as fallback)
+    logInfo('Database initialized');
+    
+    // Start background jobs
+    startDataRetentionJob();
+    startMaterializedViewRefreshJob();
+    
+    // Process pending webhooks every minute
     const webhookInterval = setInterval(() => {
-      processPendingWebhooks().catch((error) => {
-        logError("Failed to process pending webhooks", error);
+      processPendingWebhooks().catch(error => {
+        logError('Failed to process pending webhooks', error);
       });
     }, 60000);
-
+    
     // Register webhook interval cleanup
     registerShutdownHandler(async () => {
       clearInterval(webhookInterval);
-      logInfo("Webhook processing stopped");
+      logInfo('Webhook processing stopped');
     });
-
-    // Register scheduler shutdown
-    registerShutdownHandler(async () => {
-      await shutdownScheduler();
-    });
-
+    
     const httpServer = createServer(app);
-
+    
     // Initialize WebSocket server
     initializeWebSocket(httpServer);
-
+    
     const server = httpServer.listen(PORT, () => {
       logInfo(`Settler API server running on port ${PORT}`, { port: PORT });
     });
-
+    
     // Setup graceful shutdown handlers
     setupSignalHandlers(server, {
       timeout: 30000, // 30 seconds
       onShutdown: async () => {
-        logInfo("Custom shutdown tasks completed");
+        logInfo('Custom shutdown tasks completed');
       },
     });
-
+    
     return server;
   } catch (error) {
-    console.error("Failed to start server:", error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 }

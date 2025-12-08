@@ -1,0 +1,84 @@
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
+
+> settler-monorepo@1.0.0 build
+> turbo run build
+
+Turborepo did not find the correct binary for your platform.
+We will attempt to install it now.
+Installation has succeeded.
+
+Attention:
+Turborepo now collects completely anonymous telemetry regarding usage.
+This information is used to shape the Turborepo roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://turbo.build/repo/docs/telemetry
+
+• Packages in scope: @settler/adapters, @settler/api, @settler/cli, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/types, @settler/web
+• Running build in 8 packages
+• Remote caching disabled
+@settler/types:typecheck: cache miss, executing 2edf491d25c093c6
+@settler/sdk:typecheck: cache miss, executing 0ef70f460daa9635
+@settler/protocol:typecheck: cache miss, executing 16c3823d4bd268b0
+@settler/protocol:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/protocol:typecheck: npm warn config `--include=optional` to include them.
+@settler/protocol:typecheck: npm warn config
+@settler/protocol:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/types:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/types:typecheck: npm warn config `--include=optional` to include them.
+@settler/types:typecheck: npm warn config
+@settler/types:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/sdk:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/sdk:typecheck: npm warn config `--include=optional` to include them.
+@settler/sdk:typecheck: npm warn config
+@settler/sdk:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/types:typecheck: 
+@settler/types:typecheck: > @settler/types@1.0.0 typecheck
+@settler/types:typecheck: > tsc --noEmit
+@settler/types:typecheck: 
+@settler/protocol:typecheck: 
+@settler/protocol:typecheck: > @settler/protocol@0.1.0 typecheck
+@settler/protocol:typecheck: > tsc --noEmit
+@settler/protocol:typecheck: 
+@settler/sdk:typecheck: 
+@settler/sdk:typecheck: > @settler/sdk@1.0.0 typecheck
+@settler/sdk:typecheck: > tsc --noEmit
+@settler/sdk:typecheck: 
+@settler/types:build: cache miss, executing aa5859c73cc3cccd
+@settler/protocol:typecheck: src/errors.ts(24,5): error TS2412: Type 'number | undefined' is not assignable to type 'number' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+@settler/protocol:typecheck:   Type 'undefined' is not assignable to type 'number'.
+@settler/protocol:typecheck: src/errors.ts(25,5): error TS2412: Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+@settler/protocol:typecheck:   Type 'undefined' is not assignable to type 'Record<string, unknown>'.
+@settler/protocol:typecheck: src/errors.ts(46,5): error TS2412: Type 'string | undefined' is not assignable to type 'string' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+@settler/protocol:typecheck:   Type 'undefined' is not assignable to type 'string'.
+@settler/protocol:typecheck: src/errors.ts(81,5): error TS2412: Type 'string | undefined' is not assignable to type 'string' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+@settler/protocol:typecheck:   Type 'undefined' is not assignable to type 'string'.
+@settler/protocol:typecheck: src/errors.ts(82,5): error TS2412: Type 'number | undefined' is not assignable to type 'number' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+@settler/protocol:typecheck:   Type 'undefined' is not assignable to type 'number'.
+@settler/protocol:typecheck: src/errors.ts(83,5): error TS2412: Type 'number | undefined' is not assignable to type 'number' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+@settler/protocol:typecheck:   Type 'undefined' is not assignable to type 'number'.
+@settler/protocol:typecheck: src/errors.ts(100,5): error TS2412: Type 'string | undefined' is not assignable to type 'string' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+@settler/protocol:typecheck:   Type 'undefined' is not assignable to type 'string'.
+@settler/protocol:typecheck: src/utils.ts(7,3): error TS6133: 'ReconciliationTransaction' is declared but its value is never read.
+@settler/protocol:typecheck: src/utils.ts(8,3): error TS6133: 'ReconciliationSettlement' is declared but its value is never read.
+@settler/protocol:typecheck: src/utils.ts(9,3): error TS6133: 'ReconciliationException' is declared but its value is never read.
+@settler/protocol:typecheck: src/utils.ts(144,15): error TS18048: 'local' is possibly 'undefined'.
+@settler/protocol:typecheck: src/utils.ts(144,54): error TS18048: 'local' is possibly 'undefined'.
+@settler/protocol:typecheck: npm error Lifecycle script `typecheck` failed with error:
+@settler/protocol:typecheck: npm error code 2
+@settler/protocol:typecheck: npm error path /workspace/packages/protocol
+@settler/protocol:typecheck: npm error workspace @settler/protocol@0.1.0
+@settler/protocol:typecheck: npm error location /workspace/packages/protocol
+@settler/protocol:typecheck: npm error command failed
+@settler/protocol:typecheck: npm error command sh -c tsc --noEmit
+@settler/protocol:typecheck: ERROR: command finished with error: command (/workspace/packages/protocol) /home/ubuntu/.nvm/versions/node/v22.21.1/bin/npm run typecheck exited (2)
+@settler/protocol#typecheck: command (/workspace/packages/protocol) /home/ubuntu/.nvm/versions/node/v22.21.1/bin/npm run typecheck exited (2)
+
+ Tasks:    1 successful, 4 total
+Cached:    0 cached, 4 total
+  Time:    2.099s 
+Failed:    @settler/protocol#typecheck
+
+ ERROR  run failed: command  exited (2)

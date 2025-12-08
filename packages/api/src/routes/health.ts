@@ -7,7 +7,7 @@ const router = Router();
 const healthCheckService = new HealthCheckService();
 
 interface HealthCheck {
-  status: "healthy" | "unhealthy" | "degraded";
+  status: 'healthy' | 'unhealthy' | 'degraded';
   latency?: number;
   error?: string;
 }
@@ -17,12 +17,12 @@ interface HealthCheck {
 async function _checkDatabase(): Promise<HealthCheck> {
   const start = Date.now();
   try {
-    await query("SELECT 1");
+    await query('SELECT 1');
     const latency = Date.now() - start;
-    return { status: "healthy", latency };
+    return { status: 'healthy', latency };
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return { status: "unhealthy", error: message };
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return { status: 'unhealthy', error: message };
   }
 }
 
@@ -33,27 +33,27 @@ async function _checkConnectionPool(): Promise<HealthCheck> {
     const totalConnections = pool.totalCount;
     const idleConnections = pool.idleCount;
     const waitingCount = pool.waitingCount;
-
+    
     const utilization = (totalConnections - idleConnections) / pool.options.max!;
-
+    
     if (utilization > 0.9) {
       return {
-        status: "degraded",
+        status: 'degraded',
         error: `High connection pool utilization: ${(utilization * 100).toFixed(1)}%`,
       };
     }
-
+    
     if (waitingCount > 0) {
       return {
-        status: "degraded",
+        status: 'degraded',
         error: `${waitingCount} connections waiting`,
       };
     }
-
-    return { status: "healthy" };
+    
+    return { status: 'healthy' };
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return { status: "unhealthy", error: message };
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return { status: 'unhealthy', error: message };
   }
 }
 
@@ -71,7 +71,7 @@ router.get("/", async (_req: Request, res: Response) => {
 // Detailed health check with dependency checks
 router.get("/detailed", async (_req: Request, res: Response) => {
   const health = await healthCheckService.checkAll();
-  res.status(health.status === "healthy" ? 200 : 503).json({
+  res.status(health.status === 'healthy' ? 200 : 503).json({
     status: health.status,
     checks: health.checks,
     timestamp: health.timestamp,
@@ -89,7 +89,7 @@ router.get("/live", async (_req: Request, res: Response) => {
 // Readiness probe (returns ready only if dependencies are healthy)
 router.get("/ready", async (_req: Request, res: Response) => {
   const health = await healthCheckService.checkReady();
-  res.status(health.status === "ready" ? 200 : 503).json(health);
+  res.status(health.status === 'ready' ? 200 : 503).json(health);
 });
 
 // Reference unused functions to satisfy TypeScript

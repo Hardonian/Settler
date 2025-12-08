@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Head from 'next/head';
 
 interface SEOHeadProps {
   title?: string;
@@ -9,14 +9,14 @@ interface SEOHeadProps {
 }
 
 export function SEOHead({
-  title = "Settler - Reconciliation as a Service API",
-  description = "Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. All Platforms. Real-Time.",
+  title = 'Settler - Reconciliation as a Service API',
+  description = 'Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. All Platforms. Real-Time.',
   canonical,
-  ogImage = "/og-image.png",
+  ogImage = '/og-image.png',
   noindex = false,
 }: SEOHeadProps) {
-  const fullTitle = title.includes("Settler") ? title : `${title} | Settler`;
-  const url = canonical || "https://settler.dev";
+  const fullTitle = title.includes('Settler') ? title : `${title} | Settler`;
+  const url = canonical || 'https://settler.dev';
 
   return (
     <Head>
@@ -52,20 +52,20 @@ export function SEOHead({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            name: "Settler",
-            applicationCategory: "BusinessApplication",
-            operatingSystem: "Web",
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: 'Settler',
+            applicationCategory: 'BusinessApplication',
+            operatingSystem: 'Web',
             offers: {
-              "@type": "Offer",
-              price: "0",
-              priceCurrency: "USD",
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD',
             },
             aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: "4.9",
-              reviewCount: "127",
+              '@type': 'AggregateRating',
+              ratingValue: '4.9',
+              reviewCount: '127',
             },
           }),
         }}

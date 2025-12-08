@@ -3,15 +3,15 @@
  * Ensures quotas are properly enforced
  */
 
-import { QuotaService } from "../../application/services/QuotaService";
-import { TenantRepository } from "../../infrastructure/repositories/TenantRepository";
-import { TenantService } from "../../application/services/TenantService";
-import { UserRepository } from "../../infrastructure/repositories/UserRepository";
-import { TenantTier } from "../../domain/entities/Tenant";
-import { QuotaType, QuotaExceededError } from "../../application/services/QuotaService";
-import { hashPassword } from "../../infrastructure/security/password";
+import { QuotaService } from '../../application/services/QuotaService';
+import { TenantRepository } from '../../infrastructure/repositories/TenantRepository';
+import { TenantService } from '../../application/services/TenantService';
+import { UserRepository } from '../../infrastructure/repositories/UserRepository';
+import { TenantTier } from '../../domain/entities/Tenant';
+import { QuotaType, QuotaExceededError } from '../../application/services/QuotaService';
+import { hashPassword } from '../../infrastructure/security/password';
 
-describe("Quota Enforcement", () => {
+describe('Quota Enforcement', () => {
   let tenantService: TenantService;
   let quotaService: QuotaService;
   let tenant: any;
@@ -25,10 +25,10 @@ describe("Quota Enforcement", () => {
 
     // Create a test tenant
     const result = await tenantService.createTenant({
-      name: "Quota Test Tenant",
-      slug: "quota-test",
-      ownerEmail: "quota@test.com",
-      ownerPasswordHash: await hashPassword("password123"),
+      name: 'Quota Test Tenant',
+      slug: 'quota-test',
+      ownerEmail: 'quota@test.com',
+      ownerPasswordHash: await hashPassword('password123'),
       tier: TenantTier.STARTER, // Starter tier has limited quotas
     });
 
@@ -36,8 +36,8 @@ describe("Quota Enforcement", () => {
     user = result.owner;
   });
 
-  describe("Storage Quota", () => {
-    it("should allow storage usage within quota", async () => {
+  describe('Storage Quota', () => {
+    it('should allow storage usage within quota', async () => {
       const { allowed } = await quotaService.checkQuota(
         tenant.id,
         QuotaType.STORAGE,
@@ -47,7 +47,7 @@ describe("Quota Enforcement", () => {
       expect(allowed).toBe(true);
     });
 
-    it("should reject storage usage exceeding quota", async () => {
+    it('should reject storage usage exceeding quota', async () => {
       // Try to use more than the quota (Starter tier has 1 GB = 1073741824 bytes)
       const { allowed } = await quotaService.checkQuota(
         tenant.id,
@@ -58,7 +58,7 @@ describe("Quota Enforcement", () => {
       expect(allowed).toBe(false);
     });
 
-    it("should throw QuotaExceededError when enforcing exceeded quota", async () => {
+    it('should throw QuotaExceededError when enforcing exceeded quota', async () => {
       await expect(
         quotaService.enforceQuota(
           tenant.id,
@@ -69,8 +69,8 @@ describe("Quota Enforcement", () => {
     });
   });
 
-  describe("Concurrent Jobs Quota", () => {
-    it("should allow jobs within concurrent limit", async () => {
+  describe('Concurrent Jobs Quota', () => {
+    it('should allow jobs within concurrent limit', async () => {
       const { allowed } = await quotaService.checkQuota(
         tenant.id,
         QuotaType.CONCURRENT_JOBS,
@@ -80,7 +80,7 @@ describe("Quota Enforcement", () => {
       expect(allowed).toBe(true);
     });
 
-    it("should reject jobs exceeding concurrent limit", async () => {
+    it('should reject jobs exceeding concurrent limit', async () => {
       const { allowed } = await quotaService.checkQuota(
         tenant.id,
         QuotaType.CONCURRENT_JOBS,
@@ -91,16 +91,20 @@ describe("Quota Enforcement", () => {
     });
   });
 
-  describe("Monthly Reconciliations Quota", () => {
-    it("should track monthly reconciliation usage", async () => {
+  describe('Monthly Reconciliations Quota', () => {
+    it('should track monthly reconciliation usage', async () => {
       // Increment usage
-      await quotaService.incrementUsage(tenant.id, QuotaType.MONTHLY_RECONCILIATIONS, 100);
+      await quotaService.incrementUsage(
+        tenant.id,
+        QuotaType.MONTHLY_RECONCILIATIONS,
+        100
+      );
 
       const usage = await quotaService.getUsage(tenant.id);
       expect(usage[QuotaType.MONTHLY_RECONCILIATIONS].current).toBeGreaterThanOrEqual(100);
     });
 
-    it("should reject reconciliations exceeding monthly limit", async () => {
+    it('should reject reconciliations exceeding monthly limit', async () => {
       // Starter tier has 10,000 monthly reconciliations
       // Try to use more
       const { allowed } = await quotaService.checkQuota(
@@ -113,8 +117,8 @@ describe("Quota Enforcement", () => {
     });
   });
 
-  describe("Enterprise Bypass", () => {
-    it("should bypass quotas for enterprise tenants", async () => {
+  describe('Enterprise Bypass', () => {
+    it('should bypass quotas for enterprise tenants', async () => {
       // Upgrade to enterprise
       await tenantService.upgradeTier(tenant.id, TenantTier.ENTERPRISE);
 

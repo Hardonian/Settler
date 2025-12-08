@@ -22,8 +22,6 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "validate": "npm run lint && npm run typecheck && npm run format:check",
     "validate:env": "tsx scripts/check-env.ts production",
-    "build:guardian": "tsx scripts/build-guardian.ts",
-    "build:check": "npm run build:guardian && npm run typecheck",
     "prepare": "husky install 2>/dev/null || true",
     "db:new": "bash scripts/new-migration.sh",
     "db:verify": "bash scripts/verify-migrations.sh",
@@ -36,19 +34,10 @@
     "db:migrate:prod": "supabase db push --include-all",
     "db:migrate:auto": "tsx scripts/migrate-supabase.ts",
     "db:check": "tsx scripts/check-connection.ts",
-    "billing:init": "tsx scripts/init-billing-system.ts",
-    "billing:seed": "tsx scripts/post-migration-seed.ts",
-    "billing:setup-stripe": "tsx scripts/setup-stripe-products.ts",
-    "billing:auto-setup": "tsx scripts/auto-setup-stripe.ts",
-    "dead-code": "tsx scripts/find-dead-code.ts",
-    "maintainer:audit": "tsx scripts/maintainer-audit.ts",
-    "maintainer:check": "npm run build:guardian && npm run maintainer:audit",
-    "quality": "npm run lint && npm run typecheck && npm run format:check",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",
-    "migration:guardian": "tsx scripts/migration-guardian.ts",
     "postinstall": "prisma generate 2>/dev/null || true"
   },
   "lint-staged": {
@@ -62,19 +51,16 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
-    "@prisma/client": "^7.1.0",
     "@types/node": "^20.10.0",
-    "@upstash/redis": "^1.35.7",
     "dotenv": "^17.2.3",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "pg": "^8.16.3",
     "prettier": "^3.1.1",
-    "prisma": "^7.1.0",
     "tsx": "^4.7.0",
     "turbo": "^2.6.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=20.19.6",
@@ -84,7 +70,6 @@
   "overrides": {
     "glob": "^10.4.5",
     "rimraf": "^5.0.0",
-    "raw-body": "^2.5.2",
-    "jws": ">=3.2.3"
+    "raw-body": "^2.5.2"
   }
 }

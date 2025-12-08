@@ -28,7 +28,6 @@ Settler, Inc. ("Settler", "we", "us", "our") respects your privacy. This Privacy
 ## 3. How We Use Your Information
 
 We use your information to:
-
 - Provide and improve Services
 - Process payments and subscriptions
 - Send service-related communications
@@ -39,7 +38,6 @@ We use your information to:
 ## 4. Data Sharing
 
 We do not sell your personal information. We may share information with:
-
 - **Service Providers:** Payment processors, hosting providers, analytics services
 - **Legal Requirements:** When required by law or legal process
 - **Business Transfers:** In connection with merger, acquisition, or sale
@@ -47,7 +45,6 @@ We do not sell your personal information. We may share information with:
 ## 5. Data Security
 
 We implement industry-standard security measures:
-
 - Encryption in transit (TLS/SSL)
 - Encryption at rest (AES-256)
 - Access controls and authentication
@@ -58,7 +55,6 @@ However, no method of transmission or storage is 100% secure.
 ## 6. Data Retention
 
 We retain your information:
-
 - **Account Data:** While your account is active
 - **Transaction Data:** As required by law (typically 7 years)
 - **Usage Data:** Aggregated and anonymized after 2 years
@@ -66,7 +62,6 @@ We retain your information:
 ## 7. Your Rights
 
 You have the right to:
-
 - Access your personal information
 - Correct inaccurate information
 - Delete your information
@@ -76,7 +71,6 @@ You have the right to:
 ## 8. Cookies and Tracking
 
 We use cookies and similar technologies to:
-
 - Authenticate users
 - Remember preferences
 - Analyze usage
@@ -99,7 +93,6 @@ We may update this Privacy Policy with notice. Continued use after changes const
 ## 12. Contact
 
 For privacy questions:
-
 - **Email:** privacy@settler.dev
 - **Address:** [Company Address]
 

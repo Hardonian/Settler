@@ -4,10 +4,10 @@
  * Provides performant query layers with intelligent cache invalidation
  */
 
-import { Request, Response, NextFunction } from "express";
-import { AuthRequest } from "./auth";
-import { get, set, del } from "../utils/cache";
-import { logInfo, logDebug } from "../utils/logger";
+import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from './auth';
+import { get, set, del } from '../utils/cache';
+import { logInfo, logDebug } from '../utils/logger';
 
 export interface CacheConfig {
   /** Cache TTL in seconds */
@@ -29,19 +29,22 @@ const DEFAULT_TTL = 300; // 5 minutes
 /**
  * Generate cache key for request
  */
-function generateRequestCacheKey(req: Request, config: CacheConfig): string {
+function generateRequestCacheKey(
+  req: Request,
+  config: CacheConfig
+): string {
   if (config.keyGenerator) {
     return config.keyGenerator(req);
   }
 
-  const parts: string[] = ["api", req.method.toLowerCase(), req.path];
+  const parts: string[] = ['api', req.method.toLowerCase(), req.path];
 
   // Include query params if specified
   if (config.includeQueryParams && Object.keys(req.query).length > 0) {
     const sortedQuery = Object.keys(req.query)
       .sort()
       .map((key) => `${key}=${req.query[key]}`)
-      .join("&");
+      .join('&');
     parts.push(sortedQuery);
   }
 
@@ -50,7 +53,7 @@ function generateRequestCacheKey(req: Request, config: CacheConfig): string {
     parts.push(`user:${(req as AuthRequest).userId}`);
   }
 
-  return parts.join(":");
+  return parts.join(':');
 }
 
 /**
@@ -58,16 +61,20 @@ function generateRequestCacheKey(req: Request, config: CacheConfig): string {
  * Caches GET request responses in Redis
  */
 export function apiGatewayCache(config: CacheConfig = {}) {
-  const { ttl = DEFAULT_TTL, enabled = true, tags = [] } = config;
+  const {
+    ttl = DEFAULT_TTL,
+    enabled = true,
+    tags = [],
+  } = config;
 
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // Only cache GET requests
-    if (req.method !== "GET" || !enabled) {
+    if (req.method !== 'GET' || !enabled) {
       return next();
     }
 
     // Skip caching for authenticated endpoints that require fresh data
-    if (req.path.includes("/auth/") || req.path.includes("/webhooks/")) {
+    if (req.path.includes('/auth/') || req.path.includes('/webhooks/')) {
       return next();
     }
 
@@ -76,20 +83,20 @@ export function apiGatewayCache(config: CacheConfig = {}) {
       const cached = await get<unknown>(cacheKey);
 
       if (cached) {
-        logDebug("Cache hit", { key: cacheKey, path: req.path });
-        res.setHeader("X-Cache", "HIT");
+        logDebug('Cache hit', { key: cacheKey, path: req.path });
+        res.setHeader('X-Cache', 'HIT');
         res.json(cached);
         return;
       }
 
       // Cache miss - intercept response
-      res.setHeader("X-Cache", "MISS");
+      res.setHeader('X-Cache', 'MISS');
       const originalJson = res.json.bind(res);
       res.json = function (body: unknown) {
         // Cache successful responses
         if (res.statusCode >= 200 && res.statusCode < 300) {
           set(cacheKey, body, ttl).catch((error) => {
-            logDebug("Cache set failed", { error, key: cacheKey });
+            logDebug('Cache set failed', { error, key: cacheKey });
           });
 
           // Store cache tags for invalidation
@@ -112,7 +119,7 @@ export function apiGatewayCache(config: CacheConfig = {}) {
 
       next();
     } catch (error) {
-      logDebug("Cache middleware error", { error });
+      logDebug('Cache middleware error', { error });
       // Continue without caching on error
       next();
     }
@@ -126,7 +133,7 @@ export function apiGatewayCache(config: CacheConfig = {}) {
 export function cacheInvalidation(tags: string[] = []) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // Only invalidate on state-changing methods
-    if (!["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
+    if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
       return next();
     }
 
@@ -136,11 +143,11 @@ export function cacheInvalidation(tags: string[] = []) {
       // Invalidate cache on successful state changes
       if (res.statusCode >= 200 && res.statusCode < 300) {
         invalidateCache(req, tags).catch((error) => {
-          logDebug("Cache invalidation error", { error });
+          logDebug('Cache invalidation error', { error });
         });
       }
 
-      if (encoding !== undefined && typeof encoding === "string") {
+      if (encoding !== undefined && typeof encoding === 'string') {
         originalEnd(chunk, encoding, cb);
       } else if (cb !== undefined) {
         originalEnd(chunk, cb);
@@ -178,9 +185,9 @@ async function invalidateCache(req: Request, tags: string[]): Promise<void> {
       // await delPattern(pattern);
     }
 
-    logInfo("Cache invalidated", { tags, patterns, path: req.path });
+    logInfo('Cache invalidated', { tags, patterns, path: req.path });
   } catch (error) {
-    logDebug("Cache invalidation failed", { error });
+    logDebug('Cache invalidation failed', { error });
   }
 }
 
@@ -216,31 +223,31 @@ export const cacheConfigs = {
     ttl: 60, // 1 minute
     includeQueryParams: true,
     includeUserId: true,
-    tags: ["jobs"],
+    tags: ['jobs'],
   }),
 
   jobGet: (): CacheConfig => ({
     ttl: 300, // 5 minutes
     includeUserId: true,
-    tags: ["jobs"],
+    tags: ['jobs'],
   }),
 
   // Reports endpoints
   reportGet: (): CacheConfig => ({
     ttl: 60, // 1 minute (reports change frequently)
     includeUserId: true,
-    tags: ["reports"],
+    tags: ['reports'],
   }),
 
   // Adapters endpoints (rarely change)
   adaptersList: (): CacheConfig => ({
     ttl: 3600, // 1 hour
-    tags: ["adapters"],
+    tags: ['adapters'],
   }),
 
   adapterGet: (): CacheConfig => ({
     ttl: 3600, // 1 hour
-    tags: ["adapters"],
+    tags: ['adapters'],
   }),
 
   // Reconciliation summary (cached aggressively)
@@ -248,6 +255,6 @@ export const cacheConfigs = {
     ttl: 30, // 30 seconds
     includeQueryParams: true,
     includeUserId: true,
-    tags: ["reconciliation", "summary"],
+    tags: ['reconciliation', 'summary'],
   }),
 };

@@ -3,16 +3,16 @@
  * Enforces resource quotas for tenants
  */
 
-import { ITenantRepository } from "../../domain/repositories/ITenantRepository";
-import { query } from "../../db";
-import { logWarn } from "../../utils/logger";
+import { ITenantRepository } from '../../domain/repositories/ITenantRepository';
+import { query } from '../../db';
+import { logWarn } from '../../utils/logger';
 
 export enum QuotaType {
-  RATE_LIMIT = "rateLimitRpm",
-  STORAGE = "storageBytes",
-  CONCURRENT_JOBS = "concurrentJobs",
-  MONTHLY_RECONCILIATIONS = "monthlyReconciliations",
-  CUSTOM_DOMAINS = "customDomains",
+  RATE_LIMIT = 'rateLimitRpm',
+  STORAGE = 'storageBytes',
+  CONCURRENT_JOBS = 'concurrentJobs',
+  MONTHLY_RECONCILIATIONS = 'monthlyReconciliations',
+  CUSTOM_DOMAINS = 'customDomains',
 }
 
 export class QuotaExceededError extends Error {
@@ -22,7 +22,7 @@ export class QuotaExceededError extends Error {
     public limit: number
   ) {
     super(`Quota exceeded: ${quotaType}. Usage: ${currentUsage}/${limit}`);
-    this.name = "QuotaExceededError";
+    this.name = 'QuotaExceededError';
   }
 }
 
@@ -39,7 +39,7 @@ export class QuotaService {
   ): Promise<{ allowed: boolean; currentUsage: number; limit: number }> {
     const tenant = await this.tenantRepo.findById(tenantId);
     if (!tenant) {
-      throw new Error("Tenant not found");
+      throw new Error('Tenant not found');
     }
 
     // Enterprise tenants bypass quotas
@@ -107,10 +107,10 @@ export class QuotaService {
         throw new Error(`Unknown quota type: ${quotaType}`);
     }
 
-    const allowed = currentUsage + requestedValue <= limit;
+    const allowed = (currentUsage + requestedValue) <= limit;
 
     if (!allowed) {
-      logWarn("Quota exceeded", {
+      logWarn('Quota exceeded', {
         tenantId,
         quotaType,
         currentUsage,
@@ -144,7 +144,11 @@ export class QuotaService {
   /**
    * Increment quota usage
    */
-  async incrementUsage(tenantId: string, quotaType: QuotaType, value: number = 1): Promise<void> {
+  async incrementUsage(
+    tenantId: string,
+    quotaType: QuotaType,
+    value: number = 1
+  ): Promise<void> {
     switch (quotaType) {
       case QuotaType.STORAGE:
         await query(
@@ -187,7 +191,11 @@ export class QuotaService {
   /**
    * Decrement quota usage
    */
-  async decrementUsage(tenantId: string, quotaType: QuotaType, value: number = 1): Promise<void> {
+  async decrementUsage(
+    tenantId: string,
+    quotaType: QuotaType,
+    value: number = 1
+  ): Promise<void> {
     switch (quotaType) {
       case QuotaType.STORAGE:
         await query(
@@ -221,7 +229,7 @@ export class QuotaService {
   async getUsage(tenantId: string): Promise<Record<QuotaType, { current: number; limit: number }>> {
     const tenant = await this.tenantRepo.findById(tenantId);
     if (!tenant) {
-      throw new Error("Tenant not found");
+      throw new Error('Tenant not found');
     }
 
     const quotas = tenant.quotas;

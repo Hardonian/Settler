@@ -3,7 +3,7 @@
  * Type-safe validation utilities using Zod
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * Safe parse with typed error handling
@@ -30,10 +30,10 @@ export function parseOrThrow<T extends z.ZodType>(
     if (errorMessage) {
       // Create a new error with the custom message since message is read-only
       const customError = new z.ZodError(result.error.errors);
-      Object.defineProperty(customError, "message", {
+      Object.defineProperty(customError, 'message', {
         value: errorMessage,
         writable: true,
-        configurable: true,
+        configurable: true
       });
       throw customError;
     }
@@ -63,11 +63,9 @@ export const paginationSchema = z.object({
 /**
  * Validate date range
  */
-export const dateRangeSchema = z
-  .object({
-    start: z.date(),
-    end: z.date(),
-  })
-  .refine((data) => data.end >= data.start, {
-    message: "End date must be after start date",
-  });
+export const dateRangeSchema = z.object({
+  start: z.date(),
+  end: z.date(),
+}).refine((data) => data.end >= data.start, {
+  message: 'End date must be after start date',
+});

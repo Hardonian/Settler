@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface Feature {
   name: string;
@@ -9,23 +9,18 @@ interface Feature {
 }
 
 const features: Feature[] = [
-  {
-    name: "Monthly Reconciliations",
-    free: "1,000",
-    commercial: "100,000",
-    enterprise: "Unlimited",
-  },
-  { name: "Platform Adapters", free: "2", commercial: "Unlimited", enterprise: "Unlimited" },
-  { name: "Log Retention", free: "7 days", commercial: "30 days", enterprise: "Unlimited" },
-  { name: "Event-driven Webhooks", free: false, commercial: true, enterprise: true },
-  { name: "API Access", free: true, commercial: true, enterprise: true },
-  { name: "Community Support", free: true, commercial: false, enterprise: false },
-  { name: "Email Support", free: false, commercial: true, enterprise: false },
-  { name: "Priority Support", free: false, commercial: false, enterprise: true },
-  { name: "Custom Integrations", free: false, commercial: false, enterprise: true },
-  { name: "Extended Log Retention", free: false, commercial: false, enterprise: true },
-  { name: "Dedicated Account Manager", free: false, commercial: false, enterprise: true },
-  { name: "Edge AI", free: false, commercial: "Add-on", enterprise: true },
+  { name: 'Monthly Reconciliations', free: '1,000', commercial: '100,000', enterprise: 'Unlimited' },
+  { name: 'Platform Adapters', free: '2', commercial: 'Unlimited', enterprise: 'Unlimited' },
+  { name: 'Log Retention', free: '7 days', commercial: '30 days', enterprise: 'Unlimited' },
+  { name: 'Real-time Webhooks', free: false, commercial: true, enterprise: true },
+  { name: 'API Access', free: true, commercial: true, enterprise: true },
+  { name: 'Community Support', free: true, commercial: false, enterprise: false },
+  { name: 'Email Support', free: false, commercial: true, enterprise: false },
+  { name: 'Priority Support', free: false, commercial: false, enterprise: true },
+  { name: 'SSO / SAML', free: false, commercial: false, enterprise: true },
+  { name: 'RBAC', free: false, commercial: false, enterprise: true },
+  { name: 'White-label', free: false, commercial: false, enterprise: true },
+  { name: 'On-premise Deployment', free: false, commercial: false, enterprise: true },
 ];
 
 export function FeatureComparison() {
@@ -51,26 +46,18 @@ export function FeatureComparison() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800">
-                  <th className="text-left p-4 font-semibold text-slate-900 dark:text-white">
-                    Feature
-                  </th>
+                  <th className="text-left p-4 font-semibold text-slate-900 dark:text-white">Feature</th>
                   <th className="text-center p-4 font-semibold text-slate-900 dark:text-white">
                     <div>Free</div>
-                    <Badge className="mt-2 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                      OSS
-                    </Badge>
+                    <Badge className="mt-2 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">OSS</Badge>
                   </th>
                   <th className="text-center p-4 font-semibold text-slate-900 dark:text-white">
                     <div>Commercial</div>
-                    <Badge className="mt-2 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                      $99/mo
-                    </Badge>
+                    <Badge className="mt-2 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">$99/mo</Badge>
                   </th>
                   <th className="text-center p-4 font-semibold text-slate-900 dark:text-white">
                     <div>Enterprise</div>
-                    <Badge className="mt-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
-                      Custom
-                    </Badge>
+                    <Badge className="mt-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">Custom</Badge>
                   </th>
                 </tr>
               </thead>
@@ -80,9 +67,7 @@ export function FeatureComparison() {
                     key={index}
                     className="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                   >
-                    <td className="p-4 font-medium text-slate-900 dark:text-white">
-                      {feature.name}
-                    </td>
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">{feature.name}</td>
                     <td className="p-4 text-center">{renderValue(feature.free)}</td>
                     <td className="p-4 text-center">{renderValue(feature.commercial)}</td>
                     <td className="p-4 text-center">{renderValue(feature.enterprise)}</td>

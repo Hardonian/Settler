@@ -20,13 +20,20 @@ export {
 } from "./errors";
 
 // Export utilities
-export { createPaginatedIterator, collectPaginated, PaginatedIterator } from "./utils/pagination";
+export {
+  createPaginatedIterator,
+  collectPaginated,
+  PaginatedIterator,
+} from "./utils/pagination";
 export {
   verifyWebhookSignature,
   verifyWebhookSignatureWithTimestamp,
   extractWebhookTimestamp,
 } from "./utils/webhook-signature";
-export { TokenManager, type TokenInfo } from "./utils/token-refresh";
+export {
+  TokenManager,
+  type TokenInfo,
+} from "./utils/token-refresh";
 export {
   MiddlewareChain,
   type Middleware,

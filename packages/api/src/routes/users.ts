@@ -38,35 +38,32 @@ router.delete(
       // Users can only delete their own data (or admins)
       if (id !== userId) {
         // Check if user is admin
-        const users = await query<{ role: UserRole }>("SELECT role FROM users WHERE id = $1", [
-          userId,
-        ]);
-        if (
-          users.length === 0 ||
-          !users[0] ||
-          (users[0].role !== UserRole.ADMIN && users[0].role !== UserRole.OWNER)
-        ) {
-          return res.status(403).json({ error: "Forbidden" });
+        const users = await query<{ role: UserRole }>(
+          'SELECT role FROM users WHERE id = $1',
+          [userId]
+        );
+        if (users.length === 0 || !users[0] || (users[0].role !== UserRole.ADMIN && users[0].role !== UserRole.OWNER)) {
+          return res.status(403).json({ error: 'Forbidden' });
         }
       }
 
       if (!id || !userId) {
-        return res.status(400).json({ error: "User ID is required" });
+        return res.status(400).json({ error: 'User ID is required' });
       }
 
       // Verify password
       const targetUsers = await query<{ password_hash: string }>(
-        "SELECT password_hash FROM users WHERE id = $1",
+        'SELECT password_hash FROM users WHERE id = $1',
         [id]
       );
 
       if (targetUsers.length === 0 || !targetUsers[0]) {
-        return res.status(404).json({ error: "User not found" });
+        return res.status(404).json({ error: 'User not found' });
       }
 
       const isValid = await verifyPassword(password, targetUsers[0].password_hash);
       if (!isValid) {
-        return res.status(401).json({ error: "Invalid password" });
+        return res.status(401).json({ error: 'Invalid password' });
       }
 
       // Soft delete with 30-day grace period
@@ -87,7 +84,7 @@ router.delete(
           `INSERT INTO audit_logs (event, user_id, metadata)
            VALUES ($1, $2, $3)`,
           [
-            "user_deletion_scheduled",
+            'user_deletion_scheduled',
             id,
             JSON.stringify({ scheduledAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }),
           ]
@@ -98,13 +95,17 @@ router.delete(
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        ["user_data_deletion_requested", userId, JSON.stringify({ targetUserId: id })]
+        [
+          'user_data_deletion_requested',
+          userId,
+          JSON.stringify({ targetUserId: id }),
+        ]
       );
 
-      logInfo("User data deletion scheduled", { userId: id, requestedBy: userId });
+      logInfo('User data deletion scheduled', { userId: id, requestedBy: userId });
 
       res.json({
-        message: "Deletion scheduled. Data will be permanently deleted in 30 days.",
+        message: 'Deletion scheduled. Data will be permanently deleted in 30 days.',
         deletionDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       });
       return;
@@ -127,7 +128,7 @@ router.get(
 
       // Users can only export their own data
       if (id !== userId) {
-        return res.status(403).json({ error: "Forbidden" });
+        return res.status(403).json({ error: 'Forbidden' });
       }
 
       // Fetch all user data
@@ -174,7 +175,7 @@ router.get(
         jobs: jobs,
         reports: reports,
         webhooks: webhooks,
-        apiKeys: apiKeys.map((k) => ({
+        apiKeys: apiKeys.map(k => ({
           id: k.id,
           name: k.name,
           scopes: k.scopes,
@@ -190,10 +191,14 @@ router.get(
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        ["user_data_exported", userId, JSON.stringify({ exportedAt: new Date() })]
+        [
+          'user_data_exported',
+          userId,
+          JSON.stringify({ exportedAt: new Date() }),
+        ]
       );
 
-      logInfo("User data exported", { userId });
+      logInfo('User data exported', { userId });
 
       res.json({ data: exportData });
       return;

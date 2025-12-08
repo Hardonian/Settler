@@ -3,11 +3,11 @@
  * Extracts tenant context from request and sets it for RLS
  */
 
-import { Response, NextFunction } from "express";
-import { AuthRequest } from "./auth";
-import { ITenantRepository } from "../domain/repositories/ITenantRepository";
-import { Container } from "../infrastructure/di/Container";
-import { query } from "../db";
+import { Response, NextFunction } from 'express';
+import { AuthRequest } from './auth';
+import { ITenantRepository } from '../domain/repositories/ITenantRepository';
+import { Container } from '../infrastructure/di/Container';
+import { query } from '../db';
 
 export interface TenantRequest extends AuthRequest {
   tenantId?: string;
@@ -31,26 +31,26 @@ export async function tenantMiddleware(
 ): Promise<void> {
   try {
     const container = Container.getInstance();
-    const tenantRepo = container.get<ITenantRepository>("ITenantRepository");
+    const tenantRepo = container.get<ITenantRepository>('ITenantRepository');
     let tenant = null;
 
     // 1. Check custom domain
-    const host = req.get("host") || "";
+    const host = req.get('host') || '';
     if (host) {
       tenant = await tenantRepo.findByCustomDomain(host);
     }
 
     // 2. Check subdomain (e.g., tenant-slug.api.settler.io)
-    if (!tenant && host.includes(".")) {
-      const subdomain = host.split(".")[0];
-      if (subdomain && subdomain !== "api" && subdomain !== "www") {
+    if (!tenant && host.includes('.')) {
+      const subdomain = host.split('.')[0];
+      if (subdomain && subdomain !== 'api' && subdomain !== 'www') {
         tenant = await tenantRepo.findBySlug(subdomain);
       }
     }
 
     // 3. Check X-Tenant-ID header
     if (!tenant) {
-      const tenantId = req.get("X-Tenant-ID");
+      const tenantId = req.get('X-Tenant-ID');
       if (tenantId) {
         tenant = await tenantRepo.findById(tenantId);
       }
@@ -70,17 +70,17 @@ export async function tenantMiddleware(
 
     if (!tenant) {
       res.status(403).json({
-        error: "TenantNotFound",
-        message: "Unable to determine tenant context",
+        error: 'TenantNotFound',
+        message: 'Unable to determine tenant context',
       });
       return;
     }
 
     // Check tenant status
-    if (tenant.status === "suspended" || tenant.status === "cancelled") {
+    if (tenant.status === 'suspended' || tenant.status === 'cancelled') {
       res.status(403).json({
-        error: "TenantSuspended",
-        message: "Tenant account is suspended or cancelled",
+        error: 'TenantSuspended',
+        message: 'Tenant account is suspended or cancelled',
       });
       return;
     }

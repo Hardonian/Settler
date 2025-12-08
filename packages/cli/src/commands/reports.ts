@@ -4,54 +4,38 @@ import Settler from "@settler/sdk";
 
 const reportsCommand = new Command("reports");
 
-reportsCommand.description("View reconciliation reports").alias("report");
-
-interface ReportGetOptions {
-  start?: string;
-  end?: string;
-  parent?: {
-    apiKey?: string;
-    baseUrl?: string;
-  };
-}
+reportsCommand
+  .description("View reconciliation reports")
+  .alias("report");
 
 reportsCommand
   .command("get <jobId>")
   .description("Get reconciliation report for a job")
   .option("-s, --start <date>", "Start date (YYYY-MM-DD)")
   .option("-e, --end <date>", "End date (YYYY-MM-DD)")
-  .action(async (jobId: string, options: ReportGetOptions) => {
+  .action(async (jobId, options) => {
     try {
-      const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey;
+      const apiKey = process.env.SETTLER_API_KEY || options.parent.apiKey;
       if (!apiKey) {
         console.error(chalk.red("Error: API key required"));
         process.exit(1);
       }
 
-      const clientConfig: { apiKey: string; baseUrl?: string } = {
+      const client = new Settler({
         apiKey,
-      };
-      if (options.parent?.baseUrl) {
-        clientConfig.baseUrl = options.parent.baseUrl;
-      }
-      const client = new Settler(clientConfig);
+        baseUrl: options.parent.baseUrl,
+      });
 
-      const reportOptions: { startDate?: string; endDate?: string } = {};
-      if (options.start) {
-        reportOptions.startDate = options.start;
-      }
-      if (options.end) {
-        reportOptions.endDate = options.end;
-      }
-      const response = await client.reports.get(jobId, reportOptions);
+      const response = await client.reports.get(jobId, {
+        startDate: options.start,
+        endDate: options.end,
+      });
 
       const { summary } = response.data;
-
+      
       console.log(chalk.bold("\nReconciliation Report:\n"));
       console.log(`  Job ID: ${jobId}`);
-      console.log(
-        `  Date Range: ${response.data.dateRange.start} to ${response.data.dateRange.end}`
-      );
+      console.log(`  Date Range: ${response.data.dateRange.start} to ${response.data.dateRange.end}`);
       console.log();
       console.log(chalk.bold("Summary:"));
       console.log(`  Matched: ${chalk.green(summary.matched)}`);
@@ -60,9 +44,7 @@ reportsCommand
       console.log(`  Accuracy: ${chalk.cyan(summary.accuracy.toFixed(2))}%`);
       console.log(`  Total Transactions: ${summary.totalTransactions}`);
     } catch (error) {
-      console.error(
-        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-      );
+      console.error(chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`));
       process.exit(1);
     }
   });

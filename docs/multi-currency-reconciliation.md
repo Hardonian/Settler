@@ -24,7 +24,6 @@ When you enable FX conversion in a reconciliation job, Settler:
 ### Supported Currencies
 
 Settler supports all major currencies:
-
 - USD, EUR, GBP, JPY, CAD, AUD, CHF, CNY, and 100+ more
 - See [full currency list](#supported-currencies) below
 
@@ -102,9 +101,7 @@ const job = await settler.jobs.create({
   },
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: { /* ... */ },
   },
   rules: {
     matching: [
@@ -136,9 +133,7 @@ const job = await settler.jobs.create({
   },
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: { /* ... */ },
   },
   rules: {
     matching: [
@@ -190,7 +185,6 @@ fxConversion: {
 ```
 
 **Expected API Format:**
-
 ```json
 {
   "base": "USD",
@@ -214,7 +208,7 @@ Use exchange rate from the transaction date.
 **Best For:** Historical accuracy, audit compliance
 
 ```typescript
-rateDate: "transaction";
+rateDate: "transaction"
 ```
 
 ### Reconciliation Date
@@ -224,7 +218,7 @@ Use exchange rate from the reconciliation date.
 **Best For:** Current value reconciliation, real-time matching
 
 ```typescript
-rateDate: "reconciliation";
+rateDate: "reconciliation"
 ```
 
 ### Specific Date
@@ -255,7 +249,6 @@ fxConversion: {
 ```
 
 **Example:**
-
 - Stripe charge: €100.00 (EUR)
 - Exchange rate: 1 EUR = 1.10 USD
 - Converted amount: $110.00
@@ -292,13 +285,13 @@ Reports include FX conversion details:
 {
   "match": {
     "id": "match_123",
-    "sourceAmount": 100.0,
+    "sourceAmount": 100.00,
     "sourceCurrency": "EUR",
-    "targetAmount": 110.0,
+    "targetAmount": 110.00,
     "targetCurrency": "USD",
-    "fxRate": 1.1,
+    "fxRate": 1.10,
     "fxRateDate": "2026-01-15",
-    "convertedAmount": 110.0,
+    "convertedAmount": 110.00,
     "convertedCurrency": "USD"
   }
 }
@@ -357,7 +350,6 @@ All FX conversions are logged:
 **Error:** `FX rate not available for currency pair EUR/USD`
 
 **Solution:**
-
 - Check rate source supports currency pair
 - Verify rate date is valid
 - Use fallback rate source
@@ -365,13 +357,11 @@ All FX conversions are logged:
 ### Issue: High Exception Rate
 
 **Possible Causes:**
-
 - Tolerance too strict
 - Rate source inaccurate
 - Rate date mismatch
 
 **Solution:**
-
 - Increase tolerance
 - Use more accurate rate source
 - Align rate date with transaction date
@@ -381,7 +371,6 @@ All FX conversions are logged:
 **Error:** Converted amounts don't match
 
 **Solution:**
-
 - Verify exchange rate accuracy
 - Check tolerance settings
 - Review conversion calculation
@@ -393,7 +382,6 @@ All FX conversions are logged:
 Settler supports all ISO 4217 currencies, including:
 
 **Major Currencies:**
-
 - USD (US Dollar)
 - EUR (Euro)
 - GBP (British Pound)
@@ -446,7 +434,6 @@ interface MatchWithFX {
 ## Examples
 
 See code examples:
-
 - [`examples/multi-currency.ts`](../examples/multi-currency.ts)
 - [`examples/ecommerce-shopify-stripe.ts`](../examples/ecommerce-shopify-stripe.ts)
 

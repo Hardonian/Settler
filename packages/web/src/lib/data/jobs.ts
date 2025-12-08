@@ -1,10 +1,11 @@
 /**
  * Jobs Data Access
- *
+ * 
  * Centralized functions for fetching reconciliation job data.
  */
 
-import { SettlerClient } from "@settler/sdk";
+import { createClient } from '@/lib/supabase/server';
+import { SettlerClient } from '@settler/sdk';
 
 export interface Job {
   id: string;
@@ -27,8 +28,8 @@ export async function getJobs(apiKey: string, options?: { limit?: number }) {
  * This is handled via EventSource in the component, but we can add
  * a REST endpoint wrapper here if needed.
  */
-export function getJobExecution(_jobId: string, _apiKey: string) {
+export async function getJobExecution(jobId: string, apiKey: string) {
   // This would typically call an API endpoint
   // For now, real-time updates are handled via EventSource
-  throw new Error("Use EventSource for real-time job execution updates");
+  throw new Error('Use EventSource for real-time job execution updates');
 }

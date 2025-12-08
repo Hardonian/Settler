@@ -3,9 +3,9 @@
  * Manages database connections with tenant context for RLS
  */
 
-import { Pool, PoolClient } from "pg";
-import { config } from "../../config";
-import { TenantContext } from "./TenantContext";
+import { Pool, PoolClient } from 'pg';
+import { config } from '../../config';
+import { TenantContext } from './TenantContext';
 
 export class TenantConnectionPool {
   private pool: Pool;
@@ -26,8 +26,8 @@ export class TenantConnectionPool {
       query_timeout: 30000,
     });
 
-    this.pool.on("error", (err) => {
-      console.error("Unexpected error on idle client", err);
+    this.pool.on('error', (err) => {
+      console.error('Unexpected error on idle client', err);
     });
   }
 
@@ -43,10 +43,10 @@ export class TenantConnectionPool {
   /**
    * Execute a query with tenant context
    */
-  async query<T = Record<string, unknown>>(
+  async query<T = any>(
     tenantId: string,
     text: string,
-    params?: unknown[]
+    params?: any[]
   ): Promise<T[]> {
     const client = await this.getConnection(tenantId);
     try {
@@ -61,15 +61,18 @@ export class TenantConnectionPool {
   /**
    * Execute a transaction with tenant context
    */
-  async transaction<T>(tenantId: string, callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  async transaction<T>(
+    tenantId: string,
+    callback: (client: PoolClient) => Promise<T>
+  ): Promise<T> {
     const client = await this.getConnection(tenantId);
     try {
-      await client.query("BEGIN");
+      await client.query('BEGIN');
       const result = await callback(client);
-      await client.query("COMMIT");
+      await client.query('COMMIT');
       return result;
     } catch (error) {
-      await client.query("ROLLBACK");
+      await client.query('ROLLBACK');
       throw error;
     } finally {
       await TenantContext.clearTenantContext(client);

@@ -1,18 +1,14 @@
 /**
  * Compliance API Routes
- *
+ * 
  * REST API for compliance exports and edge agent management
  */
 
-import { Router, Request, Response } from "express";
-import { complianceExportSystem } from "../../services/compliance/export-system";
-import { EdgeAgent } from "../../services/privacy-preserving/edge-agent";
-import { handleRouteError } from "../../utils/error-handler";
-import { AuthRequest } from "../../middleware/auth";
-
-interface RequestWithUser extends Request {
-  user?: { id?: string };
-}
+import { Router, Request, Response } from 'express';
+import { complianceExportSystem } from '../../services/compliance/export-system';
+import { EdgeAgent } from '../../services/privacy-preserving/edge-agent';
+import { handleRouteError } from '../../utils/error-handler';
+import { AuthRequest } from '../../middleware/auth';
 
 const router = Router();
 
@@ -20,31 +16,31 @@ const router = Router();
  * POST /api/v2/compliance/exports
  * Create a compliance export
  */
-router.post("/exports", async (req: Request, res: Response) => {
+router.post('/exports', async (req: Request, res: Response) => {
   try {
     const customerId = (req as AuthRequest).userId || req.body.customerId;
     const { jurisdiction, format } = req.body;
 
     if (!customerId || !jurisdiction) {
       return res.status(400).json({
-        error: "Missing required fields",
-        message: "customerId and jurisdiction are required",
+        error: 'Missing required fields',
+        message: 'customerId and jurisdiction are required',
       });
     }
 
     const export_ = await complianceExportSystem.createExport(
       customerId,
       jurisdiction,
-      format || "json"
+      format || 'json'
     );
 
     res.status(201).json({
       data: export_,
-      message: "Export created successfully",
+      message: 'Export created successfully',
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to create export", 400);
+    handleRouteError(res, error, 'Failed to create export', 400);
     return;
   }
 });
@@ -53,14 +49,13 @@ router.post("/exports", async (req: Request, res: Response) => {
  * GET /api/v2/compliance/exports
  * List exports for customer
  */
-router.get("/exports", async (req: Request, res: Response) => {
+router.get('/exports', async (req: Request, res: Response) => {
   try {
-    const reqWithUser = req as RequestWithUser;
-    const customerId = reqWithUser.user?.id || (req.query.customerId as string);
+    const customerId = (req as any).user?.id || req.query.customerId as string;
 
     if (!customerId) {
       return res.status(400).json({
-        error: "Missing customer ID",
+        error: 'Missing customer ID',
       });
     }
 
@@ -72,7 +67,7 @@ router.get("/exports", async (req: Request, res: Response) => {
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to list exports", 500);
+    handleRouteError(res, error, 'Failed to list exports', 500);
     return;
   }
 });
@@ -81,17 +76,17 @@ router.get("/exports", async (req: Request, res: Response) => {
  * GET /api/v2/compliance/exports/:id
  * Get export by ID
  */
-router.get("/exports/:id", async (req: Request, res: Response) => {
+router.get('/exports/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     if (!id) {
-      return res.status(400).json({ error: "Export ID is required" });
+      return res.status(400).json({ error: 'Export ID is required' });
     }
     const export_ = complianceExportSystem.getExport(id);
 
     if (!export_) {
       return res.status(404).json({
-        error: "Export not found",
+        error: 'Export not found',
         message: `Export ${id} not found`,
       });
     }
@@ -101,7 +96,7 @@ router.get("/exports/:id", async (req: Request, res: Response) => {
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to get export", 500);
+    handleRouteError(res, error, 'Failed to get export', 500);
     return;
   }
 });
@@ -110,7 +105,7 @@ router.get("/exports/:id", async (req: Request, res: Response) => {
  * GET /api/v2/compliance/templates
  * Get available export templates
  */
-router.get("/templates", async (_req: Request, res: Response) => {
+router.get('/templates', async (_req: Request, res: Response) => {
   try {
     const templates = complianceExportSystem.getTemplates();
 
@@ -120,7 +115,7 @@ router.get("/templates", async (_req: Request, res: Response) => {
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to get templates", 500);
+    handleRouteError(res, error, 'Failed to get templates', 500);
     return;
   }
 });
@@ -129,22 +124,22 @@ router.get("/templates", async (_req: Request, res: Response) => {
  * POST /api/v2/compliance/edge/initialize
  * Initialize edge agent
  */
-router.post("/edge/initialize", async (req: Request, res: Response) => {
+router.post('/edge/initialize', async (req: Request, res: Response) => {
   try {
     const customerId = (req as AuthRequest).userId || req.body.customerId;
     const { apiKey, cloudEndpoint, reconciliationRules, encryptionKey } = req.body;
 
     if (!customerId || !apiKey || !cloudEndpoint || !reconciliationRules) {
       return res.status(400).json({
-        error: "Missing required fields",
-        message: "customerId, apiKey, cloudEndpoint, and reconciliationRules are required",
+        error: 'Missing required fields',
+        message: 'customerId, apiKey, cloudEndpoint, and reconciliationRules are required',
       });
     }
 
     const edgeAgent = new EdgeAgent({
       customerId,
       apiKey,
-      cloudEndpoint: cloudEndpoint || "https://api.settler.io",
+      cloudEndpoint: cloudEndpoint || 'https://api.settler.io',
       reconciliationRules,
       encryptionKey,
     });
@@ -156,11 +151,11 @@ router.post("/edge/initialize", async (req: Request, res: Response) => {
         customerId,
         initialized: true,
       },
-      message: "Edge agent initialized successfully",
+      message: 'Edge agent initialized successfully',
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to initialize edge agent", 400);
+    handleRouteError(res, error, 'Failed to initialize edge agent', 400);
     return;
   }
 });

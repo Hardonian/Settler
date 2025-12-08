@@ -3,11 +3,11 @@
  * Enforces least privilege access control
  */
 
-import { Response, NextFunction } from "express";
-import { TenantRequest } from "./tenant";
-import { Permission, PermissionChecker } from "../infrastructure/security/Permissions";
-import { UserRole } from "../domain/entities/User";
-import { query } from "../db";
+import { Response, NextFunction } from 'express';
+import { TenantRequest } from './tenant';
+import { Permission, PermissionChecker } from '../infrastructure/security/Permissions';
+import { UserRole } from '../domain/entities/User';
+import { query } from '../db';
 
 export interface AuthorizedRequest extends TenantRequest {
   permissions?: Permission[];
@@ -20,12 +20,16 @@ export { UserRole as Role };
  * Require specific permission(s)
  */
 export function requirePermission(...permissions: Permission[]) {
-  return async (req: AuthorizedRequest, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: AuthorizedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       if (!req.userId || !req.tenantId) {
         res.status(401).json({
-          error: "Unauthorized",
-          message: "Authentication required",
+          error: 'Unauthorized',
+          message: 'Authentication required',
         });
         return;
       }
@@ -41,8 +45,8 @@ export function requirePermission(...permissions: Permission[]) {
 
       if (user.length === 0 || !user[0]) {
         res.status(403).json({
-          error: "Forbidden",
-          message: "User not found",
+          error: 'Forbidden',
+          message: 'User not found',
         });
         return;
       }
@@ -51,7 +55,11 @@ export function requirePermission(...permissions: Permission[]) {
       const { role, scopes } = userRecord;
 
       // Check permissions
-      const hasPermission = PermissionChecker.hasAllPermissions(role, scopes, permissions);
+      const hasPermission = PermissionChecker.hasAllPermissions(
+        role,
+        scopes,
+        permissions
+      );
 
       if (!hasPermission) {
         // Log unauthorized access attempt
@@ -59,19 +67,19 @@ export function requirePermission(...permissions: Permission[]) {
           `INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
            VALUES ($1, $2, $3, $4, $5, $6, $7)`,
           [
-            "unauthorized_access",
+            'unauthorized_access',
             req.userId,
             req.tenantId,
             req.ip || null,
-            req.headers["user-agent"] || null,
+            req.headers['user-agent'] || null,
             req.path,
             JSON.stringify({ requiredPermissions: permissions }),
           ]
         );
 
         res.status(403).json({
-          error: "Forbidden",
-          message: "Insufficient permissions",
+          error: 'Forbidden',
+          message: 'Insufficient permissions',
           required: permissions,
         });
         return;
@@ -90,12 +98,16 @@ export function requirePermission(...permissions: Permission[]) {
  * Require any of the specified permissions
  */
 export function requireAnyPermission(...permissions: Permission[]) {
-  return async (req: AuthorizedRequest, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: AuthorizedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       if (!req.userId || !req.tenantId) {
         res.status(401).json({
-          error: "Unauthorized",
-          message: "Authentication required",
+          error: 'Unauthorized',
+          message: 'Authentication required',
         });
         return;
       }
@@ -110,8 +122,8 @@ export function requireAnyPermission(...permissions: Permission[]) {
 
       if (user.length === 0 || !user[0]) {
         res.status(403).json({
-          error: "Forbidden",
-          message: "User not found",
+          error: 'Forbidden',
+          message: 'User not found',
         });
         return;
       }
@@ -119,26 +131,30 @@ export function requireAnyPermission(...permissions: Permission[]) {
       const userRecord = user[0];
       const { role, scopes } = userRecord;
 
-      const hasPermission = PermissionChecker.hasAnyPermission(role, scopes, permissions);
+      const hasPermission = PermissionChecker.hasAnyPermission(
+        role,
+        scopes,
+        permissions
+      );
 
       if (!hasPermission) {
         await query(
           `INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
            VALUES ($1, $2, $3, $4, $5, $6, $7)`,
           [
-            "unauthorized_access",
+            'unauthorized_access',
             req.userId,
             req.tenantId,
             req.ip || null,
-            req.headers["user-agent"] || null,
+            req.headers['user-agent'] || null,
             req.path,
             JSON.stringify({ requiredPermissions: permissions }),
           ]
         );
 
         res.status(403).json({
-          error: "Forbidden",
-          message: "Insufficient permissions",
+          error: 'Forbidden',
+          message: 'Insufficient permissions',
         });
         return;
       }
@@ -166,8 +182,8 @@ export function requireResourceOwnership(
   (async () => {
     try {
       if (!req.userId || !req.tenantId) {
-        const error = { error: "Unauthorized", message: "Authentication required" };
-        if (typeof next === "function" && next.length === 1) {
+        const error = { error: 'Unauthorized', message: 'Authentication required' };
+        if (typeof next === 'function' && next.length === 1) {
           // Callback pattern
           (next as (err?: unknown) => void)(error);
         } else {
@@ -179,9 +195,9 @@ export function requireResourceOwnership(
 
       // Check resource ownership based on type
       let owned = false;
-
+      
       switch (resourceType) {
-        case "job": {
+        case 'job': {
           const result = await query<{ id: string }>(
             `SELECT id FROM reconciliation_jobs 
              WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
@@ -190,7 +206,7 @@ export function requireResourceOwnership(
           owned = result.length > 0;
           break;
         }
-        case "webhook": {
+        case 'webhook': {
           const result = await query<{ id: string }>(
             `SELECT id FROM webhooks 
              WHERE id = $1 AND tenant_id = $2`,
@@ -211,8 +227,8 @@ export function requireResourceOwnership(
       }
 
       if (!owned) {
-        const error = { error: "Forbidden", message: "Resource not found or access denied" };
-        if (typeof next === "function" && next.length === 1) {
+        const error = { error: 'Forbidden', message: 'Resource not found or access denied' };
+        if (typeof next === 'function' && next.length === 1) {
           // Callback pattern
           (next as (err?: unknown) => void)(error);
         } else {
@@ -223,7 +239,7 @@ export function requireResourceOwnership(
       }
 
       // Success - call next
-      if (typeof next === "function" && next.length === 1) {
+      if (typeof next === 'function' && next.length === 1) {
         // Callback pattern
         (next as (err?: unknown) => void)();
       } else {
@@ -231,7 +247,7 @@ export function requireResourceOwnership(
         (next as NextFunction)();
       }
     } catch (error) {
-      if (typeof next === "function" && next.length === 1) {
+      if (typeof next === 'function' && next.length === 1) {
         // Callback pattern
         (next as (err?: unknown) => void)(error);
       } else {

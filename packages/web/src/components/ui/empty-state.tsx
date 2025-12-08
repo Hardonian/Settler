@@ -1,24 +1,20 @@
 /**
  * EmptyState Component
- *
+ * 
  * Reusable empty state display component with consistent styling and accessibility.
  */
 
-"use client";
+'use client';
 
-import { Inbox, AlertCircle, LucideIcon } from "lucide-react";
-import { Button } from "./button";
-import { cn } from "@/lib/utils";
+import { Inbox, LucideIcon } from 'lucide-react';
+import { Button } from './button';
+import { cn } from '@/lib/utils';
 
 export interface EmptyStateProps {
   /**
    * Icon to display
    */
   icon?: LucideIcon;
-  /**
-   * Icon variant (shortcut for common icons)
-   */
-  iconVariant?: "inbox" | "alert";
   /**
    * Title for the empty state
    */
@@ -38,7 +34,7 @@ export interface EmptyStateProps {
    * Size variant
    * @default 'default'
    */
-  size?: "sm" | "default" | "lg";
+  size?: 'sm' | 'default' | 'lg';
   /**
    * Additional className
    */
@@ -46,42 +42,33 @@ export interface EmptyStateProps {
 }
 
 export function EmptyState({
-  icon: Icon,
-  iconVariant,
-  title = "No data available",
+  icon: Icon = Inbox,
+  title = 'No data available',
   description,
   action,
-  size = "default",
+  size = 'default',
   className,
 }: EmptyStateProps) {
-  // Determine icon based on iconVariant or provided icon
-  let FinalIcon = Icon;
-  if (!FinalIcon && iconVariant) {
-    FinalIcon = iconVariant === "alert" ? AlertCircle : Inbox;
-  }
-  if (!FinalIcon) {
-    FinalIcon = Inbox;
-  }
   // Ensure title is a proper heading level
-  const HeadingTag = size === "lg" ? "h2" : size === "sm" ? "h4" : "h3";
+  const HeadingTag = size === 'lg' ? 'h2' : size === 'sm' ? 'h4' : 'h3';
   const sizeClasses = {
     sm: {
-      container: "py-8",
-      icon: "w-10 h-10",
-      title: "text-base",
-      description: "text-sm",
+      container: 'py-8',
+      icon: 'w-10 h-10',
+      title: 'text-base',
+      description: 'text-sm',
     },
     default: {
-      container: "py-12",
-      icon: "w-12 h-12",
-      title: "text-lg",
-      description: "text-base",
+      container: 'py-12',
+      icon: 'w-12 h-12',
+      title: 'text-lg',
+      description: 'text-base',
     },
     lg: {
-      container: "py-16",
-      icon: "w-16 h-16",
-      title: "text-xl",
-      description: "text-lg",
+      container: 'py-16',
+      icon: 'w-16 h-16',
+      title: 'text-xl',
+      description: 'text-lg',
     },
   };
 
@@ -90,24 +77,24 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center px-4",
+        'flex flex-col items-center justify-center px-4',
         currentSize.container,
         className
       )}
       role="status"
       aria-live="polite"
     >
-      <FinalIcon
+      <Icon
         className={cn(
-          "text-muted-foreground mb-4",
+          'text-muted-foreground mb-4',
           currentSize.icon,
-          "motion-safe:animate-fade-in"
+          'motion-safe:animate-fade-in'
         )}
         aria-hidden="true"
       />
       <HeadingTag
         className={cn(
-          "font-semibold text-foreground mb-3 text-center leading-tight",
+          'font-semibold text-foreground mb-2 text-center',
           currentSize.title
         )}
       >
@@ -116,7 +103,7 @@ export function EmptyState({
       {description && (
         <p
           className={cn(
-            "text-muted-foreground text-center mb-6 max-w-md mx-auto leading-relaxed",
+            'text-muted-foreground text-center mb-6 max-w-md mx-auto',
             currentSize.description
           )}
         >
@@ -127,9 +114,8 @@ export function EmptyState({
         <Button
           onClick={action.onClick}
           variant="default"
-          size={size === "sm" ? "sm" : "default"}
+          size={size === 'sm' ? 'sm' : 'default'}
           aria-label={action.label}
-          className="font-medium"
         >
           {action.label}
         </Button>

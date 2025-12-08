@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { ReactNode } from 'react';
 
 interface AnimatedHeroProps {
   badge?: string;
@@ -16,7 +16,12 @@ interface AnimatedHeroProps {
  * Animated hero section component
  * Consistent hero animations across all pages
  */
-export function AnimatedHero({ badge, title, description, className = "" }: AnimatedHeroProps) {
+export function AnimatedHero({
+  badge,
+  title,
+  description,
+  className = '',
+}: AnimatedHeroProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -24,13 +29,14 @@ export function AnimatedHero({ badge, title, description, className = "" }: Anim
   }, []);
 
   const prefersReducedMotion =
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const animationClass = prefersReducedMotion
-    ? "opacity-100 translate-y-0"
+    ? 'opacity-100 translate-y-0'
     : mounted
-      ? "opacity-100 translate-y-0"
-      : "opacity-0 translate-y-4";
+    ? 'opacity-100 translate-y-0'
+    : 'opacity-0 translate-y-4';
 
   return (
     <section
@@ -54,23 +60,23 @@ export function AnimatedHero({ badge, title, description, className = "" }: Anim
         <h1
           id="hero-heading"
           className={cn(
-            "text-5xl md:text-7xl font-bold mb-6",
-            "bg-gradient-to-r from-primary-600 via-electric-indigo to-electric-purple",
-            "bg-clip-text text-transparent",
-            "transition-all duration-300",
+            'text-5xl md:text-7xl font-bold mb-6',
+            'bg-gradient-to-r from-primary-600 via-electric-indigo to-electric-purple',
+            'bg-clip-text text-transparent',
+            'transition-all duration-300',
             animationClass
           )}
-          style={{ transitionDelay: prefersReducedMotion ? "0ms" : "100ms" }}
+          style={{ transitionDelay: prefersReducedMotion ? '0ms' : '100ms' }}
         >
           {title}
         </h1>
         <p
           className={cn(
-            "text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto",
-            "transition-all duration-300",
+            'text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto',
+            'transition-all duration-300',
             animationClass
           )}
-          style={{ transitionDelay: prefersReducedMotion ? "0ms" : "150ms" }}
+          style={{ transitionDelay: prefersReducedMotion ? '0ms' : '150ms' }}
         >
           {description}
         </p>

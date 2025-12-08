@@ -1,14 +1,14 @@
 /**
  * Server Actions for Positioning Feedback
- *
+ * 
  * Community Loop Feedback: Users submit positioning clarity input,
  * which triggers a Supabase Function to calculate impact score.
  */
 
-"use server";
+'use server';
 
-import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
+import { createClient } from '@/lib/supabase/server';
+import { revalidatePath } from 'next/cache';
 
 export interface PositioningFeedbackInput {
   fiveWordVp?: string;
@@ -26,7 +26,7 @@ export interface PositioningFeedbackResult {
 
 /**
  * Server Action: Submit Positioning Feedback
- *
+ * 
  * Flow: Form Submission → Server Action → Supabase positioning_feedback table
  * → Trigger calculates impact_score → Notification created → Profile updated
  */
@@ -35,21 +35,19 @@ export async function submitPositioningFeedback(
 ): Promise<PositioningFeedbackResult> {
   try {
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
 
     // Validate input
     if (!input.fiveWordVp && !input.targetPersonaPain && !input.feedbackText) {
       return {
         success: false,
-        error: "Please provide at least one piece of feedback",
+        error: 'Please provide at least one piece of feedback',
       };
     }
 
     // Insert feedback (trigger will calculate impact_score automatically)
     const { data, error } = await supabase
-      .from("positioning_feedback")
+      .from('positioning_feedback')
       .insert({
         user_id: user?.id || null, // Allow anonymous feedback
         five_word_vp: input.fiveWordVp,
@@ -68,8 +66,8 @@ export async function submitPositioningFeedback(
     }
 
     // Revalidate dashboard to show updated metrics
-    revalidatePath("/dashboard");
-    revalidatePath("/");
+    revalidatePath('/dashboard');
+    revalidatePath('/');
 
     return {
       success: true,
@@ -77,10 +75,10 @@ export async function submitPositioningFeedback(
       feedbackId: (data as any)?.id,
     };
   } catch (error) {
-    console.error("Positioning feedback error:", error);
+    console.error('Positioning feedback error:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to submit feedback",
+      error: error instanceof Error ? error.message : 'Failed to submit feedback',
     };
   }
 }

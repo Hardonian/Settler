@@ -3,8 +3,8 @@
  * Implements retry logic with jitter for external API calls
  */
 
-import pRetry, { AbortError } from "p-retry";
-import { logWarn } from "../../utils/logger";
+import pRetry, { AbortError } from 'p-retry';
+import { logWarn } from '../../utils/logger';
 
 export interface RetryOptions {
   retries?: number;
@@ -42,7 +42,7 @@ export async function retryWithBackoff<T>(
         }
 
         const err = error instanceof Error ? error : new Error(String(error));
-
+        
         // Check if error is retryable
         if (!isRetryableError(err)) {
           throw new AbortError(err);
@@ -57,7 +57,7 @@ export async function retryWithBackoff<T>(
       maxTimeout: opts.maxTimeout,
       factor: opts.factor,
       onFailedAttempt: (error) => {
-        logWarn("Retry attempt failed", {
+        logWarn('Retry attempt failed', {
           attempt: error.attemptNumber,
           retriesLeft: error.retriesLeft,
           error: error.message,
@@ -73,12 +73,12 @@ export async function retryWithBackoff<T>(
  */
 function isRetryableError(error: Error): boolean {
   const retryableMessages = [
-    "timeout",
-    "ECONNRESET",
-    "ETIMEDOUT",
-    "ENOTFOUND",
-    "ECONNREFUSED",
-    "EAI_AGAIN",
+    'timeout',
+    'ECONNRESET',
+    'ETIMEDOUT',
+    'ENOTFOUND',
+    'ECONNREFUSED',
+    'EAI_AGAIN',
   ];
 
   const message = error.message.toLowerCase();
@@ -89,13 +89,12 @@ function isRetryableError(error: Error): boolean {
     return true;
   }
 
-    // HTTP status codes that are retryable
-    const errorWithStatus = error as Error & { statusCode?: number; status?: number };
-    const statusCode = errorWithStatus.statusCode || errorWithStatus.status;
-    if (statusCode) {
-      // 429 (Too Many Requests), 503 (Service Unavailable), 502 (Bad Gateway), 504 (Gateway Timeout)
-      return [429, 502, 503, 504].includes(statusCode);
-    }
+  // HTTP status codes that are retryable
+  const statusCode = (error as any).statusCode || (error as any).status;
+  if (statusCode) {
+    // 429 (Too Many Requests), 503 (Service Unavailable), 502 (Bad Gateway), 504 (Gateway Timeout)
+    return [429, 502, 503, 504].includes(statusCode);
+  }
 
   return false;
 }

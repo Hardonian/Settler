@@ -6,7 +6,7 @@ import { listAdapters, getAdapterConfigSchema } from "../utils/adapter-config-va
 const router = Router();
 
 // Get adapters from validator (UX-002)
-const ADAPTERS = listAdapters().map((adapter) => ({
+const ADAPTERS = listAdapters().map(adapter => ({
   id: adapter.id,
   name: adapter.name,
   description: `Reconcile ${adapter.name} transactions`,
@@ -16,22 +16,21 @@ const ADAPTERS = listAdapters().map((adapter) => ({
     optional: adapter.configSchema.optional || [],
     fields: adapter.configSchema.fields,
   },
-  supportedEvents:
-    adapter.id === "stripe"
-      ? ["payment.succeeded", "charge.refunded"]
-      : adapter.id === "shopify"
-        ? ["order.created", "order.updated", "transaction.created"]
-        : adapter.id === "quickbooks"
-          ? ["transaction.created", "transaction.updated"]
-          : adapter.id === "paypal"
-            ? ["payment.completed", "refund.completed"]
-            : [],
+  supportedEvents: adapter.id === 'stripe' 
+    ? ["payment.succeeded", "charge.refunded"]
+    : adapter.id === 'shopify'
+    ? ["order.created", "order.updated", "transaction.created"]
+    : adapter.id === 'quickbooks'
+    ? ["transaction.created", "transaction.updated"]
+    : adapter.id === 'paypal'
+    ? ["payment.completed", "refund.completed"]
+    : [],
 }));
 
 // List available adapters (cached)
 router.get("/", async (_req: Request, res: Response) => {
   try {
-    const cacheKey = "adapters:list";
+    const cacheKey = 'adapters:list';
     const cached = await get<typeof ADAPTERS>(cacheKey);
 
     if (cached) {
@@ -58,7 +57,7 @@ router.get("/", async (_req: Request, res: Response) => {
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
+    
     if (!id) {
       res.status(400).json({
         error: "Bad Request",
@@ -66,7 +65,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       });
       return;
     }
-
+    
     const schema = getAdapterConfigSchema(id);
     if (!schema) {
       res.status(404).json({

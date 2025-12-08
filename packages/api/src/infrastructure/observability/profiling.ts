@@ -3,10 +3,10 @@
  * Provides request duration tracking, database query profiling, and memory monitoring
  */
 
-import { Request, Response, NextFunction } from "express";
-import { performance } from "perf_hooks";
-import { logWarn } from "../../utils/logger";
-import { AuthRequest } from "../../middleware/auth";
+import { Request, Response, NextFunction } from 'express';
+import { performance } from 'perf_hooks';
+import { logWarn } from '../../utils/logger';
+import { AuthRequest } from '../../middleware/auth';
 
 export interface ProfileMetrics {
   requestDuration: number;
@@ -32,11 +32,7 @@ export function profilingMiddleware(req: Request, res: Response, next: NextFunct
 
   // Override res.end to capture metrics
   const originalEnd = res.end.bind(res);
-  (res as { end: typeof originalEnd }).end = function (
-    chunk?: unknown,
-    encoding?: unknown,
-    cb?: () => void
-  ) {
+  (res as { end: typeof originalEnd }).end = function(chunk?: unknown, encoding?: unknown, cb?: () => void) {
     const duration = performance.now() - startTime;
     const endMemory = process.memoryUsage();
     const memoryDelta: NodeJS.MemoryUsage = {
@@ -49,7 +45,7 @@ export function profilingMiddleware(req: Request, res: Response, next: NextFunct
 
     // Log slow requests
     if (duration > SLOW_REQUEST_THRESHOLD) {
-      logWarn("Slow request detected", {
+      logWarn('Slow request detected', {
         path: req.path,
         method: req.method,
         duration,
@@ -61,20 +57,20 @@ export function profilingMiddleware(req: Request, res: Response, next: NextFunct
     }
 
     // Add metrics to response header (for debugging)
-    res.setHeader("X-Request-Duration", `${duration.toFixed(2)}ms`);
+    res.setHeader('X-Request-Duration', `${duration.toFixed(2)}ms`);
     if (queryCount > 0) {
-      res.setHeader("X-DB-Queries", queryCount.toString());
-      res.setHeader("X-DB-Duration", `${dbDuration.toFixed(2)}ms`);
+      res.setHeader('X-DB-Queries', queryCount.toString());
+      res.setHeader('X-DB-Duration', `${dbDuration.toFixed(2)}ms`);
     }
 
     // Call original end with proper typing
-    if (typeof encoding === "function") {
+    if (typeof encoding === 'function') {
       // encoding is actually a callback function
       originalEnd(chunk as unknown, encoding as unknown as () => void);
-    } else if (typeof chunk === "function") {
+    } else if (typeof chunk === 'function') {
       // chunk is actually a callback function
       originalEnd(chunk as unknown as () => void);
-    } else if (encoding !== undefined && typeof encoding === "string") {
+    } else if (encoding !== undefined && typeof encoding === 'string') {
       // encoding is a BufferEncoding string
       originalEnd(chunk as unknown, encoding as BufferEncoding, cb);
     } else if (cb !== undefined) {
@@ -101,8 +97,8 @@ export function profileQuery<T>(
     const duration = performance.now() - start;
 
     if (duration > SLOW_DB_THRESHOLD) {
-      logWarn("Slow database query detected", {
-        query: queryName || "unknown",
+      logWarn('Slow database query detected', {
+        query: queryName || 'unknown',
         duration,
       });
     }
@@ -123,9 +119,9 @@ export function getMemoryUsage(): NodeJS.MemoryUsage {
  */
 export function formatMemoryUsage(usage: NodeJS.MemoryUsage): string {
   const formatBytes = (bytes: number): string => {
-    if (bytes === 0) return "0 B";
+    if (bytes === 0) return '0 B';
     const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
+    const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };

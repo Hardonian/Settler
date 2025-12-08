@@ -3,10 +3,10 @@
  * JSON structured logs with trace_id, span_id, tenant_id
  */
 
-import winston from "winston";
-import { redact } from "./redaction";
-import { trace } from "@opentelemetry/api";
-import { config } from "../config";
+import winston from 'winston';
+import { redact } from './redaction';
+import { trace } from '@opentelemetry/api';
+import { config } from '../config';
 
 // Get current trace and span IDs from OpenTelemetry context
 function getTraceContext(): { trace_id?: string; span_id?: string } {
@@ -23,7 +23,7 @@ function getTraceContext(): { trace_id?: string; span_id?: string } {
 }
 
 // Custom format that adds trace context
-const traceContextFormat = winston.format((info: winston.Logform.TransformableInfo) => {
+const traceContextFormat = winston.format((info) => {
   const traceContext = getTraceContext();
   return {
     ...info,
@@ -42,23 +42,18 @@ export const logger = winston.createLogger({
   level: config.logging.level,
   format: logFormat,
   defaultMeta: {
-    service: "settler-api",
+    service: 'settler-api',
     environment: config.nodeEnv,
   },
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.printf((info: winston.Logform.TransformableInfo) => {
-          const { timestamp, level, message, trace_id, span_id, tenant_id, ...meta } = info;
-          const metaStr = Object.keys(meta).length ? JSON.stringify(redact(meta)) : "";
-          const traceInfo =
-            trace_id && typeof trace_id === "string"
-              ? `[trace_id=${trace_id.substring(0, 16)}]`
-              : "";
-          const spanInfo =
-            span_id && typeof span_id === "string" ? `[span_id=${span_id.substring(0, 16)}]` : "";
-          const tenantInfo = tenant_id ? `[tenant_id=${tenant_id}]` : "";
+        winston.format.printf(({ timestamp, level, message, trace_id, span_id, tenant_id, ...meta }) => {
+          const metaStr = Object.keys(meta).length ? JSON.stringify(redact(meta)) : '';
+          const traceInfo = trace_id && typeof trace_id === 'string' ? `[trace_id=${trace_id.substring(0, 16)}]` : '';
+          const spanInfo = span_id && typeof span_id === 'string' ? `[span_id=${span_id.substring(0, 16)}]` : '';
+          const tenantInfo = tenant_id ? `[tenant_id=${tenant_id}]` : '';
           return `${timestamp} [${level}]${traceInfo}${spanInfo}${tenantInfo}: ${message} ${metaStr}`;
         })
       ),
@@ -88,10 +83,7 @@ export function logError(message: string, error?: unknown, meta?: Record<string,
   logger.error(message, {
     ...redact(meta),
     error: errorObj.message,
-    stack:
-      error instanceof Error && "stack" in errorObj && errorObj.stack
-        ? String(errorObj.stack)
-        : undefined,
+    stack: error instanceof Error && 'stack' in errorObj && errorObj.stack ? String(errorObj.stack) : undefined,
   });
 }
 

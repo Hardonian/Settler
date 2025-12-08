@@ -1,9 +1,9 @@
 export function StatsSection() {
   const stats = [
-    { value: "99.7%", label: "Reconciliation Accuracy" },
-    { value: "<50ms", label: "Average API Latency" },
-    { value: "50+", label: "Platform Integrations" },
-    { value: "10M+", label: "Transactions Reconciled" },
+    { value: '99.7%', label: 'Reconciliation Accuracy' },
+    { value: '<50ms', label: 'Average API Latency' },
+    { value: '50+', label: 'Platform Integrations' },
+    { value: '10M+', label: 'Transactions Reconciled' },
   ];
 
   return (

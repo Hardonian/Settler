@@ -17,13 +17,11 @@ const router = Router();
 const aiQuerySchema = z.object({
   body: z.object({
     query: z.string().min(1).max(1000),
-    context: z
-      .object({
-        jobId: z.string().uuid().optional(),
-        adapter: z.string().optional(),
-        error: z.string().optional(),
-      })
-      .optional(),
+    context: z.object({
+      jobId: z.string().uuid().optional(),
+      adapter: z.string().optional(),
+      error: z.string().optional(),
+    }).optional(),
   }),
 });
 
@@ -50,9 +48,7 @@ router.post(
         },
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get AI assistant response", 500, {
-        userId: req.userId,
-      });
+      handleRouteError(res, error, "Failed to get AI assistant response", 500, { userId: req.userId });
     }
   }
 );
@@ -67,12 +63,7 @@ router.get(
       const userId = req.userId!;
 
       // Get job details
-      const jobs = await query<{
-        id: string;
-        rules: unknown;
-        source_adapter: string;
-        target_adapter: string;
-      }>(
+      const jobs = await query<{ id: string; rules: unknown; source_adapter: string; target_adapter: string }>(
         `SELECT id, rules, source_adapter, target_adapter FROM jobs WHERE id = $1 AND user_id = $2`,
         [jobId || null, userId]
       );
@@ -124,9 +115,7 @@ router.get(
         },
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get AI optimization suggestions", 500, {
-        userId: req.userId,
-      });
+      handleRouteError(res, error, "Failed to get AI optimization suggestions", 500, { userId: req.userId });
     }
   }
 );
@@ -146,14 +135,9 @@ async function generateAIResponse(
   const lowerQuery = query.toLowerCase();
 
   // Pattern matching for common queries (in production, would use LLM API)
-  if (
-    lowerQuery.includes("how to") ||
-    lowerQuery.includes("setup") ||
-    lowerQuery.includes("configure")
-  ) {
+  if (lowerQuery.includes("how to") || lowerQuery.includes("setup") || lowerQuery.includes("configure")) {
     return {
-      answer:
-        "To set up reconciliation, create a job with source and target adapters, then configure matching rules. Here's a quick example:",
+      answer: "To set up reconciliation, create a job with source and target adapters, then configure matching rules. Here's a quick example:",
       suggestions: [
         "Use exact matching for transaction IDs",
         "Add tolerance for amount matching (e.g., $0.01)",
@@ -176,14 +160,9 @@ async function generateAIResponse(
     };
   }
 
-  if (
-    lowerQuery.includes("error") ||
-    lowerQuery.includes("problem") ||
-    lowerQuery.includes("issue")
-  ) {
+  if (lowerQuery.includes("error") || lowerQuery.includes("problem") || lowerQuery.includes("issue")) {
     return {
-      answer:
-        "Let me help troubleshoot. Common issues include invalid API keys, adapter configuration errors, or matching rule problems.",
+      answer: "Let me help troubleshoot. Common issues include invalid API keys, adapter configuration errors, or matching rule problems.",
       suggestions: [
         "Check your API keys are valid and have correct permissions",
         "Verify adapter configuration matches the schema",
@@ -205,11 +184,7 @@ const exceptions = await settler.exceptions.list({
     };
   }
 
-  if (
-    lowerQuery.includes("optimize") ||
-    lowerQuery.includes("improve") ||
-    lowerQuery.includes("accuracy")
-  ) {
+  if (lowerQuery.includes("optimize") || lowerQuery.includes("improve") || lowerQuery.includes("accuracy")) {
     return {
       answer: "To optimize reconciliation accuracy, consider:",
       suggestions: [
@@ -231,8 +206,7 @@ const optimizations = await settler.jobs.aiOptimize("job_abc123");`,
 
   // Default response
   return {
-    answer:
-      "I can help with reconciliation setup, troubleshooting, optimization, and best practices. What would you like to know?",
+    answer: "I can help with reconciliation setup, troubleshooting, optimization, and best practices. What would you like to know?",
     suggestions: [
       "How to set up a reconciliation job",
       "How to troubleshoot errors",
@@ -245,12 +219,7 @@ const optimizations = await settler.jobs.aiOptimize("job_abc123");`,
 
 function generateOptimizationSuggestions(
   job: { source_adapter: string; target_adapter: string; rules: unknown },
-  metrics: {
-    avg_accuracy: number;
-    avg_confidence: number;
-    exception_rate: number;
-    match_rate: number;
-  }
+  metrics: { avg_accuracy: number; avg_confidence: number; exception_rate: number; match_rate: number }
 ): Array<{
   type: "rule" | "tolerance" | "matching" | "performance";
   priority: "high" | "medium" | "low";
@@ -269,7 +238,7 @@ function generateOptimizationSuggestions(
   }> = [];
 
   // Low accuracy suggestions
-  if (metrics.avg_accuracy < 0.9) {
+  if (metrics.avg_accuracy < 0.90) {
     suggestions.push({
       type: "matching",
       priority: "high",
@@ -293,7 +262,7 @@ function generateOptimizationSuggestions(
   }
 
   // High exception rate
-  if (metrics.exception_rate > 0.1) {
+  if (metrics.exception_rate > 0.10) {
     suggestions.push({
       type: "tolerance",
       priority: "high",
@@ -305,7 +274,7 @@ function generateOptimizationSuggestions(
   }
 
   // Low match rate
-  if (metrics.match_rate < 0.8) {
+  if (metrics.match_rate < 0.80) {
     suggestions.push({
       type: "matching",
       priority: "high",

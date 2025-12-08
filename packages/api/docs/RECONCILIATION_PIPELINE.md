@@ -17,13 +17,11 @@ All reconciliation operations are recorded as immutable events in the event stor
 ### 2. CQRS Layer
 
 **Write Model (Commands)**:
-
 - `StartReconciliation`: Initiate a new reconciliation
 - `RetryReconciliation`: Retry a failed reconciliation
 - `CancelReconciliation`: Cancel an in-progress reconciliation
 
 **Read Model (Projections)**:
-
 - `ReconciliationSummary`: Current status, counts, timings
 - `TenantUsageView`: Usage metrics per tenant/day
 - `ErrorHotspotsView`: Error patterns and failure points
@@ -152,7 +150,6 @@ On failure, completed steps are compensated in reverse order:
 ### Dead Letter Queue
 
 After max retries, failures are sent to DLQ for:
-
 - Manual review
 - Root cause analysis
 - Manual retry or resolution

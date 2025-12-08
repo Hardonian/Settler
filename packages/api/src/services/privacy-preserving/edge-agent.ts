@@ -1,12 +1,11 @@
 /**
  * Edge Computing Agent
- *
+ * 
  * Lightweight agent that runs in customer infrastructure to perform
  * reconciliation locally without sending data to Settler cloud.
  */
 
-import { EventEmitter } from "events";
-import { logError } from "../../utils/logger";
+import { EventEmitter } from 'events';
 
 export interface EdgeAgentConfig {
   customerId: string;
@@ -18,7 +17,7 @@ export interface EdgeAgentConfig {
 
 export interface ReconciliationRule {
   field: string;
-  type: "exact" | "fuzzy" | "range" | "date_range";
+  type: 'exact' | 'fuzzy' | 'range' | 'date_range';
   threshold?: number;
   tolerance?: number;
   days?: number;
@@ -48,25 +47,22 @@ export class EdgeAgent extends EventEmitter {
   async initialize(): Promise<void> {
     // Validate configuration
     if (!this.config.customerId || !this.config.apiKey) {
-      throw new Error("Missing required configuration");
+      throw new Error('Missing required configuration');
     }
 
     // Test connection to cloud endpoint
     await this.testCloudConnection();
 
     this.isRunning = true;
-    this.emit("initialized");
+    this.emit('initialized');
   }
 
   /**
    * Perform local reconciliation
    */
-  async reconcile(
-    sourceData: Record<string, unknown>[],
-    targetData: Record<string, unknown>[]
-  ): Promise<ReconciliationResult> {
+  async reconcile(sourceData: Record<string, unknown>[], targetData: Record<string, unknown>[]): Promise<ReconciliationResult> {
     if (!this.isRunning) {
-      throw new Error("Edge agent not initialized");
+      throw new Error('Edge agent not initialized');
     }
 
     const startTime = Date.now();
@@ -117,13 +113,12 @@ export class EdgeAgent extends EventEmitter {
       // Send only metadata to cloud (not raw data)
       await this.sendMetadataToCloud(metadata);
 
-      this.emit("reconciliation_complete", result);
+      this.emit('reconciliation_complete', result);
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       errors++;
-      const errorObj = error instanceof Error ? error : new Error(String(error));
-      this.emit("reconciliation_error", errorObj);
-      throw errorObj;
+      this.emit('reconciliation_error', error);
+      throw error;
     }
   }
 
@@ -150,42 +145,36 @@ export class EdgeAgent extends EventEmitter {
   /**
    * Check if values match according to rule
    */
-  private matchesRule(
-    sourceValue: unknown,
-    targetValue: unknown,
-    rule: ReconciliationRule
-  ): boolean {
+  private matchesRule(sourceValue: unknown, targetValue: unknown, rule: ReconciliationRule): boolean {
     if (sourceValue === undefined || targetValue === undefined) {
       return false;
     }
 
     switch (rule.type) {
-      case "exact":
+      case 'exact':
         return sourceValue === targetValue;
-
-      case "fuzzy":
-        if (typeof sourceValue === "string" && typeof targetValue === "string") {
+      
+      case 'fuzzy':
+        if (typeof sourceValue === 'string' && typeof targetValue === 'string') {
           const similarity = this.stringSimilarity(sourceValue, targetValue);
           return similarity >= (rule.threshold || 0.8);
         }
         return false;
-
-      case "range":
-        if (typeof sourceValue === "number" && typeof targetValue === "number") {
+      
+      case 'range':
+        if (typeof sourceValue === 'number' && typeof targetValue === 'number') {
           const diff = Math.abs(sourceValue - targetValue);
           return diff <= (rule.tolerance || 0.01);
         }
         return false;
-
-      case "date_range":
+      
+      case 'date_range':
         if (sourceValue instanceof Date && targetValue instanceof Date) {
-          const diffDays = Math.abs(
-            (sourceValue.getTime() - targetValue.getTime()) / (1000 * 60 * 60 * 24)
-          );
+          const diffDays = Math.abs((sourceValue.getTime() - targetValue.getTime()) / (1000 * 60 * 60 * 24));
           return diffDays <= (rule.days || 1);
         }
         return false;
-
+      
       default:
         return false;
     }
@@ -197,9 +186,9 @@ export class EdgeAgent extends EventEmitter {
   private stringSimilarity(str1: string, str2: string): number {
     const longer = str1.length > str2.length ? str1 : str2;
     const shorter = str1.length > str2.length ? str2 : str1;
-
+    
     if (longer.length === 0) return 1.0;
-
+    
     const distance = this.levenshteinDistance(longer, shorter);
     return (longer.length - distance) / longer.length;
   }
@@ -209,18 +198,18 @@ export class EdgeAgent extends EventEmitter {
    */
   private levenshteinDistance(str1: string, str2: string): number {
     const matrix: number[][] = [];
-
+    
     for (let i = 0; i <= str2.length; i++) {
       matrix[i] = [i];
     }
-
+    
     for (let j = 0; j <= str1.length; j++) {
       if (!matrix[0]) {
         matrix[0] = [];
       }
       matrix[0][j] = j;
     }
-
+    
     for (let i = 1; i <= str2.length; i++) {
       for (let j = 1; j <= str1.length; j++) {
         if (!matrix[i]) {
@@ -242,7 +231,7 @@ export class EdgeAgent extends EventEmitter {
         }
       }
     }
-
+    
     const lastRow = matrix[str2.length];
     if (!lastRow) {
       return str1.length;
@@ -271,10 +260,10 @@ export class EdgeAgent extends EventEmitter {
     // Only metadata is sent, never raw transaction data
     try {
       const response = await fetch(`${this.config.cloudEndpoint}/api/v1/edge/metadata`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.config.apiKey}`,
         },
         body: JSON.stringify({
           customerId: this.config.customerId,
@@ -286,7 +275,7 @@ export class EdgeAgent extends EventEmitter {
         throw new Error(`Failed to send metadata: ${response.statusText}`);
       }
     } catch (error) {
-      logError("Failed to send metadata to cloud", error as Error);
+      console.error('Failed to send metadata to cloud:', error);
       // Don't throw - metadata sending failure shouldn't break reconciliation
     }
   }
@@ -297,11 +286,11 @@ export class EdgeAgent extends EventEmitter {
   private async testCloudConnection(): Promise<void> {
     try {
       const response = await fetch(`${this.config.cloudEndpoint}/health`, {
-        method: "GET",
+        method: 'GET',
       });
 
       if (!response.ok) {
-        throw new Error("Cloud endpoint not reachable");
+        throw new Error('Cloud endpoint not reachable');
       }
     } catch (error) {
       throw new Error(`Failed to connect to cloud endpoint: ${error}`);
@@ -313,6 +302,6 @@ export class EdgeAgent extends EventEmitter {
    */
   async shutdown(): Promise<void> {
     this.isRunning = false;
-    this.emit("shutdown");
+    this.emit('shutdown');
   }
 }

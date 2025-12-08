@@ -1,18 +1,18 @@
 /**
  * Currency/FX API Routes
- *
+ * 
  * REST API endpoints for multi-currency operations
  */
 
-import { Router, Response } from "express";
-import { z } from "zod";
-import { validateRequest } from "../../middleware/validation";
-import { AuthRequest } from "../../middleware/auth";
-import { requirePermission } from "../../middleware/authorization";
-import { Permission } from "../../infrastructure/security/Permissions";
-import { FXService } from "../../application/currency/FXService";
-import { sendSuccess, sendError } from "../../utils/api-response";
-import { handleRouteError } from "../../utils/error-handler";
+import { Router, Response } from 'express';
+import { z } from 'zod';
+import { validateRequest } from '../../middleware/validation';
+import { AuthRequest } from '../../middleware/auth';
+import { requirePermission } from '../../middleware/authorization';
+import { Permission } from '../../infrastructure/security/Permissions';
+import { FXService } from '../../application/currency/FXService';
+import { sendSuccess, sendError } from '../../utils/api-response';
+import { handleRouteError } from '../../utils/error-handler';
 
 const router = Router();
 const fxService = new FXService();
@@ -42,7 +42,7 @@ const getFXRateSchema = z.object({
  * Convert amount to base currency
  */
 router.post(
-  "/convert",
+  '/convert',
   requirePermission(Permission.REPORTS_READ),
   validateRequest(convertCurrencySchema),
   async (req: AuthRequest, res: Response) => {
@@ -51,7 +51,7 @@ router.post(
       const tenantId = req.tenantId!;
 
       const moneyAmount = {
-        value: typeof amount === "number" ? amount : parseFloat(String(amount)),
+        value: typeof amount === 'number' ? amount : parseFloat(String(amount)),
         currency: toCurrency,
       };
 
@@ -63,12 +63,12 @@ router.post(
       );
 
       if (!converted) {
-        return sendError(res, 404, "NOT_FOUND", "FX rate not available for currency pair");
+        return sendError(res, 404, 'NOT_FOUND', 'FX rate not available for currency pair');
       }
 
       sendSuccess(res, { original: amount, converted });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to convert currency", 500);
+      handleRouteError(res, error, 'Failed to convert currency', 500);
     }
   }
 );
@@ -78,7 +78,7 @@ router.post(
  * Get FX rate for currency pair
  */
 router.get(
-  "/fx-rate",
+  '/fx-rate',
   requirePermission(Permission.REPORTS_READ),
   validateRequest(getFXRateSchema),
   async (req: AuthRequest, res: Response) => {
@@ -94,7 +94,7 @@ router.get(
       );
 
       if (rate === null) {
-        return sendError(res, 404, "NOT_FOUND", "FX rate not available for currency pair");
+        return sendError(res, 404, 'NOT_FOUND', 'FX rate not available for currency pair');
       }
 
       sendSuccess(res, {
@@ -104,7 +104,7 @@ router.get(
         date: date || new Date().toISOString(),
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get FX rate", 500);
+      handleRouteError(res, error, 'Failed to get FX rate', 500);
     }
   }
 );
@@ -114,7 +114,7 @@ router.get(
  * Get base currency for tenant
  */
 router.get(
-  "/base-currency",
+  '/base-currency',
   requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -122,7 +122,7 @@ router.get(
       const baseCurrency = await fxService.getBaseCurrency(tenantId);
       sendSuccess(res, { baseCurrency });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get base currency", 500);
+      handleRouteError(res, error, 'Failed to get base currency', 500);
     }
   }
 );
@@ -132,7 +132,7 @@ router.get(
  * Get all FX rates for tenant
  */
 router.get(
-  "/fx-rates",
+  '/fx-rates',
   requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -141,33 +141,7 @@ router.get(
       const rates = await fxService.getFXRates(tenantId, date);
       sendSuccess(res, { rates });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get FX rates", 500);
-    }
-  }
-);
-
-/**
- * POST /api/v1/currency/sync-rates
- * Sync FX rates from external provider
- */
-router.post(
-  "/sync-rates",
-  requirePermission(Permission.JOBS_WRITE),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const baseCurrency = (req.body.baseCurrency as string) || "USD";
-      const date = req.body.date ? new Date(req.body.date as string) : undefined;
-
-      const syncedCount = await fxService.syncFXRates(tenantId, baseCurrency, date);
-      sendSuccess(res, {
-        syncedCount,
-        baseCurrency,
-        date: date?.toISOString() || new Date().toISOString(),
-        message: `Synced ${syncedCount} FX rates from external provider`,
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to sync FX rates", 500);
+      handleRouteError(res, error, 'Failed to get FX rates', 500);
     }
   }
 );

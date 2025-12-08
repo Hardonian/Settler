@@ -4,22 +4,16 @@
  * Future-forward: Drag-and-drop interface, AI rule generation, real-time impact analysis
  */
 
-import React, { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Play, TrendingUp, AlertCircle, CheckCircle2 } from "@/lib/lucide-react";
-import { MatchingRule } from "@settler/types";
+import React, { useState, useEffect } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sparkles, Play, TrendingUp, AlertCircle, CheckCircle2 } from '@/lib/lucide-react';
+import { MatchingRule } from '@settler/types';
 
 interface RuleTemplate {
   id: string;
@@ -58,37 +52,36 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
   const [aiSuggestions, setAiSuggestions] = useState<MatchingRule[]>([]);
 
   useEffect(() => {
-    void loadTemplates();
-    void loadAISuggestions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadTemplates();
+    loadAISuggestions();
   }, [jobId]);
 
   const loadTemplates = async () => {
     try {
-      const response = await fetch("/api/v1/rules/templates");
+      const response = await fetch('/api/v1/rules/templates');
       const data = await response.json();
       setTemplates(data.data || []);
     } catch (error) {
-      console.error("Failed to load templates:", error);
+      console.error('Failed to load templates:', error);
     }
   };
 
   const loadAISuggestions = async () => {
     try {
-      const response = await fetch("/api/v1/rules/suggest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/v1/rules/suggest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobId }),
       });
       const data = await response.json();
       setAiSuggestions(data.data?.suggestions?.[0]?.rules || []);
     } catch (error) {
-      console.error("Failed to load AI suggestions:", error);
+      console.error('Failed to load AI suggestions:', error);
     }
   };
 
   const applyTemplate = (templateId: string) => {
-    const template = templates.find((t) => t.id === templateId);
+    const template = templates.find(t => t.id === templateId);
     if (template) {
       setRules(template.rules);
       setSelectedTemplate(templateId);
@@ -96,14 +89,14 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
   };
 
   const addRule = () => {
-    setRules([...rules, { field: "transactionId", type: "exact" }]);
+    setRules([...rules, { field: 'transactionId', type: 'exact' }]);
   };
 
   const updateRule = (index: number, updates: Partial<MatchingRule>) => {
     const updated = [...rules];
     const currentRule = updated[index];
     if (!currentRule) return;
-
+    
     const mergedRule: MatchingRule = {
       field: updates.field !== undefined ? updates.field : currentRule.field,
       type: updates.type !== undefined ? updates.type : currentRule.type,
@@ -128,35 +121,35 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
 
   const previewRules = async () => {
     try {
-      const response = await fetch("/api/v1/rules/preview", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/v1/rules/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           rules,
           sampleData: {
-            source: { order_id: "12345", amount: 99.99, date: "2026-01-15T10:00:00Z" },
-            target: { order_id: "12345", amount: 99.99, date: "2026-01-15T10:01:00Z" },
+            source: { order_id: '12345', amount: 99.99, date: '2026-01-15T10:00:00Z' },
+            target: { order_id: '12345', amount: 99.99, date: '2026-01-15T10:01:00Z' },
           },
         }),
       });
       const data = await response.json();
       setPreviewResult(data.data?.insights || null);
     } catch (error) {
-      console.error("Failed to preview rules:", error);
+      console.error('Failed to preview rules:', error);
     }
   };
 
   const analyzeImpact = async () => {
     try {
-      const response = await fetch("/api/v1/rules/analyze-impact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/v1/rules/analyze-impact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rules }),
       });
       const data = await response.json();
       setImpactAnalysis(data.data?.impact || null);
     } catch (error) {
-      console.error("Failed to analyze impact:", error);
+      console.error('Failed to analyze impact:', error);
     }
   };
 
@@ -211,9 +204,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                         <Label>Field</Label>
                         <Input
                           value={rule.field}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            updateRule(index, { field: e.target.value })
-                          }
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRule(index, { field: e.target.value })}
                           placeholder="transaction_id"
                         />
                       </div>
@@ -221,9 +212,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                         <Label>Type</Label>
                         <Select
                           value={rule.type}
-                          onValueChange={(value: string) =>
-                            updateRule(index, { type: value as MatchingRule["type"] })
-                          }
+                          onValueChange={(value: string) => updateRule(index, { type: value as MatchingRule['type'] })}
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -235,13 +224,13 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                           </SelectContent>
                         </Select>
                       </div>
-                      {rule.type === "exact" && (
+                      {rule.type === 'exact' && (
                         <div className="col-span-2">
                           <Label>Tolerance</Label>
                           <Input
                             type="number"
                             step="0.01"
-                            value={rule.tolerance?.amount || ""}
+                            value={rule.tolerance?.amount || ''}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                               const value = parseFloat(e.target.value);
                               const updates: Partial<MatchingRule> = {};
@@ -254,7 +243,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                           />
                         </div>
                       )}
-                      {rule.type === "fuzzy" && (
+                      {rule.type === 'fuzzy' && (
                         <div className="col-span-2">
                           <Label>Threshold</Label>
                           <Input
@@ -262,7 +251,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                             step="0.01"
                             min="0"
                             max="1"
-                            value={rule.threshold || ""}
+                            value={rule.threshold || ''}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                               const value = parseFloat(e.target.value);
                               const updates: Partial<MatchingRule> = {};
@@ -275,12 +264,12 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                           />
                         </div>
                       )}
-                      {rule.type === "range" && (
+                      {rule.type === 'range' && (
                         <div className="col-span-2">
                           <Label>Days</Label>
                           <Input
                             type="number"
-                            value={rule.tolerance?.days || ""}
+                            value={rule.tolerance?.days || ''}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                               const value = parseInt(e.target.value);
                               const updates: Partial<MatchingRule> = {};
@@ -322,7 +311,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                       <AlertCircle className="w-5 h-5 text-yellow-500" />
                     )}
                     <span className="font-semibold">
-                      {previewResult.wouldMatch ? "Would Match" : "Would Not Match"}
+                      {previewResult.wouldMatch ? 'Would Match' : 'Would Not Match'}
                     </span>
                     <Badge variant="secondary">
                       {(previewResult.confidence * 100).toFixed(1)}% confidence
@@ -344,9 +333,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                       <h4 className="font-semibold mb-2">Recommendations</h4>
                       <ul className="list-disc list-inside space-y-1">
                         {previewResult.recommendations.map((r, i) => (
-                          <li key={i} className="text-sm text-muted-foreground">
-                            {r}
-                          </li>
+                          <li key={i} className="text-sm text-muted-foreground">{r}</li>
                         ))}
                       </ul>
                     </div>
@@ -365,15 +352,11 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Estimated Match Rate</p>
-                    <p className="text-2xl font-bold">
-                      {(impactAnalysis.estimatedMatchRate * 100).toFixed(1)}%
-                    </p>
+                    <p className="text-2xl font-bold">{(impactAnalysis.estimatedMatchRate * 100).toFixed(1)}%</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Estimated Accuracy</p>
-                    <p className="text-2xl font-bold">
-                      {(impactAnalysis.estimatedAccuracy * 100).toFixed(1)}%
-                    </p>
+                    <p className="text-2xl font-bold">{(impactAnalysis.estimatedAccuracy * 100).toFixed(1)}%</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Performance Impact</p>
@@ -389,9 +372,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                     <h4 className="font-semibold mb-2">Recommendations</h4>
                     <ul className="list-disc list-inside space-y-1">
                       {impactAnalysis.recommendations.map((r, i) => (
-                        <li key={i} className="text-sm">
-                          {r}
-                        </li>
+                        <li key={i} className="text-sm">{r}</li>
                       ))}
                     </ul>
                   </div>
@@ -404,11 +385,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
         <TabsContent value="templates" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {templates.map((template) => (
-              <Card
-                key={template.id}
-                className="cursor-pointer hover:border-primary"
-                onClick={() => applyTemplate(template.id)}
-              >
+              <Card key={template.id} className="cursor-pointer hover:border-primary" onClick={() => applyTemplate(template.id)}>
                 <CardHeader>
                   <CardTitle>{template.name}</CardTitle>
                   <p className="text-sm text-muted-foreground">{template.description}</p>
@@ -421,9 +398,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Match Rate:</span>
-                      <Badge variant="secondary">
-                        {(template.estimatedMatchRate * 100).toFixed(0)}%
-                      </Badge>
+                      <Badge variant="secondary">{(template.estimatedMatchRate * 100).toFixed(0)}%</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">{template.useCase}</p>
                   </div>
@@ -452,19 +427,9 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                       <div key={index} className="flex items-center gap-2 p-2 border rounded">
                         <Badge>{rule.type}</Badge>
                         <span className="font-mono text-sm">{rule.field}</span>
-                        {rule.tolerance?.amount && (
-                          <span className="text-xs text-muted-foreground">
-                            ±{rule.tolerance.amount}
-                          </span>
-                        )}
-                        {rule.tolerance?.days && (
-                          <span className="text-xs text-muted-foreground">
-                            ±{rule.tolerance.days}d
-                          </span>
-                        )}
-                        {rule.threshold && (
-                          <span className="text-xs text-muted-foreground">≥{rule.threshold}</span>
-                        )}
+                        {rule.tolerance?.amount && <span className="text-xs text-muted-foreground">±{rule.tolerance.amount}</span>}
+                        {rule.tolerance?.days && <span className="text-xs text-muted-foreground">±{rule.tolerance.days}d</span>}
+                        {rule.threshold && <span className="text-xs text-muted-foreground">≥{rule.threshold}</span>}
                         <Button
                           size="sm"
                           variant="outline"
@@ -478,9 +443,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
                   </div>
                 </div>
               ) : (
-                <p className="text-muted-foreground">
-                  No AI suggestions available. Configure your job first.
-                </p>
+                <p className="text-muted-foreground">No AI suggestions available. Configure your job first.</p>
               )}
             </CardContent>
           </Card>

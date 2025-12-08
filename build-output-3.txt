@@ -1,0 +1,162 @@
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
+
+> settler-monorepo@1.0.0 build
+> turbo run build
+
+• Packages in scope: @settler/adapters, @settler/api, @settler/cli, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/types, @settler/web
+• Running build in 8 packages
+• Remote caching disabled
+@settler/protocol:typecheck: cache miss, executing b2b8dd2a3782251f
+@settler/sdk:typecheck: cache hit, replaying logs 0ef70f460daa9635
+@settler/sdk:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/sdk:typecheck: npm warn config `--include=optional` to include them.
+@settler/sdk:typecheck: npm warn config
+@settler/sdk:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/sdk:typecheck: 
+@settler/sdk:typecheck: > @settler/sdk@1.0.0 typecheck
+@settler/sdk:typecheck: > tsc --noEmit
+@settler/sdk:typecheck: 
+@settler/types:typecheck: cache hit, replaying logs 2edf491d25c093c6
+@settler/types:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/types:typecheck: npm warn config `--include=optional` to include them.
+@settler/types:typecheck: npm warn config
+@settler/types:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/types:typecheck: 
+@settler/types:typecheck: > @settler/types@1.0.0 typecheck
+@settler/types:typecheck: > tsc --noEmit
+@settler/types:typecheck: 
+@settler/types:build: cache miss, executing aa5859c73cc3cccd
+@settler/sdk:build: cache hit, replaying logs b8fe7df153082bd0
+@settler/sdk:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/sdk:build: npm warn config `--include=optional` to include them.
+@settler/sdk:build: npm warn config
+@settler/sdk:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/sdk:build: 
+@settler/sdk:build: > @settler/sdk@1.0.0 build
+@settler/sdk:build: > tsc
+@settler/sdk:build: 
+@settler/cli:typecheck: cache miss, executing ec67339c1c87469d
+@settler/protocol:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/protocol:typecheck: npm warn config `--include=optional` to include them.
+@settler/protocol:typecheck: npm warn config
+@settler/protocol:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/types:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/types:build: npm warn config `--include=optional` to include them.
+@settler/types:build: npm warn config
+@settler/types:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/protocol:typecheck: 
+@settler/protocol:typecheck: > @settler/protocol@0.1.0 typecheck
+@settler/protocol:typecheck: > tsc --noEmit
+@settler/protocol:typecheck: 
+@settler/types:build: 
+@settler/types:build: > @settler/types@1.0.0 build
+@settler/types:build: > tsc
+@settler/types:build: 
+@settler/cli:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/cli:typecheck: npm warn config `--include=optional` to include them.
+@settler/cli:typecheck: npm warn config
+@settler/cli:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/cli:typecheck: 
+@settler/cli:typecheck: > @settler/cli@1.0.0 typecheck
+@settler/cli:typecheck: > tsc --noEmit
+@settler/cli:typecheck: 
+@settler/protocol:build: cache miss, executing 25cf91ac5fb541f2
+@settler/adapters:typecheck: cache miss, executing fd7845486da1eee5
+@settler/protocol:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/protocol:build: npm warn config `--include=optional` to include them.
+@settler/protocol:build: npm warn config
+@settler/protocol:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/protocol:build: 
+@settler/protocol:build: > @settler/protocol@0.1.0 build
+@settler/protocol:build: > tsc
+@settler/protocol:build: 
+@settler/adapters:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/adapters:typecheck: npm warn config `--include=optional` to include them.
+@settler/adapters:typecheck: npm warn config
+@settler/adapters:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/adapters:typecheck: 
+@settler/adapters:typecheck: > @settler/adapters@1.0.0 typecheck
+@settler/adapters:typecheck: > tsc --noEmit
+@settler/adapters:typecheck: 
+@settler/cli:build: cache miss, executing 0baf55b21e476b2c
+@settler/cli:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/cli:build: npm warn config `--include=optional` to include them.
+@settler/cli:build: npm warn config
+@settler/cli:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/cli:build: 
+@settler/cli:build: > @settler/cli@1.0.0 build
+@settler/cli:build: > tsc
+@settler/cli:build: 
+@settler/react-settler:typecheck: cache miss, executing 58ac7416744d787d
+@settler/adapters:build: cache miss, executing 06561cd80ec02221
+@settler/react-settler:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/react-settler:typecheck: npm warn config `--include=optional` to include them.
+@settler/react-settler:typecheck: npm warn config
+@settler/react-settler:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/react-settler:typecheck: 
+@settler/react-settler:typecheck: > @settler/react-settler@0.1.0 typecheck
+@settler/react-settler:typecheck: > tsc --noEmit
+@settler/react-settler:typecheck: 
+@settler/adapters:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/adapters:build: npm warn config `--include=optional` to include them.
+@settler/adapters:build: npm warn config
+@settler/adapters:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/adapters:build: 
+@settler/adapters:build: > @settler/adapters@1.0.0 build
+@settler/adapters:build: > tsc
+@settler/adapters:build: 
+@settler/react-settler:typecheck: src/utils/licensing.ts(164,9): error TS1005: '>' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(164,14): error TS1005: ')' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(164,16): error TS1136: Property assignment expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(166,20): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(167,17): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(168,23): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(169,26): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(171,7): error TS1109: Expression expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(172,13): error TS1005: '>' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(172,18): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(172,41): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(172,55): error TS1109: Expression expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(173,19): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(174,10): error TS1161: Unterminated regular expression literal.
+@settler/react-settler:typecheck: src/utils/licensing.ts(175,12): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(175,19): error TS1136: Property assignment expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(175,51): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(175,62): error TS1109: Expression expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(177,10): error TS1161: Unterminated regular expression literal.
+@settler/react-settler:typecheck: src/utils/licensing.ts(182,18): error TS1136: Property assignment expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(184,20): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(185,28): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(186,18): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(187,27): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(188,25): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(189,23): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(190,12): error TS1128: Declaration or statement expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(191,9): error TS1109: Expression expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(192,16): error TS1005: ';' expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(193,10): error TS1161: Unterminated regular expression literal.
+@settler/react-settler:typecheck: src/utils/licensing.ts(194,8): error TS1161: Unterminated regular expression literal.
+@settler/react-settler:typecheck: src/utils/licensing.ts(195,5): error TS1128: Declaration or statement expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(196,3): error TS1128: Declaration or statement expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(200,58): error TS1110: Type expected.
+@settler/react-settler:typecheck: src/utils/licensing.ts(200,70): error TS1161: Unterminated regular expression literal.
+@settler/react-settler:typecheck: src/utils/licensing.ts(202,1): error TS1128: Declaration or statement expected.
+@settler/react-settler:typecheck: npm error Lifecycle script `typecheck` failed with error:
+@settler/react-settler:typecheck: npm error code 2
+@settler/react-settler:typecheck: npm error path /workspace/packages/react-settler
+@settler/react-settler:typecheck: npm error workspace @settler/react-settler@0.1.0
+@settler/react-settler:typecheck: npm error location /workspace/packages/react-settler
+@settler/react-settler:typecheck: npm error command failed
+@settler/react-settler:typecheck: npm error command sh -c tsc --noEmit
+@settler/react-settler:typecheck: ERROR: command finished with error: command (/workspace/packages/react-settler) /home/ubuntu/.nvm/versions/node/v22.21.1/bin/npm run typecheck exited (2)
+@settler/react-settler#typecheck: command (/workspace/packages/react-settler) /home/ubuntu/.nvm/versions/node/v22.21.1/bin/npm run typecheck exited (2)
+
+ Tasks:    9 successful, 11 total
+Cached:    3 cached, 11 total
+  Time:    4.596s 
+Failed:    @settler/react-settler#typecheck
+
+ ERROR  run failed: command  exited (2)

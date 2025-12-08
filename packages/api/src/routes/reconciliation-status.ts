@@ -32,11 +32,7 @@ router.get(
       const userId = req.userId!;
 
       if (!executionId || !userId) {
-        throw new NotFoundError(
-          "Execution ID and User ID are required",
-          "execution",
-          executionId || "unknown"
-        );
+        throw new NotFoundError("Execution ID and User ID are required", "execution", executionId || "unknown");
       }
 
       // Get execution details

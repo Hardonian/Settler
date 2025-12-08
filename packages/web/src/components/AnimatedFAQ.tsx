@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useRef, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface FAQItem {
   question: string;
@@ -17,7 +17,7 @@ interface AnimatedFAQProps {
  * Animated FAQ component with accordion behavior
  * Accessible with keyboard navigation
  */
-export function AnimatedFAQ({ faqs, title = "Frequently Asked Questions" }: AnimatedFAQProps) {
+export function AnimatedFAQ({ faqs, title = 'Frequently Asked Questions' }: AnimatedFAQProps) {
   return (
     <section
       className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50"
@@ -66,7 +66,7 @@ function AnimatedFAQItem({
           setIsVisible(true);
         }
       },
-      { threshold: 0.1, rootMargin: "50px" }
+      { threshold: 0.1, rootMargin: '50px' }
     );
 
     if (itemRef.current) {
@@ -81,7 +81,8 @@ function AnimatedFAQItem({
   }, []);
 
   const prefersReducedMotion =
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const animationDelay = prefersReducedMotion ? 0 : index * 100;
 
@@ -91,7 +92,10 @@ function AnimatedFAQItem({
       className={`
         bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800
         transition-all duration-500
-        ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+        ${isVisible
+          ? 'opacity-100 translate-y-0'
+          : 'opacity-0 translate-y-4'
+        }
         hover:shadow-lg
         focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2
       `}
@@ -108,17 +112,24 @@ function AnimatedFAQItem({
           aria-controls={`faq-answer-${index}`}
           id={`faq-question-${index}`}
         >
-          <CardTitle className="text-lg text-slate-900 dark:text-white">{question}</CardTitle>
+          <CardTitle className="text-lg text-slate-900 dark:text-white">
+            {question}
+          </CardTitle>
           <svg
             className={`w-5 h-5 text-slate-600 dark:text-slate-400 transition-transform duration-300 ${
-              isOpen ? "rotate-180" : ""
+              isOpen ? 'rotate-180' : ''
             }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
       </CardHeader>

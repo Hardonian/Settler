@@ -1,6 +1,6 @@
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
+import { Navigation } from '@/components/Navigation';
+import { Footer } from '@/components/Footer';
+import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 
 export default function TermsPage() {
   return (
@@ -13,20 +13,14 @@ export default function TermsPage() {
             <strong>Last Updated:</strong> January 1, 2024
           </p>
           <p className="text-slate-600 dark:text-slate-300 mb-6">
-            Please read these Terms of Service carefully before using Settler. By accessing or using
-            our service, you agree to be bound by these terms.
+            Please read these Terms of Service carefully before using Settler. By accessing or using our service, 
+            you agree to be bound by these terms.
           </p>
           <p className="text-slate-600 dark:text-slate-300">
-            For the complete Terms of Service, please contact us at legal@settler.dev or visit our
-            <a
-              href="https://github.com/shardie-github/Settler-API"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 hover:underline ml-1"
-            >
+            For the complete Terms of Service, please contact us at legal@settler.dev or visit our 
+            <a href="https://github.com/shardie-github/Settler-API" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline ml-1">
               GitHub repository
-            </a>
-            .
+            </a>.
           </p>
         </div>
       </div>

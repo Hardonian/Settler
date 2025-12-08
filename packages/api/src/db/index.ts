@@ -1,5 +1,5 @@
-import { Pool, PoolClient } from "pg";
-import { config } from "../config";
+import { Pool, PoolClient } from 'pg';
+import { config } from '../config';
 
 // Database connection pool with proper configuration
 export const pool = new Pool({
@@ -14,15 +14,13 @@ export const pool = new Pool({
   connectionTimeoutMillis: config.database.connectionTimeout,
   statement_timeout: config.database.statementTimeout,
   query_timeout: config.database.statementTimeout,
-  ssl: config.database.ssl
-    ? {
-        rejectUnauthorized: config.nodeEnv === "production" || config.nodeEnv === "preview",
-      }
-    : false,
+  ssl: config.database.ssl ? {
+    rejectUnauthorized: config.nodeEnv === 'production' || config.nodeEnv === 'preview',
+  } : false,
 });
 
-pool.on("error", (err) => {
-  console.error("Unexpected error on idle client", err);
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
   process.exit(-1);
 });
 
@@ -41,15 +39,17 @@ export async function query<T = Record<string, unknown>>(
 }
 
 // Transaction helper
-export async function transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+export async function transaction<T>(
+  callback: (client: PoolClient) => Promise<T>
+): Promise<T> {
   const client = await pool.connect();
   try {
-    await client.query("BEGIN");
+    await client.query('BEGIN');
     const result = await callback(client);
-    await client.query("COMMIT");
+    await client.query('COMMIT');
     return result;
   } catch (error) {
-    await client.query("ROLLBACK");
+    await client.query('ROLLBACK');
     throw error;
   } finally {
     client.release();
@@ -58,38 +58,36 @@ export async function transaction<T>(callback: (client: PoolClient) => Promise<T
 
 // Initialize database schema
 export async function initDatabase(): Promise<void> {
-  const { runMigrations } = require("./migrate");
-
+  const { runMigrations } = require('./migrate');
+  
   try {
     // Run all migrations in order
     await runMigrations();
   } catch (error: unknown) {
     // Fallback to basic schema if migration runner fails
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.warn("Migration runner failed, falling back to basic schema:", message);
-
-    const fs = require("fs");
-    const path = require("path");
-
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.warn('Migration runner failed, falling back to basic schema:', message);
+    
+    const fs = require('fs');
+    const path = require('path');
+    
     // Run consolidated initial schema migration
-    const migrationPath = path.join(__dirname, "migrations", "001-initial-schema.sql");
+    const migrationPath = path.join(__dirname, 'migrations', '001-initial-schema.sql');
     if (fs.existsSync(migrationPath)) {
-      const migrationSQL = fs.readFileSync(migrationPath, "utf8");
+      const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
       // Split by semicolon and execute each statement
-      const statements = migrationSQL.split(";").filter((s: string) => s.trim().length > 0);
+      const statements = migrationSQL.split(';').filter((s: string) => s.trim().length > 0);
       for (const statement of statements) {
-        if (statement.trim() && !statement.trim().startsWith("--")) {
+        if (statement.trim() && !statement.trim().startsWith('--')) {
           try {
             await query(statement);
           } catch (error: unknown) {
             // Ignore "already exists" errors (idempotent migration)
             const errorMessage = error instanceof Error ? error.message : String(error);
-            if (
-              !errorMessage.includes("already exists") &&
-              !errorMessage.includes("duplicate") &&
-              !errorMessage.includes("already enabled")
-            ) {
-              console.warn("Migration warning:", errorMessage);
+            if (!errorMessage.includes('already exists') && 
+                !errorMessage.includes('duplicate') &&
+                !errorMessage.includes('already enabled')) {
+              console.warn('Migration warning:', errorMessage);
             }
           }
         }

@@ -18,14 +18,9 @@ interface SecurityHeaders {
   "Permissions-Policy": string;
 }
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
-
 /**
  * Secure Mobile-First Component
- *
+ * 
  * Features:
  * - Mobile-optimized responsive design
  * - PWA support with service worker
@@ -62,7 +57,6 @@ export default function SecureMobileApp({
     };
     setSecurityHeaders(headers);
     setClient(secureClient);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, baseURL, securityPolicy]);
 
   // Register service worker for PWA
@@ -83,8 +77,7 @@ export default function SecureMobileApp({
   useEffect(() => {
     if (typeof window !== "undefined") {
       // Check if running as standalone (installed PWA)
-      const isStandalone =
-        window.matchMedia("(display-mode: standalone)").matches ||
+      const isStandalone = window.matchMedia("(display-mode: standalone)").matches ||
         (window.navigator as any).standalone ||
         document.referrer.includes("android-app://");
 
@@ -125,11 +118,16 @@ export default function SecureMobileApp({
 
     try {
       // Type assertion for BeforeInstallPromptEvent
+      interface BeforeInstallPromptEvent extends Event {
+        prompt: () => Promise<void>;
+        userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+      }
+      
       const promptEvent = installPrompt as unknown as BeforeInstallPromptEvent;
       if (promptEvent.prompt) {
         await promptEvent.prompt();
         const choiceResult = await promptEvent.userChoice;
-
+        
         if (choiceResult?.outcome === "accepted") {
           setIsPWAInstalled(true);
         }
@@ -137,7 +135,7 @@ export default function SecureMobileApp({
     } catch (error) {
       console.error("Error installing PWA:", error);
     }
-
+    
     setInstallPrompt(null);
   }, [installPrompt]);
 
@@ -149,7 +147,12 @@ export default function SecureMobileApp({
       "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Next.js requires this
       "style-src": ["'self'", "'unsafe-inline'"],
       "img-src": ["'self'", "data:", "https:"],
-      "connect-src": ["'self'", baseURL, "https://api.settler.io", "wss://api.settler.io"],
+      "connect-src": [
+        "'self'",
+        baseURL,
+        "https://api.settler.io",
+        "wss://api.settler.io",
+      ],
       "font-src": ["'self'", "data:"],
       "object-src": ["'none'"],
       "base-uri": ["'self'"],
@@ -189,15 +192,9 @@ export default function SecureMobileApp({
       {/* Security Headers (meta tags) */}
       {securityHeaders && (
         <>
-          <meta
-            httpEquiv="Content-Security-Policy"
-            content={securityHeaders["Content-Security-Policy"]}
-          />
+          <meta httpEquiv="Content-Security-Policy" content={securityHeaders["Content-Security-Policy"]} />
           <meta httpEquiv="X-Frame-Options" content={securityHeaders["X-Frame-Options"]} />
-          <meta
-            httpEquiv="X-Content-Type-Options"
-            content={securityHeaders["X-Content-Type-Options"]}
-          />
+          <meta httpEquiv="X-Content-Type-Options" content={securityHeaders["X-Content-Type-Options"]} />
           <meta httpEquiv="Referrer-Policy" content={securityHeaders["Referrer-Policy"]} />
           <meta httpEquiv="Permissions-Policy" content={securityHeaders["Permissions-Policy"]} />
         </>
@@ -246,7 +243,9 @@ export default function SecureMobileApp({
       <main className="container mx-auto px-4 py-6 max-w-md mx-auto">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h1 className="text-2xl font-bold mb-2">Settler</h1>
-          <p className="text-gray-600 mb-6">Secure reconciliation platform optimized for mobile</p>
+          <p className="text-gray-600 mb-6">
+            Secure reconciliation platform optimized for mobile
+          </p>
 
           {/* Security Badge */}
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
@@ -295,66 +294,26 @@ export default function SecureMobileApp({
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-inset-bottom">
         <div className="flex justify-around items-center h-16">
           <button className="flex flex-col items-center justify-center flex-1 touch-manipulation">
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
+            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
             <span className="text-xs text-gray-600 mt-1">Home</span>
           </button>
           <button className="flex flex-col items-center justify-center flex-1 touch-manipulation">
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
+            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
             <span className="text-xs text-gray-600 mt-1">Jobs</span>
           </button>
           <button className="flex flex-col items-center justify-center flex-1 touch-manipulation">
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              />
+            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
             <span className="text-xs text-gray-600 mt-1">Reports</span>
           </button>
           <button className="flex flex-col items-center justify-center flex-1 touch-manipulation">
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
+            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             <span className="text-xs text-gray-600 mt-1">Profile</span>
           </button>
@@ -366,11 +325,11 @@ export default function SecureMobileApp({
         .touch-manipulation {
           touch-action: manipulation;
         }
-
+        
         .safe-area-inset {
           padding-bottom: env(safe-area-inset-bottom);
         }
-
+        
         .safe-area-inset-bottom {
           padding-bottom: env(safe-area-inset-bottom);
         }

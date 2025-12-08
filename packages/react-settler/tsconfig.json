@@ -7,10 +7,12 @@
     "declarationMap": true,
     "jsx": "react-jsx",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "skipLibCheck": true,
-    "exactOptionalPropertyTypes": false
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx"],
-  "references": [{ "path": "../protocol" }, { "path": "../types" }]
+  "references": [
+    { "path": "../protocol" },
+    { "path": "../types" }
+  ]
 }

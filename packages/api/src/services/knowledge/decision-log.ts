@@ -1,21 +1,20 @@
 /**
  * Decision Log System
- *
+ * 
  * Captures every significant decision with context, rationale, and outcomes.
  * Ensures institutional knowledge persists as the team grows.
  */
 
-import { EventEmitter } from "events";
-import * as fs from "fs/promises";
-import * as path from "path";
-import { logError } from "../../utils/logger";
+import { EventEmitter } from 'events';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 export interface Decision {
   id: string;
   title: string;
   date: Date;
   decisionMakers: string[];
-  status: "proposed" | "accepted" | "rejected" | "superseded";
+  status: 'proposed' | 'accepted' | 'rejected' | 'superseded';
   context: string;
   decision: string;
   rationale: string;
@@ -37,7 +36,7 @@ export class DecisionLog extends EventEmitter {
   private decisions: Map<string, Decision> = new Map();
   private logDirectory: string;
 
-  constructor(logDirectory: string = "./decisions") {
+  constructor(logDirectory: string = './decisions') {
     super();
     this.logDirectory = logDirectory;
     this.ensureDirectoryExists();
@@ -46,7 +45,7 @@ export class DecisionLog extends EventEmitter {
   /**
    * Create a new decision
    */
-  async createDecision(decision: Omit<Decision, "id" | "date">): Promise<Decision> {
+  async createDecision(decision: Omit<Decision, 'id' | 'date'>): Promise<Decision> {
     const fullDecision: Decision = {
       ...decision,
       id: `dec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -54,11 +53,11 @@ export class DecisionLog extends EventEmitter {
     };
 
     this.decisions.set(fullDecision.id, fullDecision);
-
+    
     // Save to file
     await this.saveDecision(fullDecision);
 
-    this.emit("decision_created", fullDecision);
+    this.emit('decision_created', fullDecision);
     return fullDecision;
   }
 
@@ -67,7 +66,7 @@ export class DecisionLog extends EventEmitter {
    */
   async updateOutcomes(decisionId: string, outcome: string): Promise<Decision> {
     const decision = this.decisions.get(decisionId);
-
+    
     if (!decision) {
       throw new Error(`Decision ${decisionId} not found`);
     }
@@ -80,16 +79,16 @@ export class DecisionLog extends EventEmitter {
     // Save to file
     await this.saveDecision(decision);
 
-    this.emit("decision_updated", decision);
+    this.emit('decision_updated', decision);
     return decision;
   }
 
   /**
    * Update decision status
    */
-  async updateStatus(decisionId: string, status: Decision["status"]): Promise<Decision> {
+  async updateStatus(decisionId: string, status: Decision['status']): Promise<Decision> {
     const decision = this.decisions.get(decisionId);
-
+    
     if (!decision) {
       throw new Error(`Decision ${decisionId} not found`);
     }
@@ -99,7 +98,7 @@ export class DecisionLog extends EventEmitter {
     // Save to file
     await this.saveDecision(decision);
 
-    this.emit("decision_status_updated", decision);
+    this.emit('decision_status_updated', decision);
     return decision;
   }
 
@@ -114,7 +113,7 @@ export class DecisionLog extends EventEmitter {
    * Query decisions
    */
   queryDecisions(query: {
-    status?: Decision["status"];
+    status?: Decision['status'];
     decisionMaker?: string;
     tag?: string;
     dateRange?: { start: Date; end: Date };
@@ -123,30 +122,31 @@ export class DecisionLog extends EventEmitter {
     let decisions = Array.from(this.decisions.values());
 
     if (query.status) {
-      decisions = decisions.filter((d) => d.status === query.status);
+      decisions = decisions.filter(d => d.status === query.status);
     }
 
     if (query.decisionMaker) {
-      decisions = decisions.filter((d) => d.decisionMakers.includes(query.decisionMaker!));
+      decisions = decisions.filter(d => 
+        d.decisionMakers.includes(query.decisionMaker!)
+      );
     }
 
     if (query.tag) {
-      decisions = decisions.filter((d) => d.tags.includes(query.tag!));
+      decisions = decisions.filter(d => d.tags.includes(query.tag!));
     }
 
     if (query.dateRange) {
-      decisions = decisions.filter(
-        (d) => d.date >= query.dateRange!.start && d.date <= query.dateRange!.end
+      decisions = decisions.filter(d => 
+        d.date >= query.dateRange!.start && d.date <= query.dateRange!.end
       );
     }
 
     if (query.search) {
       const searchLower = query.search.toLowerCase();
-      decisions = decisions.filter(
-        (d) =>
-          d.title.toLowerCase().includes(searchLower) ||
-          d.context.toLowerCase().includes(searchLower) ||
-          d.decision.toLowerCase().includes(searchLower)
+      decisions = decisions.filter(d =>
+        d.title.toLowerCase().includes(searchLower) ||
+        d.context.toLowerCase().includes(searchLower) ||
+        d.decision.toLowerCase().includes(searchLower)
       );
     }
 
@@ -158,13 +158,13 @@ export class DecisionLog extends EventEmitter {
    */
   getRelatedDecisions(decisionId: string): Decision[] {
     const decision = this.decisions.get(decisionId);
-
+    
     if (!decision) {
       return [];
     }
 
     return decision.relatedDecisions
-      .map((id) => this.decisions.get(id))
+      .map(id => this.decisions.get(id))
       .filter((d): d is Decision => d !== undefined);
   }
 
@@ -176,7 +176,7 @@ export class DecisionLog extends EventEmitter {
     const filepath = path.join(this.logDirectory, filename);
 
     const markdown = this.decisionToMarkdown(decision);
-    await fs.writeFile(filepath, markdown, "utf-8");
+    await fs.writeFile(filepath, markdown, 'utf-8');
   }
 
   /**
@@ -186,7 +186,7 @@ export class DecisionLog extends EventEmitter {
     return `# Decision: ${decision.title}
 
 **Date:** ${decision.date.toISOString()}
-**Decision Makers:** ${decision.decisionMakers.join(", ")}
+**Decision Makers:** ${decision.decisionMakers.join(', ')}
 **Status:** ${decision.status}
 
 ## Context
@@ -199,22 +199,22 @@ ${decision.decision}
 ${decision.rationale}
 
 ## Alternatives Considered
-${decision.alternativesConsidered.map((alt) => `- **${alt.option}** - ${alt.whyNot}`).join("\n")}
+${decision.alternativesConsidered.map(alt => `- **${alt.option}** - ${alt.whyNot}`).join('\n')}
 
 ## Expected Outcomes
 ${decision.expectedOutcomes}
 
 ## Actual Outcomes
-${decision.actualOutcomes.map((outcome) => `- **${outcome.date.toISOString()}:** ${outcome.outcome}`).join("\n")}
+${decision.actualOutcomes.map(outcome => `- **${outcome.date.toISOString()}:** ${outcome.outcome}`).join('\n')}
 
 ## Lessons Learned
 ${decision.lessonsLearned}
 
 ## Related Decisions
-${decision.relatedDecisions.map((id) => `- [${id}](./${id}.md)`).join("\n")}
+${decision.relatedDecisions.map(id => `- [${id}](./${id}.md)`).join('\n')}
 
 ## Tags
-${decision.tags.map((tag) => `\`${tag}\``).join(", ")}
+${decision.tags.map(tag => `\`${tag}\``).join(', ')}
 `;
   }
 
@@ -235,19 +235,19 @@ ${decision.tags.map((tag) => `\`${tag}\``).join(", ")}
   async loadDecisions(): Promise<void> {
     try {
       const files = await fs.readdir(this.logDirectory);
-      const markdownFiles = files.filter((f) => f.endsWith(".md"));
+      const markdownFiles = files.filter(f => f.endsWith('.md'));
 
       for (const file of markdownFiles) {
         const filepath = path.join(this.logDirectory, file);
-        const _content = await fs.readFile(filepath, "utf-8");
+        const _content = await fs.readFile(filepath, 'utf-8');
         void _content;
         // TODO: Parse markdown back to Decision object
         // For now, skip parsing
       }
     } catch (error) {
-      logError("Failed to load decisions", error as Error);
+      console.error('Failed to load decisions:', error);
     }
   }
 }
 
-export const decisionLog = new DecisionLog("./decisions");
+export const decisionLog = new DecisionLog('./decisions');

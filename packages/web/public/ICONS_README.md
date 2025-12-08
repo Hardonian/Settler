@@ -16,7 +16,6 @@ convert source-image.png -resize 512x512 icon-512x512.png
 ```
 
 Or use an online tool like:
-
 - https://realfavicongenerator.net/
 - https://www.pwabuilder.com/imageGenerator
 

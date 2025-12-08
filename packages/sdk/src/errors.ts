@@ -6,7 +6,12 @@ export class SettlerError extends Error {
   public readonly statusCode?: number;
   public readonly details?: unknown;
 
-  constructor(message: string, code: string, statusCode?: number, details?: unknown) {
+  constructor(
+    message: string,
+    code: string,
+    statusCode?: number,
+    details?: unknown
+  ) {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
@@ -46,7 +51,12 @@ export class AuthError extends SettlerError {
 export class ValidationError extends SettlerError {
   public readonly field?: string;
 
-  constructor(message: string, field?: string, statusCode?: number, details?: unknown) {
+  constructor(
+    message: string,
+    field?: string,
+    statusCode?: number,
+    details?: unknown
+  ) {
     super(message, "VALIDATION_ERROR", statusCode || 400, details);
     this.name = "ValidationError";
     if (field !== undefined) {
@@ -111,7 +121,10 @@ export class UnknownError extends SettlerError {
 /**
  * Parses an API error response and returns the appropriate error class
  */
-export function parseError(response: Response, body?: unknown): SettlerError {
+export function parseError(
+  response: Response,
+  body?: unknown
+): SettlerError {
   const statusCode = response.status;
   const errorData =
     typeof body === "object" && body !== null
@@ -119,7 +132,9 @@ export function parseError(response: Response, body?: unknown): SettlerError {
       : {};
 
   const message =
-    errorData.message || errorData.error || `HTTP ${statusCode}: ${response.statusText}`;
+    errorData.message ||
+    errorData.error ||
+    `HTTP ${statusCode}: ${response.statusText}`;
 
   switch (statusCode) {
     case 400:

@@ -3,17 +3,17 @@
  * Ensures complete data isolation between tenants
  */
 
-import { Pool } from "pg";
-import { TenantService } from "../../application/services/TenantService";
-import { TenantRepository } from "../../infrastructure/repositories/TenantRepository";
-import { UserRepository } from "../../infrastructure/repositories/UserRepository";
-import { Tenant, TenantTier, TenantStatus } from "../../domain/entities/Tenant";
-import { User, UserRole } from "../../domain/entities/User";
-import { TenantContext } from "../../infrastructure/tenancy/TenantContext";
-import { query } from "../../db";
-import { hashPassword } from "../../infrastructure/security/password";
+import { Pool } from 'pg';
+import { TenantService } from '../../application/services/TenantService';
+import { TenantRepository } from '../../infrastructure/repositories/TenantRepository';
+import { UserRepository } from '../../infrastructure/repositories/UserRepository';
+import { Tenant, TenantTier, TenantStatus } from '../../domain/entities/Tenant';
+import { User, UserRole } from '../../domain/entities/User';
+import { TenantContext } from '../../infrastructure/tenancy/TenantContext';
+import { query } from '../../db';
+import { hashPassword } from '../../infrastructure/security/password';
 
-describe("Tenant Isolation", () => {
+describe('Tenant Isolation', () => {
   let tenant1: Tenant;
   let tenant2: Tenant;
   let user1: User;
@@ -28,18 +28,18 @@ describe("Tenant Isolation", () => {
 
     // Create two tenants
     const { tenant: t1, owner: u1 } = await tenantService.createTenant({
-      name: "Test Tenant 1",
-      slug: "test-tenant-1",
-      ownerEmail: "owner1@test.com",
-      ownerPasswordHash: await hashPassword("password123"),
+      name: 'Test Tenant 1',
+      slug: 'test-tenant-1',
+      ownerEmail: 'owner1@test.com',
+      ownerPasswordHash: await hashPassword('password123'),
       tier: TenantTier.STARTER,
     });
 
     const { tenant: t2, owner: u2 } = await tenantService.createTenant({
-      name: "Test Tenant 2",
-      slug: "test-tenant-2",
-      ownerEmail: "owner2@test.com",
-      ownerPasswordHash: await hashPassword("password123"),
+      name: 'Test Tenant 2',
+      slug: 'test-tenant-2',
+      ownerEmail: 'owner2@test.com',
+      ownerPasswordHash: await hashPassword('password123'),
       tier: TenantTier.STARTER,
     });
 
@@ -49,11 +49,11 @@ describe("Tenant Isolation", () => {
     user2 = u2;
 
     pool = new Pool({
-      host: process.env.DB_HOST || "localhost",
-      port: parseInt(process.env.DB_PORT || "5432", 10),
-      database: process.env.DB_NAME || "settler",
-      user: process.env.DB_USER || "postgres",
-      password: process.env.DB_PASSWORD || "postgres",
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5432', 10),
+      database: process.env.DB_NAME || 'settler',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || 'postgres',
     });
   });
 
@@ -61,13 +61,13 @@ describe("Tenant Isolation", () => {
     await pool.end();
   });
 
-  describe("Row Level Security", () => {
-    it("should only return users from tenant 1 when tenant context is set", async () => {
+  describe('Row Level Security', () => {
+    it('should only return users from tenant 1 when tenant context is set', async () => {
       const client = await pool.connect();
       try {
         await TenantContext.setTenantContext(client, tenant1.id);
 
-        const result = await client.query("SELECT * FROM users WHERE deleted_at IS NULL");
+        const result = await client.query('SELECT * FROM users WHERE deleted_at IS NULL');
         const users = result.rows;
 
         expect(users.length).toBeGreaterThan(0);
@@ -84,7 +84,7 @@ describe("Tenant Isolation", () => {
       }
     });
 
-    it("should only return jobs from tenant 1 when tenant context is set", async () => {
+    it('should only return jobs from tenant 1 when tenant context is set', async () => {
       const client = await pool.connect();
       try {
         // Create jobs for both tenants
@@ -98,7 +98,7 @@ describe("Tenant Isolation", () => {
 
         await TenantContext.setTenantContext(client, tenant1.id);
 
-        const result = await client.query("SELECT * FROM jobs WHERE deleted_at IS NULL");
+        const result = await client.query('SELECT * FROM jobs WHERE deleted_at IS NULL');
         const jobs = result.rows;
 
         expect(jobs.length).toBeGreaterThan(0);
@@ -116,14 +116,17 @@ describe("Tenant Isolation", () => {
     });
   });
 
-  describe("Data Isolation", () => {
-    it("should prevent cross-tenant data access", async () => {
+  describe('Data Isolation', () => {
+    it('should prevent cross-tenant data access', async () => {
       const client = await pool.connect();
       try {
         await TenantContext.setTenantContext(client, tenant1.id);
 
         // Try to access tenant 2's data directly (should be filtered by RLS)
-        const result = await client.query("SELECT * FROM users WHERE tenant_id = $1", [tenant2.id]);
+        const result = await client.query(
+          'SELECT * FROM users WHERE tenant_id = $1',
+          [tenant2.id]
+        );
 
         // RLS should prevent this
         expect(result.rows.length).toBe(0);
@@ -133,7 +136,7 @@ describe("Tenant Isolation", () => {
       }
     });
 
-    it("should allow tenant 1 to create data without affecting tenant 2", async () => {
+    it('should allow tenant 1 to create data without affecting tenant 2', async () => {
       const client = await pool.connect();
       try {
         await TenantContext.setTenantContext(client, tenant1.id);
@@ -150,7 +153,7 @@ describe("Tenant Isolation", () => {
         await TenantContext.setTenantContext(client, tenant2.id);
 
         // Tenant 2 should not see tenant 1's job
-        const result = await client.query("SELECT * FROM jobs WHERE id = $1", [jobId]);
+        const result = await client.query('SELECT * FROM jobs WHERE id = $1', [jobId]);
         expect(result.rows.length).toBe(0);
       } finally {
         await TenantContext.clearTenantContext(client);
@@ -159,9 +162,9 @@ describe("Tenant Isolation", () => {
     });
   });
 
-  describe("Schema Per Tenant", () => {
-    it("should create separate schema for each tenant when enabled", async () => {
-      if (process.env.ENABLE_SCHEMA_PER_TENANT !== "true") {
+  describe('Schema Per Tenant', () => {
+    it('should create separate schema for each tenant when enabled', async () => {
+      if (process.env.ENABLE_SCHEMA_PER_TENANT !== 'true') {
         return; // Skip if schema-per-tenant is disabled
       }
 

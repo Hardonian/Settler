@@ -1,6 +1,6 @@
 /**
  * Batch Processing Routes
- *
+ * 
  * Handles bulk operations for reconciliation jobs
  * Supports:
  * - Batch job creation
@@ -8,9 +8,9 @@
  * - Batch result retrieval
  */
 
-import { Router, Response } from "express";
-import { authMiddleware, AuthRequest } from "../middleware/auth";
-import { logInfo, logError } from "../utils/logger";
+import { Router, Request, Response } from 'express';
+import { authMiddleware, AuthRequest } from '../middleware/auth';
+import { logInfo, logError } from '../utils/logger';
 
 const router = Router();
 
@@ -18,21 +18,21 @@ const router = Router();
  * Create batch reconciliation jobs
  * POST /api/v1/batch/jobs
  */
-router.post("/jobs", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/jobs', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { jobs } = req.body;
+    const { jobs, options } = req.body;
 
     if (!Array.isArray(jobs) || jobs.length === 0) {
       return res.status(400).json({
-        error: "Bad Request",
-        message: "jobs array is required and must not be empty",
+        error: 'Bad Request',
+        message: 'jobs array is required and must not be empty',
       });
     }
 
     if (jobs.length > 100) {
       return res.status(400).json({
-        error: "Bad Request",
-        message: "Maximum 100 jobs per batch",
+        error: 'Bad Request',
+        message: 'Maximum 100 jobs per batch',
       });
     }
 
@@ -44,23 +44,23 @@ router.post("/jobs", authMiddleware, async (req: AuthRequest, res: Response) => 
 
     const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    logInfo("Batch jobs created", {
+    logInfo('Batch jobs created', {
       batchId,
       jobCount: jobs.length,
-      tenantId: req.tenantId,
+      tenantId: req.user?.tenantId,
     });
 
     return res.json({
       batchId,
       jobCount: jobs.length,
-      status: "queued",
+      status: 'queued',
       createdAt: new Date().toISOString(),
     });
   } catch (error) {
-    logError("Failed to create batch jobs", error);
+    logError('Failed to create batch jobs', error);
     return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to create batch jobs",
+      error: 'Internal Server Error',
+      message: 'Failed to create batch jobs',
     });
   }
 });
@@ -69,14 +69,14 @@ router.post("/jobs", authMiddleware, async (req: AuthRequest, res: Response) => 
  * Get batch status
  * GET /api/v1/batch/:batchId
  */
-router.get("/:batchId", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/:batchId', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { batchId } = req.params;
 
     // In production, fetch from database
     return res.json({
       batchId,
-      status: "processing",
+      status: 'processing',
       totalJobs: 100,
       completedJobs: 45,
       failedJobs: 2,
@@ -85,10 +85,10 @@ router.get("/:batchId", authMiddleware, async (req: AuthRequest, res: Response) 
       updatedAt: new Date().toISOString(),
     });
   } catch (error) {
-    logError("Failed to get batch status", error);
+    logError('Failed to get batch status', error);
     return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to get batch status",
+      error: 'Internal Server Error',
+      message: 'Failed to get batch status',
     });
   }
 });
@@ -97,7 +97,7 @@ router.get("/:batchId", authMiddleware, async (req: AuthRequest, res: Response) 
  * Get batch results
  * GET /api/v1/batch/:batchId/results
  */
-router.get("/:batchId/results", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/:batchId/results', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { batchId } = req.params;
     const limit = parseInt(req.query.limit as string, 10) || 50;
@@ -113,10 +113,10 @@ router.get("/:batchId/results", authMiddleware, async (req: AuthRequest, res: Re
       hasMore: false,
     });
   } catch (error) {
-    logError("Failed to get batch results", error);
+    logError('Failed to get batch results', error);
     return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to get batch results",
+      error: 'Internal Server Error',
+      message: 'Failed to get batch results',
     });
   }
 });

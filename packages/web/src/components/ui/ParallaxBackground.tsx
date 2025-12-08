@@ -1,21 +1,20 @@
-"use client";
+'use client';
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
-type ScrollOffsetType =
+type ScrollOffsetType = 
+  | ['start' | 'end' | 'center', 'start' | 'end' | 'center']
   | string
-  | [string, string]
   | number
-  | [number, number]
-  | (() => number | [number, number]);
+  | (() => number);
 
 interface ParallaxBackgroundProps {
   children?: React.ReactNode;
   className?: string;
   speed?: number;
-  direction?: "up" | "down";
+  direction?: 'up' | 'down';
   offset?: ScrollOffsetType | ScrollOffsetType[];
 }
 
@@ -23,20 +22,19 @@ export function ParallaxBackground({
   children,
   className,
   speed = 0.5,
-  direction = "up",
-  offset = ["start", "end"],
+  direction = 'up',
+  offset = ['start', 'end'],
 }: ParallaxBackgroundProps) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    // @ts-expect-error - framer-motion's ScrollOffset type is not exported, but our type is compatible
-    offset: offset,
+    offset: offset as any,
   });
 
   const y = useTransform(
     scrollYProgress,
     [0, 1],
-    direction === "up" ? [0, -100 * speed] : [0, 100 * speed]
+    direction === 'up' ? [0, -100 * speed] : [0, 100 * speed]
   );
 
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1, 0.3]);
@@ -44,7 +42,7 @@ export function ParallaxBackground({
   return (
     <motion.div
       ref={ref}
-      className={cn("absolute inset-0 -z-10 overflow-hidden", className)}
+      className={cn('absolute inset-0 -z-10 overflow-hidden', className)}
       style={{ y, opacity }}
     >
       {children}
@@ -68,18 +66,18 @@ export function ParallaxBlobs({
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"],
+    offset: ['start end', 'end start'],
   });
 
   return (
-    <div ref={ref} className={cn("absolute inset-0 overflow-hidden", className)}>
+    <div ref={ref} className={cn('absolute inset-0 overflow-hidden', className)}>
       {blobs.map((_, i) => (
         <ParallaxBlob
           key={i}
           index={i}
           speed={0.3 + i * 0.1}
           size={200 + i * 100}
-          color={i % 2 === 0 ? "electric-cyan" : "electric-purple"}
+          color={i % 2 === 0 ? 'electric-cyan' : 'electric-purple'}
           scrollYProgress={scrollYProgress}
         />
       ))}
@@ -97,32 +95,36 @@ function ParallaxBlob({
   index: number;
   speed: number;
   size: number;
-  color: "electric-cyan" | "electric-purple" | "electric-neon";
-  scrollYProgress: MotionValue<number>;
+  color: 'electric-cyan' | 'electric-purple' | 'electric-neon';
+  scrollYProgress: any;
 }) {
   const y = useTransform(scrollYProgress, [0, 1], [0, -200 * speed]);
   const x = useTransform(scrollYProgress, [0, 1], [0, 50 * (index % 2 === 0 ? 1 : -1)]);
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.2, 1]);
 
   const colorClasses = {
-    "electric-cyan": "bg-electric-cyan/20",
-    "electric-purple": "bg-electric-purple/20",
-    "electric-neon": "bg-electric-neon/20",
+    'electric-cyan': 'bg-electric-cyan/20',
+    'electric-purple': 'bg-electric-purple/20',
+    'electric-neon': 'bg-electric-neon/20',
   };
 
   const positions = [
-    { top: "10%", left: "10%" },
-    { top: "50%", right: "20%" },
-    { bottom: "20%", left: "30%" },
-    { top: "30%", right: "40%" },
-    { bottom: "40%", left: "60%" },
+    { top: '10%', left: '10%' },
+    { top: '50%', right: '20%' },
+    { bottom: '20%', left: '30%' },
+    { top: '30%', right: '40%' },
+    { bottom: '40%', left: '60%' },
   ];
 
   const position = positions[index % positions.length];
 
   return (
     <motion.div
-      className={cn("absolute rounded-full blur-3xl", colorClasses[color], "animate-float")}
+      className={cn(
+        'absolute rounded-full blur-3xl',
+        colorClasses[color],
+        'animate-float'
+      )}
       style={{
         width: size,
         height: size,

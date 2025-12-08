@@ -19,15 +19,12 @@ export abstract class DomainEvent {
  * User Domain Events
  */
 export class UserCreatedEvent extends DomainEvent {
-  constructor(
-    public readonly userId: string,
-    public readonly email: string
-  ) {
+  constructor(public readonly userId: string, public readonly email: string) {
     super();
   }
 
   get eventName(): string {
-    return "user.created";
+    return 'user.created';
   }
 }
 
@@ -37,7 +34,7 @@ export class UserDeletedEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "user.deleted";
+    return 'user.deleted';
   }
 }
 
@@ -54,7 +51,7 @@ export class JobCreatedEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "job.created";
+    return 'job.created';
   }
 }
 
@@ -68,7 +65,7 @@ export class JobUpdatedEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "job.updated";
+    return 'job.updated';
   }
 }
 
@@ -81,7 +78,7 @@ export class JobExecutionStartedEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "job.execution.started";
+    return 'job.execution.started';
   }
 }
 
@@ -99,7 +96,7 @@ export class JobExecutionCompletedEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "job.execution.completed";
+    return 'job.execution.completed';
   }
 }
 
@@ -113,7 +110,7 @@ export class JobExecutionFailedEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "job.execution.failed";
+    return 'job.execution.failed';
   }
 }
 
@@ -129,7 +126,7 @@ export class WebhookReceivedEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "webhook.received";
+    return 'webhook.received';
   }
 }
 
@@ -143,7 +140,7 @@ export class WebhookDeliveredEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "webhook.delivered";
+    return 'webhook.delivered';
   }
 }
 
@@ -158,6 +155,6 @@ export class WebhookDeliveryFailedEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "webhook.delivery.failed";
+    return 'webhook.delivery.failed';
   }
 }

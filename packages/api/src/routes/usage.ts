@@ -1,6 +1,6 @@
 /**
  * Usage Tracking Routes
- *
+ * 
  * Provides endpoints for:
  * - Viewing usage statistics
  * - Cost tracking
@@ -8,10 +8,10 @@
  * - Billing information
  */
 
-import { Router, Response } from "express";
-import { authMiddleware, AuthRequest } from "../middleware/auth";
-import { getCurrentUsage } from "../middleware/usage-tracking";
-import { logError } from "../utils/logger";
+import { Router, Request, Response } from 'express';
+import { authMiddleware, AuthRequest } from '../middleware/auth';
+import { getCurrentUsage } from '../middleware/usage-tracking';
+import { logError } from '../utils/logger';
 
 const router = Router();
 
@@ -19,15 +19,15 @@ const router = Router();
  * Get usage summary
  * GET /api/v1/usage
  */
-router.get("/", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const period = (req.query.period as "day" | "week" | "month") || "day";
-    const usage = await getCurrentUsage(req, period);
+    const period = (req.query.period as 'day' | 'week' | 'month') || 'day';
+    const usage = await getCurrentUsage(req as any, period);
 
     if (!usage) {
       return res.status(404).json({
-        error: "Not Found",
-        message: "Usage data not found",
+        error: 'Not Found',
+        message: 'Usage data not found',
       });
     }
 
@@ -37,10 +37,10 @@ router.get("/", authMiddleware, async (req: AuthRequest, res: Response) => {
       retrievedAt: new Date().toISOString(),
     });
   } catch (error) {
-    logError("Failed to get usage", error);
+    logError('Failed to get usage', error);
     return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to retrieve usage data",
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve usage data',
     });
   }
 });
@@ -49,15 +49,15 @@ router.get("/", authMiddleware, async (req: AuthRequest, res: Response) => {
  * Get usage by endpoint
  * GET /api/v1/usage/endpoints
  */
-router.get("/endpoints", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/endpoints', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const period = (req.query.period as "day" | "week" | "month") || "day";
-    const usage = await getCurrentUsage(req, period);
+    const period = (req.query.period as 'day' | 'week' | 'month') || 'day';
+    const usage = await getCurrentUsage(req as any, period);
 
     if (!usage) {
       return res.status(404).json({
-        error: "Not Found",
-        message: "Usage data not found",
+        error: 'Not Found',
+        message: 'Usage data not found',
       });
     }
 
@@ -67,10 +67,10 @@ router.get("/endpoints", authMiddleware, async (req: AuthRequest, res: Response)
       retrievedAt: new Date().toISOString(),
     });
   } catch (error) {
-    logError("Failed to get usage by endpoint", error);
+    logError('Failed to get usage by endpoint', error);
     return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to retrieve endpoint usage",
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve endpoint usage',
     });
   }
 });
@@ -79,33 +79,33 @@ router.get("/endpoints", authMiddleware, async (req: AuthRequest, res: Response)
  * Get cost summary
  * GET /api/v1/usage/cost
  */
-router.get("/cost", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/cost', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const period = (req.query.period as "day" | "week" | "month") || "day";
-    const usage = await getCurrentUsage(req, period);
+    const period = (req.query.period as 'day' | 'week' | 'month') || 'day';
+    const usage = await getCurrentUsage(req as any, period);
 
     if (!usage) {
       return res.status(404).json({
-        error: "Not Found",
-        message: "Usage data not found",
+        error: 'Not Found',
+        message: 'Usage data not found',
       });
     }
 
     return res.json({
       period,
       totalCost: usage.totalCost,
-      currency: "USD",
+      currency: 'USD',
       breakdown: {
         requests: usage.totalRequests * 0.001, // $0.001 per request
-        dataTransfer: usage.totalCost - usage.totalRequests * 0.001,
+        dataTransfer: (usage.totalCost - (usage.totalRequests * 0.001)),
       },
       retrievedAt: new Date().toISOString(),
     });
   } catch (error) {
-    logError("Failed to get cost summary", error);
+    logError('Failed to get cost summary', error);
     return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to retrieve cost data",
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve cost data',
     });
   }
 });

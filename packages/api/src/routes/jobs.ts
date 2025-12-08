@@ -12,8 +12,6 @@ import { sendSuccess, sendError, sendCreated, sendNoContent } from "../utils/api
 import { handleRouteError } from "../utils/error-handler";
 import { trackEventAsync } from "../utils/event-tracker";
 import { validateAdapterConfig } from "../utils/adapter-config-validator";
-import { logUsageEvent } from "../utils/usage-tracker";
-import { getBillingAccount } from "../utils/billing-helpers";
 
 const router = Router();
 const jobService = new JobRouteService();
@@ -29,7 +27,7 @@ function getJobMutex(jobId: string): Mutex {
     entry.lastUsed = Date.now();
     return entry.mutex;
   }
-
+  
   const mutex = new Mutex();
   jobMutexes.set(jobId, { mutex, lastUsed: Date.now() });
   return mutex;
@@ -49,15 +47,20 @@ function cleanupOldMutexes(): void {
 setInterval(cleanupOldMutexes, 30 * 60 * 1000);
 
 // Validation schemas with input sanitization
-const adapterConfigSchema = z
-  .record(z.union([z.string().max(1000), z.number(), z.boolean(), z.array(z.string().max(1000))]))
-  .refine(
-    (config) => {
-      // Prevent prototype pollution
-      return !("__proto__" in config || "constructor" in config || "prototype" in config);
-    },
-    { message: "Invalid config keys" }
-  );
+const adapterConfigSchema = z.record(
+  z.union([
+    z.string().max(1000),
+    z.number(),
+    z.boolean(),
+    z.array(z.string().max(1000)),
+  ])
+).refine(
+  (config) => {
+    // Prevent prototype pollution
+    return !('__proto__' in config || 'constructor' in config || 'prototype' in config);
+  },
+  { message: 'Invalid config keys' }
+);
 
 const createJobSchema = z.object({
   body: z.object({
@@ -71,15 +74,13 @@ const createJobSchema = z.object({
       config: adapterConfigSchema,
     }),
     rules: z.object({
-      matching: z.array(
-        z.object({
-          field: z.string(),
-          type: z.enum(["exact", "fuzzy", "range"]),
-          tolerance: z.number().optional(),
-          days: z.number().optional(),
-          threshold: z.number().optional(),
-        })
-      ),
+      matching: z.array(z.object({
+        field: z.string(),
+        type: z.enum(["exact", "fuzzy", "range"]),
+        tolerance: z.number().optional(),
+        days: z.number().optional(),
+        threshold: z.number().optional(),
+      })),
       conflictResolution: z.enum(["first-wins", "last-wins", "manual-review"]).optional(),
     }),
     schedule: z.string().optional(), // Cron expression
@@ -107,50 +108,26 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.userId!;
-
+      
       // Validate adapter configs (UX-002)
       validateAdapterConfig(req.body.source.adapter, req.body.source.config);
       validateAdapterConfig(req.body.target.adapter, req.body.target.config);
-
+      
       const job = await jobService.createJob(userId, req.body);
-
+      
       // Track event
-      trackEventAsync(userId, "JobCreated", {
+      trackEventAsync(userId, 'JobCreated', {
         jobId: job.id,
         sourceAdapter: req.body.source.adapter,
         targetAdapter: req.body.target.adapter,
         hasSchedule: !!req.body.schedule,
       });
-
-      // Log usage for billing
-      try {
-        const billingAccount = await getBillingAccount(userId, req.tenantId);
-        if (billingAccount) {
-          await logUsageEvent({
-            billingAccountId: billingAccount.id,
-            eventType: "reconciliation_job",
-            quantity: 1,
-            userId: userId,
-            ...(req.tenantId && { tenantId: req.tenantId }),
-            integrationId: req.body.source.adapter,
-            metadata: {
-              job_id: job.id,
-              source_adapter: req.body.source.adapter,
-              target_adapter: req.body.target.adapter,
-            },
-          });
-        }
-      } catch (usageError) {
-        // Don't fail the request if usage logging fails
-        logError("Failed to log usage for job creation", usageError);
-      }
-
+      
       sendCreated(res, job, "Reconciliation job created successfully");
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Failed to create reconciliation job";
-      logError("Failed to create job", error, { userId: req.userId });
-      sendError(res, 500, "INTERNAL_ERROR", message, undefined, req.traceId);
+      const message = error instanceof Error ? error.message : "Failed to create reconciliation job";
+      logError('Failed to create job', error, { userId: req.userId });
+      sendError(res, 500, 'INTERNAL_ERROR', message, undefined, req.traceId);
     }
   }
 );
@@ -181,16 +158,19 @@ router.get(
            LIMIT $2 OFFSET $3`,
           [userId, limit, offset]
         ),
-        query<{ count: string }>(`SELECT COUNT(*) as count FROM jobs WHERE user_id = $1`, [userId]),
+        query<{ count: string }>(
+          `SELECT COUNT(*) as count FROM jobs WHERE user_id = $1`,
+          [userId]
+        ),
       ]);
 
       if (!totalResult[0]) {
-        throw new Error("Failed to get job count");
+        throw new Error('Failed to get job count');
       }
       const total = parseInt(totalResult[0].count);
 
       res.json({
-        data: jobs.map((job) => ({
+        data: jobs.map(job => ({
           id: job.id,
           userId,
           name: job.name,
@@ -221,41 +201,25 @@ router.get(
       const userId = req.userId!;
 
       if (!id || !userId) {
-        return sendError(
-          res,
-          400,
-          "BAD_REQUEST",
-          "Job ID and User ID are required",
-          undefined,
-          req.traceId
-        );
+        return sendError(res, 400, 'BAD_REQUEST', 'Job ID and User ID are required', undefined, req.traceId);
       }
 
       // Check ownership
       await new Promise<void>((resolve, reject) => {
-        requireResourceOwnership(
-          req,
-          res,
-          (err?: unknown) => {
-            if (err) reject(err);
-            else resolve();
-          },
-          "job",
-          id
-        );
+        requireResourceOwnership(req, res, (err?: unknown) => {
+          if (err) reject(err);
+          else resolve();
+        }, 'job', id);
       });
 
       const job = await jobService.getJob(id, userId);
       if (!job) {
-        return sendError(res, 404, "NOT_FOUND", "Job not found", undefined, req.traceId);
+        return sendError(res, 404, 'NOT_FOUND', 'Job not found', undefined, req.traceId);
       }
 
       sendSuccess(res, job);
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to fetch job", 500, {
-        userId: req.userId,
-        jobId: req.params.id,
-      });
+      handleRouteError(res, error, "Failed to fetch job", 500, { userId: req.userId, jobId: req.params.id });
     }
   }
 );
@@ -268,34 +232,21 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
     const userId = req.userId!;
-
+    
     if (!id || !userId) {
-      return sendError(
-        res,
-        400,
-        "BAD_REQUEST",
-        "Job ID and User ID are required",
-        undefined,
-        req.traceId
-      );
+      return sendError(res, 400, 'BAD_REQUEST', 'Job ID and User ID are required', undefined, req.traceId);
     }
-
+    
     const mutex = getJobMutex(id);
 
     const release = await mutex.acquire();
     try {
       // Check ownership
       await new Promise<void>((resolve, reject) => {
-        requireResourceOwnership(
-          req,
-          res,
-          (err?: unknown) => {
-            if (err) reject(err);
-            else resolve();
-          },
-          "job",
-          id
-        );
+        requireResourceOwnership(req, res, (err?: unknown) => {
+          if (err) reject(err);
+          else resolve();
+        }, 'job', id);
       });
 
       // Check if job is already running (optimistic locking)
@@ -305,13 +256,13 @@ router.post(
       );
 
       if (jobs.length === 0 || !jobs[0]) {
-        return sendError(res, 404, "NOT_FOUND", "Job not found", undefined, req.traceId);
+        return sendError(res, 404, 'NOT_FOUND', 'Job not found', undefined, req.traceId);
       }
 
       const job = jobs[0];
 
-      if (job.status === "running") {
-        return sendError(res, 409, "CONFLICT", "Job is already running", undefined, req.traceId);
+      if (job.status === 'running') {
+        return sendError(res, 409, 'CONFLICT', 'Job is already running', undefined, req.traceId);
       }
 
       // Update job status atomically
@@ -324,14 +275,7 @@ router.post(
       );
 
       if (updated.length === 0 || !updated[0]) {
-        return sendError(
-          res,
-          409,
-          "CONFLICT",
-          "Job state changed, please retry",
-          undefined,
-          req.traceId
-        );
+        return sendError(res, 409, 'CONFLICT', 'Job state changed, please retry', undefined, req.traceId);
       }
 
       // Create execution record
@@ -343,14 +287,7 @@ router.post(
       );
 
       if (executions.length === 0 || !executions[0]) {
-        return sendError(
-          res,
-          500,
-          "INTERNAL_ERROR",
-          "Failed to create execution record",
-          undefined,
-          req.traceId
-        );
+        return sendError(res, 500, 'INTERNAL_ERROR', 'Failed to create execution record', undefined, req.traceId);
       }
 
       const executionId = executions[0].id;
@@ -359,28 +296,12 @@ router.post(
       await query<{ id: string }>(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        ["job_executed", userId, JSON.stringify({ jobId: id, executionId })]
+        [
+          'job_executed',
+          userId,
+          JSON.stringify({ jobId: id, executionId }),
+        ]
       );
-
-      // Log usage for billing (job execution)
-      try {
-        const billingAccount = await getBillingAccount(userId, req.tenantId);
-        if (billingAccount) {
-          await logUsageEvent({
-            billingAccountId: billingAccount.id,
-            eventType: "reconciliation_job",
-            quantity: 1,
-            userId: userId,
-            ...(req.tenantId && { tenantId: req.tenantId }),
-            metadata: {
-              job_id: id,
-              execution_id: executionId,
-            },
-          });
-        }
-      } catch (usageError) {
-        logError("Failed to log usage for job execution", usageError);
-      }
 
       // Queue job execution (async)
       // In production, this would use a job queue like Bull
@@ -392,18 +313,24 @@ router.post(
              WHERE id = $1`,
             [executionId]
           );
-          await query(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
+          await query(
+            `UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`,
+            [id]
+          );
         } catch (error) {
-          logError("Job execution failed", error, { executionId, jobId: id });
-          await query(`UPDATE executions SET status = 'failed', error = $1 WHERE id = $2`, [
-            error instanceof Error ? error.message : "Unknown error",
-            executionId,
-          ]);
-          await query(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
+          logError('Job execution failed', error, { executionId, jobId: id });
+          await query(
+            `UPDATE executions SET status = 'failed', error = $1 WHERE id = $2`,
+            [error instanceof Error ? error.message : 'Unknown error', executionId]
+          );
+          await query(
+            `UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`,
+            [id]
+          );
         }
       }, 0);
 
-      logInfo("Job execution started", { jobId: id, executionId, userId });
+      logInfo('Job execution started', { jobId: id, executionId, userId });
 
       res.status(202).json({
         data: {
@@ -433,41 +360,25 @@ router.delete(
       const userId = req.userId!;
 
       if (!id || !userId) {
-        return sendError(
-          res,
-          400,
-          "BAD_REQUEST",
-          "Job ID and User ID are required",
-          undefined,
-          req.traceId
-        );
+        return sendError(res, 400, 'BAD_REQUEST', 'Job ID and User ID are required', undefined, req.traceId);
       }
 
       // Check ownership
       await new Promise<void>((resolve, reject) => {
-        requireResourceOwnership(
-          req,
-          res,
-          (err?: unknown) => {
-            if (err) reject(err);
-            else resolve();
-          },
-          "job",
-          id
-        );
+        requireResourceOwnership(req, res, (err?: unknown) => {
+          if (err) reject(err);
+          else resolve();
+        }, 'job', id);
       });
 
       const deleted = await jobService.deleteJob(id, userId);
       if (!deleted) {
-        return sendError(res, 404, "NOT_FOUND", "Job not found", undefined, req.traceId);
+        return sendError(res, 404, 'NOT_FOUND', 'Job not found', undefined, req.traceId);
       }
 
       sendNoContent(res);
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to delete job", 500, {
-        userId: req.userId,
-        jobId: req.params.id,
-      });
+      handleRouteError(res, error, "Failed to delete job", 500, { userId: req.userId, jobId: req.params.id });
     }
   }
 );

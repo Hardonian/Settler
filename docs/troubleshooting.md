@@ -1,520 +1,327 @@
 # Troubleshooting Guide
 
-**Common issues and solutions for Settler.dev**
+Common issues and solutions for Settler API.
 
----
+## Authentication Issues
 
-## Quick Diagnosis
+### "Unauthorized" Error
 
-### Issue: Can't create reconciliation job
-
-**Symptoms:**
-
-- API returns 400 or 401 error
-- Job creation fails
+**Problem:** API requests return 401 Unauthorized.
 
 **Solutions:**
 
-1. **Check API Key**
-
+1. **Check API Key Format**
    ```bash
-   echo $SETTLER_API_KEY
-   # Should start with sk_live_ or sk_test_
+   # Correct format
+   sk_live_1234567890abcdef
+   
+   # Wrong format
+   rk_1234567890  # Old format
    ```
 
-2. **Verify Job Configuration**
-   - Check adapter names are correct (lowercase: "stripe", "shopify", etc.)
-   - Verify API keys for source/target platforms are valid
-   - Check matching rules are properly formatted
+2. **Verify API Key in Header**
+   ```bash
+   curl -H "X-API-Key: sk_your_api_key" https://api.settler.io/api/v1/jobs
+   ```
 
-3. **Check Plan Limits**
-   - Free tier: 1,000 reconciliations/month
-   - Verify you haven't exceeded limits
+3. **Check Environment Variables**
+   ```bash
+   echo $SETTLER_API_KEY  # Should output your API key
+   ```
 
----
+### "Invalid Token" Error
 
-### Issue: Job execution fails
-
-**Symptoms:**
-
-- Job status shows "failed"
-- No matches found
-- Error messages in job logs
+**Problem:** JWT token is invalid or expired.
 
 **Solutions:**
 
-1. **Check Adapter Connection**
+1. Generate a new token
+2. Check token expiration time
+3. Verify token secret matches server configuration
 
-   ```typescript
-   // Test adapter connection
-   const testResult = await settler.adapters.test({
-     adapter: "stripe",
-     config: { apiKey: process.env.STRIPE_KEY },
-   });
+## Rate Limiting
 
-   if (!testResult.success) {
-     console.error("Adapter connection failed:", testResult.error);
-   }
-   ```
+### "Too Many Requests" Error
 
-2. **Verify Data Availability**
-   - Check source platform has transactions in date range
-   - Check target platform has corresponding transactions
-   - Verify date ranges overlap
-
-3. **Review Matching Rules**
-   - Ensure field names match actual data fields
-   - Check tolerance values are appropriate
-   - Verify date ranges allow for processing delays
-
-4. **Check Error Logs**
-   ```typescript
-   const execution = await settler.jobs.getExecution(jobId);
-   if (execution.status === "failed") {
-     console.error("Execution errors:", execution.errors);
-   }
-   ```
-
----
-
-### Issue: High number of unmatched transactions
-
-**Symptoms:**
-
-- Low match rate (< 80%)
-- Many exceptions in queue
-- Reconciliation accuracy is low
+**Problem:** Receiving 429 status code.
 
 **Solutions:**
 
-1. **Review Matching Rules**
-   - Use exact match on unique identifiers (order_id, transaction_id)
-   - Add amount matching with appropriate tolerance
-   - Consider date range matching for processing delays
-
-2. **Check Data Quality**
-
-   ```typescript
-   // Inspect source data
-   const sourceData = await settler.adapters.fetch({
-     adapter: "shopify",
-     config: {
-       /* ... */
-     },
-     dateRange: { start: "2026-01-01", end: "2026-01-31" },
-   });
-
-   // Check for missing fields, typos, formatting issues
-   console.log("Sample source data:", sourceData[0]);
+1. **Check Rate Limit Headers**
+   ```http
+   X-RateLimit-Limit: 100
+   X-RateLimit-Remaining: 0
+   X-RateLimit-Reset: 1640995200
    ```
 
-3. **Adjust Matching Tolerance**
-
+2. **Implement Exponential Backoff**
    ```typescript
-   rules: {
-     matching: [
-       { field: "order_id", type: "exact" },
-       { field: "amount", type: "range", tolerance: 0.01 }, // Increase if needed
-       { field: "date", type: "range", days: 2 }, // Increase if processing delays
-     ];
-   }
-   ```
-
-4. **Use Fuzzy Matching for Text Fields**
-   ```typescript
-   rules: {
-     matching: [{ field: "customer_name", type: "fuzzy", threshold: 0.8 }];
-   }
-   ```
-
----
-
-### Issue: Rate limit errors (429)
-
-**Symptoms:**
-
-- API returns 429 Too Many Requests
-- Requests fail with rate limit message
-
-**Solutions:**
-
-1. **Check Current Rate Limits**
-
-   ```typescript
-   // Rate limit info in response headers
-   const response = await fetch("/api/v1/jobs", {
-     headers: { Authorization: `Bearer ${apiKey}` },
-   });
-
-   console.log("Rate limit:", response.headers.get("X-RateLimit-Limit"));
-   console.log("Remaining:", response.headers.get("X-RateLimit-Remaining"));
-   console.log("Reset at:", response.headers.get("X-RateLimit-Reset"));
-   ```
-
-2. **Implement Rate Limit Handling**
-
-   ```typescript
-   async function handleRateLimit(fn: () => Promise<any>) {
+   async function requestWithRetry(fn: () => Promise<any>, retries = 3) {
      try {
        return await fn();
      } catch (error) {
-       if (error.status === 429) {
-         const resetAt = new Date(error.details.resetAt);
-         const waitTime = resetAt.getTime() - Date.now();
-
-         if (waitTime > 0) {
-           console.log(`Rate limit exceeded. Waiting ${waitTime}ms`);
-           await new Promise((resolve) => setTimeout(resolve, waitTime));
-           return await fn(); // Retry
-         }
+       if (error.status === 429 && retries > 0) {
+         await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
+         return requestWithRetry(fn, retries - 1);
        }
        throw error;
      }
    }
    ```
 
-3. **Reduce Request Frequency**
-   - Use webhooks instead of polling
-   - Batch requests when possible
-   - Cache results when appropriate
+3. **Use Multiple API Keys** (if allowed by your plan)
 
-4. **Upgrade Plan**
-   - Free: 100 requests / 15 minutes
-   - Commercial: 2,000 requests / 15 minutes
-   - Enterprise: Custom limits
+## Job Execution Issues
 
----
+### Job Stuck in "Running" State
 
-### Issue: PDF export not working
-
-**Symptoms:**
-
-- PDF export returns JSON instead of file
-- Export endpoint returns error
+**Problem:** Job execution never completes.
 
 **Solutions:**
 
-1. **Check Export Format**
-
-   ```typescript
-   const exportResult = await settler.exports.create({
-     jobId: "job_123",
-     format: "pdf", // Must be lowercase
-   });
+1. **Check Job Logs**
+   ```bash
+   curl https://api.settler.io/api/v1/jobs/job_123/logs
    ```
 
-2. **Verify Job Has Data**
-   - Ensure job has completed successfully
-   - Check job has matches or unmatched transactions
-   - Verify date range includes execution data
+2. **Verify Adapter Configuration**
+   - Check API keys are valid
+   - Verify adapter credentials
+   - Test adapter connection separately
 
-3. **Check File Size**
-   - Large reports may timeout
-   - Consider using CSV for very large datasets
-   - Use pagination for large exports
+3. **Check Date Range**
+   - Ensure date range is reasonable
+   - Very large date ranges may timeout
 
-4. **Alternative: Use CSV Export**
-   ```typescript
-   const csvExport = await settler.exports.create({
-     jobId: "job_123",
-     format: "csv", // More reliable for large datasets
-   });
-   ```
+### No Matches Found
 
----
-
-### Issue: Multi-currency reconciliation not working
-
-**Symptoms:**
-
-- Currency conversion fails
-- FX rates not available
-- Amounts don't match after conversion
+**Problem:** Reconciliation finds zero matches.
 
 **Solutions:**
 
-1. **Sync FX Rates**
-
+1. **Review Matching Rules**
    ```typescript
-   // Sync rates from external provider
-   await settler.currency.syncRates({
-     baseCurrency: "USD",
-     date: "2026-01-15", // Optional: historical date
+   // Too strict
+   rules: {
+     matching: [
+       { field: "order_id", type: "exact" },
+       { field: "amount", type: "exact", tolerance: 0 }, // No tolerance
+     ]
+   }
+   
+   // Better
+   rules: {
+     matching: [
+       { field: "order_id", type: "exact" },
+       { field: "amount", type: "exact", tolerance: 0.01 }, // Allow small variance
+     ]
+   }
+   ```
+
+2. **Check Data Formats**
+   - Verify currency codes match (USD vs US Dollar)
+   - Check date formats
+   - Ensure reference IDs are consistent
+
+3. **Use Fuzzy Matching**
+   ```typescript
+   rules: {
+     matching: [
+       { field: "reference", type: "fuzzy", threshold: 0.8 },
+     ]
+   }
+   ```
+
+## Adapter Issues
+
+### "Adapter Not Found" Error
+
+**Problem:** Adapter ID doesn't exist.
+
+**Solutions:**
+
+1. **List Available Adapters**
+   ```bash
+   curl https://api.settler.io/api/v1/adapters
+   ```
+
+2. **Check Adapter Name**
+   - Use exact adapter ID (case-sensitive)
+   - Common adapters: `stripe`, `shopify`, `quickbooks`, `paypal`
+
+### Adapter Connection Failed
+
+**Problem:** Cannot connect to external platform.
+
+**Solutions:**
+
+1. **Verify Credentials**
+   ```typescript
+   // Test adapter connection
+   const adapter = new StripeAdapter();
+   await adapter.fetch({
+     dateRange: { start: new Date(), end: new Date() },
+     config: { apiKey: "sk_test_..." }
    });
    ```
 
-2. **Manually Enter FX Rates**
+2. **Check Network/Firewall**
+   - Ensure API can reach external platform
+   - Check for IP allowlisting requirements
 
-   ```typescript
-   // If automatic sync fails, enter rates manually
-   await settler.currency.recordRate({
-     fromCurrency: "EUR",
-     toCurrency: "USD",
-     rate: 1.08,
-     date: "2026-01-15",
-   });
-   ```
+3. **Verify API Permissions**
+   - Some platforms require specific scopes
+   - Check platform-specific documentation
 
-3. **Check Base Currency**
+## Webhook Issues
 
-   ```typescript
-   const baseCurrency = await settler.currency.getBaseCurrency();
-   console.log("Base currency:", baseCurrency);
-   ```
+### Webhooks Not Received
 
-4. **Verify Currency Codes**
-   - Use ISO 4217 codes (USD, EUR, GBP, etc.)
-   - Check currency codes match in source and target data
-   - Ensure currency field is populated in transactions
-
----
-
-### Issue: Webhooks not received
-
-**Symptoms:**
-
-- Webhook events not arriving
-- Webhook delivery fails
+**Problem:** Webhooks not being delivered.
 
 **Solutions:**
 
 1. **Verify Webhook URL**
-   - Check URL is publicly accessible (not localhost)
-   - Verify HTTPS is used (required for production)
-   - Test endpoint manually
+   - Must be publicly accessible
+   - Must accept POST requests
+   - Should return 200 status code
 
-2. **Check Webhook Signature**
-
+2. **Check Webhook Secret**
    ```typescript
-   import crypto from "crypto";
-
-   function verifyWebhookSignature(signature: string, payload: string, secret: string): boolean {
-     const [timestamp, hash] = signature.split(",");
-     const [t, v1] = hash.split("=");
-
-     const expected = crypto
-       .createHmac("sha256", secret)
-       .update(`${timestamp.split("=")[1]}.${payload}`)
-       .digest("hex");
-
-     return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expected));
-   }
+   // Verify webhook signature
+   const signature = req.headers['x-settler-signature'];
+   const isValid = verifyWebhookSignature(payload, signature, secret);
    ```
 
-3. **Check Webhook Delivery Logs**
-
-   ```typescript
-   const webhook = await settler.webhooks.get(webhookId);
-   console.log("Delivery history:", webhook.deliveries);
-   ```
-
-4. **Verify Endpoint Returns 2xx**
-   - Webhook endpoint must return 200-299 status
-   - Non-2xx responses trigger retries
-   - 4xx responses stop retries (permanent failure)
-
-5. **Check Firewall/Network**
-   - Ensure Settler IPs are whitelisted (if using firewall)
-   - Check network connectivity
-   - Verify SSL certificate is valid
-
----
-
-### Issue: Slow reconciliation performance
-
-**Symptoms:**
-
-- Jobs take long time to complete
-- Timeout errors
-- High API latency
-
-**Solutions:**
-
-1. **Reduce Data Volume**
-   - Use smaller date ranges
-   - Process in batches
-   - Filter data before reconciliation
-
-2. **Optimize Matching Rules**
-   - Use exact matches first (fastest)
-   - Limit fuzzy matching (slower)
-   - Reduce number of matching rules
-
-3. **Check Adapter Performance**
-
-   ```typescript
-   // Test adapter response time
-   const start = Date.now();
-   await settler.adapters.fetch({
-     /* ... */
-   });
-   const duration = Date.now() - start;
-   console.log(`Adapter fetch took ${duration}ms`);
-   ```
-
-4. **Use Scheduled Jobs**
-   - Run during off-peak hours
-   - Process incrementally
-   - Avoid large batch processing
-
-5. **Contact Support**
-   - If consistently slow, contact support
-   - Provide job ID and execution ID
-   - Include performance metrics
-
----
-
-### Issue: Authentication errors
-
-**Symptoms:**
-
-- 401 Unauthorized errors
-- API key validation fails
-
-**Solutions:**
-
-1. **Verify API Key Format**
-
+3. **Check Webhook Logs**
    ```bash
-   # Should start with sk_live_ or sk_test_
-   echo $SETTLER_API_KEY | grep -E '^sk_(live|test)_'
+   curl https://api.settler.io/api/v1/webhooks/wh_123/logs
    ```
 
-2. **Check API Key Status**
-   - Verify key hasn't been revoked
-   - Check key hasn't expired
-   - Ensure key is for correct environment (live vs test)
+### Webhook Delivery Delayed
 
-3. **Regenerate API Key**
-
-   ```typescript
-   // In dashboard: Settings → API Keys → Regenerate
-   // Or via API (if you have admin access)
-   ```
-
-4. **Check Authorization Header**
-
-   ```typescript
-   // Correct format
-   headers: {
-     'Authorization': `Bearer ${apiKey}`
-   }
-
-   // NOT: 'Authorization': apiKey
-   // NOT: 'X-API-Key': apiKey
-   ```
-
----
-
-### Issue: Data not matching expected format
-
-**Symptoms:**
-
-- Adapter returns unexpected data structure
-- Field names don't match
-- Missing required fields
+**Problem:** Webhooks arrive late.
 
 **Solutions:**
 
-1. **Inspect Adapter Response**
+1. **Normal Behavior**
+   - Webhooks are queued and retried
+   - High volume may cause delays
+   - Check webhook status endpoint
 
+2. **Implement Idempotency**
    ```typescript
-   const data = await settler.adapters.fetch({
-     adapter: "stripe",
-     config: { apiKey: process.env.STRIPE_KEY },
-   });
-
-   console.log("Sample data:", JSON.stringify(data[0], null, 2));
-   ```
-
-2. **Check Field Mappings**
-
-   ```typescript
-   // Verify field names in matching rules match actual data
-   rules: {
-     matching: [
-       { field: "order_id", type: "exact" }, // Must exist in data
-     ];
-   }
-   ```
-
-3. **Use Custom Field Mappings**
-   ```typescript
-   source: {
-     adapter: "shopify",
-     config: {
-       apiKey: "...",
-       fieldMappings: {
-         order_id: "order_number", // Map to actual field name
-         amount: "total_price"
-       }
+   // Handle duplicate webhooks
+   const processedIds = new Set();
+   
+   app.post('/webhooks', (req, res) => {
+     const eventId = req.body.id;
+     if (processedIds.has(eventId)) {
+       return res.status(200).json({ received: true });
      }
+     processedIds.add(eventId);
+     // Process webhook...
+   });
+   ```
+
+## SDK Issues
+
+### TypeScript Errors
+
+**Problem:** Type errors when using SDK.
+
+**Solutions:**
+
+1. **Update SDK Version**
+   ```bash
+   npm install @settler/sdk@latest
+   ```
+
+2. **Check TypeScript Version**
+   ```bash
+   npm install typescript@^5.3.0 --save-dev
+   ```
+
+3. **Import Types Correctly**
+   ```typescript
+   import Settler, { ReconciliationJob } from "@settler/sdk";
+   ```
+
+### SDK Not Found
+
+**Problem:** Cannot import SDK.
+
+**Solutions:**
+
+1. **Install SDK**
+   ```bash
+   npm install @settler/sdk
+   ```
+
+2. **Check Package Scope**
+   ```typescript
+   // Correct
+   import Settler from "@settler/sdk";
+   
+   // Wrong
+   import Settler from "settler-sdk";
+   ```
+
+## Performance Issues
+
+### Slow API Responses
+
+**Problem:** API requests are slow.
+
+**Solutions:**
+
+1. **Check Date Range**
+   - Smaller date ranges are faster
+   - Use pagination for large datasets
+
+2. **Use Async Operations**
+   ```typescript
+   // Trigger async job execution
+   const execution = await client.jobs.run(jobId);
+   
+   // Poll for completion
+   while (execution.status === 'running') {
+     await sleep(5000);
+     execution = await client.jobs.getExecution(execution.id);
    }
    ```
 
----
+3. **Enable Caching**
+   - Cache adapter configs
+   - Cache report results when possible
 
 ## Getting Help
 
-### Before Contacting Support
+If you're still experiencing issues:
 
 1. **Check Documentation**
-   - [API Quick Start](./api-quick-start.md)
-   - [Error Handling Guide](./error-handling.md)
-   - [Matching Rules](./matching-rules.md)
+   - [API Reference](./api.md)
+   - [Adapters Guide](./adapters.md)
 
-2. **Search Discord**
-   - [discord.gg/settler](https://discord.gg/settler)
-   - Search for similar issues
-   - Ask community
+2. **Search Issues**
+   - Check GitHub Issues for similar problems
 
-3. **Check GitHub Issues**
-   - [github.com/settler/settler/issues](https://github.com/settler/settler/issues)
-   - Search existing issues
-   - Create new issue if needed
+3. **Create Issue**
+   - Provide detailed error messages
+   - Include code examples
+   - Share relevant logs
 
-### When Contacting Support
+4. **Contact Support**
+   - Email: support@settler.io
+   - Include your API key prefix (first 8 characters)
 
-**Include:**
+## Common Error Codes
 
-- Error message and code
-- Trace ID (from error response)
-- Job ID (if applicable)
-- Steps to reproduce
-- Expected vs actual behavior
-- API key (masked: `sk_live_...xxxx`)
-
-**Email:** [support@settler.io](mailto:support@settler.io)
-
----
-
-## Common Error Messages
-
-### "Job not found"
-
-- **Cause:** Job ID incorrect or job deleted
-- **Fix:** Verify job ID, check job exists in dashboard
-
-### "Adapter connection failed"
-
-- **Cause:** Invalid adapter API key or network issue
-- **Fix:** Verify adapter API key, check network connectivity
-
-### "No FX rate available"
-
-- **Cause:** FX rate not in database and provider fetch failed
-- **Fix:** Sync FX rates or enter manually
-
-### "Quota exceeded"
-
-- **Cause:** Plan limit reached
-- **Fix:** Upgrade plan or wait for next billing cycle
-
-### "Rate limit exceeded"
-
-- **Cause:** Too many API requests
-- **Fix:** Wait for reset time, reduce request frequency
-
----
-
-**Last Updated:** January 2026
+| Code | Meaning | Solution |
+|------|---------|----------|
+| 400 | Bad Request | Check request format and validation |
+| 401 | Unauthorized | Verify API key or token |
+| 403 | Forbidden | Check API key permissions |
+| 404 | Not Found | Verify resource ID exists |
+| 429 | Rate Limited | Implement backoff, check limits |
+| 500 | Server Error | Retry request, contact support |

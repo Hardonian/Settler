@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface TextRevealProps {
   text: string;
   className?: string;
   delay?: number;
   staggerDelay?: number;
-  splitBy?: "words" | "chars";
-  as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
+  splitBy?: 'words' | 'chars';
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 }
 
 export function TextReveal({
@@ -17,7 +17,7 @@ export function TextReveal({
   className,
   delay = 0,
   staggerDelay = 0.05,
-  splitBy = "words",
+  splitBy = 'words',
 }: TextRevealProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -45,27 +45,26 @@ export function TextReveal({
     },
   };
 
-  const splitText = splitBy === "words" ? text.split(" ") : text.split("");
+  const splitText = splitBy === 'words' ? text.split(' ') : text.split('');
 
   return (
     <motion.div
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className={cn("inline-block", className)}
+      className={cn('inline-block', className)}
     >
       {splitText.map((item, index) => {
         // For words, add a space after each word except the last
-        const displayItem =
-          splitBy === "words" ? (index < splitText.length - 1 ? `${item} ` : item) : item;
-
+        const displayItem = splitBy === 'words' ? (index < splitText.length - 1 ? `${item} ` : item) : item;
+        
         return (
           <motion.span
             key={index}
             variants={itemVariants}
             className="inline-block"
             style={{
-              whiteSpace: splitBy === "chars" ? "normal" : "pre",
+              whiteSpace: splitBy === 'chars' ? 'normal' : 'pre',
             }}
           >
             {displayItem}
@@ -82,16 +81,21 @@ export function TextRevealHeading({
   className,
   delay = 0,
   staggerDelay = 0.05,
-  splitBy = "words",
-  as: Component = "h1",
+  splitBy = 'words',
+  as: Component = 'h1',
   ...props
-}: TextRevealProps & {
-  as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+}: TextRevealProps & { 
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   id?: string;
 } & React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <Component className={className} {...props}>
-      <TextReveal text={text} delay={delay} staggerDelay={staggerDelay} splitBy={splitBy} />
+      <TextReveal
+        text={text}
+        delay={delay}
+        staggerDelay={staggerDelay}
+        splitBy={splitBy}
+      />
     </Component>
   );
 }

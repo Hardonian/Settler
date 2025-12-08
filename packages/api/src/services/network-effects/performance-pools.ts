@@ -1,11 +1,11 @@
 /**
  * Performance Tuning Pools
- *
+ * 
  * Aggregates performance data across all customers to improve matching algorithms.
  * Customers benefit from collective tuning.
  */
 
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 
 export interface PerformanceMetric {
   jobId: string;
@@ -37,7 +37,7 @@ export class PerformanceTuningPools extends EventEmitter {
    */
   optIn(customerId: string): void {
     this.optInCustomers.add(customerId);
-    this.emit("customer_opted_in", customerId);
+    this.emit('customer_opted_in', customerId);
   }
 
   /**
@@ -46,17 +46,14 @@ export class PerformanceTuningPools extends EventEmitter {
   optOut(customerId: string): void {
     this.optInCustomers.delete(customerId);
     // Remove customer's metrics
-    this.metrics = this.metrics.filter((m) => m.customerId !== customerId);
-    this.emit("customer_opted_out", customerId);
+    this.metrics = this.metrics.filter(m => m.customerId !== customerId);
+    this.emit('customer_opted_out', customerId);
   }
 
   /**
    * Submit performance metrics
    */
-  submitMetrics(
-    customerId: string,
-    metrics: Omit<PerformanceMetric, "customerId" | "timestamp">
-  ): void {
+  submitMetrics(customerId: string, metrics: Omit<PerformanceMetric, 'customerId' | 'timestamp'>): void {
     if (!this.optInCustomers.has(customerId)) {
       return; // Silently ignore if not opted in
     }
@@ -74,14 +71,14 @@ export class PerformanceTuningPools extends EventEmitter {
       this.metrics = this.metrics.slice(-this.maxMetrics);
     }
 
-    this.emit("metrics_submitted", metric);
+    this.emit('metrics_submitted', metric);
   }
 
   /**
    * Get performance insights for an adapter/rule combination
    */
   getInsights(adapter: string, ruleType?: string): PerformanceInsight[] {
-    const relevantMetrics = this.metrics.filter((m) => {
+    const relevantMetrics = this.metrics.filter(m => {
       if (m.adapter !== adapter) return false;
       if (ruleType && m.ruleType !== ruleType) return false;
       return true;
@@ -122,18 +119,15 @@ export class PerformanceTuningPools extends EventEmitter {
   /**
    * Get recommended rules for a use case
    */
-  getRecommendedRules(
-    adapter: string,
-    _useCase: string
-  ): Array<{
+  getRecommendedRules(adapter: string, _useCase: string): Array<{
     ruleType: string;
     confidence: number;
     expectedAccuracy: number;
   }> {
     const insights = this.getInsights(adapter);
-
+    
     return insights
-      .map((insight) => ({
+      .map(insight => ({
         ruleType: insight.ruleType,
         confidence: Math.min(100, insight.sampleSize / 10), // More samples = higher confidence
         expectedAccuracy: insight.avgAccuracy,
@@ -149,22 +143,18 @@ export class PerformanceTuningPools extends EventEmitter {
     const recommendations: string[] = [];
 
     if (accuracy < 0.9) {
-      recommendations.push(
-        "Consider using fuzzy matching or ML-based matching for better accuracy"
-      );
+      recommendations.push('Consider using fuzzy matching or ML-based matching for better accuracy');
     }
 
     if (latency > 100) {
-      recommendations.push("Consider adding indexes or caching to improve latency");
+      recommendations.push('Consider adding indexes or caching to improve latency');
     }
 
     if (accuracy >= 0.95 && latency < 50) {
-      recommendations.push(
-        "Performance is excellent. Consider sharing your configuration as a best practice."
-      );
+      recommendations.push('Performance is excellent. Consider sharing your configuration as a best practice.');
     }
 
-    return recommendations.join(". ") || "Performance is within acceptable range.";
+    return recommendations.join('. ') || 'Performance is within acceptable range.';
   }
 
   /**
@@ -180,11 +170,11 @@ export class PerformanceTuningPools extends EventEmitter {
       avgAccuracy: number;
     }>;
   } {
-    const adapters = new Set(this.metrics.map((m) => m.adapter));
-
+    const adapters = new Set(this.metrics.map(m => m.adapter));
+    
     // Calculate top performers
     const adapterRuleStats = new Map<string, { accuracy: number; count: number }>();
-
+    
     for (const metric of this.metrics) {
       const key = `${metric.adapter}:${metric.ruleType}`;
       if (!adapterRuleStats.has(key)) {
@@ -197,7 +187,7 @@ export class PerformanceTuningPools extends EventEmitter {
 
     const topPerformers = Array.from(adapterRuleStats.entries())
       .map(([key, stats]) => {
-        const parts = key.split(":");
+        const parts = key.split(':');
         const adapter = parts[0];
         const ruleType = parts[1];
         if (!adapter || !ruleType) {
@@ -209,9 +199,7 @@ export class PerformanceTuningPools extends EventEmitter {
           avgAccuracy: stats.accuracy / stats.count,
         };
       })
-      .filter(
-        (item): item is { adapter: string; ruleType: string; avgAccuracy: number } => item !== null
-      )
+      .filter((item): item is { adapter: string; ruleType: string; avgAccuracy: number } => item !== null)
       .sort((a, b) => b.avgAccuracy - a.avgAccuracy)
       .slice(0, 10);
 

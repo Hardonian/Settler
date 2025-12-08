@@ -3,15 +3,15 @@
  * Event handlers that update read models
  */
 
-import { Pool } from "pg";
-import { pool } from "../../../db";
-import { DomainEvent } from "../../../domain/events/DomainEvent";
-import { EventEnvelope } from "../../../domain/eventsourcing/EventEnvelope";
+import { Pool } from 'pg';
+import { pool } from '../../../db';
+import { DomainEvent } from '../../../domain/events/DomainEvent';
+import { EventEnvelope } from '../../../domain/eventsourcing/EventEnvelope';
 
 export interface ReconciliationSummary {
   reconciliation_id: string;
   job_id: string;
-  status: "running" | "completed" | "failed" | "cancelled";
+  status: 'running' | 'completed' | 'failed' | 'cancelled';
   total_source_records: number;
   total_target_records: number;
   matched_count: number;
@@ -46,53 +46,6 @@ export interface ErrorHotspotsView {
   tenant_id: string;
 }
 
-interface OrdersFetchedData {
-  count: number;
-  reconciliation_id: string;
-}
-
-interface PaymentsFetchedData {
-  count: number;
-  reconciliation_id: string;
-}
-
-interface RecordMatchedData {
-  reconciliation_id: string;
-}
-
-interface RecordUnmatchedData {
-  reconciliation_id: string;
-  source_id?: string;
-  target_id?: string;
-}
-
-interface ReconciliationCompletedData {
-  reconciliation_id: string;
-  summary: {
-    matched_count: number;
-    unmatched_source_count: number;
-    unmatched_target_count: number;
-    errors_count: number;
-    duration_ms: number;
-    accuracy_percentage: number;
-  };
-  completed_at: string;
-}
-
-interface ReconciliationFailedData {
-  reconciliation_id: string;
-  failed_at: string;
-  error: {
-    type: string;
-    message: string;
-  };
-}
-
-interface ErrorHotspotData extends ReconciliationFailedData {
-  job_id?: string;
-  step?: string;
-}
-
 export class ReconciliationProjectionHandlers {
   constructor(private db: Pool = pool) {}
 
@@ -117,19 +70,14 @@ export class ReconciliationProjectionHandlers {
     `;
 
     // Extract from event metadata
-    const eventWithMetadata = event as DomainEvent & {
-      tenantId?: string;
-      reconciliationId?: string;
-      jobId?: string;
-    };
-    const tenantId = eventWithMetadata.tenantId || "unknown";
-    const reconciliationId = eventWithMetadata.reconciliationId;
-    const jobId = eventWithMetadata.jobId;
+    const tenantId = (event as any).tenantId || 'unknown';
+    const reconciliationId = (event as any).reconciliationId;
+    const jobId = (event as any).jobId;
 
     await this.db.query(query, [
       reconciliationId,
       jobId,
-      "running",
+      'running',
       tenantId,
       new Date(),
       new Date(),
@@ -140,7 +88,7 @@ export class ReconciliationProjectionHandlers {
    * Handle OrdersFetched event
    */
   async handleOrdersFetched(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as OrdersFetchedData;
+    const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -156,7 +104,7 @@ export class ReconciliationProjectionHandlers {
    * Handle PaymentsFetched event
    */
   async handlePaymentsFetched(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as PaymentsFetchedData;
+    const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -172,7 +120,7 @@ export class ReconciliationProjectionHandlers {
    * Handle RecordMatched event
    */
   async handleRecordMatched(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as RecordMatchedData;
+    const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -188,7 +136,7 @@ export class ReconciliationProjectionHandlers {
    * Handle RecordUnmatched event
    */
   async handleRecordUnmatched(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as RecordUnmatchedData;
+    const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -204,7 +152,7 @@ export class ReconciliationProjectionHandlers {
       WHERE reconciliation_id = $1
     `;
 
-    const unmatchedType = data.source_id ? "source" : "target";
+    const unmatchedType = data.source_id ? 'source' : 'target';
     await this.db.query(query, [data.reconciliation_id, unmatchedType]);
   }
 
@@ -212,7 +160,7 @@ export class ReconciliationProjectionHandlers {
    * Handle ReconciliationCompleted event
    */
   async handleReconciliationCompleted(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as ReconciliationCompletedData;
+    const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -247,7 +195,7 @@ export class ReconciliationProjectionHandlers {
    * Handle ReconciliationFailed event
    */
   async handleReconciliationFailed(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as ReconciliationFailedData;
+    const data = eventEnvelope.data as any;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -287,15 +235,19 @@ export class ReconciliationProjectionHandlers {
         success_count = tenant_usage_view.success_count + 1
     `;
 
-    const data = eventEnvelope.data as ReconciliationCompletedData;
-    await this.db.query(query, [tenantId, today, data.summary?.duration_ms || 0]);
+    const data = eventEnvelope.data as any;
+    await this.db.query(query, [
+      tenantId,
+      today,
+      data.summary?.duration_ms || 0,
+    ]);
   }
 
   /**
    * Update error hotspots view
    */
   private async updateErrorHotspots(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as ErrorHotspotData;
+    const data = eventEnvelope.data as any;
     const tenantId = eventEnvelope.metadata.tenant_id;
 
     const query = `
@@ -316,9 +268,9 @@ export class ReconciliationProjectionHandlers {
 
     await this.db.query(query, [
       data.reconciliation_id,
-      data.job_id || "unknown",
+      (data as any).job_id || 'unknown',
       data.error.type,
-      data.step || "unknown",
+      data.step || 'unknown',
       new Date(data.failed_at),
       tenantId,
     ]);

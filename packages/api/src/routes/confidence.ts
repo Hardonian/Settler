@@ -62,9 +62,10 @@ router.get(
       const match = matches[0];
 
       // Get job rules
-      const jobs = await query<{ rules: unknown }>(`SELECT rules FROM jobs WHERE id = $1`, [
-        match.job_id,
-      ]);
+      const jobs = await query<{ rules: unknown }>(
+        `SELECT rules FROM jobs WHERE id = $1`,
+        [match.job_id]
+      );
 
       if (jobs.length === 0 || !jobs[0]) {
         throw new NotFoundError("Job not found", "job", match.job_id);

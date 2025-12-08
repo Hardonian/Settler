@@ -3,8 +3,8 @@
  * PostgreSQL implementation of IJobRepository
  */
 
-import { query } from "../../db";
-import { IJobRepository } from "../../domain/repositories/IJobRepository";
+import { query } from '../../db';
+import { IJobRepository } from '../../domain/repositories/IJobRepository';
 
 export interface Job {
   id: string;
@@ -61,11 +61,7 @@ export class JobRepository implements IJobRepository {
     };
   }
 
-  async findByUserId(
-    userId: string,
-    page: number,
-    limit: number
-  ): Promise<{ jobs: Job[]; total: number }> {
+  async findByUserId(userId: string, page: number, limit: number): Promise<{ jobs: Job[]; total: number }> {
     const offset = (page - 1) * limit;
 
     const [jobs, countResult] = await Promise.all([
@@ -89,7 +85,10 @@ export class JobRepository implements IJobRepository {
          LIMIT $2 OFFSET $3`,
         [userId, limit, offset]
       ),
-      query<{ count: string }>(`SELECT COUNT(*) as count FROM jobs WHERE user_id = $1`, [userId]),
+      query<{ count: string }>(
+        `SELECT COUNT(*) as count FROM jobs WHERE user_id = $1`,
+        [userId]
+      ),
     ]);
 
     return {
@@ -106,11 +105,11 @@ export class JobRepository implements IJobRepository {
         createdAt: row.created_at,
         updatedAt: row.updated_at,
       })),
-      total: parseInt(countResult[0]?.count || "0", 10),
+      total: parseInt(countResult[0]?.count || '0', 10),
     };
   }
 
-  async create(job: Omit<Job, "id" | "createdAt" | "updatedAt">): Promise<Job> {
+  async create(job: Omit<Job, 'id' | 'createdAt' | 'updatedAt'>): Promise<Job> {
     const result = await query<{
       id: string;
       user_id: string;
@@ -134,13 +133,13 @@ export class JobRepository implements IJobRepository {
         JSON.stringify(job.target),
         JSON.stringify(job.rules),
         job.schedule || null,
-        job.status || "active",
+        job.status || 'active',
         1,
       ]
     );
 
     if (!result[0]) {
-      throw new Error("Failed to create job");
+      throw new Error('Failed to create job');
     }
     const row = result[0];
     return {
@@ -158,12 +157,7 @@ export class JobRepository implements IJobRepository {
     };
   }
 
-  async updateStatus(
-    id: string,
-    userId: string,
-    status: string,
-    expectedVersion: number
-  ): Promise<Job | null> {
+  async updateStatus(id: string, userId: string, status: string, expectedVersion: number): Promise<Job | null> {
     const result = await query<{
       id: string;
       user_id: string;

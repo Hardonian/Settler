@@ -20,7 +20,6 @@ When a PR is merged to `main`, the following workflows automatically execute:
 **Triggers:** Push to main
 
 **What it does:**
-
 - Validates environment variable schema
 - Type checks all code
 - Lints all code
@@ -37,13 +36,11 @@ When a PR is merged to `main`, the following workflows automatically execute:
 **Triggers:** PR closed (merged to main)
 
 **What it does:**
-
 - Detects new migration files in the PR
 - Automatically runs migrations if detected
 - Creates summary of applied migrations
 
 **Migration Detection:**
-
 - Checks for files in `packages/api/src/db/migrations/`
 - Looks for commit messages containing `[migrate]` or `[migration]`
 - Can be manually triggered
@@ -53,7 +50,6 @@ When a PR is merged to `main`, the following workflows automatically execute:
 **Triggers:** After validation passes, push to main
 
 **What it does:**
-
 - Runs migrations on staging database
 - Verifies staging health after migration
 - Acts as safety check before production
@@ -65,13 +61,11 @@ When a PR is merged to `main`, the following workflows automatically execute:
 **Triggers:** After staging migrations pass, push to main
 
 **What it does:**
-
 - **Requires manual approval** (GitHub environment protection)
 - Runs migrations on production database
 - Verifies production health after migration
 
 **Safety Features:**
-
 - Requires approval before running
 - Runs after staging migrations (catch issues first)
 - Health checks verify migrations didn't break anything
@@ -83,7 +77,6 @@ When a PR is merged to `main`, the following workflows automatically execute:
 **Triggers:** Push to main, Manual dispatch
 
 **What it does:**
-
 - Runs tests
 - Builds application
 - **Runs database migrations** (if not already run)
@@ -98,7 +91,6 @@ When a PR is merged to `main`, the following workflows automatically execute:
 **Triggers:** PR with migration files
 
 **What it does:**
-
 - Checks migration file syntax
 - Tests migrations on clean database
 - Verifies migration rollback capability
@@ -113,7 +105,6 @@ When a PR is merged to `main`, the following workflows automatically execute:
 Go to **Settings → Environments** and create:
 
 #### Staging Environment
-
 - **Name:** `staging`
 - **Required reviewers:** Optional
 - **Secrets:**
@@ -123,7 +114,6 @@ Go to **Settings → Environments** and create:
   - `STAGING_URL`
 
 #### Production Environment
-
 - **Name:** `production`
 - **Required reviewers:** **Required** (recommended: 1-2 reviewers)
 - **Deployment branches:** `main` only
@@ -145,13 +135,11 @@ Go to **Settings → Environments** and create:
 Add these secrets at **Settings → Secrets and variables → Actions**:
 
 **Required:**
-
 - `DATABASE_URL` - Production database connection string
 - `JWT_SECRET` - Production JWT secret (min 32 chars)
 - `ENCRYPTION_KEY` - Production encryption key (exactly 32 chars)
 
 **Optional:**
-
 - `SNYK_TOKEN` - For security scanning
 - `VERCEL_TOKEN` - For Vercel deployment
 - `VERCEL_ORG_ID` - For Vercel deployment
@@ -160,7 +148,6 @@ Add these secrets at **Settings → Secrets and variables → Actions**:
 ### 3. Environment Protection Rules
 
 **Production Environment:**
-
 - ✅ **Required reviewers:** 1-2 (recommended)
 - ✅ **Wait timer:** 0 minutes (or 5 minutes for extra safety)
 - ✅ **Deployment branches:** `main` only
@@ -211,7 +198,6 @@ Post-Deployment Verification
 ### Automatic Migration Detection
 
 Migrations run automatically if:
-
 1. **Migration files changed:** Files in `packages/api/src/db/migrations/` are added/modified
 2. **Commit message:** PR commit message contains `[migrate]` or `[migration]`
 3. **Manual trigger:** Workflow is manually triggered via `workflow_dispatch`
@@ -227,7 +213,6 @@ Migrations run automatically if:
 ### Migration Execution
 
 **Staging:**
-
 ```bash
 cd packages/api
 npm run migrate:prod
@@ -235,7 +220,6 @@ npm run migrate:prod
 ```
 
 **Production:**
-
 ```bash
 cd packages/api
 npm run migrate:prod
@@ -248,23 +232,20 @@ npm run migrate:prod
 ### GitHub Actions Summary
 
 Each workflow creates a summary in the Actions tab showing:
-
 - ✅ Completed actions
-- ⚠️ Warnings
+- ⚠️  Warnings
 - ❌ Errors
 - 📋 Next steps
 
 ### Workflow Status
 
 Monitor workflow status at:
-
 - **Actions tab** → Select workflow → View run details
 - **Checks tab** → On PR or commit
 
 ### Failure Handling
 
 If migrations fail:
-
 1. **Check logs** in GitHub Actions
 2. **Review migration files** for syntax errors
 3. **Verify database connection** (secrets correct?)
@@ -286,7 +267,6 @@ All workflows support manual triggering:
 ### Migrations Not Running
 
 **Check:**
-
 - Are migration files in the PR?
 - Are environment secrets set?
 - Is workflow enabled?
@@ -295,14 +275,12 @@ All workflows support manual triggering:
 ### Migration Failures
 
 **Common Issues:**
-
 - Database connection string incorrect
 - Migration file syntax error
 - Conflicting migrations
 - Missing dependencies
 
 **Solution:**
-
 - Check migration logs
 - Verify database connection
 - Test migration locally first
@@ -311,7 +289,6 @@ All workflows support manual triggering:
 ### Production Approval Not Appearing
 
 **Check:**
-
 - Is production environment configured?
 - Are required reviewers set?
 - Is branch protection enabled?
@@ -320,7 +297,6 @@ All workflows support manual triggering:
 ### Health Checks Failing
 
 **Check:**
-
 - Is application deployed?
 - Are environment variables set?
 - Is database accessible?
@@ -339,7 +315,6 @@ All workflows support manual triggering:
 ### Commit Messages
 
 Include migration indicators:
-
 ```
 feat(api): add token rotation [migrate]
 
@@ -381,7 +356,7 @@ When you merge a PR to main:
 1. ✅ **Validation** runs automatically
 2. ✅ **Migrations detected** automatically
 3. ✅ **Staging migrations** run automatically
-4. ⚠️ **Production migrations** require approval
+4. ⚠️  **Production migrations** require approval
 5. ✅ **Deployment** happens automatically
 6. ✅ **Verification** confirms everything works
 
@@ -390,7 +365,6 @@ When you merge a PR to main:
 ---
 
 For questions or issues, check:
-
 - Workflow logs in GitHub Actions
 - Migration files in `packages/api/src/db/migrations/`
 - Environment secrets in GitHub Settings

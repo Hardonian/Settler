@@ -1,14 +1,14 @@
 /**
  * Next.js Middleware
- *
+ * 
  * CTO Mode: Deployment Guardrails
  * - Handles Supabase auth cookie refresh
  * - Protects routes requiring authentication
  * - Must be at root of project (not in src/)
  */
 
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
       remove(name: string, options: CookieOptions) {
         request.cookies.set({
           name,
-          value: "",
+          value: '',
           ...options,
         });
         response = NextResponse.next({
@@ -60,7 +60,7 @@ export async function middleware(request: NextRequest) {
         });
         response.cookies.set({
           name,
-          value: "",
+          value: '',
           ...options,
         });
       },
@@ -89,6 +89,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
