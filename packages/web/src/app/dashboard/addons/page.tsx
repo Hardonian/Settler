@@ -225,7 +225,7 @@ export default function AddOnsMarketplacePage() {
             isPurchased={addOn.is_purchased}
             isStandard={addOn.is_standard}
             features={addOn.features}
-            onPurchase={() => {
+            onPurchase={async (_id) => {
               openPurchaseModal(addOn);
             }}
             onCancel={() => handleCancel(addOn.id)}
