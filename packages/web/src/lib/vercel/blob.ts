@@ -49,13 +49,19 @@ export const blob = {
     }
 
     try {
-      const result = await put(pathname, body, options || {});
+      // @vercel/blob put requires access to be "public" if provided
+      // Omit access if it's not "public" to satisfy the type
+      const { access, ...restOptions } = options || {};
+      const putOptions = access === "public" 
+        ? { ...restOptions, access: "public" as const }
+        : restOptions;
+      const result = await put(pathname, body, putOptions as Parameters<typeof put>[2]);
       return {
         url: result.url,
         downloadUrl: result.downloadUrl ?? result.url,
         pathname: result.pathname,
         contentType: result.contentType,
-        size: 'size' in result ? result.size : undefined,
+        size: 'size' in result ? (result.size as number) : undefined,
       };
     } catch (error) {
       console.error(`[Blob] Error uploading file "${pathname}":`, error);

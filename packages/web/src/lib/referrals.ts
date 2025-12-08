@@ -60,7 +60,7 @@ export async function generateReferralCode(userId: string): Promise<string> {
     referrer_user_id: userId,
     referral_code: code,
     status: "pending",
-  } as Referral);
+  } as Referral as never);
 
   return code;
 }
@@ -100,7 +100,7 @@ export async function applyReferralCode(
       referred_user_id: newUserId,
       status: "completed",
       completed_at: new Date().toISOString(),
-    } as Partial<Referral>)
+    } as Partial<Referral> as never)
     .eq("id", referralData.id);
 
   if (updateError) {
@@ -145,7 +145,7 @@ export async function awardReferralReward(
       reward_amount: rewardAmount,
       reward_currency: rewardCurrency,
       updated_at: new Date().toISOString(),
-    } as Partial<Referral>)
+    } as Partial<Referral> as never)
     .eq("id", referralData.id);
 
   // TODO: Send reward to referrer (credit account, send gift card, etc.)

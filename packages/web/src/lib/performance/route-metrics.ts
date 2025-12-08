@@ -19,6 +19,7 @@ interface RouteMetrics {
 
 class RouteMetricsCollector {
   private metrics: Map<string, RouteMetrics> = new Map();
+  private currentRoute?: string;
 
   /**
    * Start tracking a route transition

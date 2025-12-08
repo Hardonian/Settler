@@ -45,6 +45,10 @@ class CustomProvider implements AnalyticsProvider {
     }
   }
 
+  destroy() {
+    this.clearFlushTimer();
+  }
+
   private async sendEvent(type: string, data: Record<string, unknown>) {
     try {
       const response = await fetch(this.config.endpoint, {

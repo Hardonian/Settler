@@ -161,9 +161,6 @@ if (typeof window !== 'undefined') {
         // Only count if the entry doesn't have recent user input
         const entryWithInput = entry as PerformanceEntry & { hadRecentInput?: boolean };
         if (!entryWithInput.hadRecentInput) {
-          const firstSessionEntry = clsEntries[0];
-          const lastSessionEntry = clsEntries[clsEntries.length - 1];
-
           // If the entry is the first one, or if it's been more than 1 second since the last entry
           const lastEntry = clsEntries[clsEntries.length - 1];
           if (
