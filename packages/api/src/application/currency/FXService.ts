@@ -180,6 +180,16 @@ export class FXService {
   }
 
   /**
+   * Sync FX rates for a tenant
+   */
+  async syncFXRates(tenantId: string, baseCurrency: string): Promise<number> {
+    // This would typically fetch rates from an external provider
+    // For now, return 0 as a placeholder
+    // TODO: Implement actual FX rate syncing from provider
+    return 0;
+  }
+
+  /**
    * Generate ID
    */
   private generateId(): string {

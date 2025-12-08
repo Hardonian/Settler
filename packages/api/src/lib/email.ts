@@ -44,23 +44,32 @@ export async function sendEmail(template: EmailTemplate): Promise<{ id: string }
   }
 
   try {
-    const result = await resendClient.emails.send({
+    const emailOptions: any = {
       from: template.from || `${resendFromName} <${resendFromEmail}>`,
       to: Array.isArray(template.to) ? template.to : [template.to],
       subject: template.subject,
       html: template.html,
-      text: template.text,
-      reply_to: template.replyTo,
-      tags: template.tags,
-    });
+    };
+    
+    if (template.text) {
+      emailOptions.text = template.text;
+    }
+    if (template.replyTo) {
+      emailOptions.reply_to = template.replyTo;
+    }
+    if (template.tags) {
+      emailOptions.tags = template.tags;
+    }
+
+    const result = await resendClient.emails.send(emailOptions);
 
     logInfo('Email sent successfully', {
-      emailId: result.id,
+      emailId: (result as any).id || 'unknown',
       to: template.to,
       subject: template.subject,
     });
 
-    return { id: result.id || 'unknown' };
+    return { id: (result as any).id || 'unknown' };
   } catch (error: any) {
     logError('Failed to send email', error, {
       to: template.to,

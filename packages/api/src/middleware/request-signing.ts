@@ -84,12 +84,15 @@ export function verifyRequestSignature(
       Buffer.from(signatureValue)
     );
 
-    return {
+    const result: any = {
       valid: isValid,
       algorithm,
       timestamp: timestampNum,
-      reason: isValid ? undefined : 'Signature mismatch',
     };
+    if (!isValid) {
+      result.reason = 'Signature mismatch';
+    }
+    return result;
   } catch (error) {
     return {
       valid: false,
