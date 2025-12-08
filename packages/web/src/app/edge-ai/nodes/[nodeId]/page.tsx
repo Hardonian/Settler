@@ -35,16 +35,16 @@ export default function NodeDetailPage() {
 
   useEffect(() => {
     if (nodeId) {
-      fetchNodeDetail();
+      fetchNodeDetail(nodeId);
     }
   }, [nodeId]);
 
-  const fetchNodeDetail = async () => {
+  const fetchNodeDetail = async (id: string) => {
     try {
       setIsLoading(true);
-      // In production, fetch from API: `/api/edge-ai/nodes/${nodeId}`
+      // In production, fetch from API: `/api/edge-ai/nodes/${id}`
       const mockNode: NodeDetail = {
-        id: nodeId,
+        id: id,
         name: "US-East Edge Node",
         status: "active",
         region: "us-east-1",
@@ -56,7 +56,7 @@ export default function NodeDetailPage() {
         config: {
           model: "settler-reconciliation-v2",
           version: "2.1.0",
-          endpoint: `https://edge-${nodeId}.settler.dev`,
+          endpoint: `https://edge-${id}.settler.dev`,
         },
       };
       setNode(mockNode);
