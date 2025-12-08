@@ -54,16 +54,16 @@ export default function JobDetailPage() {
 
   useEffect(() => {
     if (jobId) {
-      fetchJobDetail();
+      fetchJobDetail(jobId);
     }
   }, [jobId]);
 
-  const fetchJobDetail = async () => {
+  const fetchJobDetail = async (id: string) => {
     try {
       setIsLoading(true);
-      // In production, fetch from API: `/api/jobs/${jobId}`
+      // In production, fetch from API: `/api/jobs/${id}`
       const mockJob: JobDetail = {
-        id: jobId,
+        id: id,
         name: "Shopify-Stripe Monthly Reconciliation",
         status: "completed",
         source: {
