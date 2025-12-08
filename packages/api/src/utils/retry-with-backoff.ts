@@ -81,7 +81,7 @@ export async function retryNetworkOperation<T>(fn: () => Promise<T>): Promise<T>
   return retryWithBackoff(fn, {
     maxAttempts: 3,
     initialDelayMs: 1000,
-    retryableErrors: [Error], // Retry on any error for network operations
+    retryableErrors: [Error] as Array<new (...args: unknown[]) => Error>, // Retry on any error for network operations
   });
 }
 
@@ -92,6 +92,6 @@ export async function retryDatabaseOperation<T>(fn: () => Promise<T>): Promise<T
   return retryWithBackoff(fn, {
     maxAttempts: 3,
     initialDelayMs: 500,
-    retryableErrors: [Error],
+    retryableErrors: [Error] as Array<new (...args: unknown[]) => Error>,
   });
 }

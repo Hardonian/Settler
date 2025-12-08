@@ -7,6 +7,10 @@
 
 import { Router, Response } from 'express';
 import { ReconCoreEngine } from '../../../services/recon-core';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import type { PrismaClient } from '@prisma/client';
 import { handleRouteError } from '../../../utils/error-handler';
 import { authMiddleware } from '../../../middleware/auth';
@@ -123,9 +127,9 @@ router.get(
         });
       }
 
-      res.json({ data: job });
+      return res.json({ data: job });
     } catch (error) {
-      handleRouteError(res, error, 'Failed to get reconciliation job', 400);
+      return handleRouteError(res, error, 'Failed to get reconciliation job', 400);
     }
   }
 );
@@ -157,12 +161,12 @@ router.post(
         customRules: req.body.customRules,
       });
 
-      res.status(201).json({
+      return res.status(201).json({
         data: result,
         message: 'Reconciliation job executed successfully',
       });
     } catch (error) {
-      handleRouteError(res, error, 'Failed to execute reconciliation job', 400);
+      return handleRouteError(res, error, 'Failed to execute reconciliation job', 400);
     }
   }
 );

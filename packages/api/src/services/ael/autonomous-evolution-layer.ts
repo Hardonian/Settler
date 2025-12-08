@@ -5,6 +5,8 @@
  * Part 7: Autonomous AIOS Evolution
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import type { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 import { PatternExtractor } from '../intelligence/pattern-extractor';
@@ -141,10 +143,10 @@ export class AutonomousEvolutionLayer {
     });
 
     // Find slow jobs
-    const slowJobs = jobs.filter((job) => {
+    const slowJobs = jobs.filter((job: { results: Array<{ completedAt: Date | null; startedAt: Date | null }> }) => {
       if (job.results.length === 0) return false;
       const avgDuration = job.results
-        .map((r) => r.completedAt && r.startedAt 
+        .map((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt 
           ? r.completedAt.getTime() - r.startedAt.getTime() 
           : 0)
         .reduce((a: number, b: number) => a + b, 0) / job.results.length;
@@ -343,7 +345,7 @@ export class AutonomousEvolutionLayer {
       take: 10000,
     });
 
-    const totalCost = usageEvents.reduce((sum: number, event) => {
+    const totalCost = usageEvents.reduce((sum: number, event: { quantity: unknown }) => {
       return sum + (Number(event.quantity) * 0.002 / 1000); // $0.002 per 1K tokens
     }, 0);
 

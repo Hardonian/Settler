@@ -97,11 +97,11 @@ function renderTemplate(template: string, data: EmailTemplateData): string {
   let rendered = template;
 
   // Flatten nested data structure for easier replacement
-  const flatten = (obj: EmailTemplateData, prefix = ""): Record<string, unknown> => {
+  const flatten = (obj: EmailTemplateData | Record<string, unknown>, prefix = ""): Record<string, unknown> => {
     const result: Record<string, unknown> = {};
     for (const key in obj) {
       if (obj[key] && typeof obj[key] === "object" && !Array.isArray(obj[key])) {
-        Object.assign(result, flatten(obj[key], `${prefix}${key}.`));
+        Object.assign(result, flatten(obj[key] as Record<string, unknown>, `${prefix}${key}.`));
       } else {
         result[`${prefix}${key}`] = obj[key];
       }

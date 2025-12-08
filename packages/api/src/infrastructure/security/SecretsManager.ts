@@ -110,7 +110,8 @@ export class SecretsManager {
     const masked = { ...obj } as T;
     for (const field of fields) {
       if (field in masked && masked[field] !== undefined && masked[field] !== null) {
-        masked[field] = this.redactSecret(String(masked[field]), field) as T[Extract<keyof T, string>];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (masked as any)[field] = this.redactSecret(String(masked[field]), field);
       }
     }
     return masked;

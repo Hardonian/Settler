@@ -21,8 +21,8 @@ export const observabilityRouter = Router();
 observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
   try {
     const authReq = req as AuthRequest;
-    const userId = authReq.userId;
-    const tenantId = authReq.tenantId;
+    const userId = authReq.userId || '';
+    const tenantId = authReq.tenantId || '';
 
     // Get job metrics
     const jobStats = await query<{
@@ -38,7 +38,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
         COUNT(*) FILTER (WHERE status = 'failed') as failed
       FROM jobs
       WHERE user_id = $1 AND tenant_id = $2`,
-      [userId, tenantId]
+      [userId || null, tenantId || null]
     );
 
     // Get reconciliation metrics
@@ -56,7 +56,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       FROM reconciliation_reports
       WHERE user_id = $1 AND tenant_id = $2
       AND created_at >= NOW() - INTERVAL '30 days'`,
-      [userId, tenantId]
+      [userId || null, tenantId || null]
     );
 
     // Get API usage metrics
@@ -74,7 +74,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       FROM api_logs
       WHERE user_id = $1 AND tenant_id = $2
       AND created_at >= NOW() - INTERVAL '24 hours'`,
-      [userId, tenantId]
+      [userId || null, tenantId || null]
     );
 
     // Get webhook metrics
@@ -90,7 +90,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       FROM webhook_deliveries
       WHERE user_id = $1 AND tenant_id = $2
       AND created_at >= NOW() - INTERVAL '24 hours'`,
-      [userId, tenantId]
+      [userId || null, tenantId || null]
     );
 
     res.json({
@@ -137,8 +137,8 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
 observabilityRouter.get("/logs", async (req: Request, res: Response) => {
   try {
     const authReq = req as AuthRequest;
-    const userId = authReq.userId;
-    const tenantId = authReq.tenantId;
+    const userId = authReq.userId || '';
+    const tenantId = authReq.tenantId || '';
     const { level, jobId, startDate, endDate, limit = "100", offset = "0" } = req.query;
 
     let queryStr = `
@@ -152,7 +152,7 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
       FROM logs
       WHERE user_id = $1 AND tenant_id = $2
     `;
-    const params: unknown[] = [userId, tenantId];
+    const params: (string | number | boolean | Date | null)[] = [userId || null, tenantId || null];
     let paramIndex = 3;
 
     if (level) {
@@ -180,7 +180,7 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
     }
 
     queryStr += ` ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-    params.push(parseInt(limit as string), parseInt(offset as string));
+    params.push(parseInt(limit as string, 10), parseInt(offset as string, 10));
 
     const logs = await query(queryStr, params);
 

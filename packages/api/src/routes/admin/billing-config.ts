@@ -67,7 +67,8 @@ router.post(
         });
       }
 
-      const addOnId = await createAddOnFromConfig(config, supabase);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const addOnId = await createAddOnFromConfig(config, supabase as any);
 
       if (!addOnId) {
         return res.status(500).json({

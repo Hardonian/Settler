@@ -5,6 +5,8 @@
  * Part 7: Autonomous AIOS Evolution
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import type { PrismaClient } from '@prisma/client';
 import { PatternExtractor } from '../intelligence/pattern-extractor';
 

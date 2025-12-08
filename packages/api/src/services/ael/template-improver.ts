@@ -5,6 +5,8 @@
  * Part 7: Autonomous AIOS Evolution
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 import { PatternExtractor } from '../intelligence/pattern-extractor';
@@ -70,7 +72,7 @@ export class TemplateImprover {
       // If template has high failure rate, propose improvement
       const failures = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map(j => j.id) },
+          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
           status: 'failed',
         },
         take: 10,
@@ -117,14 +119,14 @@ export class TemplateImprover {
       // Check execution times
       const results = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map(j => j.id) },
+          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
         },
         take: 50,
       });
 
       const avgDuration = results
-        .filter((r) => r.completedAt && r.startedAt)
-        .map((r) => r.completedAt!.getTime() - r.startedAt!.getTime())
+        .filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt)
+        .map((r: { completedAt: Date; startedAt: Date }) => r.completedAt.getTime() - r.startedAt.getTime())
         .reduce((a: number, b: number, _: number, arr: typeof results) => a + b / arr.length, 0);
 
       if (avgDuration > 10000) { // > 10 seconds
@@ -168,7 +170,7 @@ export class TemplateImprover {
       // If rule never fails, it might be too lenient
       const results = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map(j => j.id) },
+          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
           status: 'failed',
         },
         take: 1,
