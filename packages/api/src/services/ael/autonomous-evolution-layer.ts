@@ -5,8 +5,8 @@
  * Part 7: Autonomous AIOS Evolution
  */
 
-import { PrismaClient } from '@prisma/client';
-import { logInfo, logError } from '../../utils/logger';
+import type { PrismaClient } from '@prisma/client';
+import { logInfo } from '../../utils/logger';
 import { PatternExtractor } from '../intelligence/pattern-extractor';
 import { ProductEvolutionAI } from '../intelligence/product-evolution';
 
@@ -32,13 +32,11 @@ export interface EvolutionLog {
 export class AutonomousEvolutionLayer {
   private prisma: PrismaClient;
   private patternExtractor: PatternExtractor;
-  private productEvolutionAI: ProductEvolutionAI;
   private evolutionLog: EvolutionLog[] = [];
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
     this.patternExtractor = new PatternExtractor(prisma);
-    this.productEvolutionAI = new ProductEvolutionAI(prisma);
   }
 
   /**

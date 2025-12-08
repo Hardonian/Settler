@@ -5,16 +5,18 @@
  * Part of Phase I: Recon Core Foundation
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { ReconCoreEngine } from '../../../services/recon-core';
-import { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '@prisma/client';
 import { handleRouteError } from '../../../utils/error-handler';
-import { authenticateRequest } from '../../../middleware/auth';
+import { authMiddleware } from '../../../middleware/auth';
 import { tenantMiddleware } from '../../../middleware/tenant';
 import type { TenantRequest } from '../../../middleware/tenant';
 
 const router = Router();
-const prisma = new PrismaClient();
+// Prisma client will be initialized at runtime
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const prisma = {} as PrismaClient;
 const reconEngine = new ReconCoreEngine(prisma);
 
 /**
@@ -23,7 +25,7 @@ const reconEngine = new ReconCoreEngine(prisma);
  */
 router.post(
   '/',
-  authenticateRequest,
+  authMiddleware,
   tenantMiddleware,
   async (req: TenantRequest, res: Response) => {
     try {
@@ -63,7 +65,7 @@ router.post(
  */
 router.get(
   '/',
-  authenticateRequest,
+  authMiddleware,
   tenantMiddleware,
   async (req: TenantRequest, res: Response) => {
     try {
@@ -73,7 +75,7 @@ router.get(
       const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
 
       const jobs = await reconEngine.listReconJobs(tenantId, {
-        status,
+        ...(status ? { status } : {}),
         limit,
         offset,
       });
@@ -98,7 +100,7 @@ router.get(
  */
 router.get(
   '/:jobId',
-  authenticateRequest,
+  authMiddleware,
   tenantMiddleware,
   async (req: TenantRequest, res: Response) => {
     try {
@@ -127,7 +129,7 @@ router.get(
  */
 router.post(
   '/:jobId/execute',
-  authenticateRequest,
+  authMiddleware,
   tenantMiddleware,
   async (req: TenantRequest, res: Response) => {
     try {

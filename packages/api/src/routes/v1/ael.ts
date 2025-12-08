@@ -4,9 +4,9 @@
  * Part 7: Autonomous AIOS Evolution
  */
 
-import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { authenticateRequest } from '../../middleware/auth';
+import { Router, Response } from 'express';
+import type { PrismaClient } from '@prisma/client';
+import { authMiddleware } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 import { AutonomousEvolutionLayer } from '../../services/ael/autonomous-evolution-layer';
 
@@ -20,9 +20,9 @@ const ael = new AutonomousEvolutionLayer(prisma);
  */
 router.get(
   '/evolve',
-  authenticateRequest,
+  authMiddleware,
   tenantMiddleware,
-  async (req: TenantRequest, res: Response) => {
+  async (_req: TenantRequest, res: Response) => {
     try {
       const proposals = await ael.evolve();
       res.json({
@@ -44,9 +44,9 @@ router.get(
  */
 router.get(
   '/log',
-  authenticateRequest,
+  authMiddleware,
   tenantMiddleware,
-  async (req: TenantRequest, res: Response) => {
+  async (_req: TenantRequest, res: Response) => {
     try {
       const log = ael.getEvolutionLog();
       res.json({

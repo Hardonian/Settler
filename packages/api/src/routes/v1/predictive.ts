@@ -4,9 +4,9 @@
  * Part 9: Predictive Ops, Meta-Models & Next-Gen Pipelines
  */
 
-import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { authenticateRequest } from '../../middleware/auth';
+import { Router, Response } from 'express';
+import type { PrismaClient } from '@prisma/client';
+import { authMiddleware } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 import { PredictiveOps } from '../../services/predictive/predictive-ops';
 import { MetaModels } from '../../services/predictive/meta-models';
@@ -22,9 +22,9 @@ const metaModels = new MetaModels();
  */
 router.get(
   '/failures',
-  authenticateRequest,
+  authMiddleware,
   tenantMiddleware,
-  async (req: TenantRequest, res: Response) => {
+  async (_req: TenantRequest, res: Response) => {
     try {
       const predictions = await predictiveOps.predictFailures();
       res.json({

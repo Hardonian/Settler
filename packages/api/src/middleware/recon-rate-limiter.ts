@@ -5,8 +5,8 @@
  * Part of Phase II: API & Billing Expansion
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Response, NextFunction } from 'express';
+import type { PrismaClient } from '@prisma/client';
 import type { TenantRequest } from './tenant';
 
 interface RateLimitConfig {
@@ -137,7 +137,7 @@ export class ReconRateLimiter {
 
       try {
         const tier = await this.getTenantTier(tenantId);
-        const limits = TIER_LIMITS[tier] || TIER_LIMITS.free;
+        const limits: RateLimitConfig = TIER_LIMITS[tier] || TIER_LIMITS.free;
 
         // Check RPM limit (token bucket)
         const rpmKey = `rpm:${tenantId}`;
@@ -173,11 +173,11 @@ export class ReconRateLimiter {
           }
         }
 
-        next();
+        return next();
       } catch (error) {
         console.error('Rate limiter error:', error);
         // On error, allow the request (fail open)
-        next();
+        return next();
       }
     };
   }

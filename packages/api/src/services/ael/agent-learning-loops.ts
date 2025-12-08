@@ -5,8 +5,7 @@
  * Part 7: Autonomous AIOS Evolution
  */
 
-import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+import type { PrismaClient } from '@prisma/client';
 import { PatternExtractor } from '../intelligence/pattern-extractor';
 
 export interface LearningInsight {
@@ -20,11 +19,9 @@ export interface LearningInsight {
 
 export class AgentLearningLoops {
   private prisma: PrismaClient;
-  private patternExtractor: PatternExtractor;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
-    this.patternExtractor = new PatternExtractor(prisma);
   }
 
   /**
@@ -267,7 +264,7 @@ export class AgentLearningLoops {
     });
 
     // Find slow workflows
-    const slowWorkflows = workflows.filter(w => {
+    const slowWorkflows = workflows.filter((w: { completedAt: Date | null; startedAt: Date | null }) => {
       const duration = w.completedAt && w.startedAt
         ? w.completedAt.getTime() - w.startedAt.getTime()
         : 0;

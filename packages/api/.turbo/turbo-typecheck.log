@@ -2,3 +2,276 @@
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
+src/middleware/recon-rate-limiter.ts(9,15): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/middleware/recon-rate-limiter.ts(140,15): error TS2322: Type 'RateLimitConfig | undefined' is not assignable to type 'RateLimitConfig'.
+  Type 'undefined' is not assignable to type 'RateLimitConfig'.
+src/routes/v1/ael.ts(8,15): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/routes/v1/ael.ts(14,20): error TS1361: 'PrismaClient' cannot be used as a value because it was imported using 'import type'.
+src/routes/v1/predictive.ts(8,15): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/routes/v1/predictive.ts(15,20): error TS1361: 'PrismaClient' cannot be used as a value because it was imported using 'import type'.
+src/routes/v1/predictive.ts(49,3): error TS2304: Cannot find name 'authenticateRequest'.
+src/routes/v1/pricing/simulator.ts(8,15): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/routes/v1/pricing/simulator.ts(27,3): error TS7030: Not all code paths return a value.
+src/routes/v1/recon/jobs.ts(10,15): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/routes/v1/recon/jobs.ts(105,3): error TS7030: Not all code paths return a value.
+src/routes/v1/recon/jobs.ts(110,49): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/routes/v1/recon/jobs.ts(139,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/routes/v1/recon/results.ts(10,15): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/routes/v1/recon/results.ts(30,3): error TS7030: Not all code paths return a value.
+src/routes/v1/recon/results.ts(72,3): error TS7030: Not all code paths return a value.
+src/routes/v1/recon/results.ts(77,55): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/ael/agent-learning-loops.ts(8,15): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/ael/agent-learning-loops.ts(9,1): error TS6133: 'PatternExtractor' is declared but its value is never read.
+src/services/ael/autonomous-evolution-layer.ts(8,15): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/ael/autonomous-evolution-layer.ts(11,1): error TS6133: 'ProductEvolutionAI' is declared but its value is never read.
+src/services/ael/autonomous-evolution-layer.ts(144,34): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/services/ael/autonomous-evolution-layer.ts(146,14): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/ael/autonomous-evolution-layer.ts(149,18): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/services/ael/autonomous-evolution-layer.ts(149,21): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/services/ael/autonomous-evolution-layer.ts(345,43): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/services/ael/autonomous-evolution-layer.ts(345,48): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/services/ael/autonomous-evolution-layer.ts(398,7): error TS2412: Type 'string | undefined' is not assignable to type 'string' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/ael/template-improver.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/ael/template-improver.ts(24,11): error TS6133: 'patternExtractor' is declared but its value is never read.
+src/services/ael/template-improver.ts(73,38): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/services/ael/template-improver.ts(120,38): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/services/ael/template-improver.ts(126,17): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/ael/template-improver.ts(127,14): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/ael/template-improver.ts(128,18): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/services/ael/template-improver.ts(128,21): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/services/ael/template-improver.ts(128,24): error TS7006: Parameter '_' implicitly has an 'any' type.
+src/services/ael/template-improver.ts(128,27): error TS7006: Parameter 'arr' implicitly has an 'any' type.
+src/services/ael/template-improver.ts(171,38): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/services/ael/template-improver.ts(202,28): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/ael/template-improver.ts(203,28): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/ael/template-improver.ts(204,28): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/ai-config/ai-config-manager.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/ai-config/ai-config-manager.ts(23,11): error TS6133: 'prisma' is declared but its value is never read.
+src/services/ai-config/ai-config-manager.ts(32,19): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/ai-mesh/ai-router.ts(8,19): error TS6133: 'logError' is declared but its value is never read.
+src/services/ai-mesh/ai-router.ts(112,22): error TS2532: Object is possibly 'undefined'.
+src/services/ai-mesh/multi-agent-fallback.ts(87,29): error TS6133: 'task' is declared but its value is never read.
+src/services/ai-mesh/multi-agent-fallback.ts(91,11): error TS6133: 'config' is declared but its value is never read.
+src/services/contracts/contract-manager.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/contracts/contract-manager.ts(9,19): error TS6133: 'logError' is declared but its value is never read.
+src/services/datapane/multi-model-router.ts(8,10): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/datapane/multi-model-router.ts(8,19): error TS2724: '"../../utils/logger"' has no exported member named 'logWarning'. Did you mean 'logWarn'?
+src/services/datapane/multi-model-router.ts(41,5): error TS6133: 'complexity' is declared but its value is never read.
+src/services/datapane/multi-model-router.ts(105,42): error TS2339: Property 'route' does not exist on type 'AIRouter'.
+src/services/datapane/multi-model-router.ts(108,11): error TS2322: Type 'AIModel | undefined' is not assignable to type 'AIModel'.
+  Type 'undefined' is not assignable to type 'AIModel'.
+src/services/datapane/multi-model-router.ts(130,46): error TS2551: Property 'costPer1KTokens' does not exist on type 'ModelConfig'. Did you mean 'costPer1kTokens'?
+src/services/datapane/multi-model-router.ts(136,43): error TS6133: 'request' is declared but its value is never read.
+src/services/datapane/streaming-recon.ts(225,37): error TS6133: 'data' is declared but its value is never read.
+src/services/datapane/streaming-recon.ts(225,48): error TS6133: 'rule' is declared but its value is never read.
+src/services/datapane/wasm-transforms.ts(57,18): error TS6133: 'data' is declared but its value is never read.
+src/services/datapane/wasm-transforms.ts(57,29): error TS6133: 'schema' is declared but its value is never read.
+src/services/drift/drift-detector.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/drift/drift-detector.ts(186,35): error TS6133: 'sourceData' is declared but its value is never read.
+src/services/drift/drift-detector.ts(186,54): error TS6133: 'targetData' is declared but its value is never read.
+src/services/economic/ecosystem-analytics.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/economic/ecosystem-analytics.ts(9,1): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/economic/ecosystem-analytics.ts(116,11): error TS6133: 'jobs' is declared but its value is never read.
+src/services/economic/marketplace-intelligence.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/economic/marketplace-intelligence.ts(9,1): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/economic/marketplace-intelligence.ts(136,38): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/services/economic/marketplace-intelligence.ts(145,38): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/services/economic/marketplace-intelligence.ts(150,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/economic/value-based-pricing.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/economic/value-based-pricing.ts(9,1): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/economic/value-based-pricing.ts(113,5): error TS2375: Type '{ personalizedPrice: number; usageTier: string; enterpriseDealSimulation: { basePrice: number; volumeDiscount: number; customTerms: string[]; } | undefined; }' is not assignable to type 'PricingRecommendation' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'enterpriseDealSimulation' are incompatible.
+    Type '{ basePrice: number; volumeDiscount: number; customTerms: string[]; } | undefined' is not assignable to type '{ basePrice: number; volumeDiscount: number; customTerms: string[]; }'.
+      Type 'undefined' is not assignable to type '{ basePrice: number; volumeDiscount: number; customTerms: string[]; }'.
+src/services/economic/value-based-pricing.ts(136,36): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/services/economic/value-based-pricing.ts(149,45): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/services/economic/value-based-pricing.ts(149,50): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/services/economic/value-based-pricing.ts(196,36): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/services/economic/value-based-pricing.ts(202,37): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/economic/value-based-pricing.ts(203,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/economic/value-based-pricing.ts(229,32): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/services/economic/value-based-pricing.ts(229,37): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/services/economic/value-based-pricing.ts(237,37): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/economic/value-based-pricing.ts(253,43): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/economic/value-based-pricing.ts(302,47): error TS6133: 'usage' is declared but its value is never read.
+src/services/economic/value-based-pricing.ts(312,40): error TS6133: 'analysis' is declared but its value is never read.
+src/services/events/event-bus.ts(101,11): error TS2375: Type '{ id: string; type: EventType; tenantId: string; timestamp: Date; data: Record<string, any>; metadata: Record<string, any> | undefined; }' is not assignable to type 'PlatformEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'metadata' are incompatible.
+    Type 'Record<string, any> | undefined' is not assignable to type 'Record<string, any>'.
+      Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/services/futureproof/api-evolution.ts(71,21): error TS6133: 'data' is declared but its value is never read.
+src/services/futureproof/api-evolution.ts(91,17): error TS6133: 'code' is declared but its value is never read.
+src/services/futureproof/behavioral-adaptation.ts(156,11): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/futureproof/hardware-flexibility.ts(102,23): error TS6133: 'code' is declared but its value is never read.
+src/services/futureproof/hardware-flexibility.ts(114,31): error TS6133: 'model' is declared but its value is never read.
+src/services/futureproof/model-agnosticism.ts(112,5): error TS6133: 'data' is declared but its value is never read.
+src/services/futureproof/model-agnosticism.ts(138,5): error TS6133: 'text' is declared but its value is never read.
+src/services/futureproof/model-agnosticism.ts(139,5): error TS6133: 'provider' is declared but its value is never read.
+src/services/intelligence/health-optimizer.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/intelligence/pattern-extractor.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/intelligence/pattern-extractor.ts(9,1): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/intelligence/pattern-extractor.ts(100,35): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/intelligence/pattern-extractor.ts(158,25): error TS7006: Parameter 'mapping' implicitly has an 'any' type.
+src/services/intelligence/pattern-extractor.ts(182,27): error TS7006: Parameter 'transform' implicitly has an 'any' type.
+src/services/intelligence/pattern-extractor.ts(255,5): error TS2322: Type '{ type: "workflow" | "template" | "validation_rule" | "transform_recipe" | "mapping_template"; recommendation: string; priority: string; action: { createTemplate: boolean; createWorkflow: boolean; createValidationRule: boolean; }; }[]' is not assignable to type '{ type: string; recommendation: string; priority: "high" | "medium" | "low"; action: any; }[]'.
+  Type '{ type: "workflow" | "template" | "validation_rule" | "transform_recipe" | "mapping_template"; recommendation: string; priority: string; action: { createTemplate: boolean; createWorkflow: boolean; createValidationRule: boolean; }; }' is not assignable to type '{ type: string; recommendation: string; priority: "high" | "medium" | "low"; action: any; }'.
+    Types of property 'priority' are incompatible.
+      Type 'string' is not assignable to type '"high" | "medium" | "low"'.
+src/services/intelligence/predictive-router.ts(43,11): error TS6133: 'history' is declared but its value is never read.
+src/services/intelligence/predictive-router.ts(58,45): error TS2379: Argument of type '{ jobType: string; complexity: "high" | "medium" | "low"; accuracyRequired: number; budget: number | undefined; }' is not assignable to parameter of type 'AIRequest' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'budget' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/services/intelligence/product-evolution.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/intelligence/product-evolution.ts(21,11): error TS6133: 'prisma' is declared but its value is never read.
+src/services/intelligence/product-evolution.ts(76,38): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/intelligence/usage-optimizer.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/intelligence/usage-optimizer.ts(50,40): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/services/intelligence/usage-optimizer.ts(51,41): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/services/intelligence/usage-optimizer.ts(51,46): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/services/intelligence/usage-optimizer.ts(52,37): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/services/intelligence/usage-optimizer.ts(52,42): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/services/intelligence/usage-optimizer.ts(55,15): error TS6133: 'config' is declared but its value is never read.
+src/services/intelligence/usage-optimizer.ts(72,43): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/services/predictive/adaptive-pipelines.ts(8,1): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/predictive/adaptive-pipelines.ts(9,28): error TS6133: 'RoutingDecision' is declared but its value is never read.
+src/services/predictive/adaptive-pipelines.ts(21,11): error TS6133: 'router' is declared but its value is never read.
+src/services/predictive/meta-models.ts(8,1): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/predictive/meta-models.ts(102,37): error TS2551: Property 'costPer1KTokens' does not exist on type 'ModelConfig'. Did you mean 'costPer1kTokens'?
+src/services/predictive/meta-models.ts(109,5): error TS6133: 'job' is declared but its value is never read.
+src/services/predictive/meta-models.ts(156,5): error TS6133: 'accuracyRequired' is declared but its value is never read.
+src/services/predictive/meta-models.ts(176,12): error TS2532: Object is possibly 'undefined'.
+src/services/predictive/meta-models.ts(206,29): error TS2339: Property 'reliability' does not exist on type 'ModelConfig'.
+src/services/predictive/predictive-ops.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/predictive/predictive-ops.ts(9,10): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/predictive/predictive-ops.ts(9,19): error TS2724: '"../../utils/logger"' has no exported member named 'logWarning'. Did you mean 'logWarn'?
+src/services/predictive/predictive-ops.ts(22,11): error TS6133: 'predictions' is declared but its value is never read.
+src/services/predictive/predictive-ops.ts(150,40): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/services/predictive/predictive-ops.ts(196,38): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/services/predictive/predictive-ops.ts(202,17): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/predictive/predictive-ops.ts(203,14): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/predictive/predictive-ops.ts(204,18): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/services/predictive/predictive-ops.ts(204,21): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/services/predictive/predictive-ops.ts(204,24): error TS7006: Parameter '_' implicitly has an 'any' type.
+src/services/predictive/predictive-ops.ts(204,27): error TS7006: Parameter 'arr' implicitly has an 'any' type.
+src/services/pricing/pricing-optimizer.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/pricing/pricing-optimizer.ts(9,1): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/pricing/pricing-optimizer.ts(20,11): error TS6133: 'prisma' is declared but its value is never read.
+src/services/pricing/pricing-optimizer.ts(86,35): error TS6133: 'segments' is declared but its value is never read.
+src/services/pricing/pricing-optimizer.ts(104,32): error TS6133: 'segments' is declared but its value is never read.
+src/services/pricing/pricing-optimizer.ts(122,43): error TS6133: 'customerId' is declared but its value is never read.
+src/services/pricing/usage-simulator.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/pricing/usage-simulator.ts(9,1): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/pricing/usage-simulator.ts(122,5): error TS6133: 'period' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(13,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/recon-core/recon-core-engine.ts(14,20): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(25,3): error TS6196: 'ReconUnmatched' is declared but never used.
+src/services/recon-core/recon-core-engine.ts(95,5): error TS6133: 'options' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(136,13): error TS6133: 'validationResults' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(279,28): error TS6133: 'reconJob' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(323,5): error TS6133: 'sourceData' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(324,5): error TS6133: 'targetData' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(325,5): error TS6133: 'validationRules' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(326,5): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(364,5): error TS6133: 'sourceData' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(365,5): error TS6133: 'targetData' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(366,5): error TS6133: 'strategy' is declared but its value is never read.
+src/services/recon-core/recon-core-engine.ts(367,5): error TS6133: 'reconJob' is declared but its value is never read.
+src/services/recon-core/types.ts(7,15): error TS2305: Module '"@prisma/client"' has no exported member 'ReconJob'.
+src/services/recon-core/types.ts(7,43): error TS2305: Module '"@prisma/client"' has no exported member 'ReconResult'.
+src/services/resilience/fault-tolerant-recon.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/resilience/fault-tolerant-recon.ts(9,19): error TS6133: 'logError' is declared but its value is never read.
+src/services/resilience/fault-tolerant-recon.ts(113,35): error TS6133: 'error' is declared but its value is never read.
+src/services/resilience/governance-layer.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/resilience/governance-layer.ts(29,11): error TS6133: 'prisma' is declared but its value is never read.
+src/services/resilience/governance-layer.ts(94,5): error TS6133: 'resourceType' is declared but its value is never read.
+src/services/resilience/multi-region.ts(8,19): error TS2724: '"../../utils/logger"' has no exported member named 'logWarning'. Did you mean 'logWarn'?
+src/services/resilience/multi-region.ts(98,5): error TS6133: 'request' is declared but its value is never read.
+src/services/resilience/multi-region.ts(110,39): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/rewrite/pipeline-rewriter.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/rewrite/pipeline-rewriter.ts(9,19): error TS6133: 'logError' is declared but its value is never read.
+src/services/rewrite/self-validator.ts(8,1): error TS6192: All imports in import declaration are unused.
+src/services/rewrite/self-validator.ts(68,36): error TS6133: 'module' is declared but its value is never read.
+src/services/rewrite/self-validator.ts(102,34): error TS6133: 'module' is declared but its value is never read.
+src/services/stripe/usage-sync.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/stripe/usage-sync.ts(18,43): error TS2322: Type '"2024-12-18.acacia"' is not assignable to type '"2023-10-16"'.
+src/services/usage/recon-usage-tracker.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/usage/recon-usage-tracker.ts(36,27): error TS2379: Argument of type '{ tenantId: string; billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, any> | undefined; }' is not assignable to parameter of type 'UsageEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'metadata' are incompatible.
+    Type 'Record<string, any> | undefined' is not assignable to type 'Record<string, any>'.
+      Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/services/usage/recon-usage-tracker.ts(55,27): error TS2379: Argument of type '{ tenantId: string; billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, any> | undefined; }' is not assignable to parameter of type 'UsageEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'metadata' are incompatible.
+    Type 'Record<string, any> | undefined' is not assignable to type 'Record<string, any>'.
+      Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/services/usage/recon-usage-tracker.ts(74,27): error TS2379: Argument of type '{ tenantId: string; billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, any> | undefined; }' is not assignable to parameter of type 'UsageEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'metadata' are incompatible.
+    Type 'Record<string, any> | undefined' is not assignable to type 'Record<string, any>'.
+      Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/services/usage/recon-usage-tracker.ts(93,27): error TS2379: Argument of type '{ tenantId: string; billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, any> | undefined; }' is not assignable to parameter of type 'UsageEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'metadata' are incompatible.
+    Type 'Record<string, any> | undefined' is not assignable to type 'Record<string, any>'.
+      Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/services/usage/recon-usage-tracker.ts(112,27): error TS2379: Argument of type '{ tenantId: string; billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, any> | undefined; }' is not assignable to parameter of type 'UsageEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'metadata' are incompatible.
+    Type 'Record<string, any> | undefined' is not assignable to type 'Record<string, any>'.
+      Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/services/usage/recon-usage-tracker.ts(154,27): error TS2379: Argument of type '{ tenantId: string; billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, any> | undefined; }' is not assignable to parameter of type 'UsageEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'metadata' are incompatible.
+    Type 'Record<string, any> | undefined' is not assignable to type 'Record<string, any>'.
+      Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/services/usage/recon-usage-tracker.ts(173,27): error TS2379: Argument of type '{ tenantId: string; billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, any> | undefined; }' is not assignable to parameter of type 'UsageEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'metadata' are incompatible.
+    Type 'Record<string, any> | undefined' is not assignable to type 'Record<string, any>'.
+      Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/services/usage/recon-usage-tracker.ts(192,27): error TS2379: Argument of type '{ tenantId: string; billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, any> | undefined; }' is not assignable to parameter of type 'UsageEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'metadata' are incompatible.
+    Type 'Record<string, any> | undefined' is not assignable to type 'Record<string, any>'.
+      Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/services/usage/recon-usage-tracker.ts(252,7): error TS2532: Object is possibly 'undefined'.
+src/services/verticals/compliance/policy-comparison.ts(7,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/verticals/compliance/policy-comparison.ts(27,11): error TS6133: 'prisma' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(38,5): error TS6133: 'policy1' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(39,5): error TS6133: 'policy2' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(59,5): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(60,5): error TS6133: 'currentPolicy' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(61,5): error TS6133: 'baselinePolicy' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(79,5): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(80,5): error TS6133: 'retentionPolicy' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(81,5): error TS6133: 'actualData' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(102,5): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/verticals/compliance/policy-comparison.ts(103,5): error TS6133: 'processingActivity' is declared but its value is never read.
+src/services/verticals/edtech/qti-validator.ts(23,21): error TS6133: 'qtiContent' is declared but its value is never read.
+src/services/verticals/edtech/qti-validator.ts(40,5): error TS6133: 'syllabus' is declared but its value is never read.
+src/services/verticals/edtech/qti-validator.ts(41,5): error TS6133: 'outcomes' is declared but its value is never read.
+src/services/verticals/edtech/qti-validator.ts(59,5): error TS6133: 'qtiContent' is declared but its value is never read.
+src/services/verticals/edtech/qti-validator.ts(60,5): error TS6133: 'lms' is declared but its value is never read.
+src/services/verticals/fintech/ledger-recon.ts(7,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/verticals/fintech/ledger-recon.ts(32,11): error TS6133: 'prisma' is declared but its value is never read.
+src/services/verticals/fintech/ledger-recon.ts(63,5): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/verticals/legaltech/contract-diff.ts(7,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/verticals/legaltech/contract-diff.ts(22,11): error TS6133: 'prisma' is declared but its value is never read.
+src/services/verticals/legaltech/contract-diff.ts(33,5): error TS6133: 'contract1' is declared but its value is never read.
+src/services/verticals/legaltech/contract-diff.ts(34,5): error TS6133: 'contract2' is declared but its value is never read.
+src/services/verticals/legaltech/contract-diff.ts(56,28): error TS6133: 'contract' is declared but its value is never read.
+src/services/verticals/legaltech/contract-diff.ts(70,5): error TS6133: 'sourceObligations' is declared but its value is never read.
+src/services/verticals/legaltech/contract-diff.ts(71,5): error TS6133: 'targetObligations' is declared but its value is never read.
+src/services/webhooks/webhook-service.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/workflows/workflow-engine.ts(8,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+src/services/workflows/workflow-engine.ts(9,19): error TS6133: 'logError' is declared but its value is never read.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 1
+npm error path /workspace/packages/api
+npm error workspace @settler/api@1.0.0
+npm error location /workspace/packages/api
+npm error command failed
+npm error command sh -c tsc --noEmit
