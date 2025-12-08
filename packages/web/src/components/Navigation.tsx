@@ -87,7 +87,7 @@ export function Navigation() {
                 Get Started
               </Link>
             </Button>
-          </div>
+          </nav>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
