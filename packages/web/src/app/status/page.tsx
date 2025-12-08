@@ -22,8 +22,10 @@ export default function StatusPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 60000); // Refresh every minute
+    void fetchStatus();
+    const interval = setInterval(() => {
+      void fetchStatus();
+    }, 60000); // Refresh every minute
     return () => clearInterval(interval);
   }, []);
 

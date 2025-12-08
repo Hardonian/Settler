@@ -199,7 +199,7 @@ export function IntegrationLogos() {
         {/* CTA */}
         <div className="text-center mt-12">
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-            Don't see your platform?{" "}
+            Don&apos;t see your platform?{" "}
             <Link
               href="/integrations/request"
               className="text-blue-600 dark:text-blue-400 hover:underline font-medium"

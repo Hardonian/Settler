@@ -54,7 +54,7 @@ export default function JobDetailPage() {
 
   useEffect(() => {
     if (jobId) {
-      fetchJobDetail(jobId);
+      void fetchJobDetail(jobId);
     }
   }, [jobId]);
 

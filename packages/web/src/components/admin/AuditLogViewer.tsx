@@ -23,7 +23,7 @@ export function AuditLogViewer() {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    fetchLogs();
+    void fetchLogs();
   }, []);
 
   const fetchLogs = async () => {

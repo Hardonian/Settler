@@ -28,7 +28,7 @@ export default function Dashboard({ apiKey }: DashboardProps) {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   useEffect(() => {
-    loadJobs();
+    void loadJobs();
   }, []);
 
   async function loadJobs() {
@@ -244,7 +244,8 @@ function JobDetailModal({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadReport();
+    void loadReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [job.id]);
 
   async function loadReport() {

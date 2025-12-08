@@ -63,7 +63,7 @@ export function UsageLimitIndicator({
             <div>
               <p className="font-semibold text-red-900 dark:text-red-300">Usage Limit Reached</p>
               <p className="text-sm text-red-700 dark:text-red-400">
-                You've used all {limit} {getTypeLabel()} {getPeriodLabel()}
+                You&apos;ve used all {limit} {getTypeLabel()} {getPeriodLabel()}
               </p>
             </div>
           </div>

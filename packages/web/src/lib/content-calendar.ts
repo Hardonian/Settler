@@ -39,7 +39,7 @@ export function generateContentCalendar(startDate: Date = new Date()): ContentIt
     "Developer tip: Best practices for reconciliation APIs",
   ];
 
-  let currentDate = new Date(startDate);
+  const currentDate = new Date(startDate);
 
   for (let month = 0; month < months; month++) {
     // Blog posts (2 per month)

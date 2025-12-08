@@ -44,7 +44,7 @@ export default function ContactSupportPage() {
                   Message Sent Successfully
                 </h2>
                 <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-                  We've received your message and will get back to you within 24 hours. For urgent
+                  We&apos;ve received your message and will get back to you within 24 hours. For urgent
                   issues, please check our{" "}
                   <Link
                     href="/support"
@@ -89,7 +89,7 @@ export default function ContactSupportPage() {
               Contact Support
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4">
-              Have a question or need help? We're here to assist you. Our support team typically
+              Have a question or need help? We&apos;re here to assist you. Our support team typically
               responds within 24 hours.
             </p>
           </div>
@@ -103,7 +103,7 @@ export default function ContactSupportPage() {
                     Send us a Message
                   </CardTitle>
                   <CardDescription>
-                    Fill out the form below and we'll get back to you as soon as possible
+                    Fill out the form below and we&apos;ll get back to you as soon as possible
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -262,7 +262,7 @@ export default function ContactSupportPage() {
                 <CardContent>
                   <p className="text-sm text-blue-800 dark:text-blue-300 leading-relaxed">
                     We typically respond within 24 hours during business days. For urgent issues,
-                    please mark your message as "Technical Issue" and include "URGENT" in the
+                    please mark your message as &quot;Technical Issue&quot; and include &quot;URGENT&quot; in the
                     subject line.
                   </p>
                 </CardContent>

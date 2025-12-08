@@ -36,7 +36,7 @@ export function useOnboardingProgress() {
       }
     }
 
-    fetchProgress();
+    void fetchProgress();
   }, []);
 
   return { progress, nextStep, loading };

@@ -27,7 +27,7 @@ export async function getJobs(apiKey: string, options?: { limit?: number }) {
  * This is handled via EventSource in the component, but we can add
  * a REST endpoint wrapper here if needed.
  */
-export async function getJobExecution(_jobId: string, _apiKey: string) {
+export function getJobExecution(_jobId: string, _apiKey: string) {
   // This would typically call an API endpoint
   // For now, real-time updates are handled via EventSource
   throw new Error("Use EventSource for real-time job execution updates");

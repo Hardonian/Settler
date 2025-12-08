@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       .from("profiles")
       .select("*")
       .eq("id", user.id)
-      .single()) as { data: any | null; error: any };
+      .single()) as { data: any; error: any };
 
     // Send paid welcome email
     if (profile) {
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
           firstName: profile.name?.split(" ")[0],
           industry: profile.industry,
           companyName: profile.company_name,
-          planType: planType as any,
+          planType,
         };
 
         await sendPaidWelcomeEmail(lifecycleUser);

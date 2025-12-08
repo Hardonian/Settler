@@ -89,7 +89,7 @@ export function WelcomeDashboard({ userName, trialEndDate, onComplete }: Welcome
       <Card>
         <CardHeader>
           <CardTitle>Get Started in 10 Minutes</CardTitle>
-          <CardDescription>Here's how to get value quickly</CardDescription>
+          <CardDescription>Here&apos;s how to get value quickly</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4">

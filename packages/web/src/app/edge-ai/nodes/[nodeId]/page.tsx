@@ -35,7 +35,7 @@ export default function NodeDetailPage() {
 
   useEffect(() => {
     if (nodeId) {
-      fetchNodeDetail(nodeId);
+      void fetchNodeDetail(nodeId);
     }
   }, [nodeId]);
 

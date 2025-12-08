@@ -57,7 +57,7 @@ export function RealtimePosts() {
         }
       };
 
-      fetchPosts();
+      void fetchPosts();
 
       // Subscribe to real-time changes
       try {
@@ -89,7 +89,7 @@ export function RealtimePosts() {
 
         return () => {
           try {
-            supabase.removeChannel(channel);
+            void supabase.removeChannel(channel);
           } catch (err) {
             console.error("Error removing channel:", err);
           }

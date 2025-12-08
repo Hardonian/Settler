@@ -109,7 +109,7 @@ export function generateHelpArticle(template: string, params: any): HelpArticle 
 /**
  * Generate article from user question
  */
-export async function generateArticleFromQuestion(question: string): Promise<HelpArticle> {
+export function generateArticleFromQuestion(question: string): HelpArticle {
   // In production, use AI to generate article
   // For now, return template-based article
 

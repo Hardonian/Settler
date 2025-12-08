@@ -31,7 +31,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
-    const textareaId = id || React.useId();
+    const generatedId = React.useId();
+    const textareaId = id || generatedId;
     const errorId = error && errorMessage ? `${textareaId}-error` : undefined;
     const helperId = helperText ? `${textareaId}-helper` : undefined;
     const describedBy = [errorId, helperId, ariaDescribedBy].filter(Boolean).join(" ") || undefined;

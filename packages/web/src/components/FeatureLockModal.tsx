@@ -46,7 +46,7 @@ export function FeatureLockModal({ open, onOpenChange, feature }: FeatureLockMod
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
             <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
-              What you'll get:
+              What you&apos;ll get:
             </h3>
             <ul className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
               {feature.benefits.map((benefit, index) => (

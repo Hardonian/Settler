@@ -77,7 +77,7 @@ export function UserImpersonation() {
         </div>
 
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          Search for a user and click "Impersonate" to view their dashboard as them.
+          Search for a user and click &quot;Impersonate&quot; to view their dashboard as them.
         </div>
       </CardContent>
     </Card>

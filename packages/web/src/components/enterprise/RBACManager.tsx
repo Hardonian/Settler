@@ -27,7 +27,7 @@ export function RBACManager() {
   const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchRBACData();
+    void fetchRBACData();
   }, []);
 
   const fetchRBACData = async () => {

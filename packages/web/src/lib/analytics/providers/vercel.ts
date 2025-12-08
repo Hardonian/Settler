@@ -21,7 +21,7 @@ class VercelAnalyticsProvider implements AnalyticsProvider {
     // For custom page view tracking, we can use the track function
     if (properties && typeof window !== "undefined" && "va" in window) {
       try {
-        // @ts-ignore - Vercel Analytics global
+        // @ts-expect-error - Vercel Analytics global
         window.va?.("track", {
           name: "page_view",
           properties: {

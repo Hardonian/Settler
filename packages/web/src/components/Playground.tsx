@@ -60,7 +60,7 @@ export function Playground() {
   const [activeTab, setActiveTab] = useState<"examples" | "custom" | "results">("examples");
 
   useEffect(() => {
-    loadExamples();
+    void loadExamples();
   }, []);
 
   const loadExamples = async () => {
@@ -107,7 +107,7 @@ export function Playground() {
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold">Interactive Playground</h1>
         <p className="text-muted-foreground">
-          Try Settler's reconciliation engine without signing up. See how it works in real-time.
+          Try Settler&apos;s reconciliation engine without signing up. See how it works in real-time.
         </p>
       </div>
 

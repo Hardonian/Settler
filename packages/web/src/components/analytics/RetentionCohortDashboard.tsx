@@ -20,7 +20,7 @@ export function RetentionCohortDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchCohortData();
+    void fetchCohortData();
   }, []);
 
   const fetchCohortData = async () => {

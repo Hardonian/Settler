@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(_request: NextRequest) {
+export function GET(_request: NextRequest) {
   try {
     // In production, fetch from monitoring system (e.g., UptimeRobot, Pingdom)
     // For now, return mock data

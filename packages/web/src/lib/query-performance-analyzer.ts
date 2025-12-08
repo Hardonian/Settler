@@ -15,7 +15,7 @@ export interface QueryPerformance {
 /**
  * Analyze query performance
  */
-export async function analyzeQueryPerformance(): Promise<QueryPerformance[]> {
+export function analyzeQueryPerformance(): QueryPerformance[] {
   // In production, fetch from database query logs or monitoring system
   // For now, return mock data
 

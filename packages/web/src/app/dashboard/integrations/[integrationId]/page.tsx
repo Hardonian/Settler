@@ -56,7 +56,7 @@ export default function IntegrationConfigurationPage() {
       router.push('/dashboard/integrations');
       return;
     }
-    fetchIntegrationConfig();
+    void fetchIntegrationConfig();
   }, [integrationId, router, fetchIntegrationConfig]);
 
   if (!integrationId) {

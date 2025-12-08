@@ -23,7 +23,8 @@ export default function AuditTrail({ client: _client, apiKey, jobId }: AuditTrai
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
-    loadLogs();
+    void loadLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobId, filter]);
 
   async function loadLogs() {

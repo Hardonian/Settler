@@ -50,7 +50,7 @@ export default function GlobalError({
         >
           <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Something went wrong</h1>
           <p style={{ marginBottom: "2rem", color: "#666" }}>
-            We're sorry, but something unexpected happened. Please try refreshing the page.
+            We&apos;re sorry, but something unexpected happened. Please try refreshing the page.
           </p>
           <button
             onClick={reset}

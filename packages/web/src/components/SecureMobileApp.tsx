@@ -62,6 +62,7 @@ export default function SecureMobileApp({
     };
     setSecurityHeaders(headers);
     setClient(secureClient);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, baseURL, securityPolicy]);
 
   // Register service worker for PWA

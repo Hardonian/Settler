@@ -11,7 +11,7 @@ declare global {
     gtag?: (
       command: "config" | "event" | "set" | "js",
       targetIdOrConfig: string | Date | Record<string, any>,
-      configOrValue?: Record<string, any> | any
+      configOrValue?: any
     ) => void;
     dataLayer?: any[];
   }

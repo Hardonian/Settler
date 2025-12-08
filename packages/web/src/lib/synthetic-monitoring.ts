@@ -65,11 +65,11 @@ export const CRITICAL_PATH_TESTS: SyntheticTest[] = [
 /**
  * Run synthetic test
  */
-export async function runSyntheticTest(_test: SyntheticTest): Promise<{
+export function runSyntheticTest(_test: SyntheticTest): {
   passed: boolean;
   duration: number;
   errors: string[];
-}> {
+} {
   // In production, use headless browser (Puppeteer, Playwright)
   // For now, return mock result
   return {

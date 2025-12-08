@@ -57,7 +57,7 @@ export interface CompetitorUpdate {
 /**
  * Monitor competitor changes
  */
-export async function monitorCompetitorChanges(): Promise<CompetitorUpdate[]> {
+export function monitorCompetitorChanges(): CompetitorUpdate[] {
   // In production, this would:
   // 1. Scrape competitor websites
   // 2. Monitor pricing pages

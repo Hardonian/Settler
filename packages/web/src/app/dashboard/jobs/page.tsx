@@ -33,7 +33,7 @@ export default function JobsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
-    fetchJobs();
+    void fetchJobs();
   }, []);
 
   useEffect(() => {

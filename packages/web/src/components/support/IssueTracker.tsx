@@ -24,7 +24,7 @@ export function IssueTracker() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
   useEffect(() => {
-    fetchTickets();
+    void fetchTickets();
   }, []);
 
   const fetchTickets = async () => {

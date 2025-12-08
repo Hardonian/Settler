@@ -36,7 +36,7 @@ class SentryIntegration {
 
     try {
       // Dynamic import to avoid bundling Sentry if not used
-      // @ts-ignore - @sentry/nextjs may not be installed
+      // @ts-expect-error - @sentry/nextjs may not be installed
       const Sentry = await import("@sentry/nextjs").catch(() => null);
 
       if (!Sentry || !this.config.dsn) {
@@ -78,7 +78,7 @@ class SentryIntegration {
 
     if (typeof window !== "undefined" && "Sentry" in window) {
       try {
-        // @ts-ignore
+        // @ts-expect-error
         window.Sentry.captureException(error, {
           contexts: {
             custom: context || {},

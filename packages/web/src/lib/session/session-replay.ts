@@ -160,13 +160,13 @@ class SessionReplay {
       switch (this.config.provider) {
         case "hotjar":
           if (typeof window !== "undefined" && "hj" in window) {
-            // @ts-ignore
+            // @ts-expect-error
             window.hj("identify", userId, traits);
           }
           break;
         case "fullstory":
           if (typeof window !== "undefined" && "_fs_namespace" in window) {
-            // @ts-ignore
+            // @ts-expect-error
             window[window._fs_namespace]?.identify(userId, traits);
           }
           break;

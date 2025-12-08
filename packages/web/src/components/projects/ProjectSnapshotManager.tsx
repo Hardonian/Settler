@@ -25,7 +25,8 @@ export function ProjectSnapshotManager({ projectId, projectType }: ProjectSnapsh
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    fetchSnapshots();
+    void fetchSnapshots();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, projectType]);
 
   const fetchSnapshots = async () => {

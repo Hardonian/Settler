@@ -24,7 +24,7 @@ export function ChurnPredictionDashboard() {
   const [selectedUser, setSelectedUser] = useState<ChurnRiskUser | null>(null);
 
   useEffect(() => {
-    fetchChurnRiskUsers();
+    void fetchChurnRiskUsers();
   }, []);
 
   const fetchChurnRiskUsers = async () => {
