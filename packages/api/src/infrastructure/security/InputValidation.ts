@@ -85,7 +85,7 @@ export function validateQuery<T extends z.ZodTypeAny>(schema: T) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const validated = await schema.parseAsync(req.query);
-      req.query = validated as any;
+      req.query = validated as z.infer<T> & Record<string, unknown>;
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -111,7 +111,7 @@ export function validateParams<T extends z.ZodTypeAny>(schema: T) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const validated = await schema.parseAsync(req.params);
-      req.params = validated as any;
+      req.params = validated as z.infer<T> & Record<string, string>;
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -151,10 +151,13 @@ export function sanitizeString(input: string): string {
 /**
  * Validate and sanitize JSON input
  */
-export function validateJson(input: string, maxDepth: number = REQUEST_LIMITS.MAX_DEPTH): any {
-  const parsed = JSON.parse(input);
+export function validateJson(
+  input: string,
+  maxDepth: number = REQUEST_LIMITS.MAX_DEPTH
+): unknown {
+  const parsed: unknown = JSON.parse(input);
 
-  function checkDepth(obj: any, currentDepth: number = 0): void {
+  function checkDepth(obj: unknown, currentDepth: number = 0): void {
     if (currentDepth > maxDepth) {
       throw new Error(`JSON depth exceeds maximum of ${maxDepth} levels`);
     }
