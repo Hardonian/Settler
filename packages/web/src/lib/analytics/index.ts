@@ -105,7 +105,7 @@ class Analytics {
   /**
    * Track an error
    */
-  trackError(error: Error | string, metadata?: ErrorMetadata) {
+  trackError(error: Error | string, metadata?: Partial<ErrorMetadata> & Record<string, any>) {
     if (!this.initialized) this.init();
 
     const errorMetadata: ErrorMetadata = {

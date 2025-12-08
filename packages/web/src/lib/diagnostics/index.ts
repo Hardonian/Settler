@@ -36,7 +36,7 @@ class Diagnostics {
 
     this.addEvent(event);
     logger.error(`Fetch failed: ${url}`, error, metadata);
-    analytics.trackError(error, { type: 'fetch_failure', url, ...metadata });
+    analytics.trackError(error, { message: error.message, type: 'fetch_failure', url, ...metadata });
   }
 
   /**
@@ -58,7 +58,7 @@ class Diagnostics {
 
     this.addEvent(event);
     logger.error(`Component error: ${componentName}`, error, metadata);
-    analytics.trackError(error, { type: 'component_error', component: componentName, ...metadata });
+    analytics.trackError(error, { message: error.message, type: 'component_error', component: componentName, ...metadata });
   }
 
   /**
@@ -79,7 +79,7 @@ class Diagnostics {
 
     this.addEvent(event);
     logger.error('Hydration error', error, metadata);
-    analytics.trackError(error, { type: 'hydration_error', ...metadata });
+    analytics.trackError(error, { message: error.message, type: 'hydration_error', ...metadata });
   }
 
   /**

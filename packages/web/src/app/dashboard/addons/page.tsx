@@ -227,8 +227,11 @@ export default function AddOnsMarketplacePage() {
             features={addOn.features}
             onPurchase={async (_id) => {
               openPurchaseModal(addOn);
+              await Promise.resolve();
             }}
-            onCancel={() => handleCancel(addOn.id)}
+            onCancel={async () => {
+              await Promise.resolve(handleCancel(addOn.id));
+            }}
             isLoading={isProcessing}
           />
         ))}

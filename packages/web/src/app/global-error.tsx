@@ -28,6 +28,7 @@ export default function GlobalError({
 
     // Track in analytics
     analytics.trackError(error, {
+      message: error.message,
       type: 'global_error',
       digest: error.digest,
     });

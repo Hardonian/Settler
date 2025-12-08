@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { Button } from './button';
 import { AlertCircle } from 'lucide-react';
 import { EmptyState } from './empty-state';
 import { logger } from '@/lib/logging/logger';
@@ -23,13 +22,12 @@ export interface ErrorFallbackProps {
 const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
   return (
     <EmptyState
-      iconVariant="alert"
+      icon={AlertCircle}
       title="Something went wrong"
       description={error.message || 'An unexpected error occurred. Please try again.'}
       action={{
         label: 'Try again',
         onClick: resetError,
-        variant: 'default',
       }}
     />
   );
@@ -50,7 +48,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     const componentName = this.props.componentName || 'Unknown';
     
     // Log error
@@ -66,6 +64,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
     // Track in analytics
     analytics.trackError(error, {
+      message: error.message,
       type: 'error_boundary',
       component: componentName,
       componentStack: errorInfo.componentStack,
@@ -88,5 +87,3 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     return this.props.children;
   }
 }
-
-export { ErrorBoundary };

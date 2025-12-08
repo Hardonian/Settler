@@ -67,13 +67,13 @@ export async function signUpUser(
       id: authData.user.id,
       user_id: authData.user.id,
       email: authData.user.email,
-      name: name || authData.user.email.split('@')[0] ?? null,
+      name: name || (authData.user.email.split('@')[0] ?? null),
       impact_score: 0,
     };
 
     const { error: profileError } = await supabase
       .from('profiles')
-      .insert(profileData);
+      .insert(profileData as any);
 
     if (profileError) {
       // If profile creation fails, we should handle it gracefully
@@ -95,7 +95,7 @@ export async function signUpUser(
 
     const { error: activityError } = await supabase
       .from('activity_log')
-      .insert(activityData);
+      .insert(activityData as any);
 
     if (activityError) {
       console.error('Activity log error:', activityError);
@@ -144,7 +144,7 @@ export async function logActivity(
 
     const { error } = await supabase
       .from('activity_log')
-      .insert(activityData);
+      .insert(activityData as any);
 
     if (error) {
       console.error('Activity log error:', error);

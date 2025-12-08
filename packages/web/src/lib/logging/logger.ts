@@ -86,6 +86,7 @@ class AppLogger implements Logger {
       analytics.trackError(
         entry.error || new Error(entry.message),
         {
+          message: entry.message,
           level: entry.level,
           context: entry.context,
           sessionId: entry.sessionId,

@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 interface SpotlightCardProps {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   spotlightColor?: string;
   spotlightSize?: number;
   borderColor?: string;
@@ -14,6 +15,7 @@ interface SpotlightCardProps {
 export function SpotlightCard({
   children,
   className,
+  style,
   spotlightColor = 'rgba(6, 182, 212, 0.3)',
   spotlightSize = 300,
   borderColor = 'rgba(168, 85, 247, 0.5)',
@@ -55,6 +57,7 @@ export function SpotlightCard({
       onMouseLeave={handleMouseLeave}
       style={{
         cursor: 'pointer',
+        ...style,
       }}
     >
       {/* Spotlight effect */}
