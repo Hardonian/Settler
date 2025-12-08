@@ -112,7 +112,7 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
     }
 
     const stripe = new Stripe(apiKey, {
-      apiVersion: '2024-11-20.acacia',
+      apiVersion: '2024-11-20.acacia' as any,
     });
 
     const charges = await stripe.charges.list({
@@ -136,7 +136,7 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
     }
 
     const stripe = new Stripe(apiKey, {
-      apiVersion: '2024-11-20.acacia',
+      apiVersion: '2024-11-20.acacia' as any,
     });
 
     const payouts = await stripe.payouts.list({

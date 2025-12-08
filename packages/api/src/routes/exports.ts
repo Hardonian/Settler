@@ -8,7 +8,7 @@
  * - JSON
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { logInfo, logError } from '../utils/logger';
 
@@ -20,7 +20,7 @@ const router = Router();
  */
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { jobId, format = 'csv', options } = req.body;
+    const { jobId, format = 'csv' } = req.body;
 
     if (!jobId) {
       return res.status(400).json({
@@ -49,16 +49,17 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
       exportId,
       jobId,
       format,
-      tenantId: req.user?.tenantId,
+      tenantId: (req as any).tenantId || (req as any).userId,
     });
 
     // Set appropriate content type
-    const contentType = {
+    const contentTypeMap: Record<string, string> = {
       csv: 'text/csv',
       xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       pdf: 'application/pdf',
       json: 'application/json',
-    }[format];
+    };
+    const contentType = contentTypeMap[format] || 'application/octet-stream';
 
     res.setHeader('Content-Type', contentType || 'application/octet-stream');
     res.setHeader('Content-Disposition', `attachment; filename="reconciliation_${jobId}.${format}"`);

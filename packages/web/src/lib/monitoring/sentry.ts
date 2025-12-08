@@ -62,7 +62,7 @@ class SentryIntegration {
   captureException(error: Error, context?: Record<string, any>) {
     if (!this.config.enabled) {
       // Fallback to analytics if Sentry not enabled
-      analytics.trackError(error, context);
+      analytics.trackError(error, { message: error.message, ...context });
       return;
     }
 
@@ -76,10 +76,10 @@ class SentryIntegration {
         });
       } catch (err) {
         logger.warn('Failed to capture exception in Sentry', err instanceof Error ? err : new Error(String(err)));
-        analytics.trackError(error, context);
+        analytics.trackError(error, { message: error.message, ...context });
       }
     } else {
-      analytics.trackError(error, context);
+      analytics.trackError(error, { message: error.message, ...context });
     }
   }
 

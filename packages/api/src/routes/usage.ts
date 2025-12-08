@@ -8,7 +8,7 @@
  * - Billing information
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { getCurrentUsage } from '../middleware/usage-tracking';
 import { logError } from '../utils/logger';

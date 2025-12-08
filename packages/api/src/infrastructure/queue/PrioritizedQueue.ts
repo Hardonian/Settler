@@ -46,7 +46,7 @@ export class PrioritizedQueue {
         host: string;
         port: number;
         password?: string;
-        tls?: boolean;
+        tls?: any;
       } = {
         host: config.redis.host,
         port: config.redis.port,
@@ -55,7 +55,7 @@ export class PrioritizedQueue {
         redisOptions.password = config.redis.password;
       }
       if (process.env.REDIS_TLS === 'true') {
-        redisOptions.tls = true;
+        redisOptions.tls = {}; // TLS options object, not boolean
       }
       this.redis = new Redis(redisOptions);
     }

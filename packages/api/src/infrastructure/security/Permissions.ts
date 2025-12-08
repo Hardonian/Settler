@@ -36,6 +36,12 @@ export enum Permission {
   ADMIN_READ = 'admin:read',
   ADMIN_WRITE = 'admin:write',
   ADMIN_AUDIT = 'admin:audit',
+
+  // Edge AI
+  EDGE_AIAS_ACCESS = 'edge:aias:access',
+  EDGE_MODELS_READ = 'edge:models:read',
+  EDGE_NODES_READ = 'edge:nodes:read',
+  EDGE_NODES_WRITE = 'edge:nodes:write',
 }
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {

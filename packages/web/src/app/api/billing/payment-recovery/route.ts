@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         // Grace period expired, update status
         await supabase
           .from("payment_recovery")
-          .update({ status: "failed" })
+          .update({ status: "failed" } as any)
           .eq("id", recovery.id);
         return NextResponse.json({ recovery: null });
       }

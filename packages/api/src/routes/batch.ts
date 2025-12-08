@@ -8,7 +8,7 @@
  * - Batch result retrieval
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { logInfo, logError } from '../utils/logger';
 
@@ -20,7 +20,7 @@ const router = Router();
  */
 router.post('/jobs', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { jobs, options } = req.body;
+    const { jobs } = req.body;
 
     if (!Array.isArray(jobs) || jobs.length === 0) {
       return res.status(400).json({
@@ -47,7 +47,7 @@ router.post('/jobs', authMiddleware, async (req: AuthRequest, res: Response) => 
     logInfo('Batch jobs created', {
       batchId,
       jobCount: jobs.length,
-      tenantId: req.user?.tenantId,
+      tenantId: (req as any).tenantId || (req as any).userId,
     });
 
     return res.json({

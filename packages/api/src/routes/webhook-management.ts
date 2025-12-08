@@ -8,7 +8,7 @@
  * - Webhook signature verification testing
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { logInfo, logError } from '../utils/logger';
 import { generateRequestSignature, verifyRequestSignature } from '../middleware/request-signing';
@@ -102,7 +102,7 @@ router.post('/verify', authMiddleware, async (req: AuthRequest, res: Response) =
  */
 router.post('/replay', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { webhookId, endpoint, payload, headers } = req.body;
+    const { webhookId, endpoint, payload } = req.body;
 
     if (!endpoint || !payload) {
       return res.status(400).json({
@@ -119,7 +119,7 @@ router.post('/replay', authMiddleware, async (req: AuthRequest, res: Response) =
     logInfo('Webhook replay requested', {
       webhookId,
       endpoint,
-      tenantId: req.user?.tenantId,
+      tenantId: req.tenantId,
     });
 
     return res.json({

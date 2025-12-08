@@ -14,14 +14,19 @@ export class StripeAdapter implements Adapter {
     }
 
     const stripe = new Stripe(apiKey, {
-      apiVersion: "2024-11-20.acacia",
+      apiVersion: "2024-11-20.acacia" as any,
     });
 
+    const createdParams: { gte?: number; lte?: number } = {};
+    if (dateRange?.start) {
+      createdParams.gte = Math.floor(dateRange.start.getTime() / 1000);
+    }
+    if (dateRange?.end) {
+      createdParams.lte = Math.floor(dateRange.end.getTime() / 1000);
+    }
+
     const charges = await stripe.charges.list({
-      created: {
-        gte: dateRange?.start ? Math.floor(dateRange.start.getTime() / 1000) : undefined,
-        lte: dateRange?.end ? Math.floor(dateRange.end.getTime() / 1000) : undefined,
-      },
+      created: Object.keys(createdParams).length > 0 ? createdParams : undefined,
       limit: 100,
     });
 

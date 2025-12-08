@@ -7,11 +7,10 @@
 'use client';
 
 import { useEffect } from 'react';
-import { ErrorBoundary as ReactErrorBoundary } from '@/components/ui/error-boundary';
+import { AlertCircle } from 'lucide-react';
 import { logger } from '@/lib/logging/logger';
 import { analytics } from '@/lib/analytics';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Button } from '@/components/ui/button';
 
 export default function Error({
   error,
@@ -31,6 +30,7 @@ export default function Error({
 
     // Track in analytics
     analytics.trackError(error, {
+      message: error.message,
       type: 'global_error_boundary',
       digest: error.digest,
     });
@@ -38,7 +38,7 @@ export default function Error({
 
   return (
     <EmptyState
-      iconVariant="alert"
+      icon={AlertCircle}
       title="Something went wrong"
       description={
         error.message || 
@@ -47,7 +47,6 @@ export default function Error({
       action={{
         label: 'Try again',
         onClick: reset,
-        variant: 'default',
       }}
     />
   );

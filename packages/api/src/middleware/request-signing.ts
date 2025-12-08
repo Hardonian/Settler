@@ -84,12 +84,15 @@ export function verifyRequestSignature(
       Buffer.from(signatureValue)
     );
 
-    return {
+    const result: any = {
       valid: isValid,
       algorithm,
       timestamp: timestampNum,
-      reason: isValid ? undefined : 'Signature mismatch',
     };
+    if (!isValid) {
+      result.reason = 'Signature mismatch';
+    }
+    return result;
   } catch (error) {
     return {
       valid: false,
@@ -172,7 +175,7 @@ export function requestSigningMiddleware(config: RequestSigningConfig) {
       verified: true,
     };
 
-    next();
+    return next();
   };
 }
 
@@ -220,6 +223,6 @@ export function webhookSignatureMiddleware(secret: string) {
       verified: true,
     };
 
-    next();
+    return next();
   };
 }

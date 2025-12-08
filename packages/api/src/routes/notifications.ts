@@ -9,7 +9,7 @@
  * - System status updates
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { logInfo, logError } from '../utils/logger';
 
@@ -35,12 +35,12 @@ export interface NotificationService {
  */
 router.post('/test', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { type, config } = req.body;
+    const { type } = req.body;
 
     // In production, this would send actual notifications
     logInfo('Test notification requested', {
       type,
-      tenantId: req.user?.tenantId,
+      tenantId: req.tenantId,
     });
 
     return res.json({
@@ -64,12 +64,12 @@ router.post('/test', authMiddleware, async (req: AuthRequest, res: Response) => 
  */
 router.post('/channels', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { channel, config } = req.body;
+    const { channel } = req.body;
 
     // In production, save to database
     logInfo('Notification channel configured', {
       channel,
-      tenantId: req.user?.tenantId,
+      tenantId: req.tenantId,
     });
 
     return res.json({
@@ -90,7 +90,7 @@ router.post('/channels', authMiddleware, async (req: AuthRequest, res: Response)
  * Get notification preferences
  * GET /api/v1/notifications/preferences
  */
-router.get('/preferences', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/preferences', authMiddleware, async (_req: AuthRequest, res: Response) => {
   try {
     // In production, fetch from database
     return res.json({

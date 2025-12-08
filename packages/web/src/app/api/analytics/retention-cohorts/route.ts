@@ -27,11 +27,11 @@ export async function GET() {
 
     // Group by cohort (month)
     const cohortsMap = new Map<string, string[]>();
-    for (const user of users || []) {
+    for (const user of (users || []) as Array<{ id: string; created_at: string }>) {
       if (!user || typeof user !== 'object') continue;
       
-      const createdAt = 'created_at' in user ? user.created_at : null;
-      const userId = 'id' in user ? user.id : null;
+      const createdAt = user.created_at;
+      const userId = user.id;
       
       if (!createdAt || !userId || typeof createdAt !== 'string' || typeof userId !== 'string') {
         continue;

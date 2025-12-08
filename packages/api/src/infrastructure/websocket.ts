@@ -10,7 +10,7 @@
 
 import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { logInfo, logError } from '../utils/logger';
+import { logInfo } from '../utils/logger';
 
 export interface WebSocketServer {
   io: SocketIOServer;
