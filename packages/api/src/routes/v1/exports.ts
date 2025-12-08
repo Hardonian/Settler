@@ -98,6 +98,8 @@ router.post(
               end: new Date(dateRange.end),
             },
             includeRawPayloads: options.includeRawPayloads ?? false,
+            includeFees: options.includeFees ?? false,
+            includeUnmatched: options.includeUnmatched ?? true,
           });
           res.setHeader("Content-Type", "application/json");
           return sendSuccess(res, exportData);

@@ -55,8 +55,8 @@ interface UnmatchedRecord {
 }
 
 export class ShopifyStripeReconciliationSaga {
-  private shopifyCircuitBreaker: CircuitBreaker<[AdapterFetchOptions], Order[]>;
-  private stripeCircuitBreaker: CircuitBreaker<[AdapterFetchOptions], Payment[]>;
+  private shopifyCircuitBreaker: CircuitBreaker<Order[]>;
+  private stripeCircuitBreaker: CircuitBreaker<Payment[]>;
 
   constructor(
     private eventStore: IEventStore,
@@ -128,7 +128,7 @@ export class ShopifyStripeReconciliationSaga {
                 amount: order.amount,
                 currency: order.currency,
                 date: order.date instanceof Date ? order.date.toISOString() : String(order.date),
-                metadata: order.metadata,
+                ...(order.metadata && { metadata: order.metadata }),
               })),
               fetch_duration_ms: Date.now() - (state.data.started_at as number),
             },
@@ -203,7 +203,7 @@ export class ShopifyStripeReconciliationSaga {
                 amount: payment.amount,
                 currency: payment.currency,
                 date: payment.date instanceof Date ? payment.date.toISOString() : String(payment.date),
-                metadata: payment.metadata,
+                ...(payment.metadata && { metadata: payment.metadata }),
               })),
               fetch_duration_ms: Date.now() - (state.data.started_at as number),
             },

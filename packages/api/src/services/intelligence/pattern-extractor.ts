@@ -5,6 +5,8 @@
  * Part of Section 6: Multi-Agent Evolution Layer
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 
@@ -242,7 +244,7 @@ export class PatternExtractor {
         recommendations.push({
           type: pattern.type,
           recommendation: pattern.recommendation,
-          priority: pattern.frequency > 20 ? 'high' : pattern.frequency > 10 ? 'medium' : 'low',
+          priority: (pattern.frequency > 20 ? 'high' : pattern.frequency > 10 ? 'medium' : 'low') as 'high' | 'medium' | 'low',
           action: {
             createTemplate: pattern.type === 'mapping_template' || pattern.type === 'transform_recipe',
             createWorkflow: pattern.type === 'workflow',

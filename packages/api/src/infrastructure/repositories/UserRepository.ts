@@ -9,12 +9,12 @@ import { query } from "../../db";
 
 export class UserRepository implements IUserRepository {
   async findById(id: string): Promise<User | null> {
-    const rows = await query<UserProps>(
+    const rows = await query(
       `SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL`,
       [id]
     );
 
-    if (rows.length === 0) {
+    if (rows.length === 0 || !rows[0]) {
       return null;
     }
 
@@ -22,12 +22,12 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const rows = await query<UserProps>(
+    const rows = await query(
       `SELECT * FROM users WHERE email = $1 AND deleted_at IS NULL`,
       [email]
     );
 
-    if (rows.length === 0) {
+    if (rows.length === 0 || !rows[0]) {
       return null;
     }
 
@@ -97,7 +97,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async findAll(limit: number, offset: number): Promise<User[]> {
-    const rows = await query<UserProps>(
+    const rows = await query(
       `SELECT * FROM users WHERE deleted_at IS NULL
        ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
       [limit, offset]
@@ -118,24 +118,24 @@ export class UserRepository implements IUserRepository {
 
   private mapRowToProps(row: Record<string, unknown>): UserProps {
     const props: UserProps = {
-      id: row.id,
-      tenantId: row.tenant_id,
-      email: row.email,
-      passwordHash: row.password_hash,
+      id: row.id as string,
+      tenantId: row.tenant_id as string,
+      email: row.email as string,
+      passwordHash: row.password_hash as string,
       role: row.role as UserRole,
-      dataResidencyRegion: row.data_residency_region,
-      dataRetentionDays: row.data_retention_days,
-      createdAt: new Date(row.created_at),
-      updatedAt: new Date(row.updated_at),
+      dataResidencyRegion: row.data_residency_region as string,
+      dataRetentionDays: row.data_retention_days as number,
+      createdAt: new Date(row.created_at as string | number | Date),
+      updatedAt: new Date(row.updated_at as string | number | Date),
     };
     if (row.name !== null && row.name !== undefined) {
-      props.name = row.name;
+      props.name = row.name as string;
     }
     if (row.deleted_at) {
-      props.deletedAt = new Date(row.deleted_at);
+      props.deletedAt = new Date(row.deleted_at as string | number | Date);
     }
     if (row.deletion_scheduled_at) {
-      props.deletionScheduledAt = new Date(row.deletion_scheduled_at);
+      props.deletionScheduledAt = new Date(row.deletion_scheduled_at as string | number | Date);
     }
     return props;
   }

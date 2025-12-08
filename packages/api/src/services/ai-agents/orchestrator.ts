@@ -114,13 +114,17 @@ export class AgentOrchestrator extends EventEmitter {
    * List all agents
    */
   listAgents(): AgentConfig[] {
-    return Array.from(this.agents.values()).map((agent) => ({
-      id: agent.id,
-      name: agent.name,
-      type: agent.type,
-      enabled: agent.enabled,
-      config: agent.config,
-    }));
+    return Array.from(this.agents.values()).map((agent) => {
+      // Access protected properties through a helper method if needed
+      const agentAny = agent as unknown as { enabled: boolean; config: Record<string, unknown> };
+      return {
+        id: agent.id,
+        name: agent.name,
+        type: agent.type,
+        enabled: agentAny.enabled,
+        config: agentAny.config,
+      };
+    });
   }
 
   /**
@@ -133,7 +137,8 @@ export class AgentOrchestrator extends EventEmitter {
       throw new Error(`Agent ${request.agentId} not found`);
     }
 
-    if (!agent.enabled) {
+    const agentAny = agent as unknown as { enabled: boolean };
+    if (!agentAny.enabled) {
       throw new Error(`Agent ${request.agentId} is not enabled`);
     }
 
@@ -222,7 +227,7 @@ export class AgentOrchestrator extends EventEmitter {
   } {
     return {
       totalAgents: this.agents.size,
-      enabledAgents: Array.from(this.agents.values()).filter((a) => a.enabled).length,
+      enabledAgents: Array.from(this.agents.values()).filter((a) => (a as unknown as { enabled: boolean }).enabled).length,
       queueLength: this.requestQueue.length,
       isProcessing: this.isProcessing,
     };

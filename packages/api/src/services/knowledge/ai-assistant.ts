@@ -47,7 +47,8 @@ export class AIKnowledgeAssistant extends EventEmitter {
     // const incidents = await this.searchIncidents(query.question);
 
     // Generate answer using LLM (mock for now)
-    const answer = await this.generateAnswer(query, decisions);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const answer = await this.generateAnswer(query, decisions as any);
 
     return {
       answer,

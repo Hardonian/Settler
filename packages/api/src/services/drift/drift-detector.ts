@@ -5,6 +5,8 @@
  * Part of Phase III: Self-Healing AI Mesh
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { logInfo, logError } from '../../utils/logger';
 import { MultiAgentFallback } from '../ai-mesh/multi-agent-fallback';
@@ -160,7 +162,8 @@ export class DriftDetector {
     for (const field of allFields) {
       const sourceType = source[field];
       const targetType = target[field];
-      const contractType = contract?.properties?.[field]?.type;
+      const contractProps = contract && typeof contract === 'object' && 'properties' in contract ? contract.properties as Record<string, { type?: string }> : undefined;
+      const contractType = contractProps?.[field]?.type;
 
       if (sourceType && targetType && sourceType !== targetType) {
         drifts.push({

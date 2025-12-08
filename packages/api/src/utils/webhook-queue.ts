@@ -170,7 +170,7 @@ export async function queueWebhookDelivery(
     id: deliveryId,
     webhookId,
     url: webhook.url,
-    payload,
+    payload: payload as WebhookPayload,
     secret: webhook.secret,
   }).catch((error) => {
     logError("Failed to process webhook delivery", error, { deliveryId });

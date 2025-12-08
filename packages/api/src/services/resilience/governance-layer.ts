@@ -5,6 +5,8 @@
  * Part 11: Resilience & Zero-Fault Hardening
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 
@@ -147,10 +149,11 @@ export class GovernanceLayer {
         };
       }
 
-      if (proposedChange.versionJump && proposedChange.versionJump > guardrail.maxVersionJump) {
+      const maxVersionJump = typeof guardrail.maxVersionJump === 'number' ? guardrail.maxVersionJump : 0;
+      if (proposedChange.versionJump && proposedChange.versionJump > maxVersionJump) {
         return {
           allowed: false,
-          reason: `Version jump exceeds maximum (${guardrail.maxVersionJump})`,
+          reason: `Version jump exceeds maximum (${maxVersionJump})`,
         };
       }
     }

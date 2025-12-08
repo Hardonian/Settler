@@ -5,6 +5,8 @@
  * Supports HMAC signing, retry logic, and event filtering
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient, Prisma } from '@prisma/client';
 import crypto from 'crypto';
 import { logError, logInfo } from '../../utils/logger';

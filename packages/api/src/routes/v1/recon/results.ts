@@ -7,6 +7,10 @@
 
 import { Router, Response } from 'express';
 import { ReconCoreEngine } from '../../../services/recon-core';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import type { PrismaClient } from '@prisma/client';
 import { handleRouteError } from '../../../utils/error-handler';
 import { authMiddleware } from '../../../middleware/auth';

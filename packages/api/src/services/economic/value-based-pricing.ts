@@ -5,6 +5,8 @@
  * Part 12: Economic & Marketplace Intelligence Engine
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 import { MetaModels } from '../predictive/meta-models';
@@ -319,9 +321,10 @@ export class ValueBasedPricing {
     usage: { totalJobs?: number; [key: string]: unknown },
     analysis: PricingAnalysis
   ): string {
-    if (usage.totalJobs < 100) return 'starter';
-    if (usage.totalJobs < 1000) return 'professional';
-    if (usage.totalJobs < 10000) return 'enterprise';
+    const totalJobs = usage.totalJobs ?? 0;
+    if (totalJobs < 100) return 'starter';
+    if (totalJobs < 1000) return 'professional';
+    if (totalJobs < 10000) return 'enterprise';
     return 'custom';
   }
 }

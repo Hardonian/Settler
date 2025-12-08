@@ -5,6 +5,8 @@
  * Part of Phase V: AIOS
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient, Prisma } from '@prisma/client';
 import { logInfo, logError } from '../../utils/logger';
 
@@ -44,7 +46,7 @@ export class ContractManager {
         tenantId,
         contractName,
         version,
-        schemaDefinition: schema as Record<string, unknown>,
+        schemaDefinition: schema as unknown as Record<string, unknown>,
         isActive: true,
       },
     });
@@ -111,8 +113,10 @@ export class ContractManager {
     // Detect type changes
     for (const field of newFields) {
       if (oldFields.includes(field)) {
-        const oldType = oldSchema.properties![field]?.type;
-        const newType = newSchema.properties![field]?.type;
+        const oldField = oldSchema.properties?.[field] as { type?: string } | undefined;
+        const newField = newSchema.properties?.[field] as { type?: string } | undefined;
+        const oldType = oldField?.type;
+        const newType = newField?.type;
         
         if (oldType !== newType) {
           breakingChanges.push({

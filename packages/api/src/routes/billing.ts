@@ -565,7 +565,7 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
     try {
       // Get raw body (set by middleware or use req.body if Buffer)
       const rawBody =
-        (req as Request & { rawBody?: Buffer }).rawBody ||
+        (req as unknown as Request & { rawBody?: Buffer }).rawBody ||
         (req.body instanceof Buffer ? req.body : Buffer.from(JSON.stringify(req.body)));
       event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
     } catch (err) {
@@ -630,7 +630,8 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
 
 // Helper function to handle subscription updates
 async function handleSubscriptionUpdate(
-  supabase: { from: (table: string) => { update: (data: Record<string, unknown>) => { eq: (col: string, val: string) => Promise<{ error: unknown }> } } },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   subscription: Stripe.Subscription
 ) {
   const { error } = await supabase

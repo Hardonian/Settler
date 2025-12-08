@@ -162,9 +162,11 @@ export function featureFlagsMiddleware() {
   return async (req: FeatureFlagRequest, _res: Response, next: NextFunction) => {
     try {
       const reqWithUser = req as RequestWithUser;
+      const tenantId = reqWithUser.tenantId || reqWithUser.user?.tenantId;
+      const userId = reqWithUser.userId || reqWithUser.user?.id;
       const context: FeatureFlagContext = {
-        tenantId: reqWithUser.tenantId || reqWithUser.user?.tenantId,
-        userId: reqWithUser.userId || reqWithUser.user?.id,
+        ...(tenantId ? { tenantId } : {}),
+        ...(userId ? { userId } : {}),
         environment: process.env.NODE_ENV || "development",
       };
 

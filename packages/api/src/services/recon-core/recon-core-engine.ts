@@ -10,6 +10,8 @@
  * Part of Phase I: Platform Audit + Recon Core Foundation
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { logError, logInfo } from '../../utils/logger';
 import { WebhookService } from '../webhooks/webhook-service';
@@ -428,7 +430,6 @@ export class ReconCoreEngine {
       totalAmountTarget,
       totalAmountMatched,
       totalAmountUnmatched,
-      currency: sourceData[0]?.currency || targetData[0]?.currency || null,
       confidenceAvg,
       confidenceMin,
       confidenceMax,
@@ -446,11 +447,7 @@ export class ReconCoreEngine {
           unmatched: totalAmountUnmatched,
           total: totalAmountSource || totalAmountTarget || null,
         },
-        currency: sourceData[0] && typeof sourceData[0] === 'object' && 'currency' in sourceData[0]
-          ? String(sourceData[0].currency)
-          : targetData[0] && typeof targetData[0] === 'object' && 'currency' in targetData[0]
-          ? String(targetData[0].currency)
-          : undefined,
+        ...(sourceData[0]?.currency || targetData[0]?.currency ? { currency: String(sourceData[0]?.currency || targetData[0]?.currency || '') } : {}),
       },
     };
   }

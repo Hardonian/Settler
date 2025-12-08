@@ -107,6 +107,7 @@ export class MultiRegionManager {
 
     for (let i = 0; i < regionsToTry.length; i++) {
       const regionId = regionsToTry[i];
+      if (!regionId) continue;
       const region = this.regions.get(regionId);
 
       if (region && region.available) {
