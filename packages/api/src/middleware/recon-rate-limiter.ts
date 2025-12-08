@@ -7,6 +7,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
+import type { TenantRequest } from './tenant';
 
 interface RateLimitConfig {
   rpm: number; // Requests per minute
@@ -78,12 +79,14 @@ export class ReconRateLimiter {
    * Get tenant tier
    */
   private async getTenantTier(tenantId: string): Promise<string> {
-    const tenant = await this.prisma.tenant.findUnique({
-      where: { id: tenantId },
-      select: { tier: true },
-    });
-
-    return tenant?.tier || 'free';
+    try {
+      const result = await this.prisma.$queryRaw<Array<{ tier: string }>>`
+        SELECT tier FROM tenants WHERE id = ${tenantId}::uuid
+      `;
+      return result[0]?.tier || 'free';
+    } catch {
+      return 'free';
+    }
   }
 
   /**
@@ -126,7 +129,7 @@ export class ReconRateLimiter {
    * Middleware for rate limiting
    */
   middleware() {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: TenantRequest, res: Response, next: NextFunction) => {
       const tenantId = req.tenantId;
       if (!tenantId) {
         return res.status(401).json({ error: 'Unauthorized' });

@@ -14,6 +14,7 @@ import { PrismaClient } from '@prisma/client';
 import { logError, logInfo } from '../../utils/logger';
 import { WebhookService } from '../webhooks/webhook-service';
 import { ReconUsageTracker } from '../usage/recon-usage-tracker';
+import { eventBus } from '../events/event-bus';
 import type {
   ReconJobInput,
   ReconJob,
@@ -215,6 +216,13 @@ export class ReconCoreEngine {
         summary: results.summary,
       });
 
+      // Step 11: Emit event
+      await eventBus.emitEvent('recon.completed', tenantId, {
+        reconJobId,
+        reconResultId: updatedResult.id,
+        summary: results.summary,
+      });
+
       return updatedResult;
     } catch (error) {
       const durationMs = Date.now() - startTime;
@@ -250,6 +258,13 @@ export class ReconCoreEngine {
         reconJobId,
         reconResultId: failedResult.id,
         status: 'failed',
+        error: errorMessage,
+      });
+
+      // Emit event
+      await eventBus.emitEvent('recon.failed', tenantId, {
+        reconJobId,
+        reconResultId: failedResult.id,
         error: errorMessage,
       });
 

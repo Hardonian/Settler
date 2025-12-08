@@ -10,7 +10,8 @@ import { ReconCoreEngine } from '../../../services/recon-core';
 import { PrismaClient } from '@prisma/client';
 import { handleRouteError } from '../../../utils/error-handler';
 import { authenticateRequest } from '../../../middleware/auth';
-import { getTenantId } from '../../../middleware/tenant';
+import { tenantMiddleware } from '../../../middleware/tenant';
+import type { TenantRequest } from '../../../middleware/tenant';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -23,8 +24,8 @@ const reconEngine = new ReconCoreEngine(prisma);
 router.get(
   '/',
   authenticateRequest,
-  getTenantId,
-  async (req: Request, res: Response) => {
+  tenantMiddleware,
+  async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const jobId = req.params.jobId || req.query.jobId as string;
@@ -65,8 +66,8 @@ router.get(
 router.get(
   '/:resultId',
   authenticateRequest,
-  getTenantId,
-  async (req: Request, res: Response) => {
+  tenantMiddleware,
+  async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const { resultId } = req.params;

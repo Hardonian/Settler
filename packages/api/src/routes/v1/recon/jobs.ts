@@ -10,7 +10,8 @@ import { ReconCoreEngine } from '../../../services/recon-core';
 import { PrismaClient } from '@prisma/client';
 import { handleRouteError } from '../../../utils/error-handler';
 import { authenticateRequest } from '../../../middleware/auth';
-import { getTenantId } from '../../../middleware/tenant';
+import { tenantMiddleware } from '../../../middleware/tenant';
+import type { TenantRequest } from '../../../middleware/tenant';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -23,8 +24,8 @@ const reconEngine = new ReconCoreEngine(prisma);
 router.post(
   '/',
   authenticateRequest,
-  getTenantId,
-  async (req: Request, res: Response) => {
+  tenantMiddleware,
+  async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const userId = req.userId!;
@@ -63,8 +64,8 @@ router.post(
 router.get(
   '/',
   authenticateRequest,
-  getTenantId,
-  async (req: Request, res: Response) => {
+  tenantMiddleware,
+  async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const status = req.query.status as string | undefined;
@@ -98,8 +99,8 @@ router.get(
 router.get(
   '/:jobId',
   authenticateRequest,
-  getTenantId,
-  async (req: Request, res: Response) => {
+  tenantMiddleware,
+  async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const { jobId } = req.params;
@@ -127,8 +128,8 @@ router.get(
 router.post(
   '/:jobId/execute',
   authenticateRequest,
-  getTenantId,
-  async (req: Request, res: Response) => {
+  tenantMiddleware,
+  async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const { jobId } = req.params;
