@@ -21,7 +21,7 @@ export interface FailurePrediction {
 
 export class PredictiveOps {
   private prisma: PrismaClient;
-  private predictions: FailurePrediction[] = [];
+  private _predictions: FailurePrediction[] = [];
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;

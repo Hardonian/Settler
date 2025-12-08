@@ -51,9 +51,9 @@ export class UsageOptimizer {
     // Analyze AI token usage
     const aiUsage = usageEvents.filter((e: { eventType: string }) => e.eventType === 'ai_tokens');
     const totalTokens = aiUsage.reduce((sum: number, e: { quantity: unknown }) => sum + Number(e.quantity), 0);
-    const avgCost = aiUsage.length > 0 ? aiUsage.reduce((sum: number, e: { metadata?: Record<string, unknown> }) => {
+    const avgCost = aiUsage.length > 0 ? aiUsage.reduce((sum: number, e: { metadata?: Record<string, unknown>; quantity?: unknown }) => {
       const model = e.metadata?.['model'] as string | undefined;
-      if (model) {
+      if (model && e.quantity !== undefined) {
         // Validate model is a valid AIModel before using
         const validModels: readonly string[] = ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet', 'claude-3-haiku', 'local-llm'];
         if (validModels.includes(model)) {

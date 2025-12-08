@@ -22,10 +22,10 @@ export interface AIConfig {
 }
 
 export class AIConfigManager {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**

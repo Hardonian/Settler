@@ -150,7 +150,8 @@ export class GovernanceLayer {
       }
 
       const maxVersionJump = typeof guardrail.maxVersionJump === 'number' ? guardrail.maxVersionJump : 0;
-      if (proposedChange.versionJump && proposedChange.versionJump > maxVersionJump) {
+      const versionJump = typeof proposedChange.versionJump === 'number' ? proposedChange.versionJump : 0;
+      if (versionJump > maxVersionJump) {
         return {
           allowed: false,
           reason: `Version jump exceeds maximum (${maxVersionJump})`,

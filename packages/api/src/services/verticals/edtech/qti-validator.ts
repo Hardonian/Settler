@@ -16,16 +16,17 @@ export interface QTIValidationResult {
   warnings: string[];
 }
 
-interface Syllabus {
-  outcomes?: string[];
-  [key: string]: unknown;
-}
-
-interface LearningOutcome {
-  id: string;
-  description: string;
-  [key: string]: unknown;
-}
+// Syllabus and LearningOutcome types are defined but unused - may be used in future implementations
+// interface Syllabus {
+//   outcomes?: string[];
+//   [key: string]: unknown;
+// }
+//
+// interface LearningOutcome {
+//   id: string;
+//   description: string;
+//   [key: string]: unknown;
+// }
 
 export class QTIValidator {
   /**
