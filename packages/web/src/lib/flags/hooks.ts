@@ -292,7 +292,7 @@ export function useExperimentConversion(experimentKey: FlagKey) {
     conversionName: string,
     properties?: {
       value?: number;
-      [key: string]: any;
+      [key: string]: unknown;
     }
   ) => {
     ProductEvents.conversions.subscriptionStarted({

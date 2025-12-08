@@ -12,6 +12,23 @@ export interface ReferralReward {
   status: "pending" | "completed" | "rewarded";
 }
 
+interface Referral {
+  id: string;
+  referrer_user_id: string;
+  referred_user_id?: string;
+  referral_code: string;
+  status: "pending" | "completed" | "rewarded";
+  completed_at?: string;
+  reward_amount?: number;
+  reward_currency?: string;
+  updated_at?: string;
+}
+
+interface User {
+  id: string;
+  email?: string;
+}
+
 /**
  * Generate unique referral code for user
  */
@@ -27,12 +44,14 @@ export async function generateReferralCode(userId: string): Promise<string> {
     .single();
 
   if (existing) {
-    return (existing as any).referral_code;
+    const existingData = existing as Referral;
+    return existingData.referral_code;
   }
 
   // Generate new code (user initials + random)
   const { data: user } = await supabase.from("users").select("email").eq("id", userId).single();
-  const initials = (user as any)?.email?.substring(0, 2).toUpperCase() || "US";
+  const userData = user as User | null;
+  const initials = userData?.email?.substring(0, 2).toUpperCase() || "US";
   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
   const code = `${initials}${random}`;
 
@@ -41,7 +60,7 @@ export async function generateReferralCode(userId: string): Promise<string> {
     referrer_user_id: userId,
     referral_code: code,
     status: "pending",
-  } as any);
+  } as Referral);
 
   return code;
 }
@@ -67,8 +86,10 @@ export async function applyReferralCode(
     return { success: false, error: "Invalid referral code" };
   }
 
+  const referralData = referral as Referral;
+
   // Check if user is referring themselves
-  if ((referral as any).referrer_user_id === newUserId) {
+  if (referralData.referrer_user_id === newUserId) {
     return { success: false, error: "Cannot use your own referral code" };
   }
 
@@ -79,8 +100,8 @@ export async function applyReferralCode(
       referred_user_id: newUserId,
       status: "completed",
       completed_at: new Date().toISOString(),
-    } as any as never)
-    .eq("id", (referral as any).id);
+    } as Partial<Referral>)
+    .eq("id", referralData.id);
 
   if (updateError) {
     return { success: false, error: "Failed to apply referral code" };
@@ -89,7 +110,7 @@ export async function applyReferralCode(
   // Award reward (when referred user upgrades to paid)
   // This will be triggered when the referred user upgrades
 
-  return { success: true, referrerUserId: (referral as any).referrer_user_id };
+  return { success: true, referrerUserId: referralData.referrer_user_id };
 }
 
 /**
@@ -114,6 +135,8 @@ export async function awardReferralReward(
     return; // No referral found
   }
 
+  const referralData = referral as Referral;
+
   // Update referral with reward
   await supabase
     .from("referrals")
@@ -122,8 +145,8 @@ export async function awardReferralReward(
       reward_amount: rewardAmount,
       reward_currency: rewardCurrency,
       updated_at: new Date().toISOString(),
-    } as any as never)
-    .eq("id", (referral as any).id);
+    } as Partial<Referral>)
+    .eq("id", referralData.id);
 
   // TODO: Send reward to referrer (credit account, send gift card, etc.)
 }
@@ -150,9 +173,9 @@ export async function getReferralStats(userId: string): Promise<{
 
   const totalReferrals = referrals?.length || 0;
   const completedReferrals =
-    referrals?.filter((r: any) => r.status === "completed" || r.status === "rewarded").length || 0;
+    referrals?.filter((r: Referral) => r.status === "completed" || r.status === "rewarded").length || 0;
   const totalRewards =
-    referrals?.reduce((sum: number, r: any) => sum + (r.reward_amount || 0), 0) || 0;
+    referrals?.reduce((sum: number, r: Referral) => sum + (r.reward_amount || 0), 0) || 0;
 
   return {
     referralCode: code,

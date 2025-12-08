@@ -21,7 +21,7 @@ export function ObservabilityExample() {
   const trackCTA = useTrackCTA();
   const { start, submit } = useTrackForm('example_form');
   const { trackEvent, trackError } = useAnalytics();
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 

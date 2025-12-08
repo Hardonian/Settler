@@ -15,7 +15,7 @@ interface CustomProviderConfig {
 
 class CustomProvider implements AnalyticsProvider {
   private config: CustomProviderConfig;
-  private eventQueue: Array<{ type: string; data: any }> = [];
+  private eventQueue: Array<{ type: string; data: Record<string, unknown> }> = [];
   private flushTimer?: NodeJS.Timeout;
 
   constructor(config: CustomProviderConfig) {
@@ -45,7 +45,7 @@ class CustomProvider implements AnalyticsProvider {
     }
   }
 
-  private async sendEvent(type: string, data: any) {
+  private async sendEvent(type: string, data: Record<string, unknown>) {
     try {
       const response = await fetch(this.config.endpoint, {
         method: 'POST',

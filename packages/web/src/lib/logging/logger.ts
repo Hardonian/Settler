@@ -57,7 +57,7 @@ class AppLogger implements Logger {
         name: error.name,
         message: error.message,
         stack: error.stack,
-      } as any : undefined,
+      } : undefined,
       userId: this.userId,
       sessionId: this.sessionId,
       url: typeof window !== 'undefined' ? window.location.href : undefined,

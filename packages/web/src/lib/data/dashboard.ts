@@ -43,7 +43,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   try {
     const result = await supabase.rpc('get_kpi_health_status').single() as {
       data: KpiHealthData | null;
-      error: any;
+      error: Error | null;
     };
     if (result.data) {
       kpiData = result.data;
