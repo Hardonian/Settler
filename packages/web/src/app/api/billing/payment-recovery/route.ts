@@ -36,9 +36,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if grace period has expired
-    if (data && data.length > 0) {
-      const recovery = data[0] as { id: string; grace_period_ends_at?: string } | undefined;
-      if (recovery && recovery.grace_period_ends_at && new Date(recovery.grace_period_ends_at) < new Date()) {
+    if (data && data.length > 0 && data[0]) {
+      const recovery = data[0] as { id: string; grace_period_ends_at?: string };
+      if (recovery.grace_period_ends_at && new Date(recovery.grace_period_ends_at) < new Date()) {
         // Grace period expired, update status
         await supabase
           .from("payment_recovery")
