@@ -1,7 +1,14 @@
 /**
- * Platform Intelligence Services Index
+ * Platform Intelligence Services
+ * 
+ * Consolidated exports for intelligence services
  */
 
-export { UsageOptimizer, type UsageOptimization } from './usage-optimizer';
-export { HealthOptimizer, type HealthRecommendation } from './health-optimizer';
-export { ProductEvolutionAI, type ProductProposal } from './product-evolution';
+export { UsageOptimizer } from './usage-optimizer';
+export { HealthOptimizer } from './health-optimizer';
+export { ProductEvolutionAI } from './product-evolution';
+export { PatternExtractor } from './pattern-extractor';
+export { PredictiveRouter } from './predictive-router';
+
+export type { ExtractedPattern } from './pattern-extractor';
+export type { RoutingDecision } from './predictive-router';

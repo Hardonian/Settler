@@ -13,6 +13,7 @@ import exportsRouter from "./exports";
 import currencyRouter from "./currency";
 import webhookReceiveRouter from "./webhooks/receive";
 import reconRouter from "./recon";
+import pricingRouter from "./pricing";
 
 export const v1Router = Router();
 
@@ -30,6 +31,9 @@ v1Router.use("/currency", currencyRouter);
 
 // Recon Core Engine routes (Phase I)
 v1Router.use("/recon", reconRouter);
+
+// Pricing Intelligence routes (Section 9)
+v1Router.use("/pricing", pricingRouter);
 
 // Health check
 v1Router.get("/health", (_req, res) => {

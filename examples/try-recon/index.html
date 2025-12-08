@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Try Recon - Settler.dev</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .container {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 2rem;
+    }
+    h1 {
+      color: #111827;
+    }
+    .step {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+    .code-block {
+      background: #1f2937;
+      color: #f9fafb;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+    }
+    button {
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background: #0284c7;
+    }
+    .result {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #dcfce7;
+      border-radius: 4px;
+      border: 1px solid #86efac;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Try Recon - Interactive Setup</h1>
+    <p>Get started with Settler.dev in 5 minutes</p>
+
+    <div class="step">
+      <h2>Step 1: Get Your API Key</h2>
+      <p>Sign up at <a href="https://app.settler.io">app.settler.io</a> to get your API key.</p>
+      <input type="text" id="apiKey" placeholder="sk_your_api_key" style="width: 100%; padding: 0.5rem; margin-top: 0.5rem;">
+    </div>
+
+    <div class="step">
+      <h2>Step 2: Create a Reconciliation Job</h2>
+      <div class="code-block">
+const job = await fetch('https://api.settler.io/api/v1/recon/jobs', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'My First Reconciliation',
+    sourceAdapter: 'stripe',
+    targetAdapter: 'internal_ledger',
+    reconStrategy: 'deterministic'
+  })
+});
+
+const jobData = await job.json();
+console.log('Job created:', jobData);
+      </div>
+      <button onclick="createJob()">Create Job</button>
+      <div id="jobResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="step">
+      <h2>Step 3: Execute Reconciliation</h2>
+      <div class="code-block">
+const result = await fetch(`https://api.settler.io/api/v1/recon/jobs/${jobId}/execute`, {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+const resultData = await result.json();
+console.log('Reconciliation complete:', resultData);
+      </div>
+      <button onclick="executeJob()">Execute Job</button>
+      <div id="executeResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="step">
+      <h2>Step 4: View Results</h2>
+      <div class="code-block">
+const results = await fetch(`https://api.settler.io/api/v1/recon/jobs/${jobId}/results`, {
+  headers: {
+    'X-API-Key': 'YOUR_API_KEY'
+  }
+});
+
+const resultsData = await results.json();
+console.log('Results:', resultsData);
+      </div>
+      <button onclick="viewResults()">View Results</button>
+      <div id="resultsDisplay" class="result" style="display: none;"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://api.settler.io/api/v1';
+    let currentJobId = null;
+
+    function getApiKey() {
+      return document.getElementById('apiKey').value || 'YOUR_API_KEY';
+    }
+
+    async function createJob() {
+      const apiKey = getApiKey();
+      const resultDiv = document.getElementById('jobResult');
+      
+      try {
+        const response = await fetch(`${API_BASE}/recon/jobs`, {
+          method: 'POST',
+          headers: {
+            'X-API-Key': apiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: 'My First Reconciliation',
+            sourceAdapter: 'stripe',
+            targetAdapter: 'internal_ledger',
+            reconStrategy: 'deterministic'
+          })
+        });
+
+        const data = await response.json();
+        currentJobId = data.data?.id;
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<strong>Job created!</strong><br>Job ID: ${currentJobId}`;
+      } catch (error) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+      }
+    }
+
+    async function executeJob() {
+      if (!currentJobId) {
+        alert('Please create a job first');
+        return;
+      }
+
+      const apiKey = getApiKey();
+      const resultDiv = document.getElementById('executeResult');
+      
+      try {
+        const response = await fetch(`${API_BASE}/recon/jobs/${currentJobId}/execute`, {
+          method: 'POST',
+          headers: {
+            'X-API-Key': apiKey,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<strong>Reconciliation executed!</strong><br>Result ID: ${data.data?.id}`;
+      } catch (error) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+      }
+    }
+
+    async function viewResults() {
+      if (!currentJobId) {
+        alert('Please create a job first');
+        return;
+      }
+
+      const apiKey = getApiKey();
+      const resultDiv = document.getElementById('resultsDisplay');
+      
+      try {
+        const response = await fetch(`${API_BASE}/recon/jobs/${currentJobId}/results`, {
+          headers: {
+            'X-API-Key': apiKey
+          }
+        });
+
+        const data = await response.json();
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<strong>Results:</strong><pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
