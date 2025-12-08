@@ -5,7 +5,7 @@
  */
 
 import { Router, Response } from 'express';
-import type { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { authMiddleware } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 import { AutonomousEvolutionLayer } from '../../services/ael/autonomous-evolution-layer';
@@ -29,10 +29,11 @@ router.get(
         data: proposals,
         message: 'Evolution cycle completed',
       });
-    } catch (error: any) {
-      res.status(500).json({
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({
         error: 'EvolutionError',
-        message: error.message,
+        message: errorMessage,
       });
     }
   }
@@ -49,14 +50,15 @@ router.get(
   async (_req: TenantRequest, res: Response) => {
     try {
       const log = ael.getEvolutionLog();
-      res.json({
+      return res.json({
         data: log,
         message: 'Evolution log retrieved',
       });
-    } catch (error: any) {
-      res.status(500).json({
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({
         error: 'EvolutionError',
-        message: error.message,
+        message: errorMessage,
       });
     }
   }

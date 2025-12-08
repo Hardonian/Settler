@@ -13,7 +13,7 @@ export interface HealthRecommendation {
   description: string;
   confidence: number;
   impact: 'low' | 'medium' | 'high';
-  action: any;
+  action: Record<string, unknown>;
 }
 
 export class HealthOptimizer {

@@ -51,7 +51,12 @@ router.post("/exports", async (req: Request, res: Response) => {
  */
 router.get("/exports", async (req: Request, res: Response) => {
   try {
-    const customerId = (req as any).user?.id || (req.query.customerId as string);
+    interface RequestWithUser extends Request {
+      user?: { id?: string };
+    }
+
+    const reqWithUser = req as RequestWithUser;
+    const customerId = reqWithUser.user?.id || (req.query.customerId as string);
 
     if (!customerId) {
       return res.status(400).json({

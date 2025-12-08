@@ -103,11 +103,14 @@ export class SecretsManager {
   /**
    * Mask sensitive data in objects
    */
-  static maskSensitiveFields(obj: any, fields: string[]): any {
-    const masked = { ...obj };
+  static maskSensitiveFields<T extends Record<string, unknown>>(
+    obj: T,
+    fields: string[]
+  ): T {
+    const masked = { ...obj } as T;
     for (const field of fields) {
-      if (masked[field]) {
-        masked[field] = this.redactSecret(String(masked[field]), field);
+      if (field in masked && masked[field] !== undefined && masked[field] !== null) {
+        masked[field] = this.redactSecret(String(masked[field]), field) as T[Extract<keyof T, string>];
       }
     }
     return masked;

@@ -123,9 +123,9 @@ export class TemplateImprover {
       });
 
       const avgDuration = results
-        .filter(r => r.completedAt && r.startedAt)
-        .map(r => r.completedAt!.getTime() - r.startedAt!.getTime())
-        .reduce((a, b, _, arr) => a + b / arr.length, 0);
+        .filter((r) => r.completedAt && r.startedAt)
+        .map((r) => r.completedAt!.getTime() - r.startedAt!.getTime())
+        .reduce((a: number, b: number, _: number, arr: typeof results) => a + b / arr.length, 0);
 
       if (avgDuration > 10000) { // > 10 seconds
         improvements.push({
@@ -199,9 +199,9 @@ export class TemplateImprover {
    */
   private incrementVersion(version: string): string {
     const parts = version.split('.');
-    const major = parseInt(parts[0]) || 1;
-    const minor = parseInt(parts[1]) || 0;
-    const patch = parseInt(parts[2]) || 0;
+    const major = parseInt(parts[0] ?? '1', 10) || 1;
+    const minor = parseInt(parts[1] ?? '0', 10) || 0;
+    const patch = parseInt(parts[2] ?? '0', 10) || 0;
     return `${major}.${minor}.${patch + 1}`;
   }
 

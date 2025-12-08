@@ -187,10 +187,16 @@ async function hasAddOn(billingAccountId: string, addOnIntegrationId: string): P
 /**
  * Get current usage for event type in current period
  */
+interface Subscription {
+  current_period_start: string | number | Date;
+  current_period_end: string | number | Date;
+  plan_id?: string;
+}
+
 async function getCurrentUsage(
   billingAccountId: string,
   eventType: string,
-  subscription: any
+  subscription: Subscription
 ): Promise<number> {
   try {
     const startDate = new Date(subscription.current_period_start).toISOString().split("T")[0];

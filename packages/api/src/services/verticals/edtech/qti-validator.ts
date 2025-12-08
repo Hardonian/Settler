@@ -33,12 +33,23 @@ export class QTIValidator {
     };
   }
 
+  interface Syllabus {
+    outcomes?: string[];
+    [key: string]: unknown;
+  }
+
+  interface LearningOutcome {
+    id: string;
+    description: string;
+    [key: string]: unknown;
+  }
+
   /**
    * Validate learning outcome mapping
    */
   async validateLearningOutcomes(
-    syllabus: any,
-    outcomes: any[]
+    syllabus: Syllabus,
+    outcomes: LearningOutcome[]
   ): Promise<{
     valid: boolean;
     missing: string[];

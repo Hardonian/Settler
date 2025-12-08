@@ -21,8 +21,8 @@ export interface PipelineChange {
   type: 'node_upgrade' | 'logic_rewrite' | 'patch' | 'optimization';
   nodeId: string;
   description: string;
-  oldLogic: any;
-  newLogic: any;
+  oldLogic: Record<string, unknown>;
+  newLogic: Record<string, unknown>;
 }
 
 export class PipelineRewriter {
@@ -45,7 +45,7 @@ export class PipelineRewriter {
     });
 
     // Group by workflow ID
-    const workflowGroups = new Map<string, any[]>();
+    const workflowGroups = new Map<string, typeof workflows>();
     for (const workflow of workflows) {
       const id = workflow.workflowId;
       if (!workflowGroups.has(id)) {
@@ -68,7 +68,10 @@ export class PipelineRewriter {
   /**
    * Analyze workflow for rewrite opportunities
    */
-  private async analyzeWorkflow(workflowId: string, runs: any[]): Promise<PipelineRewrite | null> {
+  private async analyzeWorkflow(
+    workflowId: string,
+    runs: Array<{ workflowId: string; [key: string]: unknown }>
+  ): Promise<PipelineRewrite | null> {
     // Check for outdated patterns
     const outdatedPatterns = this.detectOutdatedPatterns(runs);
     
@@ -109,25 +112,35 @@ export class PipelineRewriter {
     };
   }
 
+  interface OutdatedPattern {
+    type: 'outdated_node' | 'incompatible_node' | 'inefficient_logic';
+    nodeId: string;
+    oldLogic: Record<string, unknown>;
+    newLogic: Record<string, unknown>;
+  }
+
+  interface WorkflowStep {
+    id: string;
+    type: string;
+    config?: Record<string, unknown>;
+    [key: string]: unknown;
+  }
+
+  interface WorkflowRun {
+    workflowId: string;
+    steps?: WorkflowStep[];
+    [key: string]: unknown;
+  }
+
   /**
    * Detect outdated patterns in workflow runs
    */
-  private detectOutdatedPatterns(runs: any[]): Array<{
-    type: 'outdated_node' | 'incompatible_node' | 'inefficient_logic';
-    nodeId: string;
-    oldLogic: any;
-    newLogic: any;
-  }> {
-    const patterns: Array<{
-      type: 'outdated_node' | 'incompatible_node' | 'inefficient_logic';
-      nodeId: string;
-      oldLogic: any;
-      newLogic: any;
-    }> = [];
+  private detectOutdatedPatterns(runs: WorkflowRun[]): OutdatedPattern[] {
+    const patterns: OutdatedPattern[] = [];
 
     // Analyze step configurations
     for (const run of runs) {
-      const steps = run.steps || [];
+      const steps = (run.steps || []) as WorkflowStep[];
       for (const step of steps) {
         // Check for deprecated step types
         if (this.isDeprecatedStepType(step.type)) {
@@ -165,7 +178,7 @@ export class PipelineRewriter {
   /**
    * Upgrade step to new version
    */
-  private upgradeStep(step: any): any {
+  private upgradeStep(step: WorkflowStep): Record<string, unknown> {
     // Map old step types to new ones
     const typeMapping: Record<string, string> = {
       'legacy_transform': 'transform',
@@ -182,10 +195,10 @@ export class PipelineRewriter {
   /**
    * Check if step has incompatible configuration
    */
-  private isIncompatibleConfig(step: any): boolean {
+  private isIncompatibleConfig(step: WorkflowStep): boolean {
     // Check for incompatible config patterns
-    if (step.config && step.config.legacyFormat) {
-      return true;
+    if (step.config && typeof step.config === 'object' && 'legacyFormat' in step.config) {
+      return Boolean(step.config.legacyFormat);
     }
     return false;
   }
@@ -193,11 +206,11 @@ export class PipelineRewriter {
   /**
    * Patch step to fix incompatibility
    */
-  private patchStep(step: any): any {
+  private patchStep(step: WorkflowStep): Record<string, unknown> {
     return {
       ...step,
       config: {
-        ...step.config,
+        ...(step.config || {}),
         legacyFormat: false,
         migrated: true,
       },

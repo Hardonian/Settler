@@ -113,7 +113,7 @@ export class ValueBasedPricing {
     return {
       personalizedPrice,
       usageTier,
-      enterpriseDealSimulation,
+      ...(enterpriseDealSimulation !== undefined && { enterpriseDealSimulation }),
     };
   }
 
@@ -133,7 +133,7 @@ export class ValueBasedPricing {
 
     const results = await this.prisma.reconResult.findMany({
       where: {
-        reconJobId: { in: jobs.map(j => j.id) },
+        reconJobId: { in: jobs.map((j) => j.id) },
       },
       take: 10000,
     });
@@ -146,7 +146,7 @@ export class ValueBasedPricing {
       take: 10000,
     });
 
-    const totalTokens = usageEvents.reduce((sum, event) => {
+    const totalTokens = usageEvents.reduce((sum: number, event) => {
       return sum + Number(event.quantity);
     }, 0);
 
@@ -193,14 +193,14 @@ export class ValueBasedPricing {
 
     const results = await this.prisma.reconResult.findMany({
       where: {
-        reconJobId: { in: jobs.map(j => j.id) },
+        reconJobId: { in: jobs.map((j) => j.id) },
       },
       take: 1000,
     });
 
     // Calculate difficulty based on failure rate and mismatch rate
-    const failures = results.filter(r => r.status === 'failed').length;
-    const mismatches = results.filter(r => r.status === 'unmatched').length;
+    const failures = results.filter((r) => r.status === 'failed').length;
+    const mismatches = results.filter((r) => r.status === 'unmatched').length;
     const total = results.length;
 
     if (total === 0) return 0;
@@ -226,7 +226,7 @@ export class ValueBasedPricing {
       take: 10000,
     });
 
-    return usageEvents.reduce((sum, event) => {
+    return usageEvents.reduce((sum: number, event) => {
       return sum + (Number(event.quantity) * 0.002 / 1000); // $0.002 per 1K tokens
     }, 0);
   }
@@ -234,7 +234,10 @@ export class ValueBasedPricing {
   /**
    * Estimate customer ROI
    */
-  private async estimateCustomerROI(tenantId: string, usage: any): Promise<number> {
+  private async estimateCustomerROI(
+    tenantId: string,
+    usage: { totalJobs: number; [key: string]: unknown }
+  ): Promise<number> {
     // Estimate ROI based on:
     // - Time saved (automation)
     // - Error reduction
@@ -299,7 +302,10 @@ export class ValueBasedPricing {
   /**
    * Determine pricing tier
    */
-  private determinePricingTier(price: number, usage: any): 'starter' | 'professional' | 'enterprise' | 'custom' {
+  private determinePricingTier(
+    price: number,
+    usage: { totalJobs?: number; [key: string]: unknown }
+  ): 'starter' | 'professional' | 'enterprise' | 'custom' {
     if (price < 500) return 'starter';
     if (price < 2000) return 'professional';
     if (price < 10000) return 'enterprise';
@@ -309,7 +315,10 @@ export class ValueBasedPricing {
   /**
    * Suggest usage tier
    */
-  private suggestUsageTier(usage: any, analysis: PricingAnalysis): string {
+  private suggestUsageTier(
+    usage: { totalJobs?: number; [key: string]: unknown },
+    analysis: PricingAnalysis
+  ): string {
     if (usage.totalJobs < 100) return 'starter';
     if (usage.totalJobs < 1000) return 'professional';
     if (usage.totalJobs < 10000) return 'enterprise';

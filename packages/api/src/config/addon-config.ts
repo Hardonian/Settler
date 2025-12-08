@@ -207,9 +207,19 @@ export function validateAddOnConfig(config: AddOnConfig): { valid: boolean; erro
 /**
  * Create add-on from configuration (for seeding database)
  */
+interface SupabaseClient {
+  from: (table: string) => {
+    insert: (data: Record<string, unknown>) => {
+      select: (columns: string) => {
+        single: () => Promise<{ data: { id: string } | null; error: Error | null }>;
+      };
+    };
+  };
+}
+
 export async function createAddOnFromConfig(
   config: AddOnConfig,
-  supabase: any
+  supabase: SupabaseClient
 ): Promise<string | null> {
   const validation = validateAddOnConfig(config);
   if (!validation.valid) {

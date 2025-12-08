@@ -8,6 +8,56 @@
 
 import { cleanEnv, str, num, url, bool, host, port } from "envalid";
 
+// Type for unvalidated env (used during Next.js build)
+type UnvalidatedEnv = {
+  NODE_ENV: "development" | "test" | "production" | "staging" | "preview";
+  PORT: number;
+  HOST: string;
+  DB_HOST: string;
+  DB_PORT: number;
+  DB_NAME: string;
+  DB_USER: string;
+  DB_PASSWORD: string;
+  DB_SSL: boolean;
+  DB_POOL_MIN: number;
+  DB_POOL_MAX: number;
+  DB_CONNECTION_TIMEOUT: number;
+  DB_STATEMENT_TIMEOUT: number;
+  REDIS_HOST: string;
+  REDIS_PORT: number;
+  REDIS_URL?: string;
+  REDIS_PASSWORD?: string;
+  REDIS_TLS: boolean;
+  JWT_SECRET: string;
+  JWT_ACCESS_EXPIRY: string;
+  JWT_REFRESH_EXPIRY: string;
+  JWT_REFRESH_SECRET?: string;
+  ENCRYPTION_KEY: string;
+  RATE_LIMIT_DEFAULT: number;
+  RATE_LIMIT_WINDOW_MS: number;
+  WEBHOOK_MAX_RETRIES: number;
+  WEBHOOK_INITIAL_DELAY: number;
+  WEBHOOK_MAX_DELAY: number;
+  DATA_RETENTION_DAYS: number;
+  ALLOWED_ORIGINS: string;
+  LOG_LEVEL: "error" | "warn" | "info" | "debug";
+  LOG_SAMPLING_RATE: number;
+  SERVICE_NAME: string;
+  OTLP_ENDPOINT?: string;
+  JAEGER_ENDPOINT?: string;
+  SENTRY_DSN?: string;
+  SENTRY_ENVIRONMENT?: string;
+  SENTRY_TRACES_SAMPLE_RATE: number;
+  ENABLE_SCHEMA_PER_TENANT: boolean;
+  ENABLE_REQUEST_TIMEOUT: boolean;
+  ENABLE_API_DOCS: boolean;
+  DEPLOYMENT_ENV: "local" | "staging" | "production";
+  TRUST_PROXY: boolean;
+  SECURE_COOKIES: boolean;
+  METRICS_ENABLED: boolean;
+  HEALTH_CHECK_ENABLED: boolean;
+};
+
 // Skip validation during Next.js build (when NEXT_PHASE is set)
 const skipValidation =
   process.env.NEXT_PHASE !== undefined ||
@@ -16,12 +66,7 @@ const skipValidation =
 
 const env = skipValidation
   ? ({
-      NODE_ENV: (process.env.NODE_ENV || "development") as
-        | "development"
-        | "test"
-        | "production"
-        | "staging"
-        | "preview",
+      NODE_ENV: (process.env.NODE_ENV || "development") as UnvalidatedEnv["NODE_ENV"],
       PORT: Number(process.env.PORT || 3000),
       HOST: process.env.HOST || "0.0.0.0",
       DB_HOST: process.env.DB_HOST || "localhost",
@@ -51,7 +96,7 @@ const env = skipValidation
       WEBHOOK_MAX_DELAY: Number(process.env.WEBHOOK_MAX_DELAY || 32000),
       DATA_RETENTION_DAYS: Number(process.env.DATA_RETENTION_DAYS || 365),
       ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS || "*",
-      LOG_LEVEL: (process.env.LOG_LEVEL || "info") as "error" | "warn" | "info" | "debug",
+      LOG_LEVEL: (process.env.LOG_LEVEL || "info") as UnvalidatedEnv["LOG_LEVEL"],
       LOG_SAMPLING_RATE: Number(process.env.LOG_SAMPLING_RATE || 1.0),
       SERVICE_NAME: process.env.SERVICE_NAME || "settler-api",
       OTLP_ENDPOINT: process.env.OTLP_ENDPOINT,
@@ -62,12 +107,12 @@ const env = skipValidation
       ENABLE_SCHEMA_PER_TENANT: process.env.ENABLE_SCHEMA_PER_TENANT === "true",
       ENABLE_REQUEST_TIMEOUT: process.env.ENABLE_REQUEST_TIMEOUT !== "false",
       ENABLE_API_DOCS: process.env.ENABLE_API_DOCS !== "false",
-      DEPLOYMENT_ENV: (process.env.DEPLOYMENT_ENV || "local") as "local" | "staging" | "production",
+      DEPLOYMENT_ENV: (process.env.DEPLOYMENT_ENV || "local") as UnvalidatedEnv["DEPLOYMENT_ENV"],
       TRUST_PROXY: process.env.TRUST_PROXY === "true",
       SECURE_COOKIES: process.env.SECURE_COOKIES === "true",
       METRICS_ENABLED: process.env.METRICS_ENABLED !== "false",
       HEALTH_CHECK_ENABLED: process.env.HEALTH_CHECK_ENABLED !== "false",
-    } as any)
+    } satisfies UnvalidatedEnv)
   : cleanEnv(process.env, {
       // Node Environment
       NODE_ENV: str({

@@ -8,11 +8,13 @@
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 
+export type ResourceType = 'workflow' | 'template' | 'transform' | 'mapping';
+
 export interface GovernanceRule {
   type: 'version_pinning' | 'immutability' | 'migration_guardrail' | 'audit_requirement';
-  resourceType: 'workflow' | 'template' | 'transform' | 'mapping';
+  resourceType: ResourceType;
   resourceId: string;
-  rule: any;
+  rule: Record<string, unknown>;
 }
 
 export interface EvolutionEvent {
@@ -22,7 +24,7 @@ export interface EvolutionEvent {
   newVersion: string;
   timestamp: Date;
   actor: string;
-  changes: any[];
+  changes: Array<Record<string, unknown>>;
 }
 
 export class GovernanceLayer {
@@ -37,10 +39,14 @@ export class GovernanceLayer {
   /**
    * Pin version
    */
-  async pinVersion(resourceType: string, resourceId: string, version: string): Promise<void> {
+  async pinVersion(
+    resourceType: ResourceType,
+    resourceId: string,
+    version: string
+  ): Promise<void> {
     const rule: GovernanceRule = {
       type: 'version_pinning',
-      resourceType: resourceType as any,
+      resourceType,
       resourceId,
       rule: { version },
     };
@@ -52,10 +58,13 @@ export class GovernanceLayer {
   /**
    * Create immutability zone
    */
-  async createImmutabilityZone(resourceType: string, resourceId: string): Promise<void> {
+  async createImmutabilityZone(
+    resourceType: ResourceType,
+    resourceId: string
+  ): Promise<void> {
     const rule: GovernanceRule = {
       type: 'immutability',
-      resourceType: resourceType as any,
+      resourceType,
       resourceId,
       rule: { immutable: true },
     };
@@ -68,7 +77,7 @@ export class GovernanceLayer {
    * Add migration guardrail
    */
   async addMigrationGuardrail(
-    resourceType: string,
+    resourceType: ResourceType,
     resourceId: string,
     guardrail: {
       allowBreakingChanges: boolean;
@@ -78,7 +87,7 @@ export class GovernanceLayer {
   ): Promise<void> {
     const rule: GovernanceRule = {
       type: 'migration_guardrail',
-      resourceType: resourceType as any,
+      resourceType,
       resourceId,
       rule: guardrail,
     };
@@ -91,9 +100,9 @@ export class GovernanceLayer {
    * Check if change is allowed
    */
   async isChangeAllowed(
-    resourceType: string,
+    resourceType: ResourceType,
     resourceId: string,
-    proposedChange: any
+    proposedChange: Record<string, unknown>
   ): Promise<{
     allowed: boolean;
     reason?: string;

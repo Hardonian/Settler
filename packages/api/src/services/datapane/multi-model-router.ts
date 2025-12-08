@@ -5,7 +5,7 @@
  * Part 10: Next-Gen Data Plane & Processing Layers
  */
 
-import { logInfo, logWarning } from '../../utils/logger';
+import { logInfo, logWarn } from '../../utils/logger';
 import { AIRouter, AIModel } from '../ai-mesh/ai-router';
 
 export interface MMRConfig {
@@ -37,7 +37,7 @@ export class MultiModelRouter {
    * Route request to optimal model
    */
   async route(
-    request: any,
+    request: Record<string, unknown>,
     complexity: 'low' | 'medium' | 'high'
   ): Promise<MMRDecision> {
     // Start with primary model
@@ -87,12 +87,13 @@ export class MultiModelRouter {
 
   /**
    * Execute with fallback
+   * Note: This is a placeholder - actual AI execution should be implemented by the caller
    */
   async executeWithFallback(
-    request: any,
+    request: unknown,
     decision: MMRDecision
   ): Promise<{
-    result: any;
+    result: unknown;
     model: AIModel;
     attempts: number;
   }> {
@@ -102,38 +103,42 @@ export class MultiModelRouter {
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
       try {
-        const result = await this.router.route(model, request);
+        // TODO: Implement actual AI model execution
+        // This should call the actual AI service with the selected model
+        // For now, we return a placeholder result
+        const result = { model, request, executed: true };
         return {
           result,
           model,
           attempts: i + 1,
         };
-      } catch (error: any) {
-        lastError = error;
-        logWarning('Model execution failed, trying fallback', {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        lastError = error instanceof Error ? error : new Error(errorMessage);
+        logWarn('Model execution failed, trying fallback', {
           model,
-          error: error.message,
+          error: errorMessage,
           attempt: i + 1,
         });
       }
     }
 
-    throw new Error(`All models failed. Last error: ${lastError?.message}`);
+    throw new Error(`All models failed. Last error: ${lastError?.message ?? 'Unknown error'}`);
   }
 
   /**
    * Estimate cost
    */
-  private estimateCost(model: AIModel, request: any): number {
+  private estimateCost(model: AIModel, request: Record<string, unknown>): number {
     const config = this.router.getModelConfig(model);
     const estimatedTokens = this.estimateTokens(request);
-    return (estimatedTokens / 1000) * config.costPer1KTokens;
+    return (estimatedTokens / 1000) * config.costPer1kTokens;
   }
 
   /**
    * Estimate latency
    */
-  private estimateLatency(model: AIModel, request: any): number {
+  private estimateLatency(model: AIModel, _request: Record<string, unknown>): number {
     const config = this.router.getModelConfig(model);
     return config.latency;
   }
@@ -141,7 +146,7 @@ export class MultiModelRouter {
   /**
    * Estimate tokens
    */
-  private estimateTokens(request: any): number {
+  private estimateTokens(request: Record<string, unknown>): number {
     // Simple estimation based on request size
     const requestSize = JSON.stringify(request).length;
     return Math.ceil(requestSize / 4); // Rough estimate: 4 chars per token

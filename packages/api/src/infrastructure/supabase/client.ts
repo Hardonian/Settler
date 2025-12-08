@@ -54,7 +54,10 @@ export const supabaseRealtime = createClient(supabaseUrl, supabaseKey, {
 /**
  * Helper function to execute SQL queries
  */
-export async function executeSQL<T = any>(query: string, params?: any[]): Promise<T[]> {
+export async function executeSQL<T = Record<string, unknown>>(
+  query: string,
+  params?: unknown[]
+): Promise<T[]> {
   const { data, error } = await supabase.rpc("execute_sql", {
     query_text: query,
     query_params: params || [],

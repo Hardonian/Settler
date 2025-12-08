@@ -116,7 +116,7 @@ export class UserRepository implements IUserRepository {
     return parseInt(rows[0].count, 10);
   }
 
-  private mapRowToProps(row: any): UserProps {
+  private mapRowToProps(row: Record<string, unknown>): UserProps {
     const props: UserProps = {
       id: row.id,
       tenantId: row.tenant_id,

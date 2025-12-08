@@ -19,7 +19,7 @@ export interface EvolutionProposal {
   risk: 'low' | 'medium' | 'high';
   estimatedEffort: number; // hours
   backwardCompatible: boolean;
-  proposedChange: any;
+  proposedChange: Record<string, unknown>;
 }
 
 export interface EvolutionLog {
@@ -141,12 +141,13 @@ export class AutonomousEvolutionLayer {
     });
 
     // Find slow jobs
-    const slowJobs = jobs.filter(job => {
+    const slowJobs = jobs.filter((job) => {
+      if (job.results.length === 0) return false;
       const avgDuration = job.results
-        .map(r => r.completedAt && r.startedAt 
+        .map((r) => r.completedAt && r.startedAt 
           ? r.completedAt.getTime() - r.startedAt.getTime() 
           : 0)
-        .reduce((a, b) => a + b, 0) / job.results.length;
+        .reduce((a: number, b: number) => a + b, 0) / job.results.length;
       return avgDuration > 30000; // > 30 seconds
     });
 
@@ -342,7 +343,7 @@ export class AutonomousEvolutionLayer {
       take: 10000,
     });
 
-    const totalCost = usageEvents.reduce((sum, event) => {
+    const totalCost = usageEvents.reduce((sum: number, event) => {
       return sum + (Number(event.quantity) * 0.002 / 1000); // $0.002 per 1K tokens
     }, 0);
 
@@ -395,7 +396,9 @@ export class AutonomousEvolutionLayer {
     const log = this.evolutionLog.find(l => l.proposal.description === proposalId);
     if (log) {
       log.status = 'approved';
-      log.implementationNotes = implementationNotes;
+      if (implementationNotes !== undefined) {
+        log.implementationNotes = implementationNotes;
+      }
       logInfo('Evolution proposal approved', { proposalId });
     }
   }

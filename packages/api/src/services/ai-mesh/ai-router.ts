@@ -109,7 +109,12 @@ export class AIRouter {
 
     scored.sort((a, b) => b.score - a.score);
 
-    const selected = scored[0].config.model;
+    const bestCandidate = scored[0];
+    if (!bestCandidate) {
+      // Fallback if somehow scored is empty (shouldn't happen due to earlier check)
+      return 'claude-3-opus';
+    }
+    const selected = bestCandidate.config.model;
     logInfo('AI model selected', { request, selected });
     return selected;
   }

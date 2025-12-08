@@ -10,7 +10,7 @@ import { logInfo } from '../../utils/logger';
 
 export interface ExtractedPattern {
   type: 'workflow' | 'template' | 'validation_rule' | 'transform_recipe' | 'mapping_template';
-  pattern: any;
+  pattern: Record<string, unknown>;
   frequency: number;
   confidence: number;
   recommendation: string;
@@ -155,7 +155,7 @@ export class PatternExtractor {
       take: 10,
     });
 
-    return mappings.map(mapping => ({
+    return mappings.map((mapping) => ({
       type: 'mapping_template' as const,
       pattern: mapping,
       frequency: mapping.usageCount,
@@ -179,7 +179,7 @@ export class PatternExtractor {
       take: 10,
     });
 
-    return transforms.map(transform => ({
+    return transforms.map((transform) => ({
       type: 'transform_recipe' as const,
       pattern: transform,
       frequency: transform.usageCount,
@@ -232,7 +232,7 @@ export class PatternExtractor {
     type: string;
     recommendation: string;
     priority: 'low' | 'medium' | 'high';
-    action: any;
+    action: Record<string, unknown>;
   }>> {
     const patterns = await this.extractPatterns(tenantId);
     const recommendations = [];

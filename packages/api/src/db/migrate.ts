@@ -92,15 +92,16 @@ async function executeMigration(
         try {
           await pool.query(statement);
           result.statementsExecuted++;
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
           // Ignore "already exists" errors (idempotent migration)
           if (
-            error.message.includes("already exists") ||
-            error.message.includes("duplicate") ||
-            error.message.includes("already enabled") ||
-            (error.message.includes("does not exist") && error.message.includes("DROP"))
+            errorMessage.includes("already exists") ||
+            errorMessage.includes("duplicate") ||
+            errorMessage.includes("already enabled") ||
+            (errorMessage.includes("does not exist") && errorMessage.includes("DROP"))
           ) {
-            logWarn(`Migration warning (ignored): ${error.message}`);
+            logWarn(`Migration warning (ignored): ${errorMessage}`);
             continue;
           }
           throw error;
@@ -112,9 +113,10 @@ async function executeMigration(
 
     result.success = true;
     logInfo(`Migration completed: ${migrationName}`, { statements: result.statementsExecuted });
-  } catch (error: any) {
-    result.error = error.message;
-    logError(`Migration failed: ${migrationName}`, error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    result.error = errorMessage;
+    logError(`Migration failed: ${migrationName}`, error instanceof Error ? error : new Error(errorMessage));
     throw error;
   }
 
@@ -170,21 +172,24 @@ async function initializeSupabaseExtensions(): Promise<void> {
       try {
         await pool.query(ext.sql);
         logInfo(`Extension enabled: ${ext.name}`);
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         if (
-          error.message.includes("already exists") ||
-          error.message.includes("permission denied")
+          errorMessage.includes("already exists") ||
+          errorMessage.includes("permission denied")
         ) {
-          logWarn(`Extension ${ext.name}: ${error.message}`);
+          logWarn(`Extension ${ext.name}: ${errorMessage}`);
         } else {
-          logError(`Failed to enable extension ${ext.name}`, error);
+          const errorObj = error instanceof Error ? error : new Error(String(error));
+          logError(`Failed to enable extension ${ext.name}`, errorObj);
         }
       }
     }
 
     await pool.end();
-  } catch (error: any) {
-    logWarn("Supabase extension initialization warning", error);
+  } catch (error: unknown) {
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logWarn("Supabase extension initialization warning", errorObj);
     // Don't fail if extensions can't be initialized
   }
 }
@@ -223,14 +228,16 @@ export async function runMigrations(): Promise<MigrationResult[]> {
         logError(`Migration ${migrationFile} failed, stopping migration process`);
         break;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       results.push({
         migration: migrationFile,
         success: false,
-        error: error.message,
+        error: errorMessage,
         statementsExecuted: 0,
       });
-      logError(`Migration ${migrationFile} failed`, error);
+      const errorObj = error instanceof Error ? error : new Error(String(error));
+      logError(`Migration ${migrationFile} failed`, errorObj);
       throw error;
     }
   }

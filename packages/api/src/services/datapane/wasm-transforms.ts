@@ -5,12 +5,20 @@
  * Part 10: Next-Gen Data Plane & Processing Layers
  */
 
+export interface SchemaDefinition {
+  type: 'object' | 'array' | 'string' | 'number' | 'boolean';
+  properties?: Record<string, SchemaDefinition>;
+  items?: SchemaDefinition;
+  required?: string[];
+  [key: string]: unknown;
+}
+
 export interface WASMTransform {
   id: string;
   name: string;
   wasmModule: ArrayBuffer;
-  inputSchema: any;
-  outputSchema: any;
+  inputSchema: SchemaDefinition;
+  outputSchema: SchemaDefinition;
   executionTime: number;
   memoryUsage: number;
 }
@@ -28,7 +36,10 @@ export class WASMTransforms {
   /**
    * Execute WASM transform
    */
-  async executeTransform(transformId: string, input: any): Promise<any> {
+  async executeTransform(
+    transformId: string,
+    input: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     const transform = this.transforms.get(transformId);
     if (!transform) {
       throw new Error(`Transform ${transformId} not found`);
@@ -54,7 +65,7 @@ export class WASMTransforms {
   /**
    * Validate transform schema
    */
-  validateSchema(data: any, schema: any): boolean {
+  validateSchema(data: unknown, schema: SchemaDefinition): boolean {
     // TODO: Implement schema validation
     return true;
   }

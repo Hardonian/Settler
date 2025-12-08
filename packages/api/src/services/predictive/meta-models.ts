@@ -33,6 +33,16 @@ export interface ModelBenchmark {
   reliability: number;
 }
 
+export interface ReconJobInput {
+  id?: string;
+  name?: string;
+  sourceAdapter?: string;
+  targetAdapter?: string;
+  validationRules?: unknown[];
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export class MetaModels {
   private router: AIRouter;
 
@@ -43,7 +53,7 @@ export class MetaModels {
   /**
    * Evaluate job complexity
    */
-  evaluateJobComplexity(job: any): JobComplexity {
+  evaluateJobComplexity(job: ReconJobInput): JobComplexity {
     const factors: string[] = [];
     let estimatedTokens = 1000; // Base
     let estimatedCost = 0.002; // Base
@@ -99,14 +109,14 @@ export class MetaModels {
    */
   estimateLLMCost(model: AIModel, tokens: number): number {
     const config = this.router.getModelConfig(model);
-    return (tokens / 1000) * config.costPer1KTokens;
+    return (tokens / 1000) * config.costPer1kTokens;
   }
 
   /**
    * Recommend best model
    */
   recommendModel(
-    job: any,
+    job: ReconJobInput,
     complexity: JobComplexity,
     accuracyRequired: number,
     budget?: number
@@ -173,7 +183,12 @@ export class MetaModels {
 
     // Return model with highest score
     scores.sort((a, b) => b.score - a.score);
-    return scores[0].model;
+    const bestModel = scores[0];
+    if (!bestModel) {
+      // Fallback if somehow scores is empty (shouldn't happen)
+      return 'gpt-3.5-turbo';
+    }
+    return bestModel.model;
   }
 
   /**
@@ -190,7 +205,7 @@ export class MetaModels {
   /**
    * Benchmark models
    */
-  async benchmarkModels(job: any): Promise<ModelBenchmark[]> {
+  async benchmarkModels(job: ReconJobInput): Promise<ModelBenchmark[]> {
     const models: AIModel[] = ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet'];
     const benchmarks: ModelBenchmark[] = [];
 
@@ -198,12 +213,15 @@ export class MetaModels {
       const config = this.router.getModelConfig(model);
       const complexity = this.evaluateJobComplexity(job);
 
+      // Reliability is derived from accuracy (higher accuracy = higher reliability)
+      const reliability = Math.min(config.accuracy + 0.05, 0.99);
+      
       benchmarks.push({
         model,
         accuracy: config.accuracy,
         latency: config.latency,
         cost: this.estimateLLMCost(model, complexity.estimatedTokens),
-        reliability: config.reliability || 0.95,
+        reliability,
       });
     }
 

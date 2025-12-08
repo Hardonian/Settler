@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { query } from "../db";
 import { logError } from "../utils/logger";
+import { AuthRequest } from "../middleware/auth";
 
 /**
  * Observability Routes
@@ -19,8 +20,9 @@ export const observabilityRouter = Router();
  */
 observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
-    const tenantId = (req as any).tenantId;
+    const authReq = req as AuthRequest;
+    const userId = authReq.userId;
+    const tenantId = authReq.tenantId;
 
     // Get job metrics
     const jobStats = await query<{
@@ -134,8 +136,9 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
  */
 observabilityRouter.get("/logs", async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
-    const tenantId = (req as any).tenantId;
+    const authReq = req as AuthRequest;
+    const userId = authReq.userId;
+    const tenantId = authReq.tenantId;
     const { level, jobId, startDate, endDate, limit = "100", offset = "0" } = req.query;
 
     let queryStr = `
@@ -149,7 +152,7 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
       FROM logs
       WHERE user_id = $1 AND tenant_id = $2
     `;
-    const params: any[] = [userId, tenantId];
+    const params: unknown[] = [userId, tenantId];
     let paramIndex = 3;
 
     if (level) {
@@ -205,9 +208,10 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
 observabilityRouter.get("/traces", async (req: Request, res: Response) => {
   try {
     // Reserved for future user/tenant filtering
+    const authReq = req as AuthRequest;
     const _ = {
-      userId: (req as any).userId,
-      tenantId: (req as any).tenantId,
+      userId: authReq.userId,
+      tenantId: authReq.tenantId,
     };
     void _;
     // Reserved for future tracing backend integration

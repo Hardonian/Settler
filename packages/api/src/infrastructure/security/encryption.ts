@@ -80,14 +80,20 @@ export function encrypt(data: string, keyName: string = "ENCRYPTION_KEY"): strin
 export function decrypt(encryptedData: string, keyName: string = "ENCRYPTION_KEY"): string {
   const key = getEncryptionKey(keyName);
 
-  let parsed: any;
+  interface EncryptedDataFormat {
+    iv: string;
+    encrypted: string;
+    authTag: string;
+  }
+
+  let parsed: EncryptedDataFormat | null = null;
   let iv: Buffer;
   let encrypted: string;
   let authTag: Buffer;
 
   try {
     // Try new JSON format first
-    parsed = JSON.parse(encryptedData);
+    parsed = JSON.parse(encryptedData) as EncryptedDataFormat;
     iv = Buffer.from(parsed.iv, "hex");
     encrypted = parsed.encrypted;
     authTag = Buffer.from(parsed.authTag, "hex");

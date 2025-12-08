@@ -14,13 +14,16 @@ export interface PluginMetadata {
   dependencies?: string[];
 }
 
+import type { Router } from 'express';
+import type { Express } from 'express';
+
 export interface Plugin {
   metadata: PluginMetadata;
   initialize?: () => Promise<void>;
   shutdown?: () => Promise<void>;
-  registerRoutes?: (router: any) => void;
-  registerMiddleware?: (app: any) => void;
-  registerServices?: (container: any) => void;
+  registerRoutes?: (router: Router) => void;
+  registerMiddleware?: (app: Express) => void;
+  registerServices?: (container: Record<string, unknown>) => void;
 }
 
 export class PluginManager {

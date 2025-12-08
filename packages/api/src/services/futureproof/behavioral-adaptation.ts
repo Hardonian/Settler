@@ -16,8 +16,8 @@ export interface SystemDefaults {
 
 export interface AdaptationEvent {
   type: 'default_change' | 'routing_change' | 'cost_threshold_change' | 'template_change' | 'heuristic_change';
-  oldValue: any;
-  newValue: any;
+  oldValue: unknown;
+  newValue: unknown;
   reason: string;
   timestamp: Date;
 }
@@ -149,14 +149,12 @@ export class BehavioralAdaptation {
     }
 
     // Adapt template choice to most popular
-    if (usageData.popularTemplates.length > 0) {
-      const mostPopular = usageData.popularTemplates[0];
-      if (mostPopular !== this.defaults.pipelineTemplateChoice) {
-        this.adaptPipelineTemplate(
-          mostPopular,
-          'Most popular template - switching default'
-        );
-      }
+    const mostPopular = usageData.popularTemplates[0];
+    if (mostPopular && mostPopular !== this.defaults.pipelineTemplateChoice) {
+      this.adaptPipelineTemplate(
+        mostPopular,
+        'Most popular template - switching default'
+      );
     }
 
     // Adapt accuracy heuristic

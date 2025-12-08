@@ -13,7 +13,7 @@ export interface FunctionCallingSpec {
 
 export interface TypedJSONSchema {
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   required?: string[];
 }
 
@@ -68,7 +68,7 @@ export class APIEvolution {
   /**
    * Validate typed JSON
    */
-  validateTypedJSON(data: any, schemaName: string): boolean {
+  validateTypedJSON(data: unknown, schemaName: string): boolean {
     const schema = this.typedJSONSchemas.get(schemaName);
     if (!schema) {
       return false;
@@ -88,7 +88,7 @@ export class APIEvolution {
   /**
    * Parse Recon DSL
    */
-  parseReconDSL(code: string): any {
+  parseReconDSL(code: string): Record<string, unknown> {
     if (!this.reconDSL) {
       throw new Error('Recon DSL not defined');
     }
@@ -103,7 +103,7 @@ export class APIEvolution {
   /**
    * Execute Recon DSL
    */
-  async executeReconDSL(code: string): Promise<any> {
+  async executeReconDSL(code: string): Promise<{ success: boolean; result: Record<string, unknown> }> {
     const parsed = this.parseReconDSL(code);
     // TODO: Execute parsed operations
     return {

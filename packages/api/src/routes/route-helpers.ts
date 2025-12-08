@@ -3,7 +3,9 @@
  * Provides utilities for mounting routes consistently
  */
 
-import { Express, Router } from "express";
+import { Express, Router, Request, Response, NextFunction } from "express";
+
+type Middleware = (req: Request, res: Response, next: NextFunction) => void | Promise<void>;
 
 /**
  * Mount routes for both v1 and v2 API versions with consistent middleware
@@ -22,7 +24,7 @@ export function mountVersionedRoutes(
   app: Express,
   path: string,
   router: Router,
-  ...middleware: Array<(req: any, res: any, next: any) => void>
+  ...middleware: Middleware[]
 ): void {
   app.use(`/api/v1${path}`, ...middleware, router);
   app.use(`/api/v2${path}`, ...middleware, router);
@@ -42,7 +44,7 @@ export function mountRoute(
   version: "v1" | "v2",
   path: string,
   router: Router,
-  ...middleware: Array<(req: any, res: any, next: any) => void>
+  ...middleware: Middleware[]
 ): void {
   app.use(`/api/${version}${path}`, ...middleware, router);
 }

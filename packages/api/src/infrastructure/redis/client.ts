@@ -32,7 +32,7 @@ export const redis =
 /**
  * Fallback Redis client using ioredis (for local development)
  */
-let ioredisClient: any = null;
+let ioredisClient: Redis | null = null;
 
 if (!redis && process.env.REDIS_HOST) {
   try {
@@ -59,7 +59,7 @@ if (!redis && process.env.REDIS_HOST) {
 /**
  * Get Redis client (Upstash or ioredis fallback)
  */
-export function getRedisClient(): Redis | any {
+export function getRedisClient(): Redis | typeof ioredisClient {
   return redis || ioredisClient;
 }
 
@@ -77,7 +77,7 @@ export const cache = {
   /**
    * Get value from cache
    */
-  async get<T = any>(key: string): Promise<T | null> {
+  async get<T = unknown>(key: string): Promise<T | null> {
     const client = getRedisClient();
     if (!client) return null;
 
@@ -97,7 +97,7 @@ export const cache = {
   /**
    * Set value in cache
    */
-  async set(key: string, value: any, ttlSeconds?: number): Promise<void> {
+  async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
     const client = getRedisClient();
     if (!client) return;
 

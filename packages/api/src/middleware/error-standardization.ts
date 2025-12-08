@@ -82,7 +82,8 @@ function getErrorMessage(error: unknown): string {
  */
 function getErrorDetails(error: unknown): unknown {
   if (error instanceof Error && "details" in error) {
-    return (error as any).details;
+    const errorWithDetails = error as Error & { details?: unknown };
+    return errorWithDetails.details;
   }
   return undefined;
 }

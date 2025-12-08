@@ -5,7 +5,7 @@
  * Supports HMAC signing, retry logic, and event filtering
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import crypto from 'crypto';
 import { logError, logInfo } from '../../utils/logger';
 
@@ -13,9 +13,9 @@ export interface WebhookEvent {
   id: string;
   type: string;
   tenantId: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   timestamp: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface WebhookDelivery {
@@ -92,7 +92,7 @@ export class WebhookService {
         data: {
           webhookId: delivery.webhookId,
           url: delivery.url,
-          payload: delivery.event as any,
+          payload: delivery.event as Prisma.InputJsonValue,
           status: response.ok ? 'delivered' : 'failed',
           statusCode: response.status,
           responseBody: await response.text().catch(() => null),
@@ -122,7 +122,7 @@ export class WebhookService {
         data: {
           webhookId: delivery.webhookId,
           url: delivery.url,
-          payload: delivery.event as any,
+          payload: delivery.event as Prisma.InputJsonValue,
           status: 'failed',
           statusCode: null,
           responseBody: error instanceof Error ? error.message : 'Unknown error',
@@ -146,7 +146,7 @@ export class WebhookService {
   async queueWebhook(
     tenantId: string,
     eventType: string,
-    eventData: Record<string, any>
+    eventData: Record<string, unknown>
   ): Promise<void> {
     // Get all active webhooks for this tenant that subscribe to this event type
     const webhooks = await this.prisma.webhook.findMany({

@@ -5,7 +5,7 @@
  */
 
 import { Router, Response } from 'express';
-import type { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { authMiddleware } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 import { PredictiveOps } from '../../services/predictive/predictive-ops';
@@ -31,10 +31,11 @@ router.get(
         data: predictions,
         message: 'Failure predictions generated',
       });
-    } catch (error: any) {
-      res.status(500).json({
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({
         error: 'PredictionError',
-        message: error.message,
+        message: errorMessage,
       });
     }
   }
@@ -46,19 +47,20 @@ router.get(
  */
 router.post(
   '/complexity',
-  authenticateRequest,
+  authMiddleware,
   tenantMiddleware,
   async (req: TenantRequest, res: Response) => {
     try {
       const complexity = metaModels.evaluateJobComplexity(req.body);
-      res.json({
+      return res.json({
         data: complexity,
         message: 'Job complexity evaluated',
       });
-    } catch (error: any) {
-      res.status(500).json({
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({
         error: 'ComplexityError',
-        message: error.message,
+        message: errorMessage,
       });
     }
   }

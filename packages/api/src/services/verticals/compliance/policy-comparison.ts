@@ -77,8 +77,8 @@ export class PolicyComparisonService {
    */
   async auditDataRetention(
     tenantId: string,
-    retentionPolicy: any,
-    actualData: any[]
+    retentionPolicy: RetentionPolicy,
+    actualData: Array<Record<string, unknown>>
   ): Promise<{
     compliant: boolean;
     violations: Array<{
@@ -100,9 +100,9 @@ export class PolicyComparisonService {
    */
   async generateDPIA(
     tenantId: string,
-    processingActivity: any
+    processingActivity: ProcessingActivity
   ): Promise<{
-    riskAssessment: any;
+    riskAssessment: RiskAssessment;
     recommendations: string[];
     requiredSafeguards: string[];
   }> {

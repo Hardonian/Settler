@@ -119,10 +119,11 @@ export class EdgeAgent extends EventEmitter {
 
       this.emit("reconciliation_complete", result);
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       errors++;
-      this.emit("reconciliation_error", error);
-      throw error;
+      const errorObj = error instanceof Error ? error : new Error(String(error));
+      this.emit("reconciliation_error", errorObj);
+      throw errorObj;
     }
   }
 

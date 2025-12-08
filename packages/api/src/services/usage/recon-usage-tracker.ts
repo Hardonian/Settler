@@ -14,7 +14,7 @@ export interface UsageEvent {
   eventType: string;
   quantity: number;
   unit: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export class ReconUsageTracker {
@@ -31,7 +31,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     comparisonCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -39,7 +39,7 @@ export class ReconUsageTracker {
       eventType: 'recon_comparison',
       quantity: comparisonCount,
       unit: 'comparison',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -50,7 +50,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     validationCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -58,7 +58,7 @@ export class ReconUsageTracker {
       eventType: 'validation',
       quantity: validationCount,
       unit: 'validation',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -69,7 +69,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     transformationCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -77,7 +77,7 @@ export class ReconUsageTracker {
       eventType: 'transformation',
       quantity: transformationCount,
       unit: 'transformation',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -88,7 +88,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     mappingCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -96,7 +96,7 @@ export class ReconUsageTracker {
       eventType: 'mapping',
       quantity: mappingCount,
       unit: 'mapping',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -107,7 +107,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     stepCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -115,7 +115,7 @@ export class ReconUsageTracker {
       eventType: 'workflow_step',
       quantity: stepCount,
       unit: 'step',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -127,7 +127,7 @@ export class ReconUsageTracker {
     billingAccountId: string,
     tokenCount: number,
     model?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -136,8 +136,8 @@ export class ReconUsageTracker {
       quantity: tokenCount,
       unit: 'token',
       metadata: {
-        ...metadata,
-        model,
+        ...(metadata !== undefined ? metadata : {}),
+        ...(model !== undefined && { model }),
       },
     });
   }
@@ -149,7 +149,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     reportCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -157,7 +157,7 @@ export class ReconUsageTracker {
       eventType: 'audit_report',
       quantity: reportCount,
       unit: 'report',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -168,7 +168,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     bytes: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -176,7 +176,7 @@ export class ReconUsageTracker {
       eventType: 'storage',
       quantity: bytes,
       unit: 'byte',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -187,7 +187,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     webhookCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -195,7 +195,7 @@ export class ReconUsageTracker {
       eventType: 'webhook_trigger',
       quantity: webhookCount,
       unit: 'webhook',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -243,13 +243,18 @@ export class ReconUsageTracker {
     const summary: Record<string, { quantity: number; unit: string }> = {};
 
     for (const event of events) {
-      if (!summary[event.eventType]) {
-        summary[event.eventType] = {
+      const eventType = event.eventType;
+      if (!summary[eventType]) {
+        summary[eventType] = {
           quantity: 0,
           unit: event.unit || 'unit',
         };
       }
-      summary[event.eventType].quantity += Number(event.quantity);
+      // TypeScript now knows summary[eventType] is defined after the check
+      const summaryEntry = summary[eventType];
+      if (summaryEntry) {
+        summaryEntry.quantity += Number(event.quantity);
+      }
     }
 
     return summary;

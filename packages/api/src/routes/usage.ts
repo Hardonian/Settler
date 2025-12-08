@@ -22,7 +22,7 @@ const router = Router();
 router.get("/", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const period = (req.query.period as "day" | "week" | "month") || "day";
-    const usage = await getCurrentUsage(req as any, period);
+    const usage = await getCurrentUsage(req, period);
 
     if (!usage) {
       return res.status(404).json({
@@ -52,7 +52,7 @@ router.get("/", authMiddleware, async (req: AuthRequest, res: Response) => {
 router.get("/endpoints", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const period = (req.query.period as "day" | "week" | "month") || "day";
-    const usage = await getCurrentUsage(req as any, period);
+    const usage = await getCurrentUsage(req, period);
 
     if (!usage) {
       return res.status(404).json({
@@ -82,7 +82,7 @@ router.get("/endpoints", authMiddleware, async (req: AuthRequest, res: Response)
 router.get("/cost", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const period = (req.query.period as "day" | "week" | "month") || "day";
-    const usage = await getCurrentUsage(req as any, period);
+    const usage = await getCurrentUsage(req, period);
 
     if (!usage) {
       return res.status(404).json({

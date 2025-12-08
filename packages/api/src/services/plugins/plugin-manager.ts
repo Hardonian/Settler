@@ -13,7 +13,7 @@ export interface Plugin {
   version: string;
   type: 'ingestion' | 'validator' | 'transformer' | 'workflow';
   entryPoint: string;
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
 }
 
 export class PluginManager {
@@ -45,7 +45,10 @@ export class PluginManager {
   /**
    * Execute plugin
    */
-  async executePlugin(pluginId: string, input: any): Promise<any> {
+  async executePlugin(
+    pluginId: string,
+    input: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     const plugin = this.plugins.get(pluginId);
     if (!plugin) {
       throw new Error(`Plugin not found: ${pluginId}`);

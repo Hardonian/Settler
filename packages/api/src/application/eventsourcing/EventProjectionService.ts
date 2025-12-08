@@ -24,8 +24,18 @@ export class EventProjectionService {
     // Subscribe to domain events from event bus
     this.eventBus.subscribe("reconciliation.started", async (event: DomainEvent) => {
       // Fetch full event from event store
+      interface ReconciliationEvent extends DomainEvent {
+        reconciliationId?: string;
+      }
+
+      const reconciliationEvent = event as ReconciliationEvent;
+      const reconciliationId = reconciliationEvent.reconciliationId;
+      if (!reconciliationId) {
+        return;
+      }
+
       const events = await this.eventStore.getEvents(
-        (event as any).reconciliationId,
+        reconciliationId,
         "reconciliation"
       );
       const startedEvent = events.find((e) => e.event_type === "ReconciliationStarted");
@@ -44,7 +54,7 @@ export class EventProjectionService {
   async processEvent(eventEnvelope: EventEnvelope): Promise<void> {
     switch (eventEnvelope.event_type) {
       case "ReconciliationStarted":
-        await this.projectionHandlers.handleReconciliationStarted(eventEnvelope as any);
+        await this.projectionHandlers.handleReconciliationStarted(eventEnvelope as DomainEvent);
         break;
       case "OrdersFetched":
         await this.projectionHandlers.handleOrdersFetched(eventEnvelope);

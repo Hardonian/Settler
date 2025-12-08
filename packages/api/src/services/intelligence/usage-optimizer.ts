@@ -7,7 +7,7 @@
 
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
-import { AIRouter } from '../ai-mesh/ai-router';
+import { AIRouter, AIModel } from '../ai-mesh/ai-router';
 
 export interface UsageOptimization {
   recommendation: string;
@@ -47,16 +47,19 @@ export class UsageOptimizer {
     });
 
     // Analyze AI token usage
-    const aiUsage = usageEvents.filter(e => e.eventType === 'ai_tokens');
-    const totalTokens = aiUsage.reduce((sum, e) => sum + Number(e.quantity), 0);
-    const avgCost = aiUsage.reduce((sum, e) => {
-      const model = e.metadata?.['model'] as string;
+    const aiUsage = usageEvents.filter((e) => e.eventType === 'ai_tokens');
+    const totalTokens = aiUsage.reduce((sum: number, e) => sum + Number(e.quantity), 0);
+    const avgCost = aiUsage.length > 0 ? aiUsage.reduce((sum: number, e) => {
+      const model = e.metadata?.['model'] as string | undefined;
       if (model) {
-        const config = this.router.getModelConfig(model as any);
-        return sum + this.router.estimateCost(model as any, Number(e.quantity));
+        // Validate model is a valid AIModel before using
+        const validModels: readonly string[] = ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet', 'claude-3-haiku', 'local-llm'];
+        if (validModels.includes(model)) {
+          return sum + this.router.estimateCost(model as AIModel, Number(e.quantity));
+        }
       }
       return sum;
-    }, 0) / aiUsage.length;
+    }, 0) / aiUsage.length : 0;
 
     // Recommend cheaper model if accuracy allows
     if (avgCost > 0.01 && totalTokens > 100000) {
@@ -69,7 +72,7 @@ export class UsageOptimizer {
     }
 
     // Analyze reconciliation patterns
-    const reconUsage = usageEvents.filter(e => e.eventType === 'recon_comparison');
+    const reconUsage = usageEvents.filter((e) => e.eventType === 'recon_comparison');
     const peakHours = this.identifyPeakHours(reconUsage);
 
     if (peakHours.length > 0) {
@@ -88,7 +91,7 @@ export class UsageOptimizer {
   /**
    * Identify peak usage hours
    */
-  private identifyPeakHours(usageEvents: any[]): string[] {
+  private identifyPeakHours(usageEvents: Array<{ timestamp: Date | string }>): string[] {
     const hourCounts = new Map<number, number>();
 
     for (const event of usageEvents) {

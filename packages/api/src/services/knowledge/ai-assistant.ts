@@ -29,7 +29,7 @@ export interface KnowledgeResponse {
 }
 
 export class AIKnowledgeAssistant extends EventEmitter {
-  private knowledgeBase: Map<string, unknown> = new Map();
+  private knowledgeBase: Map<string, Record<string, unknown>> = new Map();
 
   /**
    * Query the knowledge base
@@ -65,7 +65,10 @@ export class AIKnowledgeAssistant extends EventEmitter {
    * Generate answer using LLM (mock implementation)
    * In production, would call OpenAI/Anthropic API
    */
-  private async generateAnswer(query: KnowledgeQuery, decisions: unknown[]): Promise<string> {
+  private async generateAnswer(
+    query: KnowledgeQuery,
+    decisions: Array<Record<string, unknown>>
+  ): Promise<string> {
     // Mock LLM response
     // In production, would use actual LLM API
     return `Based on our decision logs, here's what I found:
@@ -95,7 +98,11 @@ For "${query.question}", I recommend reviewing our decision logs and documentati
   /**
    * Index knowledge (decisions, documentation, incidents)
    */
-  async indexKnowledge(type: string, id: string, content: unknown): Promise<void> {
+  async indexKnowledge(
+    type: string,
+    id: string,
+    content: Record<string, unknown>
+  ): Promise<void> {
     this.knowledgeBase.set(`${type}:${id}`, content);
     this.emit("knowledge_indexed", { type, id });
   }

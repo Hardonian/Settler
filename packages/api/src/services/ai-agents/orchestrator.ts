@@ -118,8 +118,8 @@ export class AgentOrchestrator extends EventEmitter {
       id: agent.id,
       name: agent.name,
       type: agent.type,
-      enabled: (agent as any).enabled,
-      config: agent["config"],
+      enabled: agent.enabled,
+      config: agent.config,
     }));
   }
 
@@ -133,7 +133,7 @@ export class AgentOrchestrator extends EventEmitter {
       throw new Error(`Agent ${request.agentId} not found`);
     }
 
-    if (!(agent as any).enabled) {
+    if (!agent.enabled) {
       throw new Error(`Agent ${request.agentId} is not enabled`);
     }
 
@@ -150,14 +150,15 @@ export class AgentOrchestrator extends EventEmitter {
         data,
         executionTime,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       const executionTime = Date.now() - startTime;
+      const errorMessage = error instanceof Error ? error.message : String(error);
 
       return {
         agentId: request.agentId,
         action: request.action,
         success: false,
-        error: error.message,
+        error: errorMessage,
         executionTime,
       };
     }
@@ -221,7 +222,7 @@ export class AgentOrchestrator extends EventEmitter {
   } {
     return {
       totalAgents: this.agents.size,
-      enabledAgents: Array.from(this.agents.values()).filter((a) => (a as any).enabled).length,
+      enabledAgents: Array.from(this.agents.values()).filter((a) => a.enabled).length,
       queueLength: this.requestQueue.length,
       isProcessing: this.isProcessing,
     };

@@ -43,7 +43,11 @@ export class TenantConnectionPool {
   /**
    * Execute a query with tenant context
    */
-  async query<T = any>(tenantId: string, text: string, params?: any[]): Promise<T[]> {
+  async query<T = Record<string, unknown>>(
+    tenantId: string,
+    text: string,
+    params?: unknown[]
+  ): Promise<T[]> {
     const client = await this.getConnection(tenantId);
     try {
       const result = await client.query(text, params);

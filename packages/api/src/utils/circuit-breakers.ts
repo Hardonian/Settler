@@ -16,10 +16,13 @@ export interface CircuitBreakerOptions {
 /**
  * Create a circuit breaker for external calls
  */
-export function createCircuitBreaker<T extends (...args: any[]) => Promise<any>>(
-  fn: T,
+export function createCircuitBreaker<
+  TArgs extends unknown[],
+  TReturn
+>(
+  fn: (...args: TArgs) => Promise<TReturn>,
   options: CircuitBreakerOptions = {}
-): CircuitBreaker {
+): CircuitBreaker<TArgs, TReturn> {
   const {
     timeout = 10000,
     errorThresholdPercentage = 50,
@@ -60,10 +63,13 @@ export function createCircuitBreaker<T extends (...args: any[]) => Promise<any>>
 /**
  * Circuit breaker for adapter API calls
  */
-export function createAdapterCircuitBreaker<T extends (...args: any[]) => Promise<any>>(
+export function createAdapterCircuitBreaker<
+  TArgs extends unknown[],
+  TReturn
+>(
   adapterName: string,
-  fn: T
-): CircuitBreaker {
+  fn: (...args: TArgs) => Promise<TReturn>
+): CircuitBreaker<TArgs, TReturn> {
   return createCircuitBreaker(fn, {
     name: `adapter-${adapterName}`,
     timeout: 30000, // 30s timeout for adapters
@@ -75,9 +81,12 @@ export function createAdapterCircuitBreaker<T extends (...args: any[]) => Promis
 /**
  * Circuit breaker for webhook deliveries
  */
-export function createWebhookCircuitBreaker<T extends (...args: any[]) => Promise<any>>(
-  fn: T
-): CircuitBreaker {
+export function createWebhookCircuitBreaker<
+  TArgs extends unknown[],
+  TReturn
+>(
+  fn: (...args: TArgs) => Promise<TReturn>
+): CircuitBreaker<TArgs, TReturn> {
   return createCircuitBreaker(fn, {
     name: "webhook-delivery",
     timeout: 10000, // 10s timeout for webhooks
@@ -89,9 +98,12 @@ export function createWebhookCircuitBreaker<T extends (...args: any[]) => Promis
 /**
  * Circuit breaker for FX rate provider calls
  */
-export function createFXRateCircuitBreaker<T extends (...args: any[]) => Promise<any>>(
-  fn: T
-): CircuitBreaker {
+export function createFXRateCircuitBreaker<
+  TArgs extends unknown[],
+  TReturn
+>(
+  fn: (...args: TArgs) => Promise<TReturn>
+): CircuitBreaker<TArgs, TReturn> {
   return createCircuitBreaker(fn, {
     name: "fx-rate-provider",
     timeout: 5000, // 5s timeout for FX rates

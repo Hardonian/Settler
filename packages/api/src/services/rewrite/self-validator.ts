@@ -11,7 +11,7 @@ export interface ValidationResult {
   check: string;
   status: 'pass' | 'fail' | 'warning';
   message: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 export interface ModuleValidation {
@@ -25,7 +25,10 @@ export class SelfValidator {
   /**
    * Validate a code module
    */
-  async validateModule(module: any, moduleType: string): Promise<ModuleValidation> {
+  async validateModule(
+    module: { id?: string; schemaReferences?: unknown[]; [key: string]: unknown },
+    moduleType: string
+  ): Promise<ModuleValidation> {
     const results: ValidationResult[] = [];
 
     // Validate TypeScript types
@@ -55,8 +58,8 @@ export class SelfValidator {
     const overallStatus = this.determineOverallStatus(results);
 
     return {
-      moduleId: module.id || 'unknown',
-      moduleType: moduleType as any,
+      moduleId: (module.id as string) || 'unknown',
+      moduleType: moduleType as ModuleValidation['moduleType'],
       results,
       overallStatus,
     };
@@ -65,7 +68,7 @@ export class SelfValidator {
   /**
    * Validate TypeScript types
    */
-  private async validateTypeScript(module: any): Promise<ValidationResult> {
+  private async validateTypeScript(module: { code?: string; [key: string]: unknown }): Promise<ValidationResult> {
     // TODO: Implement actual TypeScript validation
     // This would use the TypeScript compiler API
     return {
@@ -78,7 +81,9 @@ export class SelfValidator {
   /**
    * Validate schema integrity
    */
-  private async validateSchemaIntegrity(module: any): Promise<ValidationResult> {
+  private async validateSchemaIntegrity(
+    module: { schemaReferences?: unknown[]; [key: string]: unknown }
+  ): Promise<ValidationResult> {
     // Check if module references valid database schemas
     if (module.schemaReferences && module.schemaReferences.length > 0) {
       // TODO: Validate against actual Prisma schema
@@ -99,7 +104,7 @@ export class SelfValidator {
   /**
    * Simulate pipeline execution
    */
-  private async simulatePipeline(module: any): Promise<ValidationResult> {
+  private async simulatePipeline(module: { [key: string]: unknown }): Promise<ValidationResult> {
     // Simulate pipeline execution with test data
     try {
       // TODO: Implement actual pipeline simulation
@@ -108,12 +113,13 @@ export class SelfValidator {
         status: 'pass',
         message: 'Pipeline simulation passed',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         check: 'pipeline_simulation',
         status: 'fail',
-        message: `Pipeline simulation failed: ${error.message}`,
-        details: error,
+        message: `Pipeline simulation failed: ${errorMessage}`,
+        details: error instanceof Error ? { message: error.message, stack: error.stack } : { error: String(error) },
       };
     }
   }
@@ -121,7 +127,9 @@ export class SelfValidator {
   /**
    * Check build viability for Vercel
    */
-  private async checkBuildViability(module: any): Promise<ValidationResult> {
+  private async checkBuildViability(
+    module: { edgeFunction?: boolean; usesNodeOnlyAPIs?: boolean; estimatedSize?: number; [key: string]: unknown }
+  ): Promise<ValidationResult> {
     // Check for Vercel-specific requirements
     const issues: string[] = [];
 
@@ -154,7 +162,14 @@ export class SelfValidator {
   /**
    * Evaluate risks
    */
-  private async evaluateRisks(module: any): Promise<ValidationResult> {
+  private async evaluateRisks(
+    module: {
+      usesEval?: boolean;
+      hasNestedLoops?: boolean;
+      loopDepth?: number;
+      [key: string]: unknown;
+    }
+  ): Promise<ValidationResult> {
     const risks: string[] = [];
 
     // Check for security risks
@@ -163,7 +178,7 @@ export class SelfValidator {
     }
 
     // Check for performance risks
-    if (module.hasNestedLoops && module.loopDepth > 3) {
+    if (module.hasNestedLoops && module.loopDepth && module.loopDepth > 3) {
       risks.push('Deeply nested loops - performance risk');
     }
 
@@ -186,9 +201,11 @@ export class SelfValidator {
   /**
    * Check compatibility
    */
-  private async checkCompatibility(module: any): Promise<ValidationResult> {
+  private async checkCompatibility(
+    module: { breakingChanges?: string[]; [key: string]: unknown }
+  ): Promise<ValidationResult> {
     // Check backward compatibility
-    if (module.breakingChanges && module.breakingChanges.length > 0) {
+    if (module.breakingChanges && Array.isArray(module.breakingChanges) && module.breakingChanges.length > 0) {
       return {
         check: 'compatibility',
         status: 'warning',

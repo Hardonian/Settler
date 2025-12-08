@@ -5,7 +5,7 @@
  * Part 11: Resilience & Zero-Fault Hardening
  */
 
-import { logInfo, logWarning } from '../../utils/logger';
+import { logInfo, logWarn } from '../../utils/logger';
 
 export interface Region {
   id: string;
@@ -95,7 +95,7 @@ export class MultiRegionManager {
    */
   async routeWithFailover(
     tenantId: string,
-    request: any
+    request: Record<string, unknown>
   ): Promise<{
     region: Region;
     attempts: number;
@@ -116,10 +116,11 @@ export class MultiRegionManager {
             region,
             attempts: i + 1,
           };
-        } catch (error: any) {
-          logWarning('Region request failed, trying next', {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          logWarn('Region request failed, trying next', {
             regionId,
-            error: error.message,
+            error: errorMessage,
           });
         }
       }
@@ -135,7 +136,7 @@ export class MultiRegionManager {
     const region = this.regions.get(regionId);
     if (region) {
       region.available = false;
-      logWarning('Region marked as unavailable', { regionId });
+      logWarn('Region marked as unavailable', { regionId });
     }
   }
 

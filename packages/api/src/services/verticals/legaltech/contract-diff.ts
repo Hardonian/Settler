@@ -63,15 +63,23 @@ export class ContractDiffService {
     return [];
   }
 
+  interface Obligation {
+    party: string;
+    obligation: string;
+    deadline?: string;
+    penalty?: string;
+    [key: string]: unknown;
+  }
+
   /**
    * Map obligations between contracts
    */
   async mapObligations(
-    sourceObligations: any[],
-    targetObligations: any[]
+    sourceObligations: Obligation[],
+    targetObligations: Obligation[]
   ): Promise<Array<{
-    source: any;
-    target: any;
+    source: Obligation;
+    target: Obligation;
     confidence: number;
   }>> {
     // Use reconciliation engine to map obligations

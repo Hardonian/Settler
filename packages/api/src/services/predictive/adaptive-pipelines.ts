@@ -8,6 +8,7 @@
 import { logInfo } from '../../utils/logger';
 import { PredictiveRouter, RoutingDecision } from '../intelligence/predictive-router';
 import { MetaModels } from './meta-models';
+import { AIModel } from '../ai-mesh/ai-router';
 
 export interface AdaptivePipelineConfig {
   priority: 'low' | 'medium' | 'high' | 'critical';
@@ -26,14 +27,22 @@ export class AdaptivePipelines {
     this.metaModels = new MetaModels();
   }
 
+  interface Pipeline {
+    usesAI?: boolean;
+    model?: string;
+    engine?: string;
+    route?: string;
+    [key: string]: unknown;
+  }
+
   /**
    * Adapt pipeline based on conditions
    */
   async adaptPipeline(
-    pipeline: any,
+    pipeline: Pipeline,
     config: AdaptivePipelineConfig
   ): Promise<{
-    adaptedPipeline: any;
+    adaptedPipeline: Pipeline;
     changes: Array<{
       type: 'model_switch' | 'engine_switch' | 'route_switch';
       from: string;
@@ -81,7 +90,7 @@ export class AdaptivePipelines {
    * Adapt model selection
    */
   private async adaptModel(
-    pipeline: any,
+    pipeline: Pipeline,
     config: AdaptivePipelineConfig
   ): Promise<{
     type: 'model_switch';
@@ -94,7 +103,7 @@ export class AdaptivePipelines {
 
     // Check cost limit
     if (config.costLimit) {
-      const currentCost = this.metaModels.estimateLLMCost(currentModel as any, complexity.estimatedTokens);
+      const currentCost = this.metaModels.estimateLLMCost(currentModel as AIModel, complexity.estimatedTokens);
       if (currentCost > config.costLimit) {
         // Switch to cheaper model
         const recommendation = this.metaModels.recommendModel(
@@ -143,7 +152,7 @@ export class AdaptivePipelines {
    * Adapt engine selection
    */
   private async adaptEngine(
-    pipeline: any,
+    pipeline: Pipeline,
     config: AdaptivePipelineConfig
   ): Promise<{
     type: 'engine_switch';
@@ -183,7 +192,7 @@ export class AdaptivePipelines {
    * Adapt route selection
    */
   private async adaptRoute(
-    pipeline: any,
+    pipeline: Pipeline,
     config: AdaptivePipelineConfig
   ): Promise<{
     type: 'route_switch';

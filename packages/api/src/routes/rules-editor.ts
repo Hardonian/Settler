@@ -288,9 +288,9 @@ function generateRecommendations(
 
 function calculateEstimatedMatchRate(rules: unknown[]): number {
   // AI estimation based on rule complexity
-  const exactRules = rules.filter((r: any) => r.type === "exact").length;
-  const fuzzyRules = rules.filter((r: any) => r.type === "fuzzy").length;
-  const rangeRules = rules.filter((r: any) => r.type === "range").length;
+  const exactRules = rules.filter((r: { type?: string; [key: string]: unknown }) => r.type === "exact").length;
+  const fuzzyRules = rules.filter((r: { type?: string; [key: string]: unknown }) => r.type === "fuzzy").length;
+  const rangeRules = rules.filter((r: { type?: string; [key: string]: unknown }) => r.type === "range").length;
 
   // More exact rules = lower match rate but higher accuracy
   // More fuzzy/range rules = higher match rate but lower accuracy
@@ -303,8 +303,12 @@ function calculateEstimatedMatchRate(rules: unknown[]): number {
 }
 
 function calculateEstimatedAccuracy(rules: unknown[]): number {
-  const exactRules = rules.filter((r: any) => r.type === "exact").length;
-  const fuzzyRules = rules.filter((r: any) => r.type === "fuzzy").length;
+  const exactRules = rules.filter(
+    (r: { type?: string; [key: string]: unknown }) => r.type === "exact"
+  ).length;
+  const fuzzyRules = rules.filter(
+    (r: { type?: string; [key: string]: unknown }) => r.type === "fuzzy"
+  ).length;
 
   let baseAccuracy = 0.9;
   baseAccuracy += exactRules * 0.02;
@@ -321,7 +325,9 @@ function estimateExecutionTime(rules: unknown[]): string {
 }
 
 function calculateComplexity(rules: unknown[]): "low" | "medium" | "high" {
-  const fuzzyRules = rules.filter((r: any) => r.type === "fuzzy").length;
+  const fuzzyRules = rules.filter(
+    (r: { type?: string; [key: string]: unknown }) => r.type === "fuzzy"
+  ).length;
   const totalRules = rules.length;
 
   if (totalRules <= 2 && fuzzyRules === 0) return "low";

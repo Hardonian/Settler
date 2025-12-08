@@ -132,10 +132,11 @@ export class ComplianceExportSystem extends EventEmitter {
       export_.downloadUrl = downloadUrl;
 
       this.emit("export_completed", export_);
-    } catch (error: any) {
+    } catch (error: unknown) {
       export_.status = "failed";
-      this.emit("export_failed", { export_, error });
-      throw error;
+      const errorObj = error instanceof Error ? error : new Error(String(error));
+      this.emit("export_failed", { export_, error: errorObj });
+      throw errorObj;
     }
   }
 

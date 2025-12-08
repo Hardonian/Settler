@@ -17,8 +17,8 @@ export interface LLMProvider {
 export interface ModelAdapter {
   provider: string;
   model: string;
-  adapt(input: any): any;
-  parse(output: any): any;
+  adapt(input: Record<string, unknown>): Record<string, unknown>;
+  parse(output: unknown): Record<string, unknown>;
 }
 
 export class ModelAgnosticism {
@@ -87,8 +87,8 @@ export class ModelAgnosticism {
   async executeWithModel(
     provider: string,
     model: string,
-    input: any
-  ): Promise<any> {
+    input: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     const adapter = this.getAdapter(provider, model);
     if (!adapter) {
       throw new Error(`No adapter found for ${provider}:${model}`);
@@ -115,7 +115,7 @@ export class ModelAgnosticism {
       audio?: ArrayBuffer;
       video?: ArrayBuffer;
     }
-  ): Promise<any> {
+  ): Promise<{ success: boolean; provider: string }> {
     // Find provider that supports multimodal
     const multimodalProvider = Array.from(this.providers.values())
       .find(p => p.capabilities.includes('multimodal'));
