@@ -30,6 +30,8 @@ export class PolicyComparisonService {
 
   constructor(prisma: PrismaClient) {
     this._prisma = prisma;
+    // Reserved for future database operations
+    void this._prisma;
   }
 
   /**

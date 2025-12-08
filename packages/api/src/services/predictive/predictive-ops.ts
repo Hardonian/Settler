@@ -25,6 +25,8 @@ export class PredictiveOps {
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
+    // Reserved for future use
+    void this._predictions;
   }
 
   /**
@@ -53,7 +55,7 @@ export class PredictiveOps {
     const costPredictions = await this.predictCostSpikes();
     predictions.push(...costPredictions);
 
-    this.predictions = predictions;
+    this._predictions = predictions;
     return predictions;
   }
 

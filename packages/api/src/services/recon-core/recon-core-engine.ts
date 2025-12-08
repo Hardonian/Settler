@@ -143,6 +143,8 @@ export class ReconCoreEngine {
         (reconJob.validationRules as ValidationRule[]) || [],
         tenantId
       );
+      // Reserved for future validation feedback
+      void _validationResults;
 
       // Step 4: Apply mapping if mapping template is specified
       const mappedSource = reconJob.mappingTemplateId

@@ -9,7 +9,6 @@
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
-import { PatternExtractor } from '../intelligence/pattern-extractor';
 
 export interface TemplateImprovement {
   templateId: string;

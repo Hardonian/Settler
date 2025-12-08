@@ -32,6 +32,8 @@ export class AdaptivePipelines {
 
   constructor() {
     this._router = new PredictiveRouter();
+    // Reserved for future use
+    void this._router;
     this.metaModels = new MetaModels();
   }
 
