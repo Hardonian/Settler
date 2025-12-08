@@ -66,7 +66,7 @@ export async function getReconciliationSummary(
 
     const result = await query(viewQuery, params);
     logDebug("Used materialized view for reconciliation summary", { jobId });
-    return result as ReconciliationSummaryRow[];
+    return result as unknown as ReconciliationSummaryRow[];
   }
 
   // Fallback to regular query
@@ -133,7 +133,7 @@ export async function getJobPerformance(
       [jobId]
     );
     logDebug("Used materialized view for job performance", { jobId });
-    return (result[0] as JobPerformanceRow) || null;
+    return (result[0] as unknown as JobPerformanceRow) || null;
   }
 
   // Fallback to regular query
@@ -153,7 +153,7 @@ export async function getJobPerformance(
     `,
     [jobId]
   );
-  return (fallbackResult[0] as JobPerformanceRow) || null;
+  return (fallbackResult[0] as unknown as JobPerformanceRow) || null;
 }
 
 /**
@@ -207,11 +207,11 @@ export async function getTenantUsage(
       [tenantId]
     );
     logDebug("Used materialized view for tenant usage", { tenantId, timeRange });
-    return result as TenantUsageRow[];
+    return result as unknown as TenantUsageRow[];
   }
 
   // Fallback to regular query
-  return query(
+  const fallbackResult = await query(
     `
     SELECT 
       tenant_id,
@@ -228,7 +228,8 @@ export async function getTenantUsage(
     LIMIT 100
     `,
     [tenantId]
-  ) as TenantUsageRow[];
+  );
+  return fallbackResult as unknown as TenantUsageRow[];
 }
 
 /**
@@ -282,7 +283,7 @@ export async function getMatchAccuracy(
     const params = jobId ? [jobId] : [];
     const result = await query(queryStr, params);
     logDebug("Used materialized view for match accuracy", { jobId });
-    return jobId ? ((result[0] as MatchAccuracyRow) || null) : (result as MatchAccuracyRow[]);
+    return jobId ? ((result[0] as unknown as MatchAccuracyRow) || null) : (result as unknown as MatchAccuracyRow[]);
   }
 
   // Fallback to regular query
@@ -315,7 +316,7 @@ export async function getMatchAccuracy(
 
   const params = jobId ? [jobId] : [];
   const fallbackResult = await query(fallbackQuery, params);
-  return jobId ? ((fallbackResult[0] as MatchAccuracyRow) || null) : (fallbackResult as MatchAccuracyRow[]);
+  return jobId ? ((fallbackResult[0] as unknown as MatchAccuracyRow) || null) : (fallbackResult as unknown as MatchAccuracyRow[]);
 }
 
 /**
