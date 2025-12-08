@@ -8,7 +8,7 @@
       "NODE_OPTIONS": "--max-old-space-size=4096",
       "PRISMA_CLIENT_ENGINE_TYPE": "library",
       "NEXT_TELEMETRY_DISABLED": "1",
-      "NODE_VERSION": "20.19.6"
+      "NODE_VERSION": "24"
     }
   },
   "functions": {

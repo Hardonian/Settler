@@ -25,13 +25,13 @@ const job = await client.jobs.create({
   source: {
     adapter: "shopify",
     config: {
-      apiKey: process.env.SHOPIFY_API_KEY,
+      apiKey: process.env.NEXT_PUBLIC_SHOPIFY_API_KEY || "",
     },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY,
+      apiKey: process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY || "",
     },
   },
   rules: {

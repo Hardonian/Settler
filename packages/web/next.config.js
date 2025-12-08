@@ -38,6 +38,7 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   transpilePackages: [
+    '@settler/api',
     '@settler/sdk',
     '@settler/react-settler',
     '@settler/protocol',

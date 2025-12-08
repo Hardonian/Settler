@@ -9,6 +9,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./lib/email-lifecycle": {
+      "types": "./dist/lib/email-lifecycle.d.ts",
+      "default": "./dist/lib/email-lifecycle.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
