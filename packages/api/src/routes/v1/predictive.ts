@@ -31,7 +31,7 @@ router.get(
   async (_req: TenantRequest, res: Response) => {
     try {
       const predictions = await predictiveOps.predictFailures();
-      res.json({
+      return res.json({
         data: predictions,
         message: 'Failure predictions generated',
       });

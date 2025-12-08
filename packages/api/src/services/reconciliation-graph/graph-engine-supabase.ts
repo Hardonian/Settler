@@ -243,14 +243,14 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       id: n.id,
       type: n.node_type as "error" | "match" | "transaction" | "unmatched",
       jobId: n.job_id,
-      sourceId: n.source_id,
-      targetId: n.target_id,
+      ...(n.source_id && { sourceId: n.source_id }),
+      ...(n.target_id && { targetId: n.target_id }),
       data: n.data,
-      amount: n.amount,
-      currency: n.currency,
+      ...(n.amount !== undefined && { amount: n.amount }),
+      ...(n.currency && { currency: n.currency }),
       timestamp: new Date(n.timestamp),
-      confidence: n.confidence,
-      metadata: n.metadata,
+      ...(n.confidence !== undefined && { confidence: n.confidence }),
+      ...(n.metadata && { metadata: n.metadata }),
     }));
 
     // Get edges for these nodes
@@ -271,7 +271,7 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       target: e.target_node_id,
       type: e.edge_type as "matches" | "conflicts" | "related" | "derived",
       confidence: e.confidence,
-      metadata: e.metadata,
+      ...(e.metadata && { metadata: e.metadata }),
       createdAt: new Date(e.created_at),
     }));
 

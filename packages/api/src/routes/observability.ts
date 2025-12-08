@@ -157,25 +157,25 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
 
     if (level) {
       queryStr += ` AND level = $${paramIndex}`;
-      params.push(level);
+      params.push(String(level));
       paramIndex++;
     }
 
     if (jobId) {
       queryStr += ` AND job_id = $${paramIndex}`;
-      params.push(jobId);
+      params.push(String(jobId));
       paramIndex++;
     }
 
     if (startDate) {
       queryStr += ` AND created_at >= $${paramIndex}`;
-      params.push(startDate);
+      params.push(new Date(String(startDate)));
       paramIndex++;
     }
 
     if (endDate) {
       queryStr += ` AND created_at <= $${paramIndex}`;
-      params.push(endDate);
+      params.push(new Date(String(endDate)));
       paramIndex++;
     }
 

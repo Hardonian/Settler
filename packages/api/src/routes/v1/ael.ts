@@ -29,7 +29,7 @@ router.get(
   async (_req: TenantRequest, res: Response) => {
     try {
       const proposals = await ael.evolve();
-      res.json({
+      return res.json({
         data: proposals,
         message: 'Evolution cycle completed',
       });

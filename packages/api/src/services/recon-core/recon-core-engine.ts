@@ -430,7 +430,6 @@ export class ReconCoreEngine {
       totalAmountTarget,
       totalAmountMatched,
       totalAmountUnmatched,
-      currency: (sourceData[0]?.currency || targetData[0]?.currency || '') as string,
       confidenceAvg,
       confidenceMin,
       confidenceMax,
@@ -448,11 +447,7 @@ export class ReconCoreEngine {
           unmatched: totalAmountUnmatched,
           total: totalAmountSource || totalAmountTarget || null,
         },
-        currency: sourceData[0] && typeof sourceData[0] === 'object' && 'currency' in sourceData[0]
-          ? String(sourceData[0].currency)
-          : targetData[0] && typeof targetData[0] === 'object' && 'currency' in targetData[0]
-          ? String(targetData[0].currency)
-          : undefined,
+        ...(sourceData[0]?.currency || targetData[0]?.currency ? { currency: sourceData[0]?.currency || targetData[0]?.currency || '' } : {}),
       },
     };
   }

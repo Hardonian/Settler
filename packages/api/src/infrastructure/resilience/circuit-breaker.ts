@@ -73,7 +73,7 @@ export function createCircuitBreaker<T extends unknown[], R>(
     });
   });
 
-  return breaker;
+  return breaker as CircuitBreaker<R>;
 }
 
 /**
