@@ -5,7 +5,8 @@
     "rootDir": "./src",
     "composite": true,
     "skipLibCheck": true,
-    "paths": {}
+    "paths": {},
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "../sdk/src/**/*"],
