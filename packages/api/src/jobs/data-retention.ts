@@ -59,9 +59,10 @@ export async function cleanupOldData(): Promise<void> {
       deletedIdempotencyKeys: deletedIdempotencyKeys.length,
       cutoffDate: cutoffDate.toISOString(),
     });
-  } catch (error: any) {
-    logError("Data retention cleanup failed", error);
-    throw error;
+  } catch (error: unknown) {
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logError("Data retention cleanup failed", errorObj);
+    throw errorObj;
   }
 }
 

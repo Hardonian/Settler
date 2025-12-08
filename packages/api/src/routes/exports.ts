@@ -93,7 +93,15 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
     if (format === "csv") {
       try {
         // Get report data
-        const executions = await query<{ summary: any }>(
+        interface ExecutionSummary {
+          matched?: number;
+          unmatched?: number;
+          errors?: number;
+          accuracy?: number;
+          totalTransactions?: number;
+        }
+
+        const executions = await query<{ summary: ExecutionSummary | null }>(
           `SELECT summary FROM executions WHERE job_id = $1 ORDER BY completed_at DESC LIMIT 1`,
           [jobId]
         );
@@ -144,7 +152,7 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
     // Handle JSON export
     if (format === "json") {
       try {
-        const executions = await query<{ summary: any; completed_at: Date }>(
+        const executions = await query<{ summary: ExecutionSummary | null; completed_at: Date }>(
           `SELECT summary, completed_at FROM executions WHERE job_id = $1 ORDER BY completed_at DESC LIMIT 1`,
           [jobId]
         );

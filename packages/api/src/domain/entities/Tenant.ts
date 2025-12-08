@@ -34,7 +34,7 @@ export interface TenantConfig {
   enableMLFeatures: boolean;
   webhookTimeout: number; // milliseconds
   maxRetries: number;
-  [key: string]: any; // Allow extensible config
+  [key: string]: unknown; // Allow extensible config
 }
 
 export interface TenantProps {
@@ -46,7 +46,7 @@ export interface TenantProps {
   status: TenantStatus;
   quotas: TenantQuotas;
   config: TenantConfig;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -100,7 +100,7 @@ export class Tenant {
     return { ...this.props.config };
   }
 
-  get metadata(): Record<string, any> {
+  get metadata(): Record<string, unknown> {
     return { ...this.props.metadata };
   }
 
@@ -148,7 +148,7 @@ export class Tenant {
     this.props.updatedAt = new Date();
   }
 
-  updateMetadata(metadata: Record<string, any>): void {
+  updateMetadata(metadata: Record<string, unknown>): void {
     this.props.metadata = { ...this.props.metadata, ...metadata };
     this.props.updatedAt = new Date();
   }

@@ -70,9 +70,14 @@ export class ReconciliationProjectionHandlers {
     `;
 
     // Extract from event metadata
-    const tenantId = (event as any).tenantId || "unknown";
-    const reconciliationId = (event as any).reconciliationId;
-    const jobId = (event as any).jobId;
+    const eventWithMetadata = event as DomainEvent & {
+      tenantId?: string;
+      reconciliationId?: string;
+      jobId?: string;
+    };
+    const tenantId = eventWithMetadata.tenantId || "unknown";
+    const reconciliationId = eventWithMetadata.reconciliationId;
+    const jobId = eventWithMetadata.jobId;
 
     await this.db.query(query, [
       reconciliationId,
@@ -87,8 +92,13 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle OrdersFetched event
    */
+  interface OrdersFetchedData {
+    count: number;
+    reconciliation_id: string;
+  }
+
   async handleOrdersFetched(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as any;
+    const data = eventEnvelope.data as OrdersFetchedData;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -103,8 +113,13 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle PaymentsFetched event
    */
+  interface PaymentsFetchedData {
+    count: number;
+    reconciliation_id: string;
+  }
+
   async handlePaymentsFetched(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as any;
+    const data = eventEnvelope.data as PaymentsFetchedData;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -119,8 +134,12 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle RecordMatched event
    */
+  interface RecordMatchedData {
+    reconciliation_id: string;
+  }
+
   async handleRecordMatched(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as any;
+    const data = eventEnvelope.data as RecordMatchedData;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -135,8 +154,14 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle RecordUnmatched event
    */
+  interface RecordUnmatchedData {
+    reconciliation_id: string;
+    source_id?: string;
+    target_id?: string;
+  }
+
   async handleRecordUnmatched(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as any;
+    const data = eventEnvelope.data as RecordUnmatchedData;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -159,8 +184,21 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle ReconciliationCompleted event
    */
+  interface ReconciliationCompletedData {
+    reconciliation_id: string;
+    summary: {
+      matched_count: number;
+      unmatched_source_count: number;
+      unmatched_target_count: number;
+      errors_count: number;
+      duration_ms: number;
+      accuracy_percentage: number;
+    };
+    completed_at: string;
+  }
+
   async handleReconciliationCompleted(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as any;
+    const data = eventEnvelope.data as ReconciliationCompletedData;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -194,8 +232,17 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle ReconciliationFailed event
    */
+  interface ReconciliationFailedData {
+    reconciliation_id: string;
+    failed_at: string;
+    error: {
+      type: string;
+      message: string;
+    };
+  }
+
   async handleReconciliationFailed(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as any;
+    const data = eventEnvelope.data as ReconciliationFailedData;
     const query = `
       UPDATE reconciliation_summary
       SET 
@@ -235,15 +282,20 @@ export class ReconciliationProjectionHandlers {
         success_count = tenant_usage_view.success_count + 1
     `;
 
-    const data = eventEnvelope.data as any;
+    const data = eventEnvelope.data as ReconciliationCompletedData;
     await this.db.query(query, [tenantId, today, data.summary?.duration_ms || 0]);
   }
 
   /**
    * Update error hotspots view
    */
+  interface ErrorHotspotData extends ReconciliationFailedData {
+    job_id?: string;
+    step?: string;
+  }
+
   private async updateErrorHotspots(eventEnvelope: EventEnvelope): Promise<void> {
-    const data = eventEnvelope.data as any;
+    const data = eventEnvelope.data as ErrorHotspotData;
     const tenantId = eventEnvelope.metadata.tenant_id;
 
     const query = `
@@ -264,7 +316,7 @@ export class ReconciliationProjectionHandlers {
 
     await this.db.query(query, [
       data.reconciliation_id,
-      (data as any).job_id || "unknown",
+      data.job_id || "unknown",
       data.error.type,
       data.step || "unknown",
       new Date(data.failed_at),

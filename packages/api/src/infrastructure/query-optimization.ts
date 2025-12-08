@@ -21,11 +21,22 @@ export interface QueryOptions {
  * Get reconciliation summary using materialized view
  * Much faster than querying raw reconciliation data
  */
+interface ReconciliationSummaryRow {
+  job_id: string;
+  date: Date;
+  total_matched: number;
+  total_unmatched_source: number;
+  total_unmatched_target: number;
+  total_errors: number;
+  accuracy_percentage: number;
+  avg_processing_time_ms: number;
+}
+
 export async function getReconciliationSummary(
   jobId: string,
   dateRange?: { start: Date; end: Date },
   options: QueryOptions = {}
-): Promise<any> {
+): Promise<ReconciliationSummaryRow[]> {
   const { useMaterializedView = true, refreshView = false } = options;
 
   if (refreshView && useMaterializedView) {
@@ -85,7 +96,20 @@ export async function getReconciliationSummary(
 /**
  * Get job performance metrics using materialized view
  */
-export async function getJobPerformance(jobId: string, options: QueryOptions = {}): Promise<any> {
+interface JobPerformanceRow {
+  job_id: string;
+  total_executions: number;
+  successful_executions: number;
+  failed_executions: number;
+  avg_execution_time_ms: number;
+  last_execution_at: Date;
+  last_execution_status: string;
+}
+
+export async function getJobPerformance(
+  jobId: string,
+  options: QueryOptions = {}
+): Promise<JobPerformanceRow | null> {
   const { useMaterializedView = true, refreshView = false } = options;
 
   if (refreshView && useMaterializedView) {
@@ -134,11 +158,21 @@ export async function getJobPerformance(jobId: string, options: QueryOptions = {
 /**
  * Get tenant usage metrics using materialized view
  */
+interface TenantUsageRow {
+  tenant_id: string;
+  hour?: Date;
+  day?: Date;
+  total_requests: number;
+  total_reconciliations: number;
+  total_errors: number;
+  avg_response_time_ms: number;
+}
+
 export async function getTenantUsage(
   tenantId: string,
   timeRange: "hour" | "day" | "week" = "hour",
   options: QueryOptions = {}
-): Promise<any> {
+): Promise<TenantUsageRow[]> {
   const { useMaterializedView = true, refreshView = false } = options;
 
   if (refreshView && useMaterializedView) {
@@ -199,7 +233,19 @@ export async function getTenantUsage(
 /**
  * Get match accuracy by job using materialized view
  */
-export async function getMatchAccuracy(jobId?: string, options: QueryOptions = {}): Promise<any> {
+interface MatchAccuracyRow {
+  job_id: string;
+  total_matches: number;
+  accurate_matches: number;
+  inaccurate_matches: number;
+  accuracy_percentage: number;
+  avg_confidence_score: number;
+}
+
+export async function getMatchAccuracy(
+  jobId?: string,
+  options: QueryOptions = {}
+): Promise<MatchAccuracyRow | MatchAccuracyRow[]> {
   const { useMaterializedView = true, refreshView = false } = options;
 
   if (refreshView && useMaterializedView) {
@@ -279,9 +325,10 @@ export async function refreshMaterializedView(viewName: string): Promise<void> {
   try {
     await query(`REFRESH MATERIALIZED VIEW CONCURRENTLY ${viewName}`);
     logInfo("Materialized view refreshed", { viewName });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     // If CONCURRENTLY fails (no unique index), try without it
-    if (error.message.includes("CONCURRENTLY")) {
+    if (errorMessage.includes("CONCURRENTLY")) {
       await query(`REFRESH MATERIALIZED VIEW ${viewName}`);
       logInfo("Materialized view refreshed (non-concurrent)", { viewName });
     } else {

@@ -264,9 +264,17 @@ export class PDFGenerator {
     const dateEnd = endDate || new Date();
 
     // Get latest execution
+    interface ExecutionSummary {
+      matched?: number;
+      unmatched?: number;
+      errors?: number;
+      accuracy?: number;
+      totalTransactions?: number;
+    }
+
     const executions = await query<{
       id: string;
-      summary: any;
+      summary: ExecutionSummary | null;
       completed_at: Date;
     }>(
       `SELECT id, summary, completed_at

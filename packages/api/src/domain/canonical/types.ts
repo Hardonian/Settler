@@ -47,7 +47,7 @@ export interface Payment {
   amount: Money;
   status: PaymentStatus;
   customerId?: string; // Merchant's customer ID
-  metadata: Record<string, any>; // Merchant-provided metadata
+  metadata: Record<string, unknown>; // Merchant-provided metadata
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,7 +66,7 @@ export interface Transaction {
   amount: Money; // Transaction amount
   netAmount?: Money; // Amount after fees
   status: TransactionStatus;
-  rawPayload: Record<string, any>; // Original provider payload
+  rawPayload: Record<string, unknown>; // Original provider payload
   created_at: Date;
   updatedAt: Date;
 }
@@ -86,7 +86,7 @@ export interface Settlement {
   settlementDate: Date; // When funds were settled
   expectedDate?: Date; // When settlement was expected
   status: SettlementStatus;
-  rawPayload: Record<string, any>;
+  rawPayload: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -117,7 +117,7 @@ export interface Fee {
   amount: Money; // Fee amount
   description?: string; // Human-readable description
   rate?: number; // Percentage rate (if applicable)
-  rawPayload: Record<string, any>; // Provider-specific fee data
+  rawPayload: Record<string, unknown>; // Provider-specific fee data
   createdAt: Date;
 }
 
@@ -153,7 +153,7 @@ export interface RefundDispute {
   reason?: string; // Refund reason or dispute reason code
   providerRefundId?: string; // Provider's refund ID
   providerDisputeId?: string; // Provider's dispute ID
-  rawPayload: Record<string, any>;
+  rawPayload: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -171,7 +171,7 @@ export interface ReconciliationMatch {
   settlementId?: string;
   matchType: MatchType;
   confidenceScore: number; // 0.00 to 1.00
-  matchingRules: Record<string, any>; // Rules used for matching
+  matchingRules: Record<string, unknown>; // Rules used for matching
   matchedAt: Date;
   createdAt: Date;
 }

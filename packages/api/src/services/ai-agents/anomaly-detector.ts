@@ -75,7 +75,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
       lastExecution?: Date;
       metrics?: Record<string, unknown>;
     } = {
-      enabled: (this as any).enabled,
+      enabled: this.enabled,
     };
     if (this.lastDetection) {
       status.lastExecution = this.lastDetection;

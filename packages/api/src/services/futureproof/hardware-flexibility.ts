@@ -99,7 +99,10 @@ export class HardwareFlexibility {
   /**
    * Support for Secure AI Function Enclaves (SAFEs)
    */
-  async executeInSAFE(code: string, input: any): Promise<any> {
+  async executeInSAFE(
+    code: string,
+    input: Record<string, unknown>
+  ): Promise<{ success: boolean; result: Record<string, unknown> }> {
     // TODO: Implement SAFE execution
     // This would execute code in a secure enclave
     return {
@@ -111,7 +114,10 @@ export class HardwareFlexibility {
   /**
    * Local inference
    */
-  async executeLocalInference(model: string, input: any): Promise<any> {
+  async executeLocalInference(
+    model: string,
+    input: Record<string, unknown>
+  ): Promise<{ success: boolean; result: Record<string, unknown> }> {
     // TODO: Implement local inference
     // This would run models locally
     return {
@@ -126,9 +132,9 @@ export class HardwareFlexibility {
   async executeHybrid(
     tasks: Array<{
       type: 'gpu' | 'cpu';
-      task: any;
+      task: Record<string, unknown>;
     }>
-  ): Promise<any[]> {
+  ): Promise<Array<{ success: boolean; result: Record<string, unknown> }>> {
     // TODO: Implement hybrid execution
     // This would route tasks to appropriate hardware
     return tasks.map(t => ({ success: true, result: t.task }));

@@ -117,7 +117,13 @@ export function setUsageTrackingService(service: UsageTrackingService): void {
 export function usageTrackingMiddleware() {
   return async (req: UsageTrackingRequest, res: Response, next: NextFunction) => {
     const startTime = Date.now();
-    const tenantId = (req as any).tenantId || (req as any).user?.tenantId || "anonymous";
+    interface RequestWithUser extends Request {
+      tenantId?: string;
+      user?: { tenantId?: string };
+    }
+
+    const reqWithUser = req as RequestWithUser;
+    const tenantId = reqWithUser.tenantId || reqWithUser.user?.tenantId || "anonymous";
 
     // Capture response
     const originalSend = res.send;
@@ -168,7 +174,13 @@ export async function getCurrentUsage(
   req: UsageTrackingRequest,
   period: "day" | "week" | "month" = "day"
 ) {
-  const tenantId = (req as any).tenantId || (req as any).user?.tenantId;
+  interface RequestWithUser extends Request {
+    tenantId?: string;
+    user?: { tenantId?: string };
+  }
+
+  const reqWithUser = req as RequestWithUser;
+  const tenantId = reqWithUser.tenantId || reqWithUser.user?.tenantId;
   if (!tenantId) {
     return null;
   }

@@ -11,13 +11,13 @@ import { AIRouter, AIModel } from './ai-router';
 export interface AgentTask {
   id: string;
   type: 'ingestion' | 'mapping' | 'validation' | 'transform' | 'drift_detection';
-  input: any;
+  input: Record<string, unknown>;
   retryCount?: number;
 }
 
 export interface AgentResponse {
   success: boolean;
-  result?: any;
+  result?: Record<string, unknown>;
   error?: string;
   model?: AIModel;
   cost?: number;
@@ -113,7 +113,7 @@ export class MultiAgentFallback {
   /**
    * Handle ingestion failure
    */
-  async handleIngestionFailure(error: Error, context: any): Promise<AgentResponse> {
+  async handleIngestionFailure(error: Error, context: Record<string, unknown>): Promise<AgentResponse> {
     return this.executeWithFallback({
       id: `ingestion-${Date.now()}`,
       type: 'ingestion',
@@ -125,7 +125,7 @@ export class MultiAgentFallback {
   /**
    * Handle mapping uncertainty
    */
-  async handleMappingUncertainty(uncertainFields: string[], data: any): Promise<AgentResponse> {
+  async handleMappingUncertainty(uncertainFields: string[], data: Record<string, unknown>): Promise<AgentResponse> {
     return this.executeWithFallback({
       id: `mapping-${Date.now()}`,
       type: 'mapping',
@@ -137,7 +137,10 @@ export class MultiAgentFallback {
   /**
    * Handle schema deviation
    */
-  async handleSchemaDeviation(expected: any, actual: any): Promise<AgentResponse> {
+  async handleSchemaDeviation(
+    expected: Record<string, unknown>,
+    actual: Record<string, unknown>
+  ): Promise<AgentResponse> {
     return this.executeWithFallback({
       id: `schema-${Date.now()}`,
       type: 'drift_detection',

@@ -5,12 +5,12 @@
  * Part of Phase V: AIOS
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logInfo, logError } from '../../utils/logger';
 
 export interface ContractSchema {
   type: 'object' | 'array';
-  properties?: Record<string, any>;
+  properties?: Record<string, unknown>;
   required?: string[];
   additionalProperties?: boolean;
 }
@@ -18,8 +18,8 @@ export interface ContractSchema {
 export interface BreakingChange {
   type: 'field_removed' | 'field_type_changed' | 'required_added' | 'enum_restricted';
   field: string;
-  before: any;
-  after: any;
+  before: unknown;
+  after: unknown;
   severity: 'low' | 'medium' | 'high' | 'critical';
 }
 
@@ -44,7 +44,7 @@ export class ContractManager {
         tenantId,
         contractName,
         version,
-        schemaDefinition: schema as any,
+        schemaDefinition: schema as Record<string, unknown>,
         isActive: true,
       },
     });
@@ -97,10 +97,11 @@ export class ContractManager {
     
     for (const field of oldFields) {
       if (!newFields.includes(field)) {
+        const fieldValue = oldSchema.properties?.[field];
         breakingChanges.push({
           type: 'field_removed',
           field,
-          before: oldSchema.properties![field],
+          before: fieldValue,
           after: null,
           severity: 'critical',
         });
@@ -145,7 +146,7 @@ export class ContractManager {
     await this.prisma.contractVersion.update({
       where: { id: newContract.id },
       data: {
-        breakingChanges: breakingChanges as any,
+        breakingChanges: breakingChanges as Prisma.InputJsonValue,
       },
     });
 

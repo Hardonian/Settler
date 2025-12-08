@@ -55,7 +55,7 @@ export async function sendEmail(template: EmailTemplate): Promise<{ id: string }
       text: template.text,
       ...(template.replyTo && { reply_to: template.replyTo }),
       tags: template.tags,
-    } as any);
+    });
 
     logInfo("Email sent successfully", {
       emailId: result.data?.id || "unknown",
@@ -64,12 +64,13 @@ export async function sendEmail(template: EmailTemplate): Promise<{ id: string }
     });
 
     return { id: result.data?.id || "unknown" };
-  } catch (error: any) {
-    logError("Failed to send email", error, {
+  } catch (error: unknown) {
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logError("Failed to send email", errorObj, {
       to: template.to,
       subject: template.subject,
     });
-    throw error;
+    throw errorObj;
   }
 }
 

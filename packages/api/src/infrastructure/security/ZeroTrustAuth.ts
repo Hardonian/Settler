@@ -117,11 +117,12 @@ export class ZeroTrustAuth {
       // For now, we'll implement revocation checking separately
 
       return decoded;
-    } catch (error: any) {
-      if (error.name === "TokenExpiredError") {
+    } catch (error: unknown) {
+      const jwtError = error as Error & { name?: string };
+      if (jwtError.name === "TokenExpiredError") {
         throw new Error("Access token expired");
       }
-      if (error.name === "JsonWebTokenError") {
+      if (jwtError.name === "JsonWebTokenError") {
         throw new Error("Invalid access token");
       }
       throw error;
@@ -148,11 +149,12 @@ export class ZeroTrustAuth {
       }
 
       return decoded;
-    } catch (error: any) {
-      if (error.name === "TokenExpiredError") {
+    } catch (error: unknown) {
+      const jwtError = error as Error & { name?: string };
+      if (jwtError.name === "TokenExpiredError") {
         throw new Error("Refresh token expired");
       }
-      if (error.name === "JsonWebTokenError") {
+      if (jwtError.name === "JsonWebTokenError") {
         throw new Error("Invalid refresh token");
       }
       throw error;

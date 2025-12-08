@@ -95,7 +95,7 @@ export class MultiRegionManager {
    */
   async routeWithFailover(
     tenantId: string,
-    request: any
+    request: Record<string, unknown>
   ): Promise<{
     region: Region;
     attempts: number;
@@ -116,10 +116,11 @@ export class MultiRegionManager {
             region,
             attempts: i + 1,
           };
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
           logWarn('Region request failed, trying next', {
             regionId,
-            error: error.message,
+            error: errorMessage,
           });
         }
       }

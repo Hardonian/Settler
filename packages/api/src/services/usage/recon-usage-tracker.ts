@@ -14,7 +14,7 @@ export interface UsageEvent {
   eventType: string;
   quantity: number;
   unit: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export class ReconUsageTracker {
@@ -31,7 +31,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     comparisonCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -50,7 +50,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     validationCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -69,7 +69,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     transformationCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -88,7 +88,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     mappingCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -107,7 +107,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     stepCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -127,7 +127,7 @@ export class ReconUsageTracker {
     billingAccountId: string,
     tokenCount: number,
     model?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -149,7 +149,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     reportCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -168,7 +168,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     bytes: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,
@@ -187,7 +187,7 @@ export class ReconUsageTracker {
     tenantId: string,
     billingAccountId: string,
     webhookCount: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.trackUsage({
       tenantId,

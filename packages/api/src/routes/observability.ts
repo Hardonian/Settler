@@ -152,7 +152,7 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
       FROM logs
       WHERE user_id = $1 AND tenant_id = $2
     `;
-    const params: any[] = [userId, tenantId];
+    const params: unknown[] = [userId, tenantId];
     let paramIndex = 3;
 
     if (level) {
@@ -208,9 +208,10 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
 observabilityRouter.get("/traces", async (req: Request, res: Response) => {
   try {
     // Reserved for future user/tenant filtering
+    const authReq = req as AuthRequest;
     const _ = {
-      userId: (req as any).userId,
-      tenantId: (req as any).tenantId,
+      userId: authReq.userId,
+      tenantId: authReq.tenantId,
     };
     void _;
     // Reserved for future tracing backend integration

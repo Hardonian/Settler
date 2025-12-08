@@ -16,8 +16,8 @@ export interface SystemDefaults {
 
 export interface AdaptationEvent {
   type: 'default_change' | 'routing_change' | 'cost_threshold_change' | 'template_change' | 'heuristic_change';
-  oldValue: any;
-  newValue: any;
+  oldValue: unknown;
+  newValue: unknown;
   reason: string;
   timestamp: Date;
 }

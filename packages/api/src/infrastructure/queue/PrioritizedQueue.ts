@@ -22,7 +22,7 @@ export interface QueueJobData {
   tenantId: string;
   tenantTier: TenantTier;
   jobId?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export class PrioritizedQueue {
@@ -32,7 +32,7 @@ export class PrioritizedQueue {
 
   constructor(
     private queueName: string,
-    private processor: (job: Job<QueueJobData>) => Promise<any>
+    private processor: (job: Job<QueueJobData>) => Promise<unknown>
   ) {
     // Prefer REDIS_URL if provided (Upstash format: rediss://default:password@host:6379)
     if (config.redis.url) {

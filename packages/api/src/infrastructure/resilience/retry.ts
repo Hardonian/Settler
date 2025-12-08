@@ -89,12 +89,13 @@ function isRetryableError(error: Error): boolean {
     return true;
   }
 
-  // HTTP status codes that are retryable
-  const statusCode = (error as any).statusCode || (error as any).status;
-  if (statusCode) {
-    // 429 (Too Many Requests), 503 (Service Unavailable), 502 (Bad Gateway), 504 (Gateway Timeout)
-    return [429, 502, 503, 504].includes(statusCode);
-  }
+    // HTTP status codes that are retryable
+    const errorWithStatus = error as Error & { statusCode?: number; status?: number };
+    const statusCode = errorWithStatus.statusCode || errorWithStatus.status;
+    if (statusCode) {
+      // 429 (Too Many Requests), 503 (Service Unavailable), 502 (Bad Gateway), 504 (Gateway Timeout)
+      return [429, 502, 503, 504].includes(statusCode);
+    }
 
   return false;
 }

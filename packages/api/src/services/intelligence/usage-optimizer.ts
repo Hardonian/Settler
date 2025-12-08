@@ -91,7 +91,7 @@ export class UsageOptimizer {
   /**
    * Identify peak usage hours
    */
-  private identifyPeakHours(usageEvents: any[]): string[] {
+  private identifyPeakHours(usageEvents: Array<{ timestamp: Date | string }>): string[] {
     const hourCounts = new Map<number, number>();
 
     for (const event of usageEvents) {

@@ -155,9 +155,16 @@ export function getFeatureFlagService(): FeatureFlagService {
 export function featureFlagsMiddleware() {
   return async (req: FeatureFlagRequest, _res: Response, next: NextFunction) => {
     try {
+      interface RequestWithUser extends Request {
+        tenantId?: string;
+        userId?: string;
+        user?: { tenantId?: string; id?: string };
+      }
+
+      const reqWithUser = req as RequestWithUser;
       const context: FeatureFlagContext = {
-        tenantId: (req as any).tenantId || (req as any).user?.tenantId,
-        userId: (req as any).userId || (req as any).user?.id,
+        tenantId: reqWithUser.tenantId || reqWithUser.user?.tenantId,
+        userId: reqWithUser.userId || reqWithUser.user?.id,
         environment: process.env.NODE_ENV || "development",
       };
 

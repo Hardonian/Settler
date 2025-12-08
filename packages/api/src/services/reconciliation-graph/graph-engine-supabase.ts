@@ -9,8 +9,14 @@ import { supabase, supabaseRealtime } from "../../infrastructure/supabase/client
 import { EventEmitter } from "events";
 import { logError } from "../../utils/logger";
 
+interface GraphUpdate {
+  type: string;
+  data: unknown;
+  timestamp: Date;
+}
+
 export class ReconciliationGraphEngineSupabase extends EventEmitter {
-  private updateSubscribers: Map<string, Set<(update: any) => void>> = new Map();
+  private updateSubscribers: Map<string, Set<(update: GraphUpdate) => void>> = new Map();
 
   /**
    * Initialize Realtime subscriptions
@@ -209,7 +215,21 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       throw new Error(`Failed to query nodes: ${nodesError.message}`);
     }
 
-    const nodes: ReconciliationNode[] = (nodesData || []).map((n: any) => ({
+    interface NodeRow {
+      id: string;
+      node_type: string;
+      job_id: string;
+      source_id: string | null;
+      target_id: string | null;
+      data: unknown;
+      amount: number;
+      currency: string;
+      timestamp: string | Date;
+      confidence: number;
+      metadata: Record<string, unknown> | null;
+    }
+
+    const nodes: ReconciliationNode[] = (nodesData || []).map((n: NodeRow) => ({
       id: n.id,
       type: n.node_type,
       jobId: n.job_id,
@@ -235,7 +255,17 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       throw new Error(`Failed to query edges: ${edgesError.message}`);
     }
 
-    const edges: ReconciliationEdge[] = (edgesData || []).map((e: any) => ({
+    interface EdgeRow {
+      id: string;
+      source_node_id: string;
+      target_node_id: string;
+      edge_type: string;
+      confidence: number;
+      metadata: Record<string, unknown> | null;
+      created_at: string | Date;
+    }
+
+    const edges: ReconciliationEdge[] = (edgesData || []).map((e: EdgeRow) => ({
       id: e.id,
       source: e.source_node_id,
       target: e.target_node_id,
@@ -272,7 +302,7 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
   /**
    * Subscribe to real-time updates
    */
-  subscribe(jobId: string, callback: (update: any) => void): () => void {
+  subscribe(jobId: string, callback: (update: GraphUpdate) => void): () => void {
     if (!this.updateSubscribers.has(jobId)) {
       this.updateSubscribers.set(jobId, new Set());
       this.initialize(jobId).catch((error) => {
@@ -290,7 +320,7 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
   /**
    * Notify subscribers of updates
    */
-  private notifySubscribers(jobId: string, update: any): void {
+  private notifySubscribers(jobId: string, update: GraphUpdate): void {
     const subscribers = this.updateSubscribers.get(jobId);
     if (subscribers) {
       subscribers.forEach((callback) => {

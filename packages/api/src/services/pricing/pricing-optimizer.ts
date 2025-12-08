@@ -60,10 +60,17 @@ export class PricingOptimizer {
     };
   }
 
+  interface CustomerSegments {
+    lowUsage: number;
+    mediumUsage: number;
+    highUsage: number;
+    enterprise: number;
+  }
+
   /**
    * Analyze tier pricing
    */
-  private async analyzeTiers(segments: any): Promise<PricingRecommendation[]> {
+  private async analyzeTiers(segments: CustomerSegments): Promise<PricingRecommendation[]> {
     const recommendations: PricingRecommendation[] = [];
 
     // If many customers hitting limits, consider tier adjustments
@@ -83,7 +90,7 @@ export class PricingOptimizer {
   /**
    * Analyze usage thresholds
    */
-  private async analyzeThresholds(segments: any): Promise<PricingRecommendation[]> {
+  private async analyzeThresholds(segments: CustomerSegments): Promise<PricingRecommendation[]> {
     const recommendations: PricingRecommendation[] = [];
 
     // If customers consistently exceed limits, adjust thresholds
@@ -101,7 +108,7 @@ export class PricingOptimizer {
   /**
    * Analyze overage pricing
    */
-  private async analyzeOverage(segments: any): Promise<PricingRecommendation[]> {
+  private async analyzeOverage(segments: CustomerSegments): Promise<PricingRecommendation[]> {
     const recommendations: PricingRecommendation[] = [];
 
     // If overage revenue is low, consider adjusting pricing

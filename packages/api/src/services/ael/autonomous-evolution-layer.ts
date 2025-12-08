@@ -19,7 +19,7 @@ export interface EvolutionProposal {
   risk: 'low' | 'medium' | 'high';
   estimatedEffort: number; // hours
   backwardCompatible: boolean;
-  proposedChange: any;
+  proposedChange: Record<string, unknown>;
 }
 
 export interface EvolutionLog {

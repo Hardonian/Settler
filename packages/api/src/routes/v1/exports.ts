@@ -98,7 +98,7 @@ router.post(
               end: new Date(dateRange.end),
             },
             includeRawPayloads: options.includeRawPayloads ?? false,
-          } as any);
+          });
           res.setHeader("Content-Type", "application/json");
           return sendSuccess(res, exportData);
         }

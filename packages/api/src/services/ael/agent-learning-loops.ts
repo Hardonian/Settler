@@ -11,8 +11,8 @@ import { PatternExtractor } from '../intelligence/pattern-extractor';
 export interface LearningInsight {
   type: 'transform' | 'mapping' | 'schema' | 'validation' | 'workflow';
   issue: string;
-  currentState: any;
-  proposedImprovement: any;
+  currentState: Record<string, unknown>;
+  proposedImprovement: Record<string, unknown>;
   confidence: number;
   impact: 'low' | 'medium' | 'high';
 }

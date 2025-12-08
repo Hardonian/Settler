@@ -114,13 +114,24 @@ export class UsageSimulator {
     return usage;
   }
 
+  interface HistoricalUsage {
+    reconComparisons: number;
+    validations: number;
+    transformations: number;
+    mappings: number;
+    workflowSteps: number;
+    aiTokens: number;
+    storageBytes: number;
+    webhookTriggers: number;
+  }
+
   /**
    * Project future usage
    */
   private projectUsage(
-    historical: any,
+    historical: HistoricalUsage,
     period: 'daily' | 'weekly' | 'monthly'
-  ) {
+  ): HistoricalUsage {
     // Simple projection: assume 10% growth
     const growthFactor = 1.1;
     
@@ -139,7 +150,7 @@ export class UsageSimulator {
   /**
    * Calculate cost
    */
-  private calculateCost(usage: any): number {
+  private calculateCost(usage: HistoricalUsage): number {
     const pricing = {
       reconComparison: 0.01 / 1000,
       validation: 0.005 / 1000,

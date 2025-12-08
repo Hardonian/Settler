@@ -163,9 +163,10 @@ export class SagaOrchestrator {
           // Step succeeded
           state.data = { ...state.data, ...result.data };
           await this.recordStepComplete(state, step.name);
-        } catch (error: any) {
+        } catch (error: unknown) {
           // Handle timeout or unexpected errors
-          if (step.timeoutMs && error.name === "TimeoutError") {
+          const errorWithName = error as Error & { name?: string };
+          if (step.timeoutMs && errorWithName.name === "TimeoutError") {
             await this.handleStepTimeout(state, step);
             return;
           }
@@ -175,9 +176,11 @@ export class SagaOrchestrator {
             await this.compensate(state, step.name);
           }
 
-          await this.markSagaFailed(state, error.message);
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          await this.markSagaFailed(state, errorMessage);
           if (saga.onFailure) {
-            await saga.onFailure(state, error);
+            const errorObj = error instanceof Error ? error : new Error(String(error));
+            await saga.onFailure(state, errorObj);
           }
           return;
         }
@@ -188,8 +191,9 @@ export class SagaOrchestrator {
       if (saga.onComplete) {
         await saga.onComplete(state);
       }
-    } catch (error: any) {
-      await this.markSagaFailed(state, error.message);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      await this.markSagaFailed(state, errorMessage);
       if (saga.onFailure) {
         await saga.onFailure(state, error);
       }
@@ -219,12 +223,13 @@ export class SagaOrchestrator {
         }
 
         lastError = result;
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorObj = error instanceof Error ? error : new Error(String(error));
         lastError = {
           success: false,
           error: {
-            type: error.name || "UnknownError",
-            message: error.message,
+            type: errorObj.name || "UnknownError",
+            message: errorObj.message,
             retryable: attempt < maxRetries,
           },
         };

@@ -205,7 +205,7 @@ export function getAllBillingTiers(): Record<string, BillingTier> {
 export async function updateBillingTier(
   tierId: string,
   updates: Partial<BillingTier>,
-  _supabase: any
+  _supabase: unknown
 ): Promise<boolean> {
   // In production, update in database or config store
   // For now, update in-memory config

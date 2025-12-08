@@ -121,7 +121,7 @@ export class WorkflowEngine {
     workflowId: string,
     schedule: {
       type: 'cron' | 'interval' | 'once';
-      config: any;
+      config: Record<string, unknown>;
     }
   ): Promise<void> {
     // TODO: Implement workflow scheduling
