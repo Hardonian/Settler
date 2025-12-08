@@ -113,7 +113,7 @@ export class ValueBasedPricing {
     return {
       personalizedPrice,
       usageTier,
-      enterpriseDealSimulation,
+      ...(enterpriseDealSimulation !== undefined && { enterpriseDealSimulation }),
     };
   }
 

@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { logInfo, logWarning } from '../../utils/logger';
+import { logInfo, logWarn } from '../../utils/logger';
 
 export interface FailurePrediction {
   type: 'drift' | 'mapping' | 'template' | 'transformation' | 'cost';
@@ -278,7 +278,7 @@ export class PredictiveOps {
   async takePreemptiveActions(predictions: FailurePrediction[]): Promise<void> {
     for (const prediction of predictions) {
       if (prediction.severity === 'critical' || prediction.probability > 0.8) {
-        logWarning('Taking preemptive action', { prediction });
+        logWarn('Taking preemptive action', { prediction });
 
         // Adjust routing
         if (prediction.type === 'cost') {

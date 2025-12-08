@@ -395,7 +395,9 @@ export class AutonomousEvolutionLayer {
     const log = this.evolutionLog.find(l => l.proposal.description === proposalId);
     if (log) {
       log.status = 'approved';
-      log.implementationNotes = implementationNotes;
+      if (implementationNotes !== undefined) {
+        log.implementationNotes = implementationNotes;
+      }
       logInfo('Evolution proposal approved', { proposalId });
     }
   }

@@ -5,7 +5,7 @@
  */
 
 import { Router, Response } from 'express';
-import type { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { authMiddleware } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 import { PredictiveOps } from '../../services/predictive/predictive-ops';
@@ -46,7 +46,7 @@ router.get(
  */
 router.post(
   '/complexity',
-  authenticateRequest,
+  authMiddleware,
   tenantMiddleware,
   async (req: TenantRequest, res: Response) => {
     try {

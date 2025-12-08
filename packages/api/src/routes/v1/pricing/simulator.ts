@@ -32,12 +32,12 @@ router.get(
       }
       const simulation = await simulator.simulateUsage(req.tenantId, period);
       
-      res.json({
+      return res.json({
         data: simulation,
         message: 'Usage simulation generated',
       });
     } catch (error: any) {
-      res.status(500).json({
+      return res.status(500).json({
         error: 'SimulationError',
         message: error.message,
       });

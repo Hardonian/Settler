@@ -99,7 +99,7 @@ export class MetaModels {
    */
   estimateLLMCost(model: AIModel, tokens: number): number {
     const config = this.router.getModelConfig(model);
-    return (tokens / 1000) * config.costPer1KTokens;
+    return (tokens / 1000) * config.costPer1kTokens;
   }
 
   /**

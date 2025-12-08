@@ -39,7 +39,7 @@ export class ReconUsageTracker {
       eventType: 'recon_comparison',
       quantity: comparisonCount,
       unit: 'comparison',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -58,7 +58,7 @@ export class ReconUsageTracker {
       eventType: 'validation',
       quantity: validationCount,
       unit: 'validation',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -77,7 +77,7 @@ export class ReconUsageTracker {
       eventType: 'transformation',
       quantity: transformationCount,
       unit: 'transformation',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -96,7 +96,7 @@ export class ReconUsageTracker {
       eventType: 'mapping',
       quantity: mappingCount,
       unit: 'mapping',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -115,7 +115,7 @@ export class ReconUsageTracker {
       eventType: 'workflow_step',
       quantity: stepCount,
       unit: 'step',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -136,8 +136,8 @@ export class ReconUsageTracker {
       quantity: tokenCount,
       unit: 'token',
       metadata: {
-        ...metadata,
-        model,
+        ...(metadata !== undefined ? metadata : {}),
+        ...(model !== undefined && { model }),
       },
     });
   }
@@ -157,7 +157,7 @@ export class ReconUsageTracker {
       eventType: 'audit_report',
       quantity: reportCount,
       unit: 'report',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -176,7 +176,7 @@ export class ReconUsageTracker {
       eventType: 'storage',
       quantity: bytes,
       unit: 'byte',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 
@@ -195,7 +195,7 @@ export class ReconUsageTracker {
       eventType: 'webhook_trigger',
       quantity: webhookCount,
       unit: 'webhook',
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     });
   }
 

@@ -5,7 +5,7 @@
  * Part 10: Next-Gen Data Plane & Processing Layers
  */
 
-import { logInfo, logWarning } from '../../utils/logger';
+import { logInfo, logWarn } from '../../utils/logger';
 import { AIRouter, AIModel } from '../ai-mesh/ai-router';
 
 export interface MMRConfig {
@@ -110,7 +110,7 @@ export class MultiModelRouter {
         };
       } catch (error: any) {
         lastError = error;
-        logWarning('Model execution failed, trying fallback', {
+        logWarn('Model execution failed, trying fallback', {
           model,
           error: error.message,
           attempt: i + 1,
@@ -127,7 +127,7 @@ export class MultiModelRouter {
   private estimateCost(model: AIModel, request: any): number {
     const config = this.router.getModelConfig(model);
     const estimatedTokens = this.estimateTokens(request);
-    return (estimatedTokens / 1000) * config.costPer1KTokens;
+    return (estimatedTokens / 1000) * config.costPer1kTokens;
   }
 
   /**

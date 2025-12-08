@@ -56,7 +56,7 @@ router.get(
         },
       });
     } catch (error) {
-      handleRouteError(res, error, 'Failed to list reconciliation results', 400);
+      return handleRouteError(res, error, 'Failed to list reconciliation results', 400);
     }
   }
 );
@@ -74,6 +74,13 @@ router.get(
       const tenantId = req.tenantId!;
       const { resultId } = req.params;
 
+      if (!resultId) {
+        return res.status(400).json({
+          error: 'Bad request',
+          message: 'Result ID is required',
+        });
+      }
+
       const result = await reconEngine.getReconResult(resultId, tenantId);
 
       if (!result) {
@@ -85,7 +92,7 @@ router.get(
 
       return res.json({ data: result });
     } catch (error) {
-      handleRouteError(res, error, 'Failed to get reconciliation result', 400);
+      return handleRouteError(res, error, 'Failed to get reconciliation result', 400);
     }
   }
 );

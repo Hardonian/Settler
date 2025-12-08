@@ -5,7 +5,7 @@
  */
 
 import { Router, Response } from 'express';
-import type { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { authMiddleware } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 import { AutonomousEvolutionLayer } from '../../services/ael/autonomous-evolution-layer';

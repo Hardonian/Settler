@@ -107,6 +107,13 @@ router.get(
       const tenantId = req.tenantId!;
       const { jobId } = req.params;
 
+      if (!jobId) {
+        return res.status(400).json({
+          error: 'Bad request',
+          message: 'Job ID is required',
+        });
+      }
+
       const job = await reconEngine.getReconJob(jobId, tenantId);
 
       if (!job) {
@@ -135,6 +142,13 @@ router.post(
     try {
       const tenantId = req.tenantId!;
       const { jobId } = req.params;
+
+      if (!jobId) {
+        return res.status(400).json({
+          error: 'Bad request',
+          message: 'Job ID is required',
+        });
+      }
 
       const result = await reconEngine.executeReconJob(jobId, tenantId, {
         dryRun: req.body.dryRun,

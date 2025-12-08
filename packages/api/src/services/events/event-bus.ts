@@ -104,7 +104,7 @@ export class EventBus extends EventEmitter {
       tenantId,
       timestamp: new Date(),
       data,
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     };
 
     await this.publish(event);

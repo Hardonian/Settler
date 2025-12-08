@@ -59,7 +59,7 @@ export class PredictiveRouter {
         jobType: operationType,
         complexity,
         accuracyRequired,
-        budget,
+        ...(budget !== undefined && { budget }),
       });
       const config = this.router.getModelConfig(model);
       
