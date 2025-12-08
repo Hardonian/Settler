@@ -12,6 +12,7 @@ import feesRouter from "./fees";
 import exportsRouter from "./exports";
 import currencyRouter from "./currency";
 import webhookReceiveRouter from "./webhooks/receive";
+import reconRouter from "./recon";
 
 export const v1Router = Router();
 
@@ -26,6 +27,9 @@ v1Router.use("/settlements", settlementsRouter);
 v1Router.use("/fees", feesRouter);
 v1Router.use("/exports", exportsRouter);
 v1Router.use("/currency", currencyRouter);
+
+// Recon Core Engine routes (Phase I)
+v1Router.use("/recon", reconRouter);
 
 // Health check
 v1Router.get("/health", (_req, res) => {
