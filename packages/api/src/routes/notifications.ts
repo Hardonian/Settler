@@ -90,7 +90,7 @@ router.post('/channels', authMiddleware, async (req: AuthRequest, res: Response)
  * Get notification preferences
  * GET /api/v1/notifications/preferences
  */
-router.get('/preferences', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/preferences', authMiddleware, async (_req: AuthRequest, res: Response) => {
   try {
     // In production, fetch from database
     return res.json({

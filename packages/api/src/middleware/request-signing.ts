@@ -175,7 +175,7 @@ export function requestSigningMiddleware(config: RequestSigningConfig) {
       verified: true,
     };
 
-    next();
+    return next();
   };
 }
 
@@ -223,6 +223,6 @@ export function webhookSignatureMiddleware(secret: string) {
       verified: true,
     };
 
-    next();
+    return next();
   };
 }

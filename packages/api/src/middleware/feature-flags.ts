@@ -153,7 +153,7 @@ export function getFeatureFlagService(): FeatureFlagService {
  * Feature flag middleware
  */
 export function featureFlagsMiddleware() {
-  return async (req: FeatureFlagRequest, res: Response, next: NextFunction) => {
+  return async (req: FeatureFlagRequest, _res: Response, next: NextFunction) => {
     try {
       const context: FeatureFlagContext = {
         tenantId: (req as any).tenantId || (req as any).user?.tenantId,
