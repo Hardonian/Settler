@@ -22,16 +22,16 @@ export interface AIConfig {
 }
 
 export class AIConfigManager {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**
    * Get AI config for tenant
    */
-  async getConfig(tenantId: string): Promise<AIConfig> {
+  async getConfig(_tenantId: string): Promise<AIConfig> {
     // TODO: Store in database or config table
     // For now, return defaults
     return {

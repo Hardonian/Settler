@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+// logInfo imported but unused - may be used in future
 
 export interface EcosystemMetrics {
   verticalAdoption: Map<string, number>;
@@ -115,7 +115,7 @@ export class EcosystemAnalytics {
     const opportunities: string[] = [];
 
     // Analyze usage patterns to find opportunities
-    const jobs = await this.prisma.reconJob.findMany({
+    const _jobs = await this.prisma.reconJob.findMany({
       take: 1000,
     });
 

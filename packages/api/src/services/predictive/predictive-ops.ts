@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logInfo, logWarn } from '../../utils/logger';
+import { logWarn } from '../../utils/logger';
 
 export interface FailurePrediction {
   type: 'drift' | 'mapping' | 'template' | 'transformation' | 'cost';
@@ -21,7 +21,7 @@ export interface FailurePrediction {
 
 export class PredictiveOps {
   private prisma: PrismaClient;
-  private predictions: FailurePrediction[] = [];
+  private _predictions: FailurePrediction[] = [];
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
@@ -149,7 +149,7 @@ export class PredictiveOps {
         // High usage - check for issues
         const failures = await this.prisma.reconResult.findMany({
           where: {
-            reconJobId: { in: jobs.map((j) => j.id) },
+            reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
             status: 'failed',
           },
           take: 10,
@@ -195,15 +195,15 @@ export class PredictiveOps {
       // Check execution times
       const results = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map(j => j.id) },
+          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
         },
         take: 50,
       });
 
       const avgDuration = results
-        .filter((r) => r.completedAt && r.startedAt)
-        .map((r) => r.completedAt!.getTime() - r.startedAt!.getTime())
-        .reduce((a: number, b: number, _: number, arr: typeof results) => a + b / arr.length, 0);
+        .filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt)
+        .map((r: { completedAt: Date; startedAt: Date }) => r.completedAt.getTime() - r.startedAt.getTime())
+        .reduce((a: number, b: number, _i: number, arr: number[]) => a + b / arr.length, 0);
 
       if (avgDuration > 30000) { // > 30 seconds
         predictions.push({

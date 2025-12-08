@@ -65,7 +65,7 @@ const skipValidation =
   (process.env.NODE_ENV === "production" && !process.env.VERCEL);
 
 const env = skipValidation
-  ? ({
+  ? (Object.assign({
       NODE_ENV: (process.env.NODE_ENV || "development") as UnvalidatedEnv["NODE_ENV"],
       PORT: Number(process.env.PORT || 3000),
       HOST: process.env.HOST || "0.0.0.0",
@@ -81,13 +81,10 @@ const env = skipValidation
       DB_STATEMENT_TIMEOUT: Number(process.env.DB_STATEMENT_TIMEOUT || 30000),
       REDIS_HOST: process.env.REDIS_HOST || "localhost",
       REDIS_PORT: Number(process.env.REDIS_PORT || 6379),
-      REDIS_URL: process.env.REDIS_URL as string | undefined,
-      REDIS_PASSWORD: process.env.REDIS_PASSWORD || undefined,
       REDIS_TLS: process.env.REDIS_TLS === "true",
       JWT_SECRET: process.env.JWT_SECRET || "dev-secret-change-in-production",
       JWT_ACCESS_EXPIRY: process.env.JWT_ACCESS_EXPIRY || "15m",
       JWT_REFRESH_EXPIRY: process.env.JWT_REFRESH_EXPIRY || "7d",
-      JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
       ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || "dev-encryption-key-32-chars-long!!",
       RATE_LIMIT_DEFAULT: Number(process.env.RATE_LIMIT_DEFAULT || 1000),
       RATE_LIMIT_WINDOW_MS: Number(process.env.RATE_LIMIT_WINDOW_MS || 900000),
@@ -99,10 +96,6 @@ const env = skipValidation
       LOG_LEVEL: (process.env.LOG_LEVEL || "info") as UnvalidatedEnv["LOG_LEVEL"],
       LOG_SAMPLING_RATE: Number(process.env.LOG_SAMPLING_RATE || 1.0),
       SERVICE_NAME: process.env.SERVICE_NAME || "settler-api",
-      OTLP_ENDPOINT: process.env.OTLP_ENDPOINT,
-      JAEGER_ENDPOINT: process.env.JAEGER_ENDPOINT,
-      SENTRY_DSN: process.env.SENTRY_DSN,
-      SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
       SENTRY_TRACES_SAMPLE_RATE: Number(process.env.SENTRY_TRACES_SAMPLE_RATE || 0.1),
       ENABLE_SCHEMA_PER_TENANT: process.env.ENABLE_SCHEMA_PER_TENANT === "true",
       ENABLE_REQUEST_TIMEOUT: process.env.ENABLE_REQUEST_TIMEOUT !== "false",
@@ -112,7 +105,15 @@ const env = skipValidation
       SECURE_COOKIES: process.env.SECURE_COOKIES === "true",
       METRICS_ENABLED: process.env.METRICS_ENABLED !== "false",
       HEALTH_CHECK_ENABLED: process.env.HEALTH_CHECK_ENABLED !== "false",
-    } satisfies UnvalidatedEnv)
+    },
+    ...(process.env.REDIS_URL ? { REDIS_URL: process.env.REDIS_URL } : {}),
+    ...(process.env.REDIS_PASSWORD ? { REDIS_PASSWORD: process.env.REDIS_PASSWORD } : {}),
+    ...(process.env.JWT_REFRESH_SECRET ? { JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET } : {}),
+    ...(process.env.OTLP_ENDPOINT ? { OTLP_ENDPOINT: process.env.OTLP_ENDPOINT } : {}),
+    ...(process.env.JAEGER_ENDPOINT ? { JAEGER_ENDPOINT: process.env.JAEGER_ENDPOINT } : {}),
+    ...(process.env.SENTRY_DSN ? { SENTRY_DSN: process.env.SENTRY_DSN } : {}),
+    ...(process.env.SENTRY_ENVIRONMENT ? { SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT } : {}),
+    ) as UnvalidatedEnv)
   : cleanEnv(process.env, {
       // Node Environment
       NODE_ENV: str({

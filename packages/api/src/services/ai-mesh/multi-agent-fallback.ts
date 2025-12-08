@@ -84,11 +84,11 @@ export class MultiAgentFallback {
   /**
    * Execute task with specific model
    */
-  private async executeTask(task: AgentTask, model: AIModel): Promise<AgentResponse> {
+  private async executeTask(_task: AgentTask, model: AIModel): Promise<AgentResponse> {
     // TODO: Implement actual AI agent calls
     // This is a placeholder that would call the actual AI service
     
-    const config = this.router.getModelConfig(model);
+    const _config = this.router.getModelConfig(model);
     
     // Simulate task execution
     // In production, this would call the appropriate AI service

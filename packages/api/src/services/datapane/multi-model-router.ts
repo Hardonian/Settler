@@ -5,7 +5,7 @@
  * Part 10: Next-Gen Data Plane & Processing Layers
  */
 
-import { logInfo, logWarn } from '../../utils/logger';
+import { logWarn } from '../../utils/logger';
 import { AIRouter, AIModel } from '../ai-mesh/ai-router';
 
 export interface MMRConfig {
@@ -38,7 +38,7 @@ export class MultiModelRouter {
    */
   async route(
     request: Record<string, unknown>,
-    complexity: 'low' | 'medium' | 'high'
+    _complexity: 'low' | 'medium' | 'high'
   ): Promise<MMRDecision> {
     // Start with primary model
     let selectedModel = this.config.primaryModel;

@@ -68,7 +68,7 @@ export class APIEvolution {
   /**
    * Validate typed JSON
    */
-  validateTypedJSON(data: unknown, schemaName: string): boolean {
+  validateTypedJSON(_data: unknown, schemaName: string): boolean {
     const schema = this.typedJSONSchemas.get(schemaName);
     if (!schema) {
       return false;
@@ -88,7 +88,7 @@ export class APIEvolution {
   /**
    * Parse Recon DSL
    */
-  parseReconDSL(code: string): Record<string, unknown> {
+  parseReconDSL(_code: string): Record<string, unknown> {
     if (!this.reconDSL) {
       throw new Error('Recon DSL not defined');
     }

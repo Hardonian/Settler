@@ -5,7 +5,7 @@
  * Part 9: Predictive Ops, Meta-Models & Next-Gen Pipelines
  */
 
-import { logInfo } from '../../utils/logger';
+// logInfo imported but unused - may be used in future
 import { AIRouter, AIModel } from '../ai-mesh/ai-router';
 
 export interface JobComplexity {
@@ -118,7 +118,7 @@ export class MetaModels {
    * Recommend best model
    */
   recommendModel(
-    job: ReconJobInput,
+    _job: ReconJobInput,
     complexity: JobComplexity,
     accuracyRequired: number,
     budget?: number
@@ -165,7 +165,7 @@ export class MetaModels {
   private selectOptimalModel(
     models: AIModel[],
     complexity: JobComplexity,
-    accuracyRequired: number
+    _accuracyRequired: number
   ): AIModel {
     // Score each model
     const scores = models.map(model => {

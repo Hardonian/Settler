@@ -30,12 +30,12 @@ export interface EvolutionEvent {
 }
 
 export class GovernanceLayer {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
   private rules: Map<string, GovernanceRule[]> = new Map();
   private evolutionEvents: EvolutionEvent[] = [];
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**
@@ -102,7 +102,7 @@ export class GovernanceLayer {
    * Check if change is allowed
    */
   async isChangeAllowed(
-    resourceType: ResourceType,
+    _resourceType: ResourceType,
     resourceId: string,
     proposedChange: Record<string, unknown>
   ): Promise<{
@@ -150,7 +150,8 @@ export class GovernanceLayer {
       }
 
       const maxVersionJump = typeof guardrail.maxVersionJump === 'number' ? guardrail.maxVersionJump : 0;
-      if (proposedChange.versionJump && proposedChange.versionJump > maxVersionJump) {
+      const versionJump = typeof proposedChange.versionJump === 'number' ? proposedChange.versionJump : 0;
+      if (versionJump > maxVersionJump) {
         return {
           allowed: false,
           reason: `Version jump exceeds maximum (${maxVersionJump})`,

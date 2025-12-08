@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+// logInfo imported but unused - may be used in future
 
 export interface ExtractedPattern {
   type: 'workflow' | 'template' | 'validation_rule' | 'transform_recipe' | 'mapping_template';
@@ -99,7 +99,7 @@ export class PatternExtractor {
   /**
    * Analyze recon mismatch patterns
    */
-  private async analyzeMismatches(tenantId?: string): Promise<ExtractedPattern[]> {
+  private async analyzeMismatches(_tenantId?: string): Promise<ExtractedPattern[]> {
     // TODO: Analyze mismatch patterns from recon results
     // This would look at common field mismatches and suggest mapping templates
     return [];
@@ -157,7 +157,7 @@ export class PatternExtractor {
       take: 10,
     });
 
-    return mappings.map((mapping) => ({
+    return mappings.map((mapping: { name: string; usageCount: number; [key: string]: unknown }) => ({
       type: 'mapping_template' as const,
       pattern: mapping,
       frequency: mapping.usageCount,
@@ -181,7 +181,7 @@ export class PatternExtractor {
       take: 10,
     });
 
-    return transforms.map((transform) => ({
+    return transforms.map((transform: { name: string; usageCount: number; [key: string]: unknown }) => ({
       type: 'transform_recipe' as const,
       pattern: transform,
       frequency: transform.usageCount,

@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logInfo, logError } from '../../utils/logger';
+import { logInfo } from '../../utils/logger';
 
 export interface CheckpointState {
   state: Record<string, unknown>;
@@ -120,7 +120,7 @@ export class FaultTolerantRecon {
   /**
    * Fix-forward logic
    */
-  async fixForward(jobId: string, error: Error): Promise<{
+  async fixForward(jobId: string, _error: Error): Promise<{
     fixed: boolean;
     newState: Record<string, unknown> | null;
   }> {

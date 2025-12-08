@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+// logInfo imported but unused - may be used in future
 
 export interface PricingRecommendation {
   type: 'tier_adjustment' | 'usage_threshold' | 'overage_pricing' | 'enterprise_deal';
@@ -26,10 +26,10 @@ interface CustomerSegments {
 }
 
 export class PricingOptimizer {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**
@@ -92,7 +92,7 @@ export class PricingOptimizer {
   /**
    * Analyze usage thresholds
    */
-  private async analyzeThresholds(segments: CustomerSegments): Promise<PricingRecommendation[]> {
+  private async analyzeThresholds(_segments: CustomerSegments): Promise<PricingRecommendation[]> {
     const recommendations: PricingRecommendation[] = [];
 
     // If customers consistently exceed limits, adjust thresholds
@@ -110,7 +110,7 @@ export class PricingOptimizer {
   /**
    * Analyze overage pricing
    */
-  private async analyzeOverage(segments: CustomerSegments): Promise<PricingRecommendation[]> {
+  private async analyzeOverage(_segments: CustomerSegments): Promise<PricingRecommendation[]> {
     const recommendations: PricingRecommendation[] = [];
 
     // If overage revenue is low, consider adjusting pricing
@@ -128,7 +128,7 @@ export class PricingOptimizer {
   /**
    * Generate enterprise deal recommendations
    */
-  async generateEnterpriseRecommendations(customerId: string): Promise<PricingRecommendation[]> {
+  async generateEnterpriseRecommendations(_customerId: string): Promise<PricingRecommendation[]> {
     // TODO: Analyze customer usage and generate custom pricing
     return [{
       type: 'enterprise_deal',

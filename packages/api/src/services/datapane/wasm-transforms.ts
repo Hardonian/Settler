@@ -65,7 +65,7 @@ export class WASMTransforms {
   /**
    * Validate transform schema
    */
-  validateSchema(data: unknown, schema: SchemaDefinition): boolean {
+  validateSchema(_data: unknown, _schema: SchemaDefinition): boolean {
     // TODO: Implement schema validation
     return true;
   }

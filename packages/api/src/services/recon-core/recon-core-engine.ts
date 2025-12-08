@@ -13,7 +13,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logError, logInfo } from '../../utils/logger';
+import { logError } from '../../utils/logger';
 import { WebhookService } from '../webhooks/webhook-service';
 import { ReconUsageTracker } from '../usage/recon-usage-tracker';
 import { eventBus } from '../events/event-bus';
@@ -24,7 +24,6 @@ import type {
   ReconStrategy,
   ReconExecutionOptions,
   ReconMatch,
-  ReconUnmatched,
   ReconDataRecord,
   ReconSummary,
   ValidationRule,
@@ -97,7 +96,7 @@ export class ReconCoreEngine {
   async executeReconJob(
     reconJobId: string,
     tenantId: string,
-    options?: ReconExecutionOptions
+    _options?: ReconExecutionOptions
   ): Promise<ReconResult> {
     const startTime = Date.now();
 
@@ -138,7 +137,7 @@ export class ReconCoreEngine {
         : targetData;
 
       // Step 3: Validate data
-      const validationResults = await this.validateData(
+      const _validationResults = await this.validateData(
         transformedSource,
         transformedTarget,
         (reconJob.validationRules as ValidationRule[]) || [],
@@ -281,7 +280,7 @@ export class ReconCoreEngine {
   /**
    * Ingest data from source and target adapters
    */
-  private async ingestData(reconJob: ReconJob): Promise<{
+  private async ingestData(_reconJob: ReconJob): Promise<{
     sourceData: ReconDataRecord[];
     targetData: ReconDataRecord[];
   }> {
@@ -325,10 +324,10 @@ export class ReconCoreEngine {
    * Validate data using validation rules
    */
   private async validateData(
-    sourceData: ReconDataRecord[],
-    targetData: ReconDataRecord[],
-    validationRules: ValidationRule[],
-    tenantId: string
+    _sourceData: ReconDataRecord[],
+    _targetData: ReconDataRecord[],
+    _validationRules: ValidationRule[],
+    _tenantId: string
   ): Promise<ReconDataRecord[]> {
     // TODO: Implement validation logic
     // Apply validation rules
@@ -366,10 +365,10 @@ export class ReconCoreEngine {
    * Perform reconciliation matching
    */
   private async performReconciliation(
-    sourceData: ReconDataRecord[],
-    targetData: ReconDataRecord[],
-    strategy: ReconStrategy,
-    reconJob: ReconJob
+    _sourceData: ReconDataRecord[],
+    _targetData: ReconDataRecord[],
+    _strategy: ReconStrategy,
+    _reconJob: ReconJob
   ): Promise<ReconMatch[]> {
     // TODO: Integrate with existing MatchingEngine
     // For now, return empty matches
@@ -421,6 +420,10 @@ export class ReconCoreEngine {
     const confidenceMin = confidences.length > 0 ? Math.min(...confidences) : null;
     const confidenceMax = confidences.length > 0 ? Math.max(...confidences) : null;
 
+    // Extract currency from data
+    const currency = (sourceData[0]?.currency || targetData[0]?.currency || matches[0]?.currency) as string | undefined;
+    const currencyValue = currency ? String(currency) : null;
+
     return {
       matchedCount,
       unmatchedSourceCount,
@@ -430,6 +433,7 @@ export class ReconCoreEngine {
       totalAmountTarget,
       totalAmountMatched,
       totalAmountUnmatched,
+      currency: currencyValue,
       confidenceAvg,
       confidenceMin,
       confidenceMax,
@@ -447,7 +451,7 @@ export class ReconCoreEngine {
           unmatched: totalAmountUnmatched,
           total: totalAmountSource || totalAmountTarget || null,
         },
-        ...(sourceData[0]?.currency || targetData[0]?.currency ? { currency: String(sourceData[0]?.currency || targetData[0]?.currency || '') } : {}),
+        ...(currencyValue ? { currency: currencyValue } : {}),
       },
     };
   }

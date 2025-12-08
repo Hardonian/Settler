@@ -258,8 +258,8 @@ export class StreamingRecon extends EventEmitter {
    * Apply validation rule
    */
   private async applyValidationRule(
-    data: Record<string, unknown>,
-    rule: Record<string, unknown>
+    _data: Record<string, unknown>,
+    _rule: Record<string, unknown>
   ): Promise<{
     valid: boolean;
     errors: string[];

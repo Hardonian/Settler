@@ -5,7 +5,7 @@
  * Part 8: Self-Rewriting OS & Meta-Orchestration
  */
 
-import { logInfo, logError } from '../../utils/logger';
+// logInfo and logError imported but unused - may be used in future
 
 export interface ValidationResult {
   check: string;
@@ -68,7 +68,7 @@ export class SelfValidator {
   /**
    * Validate TypeScript types
    */
-  private async validateTypeScript(module: { code?: string; [key: string]: unknown }): Promise<ValidationResult> {
+  private async validateTypeScript(_module: { code?: string; [key: string]: unknown }): Promise<ValidationResult> {
     // TODO: Implement actual TypeScript validation
     // This would use the TypeScript compiler API
     return {
@@ -104,7 +104,7 @@ export class SelfValidator {
   /**
    * Simulate pipeline execution
    */
-  private async simulatePipeline(module: { [key: string]: unknown }): Promise<ValidationResult> {
+  private async simulatePipeline(_module: { [key: string]: unknown }): Promise<ValidationResult> {
     // Simulate pipeline execution with test data
     try {
       // TODO: Implement actual pipeline simulation

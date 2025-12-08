@@ -95,7 +95,7 @@ export class MultiRegionManager {
    */
   async routeWithFailover(
     tenantId: string,
-    request: Record<string, unknown>
+    _request: Record<string, unknown>
   ): Promise<{
     region: Region;
     attempts: number;

@@ -20,10 +20,10 @@ export interface ProductProposal {
 }
 
 export class ProductEvolutionAI {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**
@@ -75,7 +75,7 @@ export class ProductEvolutionAI {
   /**
    * Analyze usage patterns
    */
-  private async analyzeUsagePatterns(tenantId?: string): Promise<{
+  private async analyzeUsagePatterns(_tenantId?: string): Promise<{
     legalTerms: number;
     educationTerms: number;
     financeTerms: number;
