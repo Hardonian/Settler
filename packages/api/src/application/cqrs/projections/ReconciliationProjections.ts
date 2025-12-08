@@ -46,6 +46,53 @@ export interface ErrorHotspotsView {
   tenant_id: string;
 }
 
+interface OrdersFetchedData {
+  count: number;
+  reconciliation_id: string;
+}
+
+interface PaymentsFetchedData {
+  count: number;
+  reconciliation_id: string;
+}
+
+interface RecordMatchedData {
+  reconciliation_id: string;
+}
+
+interface RecordUnmatchedData {
+  reconciliation_id: string;
+  source_id?: string;
+  target_id?: string;
+}
+
+interface ReconciliationCompletedData {
+  reconciliation_id: string;
+  summary: {
+    matched_count: number;
+    unmatched_source_count: number;
+    unmatched_target_count: number;
+    errors_count: number;
+    duration_ms: number;
+    accuracy_percentage: number;
+  };
+  completed_at: string;
+}
+
+interface ReconciliationFailedData {
+  reconciliation_id: string;
+  failed_at: string;
+  error: {
+    type: string;
+    message: string;
+  };
+}
+
+interface ErrorHotspotData extends ReconciliationFailedData {
+  job_id?: string;
+  step?: string;
+}
+
 export class ReconciliationProjectionHandlers {
   constructor(private db: Pool = pool) {}
 
@@ -92,11 +139,6 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle OrdersFetched event
    */
-  interface OrdersFetchedData {
-    count: number;
-    reconciliation_id: string;
-  }
-
   async handleOrdersFetched(eventEnvelope: EventEnvelope): Promise<void> {
     const data = eventEnvelope.data as OrdersFetchedData;
     const query = `
@@ -113,11 +155,6 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle PaymentsFetched event
    */
-  interface PaymentsFetchedData {
-    count: number;
-    reconciliation_id: string;
-  }
-
   async handlePaymentsFetched(eventEnvelope: EventEnvelope): Promise<void> {
     const data = eventEnvelope.data as PaymentsFetchedData;
     const query = `
@@ -134,10 +171,6 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle RecordMatched event
    */
-  interface RecordMatchedData {
-    reconciliation_id: string;
-  }
-
   async handleRecordMatched(eventEnvelope: EventEnvelope): Promise<void> {
     const data = eventEnvelope.data as RecordMatchedData;
     const query = `
@@ -154,12 +187,6 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle RecordUnmatched event
    */
-  interface RecordUnmatchedData {
-    reconciliation_id: string;
-    source_id?: string;
-    target_id?: string;
-  }
-
   async handleRecordUnmatched(eventEnvelope: EventEnvelope): Promise<void> {
     const data = eventEnvelope.data as RecordUnmatchedData;
     const query = `
@@ -184,19 +211,6 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle ReconciliationCompleted event
    */
-  interface ReconciliationCompletedData {
-    reconciliation_id: string;
-    summary: {
-      matched_count: number;
-      unmatched_source_count: number;
-      unmatched_target_count: number;
-      errors_count: number;
-      duration_ms: number;
-      accuracy_percentage: number;
-    };
-    completed_at: string;
-  }
-
   async handleReconciliationCompleted(eventEnvelope: EventEnvelope): Promise<void> {
     const data = eventEnvelope.data as ReconciliationCompletedData;
     const query = `
@@ -232,15 +246,6 @@ export class ReconciliationProjectionHandlers {
   /**
    * Handle ReconciliationFailed event
    */
-  interface ReconciliationFailedData {
-    reconciliation_id: string;
-    failed_at: string;
-    error: {
-      type: string;
-      message: string;
-    };
-  }
-
   async handleReconciliationFailed(eventEnvelope: EventEnvelope): Promise<void> {
     const data = eventEnvelope.data as ReconciliationFailedData;
     const query = `
@@ -289,11 +294,6 @@ export class ReconciliationProjectionHandlers {
   /**
    * Update error hotspots view
    */
-  interface ErrorHotspotData extends ReconciliationFailedData {
-    job_id?: string;
-    step?: string;
-  }
-
   private async updateErrorHotspots(eventEnvelope: EventEnvelope): Promise<void> {
     const data = eventEnvelope.data as ErrorHotspotData;
     const tenantId = eventEnvelope.metadata.tenant_id;

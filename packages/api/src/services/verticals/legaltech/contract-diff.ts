@@ -18,6 +18,14 @@ export interface ContractDiff {
   riskScore: number;
 }
 
+interface Obligation {
+  party: string;
+  obligation: string;
+  deadline?: string;
+  penalty?: string;
+  [key: string]: unknown;
+}
+
 export class ContractDiffService {
   private prisma: PrismaClient;
 
@@ -61,14 +69,6 @@ export class ContractDiffService {
   }>> {
     // TODO: Implement obligation extraction
     return [];
-  }
-
-  interface Obligation {
-    party: string;
-    obligation: string;
-    deadline?: string;
-    penalty?: string;
-    [key: string]: unknown;
   }
 
   /**

@@ -16,6 +16,13 @@ export interface PricingRecommendation {
   estimatedRevenueChange: number;
 }
 
+interface CustomerSegments {
+  lowUsage: number;
+  mediumUsage: number;
+  highUsage: number;
+  enterprise: number;
+}
+
 export class PricingOptimizer {
   private prisma: PrismaClient;
 
@@ -58,13 +65,6 @@ export class PricingOptimizer {
       highUsage: 0,
       enterprise: 0,
     };
-  }
-
-  interface CustomerSegments {
-    lowUsage: number;
-    mediumUsage: number;
-    highUsage: number;
-    enterprise: number;
   }
 
   /**
