@@ -113,7 +113,11 @@ export function ObservabilityExample() {
               error={error}
               retry={() => {
                 setError(null);
-                handleSubmit(new Event('submit') as any);
+                const form = document.querySelector('form');
+                if (form) {
+                  const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                  form.dispatchEvent(submitEvent);
+                }
               }}
             />
           )}

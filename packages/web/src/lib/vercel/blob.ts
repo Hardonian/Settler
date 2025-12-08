@@ -49,13 +49,13 @@ export const blob = {
     }
 
     try {
-      const result = await put(pathname, body, options);
+      const result = await put(pathname, body, options || {});
       return {
         url: result.url,
         downloadUrl: result.downloadUrl ?? result.url,
         pathname: result.pathname,
         contentType: result.contentType,
-        size: result.size,
+        size: 'size' in result ? result.size : undefined,
       };
     } catch (error) {
       console.error(`[Blob] Error uploading file "${pathname}":`, error);
@@ -161,7 +161,7 @@ export async function uploadFileFromForm(
   return {
     url: result.url,
     pathname: result.pathname,
-    size: result.size,
+    size: result.size ?? file.size,
   };
 }
 
@@ -190,6 +190,6 @@ export async function uploadFileFromUrl(
   return {
     url: result.url,
     pathname: result.pathname,
-    size: result.size,
+    size: result.size ?? blobData.size,
   };
 }
