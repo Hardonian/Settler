@@ -29,7 +29,7 @@ interface NodeDetail {
 
 export default function NodeDetailPage() {
   const params = useParams();
-  const nodeId = params.nodeId as string;
+  const nodeId = params?.nodeId as string | undefined;
   const [node, setNode] = useState<NodeDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -75,6 +75,27 @@ export default function NodeDetailPage() {
     };
     return variants[status];
   };
+
+  if (!nodeId) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-12">
+                <p className="text-slate-600 dark:text-slate-400 mb-4">Invalid node ID</p>
+                <Button asChild>
+                  <Link href="/edge-ai/nodes">Back to Nodes</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
