@@ -14,6 +14,8 @@ import currencyRouter from "./currency";
 import webhookReceiveRouter from "./webhooks/receive";
 import reconRouter from "./recon";
 import pricingRouter from "./pricing";
+import aelRouter from "./ael";
+import predictiveRouter from "./predictive";
 
 export const v1Router = Router();
 
@@ -34,6 +36,12 @@ v1Router.use("/recon", reconRouter);
 
 // Pricing Intelligence routes (Section 9)
 v1Router.use("/pricing", pricingRouter);
+
+// Autonomous Evolution Layer routes (Part 7)
+v1Router.use("/ael", aelRouter);
+
+// Predictive Operations routes (Part 9)
+v1Router.use("/predictive", predictiveRouter);
 
 // Health check
 v1Router.get("/health", (_req, res) => {
