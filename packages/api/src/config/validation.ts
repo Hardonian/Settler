@@ -65,7 +65,7 @@ const skipValidation =
   (process.env.NODE_ENV === "production" && !process.env.VERCEL);
 
 const env = skipValidation
-  ? (Object.assign({
+  ? ({
       NODE_ENV: (process.env.NODE_ENV || "development") as UnvalidatedEnv["NODE_ENV"],
       PORT: Number(process.env.PORT || 3000),
       HOST: process.env.HOST || "0.0.0.0",
@@ -105,15 +105,14 @@ const env = skipValidation
       SECURE_COOKIES: process.env.SECURE_COOKIES === "true",
       METRICS_ENABLED: process.env.METRICS_ENABLED !== "false",
       HEALTH_CHECK_ENABLED: process.env.HEALTH_CHECK_ENABLED !== "false",
-    },
-    ...(process.env.REDIS_URL ? { REDIS_URL: process.env.REDIS_URL } : {}),
-    ...(process.env.REDIS_PASSWORD ? { REDIS_PASSWORD: process.env.REDIS_PASSWORD } : {}),
-    ...(process.env.JWT_REFRESH_SECRET ? { JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET } : {}),
-    ...(process.env.OTLP_ENDPOINT ? { OTLP_ENDPOINT: process.env.OTLP_ENDPOINT } : {}),
-    ...(process.env.JAEGER_ENDPOINT ? { JAEGER_ENDPOINT: process.env.JAEGER_ENDPOINT } : {}),
-    ...(process.env.SENTRY_DSN ? { SENTRY_DSN: process.env.SENTRY_DSN } : {}),
-    ...(process.env.SENTRY_ENVIRONMENT ? { SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT } : {}),
-    ) as UnvalidatedEnv)
+      REDIS_URL: process.env.REDIS_URL,
+      REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+      JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+      OTLP_ENDPOINT: process.env.OTLP_ENDPOINT,
+      JAEGER_ENDPOINT: process.env.JAEGER_ENDPOINT,
+      SENTRY_DSN: process.env.SENTRY_DSN,
+      SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
+    } as UnvalidatedEnv)
   : cleanEnv(process.env, {
       // Node Environment
       NODE_ENV: str({

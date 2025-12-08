@@ -118,6 +118,8 @@ export class EcosystemAnalytics {
     const _jobs = await this.prisma.reconJob.findMany({
       take: 1000,
     });
+    // Reserved for future analysis
+    void _jobs;
 
     // Find common patterns that could be templates
     // TODO: Implement pattern detection

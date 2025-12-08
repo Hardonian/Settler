@@ -41,6 +41,8 @@ export class PredictiveRouter {
   ): Promise<RoutingDecision> {
     // Check historical performance
     const _history = this.historicalData.get(operationType);
+    // Reserved for future use
+    void _history;
     
     // For low complexity, prefer deterministic
     if (complexity === 'low' && accuracyRequired < 0.9) {

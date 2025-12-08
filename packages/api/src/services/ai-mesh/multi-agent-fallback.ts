@@ -89,6 +89,8 @@ export class MultiAgentFallback {
     // This is a placeholder that would call the actual AI service
     
     const _config = this.router.getModelConfig(model);
+    // Reserved for future use
+    void _config;
     
     // Simulate task execution
     // In production, this would call the appropriate AI service
