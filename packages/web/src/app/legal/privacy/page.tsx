@@ -1,6 +1,6 @@
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
+import { Navigation } from '@/components/Navigation';
+import { Footer } from '@/components/Footer';
+import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 
 export default function PrivacyPage() {
   return (
@@ -13,20 +13,14 @@ export default function PrivacyPage() {
             <strong>Last Updated:</strong> January 1, 2024
           </p>
           <p className="text-slate-600 dark:text-slate-300 mb-6">
-            We respect your privacy and are committed to protecting your personal data. This privacy
-            policy explains how we collect, use, and safeguard your information.
+            We respect your privacy and are committed to protecting your personal data. This privacy policy 
+            explains how we collect, use, and safeguard your information.
           </p>
           <p className="text-slate-600 dark:text-slate-300">
-            For the complete Privacy Policy, please contact us at privacy@settler.dev or visit our
-            <a
-              href="https://github.com/shardie-github/Settler-API"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 hover:underline ml-1"
-            >
+            For the complete Privacy Policy, please contact us at privacy@settler.dev or visit our 
+            <a href="https://github.com/shardie-github/Settler-API" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline ml-1">
               GitHub repository
-            </a>
-            .
+            </a>.
           </p>
         </div>
       </div>

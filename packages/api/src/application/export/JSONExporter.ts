@@ -1,11 +1,11 @@
 /**
  * JSON Exporter
- *
+ * 
  * Exports reconciled data to JSON format for programmatic access
  */
 
-import { Transaction, Settlement, Fee, ReconciliationMatch, MatchType } from "@settler/types";
-import { query } from "../../db";
+import { Transaction, Settlement, Fee, ReconciliationMatch, MatchType } from '@settler/types';
+import { query } from '../../db';
 
 export interface JSONExportOptions {
   dateRange: {
@@ -49,12 +49,10 @@ export class JSONExporter {
     const { dateRange, includeFees, includeUnmatched, includeRawPayloads } = options;
 
     // Get matches
-    const matches = await query<
-      ReconciliationMatch & {
-        transaction_data: string;
-        settlement_data: string;
-      }
-    >(
+    const matches = await query<ReconciliationMatch & {
+      transaction_data: string;
+      settlement_data: string;
+    }>(
       `SELECT 
         rm.*,
         row_to_json(t.*) as transaction_data,
@@ -147,9 +145,9 @@ export class JSONExporter {
           [match.transactionId, tenantId]
         );
 
-        matchEntry.fees = fees.map((fee) => {
+        matchEntry.fees = fees.map(fee => {
           const feeObj: Partial<Fee> = { ...fee };
-          if (!includeRawPayloads && "rawPayload" in feeObj) {
+          if (!includeRawPayloads && 'rawPayload' in feeObj) {
             delete feeObj.rawPayload;
           }
           return feeObj as Fee;
@@ -179,7 +177,7 @@ export class JSONExporter {
       if (matchObj.settlementId) {
         reconciliationMatch.settlementId = matchObj.settlementId;
       }
-
+      
       const matchEntryResult: {
         match: ReconciliationMatch;
         transaction: Transaction;
@@ -209,9 +207,9 @@ export class JSONExporter {
         [tenantId, dateRange.start, dateRange.end]
       );
 
-      result.unmatched = unmatched.map((tx) => {
+      result.unmatched = unmatched.map(tx => {
         const txObj: Partial<Transaction> = { ...tx };
-        if (!includeRawPayloads && "rawPayload" in txObj) {
+        if (!includeRawPayloads && 'rawPayload' in txObj) {
           delete txObj.rawPayload;
         }
         return txObj as Transaction;

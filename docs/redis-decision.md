@@ -8,7 +8,6 @@
 ## Executive Summary
 
 After analyzing the codebase, Redis is **required** for production due to:
-
 1. **BullMQ job queues** - Critical for async reconciliation processing
 2. **Rate limiting** - Security/abuse prevention (token bucket algorithm)
 3. **Caching** - Performance optimization for reconciliation results
@@ -24,22 +23,19 @@ After analyzing the codebase, Redis is **required** for production due to:
 **Location:** `packages/api/src/infrastructure/queue/PrioritizedQueue.ts`
 
 **Usage:**
-
 - Background job processing for reconciliation tasks
 - Webhook delivery retries
 - Long-running operations (export generation, etc.)
 
 **Why Redis is Required:**
-
 - BullMQ **requires Redis** as its backing store
 - No Postgres alternative exists for BullMQ
 - Job queues are **critical** for async processing
 
 **Code Evidence:**
-
 ```typescript
-import { Queue, Worker, Job } from "bullmq";
-import Redis from "ioredis";
+import { Queue, Worker, Job } from 'bullmq';
+import Redis from 'ioredis';
 
 // BullMQ requires Redis connection
 this.redis = new Redis(redisOptions);
@@ -50,14 +46,12 @@ this.queue = new Queue(queueName, {
 ```
 
 **Impact if Removed:**
-
 - ❌ No background job processing
 - ❌ Webhook retries would need to be synchronous (blocking)
 - ❌ Export generation would block API requests
 - ❌ Poor user experience (long request times)
 
 **Alternative Considered:** Postgres-based job queue (pg-boss, graphile-worker)
-
 - **Verdict:** Possible but requires significant refactoring
 - **Risk:** High (rewrite critical infrastructure)
 - **Recommendation:** Keep Redis + BullMQ
@@ -69,21 +63,18 @@ this.queue = new Queue(queueName, {
 **Location:** `packages/api/src/infrastructure/rate-limiting/TokenBucket.ts`
 
 **Usage:**
-
 - API rate limiting per tenant
 - Abuse prevention
 - Quota enforcement
 
 **Why Redis is Required:**
-
 - Token bucket algorithm needs **atomic operations** (INCR, EXPIRE)
 - Postgres can do this but Redis is **much faster** (in-memory)
 - Rate limiting is **security-critical** (must be fast)
 
 **Code Evidence:**
-
 ```typescript
-import Redis from "ioredis";
+import Redis from 'ioredis';
 
 // Token bucket uses Redis for atomic operations
 await redis.incr(key);
@@ -91,13 +82,11 @@ await redis.expire(key, windowSeconds);
 ```
 
 **Impact if Removed:**
-
 - ⚠️ Could use Postgres with advisory locks (slower)
 - ⚠️ Or use in-memory rate limiting (lost on server restart)
 - ⚠️ Security risk if rate limiting is slow/ineffective
 
 **Alternative Considered:** Postgres-based rate limiting
-
 - **Verdict:** Possible but slower
 - **Risk:** Medium (performance degradation)
 - **Recommendation:** Keep Redis for rate limiting
@@ -109,19 +98,16 @@ await redis.expire(key, windowSeconds);
 **Location:** `packages/api/src/utils/cache.ts`
 
 **Usage:**
-
 - Reconciliation results caching
 - API response caching
 - Expensive query results
 
 **Why Redis is Recommended:**
-
 - **Performance:** In-memory cache is much faster than Postgres
 - **TTL support:** Built-in expiration
 - **Scalability:** Shared cache across multiple API instances
 
 **Code Evidence:**
-
 ```typescript
 // Cache with TTL
 await cache.set(key, value, ttlSeconds);
@@ -129,13 +115,11 @@ const cached = await cache.get(key);
 ```
 
 **Impact if Removed:**
-
 - ⚠️ Fallback to in-memory cache (lost on restart, not shared)
 - ⚠️ Or no caching (slower API responses)
 - ⚠️ Higher database load
 
 **Alternative Considered:** Postgres materialized views
-
 - **Verdict:** Different use case (persistent cache vs ephemeral)
 - **Risk:** Low (caching is optimization, not critical)
 - **Recommendation:** Keep Redis for caching (performance benefit)
@@ -147,14 +131,12 @@ const cached = await cache.get(key);
 ### Current Setup
 
 **Two Redis Clients:**
-
 1. **Upstash Redis** (`@upstash/redis`) - Serverless-friendly, REST API
 2. **ioredis** - Fallback for local development
 
 **Location:** `packages/api/src/infrastructure/redis/client.ts`
 
 **Configuration:**
-
 ```typescript
 // Upstash (production)
 UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
@@ -176,13 +158,12 @@ REDIS_PORT=6379
 **Solution:** Use Upstash Redis with **TCP connection** (not REST API) for BullMQ
 
 **Upstash TCP Connection:**
-
 ```typescript
 // Upstash provides TCP endpoint for BullMQ
 const redis = new Redis({
-  host: "your-redis.upstash.io",
+  host: 'your-redis.upstash.io',
   port: 6379,
-  password: "your-password",
+  password: 'your-password',
   tls: true, // Upstash requires TLS
 });
 ```
@@ -194,13 +175,11 @@ const redis = new Redis({
 ### 1. Postgres-Based Job Queue (pg-boss, graphile-worker)
 
 **Pros:**
-
 - No additional infrastructure
 - Single database to manage
 - ACID transactions
 
 **Cons:**
-
 - ❌ Requires significant refactoring (rewrite BullMQ usage)
 - ❌ Slower than Redis (disk vs memory)
 - ❌ More complex (Postgres connection pooling issues)
@@ -213,13 +192,11 @@ const redis = new Redis({
 ### 2. Supabase Edge Functions for Background Jobs
 
 **Pros:**
-
 - No additional infrastructure
 - Serverless-friendly
 - Integrated with Supabase
 
 **Cons:**
-
 - ❌ No built-in job queue (would need to build one)
 - ❌ No retry logic (would need to implement)
 - ❌ No priority queues (would need to implement)
@@ -232,12 +209,10 @@ const redis = new Redis({
 ### 3. Vercel Background Functions
 
 **Pros:**
-
 - Integrated with Vercel
 - No additional infrastructure
 
 **Cons:**
-
 - ❌ No job queue (would need to build one)
 - ❌ No retry logic
 - ❌ Limited execution time
@@ -251,14 +226,12 @@ const redis = new Redis({
 ### Production (Vercel + Upstash)
 
 **Option 1: Upstash Redis (Recommended)**
-
 - **Provider:** Upstash (serverless Redis)
 - **Plan:** Pay-as-you-go (free tier: 10K commands/day)
 - **Connection:** TCP endpoint for BullMQ, REST API for caching
 - **Cost:** ~$0.20 per 100K commands
 
 **Setup:**
-
 1. Create Upstash Redis database
 2. Get TCP endpoint and password
 3. Set env vars:
@@ -272,7 +245,6 @@ const redis = new Redis({
    ```
 
 **Option 2: Redis Cloud / AWS ElastiCache**
-
 - **Provider:** Redis Cloud or AWS ElastiCache
 - **Plan:** Managed Redis instance
 - **Cost:** ~$10-50/month (depending on size)
@@ -282,13 +254,11 @@ const redis = new Redis({
 ### Local Development
 
 **Option 1: Local Redis (Docker)**
-
 ```bash
 docker run -d -p 6379:6379 redis:7-alpine
 ```
 
 **Option 2: Upstash Local Dev**
-
 - Use Upstash free tier for local dev
 - Or use local Redis
 
@@ -299,19 +269,16 @@ docker run -d -p 6379:6379 redis:7-alpine
 ### Upstash Redis (Recommended)
 
 **Free Tier:**
-
 - 10,000 commands/day
 - 256 MB storage
 - Good for: Development, low-traffic production
 
 **Pay-as-you-go:**
-
 - $0.20 per 100K commands
 - $0.20 per GB storage/month
 - Good for: Production (scales with usage)
 
 **Estimated Monthly Cost (100K requests/day):**
-
 - Commands: ~3M/month = $6/month
 - Storage: ~1GB = $0.20/month
 - **Total: ~$6-10/month**
@@ -346,11 +313,11 @@ docker run -d -p 6379:6379 redis:7-alpine
 
 ## Decision Matrix
 
-| Use Case            | Redis Required?    | Alternative    | Risk   | Effort    |
-| ------------------- | ------------------ | -------------- | ------ | --------- |
-| Job Queues (BullMQ) | ✅ **YES**         | Postgres queue | High   | 2-3 weeks |
-| Rate Limiting       | ✅ **YES**         | Postgres locks | Medium | 1 week    |
-| Caching             | ⚠️ **Recommended** | In-memory      | Low    | 1 day     |
+| Use Case | Redis Required? | Alternative | Risk | Effort |
+|----------|----------------|-------------|------|--------|
+| Job Queues (BullMQ) | ✅ **YES** | Postgres queue | High | 2-3 weeks |
+| Rate Limiting | ✅ **YES** | Postgres locks | Medium | 1 week |
+| Caching | ⚠️ **Recommended** | In-memory | Low | 1 day |
 
 **Overall Decision:** ✅ **Redis IS REQUIRED** for production
 
@@ -359,7 +326,6 @@ docker run -d -p 6379:6379 redis:7-alpine
 ## Implementation Checklist
 
 ### High Priority
-
 - [x] Document Redis requirement
 - [ ] Set up Upstash Redis for production
 - [ ] Configure BullMQ to use Upstash TCP endpoint
@@ -367,14 +333,12 @@ docker run -d -p 6379:6379 redis:7-alpine
 - [ ] Test Redis connection in production
 
 ### Medium Priority
-
 - [ ] Monitor Redis usage (commands, storage)
 - [ ] Set up Redis alerts (high usage, errors)
 - [ ] Document Redis key naming conventions
 - [ ] Add Redis connection retry logic
 
 ### Low Priority
-
 - [ ] Consider Redis clustering for high availability
 - [ ] Implement Redis backup strategy
 - [ ] Add Redis metrics to observability dashboard
@@ -384,7 +348,6 @@ docker run -d -p 6379:6379 redis:7-alpine
 ## Conclusion
 
 **Redis is REQUIRED for production** due to:
-
 1. **BullMQ job queues** (critical infrastructure)
 2. **Rate limiting** (security requirement)
 3. **Caching** (performance optimization)
@@ -396,7 +359,6 @@ docker run -d -p 6379:6379 redis:7-alpine
 **Risk of Removing:** High (3-4 weeks refactoring, untested alternatives, performance degradation).
 
 **Next Steps:**
-
 1. Set up Upstash Redis database
 2. Configure environment variables
 3. Test Redis connection

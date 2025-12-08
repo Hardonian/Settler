@@ -1,12 +1,12 @@
 /**
  * Defensive API Client
- *
+ * 
  * Wraps fetch with retries, timeouts, error handling, and telemetry.
  */
 
-import { logger } from "../logging/logger";
-import { diagnostics } from "../diagnostics";
-import { analytics } from "../analytics";
+import { logger } from '../logging/logger';
+import { diagnostics } from '../diagnostics';
+import { analytics } from '../analytics';
 
 export interface FetchOptions extends RequestInit {
   timeout?: number;
@@ -26,7 +26,7 @@ const DEFAULT_RETRY_ON = [408, 429, 500, 502, 503, 504];
  */
 function fetchWithTimeout(url: string, options: FetchOptions = {}): Promise<Response> {
   const timeout = options.timeout || DEFAULT_TIMEOUT;
-
+  
   return new Promise((resolve, reject) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
@@ -59,12 +59,15 @@ function getRetryDelay(attempt: number, baseDelay: number): number {
 /**
  * Defensive fetch with retries and error handling
  */
-export async function defensiveFetch(url: string, options: FetchOptions = {}): Promise<Response> {
+export async function defensiveFetch(
+  url: string,
+  options: FetchOptions = {}
+): Promise<Response> {
   const startTime = Date.now();
   const retries = options.retries ?? DEFAULT_RETRIES;
   const retryDelay = options.retryDelay ?? DEFAULT_RETRY_DELAY;
   const retryOn = options.retryOn ?? DEFAULT_RETRY_ON;
-
+  
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -78,7 +81,7 @@ export async function defensiveFetch(url: string, options: FetchOptions = {}): P
       }
 
       // Track successful request
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV === 'development') {
         logger.debug(`API request: ${url}`, {
           status: response.status,
           duration,
@@ -90,8 +93,10 @@ export async function defensiveFetch(url: string, options: FetchOptions = {}): P
       if (!response.ok && retryOn.includes(response.status) && attempt < retries) {
         const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
         options.onRetry?.(attempt + 1, error);
-
-        await new Promise((resolve) => setTimeout(resolve, getRetryDelay(attempt, retryDelay)));
+        
+        await new Promise((resolve) =>
+          setTimeout(resolve, getRetryDelay(attempt, retryDelay))
+        );
         continue;
       }
 
@@ -107,10 +112,12 @@ export async function defensiveFetch(url: string, options: FetchOptions = {}): P
       });
 
       // If we have retries left and error is retryable
-      if (attempt < retries && !(error instanceof DOMException && error.name === "AbortError")) {
+      if (attempt < retries && !(error instanceof DOMException && error.name === 'AbortError')) {
         options.onRetry?.(attempt + 1, lastError);
-
-        await new Promise((resolve) => setTimeout(resolve, getRetryDelay(attempt, retryDelay)));
+        
+        await new Promise((resolve) =>
+          setTimeout(resolve, getRetryDelay(attempt, retryDelay))
+        );
         continue;
       }
 
@@ -124,34 +131,34 @@ export async function defensiveFetch(url: string, options: FetchOptions = {}): P
     }
   }
 
-  throw lastError || new Error("Request failed");
+  throw lastError || new Error('Request failed');
 }
 
 /**
  * Fetch JSON with error handling
  */
-export async function fetchJSON<T = any>(url: string, options: FetchOptions = {}): Promise<T> {
+export async function fetchJSON<T = any>(
+  url: string,
+  options: FetchOptions = {}
+): Promise<T> {
   const response = await defensiveFetch(url, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...options.headers,
     },
   });
 
   if (!response.ok) {
-    const errorText = await response.text().catch(() => "Unknown error");
+    const errorText = await response.text().catch(() => 'Unknown error');
     throw new Error(`HTTP ${response.status}: ${errorText}`);
   }
 
   try {
     return await response.json();
   } catch (error) {
-    logger.error(
-      `Failed to parse JSON response from ${url}`,
-      error instanceof Error ? error : new Error(String(error))
-    );
-    throw new Error("Invalid JSON response");
+    logger.error(`Failed to parse JSON response from ${url}`, error instanceof Error ? error : new Error(String(error)));
+    throw new Error('Invalid JSON response');
   }
 }
 
@@ -169,7 +176,7 @@ export async function fetchWithFallback<T>(
     logger.warn(`Using fallback data for ${url}`, {
       error: error instanceof Error ? error.message : String(error),
     });
-    analytics.trackEvent("api_fallback_used", { url });
+    analytics.trackEvent('api_fallback_used', { url });
     return fallback;
   }
 }

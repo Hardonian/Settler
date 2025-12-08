@@ -36,8 +36,15 @@ router.get(
     try {
       const userId = req.userId!;
       const queryParams = getAuditTrailSchema.parse({ query: req.query });
-      const { resourceType, resourceId, startDate, endDate, eventType, limit, offset } =
-        queryParams.query;
+      const {
+        resourceType,
+        resourceId,
+        startDate,
+        endDate,
+        eventType,
+        limit,
+        offset,
+      } = queryParams.query;
 
       const conditions: string[] = [];
       const values: (string | number | boolean | Date | null)[] = [];
@@ -69,7 +76,7 @@ router.get(
         values.push(eventType);
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
       const auditLogs = await query<{
         id: string;
@@ -94,12 +101,12 @@ router.get(
       );
 
       if (!countResult[0]) {
-        throw new Error("Failed to get audit log count");
+        throw new Error('Failed to get audit log count');
       }
       const total = parseInt(countResult[0].count);
 
       res.json({
-        data: auditLogs.map((log) => ({
+        data: auditLogs.map(log => ({
           id: log.id,
           event: log.event,
           userId: log.user_id,
@@ -134,7 +141,7 @@ router.get(
       const userId = req.userId!;
 
       if (!resourceType || !resourceId) {
-        res.status(400).json({ error: "resourceType and resourceId are required" });
+        res.status(400).json({ error: 'resourceType and resourceId are required' });
         return;
       }
 
@@ -158,7 +165,7 @@ router.get(
         data: {
           resourceType,
           resourceId,
-          events: auditLogs.map((log) => ({
+          events: auditLogs.map(log => ({
             id: log.id,
             event: log.event,
             userId: log.user_id,
@@ -170,9 +177,7 @@ router.get(
         },
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get resource audit trail", 500, {
-        userId: req.userId,
-      });
+      handleRouteError(res, error, "Failed to get resource audit trail", 500, { userId: req.userId });
     }
   }
 );
@@ -184,19 +189,13 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.userId!;
-      const {
-        format = "csv",
-        startDate,
-        endDate,
-      } = req.query as {
+      const { format = "csv", startDate, endDate } = req.query as {
         format?: string;
         startDate?: string;
         endDate?: string;
       };
 
-      const start = startDate
-        ? new Date(startDate)
-        : new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
+      const start = startDate ? new Date(startDate) : new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
       const auditLogs = await query<{

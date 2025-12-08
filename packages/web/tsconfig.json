@@ -5,7 +5,6 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "noResolve": false,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -17,7 +16,6 @@
     "jsx": "preserve",
     "incremental": true,
     "baseUrl": ".",
-    "exactOptionalPropertyTypes": false,
     "plugins": [
       {
         "name": "next"
@@ -32,19 +30,9 @@
       "@settler/sdk": ["../sdk/dist"],
       "@settler/sdk/*": ["../sdk/dist/*"],
       "@settler/types": ["../types/dist"],
-      "@settler/types/*": ["../types/dist/*"],
-      "@settler/api": ["../api/dist"],
-      "@settler/api/*": ["../api/dist/*"]
+      "@settler/types/*": ["../types/dist/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": [
-    "node_modules",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "**/__tests__/**",
-    "../api"
-  ]
+  "exclude": ["node_modules"]
 }

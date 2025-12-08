@@ -1,32 +1,21 @@
 /**
  * Canonical Data Model Types
- *
+ * 
  * These types represent the unified, opinionated schema for all payment data,
  * abstracting provider differences as specified in the Product & Technical Specification.
  */
 
-export type PaymentStatus =
-  | "pending"
-  | "authorized"
-  | "captured"
-  | "refunded"
-  | "disputed"
-  | "failed";
-export type TransactionType = "authorization" | "capture" | "refund" | "chargeback" | "adjustment";
-export type TransactionStatus = "pending" | "succeeded" | "failed" | "refunded" | "disputed";
-export type SettlementStatus = "pending" | "completed" | "failed";
-export type FeeType = "processing" | "fx" | "chargeback" | "refund" | "adjustment" | "other";
-export type RefundDisputeType = "refund" | "chargeback" | "dispute";
-export type RefundDisputeStatus = "pending" | "completed" | "reversed" | "lost";
-export type MatchType = "1-to-1" | "1-to-many" | "many-to-1";
-export type ExceptionCategory =
-  | "amount_mismatch"
-  | "date_mismatch"
-  | "missing_transaction"
-  | "missing_settlement"
-  | "duplicate";
-export type ExceptionSeverity = "low" | "medium" | "high" | "critical";
-export type ExceptionResolutionStatus = "open" | "in_progress" | "resolved" | "dismissed";
+export type PaymentStatus = 'pending' | 'authorized' | 'captured' | 'refunded' | 'disputed' | 'failed';
+export type TransactionType = 'authorization' | 'capture' | 'refund' | 'chargeback' | 'adjustment';
+export type TransactionStatus = 'pending' | 'succeeded' | 'failed' | 'refunded' | 'disputed';
+export type SettlementStatus = 'pending' | 'completed' | 'failed';
+export type FeeType = 'processing' | 'fx' | 'chargeback' | 'refund' | 'adjustment' | 'other';
+export type RefundDisputeType = 'refund' | 'chargeback' | 'dispute';
+export type RefundDisputeStatus = 'pending' | 'completed' | 'reversed' | 'lost';
+export type MatchType = '1-to-1' | '1-to-many' | 'many-to-1';
+export type ExceptionCategory = 'amount_mismatch' | 'date_mismatch' | 'missing_transaction' | 'missing_settlement' | 'duplicate';
+export type ExceptionSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type ExceptionResolutionStatus = 'open' | 'in_progress' | 'resolved' | 'dismissed';
 
 /**
  * Money type - represents an amount with currency
@@ -47,7 +36,7 @@ export interface Payment {
   amount: Money;
   status: PaymentStatus;
   customerId?: string; // Merchant's customer ID
-  metadata: Record<string, unknown>; // Merchant-provided metadata
+  metadata: Record<string, any>; // Merchant-provided metadata
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,7 +55,7 @@ export interface Transaction {
   amount: Money; // Transaction amount
   netAmount?: Money; // Amount after fees
   status: TransactionStatus;
-  rawPayload: Record<string, unknown>; // Original provider payload
+  rawPayload: Record<string, any>; // Original provider payload
   created_at: Date;
   updatedAt: Date;
 }
@@ -86,7 +75,7 @@ export interface Settlement {
   settlementDate: Date; // When funds were settled
   expectedDate?: Date; // When settlement was expected
   status: SettlementStatus;
-  rawPayload: Record<string, unknown>;
+  rawPayload: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -117,7 +106,7 @@ export interface Fee {
   amount: Money; // Fee amount
   description?: string; // Human-readable description
   rate?: number; // Percentage rate (if applicable)
-  rawPayload: Record<string, unknown>; // Provider-specific fee data
+  rawPayload: Record<string, any>; // Provider-specific fee data
   createdAt: Date;
 }
 
@@ -153,7 +142,7 @@ export interface RefundDispute {
   reason?: string; // Refund reason or dispute reason code
   providerRefundId?: string; // Provider's refund ID
   providerDisputeId?: string; // Provider's dispute ID
-  rawPayload: Record<string, unknown>;
+  rawPayload: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -171,7 +160,7 @@ export interface ReconciliationMatch {
   settlementId?: string;
   matchType: MatchType;
   confidenceScore: number; // 0.00 to 1.00
-  matchingRules: Record<string, unknown>; // Rules used for matching
+  matchingRules: Record<string, any>; // Rules used for matching
   matchedAt: Date;
   createdAt: Date;
 }
@@ -203,7 +192,7 @@ export interface Exception {
  */
 export interface MatchingRule {
   field: string; // transactionId, amount, date, referenceId, etc.
-  type: "exact" | "fuzzy" | "range";
+  type: 'exact' | 'fuzzy' | 'range';
   tolerance?: {
     amount?: number; // Amount tolerance (e.g., 0.01)
     days?: number; // Date tolerance in days
@@ -213,8 +202,8 @@ export interface MatchingRule {
 
 export interface MatchingRulesConfig {
   strategies: MatchingRule[];
-  priority: "exact-first" | "fuzzy-first" | "custom";
-  conflictResolution?: "first-wins" | "last-wins" | "manual-review";
+  priority: 'exact-first' | 'fuzzy-first' | 'custom';
+  conflictResolution?: 'first-wins' | 'last-wins' | 'manual-review';
 }
 
 /**

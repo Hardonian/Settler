@@ -25,7 +25,6 @@ Pure functions that fetch data from APIs, databases, or external services. These
 - Can be used in Server Components, Route Handlers, or wrapped in hooks
 
 **Example:**
-
 ```typescript
 // lib/data/dashboard.ts
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
@@ -36,7 +35,6 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 ```
 
 **Key Files:**
-
 - `/lib/data/queryKeys.ts` - Centralized query key factory
 - `/lib/data/dashboard.ts` - Dashboard metrics data access
 - `/lib/data/jobs.ts` - Reconciliation jobs data access
@@ -51,7 +49,6 @@ React Query hooks that wrap data access functions. These hooks:
 - Support dependent queries, enabled/disabled states
 
 **Example:**
-
 ```typescript
 // lib/hooks/use-dashboard.ts
 export function useDashboardMetrics() {
@@ -64,7 +61,6 @@ export function useDashboardMetrics() {
 ```
 
 **Key Hooks:**
-
 - `useDashboardMetrics()` - Dashboard metrics
 - `useExternalMetrics()` - GitHub/NPM metrics
 - `useJobs()` - Reconciliation jobs
@@ -79,7 +75,6 @@ Components that consume hooks and render data. Use standardized loading/error/em
 - `<EmptyState />` - Reusable empty state display
 
 **Example:**
-
 ```typescript
 const metricsQuery = useDashboardMetrics();
 
@@ -98,19 +93,16 @@ return (
 ### Server State (TanStack Query)
 
 **What it is:**
-
 - Data fetched from APIs, databases, external services
 - Data that can be cached, invalidated, refetched
 - Data shared across multiple components
 
 **How to use:**
-
 - Use hooks from `/lib/hooks/`
 - Never use `useState` + `useEffect` for server data
 - Let React Query handle caching, loading, errors
 
 **Examples:**
-
 - Dashboard metrics
 - User profiles
 - Reconciliation jobs
@@ -119,19 +111,16 @@ return (
 ### UI/Local State (React useState)
 
 **What it is:**
-
 - Component-local state (modals, toggles, form inputs)
 - State that doesn't need to be shared
 - State that doesn't come from a server
 
 **How to use:**
-
 - Use `useState` for simple local state
 - Use `useReducer` for complex local state
 - Keep it minimal - prefer server state when possible
 
 **Examples:**
-
 - Modal open/close state
 - Form input values (before submission)
 - UI toggles (dark mode, sidebar)
@@ -140,7 +129,6 @@ return (
 ### Global UI State (Future: Zustand if needed)
 
 **When to use:**
-
 - UI state that needs to be shared across many components
 - Multi-step workflows (onboarding, wizards)
 - Complex UI state that doesn't belong in server state
@@ -154,19 +142,18 @@ Query keys are centralized in `/lib/data/queryKeys.ts` using a factory pattern:
 ```typescript
 export const queryKeys = {
   dashboard: {
-    all: ["dashboard"] as const,
-    metrics: () => ["dashboard", "metrics"] as const,
+    all: ['dashboard'] as const,
+    metrics: () => ['dashboard', 'metrics'] as const,
   },
   jobs: {
-    all: ["jobs"] as const,
-    list: (filters?) => ["jobs", "list", filters] as const,
-    detail: (id: string) => ["jobs", id] as const,
+    all: ['jobs'] as const,
+    list: (filters?) => ['jobs', 'list', filters] as const,
+    detail: (id: string) => ['jobs', id] as const,
   },
 };
 ```
 
 **Benefits:**
-
 - Type-safe query keys
 - Consistent naming
 - Easy invalidation: `queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })`
@@ -218,13 +205,11 @@ const mutation = useMutation({
 ### Server Components (Next.js App Router)
 
 **Use for:**
-
 - Initial data fetching (SEO, performance)
 - Static or infrequently changing data
 - Data that doesn't need real-time updates
 
 **Pattern:**
-
 ```typescript
 // app/dashboard/page.tsx (Server Component)
 async function DashboardMetrics() {
@@ -234,7 +219,6 @@ async function DashboardMetrics() {
 ```
 
 **Benefits:**
-
 - No client-side JavaScript needed
 - Faster initial load
 - Better SEO
@@ -242,13 +226,11 @@ async function DashboardMetrics() {
 ### Client Components + React Query
 
 **Use for:**
-
 - Data that needs real-time updates
 - Interactive data (filters, pagination)
 - Data that changes frequently
 
 **Pattern:**
-
 ```typescript
 // app/dashboard/page.tsx (Client Component)
 'use client';
@@ -259,7 +241,6 @@ export default function Dashboard() {
 ```
 
 **Benefits:**
-
 - Automatic caching
 - Background refetching
 - Optimistic updates
@@ -337,8 +318,8 @@ const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
 
 useEffect(() => {
-  fetch("/api/data")
-    .then((res) => res.json())
+  fetch('/api/data')
+    .then(res => res.json())
     .then(setData)
     .catch(setError)
     .finally(() => setLoading(false));

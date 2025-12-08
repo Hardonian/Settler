@@ -3,27 +3,17 @@
  * Handle commands and emit events
  */
 
-import { IEventStore } from "../../../infrastructure/eventsourcing/EventStore";
+import { IEventStore } from '../../../infrastructure/eventsourcing/EventStore';
 import {
   StartReconciliationCommand,
   RetryReconciliationCommand,
   CancelReconciliationCommand,
   PauseReconciliationCommand,
   ResumeReconciliationCommand,
-} from "./ReconciliationCommands";
-import {
-  ReconciliationEvents,
-  ReconciliationStartedData,
-} from "../../../domain/eventsourcing/reconciliation/ReconciliationEvents";
-import { IEventBus } from "../../../infrastructure/events/IEventBus";
-import { DomainEvent } from "../../../domain/events/DomainEvent";
-
-interface EventData {
-  job_id?: string;
-  source_adapter?: string;
-  target_adapter?: string;
-  date_range?: { start: string; end: string };
-}
+} from './ReconciliationCommands';
+import { ReconciliationEvents, ReconciliationStartedData } from '../../../domain/eventsourcing/reconciliation/ReconciliationEvents';
+import { IEventBus } from '../../../infrastructure/events/IEventBus';
+import { DomainEvent } from '../../../domain/events/DomainEvent';
 
 export class ReconciliationCommandHandlers {
   constructor(
@@ -65,34 +55,36 @@ export class ReconciliationCommandHandlers {
         event.metadata.correlation_id,
         command.tenant_id,
         command.date_range,
-        command.source_adapter === "shopify" ? { adapter: command.source_adapter } : undefined,
-        command.target_adapter === "stripe" ? { adapter: command.target_adapter } : undefined
+        command.source_adapter === 'shopify' ? { adapter: command.source_adapter } : undefined,
+        command.target_adapter === 'stripe' ? { adapter: command.target_adapter } : undefined
       )
     );
   }
 
   async handleRetryReconciliation(command: RetryReconciliationCommand): Promise<void> {
     // Get existing events to determine current state
-    const events = await this.eventStore.getEvents(command.reconciliation_id, "reconciliation");
+    const events = await this.eventStore.getEvents(
+      command.reconciliation_id,
+      'reconciliation'
+    );
 
     if (events.length === 0) {
-      throw new Error("Reconciliation not found");
+      throw new Error('Reconciliation not found');
     }
 
     const lastEvent = events[events.length - 1];
     if (!lastEvent) {
-      throw new Error("Reconciliation not found");
+      throw new Error('Reconciliation not found');
     }
     const correlationId = command.correlation_id || lastEvent.metadata.correlation_id;
 
     // Create retry event (could be a new event type)
-    const eventData = lastEvent.data as EventData;
     const retryEventData: ReconciliationStartedData = {
       reconciliation_id: command.reconciliation_id,
-      job_id: eventData.job_id || '',
-      source_adapter: eventData.source_adapter || '',
-      target_adapter: eventData.target_adapter || '',
-      date_range: eventData.date_range || { start: '', end: '' },
+      job_id: (lastEvent.data as any).job_id,
+      source_adapter: (lastEvent.data as any).source_adapter,
+      target_adapter: (lastEvent.data as any).target_adapter,
+      date_range: (lastEvent.data as any).date_range,
     };
     if (command.user_id) {
       retryEventData.initiated_by = command.user_id;
@@ -112,15 +104,18 @@ export class ReconciliationCommandHandlers {
   }
 
   async handleCancelReconciliation(command: CancelReconciliationCommand): Promise<void> {
-    const events = await this.eventStore.getEvents(command.reconciliation_id, "reconciliation");
+    const events = await this.eventStore.getEvents(
+      command.reconciliation_id,
+      'reconciliation'
+    );
 
     if (events.length === 0) {
-      throw new Error("Reconciliation not found");
+      throw new Error('Reconciliation not found');
     }
 
     const lastEvent = events[events.length - 1];
     if (!lastEvent) {
-      throw new Error("Reconciliation not found");
+      throw new Error('Reconciliation not found');
     }
     const correlationId = command.correlation_id || lastEvent.metadata.correlation_id;
 
@@ -129,8 +124,8 @@ export class ReconciliationCommandHandlers {
       {
         reconciliation_id: command.reconciliation_id,
         error: {
-          type: "CancellationError",
-          message: command.reason || "Reconciliation cancelled by user",
+          type: 'CancellationError',
+          message: command.reason || 'Reconciliation cancelled by user',
         },
         failed_at: new Date().toISOString(),
         retryable: false,
@@ -172,7 +167,7 @@ class ReconciliationStartedDomainEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "reconciliation.started";
+    return 'reconciliation.started';
   }
 }
 
@@ -185,7 +180,7 @@ class ReconciliationRetryDomainEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "reconciliation.retry";
+    return 'reconciliation.retry';
   }
 }
 
@@ -198,6 +193,6 @@ class ReconciliationCancelledDomainEvent extends DomainEvent {
   }
 
   get eventName(): string {
-    return "reconciliation.cancelled";
+    return 'reconciliation.cancelled';
   }
 }

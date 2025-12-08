@@ -1,11 +1,11 @@
 /**
  * React Hooks for Telemetry
- *
+ * 
  * Easy-to-use hooks for tracking user interactions in components.
  */
 
-import { useCallback } from "react";
-import { telemetry } from "./events";
+import { useCallback } from 'react';
+import { telemetry } from './events';
 
 /**
  * Hook to track button clicks
@@ -33,19 +33,13 @@ export function useTrackForm(formName: string) {
     telemetry.trackFormStart(formName);
   }, [formName]);
 
-  const abandon = useCallback(
-    (fieldsCompleted?: number, totalFields?: number) => {
-      telemetry.trackFormAbandon(formName, fieldsCompleted, totalFields);
-    },
-    [formName]
-  );
+  const abandon = useCallback((fieldsCompleted?: number, totalFields?: number) => {
+    telemetry.trackFormAbandon(formName, fieldsCompleted, totalFields);
+  }, [formName]);
 
-  const submit = useCallback(
-    (success: boolean, properties?: Record<string, any>) => {
-      telemetry.trackFormSubmit(formName, success, properties);
-    },
-    [formName]
-  );
+  const submit = useCallback((success: boolean, properties?: Record<string, any>) => {
+    telemetry.trackFormSubmit(formName, success, properties);
+  }, [formName]);
 
   return { start, abandon, submit };
 }
@@ -54,12 +48,9 @@ export function useTrackForm(formName: string) {
  * Hook to track funnel steps
  */
 export function useTrackFunnel(funnelName: string) {
-  return useCallback(
-    (step: string, stepNumber: number, properties?: Record<string, any>) => {
-      telemetry.trackFunnelStep(funnelName, step, stepNumber, properties);
-    },
-    [funnelName]
-  );
+  return useCallback((step: string, stepNumber: number, properties?: Record<string, any>) => {
+    telemetry.trackFunnelStep(funnelName, step, stepNumber, properties);
+  }, [funnelName]);
 }
 
 /**

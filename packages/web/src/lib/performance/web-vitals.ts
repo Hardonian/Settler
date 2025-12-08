@@ -1,25 +1,25 @@
 /**
  * Web Vitals Collection
- *
+ * 
  * Captures Core Web Vitals and performance metrics.
  */
 
-import { analytics } from "../analytics";
-import { logger } from "../logging/logger";
+import { analytics } from '../analytics';
+import { logger } from '../logging/logger';
 
 export interface WebVitalMetric {
   name: string;
   value: number;
   id: string;
   delta: number;
-  rating: "good" | "needs-improvement" | "poor";
+  rating: 'good' | 'needs-improvement' | 'poor';
   navigationType?: string;
 }
 
 /**
  * Get rating for a metric value
  */
-function getRating(name: string, value: number): "good" | "needs-improvement" | "poor" {
+function getRating(name: string, value: number): 'good' | 'needs-improvement' | 'poor' {
   const thresholds: Record<string, { good: number; poor: number }> = {
     LCP: { good: 2500, poor: 4000 },
     FID: { good: 100, poor: 300 },
@@ -29,11 +29,11 @@ function getRating(name: string, value: number): "good" | "needs-improvement" | 
   };
 
   const threshold = thresholds[name];
-  if (!threshold) return "good";
+  if (!threshold) return 'good';
 
-  if (value <= threshold.good) return "good";
-  if (value <= threshold.poor) return "needs-improvement";
-  return "poor";
+  if (value <= threshold.good) return 'good';
+  if (value <= threshold.poor) return 'needs-improvement';
+  return 'poor';
 }
 
 /**
@@ -43,7 +43,7 @@ export function reportWebVital(metric: WebVitalMetric) {
   const { name, value, rating, id, delta, navigationType } = metric;
 
   // Log in development
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     logger.info(`Web Vital: ${name}`, {
       value,
       rating,
@@ -53,7 +53,7 @@ export function reportWebVital(metric: WebVitalMetric) {
   }
 
   // Track in analytics
-  analytics.trackEvent("web_vital", {
+  analytics.trackEvent('web_vital', {
     name,
     value: Math.round(value),
     rating,
@@ -63,7 +63,7 @@ export function reportWebVital(metric: WebVitalMetric) {
   });
 
   // Log poor ratings
-  if (rating === "poor") {
+  if (rating === 'poor') {
     logger.warn(`Poor Web Vital: ${name} = ${value}ms`, {
       value,
       rating,
@@ -92,22 +92,22 @@ export function reportWebVitals(metric: any) {
  * Manual Web Vitals collection (non-Next.js)
  */
 export function initWebVitals() {
-  if (typeof window === "undefined") return;
+  if (typeof window === 'undefined') return;
 
   // LCP - Largest Contentful Paint
   try {
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
       const lastEntry = entries[entries.length - 1] as any;
-
+      
       reportWebVital({
-        name: "LCP",
+        name: 'LCP',
         value: lastEntry.renderTime || lastEntry.loadTime,
         id: lastEntry.id,
         delta: lastEntry.renderTime || lastEntry.loadTime,
-        rating: getRating("LCP", lastEntry.renderTime || lastEntry.loadTime),
+        rating: getRating('LCP', lastEntry.renderTime || lastEntry.loadTime),
       });
-    }).observe({ type: "largest-contentful-paint", buffered: true });
+    }).observe({ type: 'largest-contentful-paint', buffered: true });
   } catch (error) {
     // PerformanceObserver not supported
   }
@@ -117,32 +117,32 @@ export function initWebVitals() {
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         const fid = (entry as any).processingStart - entry.startTime;
-
+        
         reportWebVital({
-          name: "FID",
+          name: 'FID',
           value: fid,
           id: entry.name,
           delta: fid,
-          rating: getRating("FID", fid),
+          rating: getRating('FID', fid),
         });
       }
-    }).observe({ type: "first-input", buffered: true });
+    }).observe({ type: 'first-input', buffered: true });
   } catch (error) {
     // PerformanceObserver not supported
   }
 
   // TTFB - Time to First Byte
   try {
-    const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     if (navigation) {
       const ttfb = navigation.responseStart - navigation.requestStart;
-
+      
       reportWebVital({
-        name: "TTFB",
+        name: 'TTFB',
         value: ttfb,
-        id: "ttfb",
+        id: 'ttfb',
         delta: ttfb,
-        rating: getRating("TTFB", ttfb),
+        rating: getRating('TTFB', ttfb),
       });
     }
   } catch (error) {

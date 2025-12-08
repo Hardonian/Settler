@@ -1,14 +1,14 @@
 /**
  * @settler/protocol
- *
+ * 
  * Framework-agnostic protocol types for reconciliation workflows.
- *
+ * 
  * This package defines the core types and JSON schema for reconciliation
  * UI definitions and rules. It is designed to be consumed by any reconciliation
  * backend, not just Settler's proprietary engine.
- *
+ * 
  * Enterprise-grade security, validation, and observability built-in.
- *
+ * 
  * @license MIT
  */
 
@@ -86,19 +86,19 @@ export interface Money {
   currency: string; // ISO 4217 currency code
 }
 
-export type TransactionStatus = "pending" | "succeeded" | "failed" | "refunded" | "disputed";
-export type SettlementStatus = "pending" | "completed" | "failed";
-export type MatchType = "1-to-1" | "1-to-many" | "many-to-1";
-export type ExceptionCategory =
-  | "amount_mismatch"
-  | "date_mismatch"
-  | "missing_transaction"
-  | "missing_settlement"
-  | "duplicate"
-  | "currency_mismatch"
-  | "status_mismatch";
-export type ExceptionSeverity = "low" | "medium" | "high" | "critical";
-export type ExceptionResolutionStatus = "open" | "in_progress" | "resolved" | "dismissed";
+export type TransactionStatus = 'pending' | 'succeeded' | 'failed' | 'refunded' | 'disputed';
+export type SettlementStatus = 'pending' | 'completed' | 'failed';
+export type MatchType = '1-to-1' | '1-to-many' | 'many-to-1';
+export type ExceptionCategory = 
+  | 'amount_mismatch' 
+  | 'date_mismatch' 
+  | 'missing_transaction' 
+  | 'missing_settlement' 
+  | 'duplicate'
+  | 'currency_mismatch'
+  | 'status_mismatch';
+export type ExceptionSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type ExceptionResolutionStatus = 'open' | 'in_progress' | 'resolved' | 'dismissed';
 
 // ============================================================================
 // Rule Types
@@ -118,16 +118,16 @@ export interface ReconciliationRule {
   enabled?: boolean;
 }
 
-export type RuleField =
-  | "transactionId"
-  | "amount"
-  | "date"
-  | "referenceId"
-  | "providerTransactionId"
-  | "providerSettlementId"
-  | "currency";
+export type RuleField = 
+  | 'transactionId'
+  | 'amount'
+  | 'date'
+  | 'referenceId'
+  | 'providerTransactionId'
+  | 'providerSettlementId'
+  | 'currency';
 
-export type RuleType = "exact" | "fuzzy" | "range" | "regex";
+export type RuleType = 'exact' | 'fuzzy' | 'range' | 'regex';
 
 export interface RuleTolerance {
   amount?: number; // Amount tolerance (e.g., 0.01)
@@ -148,8 +148,8 @@ export interface ReconciliationRuleSet {
   conflictResolution?: ConflictResolution;
 }
 
-export type RulePriority = "exact-first" | "fuzzy-first" | "custom";
-export type ConflictResolution = "first-wins" | "last-wins" | "manual-review";
+export type RulePriority = 'exact-first' | 'fuzzy-first' | 'custom';
+export type ConflictResolution = 'first-wins' | 'last-wins' | 'manual-review';
 
 // ============================================================================
 // View Configuration Types
@@ -174,14 +174,14 @@ export interface WidgetConfig {
   position?: WidgetPosition;
 }
 
-export type WidgetType =
-  | "transaction-table"
-  | "exception-table"
-  | "metric-card"
-  | "match-list"
-  | "summary-stats"
-  | "rule-editor"
-  | "filter-bar";
+export type WidgetType = 
+  | 'transaction-table'
+  | 'exception-table'
+  | 'metric-card'
+  | 'match-list'
+  | 'summary-stats'
+  | 'rule-editor'
+  | 'filter-bar';
 
 export interface WidgetPosition {
   row: number;
@@ -191,7 +191,7 @@ export interface WidgetPosition {
 }
 
 export interface LayoutConfig {
-  type: "grid" | "flex";
+  type: 'grid' | 'flex';
   columns?: number;
   gap?: number;
 }
@@ -225,7 +225,7 @@ export interface ReconciliationConfig {
  * Compilation Mode
  * Determines how React components should be rendered
  */
-export type CompilationMode = "ui" | "config";
+export type CompilationMode = 'ui' | 'config';
 
 /**
  * Compilation Context
@@ -235,8 +235,8 @@ export interface CompilationContext {
   mode: CompilationMode;
   config: Partial<ReconciliationConfig>;
   widgetRegistry: Map<string, WidgetConfig>;
-  securityContext?: import("./security").SecurityContext;
-  validationRules?: import("./validation").ValidationRules;
+  securityContext?: import('./security').SecurityContext;
+  validationRules?: import('./validation').ValidationRules;
 }
 
 // Re-export security types
@@ -249,8 +249,8 @@ export type {
   ValidationPolicy,
   SanitizationPolicy,
   AuditLoggingPolicy,
-  RateLimitingPolicy,
-} from "./security";
+  RateLimitingPolicy
+} from './security';
 
 // Re-export validation types
 export type {
@@ -263,8 +263,8 @@ export type {
   ExceptionValidationRules,
   RuleValidationRules,
   MoneyValidationRules,
-  SchemaValidator,
-} from "./validation";
+  SchemaValidator
+} from './validation';
 
 // Re-export telemetry types
 export type {
@@ -274,8 +274,8 @@ export type {
   PerformanceMetrics,
   ErrorTelemetry,
   TelemetryConfig,
-  TelemetryProvider,
-} from "./telemetry";
+  TelemetryProvider
+} from './telemetry';
 
 // Re-export error types
 export {
@@ -283,8 +283,8 @@ export {
   ValidationError as ProtocolValidationError,
   SecurityError,
   CompilationError,
-  ConfigurationError,
-} from "./errors";
+  ConfigurationError
+} from './errors';
 
 // Re-export utilities
 export {
@@ -297,5 +297,5 @@ export {
   validateTransactionId,
   maskPII,
   generateSecureId,
-  deepClone,
-} from "./utils";
+  deepClone
+} from './utils';

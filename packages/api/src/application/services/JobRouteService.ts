@@ -4,9 +4,9 @@
  * Extracted from route handlers for better testability and maintainability
  */
 
-import { query } from "../../db";
-import { encrypt, decrypt } from "../../infrastructure/security/encryption";
-import { logInfo, logError } from "../../utils/logger";
+import { query } from '../../db';
+import { encrypt, decrypt } from '../../infrastructure/security/encryption';
+import { logInfo, logError } from '../../utils/logger';
 
 export interface CreateJobRequest {
   name: string;
@@ -21,12 +21,12 @@ export interface CreateJobRequest {
   rules: {
     matching: Array<{
       field: string;
-      type: "exact" | "fuzzy" | "range";
+      type: 'exact' | 'fuzzy' | 'range';
       tolerance?: number;
       days?: number;
       threshold?: number;
     }>;
-    conflictResolution?: "first-wins" | "last-wins" | "manual-review";
+    conflictResolution?: 'first-wins' | 'last-wins' | 'manual-review';
   };
   schedule?: string;
 }
@@ -37,7 +37,7 @@ export interface JobResponse {
   name: string;
   source: { adapter: string; config?: Record<string, unknown> };
   target: { adapter: string; config?: Record<string, unknown> };
-  rules: CreateJobRequest["rules"];
+  rules: CreateJobRequest['rules'];
   schedule?: string;
   status: string;
   createdAt: string;
@@ -72,7 +72,7 @@ export class JobRouteService {
       );
 
       if (!result[0]) {
-        throw new Error("Failed to create job");
+        throw new Error('Failed to create job');
       }
       const jobId = result[0].id;
 
@@ -80,10 +80,14 @@ export class JobRouteService {
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        ["job_created", userId, JSON.stringify({ jobId, name })]
+        [
+          'job_created',
+          userId,
+          JSON.stringify({ jobId, name }),
+        ]
       );
 
-      logInfo("Job created", { jobId, userId, name });
+      logInfo('Job created', { jobId, userId, name });
 
       const response: JobResponse = {
         id: jobId,
@@ -92,7 +96,7 @@ export class JobRouteService {
         source: { adapter: source.adapter },
         target: { adapter: target.adapter },
         rules,
-        status: "active",
+        status: 'active',
         createdAt: new Date().toISOString(),
       };
       if (schedule !== undefined) {
@@ -100,9 +104,8 @@ export class JobRouteService {
       }
       return response;
     } catch (error: unknown) {
-      logError("Failed to create job", error, { userId });
-      const message =
-        error instanceof Error ? error.message : "Failed to create reconciliation job";
+      logError('Failed to create job', error, { userId });
+      const message = error instanceof Error ? error.message : 'Failed to create reconciliation job';
       throw new Error(message);
     }
   }
@@ -147,14 +150,18 @@ export class JobRouteService {
     const redactedSourceConfig = Object.fromEntries(
       Object.entries(sourceConfig).map(([key, value]) => [
         key,
-        key.toLowerCase().includes("key") || key.toLowerCase().includes("secret") ? "***" : value,
+        key.toLowerCase().includes('key') || key.toLowerCase().includes('secret')
+          ? '***'
+          : value,
       ])
     );
 
     const redactedTargetConfig = Object.fromEntries(
       Object.entries(targetConfig).map(([key, value]) => [
         key,
-        key.toLowerCase().includes("key") || key.toLowerCase().includes("secret") ? "***" : value,
+        key.toLowerCase().includes('key') || key.toLowerCase().includes('secret')
+          ? '***'
+          : value,
       ])
     );
 
@@ -207,7 +214,10 @@ export class JobRouteService {
          LIMIT $2 OFFSET $3`,
         [userId, limit, offset]
       ),
-      query<{ count: string }>(`SELECT COUNT(*) as count FROM jobs WHERE user_id = $1`, [userId]),
+      query<{ count: string }>(
+        `SELECT COUNT(*) as count FROM jobs WHERE user_id = $1`,
+        [userId]
+      ),
     ]);
 
     if (!totalResult[0]) {
@@ -215,7 +225,7 @@ export class JobRouteService {
     }
     const total = parseInt(totalResult[0].count, 10);
 
-    const defaultRules: CreateJobRequest["rules"] = {
+    const defaultRules: CreateJobRequest['rules'] = {
       matching: [],
     };
 
@@ -256,10 +266,14 @@ export class JobRouteService {
     await query(
       `INSERT INTO audit_logs (event, user_id, metadata)
        VALUES ($1, $2, $3)`,
-      ["job_deleted", userId, JSON.stringify({ jobId })]
+      [
+        'job_deleted',
+        userId,
+        JSON.stringify({ jobId }),
+      ]
     );
 
-    logInfo("Job deleted", { jobId, userId });
+    logInfo('Job deleted', { jobId, userId });
 
     return true;
   }

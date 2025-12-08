@@ -1,11 +1,9 @@
 import { Router, Request, Response } from "express";
 import { query } from "../db";
-import { logError } from "../utils/logger";
-import { AuthRequest } from "../middleware/auth";
 
 /**
  * Observability Routes
- *
+ * 
  * GET /api/v1/observability/metrics - Get metrics
  * GET /api/v1/observability/logs - Query logs
  * GET /api/v1/observability/traces - Query traces
@@ -20,9 +18,8 @@ export const observabilityRouter = Router();
  */
 observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
   try {
-    const authReq = req as AuthRequest;
-    const userId = authReq.userId || '';
-    const tenantId = authReq.tenantId || '';
+    const userId = (req as any).userId;
+    const tenantId = (req as any).tenantId;
 
     // Get job metrics
     const jobStats = await query<{
@@ -38,7 +35,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
         COUNT(*) FILTER (WHERE status = 'failed') as failed
       FROM jobs
       WHERE user_id = $1 AND tenant_id = $2`,
-      [userId || null, tenantId || null]
+      [userId, tenantId]
     );
 
     // Get reconciliation metrics
@@ -56,7 +53,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       FROM reconciliation_reports
       WHERE user_id = $1 AND tenant_id = $2
       AND created_at >= NOW() - INTERVAL '30 days'`,
-      [userId || null, tenantId || null]
+      [userId, tenantId]
     );
 
     // Get API usage metrics
@@ -74,7 +71,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       FROM api_logs
       WHERE user_id = $1 AND tenant_id = $2
       AND created_at >= NOW() - INTERVAL '24 hours'`,
-      [userId || null, tenantId || null]
+      [userId, tenantId]
     );
 
     // Get webhook metrics
@@ -90,7 +87,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       FROM webhook_deliveries
       WHERE user_id = $1 AND tenant_id = $2
       AND created_at >= NOW() - INTERVAL '24 hours'`,
-      [userId || null, tenantId || null]
+      [userId, tenantId]
     );
 
     res.json({
@@ -122,7 +119,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    logError("Error fetching metrics", error as Error);
+    console.error("Error fetching metrics:", error);
     res.status(500).json({
       error: "Failed to fetch metrics",
       message: error instanceof Error ? error.message : "Unknown error",
@@ -136,10 +133,16 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
  */
 observabilityRouter.get("/logs", async (req: Request, res: Response) => {
   try {
-    const authReq = req as AuthRequest;
-    const userId = authReq.userId || '';
-    const tenantId = authReq.tenantId || '';
-    const { level, jobId, startDate, endDate, limit = "100", offset = "0" } = req.query;
+    const userId = (req as any).userId;
+    const tenantId = (req as any).tenantId;
+    const {
+      level,
+      jobId,
+      startDate,
+      endDate,
+      limit = "100",
+      offset = "0",
+    } = req.query;
 
     let queryStr = `
       SELECT 
@@ -152,35 +155,35 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
       FROM logs
       WHERE user_id = $1 AND tenant_id = $2
     `;
-    const params: (string | number | boolean | Date | null)[] = [userId || null, tenantId || null];
+    const params: any[] = [userId, tenantId];
     let paramIndex = 3;
 
     if (level) {
       queryStr += ` AND level = $${paramIndex}`;
-      params.push(String(level));
+      params.push(level);
       paramIndex++;
     }
 
     if (jobId) {
       queryStr += ` AND job_id = $${paramIndex}`;
-      params.push(String(jobId));
+      params.push(jobId);
       paramIndex++;
     }
 
     if (startDate) {
       queryStr += ` AND created_at >= $${paramIndex}`;
-      params.push(new Date(String(startDate)));
+      params.push(startDate);
       paramIndex++;
     }
 
     if (endDate) {
       queryStr += ` AND created_at <= $${paramIndex}`;
-      params.push(new Date(String(endDate)));
+      params.push(endDate);
       paramIndex++;
     }
 
     queryStr += ` ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-    params.push(parseInt(limit as string, 10), parseInt(offset as string, 10));
+    params.push(parseInt(limit as string), parseInt(offset as string));
 
     const logs = await query(queryStr, params);
 
@@ -193,7 +196,7 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    logError("Error fetching logs", error as Error);
+    console.error("Error fetching logs:", error);
     res.status(500).json({
       error: "Failed to fetch logs",
       message: error instanceof Error ? error.message : "Unknown error",
@@ -208,10 +211,9 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
 observabilityRouter.get("/traces", async (req: Request, res: Response) => {
   try {
     // Reserved for future user/tenant filtering
-    const authReq = req as AuthRequest;
     const _ = {
-      userId: authReq.userId,
-      tenantId: authReq.tenantId,
+      userId: (req as any).userId,
+      tenantId: (req as any).tenantId,
     };
     void _;
     // Reserved for future tracing backend integration
@@ -229,7 +231,7 @@ observabilityRouter.get("/traces", async (req: Request, res: Response) => {
       documentation: "https://docs.settler.io/observability/tracing",
     });
   } catch (error) {
-    logError("Error fetching traces", error as Error);
+    console.error("Error fetching traces:", error);
     res.status(500).json({
       error: "Failed to fetch traces",
       message: error instanceof Error ? error.message : "Unknown error",

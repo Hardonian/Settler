@@ -1,14 +1,14 @@
 /**
  * Network Effects API Routes
- *
+ * 
  * REST API for network effects features (cross-customer intelligence, performance pools)
  */
 
-import { Router, Request, Response } from "express";
-import { crossCustomerIntelligence } from "../../services/network-effects/cross-customer-intelligence";
-import { performanceTuningPools } from "../../services/network-effects/performance-pools";
-import { handleRouteError } from "../../utils/error-handler";
-import { AuthRequest } from "../../middleware/auth";
+import { Router, Request, Response } from 'express';
+import { crossCustomerIntelligence } from '../../services/network-effects/cross-customer-intelligence';
+import { performanceTuningPools } from '../../services/network-effects/performance-pools';
+import { handleRouteError } from '../../utils/error-handler';
+import { AuthRequest } from '../../middleware/auth';
 
 const router = Router();
 
@@ -16,13 +16,13 @@ const router = Router();
  * POST /api/v2/network-effects/intelligence/opt-in
  * Opt-in to cross-customer intelligence
  */
-router.post("/intelligence/opt-in", async (req: Request, res: Response) => {
+router.post('/intelligence/opt-in', async (req: Request, res: Response) => {
   try {
     const customerId = (req as AuthRequest).userId || req.body.customerId;
-
+    
     if (!customerId) {
       return res.status(400).json({
-        error: "Missing customer ID",
+        error: 'Missing customer ID',
       });
     }
 
@@ -33,11 +33,11 @@ router.post("/intelligence/opt-in", async (req: Request, res: Response) => {
         customerId,
         optedIn: true,
       },
-      message: "Successfully opted in to cross-customer intelligence",
+      message: 'Successfully opted in to cross-customer intelligence',
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to opt in", 400);
+    handleRouteError(res, error, 'Failed to opt in', 400);
     return;
   }
 });
@@ -46,13 +46,13 @@ router.post("/intelligence/opt-in", async (req: Request, res: Response) => {
  * POST /api/v2/network-effects/intelligence/opt-out
  * Opt-out of cross-customer intelligence
  */
-router.post("/intelligence/opt-out", async (req: Request, res: Response) => {
+router.post('/intelligence/opt-out', async (req: Request, res: Response) => {
   try {
     const customerId = (req as AuthRequest).userId || req.body.customerId;
-
+    
     if (!customerId) {
       return res.status(400).json({
-        error: "Missing customer ID",
+        error: 'Missing customer ID',
       });
     }
 
@@ -63,11 +63,11 @@ router.post("/intelligence/opt-out", async (req: Request, res: Response) => {
         customerId,
         optedIn: false,
       },
-      message: "Successfully opted out of cross-customer intelligence",
+      message: 'Successfully opted out of cross-customer intelligence',
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to opt out", 400);
+    handleRouteError(res, error, 'Failed to opt out', 400);
     return;
   }
 });
@@ -76,14 +76,14 @@ router.post("/intelligence/opt-out", async (req: Request, res: Response) => {
  * POST /api/v2/network-effects/intelligence/check-pattern
  * Check if a pattern matches known patterns
  */
-router.post("/intelligence/check-pattern", async (req: Request, res: Response) => {
+router.post('/intelligence/check-pattern', async (req: Request, res: Response) => {
   try {
     const { type, data } = req.body;
 
     if (!type || !data) {
       return res.status(400).json({
-        error: "Missing required fields",
-        message: "type and data are required",
+        error: 'Missing required fields',
+        message: 'type and data are required',
       });
     }
 
@@ -95,7 +95,7 @@ router.post("/intelligence/check-pattern", async (req: Request, res: Response) =
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to check pattern", 400);
+    handleRouteError(res, error, 'Failed to check pattern', 400);
     return;
   }
 });
@@ -104,7 +104,7 @@ router.post("/intelligence/check-pattern", async (req: Request, res: Response) =
  * GET /api/v2/network-effects/intelligence/insights
  * Get network insights (anonymized)
  */
-router.get("/intelligence/insights", async (_req: Request, res: Response) => {
+router.get('/intelligence/insights', async (_req: Request, res: Response) => {
   try {
     const insights = crossCustomerIntelligence.getNetworkInsights();
 
@@ -113,7 +113,7 @@ router.get("/intelligence/insights", async (_req: Request, res: Response) => {
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to get insights", 500);
+    handleRouteError(res, error, 'Failed to get insights', 500);
     return;
   }
 });
@@ -122,13 +122,13 @@ router.get("/intelligence/insights", async (_req: Request, res: Response) => {
  * POST /api/v2/network-effects/performance/opt-in
  * Opt-in to performance tuning pools
  */
-router.post("/performance/opt-in", async (req: Request, res: Response) => {
+router.post('/performance/opt-in', async (req: Request, res: Response) => {
   try {
     const customerId = (req as AuthRequest).userId || req.body.customerId;
-
+    
     if (!customerId) {
       return res.status(400).json({
-        error: "Missing customer ID",
+        error: 'Missing customer ID',
       });
     }
 
@@ -139,11 +139,11 @@ router.post("/performance/opt-in", async (req: Request, res: Response) => {
         customerId,
         optedIn: true,
       },
-      message: "Successfully opted in to performance tuning pools",
+      message: 'Successfully opted in to performance tuning pools',
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to opt in", 400);
+    handleRouteError(res, error, 'Failed to opt in', 400);
     return;
   }
 });
@@ -152,15 +152,15 @@ router.post("/performance/opt-in", async (req: Request, res: Response) => {
  * POST /api/v2/network-effects/performance/submit
  * Submit performance metrics
  */
-router.post("/performance/submit", async (req: Request, res: Response) => {
+router.post('/performance/submit', async (req: Request, res: Response) => {
   try {
     const customerId = (req as AuthRequest).userId || req.body.customerId;
     const { jobId, adapter, ruleType, accuracy, latency, throughput } = req.body;
 
     if (!customerId || !jobId || !adapter || !ruleType) {
       return res.status(400).json({
-        error: "Missing required fields",
-        message: "customerId, jobId, adapter, and ruleType are required",
+        error: 'Missing required fields',
+        message: 'customerId, jobId, adapter, and ruleType are required',
       });
     }
 
@@ -177,11 +177,11 @@ router.post("/performance/submit", async (req: Request, res: Response) => {
       data: {
         submitted: true,
       },
-      message: "Performance metrics submitted successfully",
+      message: 'Performance metrics submitted successfully',
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to submit metrics", 400);
+    handleRouteError(res, error, 'Failed to submit metrics', 400);
     return;
   }
 });
@@ -190,13 +190,13 @@ router.post("/performance/submit", async (req: Request, res: Response) => {
  * GET /api/v2/network-effects/performance/insights
  * Get performance insights
  */
-router.get("/performance/insights", async (req: Request, res: Response) => {
+router.get('/performance/insights', async (req: Request, res: Response) => {
   try {
     const { adapter, ruleType } = req.query;
 
     if (!adapter) {
       return res.status(400).json({
-        error: "Missing adapter parameter",
+        error: 'Missing adapter parameter',
       });
     }
 
@@ -210,7 +210,7 @@ router.get("/performance/insights", async (req: Request, res: Response) => {
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to get insights", 500);
+    handleRouteError(res, error, 'Failed to get insights', 500);
     return;
   }
 });
@@ -219,19 +219,19 @@ router.get("/performance/insights", async (req: Request, res: Response) => {
  * GET /api/v2/network-effects/performance/recommendations
  * Get recommended rules
  */
-router.get("/performance/recommendations", async (req: Request, res: Response) => {
+router.get('/performance/recommendations', async (req: Request, res: Response) => {
   try {
     const { adapter, useCase } = req.query;
 
     if (!adapter) {
       return res.status(400).json({
-        error: "Missing adapter parameter",
+        error: 'Missing adapter parameter',
       });
     }
 
     const recommendations = performanceTuningPools.getRecommendedRules(
       adapter as string,
-      (useCase as string) || "default"
+      (useCase as string) || 'default'
     );
 
     res.json({
@@ -239,7 +239,7 @@ router.get("/performance/recommendations", async (req: Request, res: Response) =
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to get recommendations", 500);
+    handleRouteError(res, error, 'Failed to get recommendations', 500);
     return;
   }
 });
@@ -248,7 +248,7 @@ router.get("/performance/recommendations", async (req: Request, res: Response) =
  * GET /api/v2/network-effects/stats
  * Get network effects statistics
  */
-router.get("/stats", async (_req: Request, res: Response) => {
+router.get('/stats', async (_req: Request, res: Response) => {
   try {
     const intelligenceInsights = crossCustomerIntelligence.getNetworkInsights();
     const performanceStats = performanceTuningPools.getStats();
@@ -261,7 +261,7 @@ router.get("/stats", async (_req: Request, res: Response) => {
     });
     return;
   } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to get stats", 500);
+    handleRouteError(res, error, 'Failed to get stats', 500);
     return;
   }
 });

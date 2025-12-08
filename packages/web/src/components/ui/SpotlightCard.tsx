@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useRef, useState, MouseEvent } from "react";
-import { cn } from "@/lib/utils";
+import { useRef, useState, MouseEvent } from 'react';
+import { cn } from '@/lib/utils';
 
 interface SpotlightCardProps {
   children: React.ReactNode;
@@ -9,16 +9,14 @@ interface SpotlightCardProps {
   spotlightColor?: string;
   spotlightSize?: number;
   borderColor?: string;
-  style?: React.CSSProperties;
 }
 
 export function SpotlightCard({
   children,
   className,
-  spotlightColor = "rgba(6, 182, 212, 0.3)",
+  spotlightColor = 'rgba(6, 182, 212, 0.3)',
   spotlightSize = 300,
-  borderColor = "rgba(168, 85, 247, 0.5)",
-  style,
+  borderColor = 'rgba(168, 85, 247, 0.5)',
 }: SpotlightCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -47,17 +45,16 @@ export function SpotlightCard({
     <div
       ref={cardRef}
       className={cn(
-        "relative group rounded-2xl p-6 overflow-hidden",
-        "glass transition-all duration-200",
-        "hover:shadow-2xl hover:shadow-electric-cyan/20",
+        'relative group rounded-2xl p-6 overflow-hidden',
+        'glass transition-all duration-200',
+        'hover:shadow-2xl hover:shadow-electric-cyan/20',
         className
       )}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       style={{
-        cursor: "pointer",
-        ...style,
+        cursor: 'pointer',
       }}
     >
       {/* Spotlight effect */}
@@ -74,11 +71,11 @@ export function SpotlightCard({
           className="absolute inset-0 rounded-2xl pointer-events-none"
           style={{
             background: `radial-gradient(${spotlightSize * 1.5}px circle at ${mousePosition.x}px ${mousePosition.y}px, ${borderColor}, transparent 60%)`,
-            WebkitMaskImage: "linear-gradient(#fff, #fff), linear-gradient(#fff, #fff)",
-            WebkitMaskComposite: "xor",
-            maskImage: "linear-gradient(#fff, #fff), linear-gradient(#fff, #fff)",
-            maskComposite: "exclude",
-            padding: "1px",
+            WebkitMaskImage: 'linear-gradient(#fff, #fff), linear-gradient(#fff, #fff)',
+            WebkitMaskComposite: 'xor',
+            maskImage: 'linear-gradient(#fff, #fff), linear-gradient(#fff, #fff)',
+            maskComposite: 'exclude',
+            padding: '1px',
           }}
         />
       )}

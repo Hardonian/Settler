@@ -4,36 +4,28 @@ import Settler from "@settler/sdk";
 
 const webhooksCommand = new Command("webhooks");
 
-webhooksCommand.description("Manage webhooks").alias("webhook");
-
-interface WebhookListOptions {
-  parent?: {
-    apiKey?: string;
-    baseUrl?: string;
-  };
-}
+webhooksCommand
+  .description("Manage webhooks")
+  .alias("webhook");
 
 webhooksCommand
   .command("list")
   .description("List all webhooks")
-  .action(async (options: WebhookListOptions) => {
+  .action(async (options) => {
     try {
-      const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey;
+      const apiKey = process.env.SETTLER_API_KEY || options.parent.apiKey;
       if (!apiKey) {
         console.error(chalk.red("Error: API key required"));
         process.exit(1);
       }
 
-      const clientConfig: { apiKey: string; baseUrl?: string } = {
+      const client = new Settler({
         apiKey,
-      };
-      if (options.parent?.baseUrl) {
-        clientConfig.baseUrl = options.parent.baseUrl;
-      }
-      const client = new Settler(clientConfig);
+        baseUrl: options.parent.baseUrl,
+      });
 
       const response = await client.webhooks.list();
-
+      
       if (response.data.length === 0) {
         console.log(chalk.yellow("No webhooks found."));
         return;
@@ -48,9 +40,7 @@ webhooksCommand
         console.log();
       });
     } catch (error) {
-      console.error(
-        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
-      );
+      console.error(chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`));
       process.exit(1);
     }
   });

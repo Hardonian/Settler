@@ -1,17 +1,17 @@
 /**
  * Google Analytics 4 Provider
- *
+ * 
  * Integration with Google Analytics 4 (gtag)
  */
 
-import type { AnalyticsProvider } from "../types";
+import type { AnalyticsProvider } from '../types';
 
 declare global {
   interface Window {
     gtag?: (
-      command: "config" | "event" | "set" | "js",
-      targetIdOrConfig: string | Date | Record<string, any>,
-      configOrValue?: any
+      command: 'config' | 'event' | 'set' | 'js',
+      targetId: string | Date,
+      config?: Record<string, any>
     ) => void;
     dataLayer?: any[];
   }
@@ -22,31 +22,29 @@ class GA4Provider implements AnalyticsProvider {
   private initialized = false;
 
   constructor(measurementId?: string) {
-    this.measurementId = measurementId || process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || "";
+    this.measurementId = measurementId || process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || '';
   }
 
   init() {
-    if (typeof window === "undefined" || !this.measurementId) return;
+    if (typeof window === 'undefined' || !this.measurementId) return;
     if (this.initialized) return;
 
     // Initialize dataLayer
     window.dataLayer = window.dataLayer || [];
-
+    
     // Load gtag script
-    const script = document.createElement("script");
+    const script = document.createElement('script');
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${this.measurementId}`;
     document.head.appendChild(script);
 
     // Initialize gtag
-    window.gtag = function (...args: unknown[]) {
-      if (window.dataLayer) {
-        window.dataLayer.push(args);
-      }
+    window.gtag = function() {
+      window.dataLayer.push(arguments);
     };
 
-    window.gtag("js", new Date());
-    window.gtag("config", this.measurementId, {
+    window.gtag('js', new Date());
+    window.gtag('config', this.measurementId, {
       page_path: window.location.pathname,
     });
 
@@ -54,9 +52,9 @@ class GA4Provider implements AnalyticsProvider {
   }
 
   trackPageView(route: string, properties?: Record<string, any>) {
-    if (typeof window === "undefined" || !window.gtag) return;
-
-    window.gtag("event", "page_view", {
+    if (typeof window === 'undefined' || !window.gtag) return;
+    
+    window.gtag('event', 'page_view', {
       page_path: route,
       page_title: properties?.title || document.title,
       ...properties,
@@ -64,17 +62,17 @@ class GA4Provider implements AnalyticsProvider {
   }
 
   trackEvent(name: string, payload?: Record<string, any>) {
-    if (typeof window === "undefined" || !window.gtag) return;
-
-    window.gtag("event", name, payload || {});
+    if (typeof window === 'undefined' || !window.gtag) return;
+    
+    window.gtag('event', name, payload || {});
   }
 
   trackError(error: Error | string, metadata?: Record<string, any>) {
-    if (typeof window === "undefined" || !window.gtag) return;
-
-    const errorMessage = typeof error === "string" ? error : error.message;
-
-    window.gtag("event", "exception", {
+    if (typeof window === 'undefined' || !window.gtag) return;
+    
+    const errorMessage = typeof error === 'string' ? error : error.message;
+    
+    window.gtag('event', 'exception', {
       description: errorMessage,
       fatal: false,
       ...metadata,
@@ -82,18 +80,18 @@ class GA4Provider implements AnalyticsProvider {
   }
 
   identify(userId: string, traits?: Record<string, any>) {
-    if (typeof window === "undefined" || !window.gtag) return;
-
-    window.gtag("set", { user_id: userId });
+    if (typeof window === 'undefined' || !window.gtag) return;
+    
+    window.gtag('set', 'user_id', userId);
     if (traits) {
-      window.gtag("set", { user_properties: traits });
+      window.gtag('set', 'user_properties', traits);
     }
   }
 
   setUserProperties(properties: Record<string, any>) {
-    if (typeof window === "undefined" || !window.gtag) return;
-
-    window.gtag("set", "user_properties", properties);
+    if (typeof window === 'undefined' || !window.gtag) return;
+    
+    window.gtag('set', 'user_properties', properties);
   }
 }
 

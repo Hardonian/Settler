@@ -1,9 +1,9 @@
 /**
  * Visual Regression Tests
- *
+ * 
  * These tests capture screenshots of critical pages and components
  * to detect visual regressions in the UI.
- *
+ * 
  * To update baselines after intentional changes:
  *   npx playwright test --update-snapshots
  */
@@ -17,7 +17,7 @@ test.describe("Visual Regression - API Pages", () => {
   test("health check endpoint response", async ({ page }) => {
     await page.goto(`${API_BASE_URL}/health`);
     await page.waitForLoadState("networkidle");
-
+    
     // Take screenshot of health check response
     await expect(page).toHaveScreenshot("health-check.json", {
       fullPage: true,
@@ -49,7 +49,7 @@ test.describe("Visual Regression - Web Pages", () => {
       await page.goto(`${WEB_BASE_URL}/`);
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(1000); // Wait for animations
-
+      
       await expect(page).toHaveScreenshot("landing-page.png", {
         fullPage: true,
         animations: "disabled",
@@ -64,7 +64,7 @@ test.describe("Visual Regression - Web Pages", () => {
       await page.goto(`${WEB_BASE_URL}/dashboard`);
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(1000);
-
+      
       await expect(page).toHaveScreenshot("dashboard-page.png", {
         fullPage: true,
         animations: "disabled",
@@ -79,7 +79,7 @@ test.describe("Visual Regression - Web Pages", () => {
       await page.goto(`${WEB_BASE_URL}/pricing`);
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(1000);
-
+      
       await expect(page).toHaveScreenshot("pricing-page.png", {
         fullPage: true,
         animations: "disabled",
@@ -93,7 +93,7 @@ test.describe("Visual Regression - Web Pages", () => {
     try {
       await page.goto(`${WEB_BASE_URL}/`);
       await page.waitForLoadState("networkidle");
-
+      
       // Capture just the navigation
       const nav = page.locator("nav").first();
       await expect(nav).toHaveScreenshot("navigation.png", {
@@ -108,11 +108,11 @@ test.describe("Visual Regression - Web Pages", () => {
     try {
       await page.goto(`${WEB_BASE_URL}/`);
       await page.waitForLoadState("networkidle");
-
+      
       // Scroll to footer
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       await page.waitForTimeout(500);
-
+      
       const footer = page.locator("footer").first();
       await expect(footer).toHaveScreenshot("footer.png", {
         animations: "disabled",
@@ -132,10 +132,10 @@ test.describe("Visual Regression - Component States", () => {
     try {
       await page.goto(`${WEB_BASE_URL}/`);
       await page.waitForLoadState("networkidle");
-
+      
       // Find a button and capture it
       const button = page.locator("button").first();
-      if ((await button.count()) > 0) {
+      if (await button.count() > 0) {
         await expect(button).toHaveScreenshot("button-default.png", {
           animations: "disabled",
         });
@@ -151,10 +151,10 @@ test.describe("Visual Regression - Component States", () => {
     try {
       await page.goto(`${WEB_BASE_URL}/`);
       await page.waitForLoadState("networkidle");
-
+      
       // Find a card component
       const card = page.locator("[class*='card'], [class*='Card']").first();
-      if ((await card.count()) > 0) {
+      if (await card.count() > 0) {
         await expect(card).toHaveScreenshot("card-component.png", {
           animations: "disabled",
         });
@@ -181,7 +181,7 @@ test.describe("Visual Regression - Responsive Design", () => {
         await page.goto(`${WEB_BASE_URL}/`);
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(1000);
-
+        
         await expect(page).toHaveScreenshot(`landing-${viewport.name}.png`, {
           fullPage: true,
           animations: "disabled",

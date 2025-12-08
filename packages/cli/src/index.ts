@@ -9,7 +9,10 @@ import { debugCommand } from "./commands/debug";
 
 const program = new Command();
 
-program.name("settler").description("CLI tool for Settler API").version("1.0.0");
+program
+  .name("settler")
+  .description("CLI tool for Settler API")
+  .version("1.0.0");
 
 program
   .option("-k, --api-key <key>", "API key")

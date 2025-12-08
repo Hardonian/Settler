@@ -1,15 +1,15 @@
 /**
  * Dashboard Hooks
- *
+ * 
  * React Query hooks for dashboard data.
  */
 
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/data/queryKeys";
-import { getDashboardMetrics, getExternalMetricsData } from "@/lib/data/dashboard";
-import type { DashboardMetrics } from "@/lib/data/dashboard";
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/data/queryKeys';
+import { getDashboardMetrics, getExternalMetricsData } from '@/lib/data/dashboard';
+import type { DashboardMetrics } from '@/lib/data/dashboard';
 
 /**
  * Hook to fetch dashboard metrics

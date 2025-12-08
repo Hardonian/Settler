@@ -1,19 +1,13 @@
 /**
  * Webhook Ingestion Service
- *
+ * 
  * Handles webhook ingestion with signature verification, idempotency,
  * and retry logic as specified in the Product & Technical Specification.
  */
 
-import {
-  EnhancedAdapter,
-  NormalizedEvent,
-  StripeEnhancedAdapter,
-  PayPalEnhancedAdapter,
-  SquareEnhancedAdapter,
-} from "@settler/adapters";
-import { Transaction, Settlement, RefundDispute } from "@settler/types";
-import { query } from "../../db";
+import { EnhancedAdapter, NormalizedEvent, StripeEnhancedAdapter, PayPalEnhancedAdapter, SquareEnhancedAdapter } from '@settler/adapters';
+import { Transaction, Settlement, RefundDispute } from '@settler/types';
+import { query } from '../../db';
 
 export interface WebhookIngestionResult {
   success: boolean;
@@ -26,11 +20,11 @@ export class WebhookIngestionService {
 
   constructor() {
     this.adapters = new Map();
-
+    
     // Register adapters
-    this.adapters.set("stripe", new StripeEnhancedAdapter());
-    this.adapters.set("paypal", new PayPalEnhancedAdapter());
-    this.adapters.set("square", new SquareEnhancedAdapter());
+    this.adapters.set('stripe', new StripeEnhancedAdapter());
+    this.adapters.set('paypal', new PayPalEnhancedAdapter());
+    this.adapters.set('square', new SquareEnhancedAdapter());
   }
 
   /**
@@ -51,7 +45,7 @@ export class WebhookIngestionService {
     tenantId: string
   ): Promise<WebhookIngestionResult> {
     const adapter = this.adapters.get(adapterName);
-
+    
     if (!adapter) {
       return {
         success: false,
@@ -61,28 +55,26 @@ export class WebhookIngestionService {
     }
 
     // Verify webhook signature
-    const payloadString =
-      typeof payload === "string"
-        ? payload
-        : Buffer.isBuffer(payload)
-          ? payload.toString()
-          : JSON.stringify(payload);
-
+    const payloadString = typeof payload === 'string' 
+      ? payload 
+      : Buffer.isBuffer(payload) 
+        ? payload.toString() 
+        : JSON.stringify(payload);
+    
     const isValid = adapter.verifyWebhook(payloadString, signature, secret);
-
+    
     if (!isValid) {
       return {
         success: false,
         events: [],
-        errors: ["Invalid webhook signature"],
+        errors: ['Invalid webhook signature'],
       };
     }
 
     // Parse payload if needed
-    const payloadObj =
-      typeof payload === "object" && !Buffer.isBuffer(payload)
-        ? payload
-        : JSON.parse(payloadString);
+    const payloadObj = typeof payload === 'object' && !Buffer.isBuffer(payload)
+      ? payload
+      : JSON.parse(payloadString);
 
     // Check idempotency
     const idempotencyKey = this.extractIdempotencyKey(payloadObj, adapterName);
@@ -101,7 +93,7 @@ export class WebhookIngestionService {
     try {
       events = adapter.normalizeWebhook(payloadObj, tenantId);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Unknown error";
+      const message = error instanceof Error ? error.message : 'Unknown error';
       return {
         success: false,
         events: [],
@@ -118,7 +110,7 @@ export class WebhookIngestionService {
       try {
         await this.processEvent(event, tenantId);
       } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : "Unknown error";
+        const message = error instanceof Error ? error.message : 'Unknown error';
         errors.push(`Failed to process event ${event.type}: ${message}`);
       }
     }
@@ -155,10 +147,7 @@ export class WebhookIngestionService {
     }
 
     if (event.fxConversion) {
-      await this.storeFXConversion(
-        event.fxConversion as unknown as Record<string, unknown>,
-        tenantId
-      );
+      await this.storeFXConversion(event.fxConversion as unknown as Record<string, unknown>, tenantId);
     }
   }
 
@@ -265,10 +254,7 @@ export class WebhookIngestionService {
   /**
    * Store FX conversion
    */
-  private async storeFXConversion(
-    fxConversion: Record<string, unknown>,
-    tenantId: string
-  ): Promise<void> {
+  private async storeFXConversion(fxConversion: Record<string, unknown>, tenantId: string): Promise<void> {
     await query(
       `INSERT INTO fx_conversions (
         id, tenant_id, transaction_id, from_currency, to_currency,
@@ -311,38 +297,24 @@ export class WebhookIngestionService {
   /**
    * Extract idempotency key from payload
    */
-  private extractIdempotencyKey(
-    payload: Record<string, unknown>,
-    adapterName: string
-  ): string | null {
+  private extractIdempotencyKey(payload: Record<string, unknown>, adapterName: string): string | null {
     // Provider-specific idempotency key extraction
     switch (adapterName) {
-      case "stripe":
-        return typeof payload.id === "string" ? payload.id : null;
-      case "paypal":
-        return typeof payload.id === "string"
-          ? payload.id
-          : typeof payload.webhook_id === "string"
-            ? payload.webhook_id
-            : null;
-      case "square":
-        return typeof payload.event_id === "string"
-          ? payload.event_id
-          : typeof payload.id === "string"
-            ? payload.id
-            : null;
+      case 'stripe':
+        return (typeof payload.id === 'string' ? payload.id : null);
+      case 'paypal':
+        return (typeof payload.id === 'string' ? payload.id : (typeof payload.webhook_id === 'string' ? payload.webhook_id : null));
+      case 'square':
+        return (typeof payload.event_id === 'string' ? payload.event_id : (typeof payload.id === 'string' ? payload.id : null));
       default:
-        return typeof payload.id === "string" ? payload.id : null;
+        return (typeof payload.id === 'string' ? payload.id : null);
     }
   }
 
   /**
    * Check if webhook was already processed (idempotency)
    */
-  private async checkIdempotency(
-    key: string,
-    tenantId: string
-  ): Promise<{ events: NormalizedEvent[] } | null> {
+  private async checkIdempotency(key: string, tenantId: string): Promise<{ events: NormalizedEvent[] } | null> {
     const result = await query(
       `SELECT payload FROM webhook_payloads 
        WHERE tenant_id = $1 AND payload->>'id' = $2 AND processed = true
@@ -361,11 +333,7 @@ export class WebhookIngestionService {
   /**
    * Store idempotency key
    */
-  private async storeIdempotencyKey(
-    key: string,
-    tenantId: string,
-    events: NormalizedEvent[]
-  ): Promise<void> {
+  private async storeIdempotencyKey(key: string, tenantId: string, events: NormalizedEvent[]): Promise<void> {
     // Store in idempotency_keys table
     await query(
       `INSERT INTO idempotency_keys (user_id, tenant_id, key, response, expires_at)

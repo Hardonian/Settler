@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface PricingFeature {
   text: string;
@@ -45,7 +45,7 @@ export function AnimatedPricingCard({ plan, index }: AnimatedPricingCardProps) {
           setIsVisible(true);
         }
       },
-      { threshold: 0.1, rootMargin: "50px" }
+      { threshold: 0.1, rootMargin: '50px' }
     );
 
     if (cardRef.current) {
@@ -60,7 +60,8 @@ export function AnimatedPricingCard({ plan, index }: AnimatedPricingCardProps) {
   }, []);
 
   const prefersReducedMotion =
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const animationDelay = prefersReducedMotion ? 0 : index * 150;
 
@@ -69,12 +70,14 @@ export function AnimatedPricingCard({ plan, index }: AnimatedPricingCardProps) {
       ref={cardRef}
       className={`
         relative bg-white dark:bg-slate-900 border-2 transition-all duration-700
-        ${
-          plan.popular
-            ? "border-blue-500 dark:border-blue-600 shadow-2xl scale-105"
-            : "border-slate-200 dark:border-slate-800"
+        ${plan.popular
+          ? 'border-blue-500 dark:border-blue-600 shadow-2xl scale-105'
+          : 'border-slate-200 dark:border-slate-800'
         }
-        ${isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-95"}
+        ${isVisible
+          ? 'opacity-100 translate-y-0 scale-100'
+          : 'opacity-0 translate-y-8 scale-95'
+        }
         hover:shadow-xl hover:shadow-blue-500/10
         hover:-translate-y-2
         focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2
@@ -111,14 +114,22 @@ export function AnimatedPricingCard({ plan, index }: AnimatedPricingCardProps) {
           <span className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             {plan.price}
           </span>
-          {plan.period && <span className="text-slate-600 dark:text-slate-400">{plan.period}</span>}
+          {plan.period && (
+            <span className="text-slate-600 dark:text-slate-400">
+              {plan.period}
+            </span>
+          )}
         </div>
         {plan.originalPrice && (
           <div className="mt-2">
-            <span className="text-sm text-slate-500 line-through">{plan.originalPrice}/year</span>
+            <span className="text-sm text-slate-500 line-through">
+              {plan.originalPrice}/year
+            </span>
           </div>
         )}
-        <p className="text-sm text-slate-600 dark:text-slate-400 mt-4">{plan.description}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400 mt-4">
+          {plan.description}
+        </p>
       </CardHeader>
       <CardContent>
         <ul className="space-y-4 mb-8" role="list" aria-label={`${plan.name} features`}>
@@ -147,10 +158,9 @@ export function AnimatedPricingCard({ plan, index }: AnimatedPricingCardProps) {
           className={`
             w-full transition-all transform hover:scale-105
             focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-            ${
-              plan.popular
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-                : "bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+            ${plan.popular
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
+              : 'bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700'
             }
           `}
           size="lg"

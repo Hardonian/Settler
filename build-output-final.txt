@@ -1,0 +1,244 @@
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
+
+> settler-monorepo@1.0.0 build
+> turbo run build
+
+• Packages in scope: @settler/adapters, @settler/api, @settler/cli, @settler/protocol, @settler/react-settler, @settler/sdk, @settler/types, @settler/web
+• Running build in 8 packages
+• Remote caching disabled
+@settler/sdk:typecheck: cache hit, replaying logs 0ef70f460daa9635
+@settler/sdk:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/sdk:typecheck: npm warn config `--include=optional` to include them.
+@settler/sdk:typecheck: npm warn config
+@settler/sdk:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/sdk:typecheck: 
+@settler/sdk:typecheck: > @settler/sdk@1.0.0 typecheck
+@settler/sdk:typecheck: > tsc --noEmit
+@settler/sdk:typecheck: 
+@settler/types:typecheck: cache hit, replaying logs 2edf491d25c093c6
+@settler/types:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/types:typecheck: npm warn config `--include=optional` to include them.
+@settler/types:typecheck: npm warn config
+@settler/types:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/types:typecheck: 
+@settler/types:typecheck: > @settler/types@1.0.0 typecheck
+@settler/types:typecheck: > tsc --noEmit
+@settler/types:typecheck: 
+@settler/protocol:typecheck: cache hit, replaying logs b2b8dd2a3782251f
+@settler/protocol:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/protocol:typecheck: npm warn config `--include=optional` to include them.
+@settler/protocol:typecheck: npm warn config
+@settler/protocol:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/protocol:typecheck: 
+@settler/protocol:typecheck: > @settler/protocol@0.1.0 typecheck
+@settler/protocol:typecheck: > tsc --noEmit
+@settler/protocol:typecheck: 
+@settler/types:build: cache hit, replaying logs aa5859c73cc3cccd
+@settler/types:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/types:build: npm warn config `--include=optional` to include them.
+@settler/types:build: npm warn config
+@settler/types:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/types:build: 
+@settler/types:build: > @settler/types@1.0.0 build
+@settler/types:build: > tsc
+@settler/types:build: 
+@settler/adapters:typecheck: cache hit, replaying logs fd7845486da1eee5
+@settler/adapters:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/adapters:typecheck: npm warn config `--include=optional` to include them.
+@settler/adapters:typecheck: npm warn config
+@settler/adapters:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/adapters:typecheck: 
+@settler/adapters:typecheck: > @settler/adapters@1.0.0 typecheck
+@settler/adapters:typecheck: > tsc --noEmit
+@settler/adapters:typecheck: 
+@settler/protocol:build: cache hit, replaying logs 25cf91ac5fb541f2
+@settler/protocol:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/protocol:build: npm warn config `--include=optional` to include them.
+@settler/protocol:build: npm warn config
+@settler/protocol:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/protocol:build: 
+@settler/protocol:build: > @settler/protocol@0.1.0 build
+@settler/protocol:build: > tsc
+@settler/protocol:build: 
+@settler/react-settler:typecheck: cache miss, executing 1a47170cbf01d980
+@settler/sdk:build: cache hit, replaying logs b8fe7df153082bd0
+@settler/sdk:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/sdk:build: npm warn config `--include=optional` to include them.
+@settler/sdk:build: npm warn config
+@settler/sdk:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/sdk:build: 
+@settler/sdk:build: > @settler/sdk@1.0.0 build
+@settler/sdk:build: > tsc
+@settler/sdk:build: 
+@settler/adapters:build: cache hit, replaying logs 06561cd80ec02221
+@settler/cli:typecheck: cache hit, replaying logs ec67339c1c87469d
+@settler/adapters:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/adapters:build: npm warn config `--include=optional` to include them.
+@settler/adapters:build: npm warn config
+@settler/cli:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/cli:typecheck: npm warn config `--include=optional` to include them.
+@settler/cli:typecheck: npm warn config
+@settler/cli:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/cli:typecheck: 
+@settler/cli:typecheck: > @settler/cli@1.0.0 typecheck
+@settler/cli:typecheck: > tsc --noEmit
+@settler/cli:typecheck: 
+@settler/adapters:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/adapters:build: 
+@settler/adapters:build: > @settler/adapters@1.0.0 build
+@settler/adapters:build: > tsc
+@settler/adapters:build: 
+@settler/cli:build: cache hit, replaying logs 0baf55b21e476b2c
+@settler/cli:build: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/cli:build: npm warn config `--include=optional` to include them.
+@settler/cli:build: npm warn config
+@settler/cli:build: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/cli:build: 
+@settler/cli:build: > @settler/cli@1.0.0 build
+@settler/cli:build: > tsc
+@settler/cli:build: 
+@settler/api:typecheck: cache miss, executing f7812bfcdc42283f
+@settler/react-settler:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/react-settler:typecheck: npm warn config `--include=optional` to include them.
+@settler/react-settler:typecheck: npm warn config
+@settler/react-settler:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/api:typecheck: npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+@settler/api:typecheck: npm warn config `--include=optional` to include them.
+@settler/api:typecheck: npm warn config
+@settler/api:typecheck: npm warn config       Default value does install optional deps unless otherwise omitted.
+@settler/react-settler:typecheck: 
+@settler/react-settler:typecheck: > @settler/react-settler@0.1.0 typecheck
+@settler/react-settler:typecheck: > tsc --noEmit
+@settler/react-settler:typecheck: 
+@settler/api:typecheck: 
+@settler/api:typecheck: > @settler/api@1.0.0 typecheck
+@settler/api:typecheck: > tsc --noEmit
+@settler/api:typecheck: 
+@settler/react-settler:typecheck: ../protocol/src/index.ts(253,8): error TS6059: File '/workspace/packages/protocol/src/security.ts' is not under 'rootDir' '/workspace/packages/react-settler'. 'rootDir' is expected to contain all source files.
+@settler/react-settler:typecheck:   The file is in the program because:
+@settler/react-settler:typecheck:     Imported via './security' from file '/workspace/packages/protocol/src/index.ts'
+@settler/react-settler:typecheck:     Imported via './security' from file '/workspace/packages/protocol/src/index.ts'
+@settler/react-settler:typecheck: ../protocol/src/index.ts(253,8): error TS6307: File '/workspace/packages/protocol/src/security.ts' is not listed within the file list of project '/workspace/packages/react-settler/tsconfig.json'. Projects must list all files or use an 'include' pattern.
+@settler/react-settler:typecheck:   The file is in the program because:
+@settler/react-settler:typecheck:     Imported via './security' from file '/workspace/packages/protocol/src/index.ts'
+@settler/react-settler:typecheck:     Imported via './security' from file '/workspace/packages/protocol/src/index.ts'
+@settler/react-settler:typecheck: ../protocol/src/index.ts(267,8): error TS6059: File '/workspace/packages/protocol/src/validation.ts' is not under 'rootDir' '/workspace/packages/react-settler'. 'rootDir' is expected to contain all source files.
+@settler/react-settler:typecheck:   The file is in the program because:
+@settler/react-settler:typecheck:     Imported via './validation' from file '/workspace/packages/protocol/src/index.ts'
+@settler/react-settler:typecheck:     Imported via './validation' from file '/workspace/packages/protocol/src/index.ts'
+@settler/react-settler:typecheck: ../protocol/src/index.ts(267,8): error TS6307: File '/workspace/packages/protocol/src/validation.ts' is not listed within the file list of project '/workspace/packages/react-settler/tsconfig.json'. Projects must list all files or use an 'include' pattern.
+@settler/react-settler:typecheck:   The file is in the program because:
+@settler/react-settler:typecheck:     Imported via './validation' from file '/workspace/packages/protocol/src/index.ts'
+@settler/react-settler:typecheck:     Imported via './validation' from file '/workspace/packages/protocol/src/index.ts'
+@settler/react-settler:typecheck: ../protocol/src/index.ts(278,8): error TS6059: File '/workspace/packages/protocol/src/telemetry.ts' is not under 'rootDir' '/workspace/packages/react-settler'. 'rootDir' is expected to contain all source files.
+@settler/react-settler:typecheck: ../protocol/src/index.ts(278,8): error TS6307: File '/workspace/packages/protocol/src/telemetry.ts' is not listed within the file list of project '/workspace/packages/react-settler/tsconfig.json'. Projects must list all files or use an 'include' pattern.
+@settler/react-settler:typecheck: ../protocol/src/index.ts(287,8): error TS6059: File '/workspace/packages/protocol/src/errors.ts' is not under 'rootDir' '/workspace/packages/react-settler'. 'rootDir' is expected to contain all source files.
+@settler/react-settler:typecheck: ../protocol/src/index.ts(287,8): error TS6307: File '/workspace/packages/protocol/src/errors.ts' is not listed within the file list of project '/workspace/packages/react-settler/tsconfig.json'. Projects must list all files or use an 'include' pattern.
+@settler/react-settler:typecheck: ../protocol/src/index.ts(301,8): error TS6059: File '/workspace/packages/protocol/src/utils.ts' is not under 'rootDir' '/workspace/packages/react-settler'. 'rootDir' is expected to contain all source files.
+@settler/react-settler:typecheck: ../protocol/src/index.ts(301,8): error TS6307: File '/workspace/packages/protocol/src/utils.ts' is not listed within the file list of project '/workspace/packages/react-settler/tsconfig.json'. Projects must list all files or use an 'include' pattern.
+@settler/react-settler:typecheck: src/compiler.tsx(12,8): error TS6059: File '/workspace/packages/protocol/src/index.ts' is not under 'rootDir' '/workspace/packages/react-settler'. 'rootDir' is expected to contain all source files.
+@settler/react-settler:typecheck:   The file is in the program because:
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/compiler.tsx'
+@settler/react-settler:typecheck:     Imported via './index' from file '/workspace/packages/protocol/src/validation.ts'
+@settler/react-settler:typecheck:     Imported via './index' from file '/workspace/packages/protocol/src/utils.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/context.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/TransactionTable.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/hooks/useTelemetry.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/TransactionTable.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/ExceptionTable.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/RuleSet.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/MatchRule.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/ErrorBoundary.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/hooks/useSecurity.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/VirtualizedTable.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/hooks/useValidation.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/utils/performance.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/utils/testing.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/utils/webhooks.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/adapters/mcp.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/adapters/shopify.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/adapters/stripe.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/MobileDashboard.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/index.ts'
+@settler/react-settler:typecheck: src/compiler.tsx(12,8): error TS6307: File '/workspace/packages/protocol/src/index.ts' is not listed within the file list of project '/workspace/packages/react-settler/tsconfig.json'. Projects must list all files or use an 'include' pattern.
+@settler/react-settler:typecheck:   The file is in the program because:
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/compiler.tsx'
+@settler/react-settler:typecheck:     Imported via './index' from file '/workspace/packages/protocol/src/validation.ts'
+@settler/react-settler:typecheck:     Imported via './index' from file '/workspace/packages/protocol/src/utils.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/context.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/TransactionTable.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/hooks/useTelemetry.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/TransactionTable.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/ExceptionTable.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/RuleSet.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/MatchRule.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/ErrorBoundary.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/hooks/useSecurity.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/VirtualizedTable.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/hooks/useValidation.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/utils/performance.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/utils/testing.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/utils/webhooks.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/adapters/mcp.ts'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/adapters/shopify.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/adapters/stripe.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/components/MobileDashboard.tsx'
+@settler/react-settler:typecheck:     Imported via '@settler/protocol' from file '/workspace/packages/react-settler/src/index.ts'
+@settler/react-settler:typecheck: src/compiler.tsx(25,3): error TS6133: 'component' is declared but its value is never read.
+@settler/react-settler:typecheck: src/compiler.tsx(45,9): error TS6133: 'Wrapper' is declared but its value is never read.
+@settler/react-settler:typecheck: src/components/ErrorBoundary.tsx(6,8): error TS6133: 'React' is declared but its value is never read.
+@settler/react-settler:typecheck: src/components/MobileDashboard.tsx(38,10): error TS6133: 'filters' is declared but its value is never read.
+@settler/react-settler:typecheck: src/components/MobileDashboard.tsx(53,6): error TS2375: Type '{ children: Element; className: string | undefined; }' is not assignable to type 'ReconciliationDashboardProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+@settler/react-settler:typecheck:   Types of property 'className' are incompatible.
+@settler/react-settler:typecheck:     Type 'string | undefined' is not assignable to type 'string'.
+@settler/react-settler:typecheck:       Type 'undefined' is not assignable to type 'string'.
+@settler/react-settler:typecheck: src/components/MobileDashboard.tsx(194,16): error TS2375: Type '{ transactions: ReconciliationTransaction[]; onSelect: ((tx: ReconciliationTransaction) => void) | undefined; }' is not assignable to type 'TransactionTableProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+@settler/react-settler:typecheck:   Types of property 'onSelect' are incompatible.
+@settler/react-settler:typecheck:     Type '((tx: ReconciliationTransaction) => void) | undefined' is not assignable to type '(transaction: ReconciliationTransaction) => void'.
+@settler/react-settler:typecheck:       Type 'undefined' is not assignable to type '(transaction: ReconciliationTransaction) => void'.
+@settler/react-settler:typecheck: src/components/MobileDashboard.tsx(226,16): error TS2375: Type '{ exceptions: ReconciliationException[]; onResolve: ((exc: ReconciliationException) => void) | undefined; }' is not assignable to type 'ExceptionTableProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+@settler/react-settler:typecheck:   Types of property 'onResolve' are incompatible.
+@settler/react-settler:typecheck:     Type '((exc: ReconciliationException) => void) | undefined' is not assignable to type '(exception: ReconciliationException) => void'.
+@settler/react-settler:typecheck:       Type 'undefined' is not assignable to type '(exception: ReconciliationException) => void'.
+@settler/react-settler:typecheck: src/components/ReconciliationDashboard.tsx(6,8): error TS6133: 'React' is declared but its value is never read.
+@settler/react-settler:typecheck: src/components/ReconciliationDashboard.tsx(21,6): error TS2375: Type '{ children: Element; mode: CompilationMode | undefined; config: Partial<ReconciliationConfig> | undefined; }' is not assignable to type 'CompilationProviderProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+@settler/react-settler:typecheck:   Types of property 'mode' are incompatible.
+@settler/react-settler:typecheck:     Type 'CompilationMode | undefined' is not assignable to type 'CompilationMode'.
+@settler/react-settler:typecheck:       Type 'undefined' is not assignable to type 'CompilationMode'.
+@settler/react-settler:typecheck: src/components/RuleSet.tsx(6,8): error TS6133: 'React' is declared but its value is never read.
+@settler/react-settler:typecheck: src/components/RuleSet.tsx(31,9): error TS6133: 'rules' is declared but its value is never read.
+@settler/react-settler:typecheck: src/components/SearchBar.tsx(6,40): error TS6133: 'useMemo' is declared but its value is never read.
+@settler/react-settler:typecheck: src/hooks/useTelemetry.ts(83,11): error TS2375: Type '{ id: string; timestamp: string; type: "component.interaction"; name: string; properties: Record<string, unknown> | undefined; context: { component?: string; }; }' is not assignable to type 'TelemetryEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+@settler/react-settler:typecheck:   Types of property 'properties' are incompatible.
+@settler/react-settler:typecheck:     Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
+@settler/react-settler:typecheck:       Type 'undefined' is not assignable to type 'Record<string, unknown>'.
+@settler/react-settler:typecheck: src/hooks/useTelemetry.ts(102,11): error TS2375: Type '{ timestamp: string; context?: Record<string, unknown> | undefined; component?: string; error: Error; }' is not assignable to type 'ErrorTelemetry' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+@settler/react-settler:typecheck:   Types of property 'context' are incompatible.
+@settler/react-settler:typecheck:     Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
+@settler/react-settler:typecheck:       Type 'undefined' is not assignable to type 'Record<string, unknown>'.
+@settler/react-settler:typecheck: src/hooks/useTelemetry.ts(123,7): error TS2375: Type '{ component?: string | undefined; }' is not assignable to type 'TelemetryContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+@settler/react-settler:typecheck:   Types of property 'component' are incompatible.
+@settler/react-settler:typecheck:     Type 'string | undefined' is not assignable to type 'string'.
+@settler/react-settler:typecheck:       Type 'undefined' is not assignable to type 'string'.
+@settler/react-settler:typecheck: src/hooks/useValidation.ts(17,3): error TS6133: 'sanitizeString' is declared but its value is never read.
+@settler/react-settler:typecheck: src/utils/performance.ts(123,47): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+@settler/react-settler:typecheck: src/utils/performance.ts(125,3): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+@settler/react-settler:typecheck: npm error Lifecycle script `typecheck` failed with error:
+@settler/react-settler:typecheck: npm error code 2
+@settler/react-settler:typecheck: npm error path /workspace/packages/react-settler
+@settler/react-settler:typecheck: npm error workspace @settler/react-settler@0.1.0
+@settler/react-settler:typecheck: npm error location /workspace/packages/react-settler
+@settler/react-settler:typecheck: npm error command failed
+@settler/react-settler:typecheck: npm error command sh -c tsc --noEmit
+@settler/react-settler:typecheck: ERROR: command finished with error: command (/workspace/packages/react-settler) /home/ubuntu/.nvm/versions/node/v22.21.1/bin/npm run typecheck exited (2)
+@settler/react-settler#typecheck: command (/workspace/packages/react-settler) /home/ubuntu/.nvm/versions/node/v22.21.1/bin/npm run typecheck exited (2)
+
+ Tasks:    10 successful, 12 total
+Cached:    10 cached, 12 total
+  Time:    2.484s 
+Failed:    @settler/react-settler#typecheck
+
+ ERROR  run failed: command  exited (2)

@@ -3,8 +3,8 @@
  * Prevents cascading failures by opening circuit after threshold failures
  */
 
-import { CircuitBreaker, CircuitBreakerOptions } from "opossum";
-import { logError, logWarn, logInfo } from "../../utils/logger";
+import { CircuitBreaker, CircuitBreakerOptions } from 'opossum';
+import { logError, logWarn, logInfo } from '../../utils/logger';
 
 export interface CircuitBreakerConfig {
   timeout?: number;
@@ -17,7 +17,7 @@ const DEFAULT_CONFIG: Required<CircuitBreakerConfig> = {
   timeout: 30000, // 30 seconds
   errorThresholdPercentage: 50, // Open circuit after 50% failures
   resetTimeout: 60000, // Try again after 60 seconds
-  name: "circuit-breaker",
+  name: 'circuit-breaker',
 };
 
 /**
@@ -28,7 +28,7 @@ export function createCircuitBreaker<T extends unknown[], R>(
   config: CircuitBreakerConfig = {}
 ): CircuitBreaker<R> {
   const opts = { ...DEFAULT_CONFIG, ...config };
-
+  
   const breakerOptions: CircuitBreakerOptions = {
     timeout: opts.timeout,
     errorThresholdPercentage: opts.errorThresholdPercentage,
@@ -36,44 +36,43 @@ export function createCircuitBreaker<T extends unknown[], R>(
     name: opts.name,
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const breaker = new CircuitBreaker(fn as any, breakerOptions);
+  const breaker = new CircuitBreaker(fn, breakerOptions);
 
   // Event handlers
-  breaker.on("open", () => {
-    logWarn("Circuit breaker opened", {
+  breaker.on('open', () => {
+    logWarn('Circuit breaker opened', {
       name: opts.name,
       failures: breaker.stats.failures,
       fires: breaker.stats.fires,
     });
   });
 
-  breaker.on("halfOpen", () => {
-    logInfo("Circuit breaker half-open", {
+  breaker.on('halfOpen', () => {
+    logInfo('Circuit breaker half-open', {
       name: opts.name,
     });
   });
 
-  breaker.on("close", () => {
-    logInfo("Circuit breaker closed", {
+  breaker.on('close', () => {
+    logInfo('Circuit breaker closed', {
       name: opts.name,
     });
   });
 
-  breaker.on("reject", (error: unknown) => {
-    logWarn("Circuit breaker rejected request", {
+  breaker.on('reject', (error: Error) => {
+    logWarn('Circuit breaker rejected request', {
       name: opts.name,
-      error: error instanceof Error ? error.message : String(error),
+      error: error.message,
     });
   });
 
-  breaker.on("failure", (error: unknown) => {
-    logError("Circuit breaker failure", error instanceof Error ? error : new Error(String(error)), {
+  breaker.on('failure', (error: Error) => {
+    logError('Circuit breaker failure', error, {
       name: opts.name,
     });
   });
 
-  return breaker as CircuitBreaker<R>;
+  return breaker;
 }
 
 /**

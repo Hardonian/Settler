@@ -33,18 +33,14 @@ export interface IJobRepository {
    * @param limit - Items per page
    * @returns Jobs and total count
    */
-  findByUserId(
-    userId: string,
-    page: number,
-    limit: number
-  ): Promise<{ jobs: Job[]; total: number }>;
+  findByUserId(userId: string, page: number, limit: number): Promise<{ jobs: Job[]; total: number }>;
 
   /**
    * Create a new job
    * @param job - Job entity to create
    * @returns Created job with ID
    */
-  create(job: Omit<Job, "id" | "createdAt" | "updatedAt">): Promise<Job>;
+  create(job: Omit<Job, 'id' | 'createdAt' | 'updatedAt'>): Promise<Job>;
 
   /**
    * Update job status atomically with optimistic locking
@@ -54,12 +50,7 @@ export interface IJobRepository {
    * @param expectedVersion - Expected version for optimistic locking
    * @returns Updated job or null if version mismatch
    */
-  updateStatus(
-    id: string,
-    userId: string,
-    status: string,
-    expectedVersion: number
-  ): Promise<Job | null>;
+  updateStatus(id: string, userId: string, status: string, expectedVersion: number): Promise<Job | null>;
 
   /**
    * Delete job by ID

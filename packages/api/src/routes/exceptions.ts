@@ -19,8 +19,8 @@ const router = Router();
 const listExceptionsSchema = z.object({
   query: z.object({
     jobId: z.string().uuid().optional(),
-    resolution_status: z.enum(["open", "in_progress", "resolved", "dismissed"]).optional(),
-    category: z.string().optional(),
+        resolution_status: z.enum(['open', 'in_progress', 'resolved', 'dismissed']).optional(),
+        category: z.string().optional(),
     startDate: z.string().datetime().optional(),
     endDate: z.string().datetime().optional(),
     limit: z.string().regex(/^\d+$/).transform(Number).optional().default("50"),
@@ -33,7 +33,7 @@ const resolveExceptionSchema = z.object({
     id: z.string().uuid(),
   }),
   body: z.object({
-    resolution: z.enum(["matched", "manual", "ignored"]),
+    resolution: z.enum(['matched', 'manual', 'ignored']),
     notes: z.string().max(1000).optional(),
   }),
 });
@@ -41,7 +41,7 @@ const resolveExceptionSchema = z.object({
 const bulkResolveSchema = z.object({
   body: z.object({
     exceptionIds: z.array(z.string().uuid()).min(1).max(100),
-    resolution: z.enum(["matched", "manual", "ignored"]),
+    resolution: z.enum(['matched', 'manual', 'ignored']),
     notes: z.string().max(1000).optional(),
   }),
 });
@@ -57,7 +57,7 @@ router.get(
       const queryParams = listExceptionsSchema.parse({ query: req.query });
       const {
         jobId,
-        resolution_status = "open",
+        resolution_status = 'open',
         category,
         startDate,
         endDate,
@@ -99,7 +99,7 @@ router.get(
         values.push(new Date(endDate));
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
       // Get exceptions
       const exceptions = await query<{
@@ -137,29 +137,27 @@ router.get(
       );
 
       if (!countResult[0]) {
-        throw new Error("Failed to get exception count");
+        throw new Error('Failed to get exception count');
       }
       const total = parseInt(countResult[0].count);
 
       res.json({
-        data: exceptions
-          .map((e) => {
-            if (!e) return null;
-            return {
-              id: e.id,
-              jobId: e.job_id,
-              executionId: e.execution_id,
-              category: e.category,
-              severity: e.severity,
-              description: e.description,
-              status: e.resolution_status,
-              resolvedAt: e.resolved_at?.toISOString() || null,
-              resolvedBy: e.resolved_by || null,
-              notes: e.resolution_notes || null,
-              createdAt: e.created_at.toISOString(),
-            };
-          })
-          .filter((e) => e !== null),
+        data: exceptions.map((e) => {
+          if (!e) return null;
+          return {
+            id: e.id,
+            jobId: e.job_id,
+            executionId: e.execution_id,
+            category: e.category,
+            severity: e.severity,
+            description: e.description,
+            status: e.resolution_status,
+            resolvedAt: e.resolved_at?.toISOString() || null,
+            resolvedBy: e.resolved_by || null,
+            notes: e.resolution_notes || null,
+            createdAt: e.created_at.toISOString(),
+          };
+        }).filter((e) => e !== null),
         pagination: {
           limit,
           offset,
@@ -183,11 +181,7 @@ router.get(
       const userId = req.userId!;
 
       if (!id || !userId) {
-        throw new NotFoundError(
-          "Exception ID and User ID are required",
-          "exception",
-          id || "unknown"
-        );
+        throw new NotFoundError("Exception ID and User ID are required", "exception", id || "unknown");
       }
 
       const exceptions = await query<{
@@ -252,11 +246,7 @@ router.post(
       const userId = req.userId!;
 
       if (!id || !userId) {
-        throw new NotFoundError(
-          "Exception ID and User ID are required",
-          "exception",
-          id || "unknown"
-        );
+        throw new NotFoundError("Exception ID and User ID are required", "exception", id || "unknown");
       }
 
       // Verify ownership
@@ -273,14 +263,16 @@ router.post(
       }
 
       const existingException = existing[0];
-      if (existingException.status !== "pending") {
-        throw new ValidationError("Exception is already resolved", "status", [
-          {
-            field: "status",
+      if (existingException.status !== 'pending') {
+        throw new ValidationError(
+          "Exception is already resolved",
+          'status',
+          [{
+            field: 'status',
             message: `Exception is already ${existingException.status}`,
-            code: "ALREADY_RESOLVED",
-          },
-        ]);
+            code: 'ALREADY_RESOLVED',
+          }]
+        );
       }
 
       await transaction(async (client) => {
@@ -301,12 +293,16 @@ router.post(
         await client.query(
           `INSERT INTO audit_logs (event, user_id, metadata)
            VALUES ($1, $2, $3)`,
-          ["exception_resolved", userId, JSON.stringify({ exceptionId: id, resolution, notes })]
+          [
+            'exception_resolved',
+            userId,
+            JSON.stringify({ exceptionId: id, resolution, notes }),
+          ]
         );
       });
 
       // Track event
-      trackEventAsync(userId, "ExceptionResolved", {
+      trackEventAsync(userId, 'ExceptionResolved', {
         exceptionId: id,
         resolution,
       });
@@ -344,14 +340,12 @@ router.post(
         if (owned.length !== exceptionIds.length) {
           throw new ValidationError(
             "Some exceptions not found or already resolved",
-            "exceptionIds",
-            [
-              {
-                field: "exceptionIds",
-                message: `Only ${owned.length} of ${exceptionIds.length} exceptions can be resolved`,
-                code: "INVALID_EXCEPTIONS",
-              },
-            ]
+            'exceptionIds',
+            [{
+              field: 'exceptionIds',
+              message: `Only ${owned.length} of ${exceptionIds.length} exceptions can be resolved`,
+              code: 'INVALID_EXCEPTIONS',
+            }]
           );
         }
 
@@ -372,7 +366,7 @@ router.post(
           `INSERT INTO audit_logs (event, user_id, metadata)
            VALUES ($1, $2, $3)`,
           [
-            "exceptions_bulk_resolved",
+            'exceptions_bulk_resolved',
             userId,
             JSON.stringify({ exceptionIds, resolution, count: exceptionIds.length }),
           ]
@@ -381,7 +375,7 @@ router.post(
 
       // Track events
       for (const exceptionId of exceptionIds) {
-        trackEventAsync(userId, "ExceptionResolved", {
+        trackEventAsync(userId, 'ExceptionResolved', {
           exceptionId,
           resolution,
           bulk: true,
@@ -393,9 +387,7 @@ router.post(
         count: exceptionIds.length,
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to bulk resolve exceptions", 500, {
-        userId: req.userId,
-      });
+      handleRouteError(res, error, "Failed to bulk resolve exceptions", 500, { userId: req.userId });
     }
   }
 );
@@ -421,7 +413,7 @@ router.get(
         values.push(jobId);
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
       const stats = await query<{
         total: string;
@@ -461,7 +453,7 @@ router.get(
         aggregated.inProgress += parseInt(stat.in_progress);
         aggregated.resolved += parseInt(stat.resolved);
         aggregated.dismissed += parseInt(stat.dismissed);
-        if (stat.by_category && typeof stat.by_category === "object") {
+        if (stat.by_category && typeof stat.by_category === 'object') {
           Object.assign(aggregated.byCategory, stat.by_category);
         }
       }
@@ -470,9 +462,7 @@ router.get(
         data: aggregated,
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get exception statistics", 500, {
-        userId: req.userId,
-      });
+      handleRouteError(res, error, "Failed to get exception statistics", 500, { userId: req.userId });
     }
   }
 );

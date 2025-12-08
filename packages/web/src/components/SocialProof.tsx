@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface Testimonial {
   name: string;
@@ -19,30 +19,27 @@ interface SocialProofProps {
 
 const defaultTestimonials: Testimonial[] = [
   {
-    name: "Sarah Chen",
-    role: "CTO",
-    company: "TechCorp",
-    image: "👩‍💼",
-    quote:
-      "Settler reduced our reconciliation time from 8 hours to 5 minutes. We process 50K transactions monthly with 99.7% accuracy. The API is incredibly easy to use and the support team is responsive.",
+    name: 'Sarah Chen',
+    role: 'CTO',
+    company: 'TechCorp',
+    image: '👩‍💼',
+    quote: 'Settler reduced our reconciliation time from 8 hours to 5 minutes. The API is incredibly easy to use and the accuracy is unmatched.',
     rating: 5,
   },
   {
-    name: "Michael Rodriguez",
-    role: "Head of Finance",
-    company: "EcomPlus",
-    image: "👨‍💼",
-    quote:
-      "We've reconciled over 2M transactions with Settler across Shopify, Stripe, and PayPal. The real-time webhook support eliminated all our manual processes. ROI in the first month.",
+    name: 'Michael Rodriguez',
+    role: 'Head of Finance',
+    company: 'EcomPlus',
+    image: '👨‍💼',
+    quote: 'We\'ve reconciled over 2M transactions with Settler. The real-time webhook support eliminated all our manual processes.',
     rating: 5,
   },
   {
-    name: "Emily Johnson",
-    role: "Engineering Lead",
-    company: "SaaSCo",
-    image: "👩‍💻",
-    quote:
-      "The developer experience is excellent. We integrated Settler in one afternoon and it's been running flawlessly for 6 months. The documentation is clear and the API is well-designed.",
+    name: 'Emily Johnson',
+    role: 'Engineering Lead',
+    company: 'SaaSCo',
+    image: '👩‍💻',
+    quote: 'The developer experience is excellent. We integrated Settler in one afternoon and it\'s been running flawlessly for months.',
     rating: 5,
   },
 ];
@@ -74,7 +71,8 @@ export function SocialProof({ testimonials = defaultTestimonials }: SocialProofP
   }, []);
 
   const prefersReducedMotion =
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   return (
     <div ref={containerRef} className="py-16" role="region" aria-labelledby="testimonials-heading">
@@ -84,11 +82,10 @@ export function SocialProof({ testimonials = defaultTestimonials }: SocialProofP
             id="testimonials-heading"
             className="text-3xl md:text-4xl font-bold mb-4 text-foreground"
           >
-            Trusted by 500+ Companies
+            Loved by Developers & Finance Teams
           </h2>
           <p className="text-lg text-muted-foreground">
-            Join finance teams and developers using Settler to process millions of transactions with
-            99.7% accuracy
+            Join thousands of companies using Settler for mission-critical reconciliation
           </p>
         </div>
         <div
@@ -100,25 +97,21 @@ export function SocialProof({ testimonials = defaultTestimonials }: SocialProofP
             <Card
               key={index}
               className={cn(
-                "bg-card border-border",
-                "transition-all duration-700",
+                'bg-card border-border',
+                'transition-all duration-700',
                 isVisible
-                  ? "opacity-100 translate-y-0 scale-100"
-                  : "opacity-0 translate-y-8 scale-95",
-                "hover:shadow-xl hover:-translate-y-2"
+                  ? 'opacity-100 translate-y-0 scale-100'
+                  : 'opacity-0 translate-y-8 scale-95',
+                'hover:shadow-xl hover:-translate-y-2'
               )}
               style={{
-                transitionDelay: prefersReducedMotion ? "0ms" : `${index * 150}ms`,
+                transitionDelay: prefersReducedMotion ? '0ms' : `${index * 150}ms`,
               }}
               role="listitem"
               aria-label={`Testimonial from ${testimonial.name}`}
             >
               <CardContent className="p-6">
-                <div
-                  className="flex items-center gap-1 mb-4"
-                  role="img"
-                  aria-label={`${testimonial.rating} out of 5 stars`}
-                >
+                <div className="flex items-center gap-1 mb-4" role="img" aria-label={`${testimonial.rating} out of 5 stars`}>
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <span key={i} className="text-yellow-400 text-lg" aria-hidden="true">
                       ★
@@ -126,7 +119,7 @@ export function SocialProof({ testimonials = defaultTestimonials }: SocialProofP
                   ))}
                 </div>
                 <blockquote className="text-muted-foreground mb-6 italic">
-                  <p>&quot;{testimonial.quote}&quot;</p>
+                  <p>"{testimonial.quote}"</p>
                 </blockquote>
                 <div className="flex items-center gap-3">
                   <div

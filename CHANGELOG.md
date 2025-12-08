@@ -7,7 +7,6 @@ All notable changes to the Settler codebase are documented in this file.
 ### 🎯 Major Changes
 
 #### Supabase SSR Infrastructure (CTO Mode)
-
 - **Added complete Supabase SSR setup for Next.js**
   - Created `lib/supabase/server.ts` with `createClient()` and `createAdminClient()`
   - Created `lib/supabase/client.ts` for client-side operations
@@ -16,7 +15,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Type-safe with generated database types
 
 #### Environment Variable Safety (CTO Mode)
-
 - **Created `lib/env.ts` with safe env var utilities**
   - Never destructures `process.env` directly
   - All env vars treated as potentially undefined
@@ -24,7 +22,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Validation functions for production safety
 
 #### CRM Schema Implementation (CRO Mode)
-
 - **Created comprehensive CRM tables with RLS**
   - `leads` table with status, lifecycle_stage, assigned_to, scoring
   - `deals` table with stages, value_cents (integer math), probability
@@ -34,7 +31,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Admin/owner roles can view all tenant data
 
 #### Financial Ledger System (CFO Mode)
-
 - **Created immutable financial ledger with idempotency**
   - `financial_ledger` table with credit/debit model
   - All amounts stored in cents (BIGINT) - no floating point math
@@ -44,7 +40,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Immutable records (no UPDATE/DELETE policies)
 
 #### Error Logging Infrastructure (Support Mode)
-
 - **Created `error_logs` table for monitoring**
   - Severity levels (debug, info, warn, error, critical)
   - Context JSONB for request tracing
@@ -53,7 +48,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Indexed for fast queries by tenant, severity, resolved status
 
 #### Lead Scoring (CRO Mode)
-
 - **Database function for lead scoring**
   - `calculate_lead_score()` function in database (not client-side)
   - Auto-updates via trigger on lead changes
@@ -61,7 +55,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Capped at 200 points
 
 #### Server Actions Standardization (CTO Mode)
-
 - **Created `lib/actions/types.ts` with standard response format**
   - All Server Actions return `{ success: boolean, message?: string, data?: T }`
   - `success()` and `error()` helper functions
@@ -69,7 +62,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Never throws raw errors to client
 
 #### Admin Impersonation (Support Mode)
-
 - **Created `lib/admin/impersonation.ts`**
   - `impersonateUser()` function for admin debugging
   - Only accessible to admin/owner roles
@@ -77,7 +69,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Tenant isolation enforced
 
 #### Feature Flag Infrastructure (PM Mode)
-
 - **Created `lib/features/flags.ts`**
   - Environment variable based flags
   - Tenant-specific overrides via database config
@@ -87,7 +78,6 @@ All notable changes to the Settler codebase are documented in this file.
 ### 🔧 Improvements
 
 #### Database Migrations
-
 - Added 4 new migration files:
   - `20251129000000_crm_schema.sql` - CRM tables and RLS
   - `20251129000001_financial_ledger.sql` - Financial ledger with idempotency
@@ -95,7 +85,6 @@ All notable changes to the Settler codebase are documented in this file.
   - `20251129000003_lead_scoring.sql` - Lead scoring functions
 
 #### Type Safety
-
 - Created `types/database.types.ts` placeholder for Supabase generated types
 - All Supabase clients use typed Database interface
 - No `any` types in new code
@@ -103,7 +92,6 @@ All notable changes to the Settler codebase are documented in this file.
 ### 📝 Documentation
 
 #### Updated CHANGELOG.md
-
 - Comprehensive documentation of all infrastructure changes
 - Clear categorization by mode (CTO, CRO, CFO, Support, PM)
 - Migration instructions included
@@ -133,7 +121,6 @@ All notable changes to the Settler codebase are documented in this file.
 ### 🎯 Major Changes
 
 #### Database Migrations Consolidation
-
 - **Consolidated all migration files into single initial schema**
   - Merged `multi-tenancy.sql`, `event-sourcing.sql`, `cqrs-projections.sql`, `security.sql`, `performance-indexes.sql`, `materialized-views.sql` into `001-initial-schema.sql`
   - Single migration file for one-command deployment
@@ -141,7 +128,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Created comprehensive migration runbook (`packages/api/src/db/MIGRATION_RUNBOOK.md`)
 
 #### Code Consolidation & Cleanup
-
 - **Removed duplicate utilities** (DRY principle)
   - Deleted `packages/api/src/utils/encryption.ts` (consolidated into `infrastructure/security/encryption.ts`)
   - Deleted `packages/api/src/utils/circuit-breaker.ts` (consolidated into `infrastructure/resilience/circuit-breaker.ts`)
@@ -150,7 +136,6 @@ All notable changes to the Settler codebase are documented in this file.
   - All code now uses infrastructure versions with better error handling and logging
 
 #### Configuration Unification
-
 - **Unified encryption utilities**
   - Updated `infrastructure/security/encryption.ts` to support both SecretsManager and direct config access
   - Added backward compatibility for legacy encryption formats
@@ -158,7 +143,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Supports both JSON and legacy base64 encryption formats
 
 #### Bug Fixes
-
 - **Fixed missing import in `packages/api/src/index.ts`**
   - Added missing `logError` import that was causing runtime errors
   - Fixed webhook processing error handling
@@ -168,7 +152,6 @@ All notable changes to the Settler codebase are documented in this file.
   - Improved error messages for invalid webhook URLs
 
 #### Documentation
-
 - **Completely rewrote README.md**
   - Problem-first approach for non-technical stakeholders
   - Clear value proposition and use cases
@@ -187,19 +170,16 @@ All notable changes to the Settler codebase are documented in this file.
 ### 🔧 Improvements
 
 #### Database
-
 - Updated `packages/api/src/db/index.ts` to use consolidated migration file
 - Improved error handling in migration execution
 - Better handling of "already exists" errors (idempotent migrations)
 
 #### Security
-
 - Enhanced encryption utilities with backward compatibility
 - Improved SSRF protection with clearer API
 - Better error messages for security-related failures
 
 #### Code Quality
-
 - Removed ~7KB of duplicate code
 - Consolidated utilities into infrastructure layer
 - Improved code organization and maintainability
@@ -207,9 +187,7 @@ All notable changes to the Settler codebase are documented in this file.
 ### 📝 Deprecated
 
 #### Migration Files (Consolidated)
-
 The following migration files are deprecated and consolidated into `001-initial-schema.sql`:
-
 - `packages/api/src/db/migrations/multi-tenancy.sql`
 - `packages/api/src/db/migrations/event-sourcing.sql`
 - `packages/api/src/db/migrations/cqrs-projections.sql`
@@ -220,9 +198,7 @@ The following migration files are deprecated and consolidated into `001-initial-
 **Note:** These files are kept for reference but should not be run separately. Use `001-initial-schema.sql` for all new deployments.
 
 #### Utility Files (Removed)
-
 The following utility files have been removed and consolidated:
-
 - `packages/api/src/utils/encryption.ts` → Use `infrastructure/security/encryption.ts`
 - `packages/api/src/utils/circuit-breaker.ts` → Use `infrastructure/resilience/circuit-breaker.ts`
 - `packages/api/src/utils/retry.ts` → Use `infrastructure/resilience/retry.ts`
@@ -231,7 +207,6 @@ The following utility files have been removed and consolidated:
 ### 🐛 Known Issues & Recommendations
 
 #### Runtime Bugs Identified
-
 1. **Async Error Handling in Webhook Processing**
    - **Location:** `packages/api/src/index.ts` (line 168)
    - **Issue:** Webhook processing errors are logged but not properly handled
@@ -250,7 +225,6 @@ The following utility files have been removed and consolidated:
    - **Status:** Backward compatibility maintained, migration script recommended
 
 #### Code Smells Identified
-
 1. **Deep Nesting in Route Handlers**
    - **Location:** `packages/api/src/routes/jobs.ts`, `packages/api/src/routes/webhooks.ts`
    - **Issue:** Some route handlers have deeply nested try-catch blocks
@@ -269,7 +243,6 @@ The following utility files have been removed and consolidated:
    - **Status:** Partially addressed, needs completion
 
 #### Test Coverage Gaps
-
 1. **Critical Flows Missing Tests**
    - Reconciliation service (`packages/api/src/application/reconciliation/ReconciliationService.ts`)
    - Webhook delivery (`packages/api/src/utils/webhook-queue.ts`)
@@ -288,29 +261,25 @@ The following utility files have been removed and consolidated:
 #### For Existing Deployments
 
 1. **Backup Database**
-
    ```bash
    pg_dump -U postgres settler > settler_backup_$(date +%Y%m%d_%H%M%S).sql
    ```
 
 2. **Update Code**
-
    ```bash
    git pull origin main
    npm install
    ```
 
 3. **Run Consolidated Migration**
-
    ```bash
    psql -U postgres -d settler -f packages/api/src/db/migrations/001-initial-schema.sql
    ```
 
 4. **Verify Migration**
-
    ```sql
    -- Check that all tables exist
-   SELECT table_name FROM information_schema.tables
+   SELECT table_name FROM information_schema.tables 
    WHERE table_schema = 'public' ORDER BY table_name;
    ```
 

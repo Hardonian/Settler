@@ -13,21 +13,19 @@ This document maps all routes in the Settler web application, their purpose, sou
 ## Static Routes
 
 ### `/` (Home)
-
 - **Source:** `packages/web/src/app/page.tsx`
 - **Purpose:** Main landing page with hero, features, stats, and CTAs
-- **Linked from:**
+- **Linked from:** 
   - Navigation logo
   - Footer brand link
 - **Components:** Navigation, Footer, AnimatedHero, TrustBadges, CustomerLogos, SocialProof, NewsletterSignup, ConversionCTA
 - **Status:** ✅ Complete
 
 ### `/docs`
-
 - **Source:** `packages/web/src/app/docs/page.tsx`
 - **Layout:** `packages/web/src/app/docs/layout.tsx`
 - **Purpose:** Developer documentation with interactive sidebar
-- **Linked from:**
+- **Linked from:** 
   - Navigation (Desktop & Mobile)
   - Footer (Product section)
   - Footer (Resources section - "API Reference")
@@ -36,10 +34,9 @@ This document maps all routes in the Settler web application, their purpose, sou
 - **Status:** ✅ Complete
 
 ### `/cookbooks`
-
 - **Source:** `packages/web/src/app/cookbooks/page.tsx`
 - **Purpose:** Pre-built reconciliation workflows and code examples
-- **Linked from:**
+- **Linked from:** 
   - Navigation (Desktop & Mobile)
   - Footer (Product section)
   - Docs page
@@ -47,10 +44,9 @@ This document maps all routes in the Settler web application, their purpose, sou
 - **Status:** ✅ Complete
 
 ### `/pricing`
-
 - **Source:** `packages/web/src/app/pricing/page.tsx`
 - **Purpose:** Pricing plans and feature comparison
-- **Linked from:**
+- **Linked from:** 
   - Navigation (Desktop & Mobile)
   - Footer (Product section)
   - Home page CTAs
@@ -59,10 +55,9 @@ This document maps all routes in the Settler web application, their purpose, sou
 - **Status:** ✅ Complete
 
 ### `/enterprise`
-
 - **Source:** `packages/web/src/app/enterprise/page.tsx`
 - **Purpose:** Enterprise solutions and contact form
-- **Linked from:**
+- **Linked from:** 
   - Navigation (Desktop & Mobile)
   - Footer (Product section)
   - Pricing page (Enterprise plan CTA)
@@ -71,10 +66,9 @@ This document maps all routes in the Settler web application, their purpose, sou
 - **Status:** ✅ Complete
 
 ### `/community`
-
 - **Source:** `packages/web/src/app/community/page.tsx`
 - **Purpose:** Community hub with positioning feedback and real-time posts
-- **Linked from:**
+- **Linked from:** 
   - Navigation (Desktop & Mobile)
   - Footer (Resources section)
   - Support page
@@ -82,10 +76,9 @@ This document maps all routes in the Settler web application, their purpose, sou
 - **Status:** ✅ Complete (Missing AnimatedPageWrapper wrapper)
 
 ### `/support`
-
 - **Source:** `packages/web/src/app/support/page.tsx`
 - **Purpose:** Support center with FAQs, support tiers, and escalation info
-- **Linked from:**
+- **Linked from:** 
   - Navigation (Desktop & Mobile)
   - Footer (Resources section)
   - Pricing page CTAs
@@ -93,10 +86,9 @@ This document maps all routes in the Settler web application, their purpose, sou
 - **Status:** ✅ Complete
 
 ### `/playground`
-
 - **Source:** `packages/web/src/app/playground/page.tsx`
 - **Purpose:** Interactive API playground for testing reconciliation
-- **Linked from:**
+- **Linked from:** 
   - Navigation (Desktop & Mobile)
   - Footer (Product section)
   - Home page CTAs ("Get Started")
@@ -110,16 +102,14 @@ This document maps all routes in the Settler web application, their purpose, sou
 ## Application Routes
 
 ### `/dashboard`
-
 - **Source:** `packages/web/src/app/dashboard/page.tsx`
 - **Purpose:** Public ecosystem dashboard showing real-time metrics
-- **Linked from:**
+- **Linked from:** 
   - Signup page (after registration)
 - **Components:** None (Missing Navigation/Footer)
 - **Status:** ⚠️ Missing Navigation/Footer
 
 ### `/mobile`
-
 - **Source:** `packages/web/src/app/mobile/page.tsx`
 - **Purpose:** Secure mobile app demonstration
 - **Linked from:** None (direct access only)
@@ -127,7 +117,6 @@ This document maps all routes in the Settler web application, their purpose, sou
 - **Status:** ⚠️ Missing Navigation/Footer (may be intentional for mobile app)
 
 ### `/react-settler-demo`
-
 - **Source:** `packages/web/src/app/react-settler-demo/page.tsx`
 - **Purpose:** Demo of @settler/react-settler component library
 - **Linked from:** None (direct access only)
@@ -135,7 +124,6 @@ This document maps all routes in the Settler web application, their purpose, sou
 - **Status:** ⚠️ Missing Navigation/Footer
 
 ### `/realtime-dashboard`
-
 - **Source:** `packages/web/src/app/realtime-dashboard/page.tsx`
 - **Purpose:** Real-time reconciliation execution dashboard
 - **Linked from:** None (direct access with jobId/apiKey params)
@@ -143,7 +131,6 @@ This document maps all routes in the Settler web application, their purpose, sou
 - **Status:** ⚠️ Missing Navigation/Footer
 
 ### `/signup`
-
 - **Source:** `packages/web/src/app/signup/page.tsx`
 - **Purpose:** User registration page
 - **Linked from:** None (direct access)
@@ -155,28 +142,25 @@ This document maps all routes in the Settler web application, their purpose, sou
 ## Legal Routes
 
 ### `/legal/privacy`
-
 - **Source:** `packages/web/src/app/legal/privacy/page.tsx`
 - **Purpose:** Privacy Policy
-- **Linked from:**
+- **Linked from:** 
   - Footer (Legal section)
 - **Components:** Navigation, Footer, AnimatedPageWrapper
 - **Status:** ✅ Complete
 
 ### `/legal/terms`
-
 - **Source:** `packages/web/src/app/legal/terms/page.tsx`
 - **Purpose:** Terms of Service
-- **Linked from:**
+- **Linked from:** 
   - Footer (Legal section)
 - **Components:** Navigation, Footer, AnimatedPageWrapper
 - **Status:** ✅ Complete
 
 ### `/legal/license`
-
 - **Source:** `packages/web/src/app/legal/license/page.tsx`
 - **Purpose:** MIT License information
-- **Linked from:**
+- **Linked from:** 
   - Footer (Legal section)
 - **Components:** Navigation, Footer, AnimatedPageWrapper
 - **Status:** ✅ Complete
@@ -186,13 +170,11 @@ This document maps all routes in the Settler web application, their purpose, sou
 ## API Routes
 
 ### `/api/analytics`
-
 - **Source:** `packages/web/src/app/api/analytics/route.ts`
 - **Purpose:** Analytics endpoint
 - **Status:** ✅ Complete
 
 ### `/api/status/health`
-
 - **Source:** `packages/web/src/app/api/status/health/route.ts`
 - **Purpose:** Health check endpoint
 - **Status:** ✅ Complete
@@ -202,13 +184,11 @@ This document maps all routes in the Settler web application, their purpose, sou
 ## Special Files
 
 ### `/robots.ts`
-
 - **Source:** `packages/web/src/app/robots.ts`
 - **Purpose:** Robots.txt generation
 - **Status:** ✅ Complete
 
 ### `/sitemap.ts`
-
 - **Source:** `packages/web/src/app/sitemap.ts`
 - **Purpose:** Sitemap.xml generation
 - **Status:** ✅ Complete
@@ -218,7 +198,6 @@ This document maps all routes in the Settler web application, their purpose, sou
 ## Navigation Structure
 
 ### Desktop Navigation
-
 - Docs
 - Cookbooks
 - Pricing
@@ -230,13 +209,11 @@ This document maps all routes in the Settler web application, their purpose, sou
 - Dark Mode Toggle
 
 ### Mobile Navigation
-
 - Same as desktop, collapsed into hamburger menu
 
 ### Footer Links
 
 **Product:**
-
 - Documentation → `/docs`
 - Cookbooks → `/cookbooks`
 - Playground → `/playground`
@@ -244,7 +221,6 @@ This document maps all routes in the Settler web application, their purpose, sou
 - Enterprise → `/enterprise`
 
 **Resources:**
-
 - Support → `/support`
 - Community → `/community`
 - GitHub → External (https://github.com/shardie-github/Settler-API)
@@ -252,13 +228,11 @@ This document maps all routes in the Settler web application, their purpose, sou
 - Status → External (https://status.settler.dev)
 
 **Legal:**
-
 - Terms of Service → `/legal/terms`
 - Privacy Policy → `/legal/privacy`
 - License → `/legal/license`
 
 **Social:**
-
 - Twitter → External (@settler_io)
 - GitHub → External
 - Discord → External

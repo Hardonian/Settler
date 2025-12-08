@@ -17,23 +17,14 @@ const router = Router();
 
 const createFeedbackSchema = z.object({
   body: z.object({
-    source: z.enum([
-      "sales_call",
-      "user_interview",
-      "support_ticket",
-      "github_issue",
-      "community",
-      "survey",
-    ]),
+    source: z.enum(["sales_call", "user_interview", "support_ticket", "github_issue", "community", "survey"]),
     persona: z.enum(["cto", "cfo", "finance_ops", "developer"]).optional(),
     company: z.string().max(255).optional(),
-    context: z
-      .object({
-        stage: z.enum(["evaluating", "onboarding", "active", "churned"]).optional(),
-        useCase: z.string().optional(),
-        transactionVolume: z.string().optional(),
-      })
-      .optional(),
+    context: z.object({
+      stage: z.enum(["evaluating", "onboarding", "active", "churned"]).optional(),
+      useCase: z.string().optional(),
+      transactionVolume: z.string().optional(),
+    }).optional(),
     pain: z.object({
       description: z.string().min(1),
       severity: z.enum(["high", "medium", "low"]),
@@ -43,22 +34,16 @@ const createFeedbackSchema = z.object({
       description: z.string().min(1),
       successMetric: z.string().optional(),
     }),
-    workaround: z
-      .object({
-        description: z.string(),
-        painPoints: z.array(z.string()),
-      })
-      .optional(),
+    workaround: z.object({
+      description: z.string(),
+      painPoints: z.array(z.string()),
+    }).optional(),
     quotes: z.array(z.string()).optional(),
-    featureRequests: z
-      .array(
-        z.object({
-          feature: z.string(),
-          priority: z.enum(["high", "medium", "low"]),
-          rationale: z.string(),
-        })
-      )
-      .optional(),
+    featureRequests: z.array(z.object({
+      feature: z.string(),
+      priority: z.enum(["high", "medium", "low"]),
+      rationale: z.string(),
+    })).optional(),
     tags: z.array(z.string()).optional(),
   }),
 });
@@ -107,11 +92,11 @@ router.post(
       );
 
       if (!result[0]) {
-        throw new Error("Failed to create feedback");
+        throw new Error('Failed to create feedback');
       }
 
       // Track event
-      trackEventAsync(userId, "FeedbackCreated", {
+      trackEventAsync(userId, 'FeedbackCreated', {
         feedbackId: result[0].id,
         source: feedback.source,
         persona: feedback.persona,
@@ -168,7 +153,7 @@ router.get(
         values.push(new Date(endDate));
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
       const feedback = await query<{
         id: string;
@@ -200,30 +185,28 @@ router.get(
       );
 
       if (!countResult[0]) {
-        throw new Error("Failed to get feedback count");
+        throw new Error('Failed to get feedback count');
       }
       const total = parseInt(countResult[0].count);
 
       res.json({
-        data: feedback
-          .map((f) => {
-            if (!f) return null;
-            return {
-              id: f.id,
-              source: f.source,
-              persona: f.persona,
-              company: f.company,
-              context: f.context,
-              pain: f.pain,
-              desiredOutcome: f.desired_outcome,
-              workaround: f.workaround,
-              quotes: f.quotes,
-              featureRequests: f.feature_requests,
-              tags: f.tags,
-              createdAt: f.created_at.toISOString(),
-            };
-          })
-          .filter((f) => f !== null),
+        data: feedback.map((f) => {
+          if (!f) return null;
+          return {
+            id: f.id,
+            source: f.source,
+            persona: f.persona,
+            company: f.company,
+            context: f.context,
+            pain: f.pain,
+            desiredOutcome: f.desired_outcome,
+            workaround: f.workaround,
+            quotes: f.quotes,
+            featureRequests: f.feature_requests,
+            tags: f.tags,
+            createdAt: f.created_at.toISOString(),
+          };
+        }).filter((f) => f !== null),
         pagination: {
           limit,
           offset,
@@ -249,9 +232,7 @@ router.get(
         endDate?: string;
       };
 
-      const start = startDate
-        ? new Date(startDate)
-        : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
       // Top pains by frequency
@@ -301,12 +282,12 @@ router.get(
 
       res.json({
         data: {
-          topPains: topPains.map((p) => ({
+          topPains: topPains.map(p => ({
             description: p.pain_description,
             count: parseInt(p.count),
             avgSeverity: parseFloat(p.avg_severity),
           })),
-          topFeatureRequests: topFeatureRequests.map((f) => ({
+          topFeatureRequests: topFeatureRequests.map(f => ({
             feature: f.feature,
             count: parseInt(f.count),
             avgPriority: parseFloat(f.avg_priority),

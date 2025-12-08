@@ -75,12 +75,10 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - run: npm ci
-      - name: Run ESLint
-        run: npm run lint
-      - name: Run Prettier check
-        run: npm run format:check
-      - name: Run TypeScript type check
-        run: npm run typecheck
+      - run: npm run lint
+      - run: npm run lint:fix -- --dry-run || true
+      - run: npm run format:check
+      - run: npm run typecheck
 
   test:
     name: Test

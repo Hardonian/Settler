@@ -21,24 +21,12 @@ const exportReportSchema = z.object({
     jobId: z.string().uuid(),
   }),
   query: z.object({
-    format: z
-      .enum(["csv", "json", "xlsx", "quickbooks", "xero", "netsuite"])
-      .optional()
-      .default("csv"),
+    format: z.enum(["csv", "json", "xlsx", "quickbooks", "xero", "netsuite"]).optional().default("csv"),
     startDate: z.string().datetime().optional(),
     endDate: z.string().datetime().optional(),
-    includeMatched: z
-      .string()
-      .transform((v) => v === "true")
-      .default("true"),
-    includeUnmatched: z
-      .string()
-      .transform((v) => v === "true")
-      .default("true"),
-    includeExceptions: z
-      .string()
-      .transform((v) => v === "true")
-      .default("true"),
+    includeMatched: z.string().transform(v => v === "true").default("true"),
+    includeUnmatched: z.string().transform(v => v === "true").default("true"),
+    includeExceptions: z.string().transform(v => v === "true").default("true"),
   }),
 });
 
@@ -63,14 +51,7 @@ router.get(
     try {
       const { jobId } = req.params;
       const queryParams = exportReportSchema.parse({ params: req.params, query: req.query });
-      const {
-        format,
-        startDate,
-        endDate,
-        includeMatched,
-        includeUnmatched: _includeUnmatched,
-        includeExceptions,
-      } = queryParams.query;
+      const { format, startDate, endDate, includeMatched, includeUnmatched: _includeUnmatched, includeExceptions } = queryParams.query;
       const userId = req.userId!;
 
       if (!jobId || !userId) {
@@ -87,9 +68,7 @@ router.get(
         throw new NotFoundError("Job not found", "job", jobId);
       }
 
-      const start = startDate
-        ? new Date(startDate)
-        : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
       // Get execution
@@ -139,13 +118,9 @@ router.get(
         // Generate CSV
         if (format === "csv") {
           res.setHeader("Content-Type", "text/csv");
-          res.setHeader(
-            "Content-Disposition",
-            `attachment; filename="settler-export-${jobId}.csv"`
-          );
+          res.setHeader("Content-Disposition", `attachment; filename="settler-export-${jobId}.csv"`);
 
-          let csv =
-            "Type,Source ID,Target ID,Amount,Currency,Confidence,Date,Category,Description,Severity\n";
+          let csv = "Type,Source ID,Target ID,Amount,Currency,Confidence,Date,Category,Description,Severity\n";
 
           for (const match of matches) {
             csv += `Matched,${match.source_id},${match.target_id},${match.amount},${match.currency},${(match.confidence * 100).toFixed(1)}%,${match.matched_at.toISOString()},,,\n`;
@@ -201,11 +176,17 @@ router.get(
 
       // JSON format
       const matches = includeMatched
-        ? await query(`SELECT * FROM matches WHERE execution_id = $1`, [executionId])
+        ? await query(
+            `SELECT * FROM matches WHERE execution_id = $1`,
+            [executionId]
+          )
         : [];
 
       const exceptions = includeExceptions
-        ? await query(`SELECT * FROM exceptions WHERE execution_id = $1`, [executionId])
+        ? await query(
+            `SELECT * FROM exceptions WHERE execution_id = $1`,
+            [executionId]
+          )
         : [];
 
       res.json({
@@ -275,17 +256,11 @@ router.post(
 // Helper functions
 
 function formatAccountingExport(
-  matches: Array<{
-    source_id: string;
-    target_id: string;
-    amount: number;
-    currency: string;
-    date: Date;
-  }>,
+  matches: Array<{ source_id: string; target_id: string; amount: number; currency: string; date: Date }>,
   format: "quickbooks" | "xero" | "netsuite"
 ): unknown[] {
   if (format === "quickbooks") {
-    return matches.map((m) => ({
+    return matches.map(m => ({
       Date: m.date.toISOString().split("T")[0],
       Amount: m.amount,
       Currency: m.currency,
@@ -296,7 +271,7 @@ function formatAccountingExport(
   }
 
   if (format === "xero") {
-    return matches.map((m) => ({
+    return matches.map(m => ({
       Date: m.date.toISOString().split("T")[0],
       Amount: m.amount,
       Currency: m.currency,
@@ -307,7 +282,7 @@ function formatAccountingExport(
   }
 
   if (format === "netsuite") {
-    return matches.map((m) => ({
+    return matches.map(m => ({
       date: m.date.toISOString().split("T")[0],
       amount: m.amount,
       currency: m.currency,

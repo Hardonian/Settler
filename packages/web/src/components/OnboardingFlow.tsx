@@ -22,7 +22,7 @@ const trackEvent = (event: AnalyticsEvent) => {
   if (typeof window !== "undefined") {
     // In production, this would send to your APM system (e.g., Sentry, Datadog, etc.)
     const analyticsEndpoint = process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT || "/api/analytics";
-
+    
     fetch(analyticsEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -49,7 +49,7 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  
   // Analytics tracking
   const startTimeRef = useRef<number>(Date.now());
   const stepStartTimeRef = useRef<number>(Date.now());
@@ -67,7 +67,7 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
   useEffect(() => {
     const sessionId = crypto.randomUUID();
     sessionStorage.setItem("sessionId", sessionId);
-
+    
     trackEvent({
       event: "onboarding.started",
       timestamp: Date.now(),
@@ -76,13 +76,12 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
         totalSteps: steps.length,
       },
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Track step changes
   useEffect(() => {
     const stepDuration = Date.now() - stepStartTimeRef.current;
-
+    
     trackEvent({
       event: "onboarding.step_viewed",
       timestamp: Date.now(),
@@ -94,7 +93,6 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
     });
 
     stepStartTimeRef.current = Date.now();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   async function handleSubmit() {
@@ -127,7 +125,7 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
       // Track "aha moment" - first successful job creation
       if (!ahaMomentReachedRef.current) {
         ahaMomentReachedRef.current = true;
-
+        
         trackEvent({
           event: "onboarding.aha_moment",
           timestamp: Date.now(),
@@ -170,7 +168,7 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to create job";
       setError(message);
-
+      
       // Track error
       trackEvent({
         event: "onboarding.error",
@@ -197,7 +195,9 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
                 <div className="flex items-center">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                      step >= s.number ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
+                      step >= s.number
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-600"
                     }`}
                   >
                     {s.number}
@@ -225,7 +225,9 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
             <div>
               <h2 className="text-2xl font-bold mb-4">Job Details</h2>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Job Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Job Name
+                </label>
                 <input
                   type="text"
                   value={formData.name}
@@ -242,10 +244,14 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
               <h2 className="text-2xl font-bold mb-4">Source System</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Adapter</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Adapter
+                  </label>
                   <select
                     value={formData.sourceAdapter}
-                    onChange={(e) => setFormData({ ...formData, sourceAdapter: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, sourceAdapter: e.target.value })
+                    }
                     className="w-full px-4 py-2 border border-gray-300 rounded"
                   >
                     <option value="shopify">Shopify</option>
@@ -255,7 +261,9 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    API Key
+                  </label>
                   <input
                     type="password"
                     value={formData.sourceConfig.api_key || ""}
@@ -278,10 +286,14 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
               <h2 className="text-2xl font-bold mb-4">Target System</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Adapter</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Adapter
+                  </label>
                   <select
                     value={formData.targetAdapter}
-                    onChange={(e) => setFormData({ ...formData, targetAdapter: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, targetAdapter: e.target.value })
+                    }
                     className="w-full px-4 py-2 border border-gray-300 rounded"
                   >
                     <option value="stripe">Stripe</option>
@@ -291,7 +303,9 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    API Key
+                  </label>
                   <input
                     type="password"
                     value={formData.targetConfig.api_key || ""}
@@ -313,7 +327,9 @@ export default function OnboardingFlow({ apiKey, onComplete }: OnboardingFlowPro
             <div>
               <h2 className="text-2xl font-bold mb-4">Matching Rules</h2>
               <div className="bg-blue-50 border border-blue-200 rounded p-4">
-                <p className="text-sm text-blue-800">Default matching rules will be used:</p>
+                <p className="text-sm text-blue-800">
+                  Default matching rules will be used:
+                </p>
                 <ul className="mt-2 text-sm text-blue-700 list-disc list-inside">
                   <li>Match by order_id (exact)</li>
                   <li>Match by amount (exact, tolerance: $0.01)</li>

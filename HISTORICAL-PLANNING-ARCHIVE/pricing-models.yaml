@@ -1,0 +1,261 @@
+# Task A: Pricing Strategist - Revenue Model Design
+# Generated: January 2026
+
+task: "A"
+executive_summary: "Designed 3 pricing models (Pure Usage, Hybrid, Tiered) with 4 packages (Free, Starter, Growth, Enterprise). Primary value metric: reconciled_transactions. Hybrid model ($99/mo base + $0.005/txn) balances predictability with usage alignment. Tiered model ($49-$999+/mo) provides clear upgrade path for D2C/SaaS customers."
+
+# A1. Value Metric Discovery
+value_metrics:
+  - name: "reconciled_transactions"
+    description: "Primary unit of value - each matched transaction pair"
+    unit_economics:
+      cost_per_unit: "$0.001-0.003"
+      willingness_to_pay: "$0.005-0.01 per transaction"
+      rationale: "Directly correlates with customer value - more transactions = more value delivered"
+    
+  - name: "gateways_connected"
+    description: "Number of payment/accounting platforms connected"
+    unit_economics:
+      cost_per_unit: "Negligible (API calls)"
+      willingness_to_pay: "$10-20 per additional gateway"
+      rationale: "Multi-platform complexity is a key pain point - more gateways = more value"
+    
+  - name: "exported_ledgers"
+    description: "Number of ledger exports to accounting systems"
+    unit_economics:
+      cost_per_unit: "$0.01-0.05 per export"
+      willingness_to_pay: "$0.10-0.50 per export"
+      rationale: "Downstream value - automated exports save hours of manual work"
+    
+  - name: "exceptions_autoresolved_pct"
+    description: "Percentage of exceptions automatically resolved"
+    unit_economics:
+      cost_per_unit: "ML compute costs"
+      willingness_to_pay: "Premium pricing for >90% auto-resolution"
+      rationale: "Automation quality - higher auto-resolution = less manual intervention"
+    
+  - name: "month_end_close_hours_saved"
+    description: "Time saved during month-end close process"
+    unit_economics:
+      cost_per_unit: "Infrastructure costs"
+      willingness_to_pay: "$50-200 per hour saved"
+      rationale: "Time value - finance teams value speed and accuracy"
+
+primary_value_metric: "reconciled_transactions"
+rationale: "Most directly correlates with customer value and scales with business growth"
+
+# A2. Model Comparison Matrix
+pricing_models:
+  - model_id: "pure_usage"
+    name: "Pure Usage-Based"
+    structure: "$0.01 per reconciled transaction"
+    pros:
+      - "Perfect alignment with value delivered"
+      - "No upfront commitment - pay as you go"
+      - "Scales automatically with customer growth"
+      - "Simple to understand"
+    cons:
+      - "Unpredictable revenue for customers"
+      - "High variance in monthly bills"
+      - "May discourage usage (fear of overage)"
+      - "Lower conversion (no free tier anchor)"
+    best_for: "High-volume customers who want pure usage alignment"
+    example:
+      customer: "E-commerce processing 50K orders/month"
+      monthly_cost: "$500/month"
+      cost_per_transaction: "$0.01"
+  
+  - model_id: "hybrid"
+    name: "Hybrid (Base + Usage)"
+    structure: "$99/month base + $0.005 per transaction"
+    pros:
+      - "Predictable base revenue"
+      - "Usage component aligns with value"
+      - "Lower per-transaction cost encourages usage"
+      - "Good for mid-market customers"
+    cons:
+      - "More complex to explain"
+      - "Base fee may deter small customers"
+      - "Need to balance base vs. usage pricing"
+    best_for: "Mid-market SaaS and growing e-commerce ($1M-$50M ARR)"
+    example:
+      customer: "SaaS processing 10K transactions/month"
+      base_cost: "$99"
+      usage_cost: "$50"
+      total_monthly_cost: "$149/month"
+      cost_per_transaction: "$0.0149"
+  
+  - model_id: "tiered_seats"
+    name: "Tiered Seats"
+    structure: "Starter $49/mo, Growth $299/mo, Enterprise $999+/mo"
+    pros:
+      - "Clear upgrade path"
+      - "Predictable pricing for customers"
+      - "Easy to understand and sell"
+      - "Good for self-service model"
+    cons:
+      - "May leave money on table (high-volume customers)"
+      - "Price anchoring challenges"
+      - "Less flexible than usage-based"
+    best_for: "D2C CTOs and SaaS RevOps teams ($1M-$50M ARR)"
+    example:
+      starter:
+        price: "$49/month"
+        transactions: "10K/month"
+        cost_per_1k: "$4.90"
+      growth:
+        price: "$299/month"
+        transactions: "100K/month"
+        cost_per_1k: "$2.99"
+      enterprise:
+        price: "$999+/month"
+        transactions: "Unlimited"
+        cost_per_1k: "Volume-dependent"
+
+recommended_model: "tiered_seats"
+rationale: "Best fit for D2C/SaaS ICP - clear upgrade path, predictable pricing, self-service friendly"
+
+# A3. Settler-Specific Packaging
+packages:
+  - name: "Free"
+    price: "$0/month"
+    value_metric_limit: "1,000 reconciled transactions/month"
+    includes:
+      - "2 gateways/adapters"
+      - "Basic matching rules (exact match only)"
+      - "CSV export"
+      - "7-day log retention"
+      - "Community support (Discord, GitHub)"
+      - "API rate limit: 100 requests/15 min"
+    who_for: "Developers testing, solo founders, small projects"
+    conversion_strategy: "Product-led growth - try before buy"
+    upgrade_trigger: "Hit 1K transaction limit or need more gateways"
+  
+  - name: "Starter"
+    price: "$49/month"
+    annual_price: "$490/year (save $98, ~17% discount)"
+    value_metric_limit: "10,000 reconciled transactions/month"
+    includes:
+      - "3 gateways/adapters"
+      - "Advanced matching rules (fuzzy, tolerance, date ranges)"
+      - "CSV + JSON export"
+      - "30-day log retention"
+      - "Email support (24-hour response)"
+      - "Scheduled jobs (daily/weekly)"
+      - "API rate limit: 500 requests/15 min"
+      - "Webhook notifications"
+    who_for: "Solo D2C founders testing multi-gateway, early-stage SaaS (<$1M ARR)"
+    use_case_example: "Shopify store processing 500 orders/month, Stripe reconciliation"
+    cost_per_transaction: "$0.0049"
+    upgrade_trigger: "Hit 10K limit or need more gateways/features"
+  
+  - name: "Growth"
+    price: "$299/month"
+    annual_price: "$2,990/year (save $598, ~17% discount)"
+    value_metric_limit: "100,000 reconciled transactions/month"
+    includes:
+      - "10 gateways/adapters"
+      - "All matching rules + custom logic"
+      - "CSV + JSON + PDF export"
+      - "90-day log retention"
+      - "Priority email support (4-hour response)"
+      - "Scheduled jobs + real-time webhooks"
+      - "Multi-currency support"
+      - "Advanced exception handling"
+      - "API rate limit: 2,000 requests/15 min"
+      - "White-label reports"
+    who_for: "Mid-market SaaS ($1M-$50M ARR), growing e-commerce (1K-10K orders/month)"
+    use_case_example: "SaaS processing 5K transactions/month, Stripe+PayPal+QuickBooks"
+    cost_per_transaction: "$0.00299"
+    upgrade_trigger: "Hit 100K limit or need enterprise features (SSO, dedicated infra)"
+  
+  - name: "Enterprise"
+    price: "$999+/month (custom)"
+    value_metric_limit: "Unlimited reconciled transactions"
+    includes:
+      - "Unlimited gateways/adapters"
+      - "All features + custom adapters (1 free)"
+      - "All export formats + custom reports"
+      - "Custom log retention (up to 7 years)"
+      - "Dedicated account manager (1-hour SLA)"
+      - "SSO (SAML, OIDC)"
+      - "SOC 2 Type II, PCI-DSS Level 1, HIPAA-ready"
+      - "Dedicated infrastructure"
+      - "VPC peering, private endpoints"
+      - "Custom SLAs (99.99% uptime)"
+      - "Custom API rate limits"
+      - "Multi-entity support"
+    who_for: "Large e-commerce, enterprise SaaS, regulated industries"
+    use_case_example: "E-commerce processing 50K+ orders/month, multiple payment providers, multi-entity"
+    pricing_logic: "Custom based on volume, compliance requirements, and infrastructure needs"
+    typical_range: "$1,000-$10,000+/month"
+
+overage_pricing:
+  rate: "$0.01 per reconciliation beyond plan limit"
+  automatic_billing: true
+  example:
+    plan: "Starter ($49/month, 10K limit)"
+    actual_usage: "12,000 transactions"
+    overage: "2,000 × $0.01 = $20"
+    total: "$69/month"
+
+# A4. Pricing Page Copy
+pricing_page_copy:
+  headline: "Simple, transparent pricing that scales with you"
+  subheadline: "Start free. Upgrade when you need to scale. No hidden fees."
+  
+  free_tier:
+    headline: "Free Forever"
+    subheadline: "Perfect for testing and small projects"
+    cta: "Get Started Free"
+    value_prop: "1,000 reconciliations/month • 2 gateways • Community support"
+  
+  starter_tier:
+    headline: "Starter"
+    subheadline: "For small e-commerce and early-stage SaaS"
+    price_display: "$49"
+    period: "/month"
+    cta: "Start Free Trial"
+    value_prop: "10K reconciliations/month • 3 gateways • Email support • Scheduled jobs"
+    customer_language: "Ideal for Shopify stores processing 500+ orders/month"
+  
+  growth_tier:
+    headline: "Growth"
+    subheadline: "For mid-market SaaS and growing e-commerce"
+    price_display: "$299"
+    period: "/month"
+    cta: "Start Free Trial"
+    value_prop: "100K reconciliations/month • 10 gateways • Priority support • Multi-currency"
+    customer_language: "Perfect for SaaS companies processing 5K+ transactions/month"
+    popular_badge: true
+  
+  enterprise_tier:
+    headline: "Enterprise"
+    subheadline: "For large operations and regulated industries"
+    price_display: "Custom"
+    period: ""
+    cta: "Contact Sales"
+    value_prop: "Unlimited reconciliations • All features • Dedicated support • Compliance ready"
+    customer_language: "For companies processing 50K+ transactions/month or with compliance requirements"
+
+testimonials:
+  - quote: "Settler saved us 2 hours every day. We went from manual reconciliation to fully automated in 5 minutes."
+    author: "Finance Manager, E-commerce Company"
+    company: "Mid-size Shopify Store"
+  
+  - quote: "Real-time reconciliation helped us catch payment discrepancies instantly. We've eliminated customer disputes completely."
+    author: "CTO, SaaS Platform"
+    company: "B2B SaaS Company"
+
+faq:
+  - question: "What counts as a reconciliation?"
+    answer: "One reconciliation = matching one source transaction (e.g., Shopify order) with one target transaction (e.g., Stripe payment)."
+  
+  - question: "What happens if I exceed my plan limit?"
+    answer: "You're automatically charged $0.01 per reconciliation over your limit. No service interruption - we'll notify you via email."
+  
+  - question: "Can I upgrade or downgrade anytime?"
+    answer: "Yes! Upgrades are immediate. Downgrades take effect at the end of your billing cycle. We'll prorate any charges."
+  
+  - question: "Do you offer annual billing discounts?"
+    answer: "Yes! Save 17% with annual billing (equivalent to 2 months free). Contact us for enterprise annual contracts."

@@ -18,7 +18,10 @@
             "legendFormat": "{{method}} {{endpoint}}"
           }
         ],
-        "yaxes": [{ "format": "reqps", "label": "Requests/sec" }, { "format": "short" }]
+        "yaxes": [
+          { "format": "reqps", "label": "Requests/sec" },
+          { "format": "short" }
+        ]
       },
       {
         "id": 2,
@@ -31,7 +34,10 @@
             "legendFormat": "{{status}}"
           }
         ],
-        "yaxes": [{ "format": "percent", "label": "Error Rate" }, { "format": "short" }]
+        "yaxes": [
+          { "format": "percent", "label": "Error Rate" },
+          { "format": "short" }
+        ]
       },
       {
         "id": 3,
@@ -44,7 +50,10 @@
             "legendFormat": "p95 - {{endpoint}}"
           }
         ],
-        "yaxes": [{ "format": "ms", "label": "Latency" }, { "format": "short" }]
+        "yaxes": [
+          { "format": "ms", "label": "Latency" },
+          { "format": "short" }
+        ]
       },
       {
         "id": 4,
@@ -57,7 +66,10 @@
             "legendFormat": "p99 - {{endpoint}}"
           }
         ],
-        "yaxes": [{ "format": "ms", "label": "Latency" }, { "format": "short" }]
+        "yaxes": [
+          { "format": "ms", "label": "Latency" },
+          { "format": "short" }
+        ]
       },
       {
         "id": 5,
@@ -142,7 +154,10 @@
             "legendFormat": "{{datname}}"
           }
         ],
-        "yaxes": [{ "format": "short", "label": "Connections" }, { "format": "short" }]
+        "yaxes": [
+          { "format": "short", "label": "Connections" },
+          { "format": "short" }
+        ]
       },
       {
         "id": 9,
@@ -155,7 +170,10 @@
             "legendFormat": "Memory Used"
           }
         ],
-        "yaxes": [{ "format": "bytes", "label": "Memory" }, { "format": "short" }]
+        "yaxes": [
+          { "format": "bytes", "label": "Memory" },
+          { "format": "short" }
+        ]
       }
     ]
   }

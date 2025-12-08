@@ -24,7 +24,6 @@ By accessing or using Settler's services ("Services"), you agree to be bound by 
 React.Settler OSS components are licensed under the **MIT License** and are free to use for any purpose, including commercial use, subject to the MIT License terms.
 
 **OSS Features Include:**
-
 - Core protocol types (`@settler/protocol`)
 - Basic React components
 - Config compiler
@@ -36,7 +35,6 @@ React.Settler OSS components are licensed under the **MIT License** and are free
 Commercial features require a paid subscription ($99/month or $990/year).
 
 **Commercial Features Include:**
-
 - Platform integrations (Shopify, Stripe, MCP)
 - Virtualized tables
 - Advanced telemetry
@@ -44,7 +42,6 @@ Commercial features require a paid subscription ($99/month or $990/year).
 - Webhook manager
 
 **Commercial License Terms:**
-
 - Subscription required for Commercial features
 - License is non-transferable
 - Subscription renews automatically unless cancelled
@@ -55,7 +52,6 @@ Commercial features require a paid subscription ($99/month or $990/year).
 Enterprise features require a custom contract with Settler.
 
 **Enterprise Features Include:**
-
 - SSO and RBAC
 - Custom integrations
 - White-label options
@@ -63,7 +59,6 @@ Enterprise features require a custom contract with Settler.
 - SLA guarantees
 
 **Enterprise License Terms:**
-
 - Governed by separate Enterprise Agreement
 - Custom pricing and terms
 - Annual or multi-year contracts
@@ -77,7 +72,6 @@ Subject to payment of applicable fees, Settler grants you a limited, non-exclusi
 ### 4.2 Usage Limits
 
 Usage limits are defined by your subscription tier:
-
 - **Starter:** Up to 1,000 reconciliation jobs/month
 - **Pro:** Up to 10,000 reconciliation jobs/month
 - **Enterprise:** Unlimited (subject to fair use)
@@ -85,7 +79,6 @@ Usage limits are defined by your subscription tier:
 ### 4.3 Overages
 
 Usage exceeding your tier limits may result in:
-
 - Automatic upgrade to next tier, or
 - Additional charges at overage rates, or
 - Service throttling
@@ -121,7 +114,6 @@ Usage exceeding your tier limits may result in:
 ### 6.1 Prohibited Uses
 
 You may not:
-
 - Reverse engineer, decompile, or disassemble proprietary components
 - Use Services to violate any laws or regulations
 - Transmit malicious code or viruses
@@ -138,7 +130,6 @@ OSS components may be used freely subject to MIT License terms. Commercial featu
 ### 7.1 Settler's IP
 
 Settler retains all rights, title, and interest in:
-
 - Settler API (proprietary)
 - Commercial features of React.Settler
 - Documentation and materials
@@ -147,7 +138,6 @@ Settler retains all rights, title, and interest in:
 ### 7.2 Your IP
 
 You retain all rights to:
-
 - Your data and content
 - Applications built using Settler
 - Custom integrations and modifications (OSS components)
@@ -155,7 +145,6 @@ You retain all rights to:
 ### 7.3 OSS License
 
 OSS components are licensed under MIT License. You may:
-
 - Use, modify, and distribute OSS components
 - Use OSS components in commercial products
 - Create derivative works
@@ -197,13 +186,11 @@ Settler may modify, suspend, or discontinue Services with reasonable notice, exc
 ### 10.2 Support Scope
 
 Support includes:
-
 - Technical assistance with Services
 - Bug fixes and updates
 - Documentation and guides
 
 Support does not include:
-
 - Custom development
 - Integration consulting (available as Professional Services)
 - Training (available as Professional Services)
@@ -217,7 +204,6 @@ You may cancel your subscription at any time. Cancellation effective at end of b
 ### 11.2 By Settler
 
 Settler may suspend or terminate Services if:
-
 - You breach these Terms
 - Payment is overdue
 - You engage in prohibited uses
@@ -226,7 +212,6 @@ Settler may suspend or terminate Services if:
 ### 11.3 Effect of Termination
 
 Upon termination:
-
 - Access to Commercial features ceases
 - OSS components remain available under MIT License
 - Data export available for 30 days
@@ -237,7 +222,6 @@ Upon termination:
 ### 12.1 Warranties
 
 Settler warrants that:
-
 - Services will perform substantially as described
 - Settler has right to grant licenses
 
@@ -258,7 +242,6 @@ OSS components provided without warranty per MIT License.
 ## 14. Indemnification
 
 You agree to indemnify Settler against claims arising from:
-
 - Your use of Services
 - Your breach of these Terms
 - Your violation of any laws or third-party rights
@@ -274,7 +257,6 @@ Settler may modify these Terms with 30 days' notice. Continued use after changes
 ## 17. Contact
 
 For questions about these Terms:
-
 - **Email:** legal@settler.dev
 - **Address:** [Company Address]
 

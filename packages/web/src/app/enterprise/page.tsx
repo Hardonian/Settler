@@ -1,9 +1,8 @@
-"use client";
+'use client';
 
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -13,53 +12,52 @@ import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { AnimatedFeatureCard } from "@/components/AnimatedFeatureCard";
 import { AnimatedStatCard } from "@/components/AnimatedStatCard";
-import { EdgeAIMarketingSection } from "@/components/EdgeAIMarketingSection";
 
 export default function Enterprise() {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    company: "",
-    message: "",
+    name: '',
+    email: '',
+    company: '',
+    message: '',
   });
 
   const features = [
     {
-      icon: "🚀",
-      title: "Unlimited Scale",
-      description: "No limits on reconciliations, adapters, or data retention",
+      icon: '🔒',
+      title: 'Enterprise Security',
+      description: 'SOC 2 Type II, SSO, SAML, RBAC, and custom security policies',
     },
     {
-      icon: "👥",
-      title: "Dedicated Support",
-      description: "Priority support with SLA guarantees and dedicated account manager",
+      icon: '🚀',
+      title: 'Unlimited Scale',
+      description: 'No limits on reconciliations, adapters, or data retention',
     },
     {
-      icon: "🔌",
-      title: "Custom Integrations",
-      description: "Build custom adapters and integrations for your specific needs",
+      icon: '👥',
+      title: 'Dedicated Support',
+      description: '24/7 support with SLA guarantees and dedicated account manager',
     },
     {
-      icon: "📊",
-      title: "Extended Log Retention",
-      description: "Keep reconciliation history for up to 7 years for compliance",
+      icon: '🏢',
+      title: 'On-Premise Option',
+      description: 'Deploy Settler in your own infrastructure for maximum control',
     },
     {
-      icon: "⚡",
-      title: "Priority Feature Requests",
-      description: "Influence product roadmap with priority feature requests",
+      icon: '🎨',
+      title: 'White-Label',
+      description: 'Fully customizable branding and UI to match your brand',
     },
     {
-      icon: "🔒",
-      title: "Enhanced Security",
-      description: "AES-256 encryption, secure API key storage, and audit trails",
+      icon: '🔌',
+      title: 'Custom Integrations',
+      description: 'Build custom adapters and integrations for your specific needs',
     },
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission
-    console.log("Form submitted:", formData);
+    console.log('Form submitted:', formData);
     // In production, this would send to your backend
   };
 
@@ -81,7 +79,7 @@ export default function Enterprise() {
       />
 
       {/* Hero CTA Buttons */}
-      <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-12" aria-label="Call to action">
+      <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-8" aria-label="Call to action">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -108,16 +106,19 @@ export default function Enterprise() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="enterprise-features-heading">
+      <section
+        className="py-20 px-4 sm:px-6 lg:px-8"
+        aria-labelledby="enterprise-features-heading"
+      >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
+          <div className="text-center mb-16">
             <h2
               id="enterprise-features-heading"
-              className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
+              className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
             >
               Everything You Need
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4">
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
               Enterprise features designed for scale, security, and compliance
             </p>
           </div>
@@ -146,35 +147,35 @@ export default function Enterprise() {
         aria-labelledby="benefits-heading"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2
                 id="benefits-heading"
-                className="text-3xl md:text-4xl font-bold mb-8 text-slate-900 dark:text-white"
+                className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
               >
                 Why Enterprise?
               </h2>
               <div className="space-y-6" role="list" aria-label="Enterprise benefits">
                 {[
                   {
-                    title: "99.99% Uptime SLA",
+                    title: '99.99% Uptime SLA',
                     description:
-                      "Guaranteed availability with financial penalties if we don't meet our SLA. Enterprise-grade infrastructure with redundancy and failover.",
+                      "Guaranteed availability with financial penalties if we don't meet our SLA.",
                   },
                   {
-                    title: "Custom Contracts & Pricing",
+                    title: 'Custom Contracts',
                     description:
-                      "Flexible terms, custom pricing based on your volume, and dedicated account management. Annual contracts with volume discounts available.",
+                      'Flexible terms, custom pricing, and dedicated account management.',
                   },
                   {
-                    title: "24/7 Priority Support",
+                    title: 'Priority Support',
                     description:
-                      "Dedicated support team with under 4 hour response time for critical issues. Direct line to engineering for urgent matters.",
+                      '24/7 support with under 4 hour response time for critical issues.',
                   },
                   {
-                    title: "Enterprise Compliance",
+                    title: 'Compliance Ready',
                     description:
-                      "GDPR compliant with full audit trails. SOC 2 Type II certification in progress (Q2 2026). PCI-DSS Level 1 planned for Q3 2026.",
+                      'SOC 2 Type II, GDPR, PCI-DSS, HIPAA-ready with audit trails.',
                   },
                 ].map((benefit, index) => (
                   <div key={index} className="flex items-start" role="listitem">
@@ -197,12 +198,10 @@ export default function Enterprise() {
                       </svg>
                     </div>
                     <div className="ml-4">
-                      <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
+                      <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
                         {benefit.title}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                        {benefit.description}
-                      </p>
+                      <p className="text-slate-600 dark:text-slate-300">{benefit.description}</p>
                     </div>
                   </div>
                 ))}
@@ -215,10 +214,7 @@ export default function Enterprise() {
               aria-labelledby="demo-form-heading"
             >
               <CardHeader>
-                <CardTitle
-                  id="demo-form-heading"
-                  className="text-2xl text-slate-900 dark:text-white"
-                >
+                <CardTitle id="demo-form-heading" className="text-2xl text-slate-900 dark:text-white">
                   Request a Demo
                 </CardTitle>
                 <CardDescription>
@@ -226,11 +222,11 @@ export default function Enterprise() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-5" aria-label="Demo request form">
+                <form onSubmit={handleSubmit} className="space-y-4" aria-label="Demo request form">
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2.5"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                     >
                       Name
                     </label>
@@ -247,7 +243,7 @@ export default function Enterprise() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2.5"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                     >
                       Email
                     </label>
@@ -264,7 +260,7 @@ export default function Enterprise() {
                   <div>
                     <label
                       htmlFor="company"
-                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2.5"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                     >
                       Company
                     </label>
@@ -281,7 +277,7 @@ export default function Enterprise() {
                   <div>
                     <label
                       htmlFor="message"
-                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2.5"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                     >
                       Message
                     </label>
@@ -327,14 +323,10 @@ export default function Enterprise() {
             aria-label="Enterprise performance metrics"
           >
             {[
-              { value: "99.99%", label: "Uptime SLA", description: "Guaranteed availability" },
-              { value: "<4hr", label: "Support Response", description: "Critical issues" },
-              { value: "24/7", label: "Support Coverage", description: "Always available" },
-              {
-                value: "GDPR",
-                label: "Compliance",
-                description: "GDPR compliant, SOC 2 in progress",
-              },
+              { value: '99.99%', label: 'Uptime SLA', description: 'Guaranteed availability' },
+              { value: '<4hr', label: 'Support Response', description: 'Critical issues' },
+              { value: '24/7', label: 'Support Coverage', description: 'Always available' },
+              { value: '100%', label: 'Compliance', description: 'SOC 2, GDPR, PCI-DSS' },
             ].map((stat, index) => (
               <div key={index} role="listitem">
                 <AnimatedStatCard
@@ -349,91 +341,20 @@ export default function Enterprise() {
         </div>
       </section>
 
-      {/* Coming Soon Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="coming-soon-heading">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2
-              id="coming-soon-heading"
-              className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white"
-            >
-              Coming Soon
-            </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4">
-              Enterprise features in development
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                title: "SSO (SAML, OIDC)",
-                description: "Single sign-on integration with your identity provider",
-                timeline: "Q2 2026",
-              },
-              {
-                title: "SOC 2 Type II",
-                description: "Full SOC 2 Type II certification and compliance",
-                timeline: "Q2 2026",
-              },
-              {
-                title: "PCI-DSS Level 1",
-                description: "PCI-DSS Level 1 certification for payment processing",
-                timeline: "Q3 2026",
-              },
-              {
-                title: "White-Label Reports",
-                description: "Fully customizable branding for reports and exports",
-                timeline: "Q2 2026",
-              },
-              {
-                title: "On-Premise Deployment",
-                description: "Deploy Settler in your own infrastructure",
-                timeline: "Q4 2026",
-              },
-              {
-                title: "VPC Peering",
-                description: "Private network connectivity for enhanced security",
-                timeline: "Q3 2026",
-              },
-            ].map((feature, index) => (
-              <Card
-                key={index}
-                className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg text-slate-900 dark:text-white">
-                    {feature.title}
-                  </CardTitle>
-                  <CardDescription>{feature.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Badge variant="outline" className="text-xs">
-                    {feature.timeline}
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Trust Indicators */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
               Enterprise-Grade Security & Compliance
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4">
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
               Join leading companies using Settler for mission-critical reconciliation
             </p>
           </div>
           <TrustBadges />
         </div>
       </section>
-
-      {/* Edge AI Section */}
-      <EdgeAIMarketingSection variant="default" />
 
       {/* Final CTA */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">

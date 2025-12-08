@@ -63,10 +63,12 @@ export class MiddlewareChain {
 /**
  * Built-in middleware for logging requests and responses
  */
-export function createLoggingMiddleware(logger?: {
-  info?: (message: string, meta?: unknown) => void;
-  error?: (message: string, meta?: unknown) => void;
-}): Middleware {
+export function createLoggingMiddleware(
+  logger?: {
+    info?: (message: string, meta?: unknown) => void;
+    error?: (message: string, meta?: unknown) => void;
+  }
+): Middleware {
   const log = logger?.info || console.log;
   const logError = logger?.error || console.error;
 
@@ -104,10 +106,12 @@ export function createLoggingMiddleware(logger?: {
 /**
  * Built-in middleware for metrics collection
  */
-export function createMetricsMiddleware(metrics?: {
-  increment?: (name: string, tags?: Record<string, string>) => void;
-  histogram?: (name: string, value: number, tags?: Record<string, string>) => void;
-}): Middleware {
+export function createMetricsMiddleware(
+  metrics?: {
+    increment?: (name: string, tags?: Record<string, string>) => void;
+    histogram?: (name: string, value: number, tags?: Record<string, string>) => void;
+  }
+): Middleware {
   return async (context: RequestContext, next: MiddlewareNext) => {
     const startTime = Date.now();
     metrics?.increment?.("settler.request.started", {

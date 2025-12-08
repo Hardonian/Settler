@@ -9,7 +9,6 @@ Settler uses a **dual-licensing model** to balance open source community growth 
 ### Core Components (MIT License)
 
 **What's MIT Licensed:**
-
 - **SDK (`@settler/sdk`)**: MIT License
 - **Adapter SDK (`@settler/adapter-sdk`)**: MIT License
 - **Community Adapters**: MIT License (individual packages)
@@ -17,14 +16,12 @@ Settler uses a **dual-licensing model** to balance open source community growth 
 - **Documentation**: CC BY 4.0
 
 **Why MIT:**
-
 - Maximum adoption and compatibility
 - Permissive license encourages contributions
 - Compatible with all major open source licenses
 - Industry standard for developer tools
 
 **MIT License Text:**
-
 ```
 MIT License
 
@@ -52,14 +49,12 @@ SOFTWARE.
 ### Hosted Service (Proprietary)
 
 **What's Proprietary:**
-
 - **Hosted API Service**: Proprietary (managed infrastructure)
 - **Enterprise Features**: Proprietary (SSO, dedicated infrastructure, custom SLAs)
 - **Advanced Analytics**: Proprietary (ML-powered insights, predictive alerts)
 - **Compliance Certifications**: Proprietary (SOC 2, PCI-DSS hosted only)
 
 **Why Proprietary:**
-
 - Enables sustainable business model
 - Funds continued development and support
 - Provides managed service with SLA guarantees
@@ -68,19 +63,16 @@ SOFTWARE.
 ### Self-Hosted Core (AGPL v3)
 
 **What's AGPL v3 Licensed:**
-
 - **Self-Hosted Core Engine**: AGPL v3
 - **Community Edition**: AGPL v3
 
 **Why AGPL v3:**
-
 - Ensures improvements are shared back with community
 - Prevents proprietary forks without contributing back
 - Still allows commercial use (with source code sharing)
 - Common for infrastructure software
 
 **AGPL v3 License Text:**
-
 ```
 GNU AFFERO GENERAL PUBLIC LICENSE
 Version 3, 19 November 2007
@@ -94,14 +86,14 @@ of this license document, but changing it is not allowed.
 
 ### License Compatibility Matrix
 
-| Your License    | Can Use MIT | Can Use AGPL v3            | Notes                               |
-| --------------- | ----------- | -------------------------- | ----------------------------------- |
-| **MIT**         | ✅ Yes      | ✅ Yes                     | Compatible                          |
-| **Apache 2.0**  | ✅ Yes      | ✅ Yes                     | Compatible                          |
-| **GPL v3**      | ✅ Yes      | ✅ Yes                     | Compatible                          |
-| **AGPL v3**     | ✅ Yes      | ✅ Yes                     | Compatible                          |
-| **BSD**         | ✅ Yes      | ✅ Yes                     | Compatible                          |
-| **Proprietary** | ✅ Yes      | ⚠️ Requires source sharing | AGPL requires sharing modifications |
+| Your License | Can Use MIT | Can Use AGPL v3 | Notes |
+|--------------|-------------|-----------------|-------|
+| **MIT** | ✅ Yes | ✅ Yes | Compatible |
+| **Apache 2.0** | ✅ Yes | ✅ Yes | Compatible |
+| **GPL v3** | ✅ Yes | ✅ Yes | Compatible |
+| **AGPL v3** | ✅ Yes | ✅ Yes | Compatible |
+| **BSD** | ✅ Yes | ✅ Yes | Compatible |
+| **Proprietary** | ✅ Yes | ⚠️ Requires source sharing | AGPL requires sharing modifications |
 
 ---
 
@@ -190,14 +182,14 @@ Corporation represents that:
 
 #### 5. Corporate Information
 
-**Corporation Name:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***  
-**Authorized Representative Name:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***  
-**Title:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***  
-**Email:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***  
-**Address:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***  
-**Date:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***
+**Corporation Name:** _________________________  
+**Authorized Representative Name:** _________________________  
+**Title:** _________________________  
+**Email:** _________________________  
+**Address:** _________________________  
+**Date:** _________________________
 
-**Signature:** \***\*\*\*\*\*\*\***\_\***\*\*\*\*\*\*\***
+**Signature:** _________________________
 
 ---
 
@@ -206,14 +198,12 @@ Corporation represents that:
 ### 1. Sign the CLA
 
 **For Individual Contributors:**
-
 - Read the Individual CLA above
 - Open a pull request with your contribution
 - Comment "I have read the CLA and agree to its terms"
 - Your first contribution will require manual CLA verification
 
 **For Corporate Contributors:**
-
 - Download the Corporate CLA template
 - Fill out the corporate information
 - Have an authorized representative sign
@@ -234,7 +224,6 @@ Corporation represents that:
 ### 3. Pull Request Guidelines
 
 **Required:**
-
 - Clear description of changes
 - Link to related issues (if any)
 - Tests pass (if applicable)
@@ -242,7 +231,6 @@ Corporation represents that:
 - CLA acknowledgment comment
 
 **Preferred:**
-
 - Small, focused PRs (easier to review)
 - Follow existing code style
 - Add tests for new features

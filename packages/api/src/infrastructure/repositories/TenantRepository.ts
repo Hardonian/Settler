@@ -1,6 +1,6 @@
-import { ITenantRepository } from "../../domain/repositories/ITenantRepository";
-import { Tenant, TenantProps } from "../../domain/entities/Tenant";
-import { query } from "../../db";
+import { ITenantRepository } from '../../domain/repositories/ITenantRepository';
+import { Tenant, TenantProps } from '../../domain/entities/Tenant';
+import { query } from '../../db';
 
 export class TenantRepository implements ITenantRepository {
   async findById(id: string): Promise<Tenant | null> {
@@ -36,7 +36,7 @@ export class TenantRepository implements ITenantRepository {
        WHERE parent_tenant_id = $1 AND deleted_at IS NULL`,
       [parentTenantId]
     );
-    return rows.map((row) => Tenant.fromPersistence(row));
+    return rows.map(row => Tenant.fromPersistence(row));
   }
 
   async findParentTenant(tenantId: string): Promise<Tenant | null> {
@@ -51,8 +51,10 @@ export class TenantRepository implements ITenantRepository {
   }
 
   async findAll(): Promise<Tenant[]> {
-    const rows = await query<TenantProps>(`SELECT * FROM tenants WHERE deleted_at IS NULL`);
-    return rows.map((row) => Tenant.fromPersistence(row));
+    const rows = await query<TenantProps>(
+      `SELECT * FROM tenants WHERE deleted_at IS NULL`
+    );
+    return rows.map(row => Tenant.fromPersistence(row));
   }
 
   async save(tenant: Tenant): Promise<void> {

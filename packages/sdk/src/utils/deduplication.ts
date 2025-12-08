@@ -13,7 +13,11 @@ const REQUEST_TIMEOUT = 60000; // 60 seconds
 /**
  * Generates a unique key for a request based on method, path, and body
  */
-function generateRequestKey(method: string, path: string, body?: unknown): string {
+function generateRequestKey(
+  method: string,
+  path: string,
+  body?: unknown
+): string {
   const bodyHash = body ? JSON.stringify(body) : "";
   return `${method}:${path}:${bodyHash}`;
 }
@@ -37,7 +41,7 @@ function cleanupStaleRequests(): void {
 export async function withDeduplication<T>(
   method: string,
   path: string,
-  body: unknown,
+  body: unknown | undefined,
   fn: () => Promise<T>
 ): Promise<T> {
   cleanupStaleRequests();

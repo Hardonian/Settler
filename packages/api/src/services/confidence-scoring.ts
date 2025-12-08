@@ -108,9 +108,7 @@ export function calculateConfidenceScore(
         if (rule.days !== undefined && rule.field.includes("date")) {
           const sourceDate = new Date(String(sourceValue));
           const targetDate = new Date(String(targetValue));
-          const diffDays = Math.abs(
-            (sourceDate.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24)
-          );
+          const diffDays = Math.abs((sourceDate.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24));
           if (diffDays <= rule.days) {
             score = 1 - (diffDays / rule.days) * 0.2; // Slight penalty for date differences
             reason = `Date range match: ${diffDays.toFixed(1)} days <= ${rule.days} days`;
@@ -221,9 +219,9 @@ export function explainConfidenceScore(confidence: ConfidenceScore): string {
 
   if (score >= 0.95) {
     return `High confidence (${(score * 100).toFixed(1)}%): ${factors.exactMatches} exact matches, all rules satisfied.`;
-  } else if (score >= 0.8) {
+  } else if (score >= 0.80) {
     return `Medium confidence (${(score * 100).toFixed(1)}%): ${factors.exactMatches} exact matches, ${factors.fuzzyMatches} fuzzy matches.`;
-  } else if (score >= 0.5) {
+  } else if (score >= 0.50) {
     return `Low confidence (${(score * 100).toFixed(1)}%): Some matches found but not all rules satisfied. Review recommended.`;
   } else {
     return `Very low confidence (${(score * 100).toFixed(1)}%): Few matches found. Manual review required.`;

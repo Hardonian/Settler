@@ -1,16 +1,47 @@
 {
-  "crons": [
+  "buildCommand": "npx turbo run build --filter=@settler/web...",
+  "installCommand": "npm ci",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=8192",
+      "PRISMA_CLIENT_ENGINE_TYPE": "binary",
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  },
+  "functions": {
+    "app/api/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "headers": [
     {
-      "path": "/api/cron/email-lifecycle",
-      "schedule": "0 9 * * *"
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
     },
     {
-      "path": "/api/cron/monthly-summary",
-      "schedule": "0 9 1 * *"
-    },
-    {
-      "path": "/api/cron/low-activity",
-      "schedule": "0 10 * * *"
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ]
 }

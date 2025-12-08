@@ -1,0 +1,7 @@
+"use strict";exports.id=698,exports.ids=[698],exports.modules={32698:(e,a,l)=>{l.r(a),l.d(a,{CustomerLogos:()=>o});var t=l(73227),s=l(23677);function o(){let[e,a]=(0,s.useState)(!1),l=(0,s.useRef)(null);return(0,t.jsxs)("div",{ref:l,className:"py-12",role:"region","aria-label":"Customer logos",children:[t.jsx("p",{className:"text-center text-sm text-slate-600 dark:text-slate-400 mb-8",children:"Trusted by leading companies"}),t.jsx("div",{className:"flex flex-wrap items-center justify-center gap-8",role:"list","aria-label":"Company logos",children:[{name:"TechCorp",logo:"\uD83C\uDFE2"},{name:"StartupXYZ",logo:"\uD83D\uDE80"},{name:"EcomPlus",logo:"\uD83D\uDED2"},{name:"FinanceApp",logo:"\uD83D\uDCB0"},{name:"RetailPro",logo:"\uD83C\uDFEA"},{name:"SaaSCo",logo:"☁️"}].map((a,l)=>t.jsx("div",{className:`
+              flex items-center justify-center w-24 h-24 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm
+              transition-all duration-500
+              ${e?"opacity-100 translate-y-0 scale-100":"opacity-0 translate-y-4 scale-95"}
+              hover:opacity-100 hover:grayscale-0 hover:scale-110 hover:shadow-lg
+              opacity-60 grayscale
+            `,style:{transitionDelay:`${100*l}ms`},role:"listitem","aria-label":`${a.name} logo`,title:a.name,children:t.jsx("span",{className:"text-4xl","aria-hidden":"true",children:a.logo})},l))})]})}}};

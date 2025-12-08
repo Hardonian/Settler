@@ -13,14 +13,14 @@ export const errorHandler = (
 ): void => {
   const authReq = req as AuthRequest;
   const apiError = toApiError(err);
-
+  
   // Set Sentry user context
   if (authReq.userId) {
     setSentryUser(authReq);
   }
-
+  
   // Log error with context
-  logError("Request error", err, {
+  logError('Request error', err, {
     method: req.method,
     path: req.path,
     ip: req.ip,

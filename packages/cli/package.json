@@ -9,12 +9,9 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
-    "test": "jest --passWithNoTests",
+    "test": "jest",
     "lint": "eslint src --ext .ts --max-warnings 100",
-    "lint:fix": "eslint src --ext .ts --fix",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json}\"",
     "clean": "rm -rf dist"
   },
   "dependencies": {

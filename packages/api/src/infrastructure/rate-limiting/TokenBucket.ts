@@ -3,8 +3,8 @@
  * Adaptive token bucket implementation for tenant rate limiting
  */
 
-import Redis from "ioredis";
-import { config } from "../../config";
+import Redis from 'ioredis';
+import { config } from '../../config';
 
 export interface TokenBucketConfig {
   capacity: number; // Maximum tokens
@@ -79,7 +79,7 @@ export class TokenBucket {
       end
     `;
 
-    const result = (await this.redis.eval(
+    const result = await this.redis.eval(
       luaScript,
       1,
       redisKey,
@@ -88,7 +88,7 @@ export class TokenBucket {
       config.refillRate.toString(),
       now.toString(),
       windowMs.toString()
-    )) as [number, number, number];
+    ) as [number, number, number];
 
     const allowed = result[0] === 1;
     const remaining = result[1];
@@ -105,7 +105,7 @@ export class TokenBucket {
     const windowMs = (config.capacity / config.refillRate) * 1000;
     const redisKey = `rate_limit:${key}`;
 
-    const bucket = await this.redis.hmget(redisKey, "tokens", "lastRefill");
+    const bucket = await this.redis.hmget(redisKey, 'tokens', 'lastRefill');
     const currentTokens = bucket[0] ? parseFloat(bucket[0]) : config.capacity;
     const lastRefill = bucket[1] ? parseFloat(bucket[1]) : now;
 

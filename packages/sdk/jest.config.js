@@ -1,38 +1,19 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  preset: "ts-jest",
-  testEnvironment: "node",
-  roots: ["<rootDir>/src"],
-  testMatch: ["**/__tests__/**/*.test.ts"],
-  setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup.ts"],
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/src'],
+  testMatch: ['**/__tests__/**/*.test.ts'],
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
   collectCoverageFrom: [
-    "src/**/*.ts",
-    "!src/**/*.test.ts",
-    "!src/**/__tests__/**",
-    "!src/**/__mocks__/**",
+    'src/**/*.ts',
+    '!src/**/*.test.ts',
+    '!src/**/__tests__/**',
+    '!src/**/__mocks__/**',
   ],
-  coverageDirectory: "coverage",
-  coverageReporters: ["text", "lcov", "html"],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
-  },
-  transformIgnorePatterns: [
-    "node_modules/(?!(until-async|msw|@mswjs|@bundled-es-modules|@open-draft)/)",
-  ],
-  transform: {
-    "^.+\\.tsx?$": [
-      "ts-jest",
-      {
-        useESM: false,
-        isolatedModules: true,
-        tsconfig: {
-          esModuleInterop: true,
-          allowSyntheticDefaultImports: true,
-        },
-      },
-    ],
-  },
-  testEnvironmentOptions: {
-    customExportConditions: ["node", "node-addons"],
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
 };

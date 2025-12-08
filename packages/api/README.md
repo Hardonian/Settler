@@ -9,7 +9,6 @@ Built using **Hexagonal Architecture** with **CQRS** and **Event-Driven** patter
 ## Features
 
 ### Security
-
 - ✅ JWT authentication with refresh tokens (15min access, 7d refresh)
 - ✅ API key authentication with hashed storage (bcrypt)
 - ✅ Scope-based permissions (read, write, admin)
@@ -20,14 +19,12 @@ Built using **Hexagonal Architecture** with **CQRS** and **Event-Driven** patter
 - ✅ Field-level encryption for sensitive data
 
 ### Observability
-
 - ✅ Structured logging with Winston (JSON output)
 - ✅ Distributed tracing with OpenTelemetry
 - ✅ Prometheus metrics endpoint
 - ✅ Comprehensive health checks (/health, /health/live, /health/ready)
 
 ### Resilience
-
 - ✅ Retry logic with exponential backoff
 - ✅ Circuit breaker pattern for external APIs
 - ✅ Idempotency key support
@@ -35,14 +32,12 @@ Built using **Hexagonal Architecture** with **CQRS** and **Event-Driven** patter
 - ✅ Connection pooling (max 20 connections)
 
 ### Performance
-
 - ✅ Database indexes on all foreign keys
 - ✅ Redis caching layer
 - ✅ Pagination for all list endpoints
 - ✅ Query optimization (no N+1 queries)
 
 ### Testing
-
 - ✅ Unit tests (Jest, 70% coverage target)
 - ✅ Integration tests (Supertest)
 - ✅ Security tests (SQL injection, XSS, auth)
@@ -60,27 +55,23 @@ Built using **Hexagonal Architecture** with **CQRS** and **Event-Driven** patter
 ### Local Development
 
 1. **Clone and install dependencies:**
-
    ```bash
    npm install
    ```
 
 2. **Start dependencies with Docker Compose:**
-
    ```bash
    cd packages/api
    docker-compose up -d postgres redis
    ```
 
 3. **Set up environment variables:**
-
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 4. **Initialize database:**
-
    ```bash
    npm run dev
    # Database schema will be created automatically
@@ -100,7 +91,6 @@ docker-compose up
 ```
 
 This starts:
-
 - API server (port 3000)
 - PostgreSQL (port 5432)
 - Redis (port 6379)
@@ -240,7 +230,6 @@ Prometheus metrics available at `/metrics`:
 ### Logging
 
 Structured JSON logs with:
-
 - Trace IDs for request correlation
 - Automatic PII redaction
 - Log levels: ERROR, WARN, INFO, DEBUG
@@ -248,7 +237,6 @@ Structured JSON logs with:
 ### Tracing
 
 OpenTelemetry traces include:
-
 - HTTP requests
 - Database queries
 - External API calls

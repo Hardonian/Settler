@@ -1,14 +1,14 @@
 /**
  * Global Error Handler (Next.js App Router)
- *
+ * 
  * Catches errors in the root layout.
  */
 
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { logger } from "@/lib/logging/logger";
-import { analytics } from "@/lib/analytics";
+import { useEffect } from 'react';
+import { logger } from '@/lib/logging/logger';
+import { analytics } from '@/lib/analytics';
 
 export default function GlobalError({
   error,
@@ -19,7 +19,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     // Log critical error
-    logger.critical("Global error handler caught error", error, {
+    logger.critical('Global error handler caught error', error, {
       digest: error.digest,
       name: error.name,
       message: error.message,
@@ -28,40 +28,39 @@ export default function GlobalError({
 
     // Track in analytics
     analytics.trackError(error, {
-      type: "global_error",
+      type: 'global_error',
       digest: error.digest,
-      message: error.message,
     });
   }, [error]);
 
   return (
     <html lang="en">
       <body>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            minHeight: "100vh",
-            padding: "2rem",
-            textAlign: "center",
-          }}
-        >
-          <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Something went wrong</h1>
-          <p style={{ marginBottom: "2rem", color: "#666" }}>
-            We&apos;re sorry, but something unexpected happened. Please try refreshing the page.
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          padding: '2rem',
+          textAlign: 'center',
+        }}>
+          <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>
+            Something went wrong
+          </h1>
+          <p style={{ marginBottom: '2rem', color: '#666' }}>
+            We're sorry, but something unexpected happened. Please try refreshing the page.
           </p>
           <button
             onClick={reset}
             style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#2563eb",
-              color: "white",
-              border: "none",
-              borderRadius: "0.5rem",
-              cursor: "pointer",
-              fontSize: "1rem",
+              padding: '0.75rem 1.5rem',
+              backgroundColor: '#2563eb',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.5rem',
+              cursor: 'pointer',
+              fontSize: '1rem',
             }}
           >
             Try again

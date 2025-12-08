@@ -70,7 +70,6 @@ SENTRY_ENVIRONMENT=production
 ### Secrets Management
 
 **Production Secrets:**
-
 - Store in AWS Secrets Manager, HashiCorp Vault, or similar
 - Never commit secrets to git
 - Rotate secrets regularly
@@ -83,7 +82,6 @@ SENTRY_ENVIRONMENT=production
 ### Option 1: Vercel (Recommended for MVP)
 
 **Pros:**
-
 - Zero-config deployment
 - Automatic scaling
 - Edge network
@@ -92,41 +90,34 @@ SENTRY_ENVIRONMENT=production
 **Steps:**
 
 1. **Install Vercel CLI:**
-
 ```bash
 npm install -g vercel
 ```
 
 2. **Login:**
-
 ```bash
 vercel login
 ```
 
 3. **Deploy API:**
-
 ```bash
 cd packages/api
 vercel --prod
 ```
 
 4. **Deploy Web:**
-
 ```bash
 cd packages/web
 vercel --prod
 ```
 
 5. **Configure Environment Variables:**
-
 - Go to Vercel dashboard
 - Project → Settings → Environment Variables
 - Add all required variables
 
 **Configuration:**
-
 - `vercel.json` in `packages/api`:
-
 ```json
 {
   "version": 2,
@@ -150,7 +141,6 @@ vercel --prod
 ### Option 2: AWS (Production)
 
 **Architecture:**
-
 - API: AWS Lambda + API Gateway
 - Database: RDS PostgreSQL
 - Cache: ElastiCache Redis
@@ -160,13 +150,11 @@ vercel --prod
 **Steps:**
 
 1. **Build Docker Image:**
-
 ```bash
 docker build -t settler-api:latest packages/api
 ```
 
 2. **Push to ECR:**
-
 ```bash
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
 docker tag settler-api:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/settler-api:latest
@@ -174,7 +162,6 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/settler-api:latest
 ```
 
 3. **Deploy with Terraform:**
-
 ```bash
 cd infrastructure/aws
 terraform init
@@ -183,16 +170,15 @@ terraform apply
 ```
 
 **Terraform Configuration:**
-
 ```hcl
 # infrastructure/aws/main.tf
 module "settler_api" {
   source = "./modules/api"
-
+  
   environment = "production"
   vpc_id      = var.vpc_id
   subnet_ids  = var.subnet_ids
-
+  
   database_url = var.database_url
   redis_url    = var.redis_url
 }
@@ -203,14 +189,12 @@ module "settler_api" {
 ### Option 3: Kubernetes (Enterprise)
 
 **Prerequisites:**
-
 - Kubernetes cluster (EKS, GKE, AKS)
 - Helm installed
 
 **Steps:**
 
 1. **Build and Push Image:**
-
 ```bash
 docker build -t settler-api:latest packages/api
 docker tag settler-api:latest registry.example.com/settler-api:v1.0.0
@@ -218,7 +202,6 @@ docker push registry.example.com/settler-api:v1.0.0
 ```
 
 2. **Deploy with Helm:**
-
 ```bash
 helm install settler-api ./helm/settler-api \
   --set image.tag=v1.0.0 \
@@ -228,7 +211,6 @@ helm install settler-api ./helm/settler-api \
 ```
 
 **Helm Chart Structure:**
-
 ```
 helm/settler-api/
 ├── Chart.yaml
@@ -247,9 +229,8 @@ helm/settler-api/
 **Steps:**
 
 1. **Create docker-compose.yml:**
-
 ```yaml
-version: "3.8"
+version: '3.8'
 
 services:
   api:
@@ -284,13 +265,11 @@ volumes:
 ```
 
 2. **Start Services:**
-
 ```bash
 docker-compose up -d
 ```
 
 3. **Run Migrations:**
-
 ```bash
 docker-compose exec api npm run migrate
 ```
@@ -315,21 +294,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "20"
-
+          node-version: '20'
+      
       - name: Install dependencies
         run: npm ci
-
+      
       - name: Run tests
         run: npm test
-
+      
       - name: Build
         run: npm run build
-
+      
       - name: Deploy to production
         run: |
           # Deployment steps
@@ -343,13 +322,11 @@ jobs:
 ### Running Migrations
 
 **Local:**
-
 ```bash
 npm run migrate
 ```
 
 **Production:**
-
 ```bash
 # Via API container
 kubectl exec -it deployment/api -- npm run migrate
@@ -414,7 +391,6 @@ curl https://api.settler.io/health
 ```
 
 **Expected Response:**
-
 ```json
 {
   "status": "healthy",
@@ -458,21 +434,18 @@ curl https://api.settler.io/health
 ### Common Issues
 
 **Issue: Deployment fails**
-
 - Check environment variables
 - Verify secrets are set
 - Check build logs
 - Verify dependencies
 
 **Issue: API returns 500 errors**
-
 - Check application logs
 - Verify database connectivity
 - Check Redis connectivity
 - Review recent code changes
 
 **Issue: High latency**
-
 - Check database query performance
 - Verify cache is working
 - Check external API dependencies

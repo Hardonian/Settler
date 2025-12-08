@@ -1,9 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CopyButton } from "@/components/ui/CopyButton";
-import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface AnimatedCodeBlockProps {
   code: string;
@@ -20,9 +19,9 @@ export function AnimatedCodeBlock({
   code,
   title,
   description,
-  language = "typescript",
+  language = 'typescript',
 }: AnimatedCodeBlockProps) {
-  const [displayedCode, setDisplayedCode] = useState("");
+  const [displayedCode, setDisplayedCode] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const codeRef = useRef<HTMLPreElement>(null);
 
@@ -52,8 +51,8 @@ export function AnimatedCodeBlock({
     if (!isVisible) return;
 
     const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReducedMotion) {
       // Show all code immediately for reduced motion
@@ -80,47 +79,44 @@ export function AnimatedCodeBlock({
   return (
     <Card
       className={cn(
-        "max-w-4xl mx-auto",
-        "bg-slate-900 border-slate-800",
-        "shadow-2xl",
-        "transition-all duration-300",
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        'max-w-4xl mx-auto',
+        'bg-slate-900 border-slate-800',
+        'shadow-2xl',
+        'transition-all duration-300',
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-8'
       )}
       role="region"
       aria-labelledby="code-title"
       aria-describedby="code-description"
     >
-      <CardHeader className="flex flex-row items-start justify-between gap-4">
-        <div className="flex-1">
-          <CardTitle id="code-title" className="text-white">
-            {title}
-          </CardTitle>
-          <CardDescription id="code-description" className="text-muted-foreground">
-            {description}
-          </CardDescription>
-        </div>
-        <CopyButton text={code} size="sm" />
+      <CardHeader>
+        <CardTitle id="code-title" className="text-white">
+          {title}
+        </CardTitle>
+        <CardDescription id="code-description" className="text-muted-foreground">
+          {description}
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="relative group">
-          <pre
-            ref={codeRef}
-            className="bg-slate-950 rounded-lg p-4 sm:p-6 overflow-x-auto"
-            role="code"
-            aria-label={`${language} code example`}
+        <pre
+          ref={codeRef}
+          className="bg-slate-950 rounded-lg p-6 overflow-x-auto"
+          role="code"
+          aria-label={`${language} code example`}
+        >
+          <code
+            className="text-sm text-green-400 font-mono"
+            aria-live="polite"
+            aria-atomic="true"
           >
-            <code
-              className="text-xs sm:text-sm text-green-400 font-mono"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {displayedCode}
-              {isVisible && displayedCode.length < code.length && (
-                <span className="animate-pulse">|</span>
-              )}
-            </code>
-          </pre>
-        </div>
+            {displayedCode}
+            {isVisible && displayedCode.length < code.length && (
+              <span className="animate-pulse">|</span>
+            )}
+          </code>
+        </pre>
       </CardContent>
     </Card>
   );

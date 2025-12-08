@@ -1,52 +1,40 @@
 /**
  * Enhanced Stripe Adapter
- *
+ * 
  * Implements webhook ingestion, API polling, and comprehensive normalization
  * as specified in the Product & Technical Specification.
  */
 
-import { EnhancedAdapter, AdapterConfig, DateRange, NormalizedEvent } from "./enhanced-base";
-import {
-  Transaction,
-  Settlement,
-  Fee,
-  RefundDispute,
-  TransactionType,
-  TransactionStatus,
-  SettlementStatus,
-  RefundDisputeType,
-  RefundDisputeStatus,
-} from "@settler/types";
-import crypto from "crypto";
-import Stripe from "stripe";
+import { EnhancedAdapter, AdapterConfig, DateRange, NormalizedEvent } from './enhanced-base';
+import { Transaction, Settlement, Fee, RefundDispute, TransactionType, TransactionStatus, SettlementStatus, RefundDisputeType, RefundDisputeStatus } from '@settler/types';
+import crypto from 'crypto';
+import Stripe from 'stripe';
 
 export class StripeEnhancedAdapter implements EnhancedAdapter {
-  name = "stripe";
-  version = "1.0.0";
-  private supportedVersions = ["2023-10-16", "2024-01-01"]; // Supported API versions
+  name = 'stripe';
+  version = '1.0.0';
+  private supportedVersions = ['2023-10-16', '2024-01-01']; // Supported API versions
 
   /**
    * Verify webhook signature
    */
   verifyWebhook(payload: string | Buffer, signature: string, secret: string): boolean {
     try {
-      const elements = signature.split(",");
-      const timestamp = elements.find((e) => e.startsWith("t="))?.substring(2);
-      const signatures = elements.filter((e) => e.startsWith("v1=")).map((e) => e.substring(3));
+      const elements = signature.split(',');
+      const timestamp = elements.find(e => e.startsWith('t='))?.substring(2);
+      const signatures = elements.filter(e => e.startsWith('v1=')).map(e => e.substring(3));
 
       if (!timestamp || signatures.length === 0) {
         return false;
       }
 
-      const signedPayload = `${timestamp}.${typeof payload === "string" ? payload : payload.toString()}`;
+      const signedPayload = `${timestamp}.${typeof payload === 'string' ? payload : payload.toString()}`;
       const expectedSignature = crypto
-        .createHmac("sha256", secret)
+        .createHmac('sha256', secret)
         .update(signedPayload)
-        .digest("hex");
+        .digest('hex');
 
-      return signatures.some((sig) =>
-        crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSignature))
-      );
+      return signatures.some(sig => crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSignature)));
     } catch (error) {
       return false;
     }
@@ -61,38 +49,38 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
     const data = payload.data?.object || payload;
 
     switch (eventType) {
-      case "charge.succeeded":
-      case "payment_intent.succeeded":
+      case 'charge.succeeded':
+      case 'payment_intent.succeeded':
         events.push({
-          type: "capture",
+          type: 'capture',
           transaction: this.normalizeTransaction(data, tenantId),
           rawPayload: payload,
           timestamp: new Date(payload.created * 1000),
         });
         break;
 
-      case "charge.refunded":
-      case "refund.created":
+      case 'charge.refunded':
+      case 'refund.created':
         events.push({
-          type: "refund",
-          refundDispute: this.normalizeRefundDispute(data, tenantId, "refund"),
+          type: 'refund',
+          refundDispute: this.normalizeRefundDispute(data, tenantId, 'refund'),
           rawPayload: payload,
           timestamp: new Date(payload.created * 1000),
         });
         break;
 
-      case "charge.dispute.created":
+      case 'charge.dispute.created':
         events.push({
-          type: "chargeback",
-          refundDispute: this.normalizeRefundDispute(data, tenantId, "chargeback"),
+          type: 'chargeback',
+          refundDispute: this.normalizeRefundDispute(data, tenantId, 'chargeback'),
           rawPayload: payload,
           timestamp: new Date(payload.created * 1000),
         });
         break;
 
-      case "payout.paid":
+      case 'payout.paid':
         events.push({
-          type: "payout",
+          type: 'payout',
           settlement: this.normalizeSettlement(data, tenantId),
           rawPayload: payload,
           timestamp: new Date(payload.created * 1000),
@@ -103,7 +91,7 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
         // Unknown event type, but still normalize if possible
         if (data.id && data.amount) {
           events.push({
-            type: "capture",
+            type: 'capture',
             transaction: this.normalizeTransaction(data, tenantId),
             rawPayload: payload,
             timestamp: new Date(payload.created * 1000),
@@ -120,11 +108,11 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
   async pollTransactions(config: AdapterConfig, dateRange: DateRange): Promise<Transaction[]> {
     const apiKey = config.apiKey;
     if (!apiKey) {
-      throw new Error("Stripe API key is required");
+      throw new Error('Stripe API key is required');
     }
 
     const stripe = new Stripe(apiKey, {
-      apiVersion: "2023-10-16" as any,
+      apiVersion: '2024-11-20.acacia',
     });
 
     const charges = await stripe.charges.list({
@@ -135,9 +123,7 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
       limit: 100,
     });
 
-    return charges.data.map((charge) =>
-      this.normalizeTransaction(charge, config.tenantId || "default")
-    );
+    return charges.data.map((charge) => this.normalizeTransaction(charge, config.tenantId || 'default'));
   }
 
   /**
@@ -146,11 +132,11 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
   async pollSettlements(config: AdapterConfig, dateRange: DateRange): Promise<Settlement[]> {
     const apiKey = config.apiKey;
     if (!apiKey) {
-      throw new Error("Stripe API key is required");
+      throw new Error('Stripe API key is required');
     }
 
     const stripe = new Stripe(apiKey, {
-      apiVersion: "2023-10-16" as any,
+      apiVersion: '2024-11-20.acacia',
     });
 
     const payouts = await stripe.payouts.list({
@@ -161,9 +147,7 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
       limit: 100,
     });
 
-    return payouts.data.map((payout) =>
-      this.normalizeSettlement(payout, config.tenantId || "default")
-    );
+    return payouts.data.map((payout) => this.normalizeSettlement(payout, config.tenantId || 'default'));
   }
 
   /**
@@ -175,22 +159,19 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
 
     if (payload.balance_transaction) {
       const balanceTx = payload.balance_transaction;
-
+      
       if (balanceTx.fee !== undefined) {
         fees.push({
           id: this.generateId(),
           tenantId,
           transactionId: transaction.id,
-          type: "processing",
+          type: 'processing',
           amount: {
             value: balanceTx.fee / 100,
             currency: transaction.amount.currency,
           },
-          description: "Stripe processing fee",
-          rate:
-            transaction.amount.value > 0
-              ? (balanceTx.fee / 100 / transaction.amount.value) * 100
-              : 0,
+          description: 'Stripe processing fee',
+          rate: transaction.amount.value > 0 ? (balanceTx.fee / 100) / transaction.amount.value * 100 : 0,
           rawPayload: balanceTx,
           createdAt: new Date(),
         });
@@ -205,12 +186,12 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
    */
   normalizeTransaction(raw: Record<string, any>, tenantId: string): Transaction {
     const charge = raw.charge || raw;
-
+    
     const transaction: Transaction = {
       id: this.generateId(),
       tenantId,
       paymentId: charge.metadata?.payment_id,
-      provider: "stripe",
+      provider: 'stripe',
       providerTransactionId: charge.id,
       type: this.mapTransactionType(charge),
       amount: {
@@ -238,11 +219,11 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
    */
   normalizeSettlement(raw: Record<string, any>, tenantId: string): Settlement {
     const payout = raw.payout || raw;
-
+    
     return {
       id: this.generateId(),
       tenantId,
-      provider: "stripe",
+      provider: 'stripe',
       providerSettlementId: payout.id,
       amount: {
         value: payout.amount / 100,
@@ -262,11 +243,7 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
   /**
    * Normalize refund/dispute
    */
-  normalizeRefundDispute(
-    raw: Record<string, any>,
-    tenantId: string,
-    type: RefundDisputeType
-  ): RefundDispute {
+  normalizeRefundDispute(raw: Record<string, any>, tenantId: string, type: RefundDisputeType): RefundDispute {
     return {
       id: this.generateId(),
       tenantId,
@@ -274,12 +251,12 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
       type,
       amount: {
         value: raw.amount ? raw.amount / 100 : 0,
-        currency: raw.currency ? raw.currency.toUpperCase() : "USD",
+        currency: raw.currency ? raw.currency.toUpperCase() : 'USD',
       },
       status: this.mapRefundDisputeStatus(raw),
       reason: raw.reason || raw.dispute_reason,
-      providerRefundId: type === "refund" ? raw.id : undefined,
-      providerDisputeId: type === "chargeback" ? raw.id : undefined,
+      providerRefundId: type === 'refund' ? raw.id : undefined,
+      providerDisputeId: type === 'chargeback' ? raw.id : undefined,
       rawPayload: raw,
       createdAt: new Date(raw.created * 1000),
       updatedAt: new Date(raw.updated || raw.created * 1000),
@@ -291,9 +268,7 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
    */
   handleVersionChange(_oldVersion: string, newVersion: string): void {
     if (!this.supportedVersions.includes(newVersion)) {
-      console.warn(
-        `Stripe API version ${newVersion} is not officially supported. Supported versions: ${this.supportedVersions.join(", ")}`
-      );
+      console.warn(`Stripe API version ${newVersion} is not officially supported. Supported versions: ${this.supportedVersions.join(', ')}`);
     }
   }
 
@@ -301,40 +276,40 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
    * Map Stripe transaction type to canonical type
    */
   private mapTransactionType(charge: any): TransactionType {
-    if (charge.refunded) return "refund";
-    if (charge.disputed) return "chargeback";
-    if (charge.captured) return "capture";
-    return "authorization";
+    if (charge.refunded) return 'refund';
+    if (charge.disputed) return 'chargeback';
+    if (charge.captured) return 'capture';
+    return 'authorization';
   }
 
   /**
    * Map Stripe status to canonical status
    */
   private mapTransactionStatus(charge: any): TransactionStatus {
-    if (charge.refunded) return "refunded";
-    if (charge.disputed) return "disputed";
-    if (charge.paid) return "succeeded";
-    if (charge.failed) return "failed";
-    return "pending";
+    if (charge.refunded) return 'refunded';
+    if (charge.disputed) return 'disputed';
+    if (charge.paid) return 'succeeded';
+    if (charge.failed) return 'failed';
+    return 'pending';
   }
 
   /**
    * Map Stripe payout status to canonical status
    */
   private mapSettlementStatus(payout: any): SettlementStatus {
-    if (payout.status === "paid") return "completed";
-    if (payout.status === "failed") return "failed";
-    return "pending";
+    if (payout.status === 'paid') return 'completed';
+    if (payout.status === 'failed') return 'failed';
+    return 'pending';
   }
 
   /**
    * Map Stripe refund/dispute status to canonical status
    */
   private mapRefundDisputeStatus(raw: any): RefundDisputeStatus {
-    if (raw.status === "succeeded" || raw.status === "won") return "completed";
-    if (raw.status === "failed" || raw.status === "lost") return "lost";
-    if (raw.status === "canceled") return "reversed";
-    return "pending";
+    if (raw.status === 'succeeded' || raw.status === 'won') return 'completed';
+    if (raw.status === 'failed' || raw.status === 'lost') return 'lost';
+    if (raw.status === 'canceled') return 'reversed';
+    return 'pending';
   }
 
   /**

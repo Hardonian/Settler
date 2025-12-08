@@ -3,15 +3,15 @@
  * Application service for reconciliation job operations
  */
 
-import { Job, JobStatus, JobProps } from "../../domain/entities/Job";
-import { IJobRepository } from "../../domain/repositories/IJobRepository";
-import { CreateJobCommand, CreateJobCommandResult } from "../commands/CreateJobCommand";
-import { GetJobQuery, GetJobQueryResult } from "../queries/GetJobQuery";
-import { ReconciliationRules } from "../../domain/entities/Job";
-import { ListJobsQuery, ListJobsQueryResult } from "../queries/ListJobsQuery";
-import { encrypt } from "../../infrastructure/security/encryption";
-import { JobCreatedEvent, JobUpdatedEvent } from "../../domain/events/DomainEvent";
-import { IEventBus } from "../../infrastructure/events/IEventBus";
+import { Job, JobStatus, JobProps } from '../../domain/entities/Job';
+import { IJobRepository } from '../../domain/repositories/IJobRepository';
+import { CreateJobCommand, CreateJobCommandResult } from '../commands/CreateJobCommand';
+import { GetJobQuery, GetJobQueryResult } from '../queries/GetJobQuery';
+import { ReconciliationRules } from '../../domain/entities/Job';
+import { ListJobsQuery, ListJobsQueryResult } from '../queries/ListJobsQuery';
+import { encrypt } from '../../infrastructure/security/encryption';
+import { JobCreatedEvent, JobUpdatedEvent } from '../../domain/events/DomainEvent';
+import { IEventBus } from '../../infrastructure/events/IEventBus';
 
 export class JobService {
   constructor(
@@ -25,7 +25,7 @@ export class JobService {
     const targetConfigEncrypted = await encrypt(JSON.stringify(command.targetConfig));
 
     // Create job entity
-    const jobProps: Omit<JobProps, "id" | "status" | "version" | "createdAt" | "updatedAt"> = {
+    const jobProps: Omit<JobProps, 'id' | 'status' | 'version' | 'createdAt' | 'updatedAt'> = {
       userId: command.userId,
       name: command.name,
       sourceAdapter: command.sourceAdapter,
@@ -59,20 +59,25 @@ export class JobService {
     });
 
     // Emit domain event
-    await this.eventBus.publish(new JobCreatedEvent(savedJob.id, savedJob.userId, savedJob.name));
+    await this.eventBus.publish(
+      new JobCreatedEvent(savedJob.id, savedJob.userId, savedJob.name)
+    );
 
     return {
       jobId: savedJob.id,
       name: savedJob.name,
-      status: savedJob.status as Job["status"],
+      status: savedJob.status as Job['status'],
     };
   }
 
   async getJob(query: GetJobQuery): Promise<GetJobQueryResult> {
-    const jobData = await this.jobRepository.findById(query.jobId, query.userId);
+    const jobData = await this.jobRepository.findById(
+      query.jobId,
+      query.userId
+    );
 
     if (!jobData) {
-      throw new Error("Job not found");
+      throw new Error('Job not found');
     }
 
     // Convert repository format to domain format
@@ -86,7 +91,7 @@ export class JobService {
       name: jobData.name,
       sourceAdapter: source.adapter,
       targetAdapter: target.adapter,
-      rules: rules as GetJobQueryResult["rules"],
+      rules: rules as GetJobQueryResult['rules'],
       status: jobData.status,
       createdAt: jobData.createdAt,
       updatedAt: jobData.updatedAt,
@@ -99,7 +104,11 @@ export class JobService {
 
   async listJobs(query: ListJobsQuery): Promise<ListJobsQueryResult> {
     const page = Math.floor(query.offset / query.limit) + 1;
-    const result = await this.jobRepository.findByUserId(query.userId, page, query.limit);
+    const result = await this.jobRepository.findByUserId(
+      query.userId,
+      page,
+      query.limit
+    );
 
     return {
       jobs: result.jobs.map((jobData) => {
@@ -126,7 +135,7 @@ export class JobService {
     userId: string,
     updates: Partial<{
       name: string;
-      rules: Job["rules"];
+      rules: Job['rules'];
       schedule: string;
       sourceConfig: Record<string, unknown>;
       targetConfig: Record<string, unknown>;
@@ -134,14 +143,14 @@ export class JobService {
   ): Promise<void> {
     const jobData = await this.jobRepository.findById(jobId, userId);
     if (!jobData) {
-      throw new Error("Job not found");
+      throw new Error('Job not found');
     }
 
     // Convert repository format to domain entity
     const source = jobData.source as { adapter: string; configEncrypted: string };
     const target = jobData.target as { adapter: string; configEncrypted: string };
-    const rules = jobData.rules as unknown as Job["rules"];
-
+    const rules = jobData.rules as unknown as Job['rules'];
+    
     const jobPropsForPersistence: JobProps = {
       id: jobData.id,
       userId: jobData.userId,
@@ -187,7 +196,7 @@ export class JobService {
         : job.targetConfigEncrypted;
 
       job.updateConfigs(sourceConfigEncrypted, targetConfigEncrypted);
-      changes.configs = "updated";
+      changes.configs = 'updated';
     }
 
     // Note: Repository doesn't have update method, so we'd need to implement it
@@ -201,13 +210,15 @@ export class JobService {
     );
 
     // Emit domain event
-    await this.eventBus.publish(new JobUpdatedEvent(jobProps.id, jobProps.userId, changes));
+    await this.eventBus.publish(
+      new JobUpdatedEvent(jobProps.id, jobProps.userId, changes)
+    );
   }
 
   async deleteJob(jobId: string, userId: string): Promise<void> {
     const deleted = await this.jobRepository.delete(jobId, userId);
     if (!deleted) {
-      throw new Error("Job not found");
+      throw new Error('Job not found');
     }
   }
 }

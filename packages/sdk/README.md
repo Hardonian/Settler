@@ -36,10 +36,10 @@ npm install @settler/sdk
 ### 2. Create a client
 
 ```typescript
-import { SettlerClient } from "@settler/sdk";
+import { SettlerClient } from '@settler/sdk';
 
 const client = new SettlerClient({
-  apiKey: "sk_your_api_key_here",
+  apiKey: 'sk_your_api_key_here',
 });
 ```
 
@@ -48,38 +48,35 @@ const client = new SettlerClient({
 ```typescript
 // List available adapters
 const adapters = await client.adapters.list();
-console.log(
-  "Available adapters:",
-  adapters.data.map((a) => a.name)
-);
+console.log('Available adapters:', adapters.data.map(a => a.name));
 
 // Create a reconciliation job
 const job = await client.jobs.create({
-  name: "Shopify-Stripe Reconciliation",
+  name: 'Shopify-Stripe Reconciliation',
   source: {
-    adapter: "shopify",
+    adapter: 'shopify',
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: "your-shop.myshopify.com",
+      shopDomain: 'your-shop.myshopify.com',
     },
   },
   target: {
-    adapter: "stripe",
+    adapter: 'stripe',
     config: {
       apiKey: process.env.STRIPE_SECRET_KEY,
     },
   },
   rules: {
     matching: [
-      { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 },
-      { field: "date", type: "range", days: 1 },
+      { field: 'order_id', type: 'exact' },
+      { field: 'amount', type: 'exact', tolerance: 0.01 },
+      { field: 'date', type: 'range', days: 1 },
     ],
-    conflictResolution: "last-wins",
+    conflictResolution: 'last-wins',
   },
 });
 
-console.log("Job created:", job.data.id);
+console.log('Job created:', job.data.id);
 ```
 
 **That's it!** You've made your first API call. 🎉
@@ -89,16 +86,14 @@ console.log("Job created:", job.data.id);
 ### Basic Operations
 
 ```typescript
-import { SettlerClient } from "@settler/sdk";
+import { SettlerClient } from '@settler/sdk';
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
 });
 
 // Create a job
-const job = await client.jobs.create({
-  /* ... */
-});
+const job = await client.jobs.create({ /* ... */ });
 
 // Get a job
 const jobDetails = await client.jobs.get(job.data.id);
@@ -108,8 +103,8 @@ const execution = await client.jobs.run(job.data.id);
 
 // Get a report
 const report = await client.reports.get(job.data.id, {
-  startDate: "2026-01-01",
-  endDate: "2026-01-31",
+  startDate: '2026-01-01',
+  endDate: '2026-01-31',
 });
 
 // Delete a job
@@ -125,7 +120,7 @@ for await (const job of client.jobs.listPaginated()) {
 }
 
 // Or collect all at once
-import { collectPaginated } from "@settler/sdk";
+import { collectPaginated } from '@settler/sdk';
 
 const allJobs = await collectPaginated(client.jobs.listPaginated());
 ```
@@ -139,24 +134,22 @@ import {
   AuthError,
   ValidationError,
   RateLimitError,
-} from "@settler/sdk";
+} from '@settler/sdk';
 
 try {
-  const job = await client.jobs.create({
-    /* ... */
-  });
+  const job = await client.jobs.create({ /* ... */ });
 } catch (error) {
   if (error instanceof ValidationError) {
-    console.error("Validation error:", error.message);
-    console.error("Field:", error.field);
+    console.error('Validation error:', error.message);
+    console.error('Field:', error.field);
   } else if (error instanceof AuthError) {
-    console.error("Authentication failed:", error.message);
+    console.error('Authentication failed:', error.message);
   } else if (error instanceof RateLimitError) {
-    console.error("Rate limit exceeded. Retry after:", error.retryAfter);
+    console.error('Rate limit exceeded. Retry after:', error.retryAfter);
   } else if (error instanceof NetworkError) {
-    console.error("Network error:", error.message);
+    console.error('Network error:', error.message);
   } else {
-    console.error("Unknown error:", error);
+    console.error('Unknown error:', error);
   }
 }
 ```
@@ -164,15 +157,15 @@ try {
 ### Webhook Signature Verification
 
 ```typescript
-import { verifyWebhookSignature } from "@settler/sdk";
+import { verifyWebhookSignature } from '@settler/sdk';
 
 // In your webhook handler
-app.post("/webhooks/settler", express.raw({ type: "application/json" }), (req, res) => {
-  const signature = req.headers["x-settler-signature"] as string;
+app.post('/webhooks/settler', express.raw({ type: 'application/json' }), (req, res) => {
+  const signature = req.headers['x-settler-signature'] as string;
   const secret = process.env.WEBHOOK_SECRET;
 
   if (!verifyWebhookSignature(req.body, signature, secret)) {
-    return res.status(401).send("Invalid signature");
+    return res.status(401).send('Invalid signature');
   }
 
   const event = JSON.parse(req.body.toString());
@@ -183,7 +176,7 @@ app.post("/webhooks/settler", express.raw({ type: "application/json" }), (req, r
 ### Custom Middleware
 
 ```typescript
-import { SettlerClient, createLoggingMiddleware, createMetricsMiddleware } from "@settler/sdk";
+import { SettlerClient, createLoggingMiddleware, createMetricsMiddleware } from '@settler/sdk';
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
@@ -215,13 +208,13 @@ client.use(createMetricsMiddleware(metrics));
 
 ```typescript
 const client = new SettlerClient({
-  apiKey: "initial_token", // Can be a JWT token
+  apiKey: 'initial_token', // Can be a JWT token
   tokenRefresh: {
     refreshFn: async () => {
       // Call your token refresh endpoint
-      const response = await fetch("https://your-api.com/refresh", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${currentToken}` },
+      const response = await fetch('https://your-api.com/refresh', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${currentToken}` },
       });
       const data = await response.json();
       return {
@@ -259,8 +252,8 @@ Request deduplication is enabled by default for GET requests. If you make the sa
 
 ```typescript
 // Both of these will result in only one actual HTTP request
-const promise1 = client.jobs.get("job_123");
-const promise2 = client.jobs.get("job_123");
+const promise1 = client.jobs.get('job_123');
+const promise2 = client.jobs.get('job_123');
 
 const [job1, job2] = await Promise.all([promise1, promise2]);
 // job1 === job2 (same response)
@@ -380,12 +373,10 @@ client.adapters.listPaginated(options?: PaginationOptions): AsyncIterableIterato
 The SDK is written in TypeScript and provides full type inference:
 
 ```typescript
-const job = await client.jobs.create({
-  /* ... */
-});
+const job = await client.jobs.create({ /* ... */ });
 // job is typed as ApiResponse<ReconciliationJob>
 
-const report = await client.reports.get("job_123");
+const report = await client.reports.get('job_123');
 // report.data.summary.matched is typed as number
 ```
 
@@ -404,7 +395,6 @@ The SDK provides strongly typed error classes:
 ## Bundle Size
 
 The SDK is optimized for size:
-
 - **Minified**: ~45KB
 - **Minified + Gzipped**: ~15KB
 
@@ -413,7 +403,6 @@ Tree-shaking is supported, so unused code will be eliminated by your bundler.
 ## Browser Support
 
 The SDK works in:
-
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Node.js 18+
 - Deno

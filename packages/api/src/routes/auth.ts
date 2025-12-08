@@ -39,95 +39,102 @@ const createApiKeySchema = z.object({
 });
 
 // Login and get access + refresh tokens
-router.post("/login", validateRequest(loginSchema), async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body;
+router.post(
+  "/login",
+  validateRequest(loginSchema),
+  async (req: Request, res: Response) => {
+    try {
+      const { email, password } = req.body;
 
-    const users = await query<{
-      id: string;
-      password_hash: string;
-      role: string;
-    }>(`SELECT id, password_hash, role FROM users WHERE email = $1 AND deleted_at IS NULL`, [
-      email,
-    ]);
+      const users = await query<{
+        id: string;
+        password_hash: string;
+        role: string;
+      }>(
+        `SELECT id, password_hash, role FROM users WHERE email = $1 AND deleted_at IS NULL`,
+        [email]
+      );
 
-    if (users.length === 0 || !users[0]) {
-      res.status(401).json({ error: "Invalid credentials" });
-      return;
-    }
+      if (users.length === 0 || !users[0]) {
+        res.status(401).json({ error: "Invalid credentials" });
+        return;
+      }
 
-    const user = users[0];
-    const isValid = await verifyPassword(password, user.password_hash);
+      const user = users[0];
+      const isValid = await verifyPassword(password, user.password_hash);
 
-    if (!isValid) {
-      res.status(401).json({ error: "Invalid credentials" });
-      return;
-    }
+      if (!isValid) {
+        res.status(401).json({ error: "Invalid credentials" });
+        return;
+      }
 
-    if (!config.jwt.secret) {
-      throw new Error("JWT secret not configured");
-    }
+      if (!config.jwt.secret) {
+        throw new Error('JWT secret not configured');
+      }
 
-    const jwtSecret = config.jwt.secret as string;
-    const accessTokenExpiry: string | number =
-      typeof config.jwt.accessTokenExpiry === "string"
-        ? config.jwt.accessTokenExpiry
-        : typeof config.jwt.accessTokenExpiry === "number"
-          ? config.jwt.accessTokenExpiry
-          : "15m";
-    const refreshSecret = (config.jwt.refreshSecret || jwtSecret) as string;
-    const refreshTokenExpiry: string | number =
-      typeof config.jwt.refreshTokenExpiry === "string"
+      const jwtSecret = config.jwt.secret as string;
+      const accessTokenExpiry: string | number = typeof config.jwt.accessTokenExpiry === 'string' 
+        ? config.jwt.accessTokenExpiry 
+        : (typeof config.jwt.accessTokenExpiry === 'number' ? config.jwt.accessTokenExpiry : '15m');
+      const refreshSecret = (config.jwt.refreshSecret || jwtSecret) as string;
+      const refreshTokenExpiry: string | number = typeof config.jwt.refreshTokenExpiry === 'string'
         ? config.jwt.refreshTokenExpiry
-        : typeof config.jwt.refreshTokenExpiry === "number"
-          ? config.jwt.refreshTokenExpiry
-          : "7d";
+        : (typeof config.jwt.refreshTokenExpiry === 'number' ? config.jwt.refreshTokenExpiry : '7d');
 
-    // Generate access token (15 minutes)
-    const accessToken = jwt.sign({ userId: user.id, type: "access" }, jwtSecret, {
-      expiresIn: accessTokenExpiry,
-      issuer: "settler-api",
-      audience: "settler-client",
-    } as jwt.SignOptions);
+      // Generate access token (15 minutes)
+      const accessToken = jwt.sign(
+        { userId: user.id, type: 'access' },
+        jwtSecret,
+        {
+          expiresIn: accessTokenExpiry,
+          issuer: 'settler-api',
+          audience: 'settler-client',
+        } as jwt.SignOptions
+      );
 
-    // Generate refresh token with rotation support
-    const refreshTokenId = uuidv4();
-    const refreshToken = jwt.sign(
-      { userId: user.id, tokenId: refreshTokenId, type: "refresh" },
-      refreshSecret,
-      {
-        expiresIn: refreshTokenExpiry,
-        issuer: "settler-api",
-        audience: "settler-client",
-      } as jwt.SignOptions
-    );
+      // Generate refresh token with rotation support
+      const refreshTokenId = uuidv4();
+      const refreshToken = jwt.sign(
+        { userId: user.id, tokenId: refreshTokenId, type: 'refresh' },
+        refreshSecret,
+        {
+          expiresIn: refreshTokenExpiry,
+          issuer: 'settler-api',
+          audience: 'settler-client',
+        } as jwt.SignOptions
+      );
 
-    // Store refresh token in database for rotation
-    await storeRefreshToken(user.id, refreshTokenId, 7);
+      // Store refresh token in database for rotation
+      await storeRefreshToken(user.id, refreshTokenId, 7);
 
-    // Log audit event
-    await query(
-      `INSERT INTO audit_logs (event, user_id, metadata)
+      // Log audit event
+      await query(
+        `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-      ["user_login", user.id, JSON.stringify({ ip: req.ip })]
-    );
+        [
+          'user_login',
+          user.id,
+          JSON.stringify({ ip: req.ip }),
+        ]
+      );
 
-    logInfo("User logged in", { userId: user.id });
+      logInfo('User logged in', { userId: user.id });
 
-    sendSuccess(res, {
-      accessToken,
-      refreshToken,
-      expiresIn: 900, // 15 minutes in seconds
-      user: {
-        id: user.id,
-        email,
-        role: user.role,
-      },
-    });
-  } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to login", 500);
+      sendSuccess(res, {
+        accessToken,
+        refreshToken,
+        expiresIn: 900, // 15 minutes in seconds
+        user: {
+          id: user.id,
+          email,
+          role: user.role,
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to login", 500);
+    }
   }
-});
+);
 
 // Refresh access token with rotation
 router.post(
@@ -141,7 +148,7 @@ router.post(
       const tokenPair = await rotateRefreshToken(refreshToken);
 
       if (!tokenPair) {
-        return sendError(res, 401, "INVALID_TOKEN", "Invalid or expired refresh token");
+        return sendError(res, 401, 'INVALID_TOKEN', 'Invalid or expired refresh token');
       }
 
       sendSuccess(res, {
@@ -177,14 +184,14 @@ router.post(
           prefix,
           keyHash,
           name,
-          scopes || ["jobs:read", "jobs:write", "reports:read"],
+          scopes || ['jobs:read', 'jobs:write', 'reports:read'],
           rateLimit || 1000,
           expiresAt ? new Date(expiresAt) : null,
         ]
       );
 
       if (!result[0]) {
-        throw new Error("Failed to create API key");
+        throw new Error('Failed to create API key');
       }
 
       const apiKeyId = result[0].id;
@@ -193,10 +200,14 @@ router.post(
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        ["api_key_created", userId, JSON.stringify({ apiKeyId, name })]
+        [
+          'api_key_created',
+          userId,
+          JSON.stringify({ apiKeyId, name }),
+        ]
       );
 
-      logInfo("API key created", { userId, apiKeyId });
+      logInfo('API key created', { userId, apiKeyId });
 
       // Return key only once (never again)
       res.status(201).json({
@@ -204,7 +215,7 @@ router.post(
           id: apiKeyId,
           key, // Only returned on creation
           name,
-          scopes: scopes || ["jobs:read", "jobs:write", "reports:read"],
+          scopes: scopes || ['jobs:read', 'jobs:write', 'reports:read'],
           rateLimit: rateLimit || 1000,
           createdAt: new Date().toISOString(),
         },

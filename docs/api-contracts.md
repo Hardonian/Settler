@@ -28,7 +28,6 @@ interface DashboardMetrics {
 ```
 
 **Usage:**
-
 ```typescript
 const { data } = useDashboardMetrics();
 // data: DashboardMetrics
@@ -59,7 +58,6 @@ interface ExternalMetrics {
 ```
 
 **Usage:**
-
 ```typescript
 const { data } = useExternalMetrics();
 // data: ExternalMetrics
@@ -81,7 +79,6 @@ interface Job {
 ```
 
 **Usage:**
-
 ```typescript
 const { data } = useJobs({ apiKey, limit: 10 });
 // data: Job[]
@@ -97,7 +94,7 @@ const { data } = useJobs({ apiKey, limit: 10 });
 interface ExecutionUpdate {
   type: string;
   executionId?: string;
-  status?: "running" | "completed" | "failed";
+  status?: 'running' | 'completed' | 'failed';
   startedAt?: string; // ISO date string
   completedAt?: string; // ISO date string
   error?: string;
@@ -114,7 +111,6 @@ interface ExecutionUpdate {
 ```
 
 **Usage:**
-
 ```typescript
 const { execution } = useRealtimeExecution({ jobId, apiKey });
 // execution: ExecutionUpdate | null
@@ -159,41 +155,41 @@ All query keys are defined in `/lib/data/queryKeys.ts`:
 ```typescript
 export const queryKeys = {
   user: {
-    all: ["user"] as const,
-    detail: (id: string) => ["user", id] as const,
-    current: () => ["user", "current"] as const,
+    all: ['user'] as const,
+    detail: (id: string) => ['user', id] as const,
+    current: () => ['user', 'current'] as const,
   },
   dashboard: {
-    all: ["dashboard"] as const,
-    metrics: () => ["dashboard", "metrics"] as const,
-    kpiHealth: () => ["dashboard", "kpi-health"] as const,
-    externalMetrics: () => ["dashboard", "external-metrics"] as const,
+    all: ['dashboard'] as const,
+    metrics: () => ['dashboard', 'metrics'] as const,
+    kpiHealth: () => ['dashboard', 'kpi-health'] as const,
+    externalMetrics: () => ['dashboard', 'external-metrics'] as const,
   },
   activity: {
-    all: ["activity"] as const,
-    list: (filters?: { since?: string }) => ["activity", "list", filters] as const,
-    recent: (hours?: number) => ["activity", "recent", hours] as const,
+    all: ['activity'] as const,
+    list: (filters?: { since?: string }) => ['activity', 'list', filters] as const,
+    recent: (hours?: number) => ['activity', 'recent', hours] as const,
   },
   posts: {
-    all: ["posts"] as const,
-    list: (filters?: { status?: string; limit?: number }) => ["posts", "list", filters] as const,
-    detail: (id: string) => ["posts", id] as const,
-    topEngaged: (date?: string) => ["posts", "top-engaged", date] as const,
+    all: ['posts'] as const,
+    list: (filters?: { status?: string; limit?: number }) => ['posts', 'list', filters] as const,
+    detail: (id: string) => ['posts', id] as const,
+    topEngaged: (date?: string) => ['posts', 'top-engaged', date] as const,
   },
   profiles: {
-    all: ["profiles"] as const,
-    list: (filters?: { since?: string }) => ["profiles", "list", filters] as const,
-    count: (filters?: { since?: string }) => ["profiles", "count", filters] as const,
+    all: ['profiles'] as const,
+    list: (filters?: { since?: string }) => ['profiles', 'list', filters] as const,
+    count: (filters?: { since?: string }) => ['profiles', 'count', filters] as const,
   },
   jobs: {
-    all: ["jobs"] as const,
-    list: (filters?: { limit?: number; status?: string }) => ["jobs", "list", filters] as const,
-    detail: (id: string) => ["jobs", id] as const,
-    execution: (jobId: string) => ["jobs", jobId, "execution"] as const,
+    all: ['jobs'] as const,
+    list: (filters?: { limit?: number; status?: string }) => ['jobs', 'list', filters] as const,
+    detail: (id: string) => ['jobs', id] as const,
+    execution: (jobId: string) => ['jobs', jobId, 'execution'] as const,
   },
   settings: {
-    all: ["settings"] as const,
-    current: () => ["settings", "current"] as const,
+    all: ['settings'] as const,
+    current: () => ['settings', 'current'] as const,
   },
 };
 ```
@@ -231,7 +227,6 @@ export const queryKeys = {
 **Description:** Fetches reconciliation jobs using the Settler SDK.
 
 **Parameters:**
-
 - `apiKey`: API key for authentication
 - `options.limit`: Maximum number of jobs to fetch (default: 10)
 
@@ -250,7 +245,6 @@ export const queryKeys = {
 **Stale Time:** 30 seconds
 
 **Example:**
-
 ```typescript
 const { data, isLoading, isError, error } = useDashboardMetrics();
 ```
@@ -266,7 +260,6 @@ const { data, isLoading, isError, error } = useDashboardMetrics();
 **Stale Time:** 5 minutes
 
 **Example:**
-
 ```typescript
 const { data, isLoading, isError, error } = useExternalMetrics();
 ```
@@ -276,7 +269,6 @@ const { data, isLoading, isError, error } = useExternalMetrics();
 **File:** `/lib/hooks/use-jobs.ts`
 
 **Parameters:**
-
 ```typescript
 interface UseJobsOptions {
   apiKey: string;
@@ -292,10 +284,9 @@ interface UseJobsOptions {
 **Stale Time:** 10 seconds
 
 **Example:**
-
 ```typescript
 const { data, isLoading, isError, error, refetch } = useJobs({
-  apiKey: "...",
+  apiKey: '...',
   limit: 10,
   enabled: true,
 });
@@ -306,7 +297,6 @@ const { data, isLoading, isError, error, refetch } = useJobs({
 **File:** `/lib/hooks/use-realtime-execution.ts`
 
 **Parameters:**
-
 ```typescript
 interface UseRealtimeExecutionOptions {
   jobId: string;
@@ -318,7 +308,6 @@ interface UseRealtimeExecutionOptions {
 ```
 
 **Returns:**
-
 ```typescript
 interface UseRealtimeExecutionResult {
   connected: boolean;
@@ -333,11 +322,10 @@ interface UseRealtimeExecutionResult {
 **Description:** Manages real-time execution updates via EventSource. This is a special case that doesn't use React Query.
 
 **Example:**
-
 ```typescript
 const { connected, execution, logs, errors } = useRealtimeExecution({
-  jobId: "...",
-  apiKey: "...",
+  jobId: '...',
+  apiKey: '...',
   enabled: true,
 });
 ```
@@ -347,31 +335,26 @@ const { connected, execution, logs, errors } = useRealtimeExecution({
 ### `profiles`
 
 **Columns:**
-
 - `id`: UUID (primary key)
 - `created_at`: Timestamp
 - Other profile fields...
 
 **Queries:**
-
 - Count new users: `supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', since)`
 
 ### `activity_log`
 
 **Columns:**
-
 - `id`: UUID (primary key)
 - `created_at`: Timestamp
 - Other activity fields...
 
 **Queries:**
-
 - Count recent activity: `supabase.from('activity_log').select('*', { count: 'exact', head: true }).gte('created_at', since)`
 
 ### `posts`
 
 **Columns:**
-
 - `id`: UUID (primary key)
 - `title`: String
 - `views`: Number
@@ -380,7 +363,6 @@ const { connected, execution, logs, errors } = useRealtimeExecution({
 - `created_at`: Timestamp
 
 **Queries:**
-
 - List posts: `supabase.from('posts').select('id, title, views, upvotes').eq('status', 'published')`
 
 ## External APIs
@@ -390,7 +372,6 @@ const { connected, execution, logs, errors } = useRealtimeExecution({
 **Endpoint:** Configured in `/lib/api/external.ts`
 
 **Returns:**
-
 ```typescript
 {
   stars: number;
@@ -405,7 +386,6 @@ const { connected, execution, logs, errors } = useRealtimeExecution({
 **Endpoint:** Configured in `/lib/api/external.ts`
 
 **Returns:**
-
 ```typescript
 {
   downloads: number;
@@ -420,7 +400,6 @@ const { connected, execution, logs, errors } = useRealtimeExecution({
 **Type:** `Error` or custom error type
 
 **Structure:**
-
 ```typescript
 {
   message: string;
@@ -429,7 +408,6 @@ const { connected, execution, logs, errors } = useRealtimeExecution({
 ```
 
 **Handling:**
-
 ```typescript
 const { isError, error } = useQuery(...);
 if (isError) {
@@ -448,7 +426,6 @@ All data shapes are typed with TypeScript. When adding new data:
 4. **Type the query function** return value
 
 **Example:**
-
 ```typescript
 // lib/data/example.ts
 export interface ExampleData {

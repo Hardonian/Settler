@@ -1,4 +1,4 @@
-declare module "opossum" {
+declare module 'opossum' {
   export interface Options {
     timeout?: number;
     errorThresholdPercentage?: number;
@@ -26,16 +26,16 @@ declare module "opossum" {
     latencyTimes: number[];
   }
 
-  export class CircuitBreaker<T = unknown> {
-    constructor(action: (...args: unknown[]) => Promise<T>, options?: Options);
-    fire(...args: unknown[]): Promise<T>;
+  export class CircuitBreaker<T = any> {
+    constructor(action: (...args: any[]) => Promise<T>, options?: Options);
+    fire(...args: any[]): Promise<T>;
     open(): void;
     close(): void;
     halfOpen(): void;
     enable(): void;
     disable(): void;
-    on(event: string, listener: (...args: unknown[]) => void): void;
-    removeListener(event: string, listener: (...args: unknown[]) => void): void;
+    on(event: string, listener: (...args: any[]) => void): void;
+    removeListener(event: string, listener: (...args: any[]) => void): void;
     removeAllListeners(event?: string): void;
     stats: CircuitBreakerStats;
   }

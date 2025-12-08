@@ -1,6 +1,6 @@
 /**
  * Redis Client Configuration (Upstash Redis)
- *
+ * 
  * Used for:
  * - In-memory matching engine (sub-second reconciliation)
  * - Caching reconciliation results
@@ -8,62 +8,56 @@
  * - Session storage
  */
 
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 // Upstash Redis configuration
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_TOKEN;
 
 if (!redisUrl || !redisToken) {
-  console.warn("Redis not configured. Some features will be disabled.");
+  console.warn('Redis not configured. Some features will be disabled.');
 }
 
 /**
  * Upstash Redis client (serverless-friendly)
  */
-export const redis =
-  redisUrl && redisToken
-    ? new Redis({
-        url: redisUrl,
-        token: redisToken,
-      })
-    : null;
+export const redis = redisUrl && redisToken
+  ? new Redis({
+      url: redisUrl,
+      token: redisToken,
+    })
+  : null;
 
 /**
  * Fallback Redis client using ioredis (for local development)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ioredisClient: any = null;
 
 if (!redis && process.env.REDIS_HOST) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const IORedis = require("ioredis");
-    ioredisClient = new IORedis({
-      host: process.env.REDIS_HOST || "localhost",
-      port: parseInt(process.env.REDIS_PORT || "6379"),
+    const Redis = require('ioredis');
+    ioredisClient = new Redis({
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD,
-      db: parseInt(process.env.REDIS_DB || "0"),
+      db: parseInt(process.env.REDIS_DB || '0'),
       retryStrategy: (times: number) => {
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
     });
 
-    if (ioredisClient && typeof ioredisClient.on === "function") {
-      ioredisClient.on("error", (err: Error) => {
-        console.error("Redis connection error:", err);
-      });
-    }
+    ioredisClient.on('error', (err: Error) => {
+      console.error('Redis connection error:', err);
+    });
   } catch (error) {
-    console.warn("Failed to initialize Redis client:", error);
+    console.warn('Failed to initialize Redis client:', error);
   }
 }
 
 /**
  * Get Redis client (Upstash or ioredis fallback)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getRedisClient(): Redis | any {
   return redis || ioredisClient;
 }
@@ -82,7 +76,7 @@ export const cache = {
   /**
    * Get value from cache
    */
-  async get<T = unknown>(key: string): Promise<T | null> {
+  async get<T = any>(key: string): Promise<T | null> {
     const client = getRedisClient();
     if (!client) return null;
 
@@ -94,7 +88,7 @@ export const cache = {
         return value ? JSON.parse(value) : null;
       }
     } catch (error) {
-      console.error("Redis get error:", error);
+      console.error('Redis get error:', error);
       return null;
     }
   },
@@ -102,7 +96,7 @@ export const cache = {
   /**
    * Set value in cache
    */
-  async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
+  async set(key: string, value: any, ttlSeconds?: number): Promise<void> {
     const client = getRedisClient();
     if (!client) return;
 
@@ -122,7 +116,7 @@ export const cache = {
         }
       }
     } catch (error) {
-      console.error("Redis set error:", error);
+      console.error('Redis set error:', error);
     }
   },
 
@@ -136,7 +130,7 @@ export const cache = {
     try {
       await client.del(key);
     } catch (error) {
-      console.error("Redis del error:", error);
+      console.error('Redis del error:', error);
     }
   },
 
@@ -156,7 +150,7 @@ export const cache = {
         return result === 1;
       }
     } catch (error) {
-      console.error("Redis exists error:", error);
+      console.error('Redis exists error:', error);
       return false;
     }
   },

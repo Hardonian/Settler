@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction } from 'express';
 import { AuthRequest } from "../middleware/auth";
 import { query } from "../db";
 import { config } from "../config";
@@ -32,7 +32,7 @@ export async function checkRateLimit(req: AuthRequest): Promise<{
   let limit = config.rateLimiting.defaultLimit;
   if (req.apiKeyId) {
     const keys = await query<{ rate_limit: number }>(
-      "SELECT rate_limit FROM api_keys WHERE id = $1",
+      'SELECT rate_limit FROM api_keys WHERE id = $1',
       [req.apiKeyId]
     );
     if (keys.length > 0 && keys[0]) {
@@ -85,14 +85,14 @@ export function rateLimitMiddleware() {
   return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     const result = await checkRateLimit(req);
 
-    res.setHeader("X-RateLimit-Limit", config.rateLimiting.defaultLimit);
-    res.setHeader("X-RateLimit-Remaining", result.remaining);
-    res.setHeader("X-RateLimit-Reset", new Date(result.resetAt).toISOString());
+    res.setHeader('X-RateLimit-Limit', config.rateLimiting.defaultLimit);
+    res.setHeader('X-RateLimit-Remaining', result.remaining);
+    res.setHeader('X-RateLimit-Reset', new Date(result.resetAt).toISOString());
 
     if (!result.allowed) {
       res.status(429).json({
-        error: "Too Many Requests",
-        message: "Rate limit exceeded",
+        error: 'Too Many Requests',
+        message: 'Rate limit exceeded',
         retryAfter: Math.ceil((result.resetAt - Date.now()) / 1000),
       });
       return;

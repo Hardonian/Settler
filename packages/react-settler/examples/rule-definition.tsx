@@ -1,11 +1,15 @@
 /**
  * Rule Definition Example
- *
+ * 
  * Demonstrates defining reconciliation rules using RuleSet and MatchRule components.
  */
 
-import React from "react";
-import { ReconciliationDashboard, RuleSet, MatchRule } from "@settler/react-settler";
+import React from 'react';
+import {
+  ReconciliationDashboard,
+  RuleSet,
+  MatchRule
+} from '@settler/react-settler';
 
 export function RuleDefinition() {
   return (

@@ -9,19 +9,16 @@ This document summarizes the complete production-grade TypeScript codebase imple
 ### ✅ Hexagonal Architecture
 
 **Domain Layer** (`src/domain/`)
-
 - Entities: `User`, `Job`, `Execution`, `ApiKey`
 - Domain Events: `UserCreatedEvent`, `JobCreatedEvent`, `JobExecutionCompletedEvent`, etc.
 - Repository Interfaces: `IUserRepository`, `IJobRepository`, `IExecutionRepository`, `IApiKeyRepository`
 
 **Application Layer** (`src/application/`)
-
 - Commands: `CreateUserCommand`, `CreateJobCommand`
 - Queries: `GetJobQuery`, `ListJobsQuery`
 - Services: `UserService`, `JobService`
 
 **Infrastructure Layer** (`src/infrastructure/`)
-
 - Repositories: `UserRepository`, `JobRepository` (PostgreSQL implementations)
 - Security: Password hashing, encryption (AES-256-GCM)
 - Events: `EventBus` implementation
@@ -30,7 +27,6 @@ This document summarizes the complete production-grade TypeScript codebase imple
 - DI Container: Service registration and resolution
 
 **Adapters Layer** (`src/routes/`, `src/middleware/`)
-
 - HTTP routes for all endpoints
 - Middleware: Auth, validation, error handling, idempotency
 
@@ -64,14 +60,12 @@ This document summarizes the complete production-grade TypeScript codebase imple
 ### ✅ Authentication & Authorization
 
 **JWT Authentication:**
-
 - Short-lived access tokens (15min)
 - Refresh tokens (7 days)
 - RS256 signing support
 - Token validation with issuer/audience checks
 
 **API Key Authentication:**
-
 - Hashed storage (bcrypt, 12 rounds)
 - Prefix-based lookup for performance
 - Scope-based permissions (`jobs:read`, `jobs:write`, `reports:read`, etc.)
@@ -80,7 +74,6 @@ This document summarizes the complete production-grade TypeScript codebase imple
 - Revocation and expiration support
 
 **RBAC:**
-
 - Roles: Owner, Admin, Developer, Viewer
 - Resource-level authorization (users can only access their own resources)
 - Permission middleware for route protection
@@ -327,7 +320,6 @@ packages/api/
 ## Key Files Created
 
 ### Domain Layer
-
 - `src/domain/entities/User.ts`
 - `src/domain/entities/Job.ts`
 - `src/domain/entities/Execution.ts`
@@ -336,14 +328,12 @@ packages/api/
 - `src/domain/repositories/*.ts`
 
 ### Application Layer
-
 - `src/application/commands/*.ts`
 - `src/application/queries/*.ts`
 - `src/application/services/UserService.ts`
 - `src/application/services/JobService.ts`
 
 ### Infrastructure Layer
-
 - `src/infrastructure/repositories/UserRepository.ts`
 - `src/infrastructure/repositories/JobRepository.ts`
 - `src/infrastructure/security/password.ts`
@@ -357,14 +347,12 @@ packages/api/
 - `src/infrastructure/di/Container.ts`
 
 ### Tests
-
 - `src/__tests__/setup.ts`
 - `src/__tests__/domain/User.test.ts`
 - `src/__tests__/integration/jobs.test.ts`
 - `src/__tests__/security/auth.test.ts`
 
 ### DevOps
-
 - `Dockerfile`
 - `docker-compose.yml`
 - `.github/workflows/ci.yml`

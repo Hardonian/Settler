@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { SettlerClient } from "@settler/sdk";
-import { Skeleton, SkeletonCard, SkeletonText } from "@/components/ui/skeleton";
 
 interface DashboardProps {
   apiKey: string;
@@ -28,7 +27,7 @@ export default function Dashboard({ apiKey }: DashboardProps) {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   useEffect(() => {
-    void loadJobs();
+    loadJobs();
   }, []);
 
   async function loadJobs() {
@@ -54,40 +53,8 @@ export default function Dashboard({ apiKey }: DashboardProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <Skeleton className="h-9 w-64 mb-2" />
-            <Skeleton className="h-5 w-96" />
-          </div>
-
-          {/* Stats Overview Skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <SkeletonCard key={i} showFooter={false} />
-            ))}
-          </div>
-
-          {/* Jobs List Skeleton */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <Skeleton className="h-6 w-48" />
-            </div>
-            <div className="divide-y divide-gray-200">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <Skeleton className="h-5 w-48 mb-2" />
-                      <SkeletonText lines={2} lastLineShort={true} />
-                    </div>
-                    <Skeleton className="h-9 w-24" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
       </div>
     );
   }
@@ -97,12 +64,18 @@ export default function Dashboard({ apiKey }: DashboardProps) {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Reconciliation Dashboard</h1>
-          <p className="text-gray-600 mt-2">Monitor and manage your reconciliation jobs</p>
+          <p className="text-gray-600 mt-2">
+            Monitor and manage your reconciliation jobs
+          </p>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <StatCard title="Total Jobs" value={jobs.length} icon="📊" />
+          <StatCard
+            title="Total Jobs"
+            value={jobs.length}
+            icon="📊"
+          />
           <StatCard
             title="Active Jobs"
             value={jobs.filter((j) => j.status === "active").length}
@@ -145,14 +118,26 @@ export default function Dashboard({ apiKey }: DashboardProps) {
 
         {/* Job Detail Modal */}
         {selectedJob && (
-          <JobDetailModal job={selectedJob} client={client} onClose={() => setSelectedJob(null)} />
+          <JobDetailModal
+            job={selectedJob}
+            client={client}
+            onClose={() => setSelectedJob(null)}
+          />
         )}
       </div>
     </div>
   );
 }
 
-function StatCard({ title, value, icon }: { title: string; value: number; icon: string }) {
+function StatCard({
+  title,
+  value,
+  icon,
+}: {
+  title: string;
+  value: number;
+  icon: string;
+}) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center justify-between">
@@ -166,7 +151,15 @@ function StatCard({ title, value, icon }: { title: string; value: number; icon: 
   );
 }
 
-function JobRow({ job, onSelect, onRun }: { job: Job; onSelect: () => void; onRun: () => void }) {
+function JobRow({
+  job,
+  onSelect,
+  onRun,
+}: {
+  job: Job;
+  onSelect: () => void;
+  onRun: () => void;
+}) {
   const statusColors = {
     active: "bg-green-100 text-green-800",
     paused: "bg-yellow-100 text-yellow-800",
@@ -184,7 +177,9 @@ function JobRow({ job, onSelect, onRun }: { job: Job; onSelect: () => void; onRu
             >
               {job.name}
             </h3>
-            <span className={`px-2 py-1 text-xs font-semibold rounded ${statusColors[job.status]}`}>
+            <span
+              className={`px-2 py-1 text-xs font-semibold rounded ${statusColors[job.status]}`}
+            >
               {job.status}
             </span>
           </div>
@@ -244,8 +239,7 @@ function JobDetailModal({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    void loadReport();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadReport();
   }, [job.id]);
 
   async function loadReport() {
@@ -265,7 +259,10 @@ function JobDetailModal({
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-xl font-semibold">{job.name}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
             ✕
           </button>
         </div>
@@ -332,7 +329,9 @@ function JobDetailModal({
               )}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">No report data available</div>
+            <div className="text-center py-8 text-gray-500">
+              No report data available
+            </div>
           )}
         </div>
       </div>

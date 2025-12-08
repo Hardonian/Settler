@@ -3,11 +3,11 @@
  * Captures and reports errors to Sentry
  */
 
-import * as Sentry from "@sentry/node";
-import { ProfilingIntegration } from "@sentry/profiling-node";
-import { Request, Response, NextFunction } from "express";
-import { validatedConfig } from "../config/validation";
-import { AuthRequest } from "./auth";
+import * as Sentry from '@sentry/node';
+import { ProfilingIntegration } from '@sentry/profiling-node';
+import { Request, Response, NextFunction } from 'express';
+import { validatedConfig } from '../config/validation';
+import { AuthRequest } from './auth';
 
 let sentryInitialized = false;
 
@@ -20,7 +20,7 @@ export function initializeSentry(): void {
   }
 
   if (!validatedConfig.sentry.dsn) {
-    console.log("Sentry DSN not configured, skipping Sentry initialization");
+    console.log('Sentry DSN not configured, skipping Sentry initialization');
     return;
   }
 
@@ -28,7 +28,7 @@ export function initializeSentry(): void {
     dsn: validatedConfig.sentry.dsn,
     environment: validatedConfig.sentry.environment,
     tracesSampleRate: validatedConfig.sentry.tracesSampleRate,
-    profilesSampleRate: validatedConfig.sentry.environment === "production" ? 0.1 : 1.0,
+    profilesSampleRate: validatedConfig.sentry.environment === 'production' ? 0.1 : 1.0,
     integrations: [
       new ProfilingIntegration(),
       new Sentry.Integrations.Http({ tracing: true }),
@@ -36,7 +36,7 @@ export function initializeSentry(): void {
     ],
     beforeSend(event, _hint) {
       // Don't send events in development unless explicitly enabled
-      if (validatedConfig.nodeEnv === "development" && !process.env.SENTRY_ENABLE_DEV) {
+      if (validatedConfig.nodeEnv === 'development' && !process.env.SENTRY_ENABLE_DEV) {
         return null;
       }
       return event;
@@ -44,7 +44,7 @@ export function initializeSentry(): void {
   });
 
   sentryInitialized = true;
-  console.log("Sentry initialized");
+  console.log('Sentry initialized');
 }
 
 /**
@@ -55,9 +55,9 @@ export function sentryRequestHandler() {
   if (!sentryInitialized) {
     return (_req: Request, _res: Response, next: NextFunction) => next();
   }
-
+  
   return Sentry.Handlers.requestHandler({
-    user: ["id", "email"],
+    user: ['id', 'email'],
     ip: true,
   });
 }
@@ -70,7 +70,7 @@ export function sentryTracingHandler() {
   if (!sentryInitialized) {
     return (_req: Request, _res: Response, next: NextFunction) => next();
   }
-
+  
   return Sentry.Handlers.tracingHandler();
 }
 
@@ -78,16 +78,11 @@ export function sentryTracingHandler() {
  * Sentry error handler middleware
  * Must be added before error handler
  */
-export function sentryErrorHandler(): (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void {
+export function sentryErrorHandler(): (err: Error, req: Request, res: Response, next: NextFunction) => void {
   if (!sentryInitialized) {
     return (err: Error, _req: Request, _res: Response, next: NextFunction) => next(err);
   }
-
+  
   return Sentry.Handlers.errorHandler({
     shouldHandleError(error) {
       // Don't report 4xx errors (client errors)
@@ -140,11 +135,7 @@ export function captureException(error: Error, context?: Record<string, unknown>
 /**
  * Capture message to Sentry
  */
-export function captureMessage(
-  message: string,
-  level: Sentry.SeverityLevel = "info",
-  context?: Record<string, unknown>
-): void {
+export function captureMessage(message: string, level: Sentry.SeverityLevel = 'info', context?: Record<string, unknown>): void {
   if (!sentryInitialized) {
     return;
   }
