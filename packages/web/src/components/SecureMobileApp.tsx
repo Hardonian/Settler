@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { SettlerClient } from "@settler/sdk";
 import { SecurityPolicy } from "@settler/protocol";
+import { logger } from "@/lib/logging/logger";
 
 interface SecureMobileAppProps {
   apiKey: string;
@@ -102,10 +103,10 @@ export default function SecureMobileApp({
       navigator.serviceWorker
         .register("/sw.js")
         .then((registration) => {
-          console.log("Service Worker registered:", registration);
+          logger.debug("Service Worker registered", { scope: registration.scope });
         })
         .catch((error) => {
-          console.error("Service Worker registration failed:", error);
+          logger.error("Service Worker registration failed", error instanceof Error ? error : new Error(String(error)));
         });
     }
   }, []);
@@ -173,7 +174,7 @@ export default function SecureMobileApp({
         }
       }
     } catch (error) {
-      console.error("Error installing PWA:", error);
+      logger.error("Error installing PWA", error instanceof Error ? error : new Error(String(error)));
     }
     
     setInstallPrompt(null);

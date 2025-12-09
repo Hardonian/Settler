@@ -141,7 +141,8 @@ export async function getUserDashboardData(): Promise<UserDashboardData | null> 
       isFirstVisit,
     };
   } catch (error) {
-    console.error("Error fetching user dashboard data:", error);
+    const logger = (await import('@/lib/logging/logger')).logger;
+    logger.error("Error fetching user dashboard data", error instanceof Error ? error : new Error(String(error)));
     return null;
   }
 }

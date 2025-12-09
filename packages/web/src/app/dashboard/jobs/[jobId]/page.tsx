@@ -17,6 +17,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
+import { logger } from "@/lib/logging/logger";
 
 interface JobDetail {
   id: string;
@@ -92,7 +93,7 @@ export default function JobDetailPage() {
       };
       setJob(mockJob);
     } catch (error) {
-      console.error("Failed to fetch job:", error);
+      logger.error("Failed to fetch job", error instanceof Error ? error : new Error(String(error)), { jobId });
     } finally {
       setIsLoading(false);
     }

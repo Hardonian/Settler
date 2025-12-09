@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { UsageBar } from "@/components/billing/UsageBar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Calendar, TrendingUp, TrendingDown } from "lucide-react";
+import { logger } from "@/lib/logging/logger";
 // Date utility functions
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -93,7 +94,7 @@ export default function UsageDashboardPage() {
         }),
       });
     } catch (error) {
-      console.error("Failed to fetch usage data:", error);
+      logger.error("Failed to fetch usage data", error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }

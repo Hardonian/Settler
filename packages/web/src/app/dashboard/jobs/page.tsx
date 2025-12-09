@@ -10,6 +10,7 @@ import { Footer } from "@/components/Footer";
 import { Loader2, Search, Plus, CheckCircle2, AlertCircle, Clock, Filter } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { logger } from "@/lib/logging/logger";
 
 interface Job {
   id: string;
@@ -110,7 +111,7 @@ export default function JobsPage() {
       setJobs(mockJobs);
       setFilteredJobs(mockJobs);
     } catch (error) {
-      console.error("Failed to fetch jobs:", error);
+      logger.error("Failed to fetch jobs", error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }

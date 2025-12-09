@@ -26,6 +26,7 @@ import { Footer } from '@/components/Footer';
 import { useJobs } from '@/lib/hooks/use-jobs';
 import { DataLoader } from '@/components/ui/data-loader';
 import { ErrorState } from '@/components/ui/error-state';
+import { logger } from '@/lib/logging/logger';
 
 // Force dynamic rendering to avoid static generation issues
 export const dynamic = 'force-dynamic';
@@ -179,7 +180,7 @@ export default function ReactSettlerDemoPage() {
             <TransactionTable
               transactions={transactions}
               onSelect={(tx: ReconciliationTransaction) => {
-                console.log('Selected transaction:', tx);
+                logger.debug('Selected transaction', { transactionId: tx.id });
                 alert(`Selected transaction: ${tx.id}`);
               }}
             />
@@ -195,7 +196,7 @@ export default function ReactSettlerDemoPage() {
             <ExceptionTable
               exceptions={exceptions}
               onResolve={(exc: ReconciliationException) => {
-                console.log('Resolving exception:', exc);
+                logger.debug('Resolving exception', { exceptionId: exc.id });
                 alert(`Resolving exception: ${exc.id}`);
               }}
             />

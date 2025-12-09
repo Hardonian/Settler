@@ -10,15 +10,12 @@ export const dynamic = "force-dynamic";
 import { createAdminClient } from "@/lib/supabase/server";
 import { sendMonthlySummaryEmail, LifecycleUser } from "@settler/api/lib/email-lifecycle";
 
-const logInfo = (message: string, meta?: Record<string, unknown>) => {
-  console.log(`[INFO] ${message}`, meta || "");
-};
 
-const logError = (message: string, error?: Error, meta?: Record<string, unknown>) => {
-  console.error(`[ERROR] ${message}`, { error: error?.message, ...meta });
-};
+import { logger } from "@/lib/logging/logger";
 
-const CRON_SECRET = process.env.CRON_SECRET;
+import { getEnv } from '@/lib/env';
+
+const CRON_SECRET = getEnv('CRON_SECRET', false) || '';
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,7 +33,7 @@ export async function GET(request: NextRequest) {
     )) as { data: any[] | null; error: any };
 
     if (error) {
-      logError("Failed to fetch paid users", error);
+      logger.error("Failed to fetch paid users", error instanceof Error ? error : new Error(String(error)));
       return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
     }
 
@@ -84,7 +81,7 @@ export async function GET(request: NextRequest) {
         results.processed++;
         results.emails.push(user.email);
       } catch (error) {
-        logError("Failed to send monthly summary", error as Error, { user: user.email });
+        logger.error("Failed to send monthly summary", error instanceof Error ? error : new Error(String(error)), { user: user.email });
         results.errors++;
       }
     }
@@ -100,7 +97,7 @@ export async function GET(request: NextRequest) {
       errors: results.errors,
     });
   } catch (error) {
-    logError("Monthly summary cron job failed", error as Error);
+    logger.error("Monthly summary cron job failed", error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Internal server error", message: (error as Error).message },
       { status: 500 }
