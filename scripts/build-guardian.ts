@@ -8,6 +8,7 @@
 import { execSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
+import { ESLintConfigValidator } from './validate-eslint-config';
 
 interface BuildIssue {
   severity: 'error' | 'warning' | 'info';
@@ -38,6 +39,7 @@ class BuildGuardian {
     this.checkEnvFiles();
     this.checkImportPaths();
     this.checkDependencies();
+    this.checkESLintConfigs();
 
     this.report();
     return this.issues.filter(i => i.severity === 'error').length === 0;
@@ -194,6 +196,31 @@ class BuildGuardian {
       }
     } catch (error) {
       // Already handled in checkPackageJson
+    }
+  }
+
+  /**
+   * Check ESLint config dependencies
+   */
+  private checkESLintConfigs(): void {
+    try {
+      const validator = new ESLintConfigValidator(this.rootDir);
+      const isValid = validator.validate();
+      
+      if (!isValid) {
+        this.issues.push({
+          severity: 'error',
+          category: 'eslint',
+          message: 'ESLint config dependencies are missing. Run: npm run validate:eslint-config',
+          fix: 'npm run validate:eslint-config',
+        });
+      }
+    } catch (error) {
+      this.issues.push({
+        severity: 'warning',
+        category: 'eslint',
+        message: `Failed to validate ESLint configs: ${error instanceof Error ? error.message : String(error)}`,
+      });
     }
   }
 

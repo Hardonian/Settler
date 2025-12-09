@@ -17,6 +17,13 @@ if git diff --cached --name-only | grep -q "prisma/schema.prisma"; then
   git add src/types/ 2>/dev/null || true
 fi
 
+# Validate ESLint config dependencies before linting
+echo "🔍 Validating ESLint config dependencies..."
+npm run validate:eslint-config || {
+  echo "❌ ESLint config dependency issues found. Please fix them before committing."
+  exit 1
+}
+
 # Run typecheck before lint-staged to catch TypeScript errors early
 echo "🔍 Running TypeScript typecheck..."
 npm run typecheck || {

@@ -75,6 +75,8 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - run: npm ci
+      - name: Validate ESLint config dependencies
+        run: npm run validate:eslint-config
       - run: npm run lint
       - run: npm run lint:fix -- --dry-run || true
       - run: npm run format:check

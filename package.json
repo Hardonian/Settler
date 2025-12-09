@@ -22,6 +22,7 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "validate": "npm run lint && npm run typecheck && npm run format:check",
     "validate:env": "tsx scripts/check-env.ts production",
+    "validate:eslint-config": "npx tsx scripts/validate-eslint-config.ts",
     "prepare": "husky install 2>/dev/null || true",
     "db:new": "bash scripts/new-migration.sh",
     "db:verify": "bash scripts/verify-migrations.sh",
