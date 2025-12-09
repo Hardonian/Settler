@@ -41,7 +41,7 @@ export async function GET() {
         supabase.from('kpi_most_engaged_post_today').select('total_engagement').single(),
       ]);
       
-      type KpiRow = { count?: number; total_engagement?: number };
+      type KpiRow = { count?: number; total_engagement?: number } | null;
       const newUsersWeek = (kpi1.data as KpiRow)?.count || 0;
       const actionsLastHour = (kpi2.data as KpiRow)?.count || 0;
       const topPostEngagement = (kpi3.data as KpiRow)?.total_engagement || 0;

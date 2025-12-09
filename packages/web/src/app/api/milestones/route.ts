@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         milestone_type: milestoneType,
         milestone_data: metadata || {},
-      })
+      } as any)
       .select()
       .single();
 
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         first_successful_setup_at: new Date().toISOString(),
         current_stage: "activation",
         updated_at: new Date().toISOString(),
-      });
+      } as any);
     }
 
     return NextResponse.json({ achieved: true, milestone: data });

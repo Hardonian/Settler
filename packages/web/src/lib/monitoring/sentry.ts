@@ -91,10 +91,12 @@ class SentryIntegration {
     }
 
     try {
-      window.Sentry.setUser({
-        id: userId,
-        ...traits,
-      });
+      if (window.Sentry) {
+        window.Sentry.setUser({
+          id: userId,
+          ...traits,
+        });
+      }
     } catch (error) {
       logger.warn('Failed to set Sentry user', error instanceof Error ? error : new Error(String(error)));
     }
@@ -109,11 +111,13 @@ class SentryIntegration {
     }
 
     try {
-      window.Sentry.addBreadcrumb({
-        message,
-        category,
-        level,
-      });
+      if (window.Sentry) {
+        window.Sentry.addBreadcrumb({
+          message,
+          category,
+          level,
+        });
+      }
     } catch (error) {
       // Silently fail
     }

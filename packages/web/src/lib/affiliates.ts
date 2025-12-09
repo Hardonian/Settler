@@ -48,7 +48,7 @@ export async function trackAffiliateConversion(
     revenue_amount: revenueAmount,
     commission_amount: commissionAmount,
     status: "pending",
-  });
+  } as any);
 
   // Update affiliate totals
   await supabase
@@ -56,7 +56,7 @@ export async function trackAffiliateConversion(
     .update({
       total_revenue: (affiliateData.total_revenue || 0) + revenueAmount,
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq("id", affiliateData.id);
 }
 
@@ -89,7 +89,7 @@ export async function processAffiliatePayout(affiliateId: string, amount: number
   const conversionIds = typedConversions.map((c) => c.id);
   await supabase
     .from("affiliate_conversions")
-    .update({ status: "paid", paid_at: new Date().toISOString() })
+    .update({ status: "paid", paid_at: new Date().toISOString() } as any)
     .in("id", conversionIds);
 
   // Update affiliate payouts
@@ -105,7 +105,7 @@ export async function processAffiliatePayout(affiliateId: string, amount: number
     .update({
       total_payouts: (affiliateData?.total_payouts || 0) + amount,
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq("id", affiliateId);
 }
 

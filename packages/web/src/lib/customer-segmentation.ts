@@ -31,7 +31,7 @@ export async function assignSegment(
     segment_name: segmentName,
     segment_metadata: metadata || {},
     assigned_at: new Date().toISOString(),
-  });
+  } as any);
 }
 
 /**

@@ -101,7 +101,7 @@ export async function triggerEmailSequence(
       subject: template.subject || '',
       status: "pending",
       metadata: metadata || {},
-    });
+    } as any);
 
     cumulativeDelay += template.delay_hours || 0;
   }

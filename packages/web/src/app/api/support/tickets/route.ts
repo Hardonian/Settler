@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         category,
         severity: severity || "medium",
         status: "open",
-      })
+      } as any)
       .select()
       .single();
 

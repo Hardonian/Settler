@@ -48,11 +48,15 @@ export function IntegrationSandbox({ integrationId, onTestComplete }: Integratio
         onTestComplete?.(false, result);
       }
     } catch (error) {
+      const errorRecord: Record<string, unknown> = {
+        error: error instanceof Error ? error.message : String(error),
+        type: 'exception',
+      };
       setTestResult({
         success: false,
         message: "Failed to test integration",
       });
-      onTestComplete?.(false, error);
+      onTestComplete?.(false, errorRecord);
     } finally {
       setIsRunning(false);
     }
