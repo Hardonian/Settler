@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    logInfo("Low activity cron job completed", {
+    logger.info("Low activity cron job completed", {
       processed: results.processed,
       errors: results.errors,
     });
