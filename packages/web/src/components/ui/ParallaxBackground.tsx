@@ -4,15 +4,13 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-type UseScrollOptions = NonNullable<Parameters<typeof useScroll>[0]>;
-type ScrollOffset = UseScrollOptions['offset'];
-
 interface ParallaxBackgroundProps {
   children?: React.ReactNode;
   className?: string;
   speed?: number;
   direction?: 'up' | 'down';
-  offset?: ScrollOffset;
+  // Accept the same types that framer-motion's useScroll accepts for offset
+  offset?: [string, string] | number | (() => number);
 }
 
 export function ParallaxBackground({
@@ -23,10 +21,13 @@ export function ParallaxBackground({
   offset = ['start', 'end'],
 }: ParallaxBackgroundProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
+  // Type assertion needed because framer-motion's ScrollOffset type is complex
+  // but we know our values are compatible (tuples like ['start', 'end'], numbers, or functions)
+  const scrollOptions = {
     target: ref,
-    offset: offset,
-  });
+    ...(offset !== undefined && { offset }),
+  };
+  const { scrollYProgress } = useScroll(scrollOptions as Parameters<typeof useScroll>[0]);
 
   const y = useTransform(
     scrollYProgress,
