@@ -12,6 +12,7 @@ import { createCheckoutSession } from '@/domain/billing/stripeService';
 import { PlanCode, getPlanConfig } from '@/domain/billing/planConfig';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 /**
  * Validate plan code

@@ -1,6 +1,6 @@
 {
   "buildCommand": "cd ../.. && npx turbo run build --filter=@settler/web...",
-  "installCommand": "npm install --frozen-lockfile",
+  "installCommand": "npm ci --prefer-offline --no-audit",
   "framework": "nextjs",
   "regions": ["iad1"],
   "build": {

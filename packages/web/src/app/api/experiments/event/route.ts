@@ -9,6 +9,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 /**
  * POST /api/experiments/event

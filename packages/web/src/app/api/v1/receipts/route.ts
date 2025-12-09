@@ -13,6 +13,7 @@ import { parseReceiptFromText } from '@/domain/receipts/parser';
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 export const maxDuration = 60; // 60 seconds for OCR processing
 
 export async function POST(request: NextRequest) {

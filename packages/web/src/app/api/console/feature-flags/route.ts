@@ -8,6 +8,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { listFeatureFlags } from '@/domain/console/featureFlags';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 export async function GET() {
   try {

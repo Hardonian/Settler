@@ -12,6 +12,7 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 // Rate limiting: track webhook processing to prevent abuse
 const webhookProcessing = new Map<string, number>();

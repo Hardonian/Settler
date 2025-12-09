@@ -9,6 +9,7 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { prisma } from '@/shared/db/prismaClient';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 interface RouteParams {
   params: Promise<{ id: string }>;

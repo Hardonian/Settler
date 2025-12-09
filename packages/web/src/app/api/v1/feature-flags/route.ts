@@ -11,6 +11,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { FlagType } from '@/domain/featureFlags/types';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 export async function POST(request: NextRequest) {
   try {
