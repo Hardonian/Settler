@@ -10,17 +10,23 @@ import { prisma } from '@/shared/db/prismaClient';
 
 export const dynamic = 'force-dynamic';
 
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: RouteParams
 ) {
   try {
     // Authenticate API key
     await authenticateApiKey(request);
 
+    const { id } = await params;
+
     // Get receipt
     const receipt = await prisma.receipt.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         items: true,
         upload: true,

@@ -10,9 +10,13 @@ import { Environment } from '@/domain/featureFlags/types';
 
 export const dynamic = 'force-dynamic';
 
+interface RouteParams {
+  params: Promise<{ id: string; env: string }>;
+}
+
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; env: string } }
+  { params }: RouteParams
 ) {
   try {
     const supabase = await createClient();
@@ -30,11 +34,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'No billing account found' }, { status: 404 });
     }
 
+    const { id, env } = await params;
     const body = await request.json();
 
     await updateFlagEnvironment(
-      params.id,
-      params.env as Environment,
+      id,
+      env as Environment,
       billingAccount.id,
       {
         enabled: body.enabled,

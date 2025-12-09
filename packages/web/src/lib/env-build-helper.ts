@@ -21,10 +21,15 @@ export function isBuildTime(): boolean {
 /**
  * Build-time required environment variables
  * These are needed during the build process
+ * 
+ * Note: DATABASE_URL is needed for Prisma client generation and build-time queries,
+ * but Prisma will handle missing DATABASE_URL gracefully during build if engineType is "binary"
  */
 export const BUILD_TIME_REQUIRED = [
   'SUPABASE_URL',
   'SUPABASE_ANON_KEY',
+  // DATABASE_URL is optional during build - Prisma can generate client without it
+  // but it's required at runtime for database operations
 ] as const;
 
 /**

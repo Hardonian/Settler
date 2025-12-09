@@ -10,9 +10,13 @@ import { prisma } from '@/shared/db/prismaClient';
 
 export const dynamic = 'force-dynamic';
 
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: RouteParams
 ) {
   try {
     const auth = await authenticateApiKey(request);
@@ -24,12 +28,13 @@ export async function PATCH(
       );
     }
 
+    const { id } = await params;
     const body = await request.json();
 
     // Verify flag belongs to billing account
     const existing = await prisma.featureFlag.findFirst({
       where: {
-        id: params.id,
+        id,
         billingAccountId: auth.billingAccountId,
       },
     });
@@ -43,7 +48,7 @@ export async function PATCH(
 
     // Update flag
     const flag = await prisma.featureFlag.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: body.name,
         description: body.description,
