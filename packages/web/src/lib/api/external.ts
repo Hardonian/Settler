@@ -19,6 +19,12 @@ export interface NPMStats {
   lastUpdated: string;
 }
 
+export interface ExternalMetrics {
+  github: GitHubRepoStats;
+  npm: NPMStats;
+  timestamp: string;
+}
+
 /**
  * Fetch GitHub repository statistics
  * Falls back to demo data if API is unavailable or rate-limited
@@ -112,7 +118,7 @@ export async function getNPMStats(
  * Get combined external metrics
  * Aggregates data from multiple sources for dashboard display
  */
-export async function getExternalMetrics() {
+export async function getExternalMetrics(): Promise<ExternalMetrics> {
   const [githubStats, npmStats] = await Promise.all([
     getGitHubStats(),
     getNPMStats(),
