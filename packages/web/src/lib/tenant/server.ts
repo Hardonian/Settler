@@ -102,12 +102,13 @@ export async function getTenantContext(): Promise<TenantContext> {
 }
 
 /**
- * Get tenant page by slug
+ * Get tenant page by slug with experiment variant
  */
 export async function getTenantPage(tenantId: string, slug: string) {
   const { prisma } = await import('@/shared/db/prismaClient');
+  const { resolveExperimentVariant } = await import('./experimentResolver');
 
-  return prisma.tenantPage.findUnique({
+  const page = await prisma.tenantPage.findUnique({
     where: {
       tenantId_slug: {
         tenantId,
@@ -123,4 +124,30 @@ export async function getTenantPage(tenantId: string, slug: string) {
       },
     },
   });
+
+  if (!page || page.isDraft) {
+    return null;
+  }
+
+  // Resolve experiment variant if active
+  const experiment = await resolveExperimentVariant(tenantId, page.id);
+  
+  // Merge experiment blocks override with base blocks
+  let finalBlocks = page.blocks as unknown[];
+  if (experiment.blocksOverride && Array.isArray(experiment.blocksOverride)) {
+    // Simple merge: experiment blocks override base blocks
+    // In production, you might want more sophisticated merging
+    finalBlocks = experiment.blocksOverride.length > 0 
+      ? experiment.blocksOverride 
+      : finalBlocks;
+  }
+
+  return {
+    ...page,
+    blocks: finalBlocks,
+    experiment: experiment.experimentId ? {
+      id: experiment.experimentId,
+      variantKey: experiment.variantKey,
+    } : null,
+  };
 }

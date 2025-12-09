@@ -10,6 +10,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { HeroBlock } from '../pageSchema';
 import { cn } from '@/lib/utils';
+import { useTenantTheme } from '@/components/tenant/TenantThemeProvider';
+import { getTenantColorStyle, getTenantColorClasses } from '@/lib/tenant/colorTokens';
 
 interface HeroBlockComponentProps {
   block: HeroBlock;
@@ -18,6 +20,8 @@ interface HeroBlockComponentProps {
 export function HeroBlockComponent({ block }: HeroBlockComponentProps) {
   const alignment = block.alignment || 'center';
   const hasBackground = block.backgroundImage || block.backgroundGradient;
+  const { theme } = useTenantTheme();
+  const colorClasses = getTenantColorClasses(theme);
 
   return (
     <section
@@ -47,7 +51,11 @@ export function HeroBlockComponent({ block }: HeroBlockComponentProps) {
       )}>
         <h1
           id={`hero-${block.id}`}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
+          className={cn(
+            "text-5xl md:text-7xl lg:text-8xl font-bold mb-6",
+            colorClasses.primary || ''
+          )}
+          style={colorClasses.primary ? undefined : getTenantColorStyle(theme, 'primary')}
         >
           {block.title}
         </h1>
@@ -66,7 +74,11 @@ export function HeroBlockComponent({ block }: HeroBlockComponentProps) {
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           {block.primaryCta && (
-            <Button size="lg" asChild>
+            <Button 
+              size="lg" 
+              asChild
+              style={theme ? { backgroundColor: theme.colors.primary } : undefined}
+            >
               <Link href={block.primaryCta.href}>
                 {block.primaryCta.label}
               </Link>
