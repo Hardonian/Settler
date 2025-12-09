@@ -6,6 +6,9 @@
  * 
  * Note: Prisma client is generated from /workspace/prisma/schema.prisma
  * Run `npm run prisma:generate` at the root to generate the client.
+ * 
+ * Prisma 7 compatibility: The schema uses engineType = "binary" to ensure
+ * the standard engine is used. DATABASE_URL is read from environment automatically.
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
