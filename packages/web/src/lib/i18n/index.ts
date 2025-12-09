@@ -122,7 +122,7 @@ const translations: Record<Locale, any> = {
 /**
  * Get nested value from object by dot-notation key
  */
-function getNestedValue(obj: any, key: string): string | undefined {
+function getNestedValue(obj: Record<string, unknown>, key: string): string | undefined {
   const keys = key.split('.');
   let value = obj;
   

@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 /**
  * Hook to track page views automatically
  */
-export function usePageView() {
+export function usePageView(): void {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -28,7 +28,11 @@ export function usePageView() {
 /**
  * Hook for tracking custom events
  */
-export function useAnalytics() {
+export function useAnalytics(): {
+  trackEvent: (name: string, properties?: Record<string, any>) => void;
+  trackError: (error: Error | string, metadata?: Record<string, any>) => void;
+  identify: (userId: string, traits?: Record<string, any>) => void;
+} {
   const trackEvent = useCallback((name: string, properties?: Record<string, any>) => {
     analytics.trackEvent(name, properties);
   }, []);

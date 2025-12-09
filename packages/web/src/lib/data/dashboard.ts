@@ -6,7 +6,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
-import { getExternalMetrics } from '@/lib/api/external';
+import { getExternalMetrics, type ExternalMetrics } from '@/lib/api/external';
 
 export interface DashboardMetrics {
   newUsersWeek: number;
@@ -139,7 +139,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 /**
  * Fetch external metrics (GitHub, NPM)
  */
-export async function getExternalMetricsData() {
+export async function getExternalMetricsData(): Promise<ExternalMetrics> {
   try {
     return await getExternalMetrics();
   } catch (err) {

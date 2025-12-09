@@ -32,7 +32,7 @@ const I18nContext = createContext<I18nContextValue | undefined>(undefined);
 /**
  * Get nested value from object by dot-notation key
  */
-function getNestedValue(obj: any, key: string): string | undefined {
+function getNestedValue(obj: Record<string, unknown>, key: string): string | undefined {
   const keys = key.split('.');
   let value = obj;
   
@@ -138,7 +138,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 /**
  * Hook to access i18n context
  */
-export function useTranslation() {
+export function useTranslation(): I18nContextValue {
   const context = useContext(I18nContext);
   
   if (!context) {
@@ -158,7 +158,7 @@ export function useTranslation() {
 /**
  * Hook to get current locale
  */
-export function useLocale() {
+export function useLocale(): Locale {
   const { locale } = useTranslation();
   return locale;
 }
@@ -166,7 +166,7 @@ export function useLocale() {
 /**
  * Hook to translate a specific key
  */
-export function useT() {
+export function useT(): (key: string, params?: Record<string, string | number>) => string {
   const { t } = useTranslation();
   return t;
 }

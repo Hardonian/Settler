@@ -10,7 +10,7 @@ import { telemetry } from './events';
 /**
  * Hook to track button clicks
  */
-export function useTrackButton() {
+export function useTrackButton(): (buttonName: string, properties?: Record<string, any>) => void {
   return useCallback((buttonName: string, properties?: Record<string, any>) => {
     telemetry.trackButtonClick(buttonName, properties);
   }, []);
@@ -19,7 +19,7 @@ export function useTrackButton() {
 /**
  * Hook to track CTA clicks
  */
-export function useTrackCTA() {
+export function useTrackCTA(): (ctaName: string, properties?: Record<string, any>) => void {
   return useCallback((ctaName: string, properties?: Record<string, any>) => {
     telemetry.trackCTAClick(ctaName, properties);
   }, []);
@@ -28,7 +28,11 @@ export function useTrackCTA() {
 /**
  * Hook to track form interactions
  */
-export function useTrackForm(formName: string) {
+export function useTrackForm(formName: string): {
+  start: () => void;
+  abandon: (fieldsCompleted?: number, totalFields?: number) => void;
+  submit: (success: boolean, properties?: Record<string, any>) => void;
+} {
   const start = useCallback(() => {
     telemetry.trackFormStart(formName);
   }, [formName]);
@@ -47,7 +51,7 @@ export function useTrackForm(formName: string) {
 /**
  * Hook to track funnel steps
  */
-export function useTrackFunnel(funnelName: string) {
+export function useTrackFunnel(funnelName: string): (step: string, stepNumber: number, properties?: Record<string, any>) => void {
   return useCallback((step: string, stepNumber: number, properties?: Record<string, any>) => {
     telemetry.trackFunnelStep(funnelName, step, stepNumber, properties);
   }, [funnelName]);
@@ -56,7 +60,7 @@ export function useTrackFunnel(funnelName: string) {
 /**
  * Hook to track conversions
  */
-export function useTrackConversion() {
+export function useTrackConversion(): (conversionName: string, value?: number, properties?: Record<string, any>) => void {
   return useCallback((conversionName: string, value?: number, properties?: Record<string, any>) => {
     telemetry.trackConversion(conversionName, value, properties);
   }, []);
@@ -65,7 +69,7 @@ export function useTrackConversion() {
 /**
  * Hook to track link clicks
  */
-export function useTrackLink() {
+export function useTrackLink(): (url: string, text?: string, properties?: Record<string, any>) => void {
   return useCallback((url: string, text?: string, properties?: Record<string, any>) => {
     telemetry.trackLinkClick(url, text, properties);
   }, []);

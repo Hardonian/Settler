@@ -15,7 +15,7 @@ import { Database } from '@/types/database.types';
  * Get Supabase browser client for client-side operations
  * Only use in Client Components ('use client')
  */
-export function createClient() {
+export function createClient(): ReturnType<typeof createBrowserClient<Database>> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 

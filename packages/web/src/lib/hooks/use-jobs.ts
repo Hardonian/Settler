@@ -20,7 +20,7 @@ export interface UseJobsOptions {
 /**
  * Hook to fetch reconciliation jobs
  */
-export function useJobs({ apiKey, limit = 10, enabled = true }: UseJobsOptions) {
+export function useJobs({ apiKey, limit = 10, enabled = true }: UseJobsOptions): ReturnType<typeof useQuery<Job[]>> {
   return useQuery<Job[]>({
     queryKey: queryKeys.jobs.list({ limit }),
     queryFn: () => getJobs(apiKey, { limit }),

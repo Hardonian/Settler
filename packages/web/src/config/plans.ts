@@ -219,7 +219,7 @@ export function hasFeatureAccess(
 /**
  * Get plan limits for a user
  */
-export function getPlanLimits(userPlan: PlanType) {
+export function getPlanLimits(userPlan: PlanType): Plan['limits'] {
   return plans[userPlan].limits;
 }
 

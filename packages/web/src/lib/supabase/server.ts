@@ -10,12 +10,13 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Database } from '@/types/database.types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Get Supabase server client for authenticated requests
  * Uses cookies for session management
  */
-export async function createClient() {
+export async function createClient(): Promise<ReturnType<typeof createServerClient<Database>>> {
   // eslint-disable-next-line @typescript-eslint/await-thenable
   const cookieStore = await cookies();
 
@@ -58,7 +59,7 @@ export async function createClient() {
  * Get Supabase admin client (service role)
  * WARNING: Only use in Server Actions/Route Handlers, never expose to client
  */
-export async function createAdminClient() {
+export async function createAdminClient(): Promise<SupabaseClient<Database>> {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 

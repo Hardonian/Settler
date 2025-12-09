@@ -39,7 +39,7 @@ function getRating(name: string, value: number): 'good' | 'needs-improvement' | 
 /**
  * Report Web Vital metric
  */
-export function reportWebVital(metric: WebVitalMetric) {
+export function reportWebVital(metric: WebVitalMetric): void {
   const { name, value, rating, id, delta, navigationType } = metric;
 
   // Log in development
@@ -75,7 +75,13 @@ export function reportWebVital(metric: WebVitalMetric) {
 /**
  * Initialize Web Vitals collection (Next.js)
  */
-export function reportWebVitals(metric: any) {
+export function reportWebVitals(metric: {
+  name: string;
+  value: number;
+  id: string;
+  delta: number;
+  navigationType?: string;
+}): void {
   const { name, value, id, delta, navigationType } = metric;
 
   reportWebVital({
@@ -91,7 +97,7 @@ export function reportWebVitals(metric: any) {
 /**
  * Manual Web Vitals collection (non-Next.js)
  */
-export function initWebVitals() {
+export function initWebVitals(): void {
   if (typeof window === 'undefined') return;
 
   // LCP - Largest Contentful Paint
