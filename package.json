@@ -42,7 +42,7 @@
     "db:migrate:prod": "supabase db push --include-all",
     "db:migrate:auto": "tsx scripts/migrate-supabase.ts",
     "db:check": "tsx scripts/check-connection.ts",
-    "prisma:generate": "prisma generate",
+    "prisma:generate": "PRISMA_CLIENT_ENGINE_TYPE=binary prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",
