@@ -156,6 +156,7 @@ if (typeof window !== 'undefined') {
     let clsValue = 0;
     let clsEntries: PerformanceEntry[] = [];
 
+    let firstSessionEntry = true;
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         // Only count if the entry doesn't have recent user input
@@ -164,10 +165,11 @@ if (typeof window !== 'undefined') {
           // If the entry is the first one, or if it's been more than 1 second since the last entry
           const lastEntry = clsEntries[clsEntries.length - 1];
           if (
-            !firstSessionEntry ||
+            firstSessionEntry ||
             !lastEntry ||
             entry.startTime - lastEntry.startTime > 1000
           ) {
+            firstSessionEntry = false;
             clsEntries = [entry];
           } else {
             clsEntries.push(entry);

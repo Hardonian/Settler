@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 interface ProfileRow {
   id: string;
   email?: string;
+  name?: string;
   plan_type?: string;
   trial_end_date?: string;
   industry?: string;
@@ -125,7 +126,7 @@ export async function getUserDashboardData(): Promise<UserDashboardData | null> 
       user: {
         id: profile?.id || "",
         email: profile?.email || "",
-        firstName: profile?.name?.split(" ")[0],
+        firstName: profile?.name && typeof profile.name === 'string' ? profile.name.split(" ")[0] : undefined,
         planType: planType,
         trialEndDate: profile?.trial_end_date,
         industry: profile?.industry,

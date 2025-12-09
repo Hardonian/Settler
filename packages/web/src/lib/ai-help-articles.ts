@@ -19,7 +19,11 @@ type ArticleParams =
   | Record<string, string | number>;
 
 const ARTICLE_TEMPLATES: Record<string, (params: ArticleParams) => HelpArticle> = {
-  "integration-setup": (params: { integration: string }) => ({
+  "integration-setup": (params) => {
+    if (!('integration' in params) || typeof params.integration !== 'string') {
+      throw new Error('integration-setup template requires integration parameter');
+    }
+    return {
     id: `setup-${params.integration}`,
     title: `How to Set Up ${params.integration} Integration`,
     category: "Integrations",

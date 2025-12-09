@@ -34,11 +34,11 @@ const I18nContext = createContext<I18nContextValue | undefined>(undefined);
  */
 function getNestedValue(obj: Record<string, unknown>, key: string): string | undefined {
   const keys = key.split('.');
-  let value = obj;
+  let value: unknown = obj;
   
   for (const k of keys) {
-    if (value && typeof value === 'object' && k in value) {
-      value = value[k];
+    if (value && typeof value === 'object' && value !== null && k in value) {
+      value = (value as Record<string, unknown>)[k];
     } else {
       return undefined;
     }
@@ -70,7 +70,7 @@ function translate(
   params?: Record<string, string | number>
 ): string {
   const localeTranslations = translations[locale] || translations[defaultLocale];
-  const translation = getNestedValue(localeTranslations, key);
+  const translation = getNestedValue(localeTranslations as Record<string, unknown>, key);
   
   if (!translation) {
     // Fallback to key if translation not found
