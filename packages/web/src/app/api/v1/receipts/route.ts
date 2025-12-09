@@ -10,6 +10,7 @@ import { recordServiceUsage } from '@/shared/usage/usageEvent';
 import { prisma } from '@/shared/db/prismaClient';
 import { getOcrProvider } from '@/domain/receipts/ocrProvider';
 import { parseReceiptFromText } from '@/domain/receipts/parser';
+import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // 60 seconds for OCR processing
@@ -25,6 +26,12 @@ export async function POST(request: NextRequest) {
         { error: 'Billing account required' },
         { status: 400 }
       );
+    }
+
+    // Check entitlement
+    const entitlement = await checkRequestEntitlement(auth, 'receipts');
+    if (!entitlement.allowed && entitlement.error) {
+      return createEntitlementErrorResponse(entitlement.error);
     }
 
     // Parse request body

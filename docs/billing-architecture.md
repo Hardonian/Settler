@@ -1,484 +1,185 @@
-# Billing Architecture Documentation
+# Billing Architecture
+
+This document describes the billing and subscription system for Settler.dev.
 
 ## Overview
 
-Settler.dev's billing system is a comprehensive subscription and usage-based billing platform that integrates with Stripe for payment processing and Supabase for data storage. The system supports base subscriptions, premium add-ons, and metered usage billing.
+Settler.dev uses Stripe for subscription management and billing. The system integrates with existing infrastructure:
+- `BillingAccount` - Links users to Stripe customers
+- `Subscription` - Tracks active subscriptions and plan details
+- `UsageEvent` - Records API usage for quota enforcement
+- `ApiKey` - Authenticates API requests and links to billing accounts
 
-## Architecture Diagram
+## Plan Model
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        Web UI (Next.js)                     │
-│  /dashboard/billing, /dashboard/addons, /dashboard/usage   │
-└───────────────────────┬─────────────────────────────────────┘
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    API Layer (Express)                      │
-│  /api/billing/* - Customer, Subscription, Add-Ons, Usage     │
-└───────────────┬───────────────────────┬───────────────────┘
-                │                         │
-                ▼                         ▼
-┌──────────────────────────┐  ┌──────────────────────────────┐
-│   Supabase Database      │  │      Stripe API               │
-│  - billing_accounts      │  │  - Customers                  │
-│  - subscriptions         │  │  - Subscriptions              │
-│  - add_ons               │  │  - Products & Prices          │
-│  - add_on_purchases      │  │  - Usage Records               │
-│  - usage_events         │  │  - Webhooks                    │
-│  - usage_aggregate_daily│  └──────────────────────────────┘
-└───────────────┬──────────┘
-                │
-                ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Edge Functions (Deno)                          │
-│  - log-usage, compute-bill, sync-usage-to-stripe            │
-│  - integration-sync-* (per integration)                     │
-└─────────────────────────────────────────────────────────────┘
-```
+### Plan Codes
 
-## Database Schema
+- `free` - Free tier with basic limits
+- `pro` - Pro tier ($99/month) with higher limits
+- `scale` - Scale tier ($499/month) with very high limits
 
-### Core Tables
+### Service Limits
 
-#### billing_accounts
+Each plan includes monthly usage limits for:
 
-Stores customer billing information and links to Stripe customers.
+1. **Reconcile API**
+   - Free: 1,000 calls/month
+   - Pro: 100,000 calls/month
+   - Scale: 1,000,000 calls/month
 
-- `id` (UUID) - Primary key
-- `user_id` (UUID) - Links to users table
-- `tenant_id` (UUID) - Optional tenant association
-- `stripe_customer_id` (VARCHAR) - Stripe customer ID
-- `email` (VARCHAR) - Billing email
-- `status` (VARCHAR) - active, suspended, cancelled
-- `currency` (VARCHAR) - Default currency (default: usd)
+2. **Receipts API**
+   - Free: 100 parses/month
+   - Pro: 10,000 parses/month
+   - Scale: 100,000 parses/month
 
-#### subscriptions
+3. **Feature Flags API**
+   - Free: 100,000 evaluations/month (generous free tier)
+   - Pro: 1,000,000 evaluations/month
+   - Scale: 10,000,000 evaluations/month
 
-Tracks active subscriptions to base plans.
+## Data Model
 
-- `id` (UUID) - Primary key
-- `billing_account_id` (UUID) - Foreign key to billing_accounts
-- `stripe_subscription_id` (VARCHAR) - Stripe subscription ID
-- `plan_id` (VARCHAR) - base, pro, enterprise
-- `plan_name` (VARCHAR) - Human-readable plan name
-- `status` (VARCHAR) - active, cancelled, past_due, trialing
-- `current_period_start` (TIMESTAMPTZ) - Billing period start
-- `current_period_end` (TIMESTAMPTZ) - Billing period end
+### BillingAccount ↔ Stripe Customer
 
-#### add_ons
+- Each `BillingAccount` can have a `stripeCustomerId`
+- Stripe customers are created on-demand when needed
+- Customer metadata includes `billingAccountId` for webhook processing
 
-Catalog of available add-ons (both standard and premium).
+### Subscription ↔ Stripe Subscription
 
-- `id` (UUID) - Primary key
-- `integration_id` (VARCHAR) - Unique integration identifier
-- `name` (VARCHAR) - Display name
-- `base_price_monthly` (DECIMAL) - Monthly base price
-- `usage_price_per_unit` (DECIMAL) - Per-unit usage price
-- `usage_unit` (VARCHAR) - Unit type (order, event, message, etc.)
-- `is_standard` (BOOLEAN) - Included in base plan
-- `is_active` (BOOLEAN) - Available for purchase
+- `Subscription` model tracks Stripe subscriptions
+- `stripeSubscriptionId` links to Stripe subscription
+- `planId` stores legacy plan ID (base/pro/enterprise) for compatibility
+- Plan code is derived from metadata or mapped from `planId`
 
-#### add_on_purchases
+### ApiKey → BillingAccount
 
-Tracks purchased add-ons for each billing account.
+- API keys are associated with users via `user_id`
+- Users have `BillingAccount` records
+- Entitlement checks resolve: `ApiKey` → `user_id` → `BillingAccount` → `Subscription` → `Plan`
 
-- `id` (UUID) - Primary key
-- `billing_account_id` (UUID) - Foreign key to billing_accounts
-- `add_on_id` (UUID) - Foreign key to add_ons
-- `stripe_subscription_item_id` (VARCHAR) - Stripe subscription item ID
-- `status` (VARCHAR) - active, cancelled, expired
+## Usage Accounting
 
-#### usage_events
+### Event Types
 
-Individual usage events logged in real-time.
+Usage events use the format: `{service}:{operation}`
 
-- `id` (UUID) - Primary key
-- `billing_account_id` (UUID) - Foreign key to billing_accounts
-- `event_type` (VARCHAR) - Type of event (reconciliation_job, api_request, etc.)
-- `quantity` (DECIMAL) - Quantity of usage
-- `integration_id` (VARCHAR) - Optional integration identifier
-- `add_on_id` (UUID) - Optional add-on identifier
-- `timestamp` (TIMESTAMPTZ) - When event occurred
-- `aggregated` (BOOLEAN) - Whether event has been aggregated
+- `settler-reconcile:{operation}` - Reconcile API calls
+- `settler-receipts:{operation}` - Receipt parsing operations
+- `settler-feature-flags:{operation}` - Feature flag evaluations
 
-#### usage_aggregate_daily
+### Billing Periods
 
-Daily aggregated usage for billing calculations.
+- **Paid plans**: Uses `Subscription.currentPeriodStart` and `currentPeriodEnd`
+- **Free plan**: Uses calendar month (1st to last day of month)
 
-- `id` (UUID) - Primary key
-- `billing_account_id` (UUID) - Foreign key to billing_accounts
-- `date` (DATE) - Date of aggregation
-- `event_type` (VARCHAR) - Type of event
-- `total_quantity` (DECIMAL) - Total quantity for the day
-- `event_count` (INTEGER) - Number of events
-- `estimated_cost` (DECIMAL) - Estimated cost for this usage
+### Usage Aggregation
 
-## API Endpoints
+Usage is aggregated by:
+- `billingAccountId`
+- `eventType` (service prefix)
+- `timestamp` (within billing period)
 
-### Billing Account Management
+## Entitlement Enforcement
 
-#### POST /api/billing/create-customer
+### Flow
 
-Creates or retrieves a billing account and Stripe customer.
+1. API request authenticated via `ApiKey`
+2. Resolve `billingAccountId` from API key's `user_id`
+3. Get account's plan code (from subscription or default to `free`)
+4. Get current period usage for the service
+5. Compare usage against plan limits
+6. Allow or reject with quota error
 
-**Request:**
+### Error Response
+
+When quota is exceeded:
 
 ```json
 {
-  "email": "user@example.com",
-  "name": "John Doe"
-}
-```
-
-**Response:**
-
-```json
-{
-  "billing_account_id": "uuid",
-  "stripe_customer_id": "cus_...",
-  "email": "user@example.com",
-  "status": "active"
-}
-```
-
-### Subscription Management
-
-#### POST /api/billing/subscribe
-
-Subscribes a billing account to the base plan.
-
-**Request:**
-
-```json
-{
-  "billing_account_id": "uuid"
-}
-```
-
-**Response:**
-
-```json
-{
-  "subscription_id": "uuid",
-  "stripe_subscription_id": "sub_...",
-  "status": "active",
-  "client_secret": "pi_..." // For payment setup
-}
-```
-
-### Add-On Management
-
-#### POST /api/billing/addon/purchase
-
-Purchases a premium add-on.
-
-**Request:**
-
-```json
-{
-  "billing_account_id": "uuid",
-  "add_on_id": "uuid"
-}
-```
-
-**Response:**
-
-```json
-{
-  "purchase_id": "uuid",
-  "add_on_id": "uuid",
-  "integration_id": "tiktok-shop",
-  "name": "TikTok Shop + TikTok Ads",
-  "status": "active"
-}
-```
-
-### Usage Reporting
-
-#### POST /api/billing/usage/report
-
-Logs a usage event for billing.
-
-**Request:**
-
-```json
-{
-  "billing_account_id": "uuid",
-  "event_type": "reconciliation_job",
-  "quantity": 1,
-  "integration_id": "stripe",
-  "metadata": {
-    "job_id": "uuid"
+  "error": "Plan Limit Exceeded",
+  "code": "plan_limit_exceeded",
+  "message": "You have exceeded your monthly quota for receipts. Current usage: 101/100.",
+  "details": {
+    "currentPlan": "free",
+    "currentUsage": 101,
+    "limit": 100,
+    "upgradeUrl": "/console/billing"
   }
 }
 ```
-
-### Invoice Estimation
-
-#### GET /api/billing/invoice/estimate
-
-Gets estimated bill for current or specified period.
-
-**Query Parameters:**
-
-- `billing_account_id` (required)
-- `start_date` (optional)
-- `end_date` (optional)
-
-**Response:**
-
-```json
-{
-  "billing_account_id": "uuid",
-  "period_start": "2025-01-01",
-  "period_end": "2025-01-31",
-  "base_subscription_cost": 49.95,
-  "add_on_costs": 39.95,
-  "usage_costs": 15.0,
-  "total_cost": 104.9,
-  "currency": "usd"
-}
-```
-
-### Stripe Webhooks
-
-#### POST /api/billing/webhook
-
-Handles Stripe webhook events.
-
-**Supported Events:**
-
-- `customer.subscription.updated`
-- `customer.subscription.deleted`
-- `invoice.paid`
-- `invoice.payment_failed`
-- `invoice.upcoming`
-
-## Database Functions
-
-### log_usage_event()
-
-Logs a usage event for billing and analytics.
-
-**Parameters:**
-
-- `p_billing_account_id` (UUID)
-- `p_event_type` (VARCHAR)
-- `p_quantity` (DECIMAL, default: 1)
-- `p_project_id` (UUID, optional)
-- `p_user_id` (UUID, optional)
-- `p_tenant_id` (UUID, optional)
-- `p_integration_id` (VARCHAR, optional)
-- `p_add_on_id` (UUID, optional)
-- `p_unit` (VARCHAR, optional)
-- `p_metadata` (JSONB, optional)
-
-**Returns:** UUID (event ID)
-
-### aggregate_daily_usage()
-
-Aggregates usage events into daily aggregates.
-
-**Parameters:**
-
-- `p_start_date` (DATE, default: yesterday)
-- `p_end_date` (DATE, default: yesterday)
-
-**Returns:** INTEGER (number of aggregates created)
-
-### compute_estimated_bill()
-
-Computes estimated bill for a billing period.
-
-**Parameters:**
-
-- `p_billing_account_id` (UUID)
-- `p_start_date` (DATE)
-- `p_end_date` (DATE)
-
-**Returns:** JSONB with cost breakdown
-
-### check_upgrade_requirement()
-
-Checks if a billing account should be prompted to upgrade.
-
-**Parameters:**
-
-- `p_billing_account_id` (UUID)
-
-**Returns:** JSONB with upgrade recommendations
-
-## Edge Functions
-
-### log-usage
-
-Logs usage events via HTTP API.
-
-**Endpoint:** `/functions/v1/log-usage`
-
-**Method:** POST
-
-**Headers:**
-
-- `Authorization: Bearer <token>`
-
-**Body:**
-
-```json
-{
-  "billing_account_id": "uuid",
-  "event_type": "reconciliation_job",
-  "quantity": 1,
-  "integration_id": "stripe"
-}
-```
-
-### compute-bill
-
-Computes estimated bill for a billing account.
-
-**Endpoint:** `/functions/v1/compute-bill`
-
-**Method:** GET
-
-**Query Parameters:**
-
-- `billing_account_id` (required)
-- `start_date` (optional)
-- `end_date` (optional)
-
-### sync-usage-to-stripe
-
-Syncs usage aggregates to Stripe for metered billing.
-
-**Endpoint:** `/functions/v1/sync-usage-to-stripe`
-
-**Method:** POST
-
-**Body:**
-
-```json
-{
-  "billing_account_id": "uuid",
-  "date": "2025-01-20"
-}
-```
-
-### integration-sync-\*
-
-Integration-specific sync functions that log usage events.
-
-**Endpoints:**
-
-- `/functions/v1/integration-sync-stripe`
-- `/functions/v1/integration-sync-shopify`
-- `/functions/v1/integration-sync-paypal`
-- `/functions/v1/integration-sync-tiktok`
-- etc.
-
-## Feature Gating
-
-The system includes middleware for feature gating based on:
-
-- Plan tier (base, pro, enterprise)
-- Add-on purchases
-- Usage limits
-
-### Usage
-
-```typescript
-import { featureGate } from "../middleware/billing-gating";
-
-router.post(
-  "/premium-feature",
-  authMiddleware,
-  featureGate("advanced_analytics"), // Requires Pro plan
-  async (req, res) => {
-    // Route handler
-  }
-);
-```
-
-## Usage Tracking Integration
-
-Usage tracking is integrated into API routes:
-
-```typescript
-import { logUsageEvent } from "../utils/usage-tracker";
-
-// After successful operation
-await logUsageEvent({
-  billingAccountId: billingAccount.id,
-  eventType: "reconciliation_job",
-  quantity: 1,
-  integrationId: "stripe",
-});
-```
-
-## Scheduled Jobs
-
-### Daily Usage Aggregation
-
-Runs nightly at 3 AM UTC to:
-
-1. Aggregate usage events into daily totals
-2. Sync usage to Stripe for metered billing
-
-**Job:** `usage-aggregation`
-**Schedule:** `0 3 * * *` (daily at 3 AM UTC)
 
 ## Stripe Integration
 
-### Products & Prices
+### Checkout Sessions
 
-Products are created via setup script:
+- Created via `/api/stripe/checkout` endpoint
+- Includes `billingAccountId` and `planCode` in metadata
+- Redirects to Stripe-hosted checkout page
+
+### Customer Portal
+
+- Created via `/api/stripe/portal` endpoint
+- Allows customers to manage payment methods, view invoices, cancel subscriptions
+- Redirects to Stripe-hosted portal
+
+### Webhooks
+
+Webhook endpoint: `/api/stripe/webhook`
+
+Handles events:
+- `customer.subscription.created` - New subscription
+- `customer.subscription.updated` - Subscription changes
+- `customer.subscription.deleted` - Subscription cancellation
+- `customer.updated` - Customer metadata updates
+- `invoice.payment_succeeded` - Payment confirmation
+- `invoice.payment_failed` - Payment failure
+
+Webhook processing:
+1. Verify signature with `STRIPE_WEBHOOK_SECRET`
+2. Extract `billingAccountId` from subscription metadata
+3. Sync subscription state to local `Subscription` model
+4. Update `BillingAccount` if needed
+
+## Developer Console
+
+### Billing Page (`/console/billing`)
+
+Shows:
+- Current plan and subscription status
+- Usage vs limits for all services
+- Plan comparison and upgrade options
+- Link to Stripe Customer Portal
+
+### Usage Tracking
+
+Usage is displayed in:
+- Console Overview (`/console`)
+- Usage & Metrics (`/console/usage`)
+- Billing page (`/console/billing`)
+
+## Environment Variables
+
+Required Stripe configuration:
 
 ```bash
-tsx scripts/setup-stripe-products.ts
+STRIPE_SECRET_KEY=sk_test_... # Stripe secret key
+STRIPE_WEBHOOK_SECRET=whsec_... # Webhook signing secret
+STRIPE_PRICE_ID_PRO=price_... # Pro plan price ID
+STRIPE_PRICE_ID_SCALE=price_... # Scale plan price ID
 ```
-
-This creates:
-
-- Base plan product ($49.95/month)
-- 5 premium add-on products with monthly + usage pricing
-
-### Webhook Configuration
-
-Configure webhook endpoint in Stripe Dashboard:
-
-- URL: `https://your-domain.com/api/billing/webhook`
-- Events: `customer.subscription.*`, `invoice.*`
-
-### Metered Billing
-
-Usage is synced to Stripe via `sync-usage-to-stripe` edge function, which creates usage records for metered subscription items.
-
-## Security Considerations
-
-1. **Webhook Signature Verification**: All Stripe webhooks verify HMAC signatures
-2. **Authorization**: All billing endpoints require authentication
-3. **Tenant Isolation**: Usage and billing data is isolated by tenant
-4. **Rate Limiting**: Usage reporting endpoints are rate-limited
-
-## Error Handling
-
-- Usage logging failures don't block main operations
-- Webhook processing is idempotent
-- Failed Stripe operations are logged and retried
-- Database errors are caught and logged
-
-## Monitoring & Observability
-
-- All usage events are logged with metadata
-- Stripe webhook events are logged in `stripe_event_log` table
-- Usage aggregation jobs log success/failure
-- Billing errors are tracked in application logs
 
 ## Future Enhancements
 
-1. **Annual Billing**: Support for annual subscription plans
-2. **Volume Discounts**: Tiered pricing based on usage volume
-3. **Enterprise Contracts**: Custom pricing for enterprise customers
-4. **Usage Predictions**: ML-based usage forecasting
-5. **Cost Optimization**: Recommendations for cost reduction
+1. **Rate Limiting**: Add per-minute rate limits per plan
+2. **Overage Billing**: Charge for usage beyond included limits
+3. **Annual Plans**: Support annual billing with discounts
+4. **Usage Alerts**: Notify users when approaching limits
+5. **Usage Analytics**: Detailed usage breakdowns and trends
+
+## Migration Notes
+
+- Existing `Subscription` records use `planId` (base/pro/enterprise)
+- New code maps these to `planCode` (free/pro/scale)
+- Legacy compatibility maintained via `mapLegacyPlanId()`
+- Free plan is default for accounts without subscriptions

@@ -26,6 +26,8 @@ export default function Pricing() {
       description: 'Open source components and basic features',
       features: [
         { text: '1,000 reconciliations/month' },
+        { text: '100 receipt parses/month' },
+        { text: '100k feature flag evaluations/month' },
         { text: '2 platform adapters' },
         { text: '7-day log retention' },
         { text: 'Community support' },
@@ -48,6 +50,8 @@ export default function Pricing() {
       description: 'Platform integrations and advanced features',
       features: [
         { text: '100,000 reconciliations/month' },
+        { text: '10,000 receipt parses/month' },
+        { text: '1M feature flag evaluations/month' },
         { text: 'Unlimited adapters' },
         { text: '30-day log retention' },
         { text: 'Email support' },
@@ -69,7 +73,9 @@ export default function Pricing() {
       period: '',
       description: 'Full-featured with dedicated support',
       features: [
-        { text: 'Unlimited reconciliations' },
+        { text: '1M+ reconciliations/month' },
+        { text: '100k+ receipt parses/month' },
+        { text: '10M+ feature flag evaluations/month' },
         { text: 'Unlimited adapters' },
         { text: 'Unlimited log retention' },
         { text: 'Dedicated support (SLA)' },

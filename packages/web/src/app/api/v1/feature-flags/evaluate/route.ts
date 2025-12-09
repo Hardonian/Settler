@@ -9,6 +9,7 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { recordServiceUsage } from '@/shared/usage/usageEvent';
 import { evaluateFlag } from '@/domain/featureFlags/evaluator';
 import { Environment } from '@/domain/featureFlags/types';
+import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,6 +22,12 @@ export async function POST(request: NextRequest) {
         { error: 'Billing account required' },
         { status: 400 }
       );
+    }
+
+    // Check entitlement (Feature Flags has generous limits, but still check)
+    const entitlement = await checkRequestEntitlement(auth, 'featureFlags');
+    if (!entitlement.allowed && entitlement.error) {
+      return createEntitlementErrorResponse(entitlement.error);
     }
 
     const body = await request.json();

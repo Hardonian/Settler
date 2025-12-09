@@ -13,19 +13,21 @@ import {
   LayoutDashboard,
   Key,
   BarChart3,
+  CreditCard,
   Receipt,
   ToggleLeft,
   BookOpen,
 } from 'lucide-react';
 
 const consoleNavItems = [
-  { href: '/console', label: 'Overview', icon: LayoutDashboard },
-  { href: '/console/api-keys', label: 'API Keys', icon: Key },
-  { href: '/console/usage', label: 'Usage & Metrics', icon: BarChart3 },
-  { href: '/console/receipts', label: 'Receipts', icon: Receipt },
-  { href: '/console/feature-flags', label: 'Feature Flags', icon: ToggleLeft },
-  { href: '/console/docs', label: 'Docs & Examples', icon: BookOpen },
-];
+    { href: '/console', label: 'Overview', icon: LayoutDashboard },
+    { href: '/console/api-keys', label: 'API Keys', icon: Key },
+    { href: '/console/usage', label: 'Usage & Metrics', icon: BarChart3 },
+    { href: '/console/billing', label: 'Billing & Plan', icon: CreditCard },
+    { href: '/console/receipts', label: 'Receipts', icon: Receipt },
+    { href: '/console/feature-flags', label: 'Feature Flags', icon: ToggleLeft },
+    { href: '/console/docs', label: 'Docs & Examples', icon: BookOpen },
+  ];
 
 interface ConsoleLayoutProps {
   children: React.ReactNode;
