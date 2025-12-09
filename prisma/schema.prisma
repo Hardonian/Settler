@@ -25,6 +25,7 @@ model BillingAccount {
   taxId             String?
   currency          String    @default("usd")
   status            String    @default("active") // active, suspended, cancelled
+  metadata          Json      @default("{}")
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   deletedAt         DateTime?
