@@ -17,6 +17,7 @@ import {
   Receipt,
   ToggleLeft,
   BookOpen,
+  Palette,
 } from 'lucide-react';
 
 const consoleNavItems = [
@@ -26,6 +27,7 @@ const consoleNavItems = [
     { href: '/console/billing', label: 'Billing & Plan', icon: CreditCard },
     { href: '/console/receipts', label: 'Receipts', icon: Receipt },
     { href: '/console/feature-flags', label: 'Feature Flags', icon: ToggleLeft },
+    { href: '/console/site', label: 'Site Designer', icon: Palette },
     { href: '/console/docs', label: 'Docs & Examples', icon: BookOpen },
   ];
 
