@@ -161,14 +161,15 @@ export async function resolveTenant(
   const pathMatch = url.pathname.match(/^\/t\/([^/]+)/);
   if (pathMatch && userId) {
     const previewSlug = pathMatch[1];
-    if (!previewSlug) return null;
-    const tenantBySlug = await findTenantBySlug(previewSlug);
-    if (tenantBySlug && await canAccessTenant(userId, tenantBySlug.id)) {
-      return {
-        tenantId: tenantBySlug.id,
-        tenantSlug: tenantBySlug.slug,
-        tenant: tenantBySlug,
-      };
+    if (previewSlug) {
+      const tenantBySlug = await findTenantBySlug(previewSlug);
+      if (tenantBySlug && await canAccessTenant(userId, tenantBySlug.id)) {
+        return {
+          tenantId: tenantBySlug.id,
+          tenantSlug: tenantBySlug.slug,
+          tenant: tenantBySlug,
+        };
+      }
     }
   }
   

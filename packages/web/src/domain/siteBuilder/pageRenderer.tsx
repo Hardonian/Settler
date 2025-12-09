@@ -29,16 +29,16 @@ interface PageRendererProps {
  * Block component registry
  */
 const blockComponents: Record<string, React.ComponentType<{ block: PageBlock }>> = {
-  hero: HeroBlockComponent,
-  featureGrid: FeatureGridBlockComponent,
-  logoCloud: LogoCloudBlockComponent,
-  testimonial: TestimonialBlockComponent,
-  faq: FAQBlockComponent,
-  ctaBanner: CTABannerBlockComponent,
-  pricingTable: PricingTableBlockComponent,
-  twoColumnText: TwoColumnTextBlockComponent,
-  codeExample: CodeExampleBlockComponent,
-  stats: StatsBlockComponent,
+  hero: HeroBlockComponent as React.ComponentType<{ block: PageBlock }>,
+  featureGrid: FeatureGridBlockComponent as React.ComponentType<{ block: PageBlock }>,
+  logoCloud: LogoCloudBlockComponent as React.ComponentType<{ block: PageBlock }>,
+  testimonial: TestimonialBlockComponent as React.ComponentType<{ block: PageBlock }>,
+  faq: FAQBlockComponent as React.ComponentType<{ block: PageBlock }>,
+  ctaBanner: CTABannerBlockComponent as React.ComponentType<{ block: PageBlock }>,
+  pricingTable: PricingTableBlockComponent as React.ComponentType<{ block: PageBlock }>,
+  twoColumnText: TwoColumnTextBlockComponent as React.ComponentType<{ block: PageBlock }>,
+  codeExample: CodeExampleBlockComponent as React.ComponentType<{ block: PageBlock }>,
+  stats: StatsBlockComponent as React.ComponentType<{ block: PageBlock }>,
 };
 
 export function PageRenderer({ blocks, className }: PageRendererProps) {

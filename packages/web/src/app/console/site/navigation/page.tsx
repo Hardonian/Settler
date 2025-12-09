@@ -94,12 +94,18 @@ export default function NavigationEditorPage() {
   ) {
     if (type === 'nav') {
       const updated = [...navItems];
-      updated[index] = { ...updated[index], ...updates };
-      setNavItems(updated);
+      const existing = updated[index];
+      if (existing) {
+        updated[index] = { ...existing, ...updates } as TenantNavigationItem;
+        setNavItems(updated);
+      }
     } else {
       const updated = [...footerItems];
-      updated[index] = { ...updated[index], ...updates };
-      setFooterItems(updated);
+      const existing = updated[index];
+      if (existing) {
+        updated[index] = { ...existing, ...updates } as TenantNavigationItem;
+        setFooterItems(updated);
+      }
     }
   }
 
@@ -111,23 +117,7 @@ export default function NavigationEditorPage() {
     }
   }
 
-  function _handleMoveItem(
-    type: 'nav' | 'footer',
-    fromIndex: number,
-    toIndex: number
-  ) {
-    if (type === 'nav') {
-      const updated = [...navItems];
-      const [moved] = updated.splice(fromIndex, 1);
-      updated.splice(toIndex, 0, moved);
-      setNavItems(updated);
-    } else {
-      const updated = [...footerItems];
-      const [moved] = updated.splice(fromIndex, 1);
-      updated.splice(toIndex, 0, moved);
-      setFooterItems(updated);
-    }
-  }
+  // Removed unused function _handleMoveItem
 
   function renderItemEditor(
     item: TenantNavigationItem,
