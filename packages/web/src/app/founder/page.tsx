@@ -1,6 +1,8 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ConversionCTA } from "@/components/ConversionCTA";
 import { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/metadata";
 
@@ -16,7 +18,14 @@ export default function FounderPage() {
     <AnimatedPageWrapper>
       <Navigation />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-4xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Founder Story' }]} />
+        </div>
+      </section>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-8 text-slate-900 dark:text-white">
           Why I Built Settler
         </h1>
@@ -62,6 +71,19 @@ export default function FounderPage() {
             manual work, just accurate results in minutes instead of hours.
           </p>
         </div>
+
+        {/* CTA Section */}
+        <section className="py-20">
+          <ConversionCTA
+            title="Ready to Experience the Difference?"
+            description="Join hundreds of companies using Settler to automate their reconciliation. Start your free trial today."
+            primaryAction="Start Free Trial"
+            primaryLink="/signup"
+            secondaryAction="View Pricing"
+            secondaryLink="/pricing"
+            variant="gradient"
+          />
+        </section>
       </div>
 
       <Footer />

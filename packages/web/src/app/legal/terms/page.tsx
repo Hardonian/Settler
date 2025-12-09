@@ -1,11 +1,20 @@
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 export default function TermsPage() {
   return (
     <AnimatedPageWrapper aria-label="Terms of Service page">
       <Navigation />
+      
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-4xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Legal', href: '/legal' }, { label: 'Terms of Service' }]} />
+        </div>
+      </section>
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-bold mb-8 text-slate-900 dark:text-white">Terms of Service</h1>
         <div className="prose prose-slate dark:prose-invert max-w-none">

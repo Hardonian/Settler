@@ -11,6 +11,8 @@ import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { AnimatedPricingCard } from "@/components/AnimatedPricingCard";
 import { AnimatedFAQ } from "@/components/AnimatedFAQ";
+import { FAQSchema } from "@/components/StructuredData";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
@@ -56,7 +58,7 @@ export default function Pricing() {
         { text: 'Commercial License' },
       ],
       cta: 'Start Free Trial',
-      ctaLink: '/playground',
+      ctaLink: '/signup',
       popular: true,
       badge: 'Most Popular',
     },
@@ -111,7 +113,15 @@ export default function Pricing() {
 
   return (
     <AnimatedPageWrapper aria-label="Pricing page">
+      <FAQSchema faqs={faqs} />
       <Navigation />
+
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Pricing' }]} />
+        </div>
+      </section>
 
       {/* Hero Section */}
       <AnimatedHero
@@ -119,6 +129,17 @@ export default function Pricing() {
         title="Choose Your Plan"
         description="Start free, scale as you grow. All plans include our core reconciliation engine."
       />
+
+      {/* What is a Reconciliation? */}
+      <section className="px-4 sm:px-6 lg:px-8 -mt-8 mb-8" aria-label="Pricing explanation">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>What is a reconciliation?</strong> A reconciliation matches transactions between two platforms (e.g., matching Shopify orders with Stripe payments). Each reconciliation job processes multiple transactions and counts as one reconciliation.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Billing Toggle */}
       <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-8" aria-label="Billing cycle selector">

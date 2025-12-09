@@ -39,11 +39,11 @@ export function ConversionCTA({
             size="lg"
             variant="default"
           >
-            <Link href={primaryLink} aria-label={primaryAction}>
+            <Link href={primaryLink || '/'} aria-label={primaryAction}>
               {primaryAction}
             </Link>
           </Button>
-          {secondaryAction && (
+          {secondaryAction && secondaryLink && (
             <Button
               asChild
               size="lg"
@@ -76,6 +76,26 @@ export function ConversionCTA({
             {title}
           </CardTitle>
           <CardDescription className="text-primary-100 text-lg">{description}</CardDescription>
+          <div className="flex items-center justify-center gap-6 mt-4 text-primary-100 text-sm">
+            <span className="flex items-center gap-1">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              No credit card required
+            </span>
+            <span className="flex items-center gap-1">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              30-day free trial
+            </span>
+            <span className="flex items-center gap-1">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Cancel anytime
+            </span>
+          </div>
         </CardHeader>
         <CardContent className="text-center">
           <div
@@ -89,11 +109,11 @@ export function ConversionCTA({
               asChild
               className="bg-white text-primary-600 hover:bg-primary-50"
             >
-              <Link href={primaryLink} aria-label={primaryAction}>
+              <Link href={primaryLink || '/'} aria-label={primaryAction}>
                 {primaryAction}
               </Link>
             </Button>
-            {secondaryAction && (
+            {secondaryAction && secondaryLink && (
               <Button
                 size="lg"
                 variant="outline"
@@ -135,11 +155,11 @@ export function ConversionCTA({
             asChild
             variant="default"
           >
-            <Link href={primaryLink} aria-label={primaryAction}>
+            <Link href={primaryLink || '/'} aria-label={primaryAction}>
               {primaryAction}
             </Link>
           </Button>
-          {secondaryAction && (
+          {secondaryAction && secondaryLink && (
             <Button
               size="lg"
               variant="outline"

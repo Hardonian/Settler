@@ -10,21 +10,30 @@ import { RealtimePosts } from '@/app/components/RealtimePosts';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { ConversionCTA } from '@/components/ConversionCTA';
+import { AnimatedHero } from '@/components/AnimatedHero';
 
 export default function CommunityPage() {
   return (
     <AnimatedPageWrapper aria-label="Community hub">
       <Navigation />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent">
-            Community Hub
-          </h1>
-          <p className="text-xl text-slate-700 dark:text-slate-300">
-            Share feedback, engage with posts, and help shape our ecosystem
-          </p>
+
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Community' }]} />
         </div>
+      </section>
+
+      {/* Hero Section */}
+      <AnimatedHero
+        badge="Join Our Community"
+        title="Community Hub"
+        description="Share feedback, engage with posts, and help shape the future of Settler"
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Positioning Feedback Form */}
@@ -37,6 +46,21 @@ export default function CommunityPage() {
             <RealtimePosts />
           </div>
         </div>
+
+        {/* CTA Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <ConversionCTA
+              title="Ready to Get Started?"
+              description="Join our community and start automating your reconciliation today."
+              primaryAction="Start Free Trial"
+              primaryLink="/signup"
+              secondaryAction="View Documentation"
+              secondaryLink="/docs"
+              variant="gradient"
+            />
+          </div>
+        </section>
       </div>
 
       <Footer />

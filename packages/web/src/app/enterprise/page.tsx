@@ -12,9 +12,17 @@ import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { AnimatedFeatureCard } from "@/components/AnimatedFeatureCard";
 import { AnimatedStatCard } from "@/components/AnimatedStatCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+
+interface EnterpriseFormData {
+  name: string;
+  email: string;
+  company: string;
+  message: string;
+}
 
 export default function Enterprise() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<EnterpriseFormData>({
     name: '',
     email: '',
     company: '',
@@ -54,16 +62,50 @@ export default function Enterprise() {
     },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
-    // In production, this would send to your backend
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    
+    try {
+      // TODO: Replace with actual API endpoint when available
+      // const response = await fetch('/api/enterprise/contact', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(formData),
+      // });
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', company: '', message: '' });
+      
+      // Show success message for 5 seconds
+      setTimeout(() => {
+        setSubmitStatus('idle');
+      }, 5000);
+    } catch (error) {
+      setSubmitStatus('error');
+      console.error('Failed to submit form:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <AnimatedPageWrapper aria-label="Enterprise solutions page">
       <Navigation />
+
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Enterprise' }]} />
+        </div>
+      </section>
 
       {/* Hero Section */}
       <AnimatedHero
@@ -292,12 +334,23 @@ export default function Enterprise() {
                   </div>
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all transform hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    disabled={isSubmitting}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all transform hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     size="lg"
                     aria-label="Submit demo request form"
                   >
-                    Request Demo
+                    {isSubmitting ? 'Submitting...' : submitStatus === 'success' ? 'Submitted!' : 'Request Demo'}
                   </Button>
+                  {submitStatus === 'success' && (
+                    <p className="text-sm text-green-600 dark:text-green-400 mt-2 text-center">
+                      Thank you! We'll contact you within 24 hours.
+                    </p>
+                  )}
+                  {submitStatus === 'error' && (
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2 text-center">
+                      Something went wrong. Please try again or contact us at enterprise@settler.dev
+                    </p>
+                  )}
                 </form>
               </CardContent>
             </Card>

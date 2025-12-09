@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { ConversionCTA } from "@/components/ConversionCTA";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Check, X, Clock, DollarSign, Wrench, Zap } from "lucide-react";
 
 export default function ComparisonPage() {
@@ -112,6 +113,13 @@ export default function ComparisonPage() {
   return (
     <AnimatedPageWrapper aria-label="Comparison page">
       <Navigation />
+
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Comparison' }]} />
+        </div>
+      </section>
 
       {/* Hero Section */}
       <AnimatedHero

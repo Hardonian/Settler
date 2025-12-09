@@ -156,7 +156,7 @@ const report = await client.jobs.run(job.id);
               <TextRevealHeading
                 as="h1"
                 id="hero-heading"
-                text="Make Reconciliation As Simple As Email"
+                text="Automate Payment Reconciliation in Minutes"
                 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent"
                 delay={0.1}
                 staggerDelay={0.02}
@@ -164,7 +164,7 @@ const report = await client.jobs.run(job.id);
               />
               
               <TextReveal
-                text="Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. All platforms. Real-time."
+                text="Connect Shopify, Stripe, PayPal, and 50+ platforms. Automatically match transactions, orders, and payments with 99.7% accuracy. No manual work required."
                 className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-3xl mx-auto"
                 delay={0.4}
                 staggerDelay={0.01}
@@ -182,7 +182,7 @@ const report = await client.jobs.run(job.id);
                   className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-electric-cyan dark:to-electric-blue dark:hover:from-electric-cyan/90 dark:hover:to-electric-blue/90 text-white px-8 py-6 text-lg shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-electric-cyan/50 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-blue-500 dark:focus:ring-electric-cyan focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
                   onClick={() => trackCTA('Start Free Trial', { location: 'hero' })}
                 >
-                  <Link href="/playground" aria-label="Start free trial of Settler">
+                  <Link href="/signup" aria-label="Start free trial of Settler">
                     Start Free Trial
                   </Link>
                 </Button>
@@ -370,15 +370,15 @@ const report = await client.jobs.run(job.id);
           </ParallaxBackground>
           <div className="max-w-4xl mx-auto relative z-10">
             <SpotlightCard className="p-12 text-center">
-              <ConversionCTA
-                title="Ready to Automate Your Reconciliation?"
-                description="Join thousands of companies using Settler to automate their financial operations. Start free, no credit card required."
-                primaryAction="Start Free Trial"
-                primaryLink="/playground"
-                secondaryAction="View Pricing"
-                secondaryLink="/pricing"
-                variant="gradient"
-              />
+            <ConversionCTA
+              title="Ready to Automate Your Reconciliation?"
+              description="Join thousands of companies using Settler to automate their financial operations. Start free, no credit card required."
+              primaryAction="Start Free Trial"
+              primaryLink="/signup"
+              secondaryAction="View Pricing"
+              secondaryLink="/pricing"
+              variant="gradient"
+            />
             </SpotlightCard>
           </div>
         </section>

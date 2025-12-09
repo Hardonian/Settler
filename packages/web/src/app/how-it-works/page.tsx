@@ -11,6 +11,7 @@ import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { ConversionCTA } from "@/components/ConversionCTA";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import {
   Zap,
   Plug,
@@ -140,6 +141,13 @@ export default function HowItWorksPage() {
   return (
     <AnimatedPageWrapper aria-label="How it works page">
       <Navigation />
+
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'How It Works' }]} />
+        </div>
+      </section>
 
       {/* Hero Section */}
       <section

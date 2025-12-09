@@ -8,6 +8,8 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedCodeBlock } from "@/components/AnimatedCodeBlock";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { AnimatedHero } from "@/components/AnimatedHero";
 import Link from "next/link";
 import { 
   ShoppingCart, 
@@ -450,17 +452,19 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
     <AnimatedPageWrapper aria-label="Cookbooks and workflow examples">
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
-            Cookbooks & Workflows
-          </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Pre-built reconciliation workflows and recipes for common use cases. Copy, customize, and deploy.
-          </p>
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Cookbooks' }]} />
         </div>
       </section>
+
+      {/* Hero Section */}
+      <AnimatedHero
+        badge="Ready-to-Use Workflows"
+        title="Cookbooks & Examples"
+        description="Pre-built reconciliation workflows and code examples for common use cases. Copy, customize, and deploy in minutes."
+      />
 
       {/* Category Filter */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-slate-800">
@@ -639,16 +643,18 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
           <div className="flex gap-3 justify-center">
             <Button
               asChild
-              className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100"
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
             >
-              <Link href="/playground">Try Playground</Link>
+              <Link href="/signup">Start Free Trial</Link>
             </Button>
             <Button
               variant="outline"
+              size="lg"
               className="border-slate-300 dark:border-slate-700"
               asChild
             >
-              <Link href="/docs">View Documentation</Link>
+              <Link href="/playground">Try Playground</Link>
             </Button>
           </div>
         </div>

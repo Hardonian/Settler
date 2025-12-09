@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { ConversionCTA } from "@/components/ConversionCTA";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { FAQSchema } from "@/components/StructuredData";
 import Link from "next/link";
 
@@ -230,6 +231,13 @@ export default function Support() {
     <AnimatedPageWrapper aria-label="Support and help center">
       <FAQSchema faqs={faqs} />
       <Navigation />
+
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Support' }]} />
+        </div>
+      </section>
 
       {/* Hero Section */}
       <AnimatedHero
