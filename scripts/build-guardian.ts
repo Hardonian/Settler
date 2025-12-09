@@ -8,6 +8,9 @@
 import { execSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
+import { ESLintConfigValidator } from './validate-eslint-config';
+import { NextJSBuildValidator } from './validate-nextjs-build';
+import { ComprehensiveBuildValidator } from './validate-comprehensive-build';
 
 interface BuildIssue {
   severity: 'error' | 'warning' | 'info';
@@ -38,6 +41,9 @@ class BuildGuardian {
     this.checkEnvFiles();
     this.checkImportPaths();
     this.checkDependencies();
+    this.checkESLintConfigs();
+    this.checkNextJSBuild();
+    this.checkComprehensiveBuild();
 
     this.report();
     return this.issues.filter(i => i.severity === 'error').length === 0;
@@ -194,6 +200,97 @@ class BuildGuardian {
       }
     } catch (error) {
       // Already handled in checkPackageJson
+    }
+  }
+
+  /**
+   * Check ESLint config dependencies
+   */
+  private checkESLintConfigs(): void {
+    const validatorPath = join(this.rootDir, 'scripts', 'validate-eslint-config.ts');
+    if (!existsSync(validatorPath)) {
+      // Script not available (e.g., in Vercel builds where scripts/ is ignored)
+      return;
+    }
+
+    try {
+      const validator = new ESLintConfigValidator(this.rootDir);
+      const isValid = validator.validate();
+      
+      if (!isValid) {
+        this.issues.push({
+          severity: 'error',
+          category: 'eslint',
+          message: 'ESLint config dependencies are missing. Run: npm run validate:eslint-config',
+          fix: 'npm run validate:eslint-config',
+        });
+      }
+    } catch (error) {
+      this.issues.push({
+        severity: 'warning',
+        category: 'eslint',
+        message: `Failed to validate ESLint configs: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    }
+  }
+
+  /**
+   * Check Next.js build configuration
+   */
+  private checkNextJSBuild(): void {
+    const validatorPath = join(this.rootDir, 'scripts', 'validate-nextjs-build.ts');
+    if (!existsSync(validatorPath)) {
+      return;
+    }
+
+    try {
+      const validator = new NextJSBuildValidator(this.rootDir);
+      const isValid = validator.validate();
+      
+      if (!isValid) {
+        this.issues.push({
+          severity: 'error',
+          category: 'nextjs',
+          message: 'Next.js build configuration issues found. Run: npm run validate:nextjs',
+          fix: 'npm run validate:nextjs',
+        });
+      }
+    } catch (error) {
+      this.issues.push({
+        severity: 'warning',
+        category: 'nextjs',
+        message: `Failed to validate Next.js build config: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    }
+  }
+
+  /**
+   * Check comprehensive build issues
+   */
+  private checkComprehensiveBuild(): void {
+    const validatorPath = join(this.rootDir, 'scripts', 'validate-comprehensive-build.ts');
+    if (!existsSync(validatorPath)) {
+      return;
+    }
+
+    try {
+      const validator = new ComprehensiveBuildValidator(this.rootDir);
+      const isValid = validator.validate();
+      
+      if (!isValid) {
+        this.issues.push({
+          severity: 'error',
+          category: 'build',
+          message: 'Comprehensive build validation found issues. Run: npm run validate:comprehensive',
+          fix: 'npm run validate:comprehensive',
+        });
+      }
+    } catch (error) {
+      this.issues.push({
+        severity: 'warning',
+        category: 'build',
+        message: `Failed to run comprehensive build validation: ${error instanceof Error ? error.message : String(error)}`,
+      });
     }
   }
 

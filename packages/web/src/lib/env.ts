@@ -4,18 +4,33 @@
  * CTO Mode: Deployment Guardrails
  * - NEVER destructure process.env
  * - Treat all env vars as potentially undefined
- * - Throw errors early if missing
+ * - Throw errors early if missing (except during build for runtime-only vars)
+ * 
+ * Uses build-time detection to skip validation for runtime-only variables during build.
  */
+import { isBuildTime, RUNTIME_ONLY } from './env-build-helper';
 
 /**
  * Get environment variable with validation
- * Throws error if required variable is missing
+ * Throws error if required variable is missing (skips during build for runtime-only vars)
  */
 export function getEnv(name: string, required = true): string {
   const value = process.env[name];
+  const isBuild = isBuildTime();
+  const isRuntimeOnly = RUNTIME_ONLY.includes(name as any);
   
+  // During build, runtime-only variables are optional (they'll be validated at runtime)
   if (required && !value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+    if (isBuild && isRuntimeOnly) {
+      // Runtime-only vars are optional during build - return empty string
+      console.warn(`⚠️  Missing ${name} during build (will be required at runtime)`);
+      return '';
+    }
+    
+    // Build-time required vars or runtime validation
+    if (!isBuild || !isRuntimeOnly) {
+      throw new Error(`Missing required environment variable: ${name}`);
+    }
   }
   
   return value || '';
@@ -49,8 +64,28 @@ export function getEnvNumber(name: string, defaultValue: number): number {
 
 /**
  * Validate required environment variables for production
+ * Skips validation for runtime-only variables during build time
  */
 export function validateEnv(): { valid: boolean; errors: string[] } {
+  const isBuild = isBuildTime();
+  
+  // During build, only validate build-time required vars
+  if (isBuild) {
+    const buildRequired = ['SUPABASE_URL', 'SUPABASE_ANON_KEY'];
+    const errors: string[] = [];
+    
+    for (const name of buildRequired) {
+      if (!process.env[name]) {
+        errors.push(`Missing build-time required variable: ${name}`);
+      }
+    }
+    
+    return {
+      valid: errors.length === 0,
+      errors,
+    };
+  }
+  
   const errors: string[] = [];
   
   const required = [

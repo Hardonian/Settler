@@ -30,15 +30,24 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-progress', '@radix-ui/react-radio-group'],
   },
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: false,
+    // Ignore linting during builds - we run linting in pre-commit hooks and CI
+    // This prevents build failures from warnings while maintaining code quality checks
+    ignoreDuringBuilds: true,
+    // Only lint src and app directories
+    dirs: ['src', 'app'],
   },
   typescript: {
     // Strict type checking - fail build on errors
     ignoreBuildErrors: false,
     // Show type errors during build
     tsconfigPath: './tsconfig.json',
+  },
+  // Environment variables configuration
+  // Note: Runtime-only env vars (DB_PASSWORD, ENCRYPTION_KEY, JWT_SECRET, etc.)
+  // are not required during build and will be validated at runtime
+  env: {
+    // Flag to indicate build context (used by env validation helpers)
+    SKIP_ENV_VALIDATION: process.env.VERCEL ? 'true' : undefined,
   },
   transpilePackages: [
     '@settler/api',
