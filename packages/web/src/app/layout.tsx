@@ -7,6 +7,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { QueryProvider } from "@/lib/providers/query-provider";
+import { TenantThemeProvider } from "@/components/tenant/TenantThemeProvider";
+import { getTenantContext } from "@/lib/tenant/server";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -104,11 +106,14 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Get tenant context for theme
+  const tenantContext = await getTenantContext();
+  
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>
@@ -135,18 +140,24 @@ export default function RootLayout({
       </head>
       <body>
         <ErrorBoundary componentName="RootLayout">
-          <QueryProvider>
-            {/* Skip to main content link for accessibility */}
-            <a
-              href="#main-content"
-              className="skip-to-main"
-            >
-              Skip to main content
-            </a>
-            <SmoothScroll>{children}</SmoothScroll>
-            <Analytics />
-            <SpeedInsights />
-          </QueryProvider>
+          <TenantThemeProvider
+            theme={tenantContext.theme}
+            tenantId={tenantContext.tenantId}
+            tenantSlug={tenantContext.tenantSlug}
+          >
+            <QueryProvider>
+              {/* Skip to main content link for accessibility */}
+              <a
+                href="#main-content"
+                className="skip-to-main"
+              >
+                Skip to main content
+              </a>
+              <SmoothScroll>{children}</SmoothScroll>
+              <Analytics />
+              <SpeedInsights />
+            </QueryProvider>
+          </TenantThemeProvider>
         </ErrorBoundary>
       </body>
     </html>
