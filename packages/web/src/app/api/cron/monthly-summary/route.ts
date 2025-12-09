@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    logInfo("Monthly summary cron job completed", {
+    logger.info("Monthly summary cron job completed", {
       processed: results.processed,
       errors: results.errors,
     });
