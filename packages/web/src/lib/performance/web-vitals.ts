@@ -122,7 +122,8 @@ export function initWebVitals(): void {
   try {
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        const fid = (entry as any).processingStart - entry.startTime;
+        const performanceEntry = entry as PerformanceEventTiming;
+        const fid = performanceEntry.processingStart - entry.startTime;
         
         reportWebVital({
           name: 'FID',

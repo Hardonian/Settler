@@ -12,7 +12,13 @@ export interface HelpArticle {
   relatedArticles: string[];
 }
 
-const ARTICLE_TEMPLATES: Record<string, (params: any) => HelpArticle> = {
+type ArticleParams = 
+  | { integration: string }
+  | { error: string }
+  | { feature: string }
+  | Record<string, string | number>;
+
+const ARTICLE_TEMPLATES: Record<string, (params: ArticleParams) => HelpArticle> = {
   "integration-setup": (params: { integration: string }) => ({
     id: `setup-${params.integration}`,
     title: `How to Set Up ${params.integration} Integration`,
@@ -98,7 +104,7 @@ A reconciliation job matches transactions between two platforms.
 /**
  * Generate help article
  */
-export function generateHelpArticle(template: string, params: any): HelpArticle {
+export function generateHelpArticle(template: string, params: ArticleParams): HelpArticle {
   const generator = ARTICLE_TEMPLATES[template];
   if (!generator) {
     throw new Error(`Unknown article template: ${template}`);

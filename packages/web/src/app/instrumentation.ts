@@ -4,7 +4,7 @@
  * Initializes observability tools and performance monitoring.
  */
 
-export async function register() {
+export async function register(): Promise<void> {
   if (typeof window === 'undefined') {
     // Server-side initialization
     return;
