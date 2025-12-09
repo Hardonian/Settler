@@ -203,6 +203,12 @@ class BuildGuardian {
    * Check ESLint config dependencies
    */
   private checkESLintConfigs(): void {
+    const validatorPath = join(this.rootDir, 'scripts', 'validate-eslint-config.ts');
+    if (!existsSync(validatorPath)) {
+      // Script not available (e.g., in Vercel builds where scripts/ is ignored)
+      return;
+    }
+
     try {
       const validator = new ESLintConfigValidator(this.rootDir);
       const isValid = validator.validate();
