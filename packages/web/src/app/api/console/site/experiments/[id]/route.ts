@@ -21,11 +21,11 @@ interface RouteParams {
  * GET /api/console/site/experiments/[id]
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteParams
 ) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { id } = await params;
     const tenantContext = await getTenantContext();
     
@@ -81,7 +81,7 @@ export async function PUT(
   { params }: RouteParams
 ) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { id } = await params;
     const tenantContext = await getTenantContext();
     
@@ -175,11 +175,11 @@ export async function PUT(
  * DELETE /api/console/site/experiments/[id]
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteParams
 ) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { id } = await params;
     const tenantContext = await getTenantContext();
     

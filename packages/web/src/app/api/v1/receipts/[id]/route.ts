@@ -45,7 +45,7 @@ export async function GET(
       total: receipt.total,
       paymentMethod: receipt.paymentMethod,
       confidenceScore: receipt.confidenceScore,
-      items: receipt.items.map(item => ({
+      items: receipt.items.map((item: { id: string; name: string; quantity: number; unitPrice: number; lineTotal: number; category: string | null }) => ({
         id: item.id,
         name: item.name,
         quantity: item.quantity,

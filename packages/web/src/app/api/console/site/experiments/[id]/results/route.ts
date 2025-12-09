@@ -19,11 +19,11 @@ interface RouteParams {
  * GET /api/console/site/experiments/[id]/results
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteParams
 ) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { id } = await params;
     const tenantContext = await getTenantContext();
     
@@ -63,7 +63,7 @@ export async function GET(
     
     // Aggregate metrics by variant
     const variantResults = await Promise.all(
-      experiment.variants.map(async (variant) => {
+      experiment.variants.map(async (variant: { key: string; label: string }) => {
         const events = await prisma.experimentMetricEvent.findMany({
           where: {
             experimentId: id,
@@ -71,9 +71,9 @@ export async function GET(
           },
         });
         
-        const views = events.filter(e => e.eventType === 'view').length;
-        const clicks = events.filter(e => e.eventType === 'click').length;
-        const conversions = events.filter(e => e.eventType === 'conversion').length;
+        const views = events.filter((e: { eventType: string }) => e.eventType === 'view').length;
+        const clicks = events.filter((e: { eventType: string }) => e.eventType === 'click').length;
+        const conversions = events.filter((e: { eventType: string }) => e.eventType === 'conversion').length;
         const conversionRate = views > 0 ? (conversions / views) * 100 : 0;
         
         return {

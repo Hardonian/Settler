@@ -20,11 +20,11 @@ interface RouteParams {
  * Publish a page
  */
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteParams
 ) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { id } = await params;
     const tenantContext = await getTenantContext();
     

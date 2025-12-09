@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Save, Upload, Palette } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import { COLOR_PRESETS, isValidColor } from '@/lib/tenant/colorTokens';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -113,7 +113,7 @@ export default function BrandingEditorPage() {
     }
   }
 
-  function handleColorChange(field: keyof TenantBranding, value: string) {
+  function handleColorChange(field: keyof TenantBranding, value: string | number) {
     setBranding(prev => ({ ...prev, [field]: value }));
   }
 

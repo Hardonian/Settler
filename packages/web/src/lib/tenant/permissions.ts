@@ -7,6 +7,9 @@
 import { hasPermission, canAccessTenant, requirePermission, SiteBuilderPermission } from '@/shared/auth/roles';
 import { createClient } from '@/lib/supabase/server';
 
+// Re-export SiteBuilderPermission for convenience
+export { SiteBuilderPermission };
+
 /**
  * Get current user ID from session
  */

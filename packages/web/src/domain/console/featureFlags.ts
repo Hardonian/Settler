@@ -49,7 +49,7 @@ export async function listFeatureFlags(
     orderBy: { createdAt: 'desc' },
   });
 
-  return flags.map(flag => ({
+  return flags.map((flag: { id: string; key: string; name: string; description: string | null; type: string; isGlobal: boolean; defaultValue: unknown; environments: Array<{ environment: string; enabled: boolean }> }) => ({
     id: flag.id,
     key: flag.key,
     name: flag.name,
@@ -57,7 +57,7 @@ export async function listFeatureFlags(
     type: flag.type,
     isGlobal: flag.isGlobal,
     defaultValue: flag.defaultValue,
-    environments: flag.environments.map(env => ({
+    environments: flag.environments.map((env: { environment: string; enabled: boolean }) => ({
       environment: env.environment,
       enabled: env.enabled,
       variant: env.variant as unknown,

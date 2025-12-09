@@ -13,7 +13,7 @@ interface BlockEditorProps {
   onUpdate: (block: PageBlock) => void;
 }
 
-export function BlockEditor({ block, onUpdate }: BlockEditorProps) {
+export function BlockEditor(_props: BlockEditorProps) {
   // Future: Visual block editor with drag-and-drop
   return (
     <div className="p-4 border rounded-lg">

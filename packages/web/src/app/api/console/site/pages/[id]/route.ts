@@ -23,11 +23,11 @@ interface RouteParams {
  * Get page by ID
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteParams
 ) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { id } = await params;
     const tenantContext = await getTenantContext();
     
@@ -245,11 +245,11 @@ export async function PUT(
  * Delete page
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteParams
 ) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { id } = await params;
     const tenantContext = await getTenantContext();
     

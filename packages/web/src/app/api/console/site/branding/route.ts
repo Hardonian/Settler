@@ -16,9 +16,9 @@ export const dynamic = 'force-dynamic';
  * GET /api/console/site/branding
  * Get branding for current tenant
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const tenantContext = await getTenantContext();
     
     if (!tenantContext.tenantId) {
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
  */
 export async function PUT(request: NextRequest) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const tenantContext = await getTenantContext();
     
     if (!tenantContext.tenantId) {

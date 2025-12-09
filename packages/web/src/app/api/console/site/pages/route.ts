@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/db/prismaClient';
-import { requireAuth, checkTenantAccess, checkPermission, SiteBuilderPermission } from '@/lib/tenant/permissions';
+import { requireAuth, checkPermission, SiteBuilderPermission } from '@/lib/tenant/permissions';
 import { getTenantContext } from '@/lib/tenant/server';
 import { PageBlock, validateBlock } from '@/domain/siteBuilder/pageSchema';
 
@@ -17,9 +17,9 @@ export const dynamic = 'force-dynamic';
  * GET /api/console/site/pages
  * List all pages for the current tenant
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const tenantContext = await getTenantContext();
     
     if (!tenantContext.tenantId) {
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const tenantContext = await getTenantContext();
     
     if (!tenantContext.tenantId) {
