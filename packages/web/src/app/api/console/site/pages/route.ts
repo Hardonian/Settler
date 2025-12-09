@@ -12,6 +12,7 @@ import { getTenantContext } from '@/lib/tenant/server';
 import { PageBlock, validateBlock } from '@/domain/siteBuilder/pageSchema';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 /**
  * GET /api/console/site/pages

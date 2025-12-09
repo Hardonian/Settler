@@ -11,6 +11,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { createCustomerPortalSession } from '@/domain/billing/stripeService';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 /**
  * Validate URL format and origin

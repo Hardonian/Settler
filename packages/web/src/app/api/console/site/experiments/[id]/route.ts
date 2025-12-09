@@ -12,6 +12,7 @@ import { requireAuth, checkPermission, SiteBuilderPermission } from '@/lib/tenan
 import { getTenantContext } from '@/lib/tenant/server';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 interface RouteParams {
   params: Promise<{ id: string }>;
