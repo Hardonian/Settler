@@ -72,7 +72,7 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
     code: 'pro',
     name: 'Pro',
     description: 'For growing businesses with higher usage needs',
-    stripePriceId: process.env.STRIPE_PRICE_ID_PRO, // Set via env var
+    stripePriceId: process.env.STRIPE_PRICE_ID_PRO || undefined, // Set via env var
     monthlyPrice: 99,
     annualPrice: 990, // ~17% discount
     limits: {
@@ -101,7 +101,7 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
     code: 'scale',
     name: 'Scale',
     description: 'For large organizations with high-volume needs',
-    stripePriceId: process.env.STRIPE_PRICE_ID_SCALE, // Set via env var
+    stripePriceId: process.env.STRIPE_PRICE_ID_SCALE || undefined, // Set via env var
     monthlyPrice: 499,
     annualPrice: 4990, // ~17% discount
     limits: {

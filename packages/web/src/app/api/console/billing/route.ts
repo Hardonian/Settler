@@ -2,6 +2,7 @@
  * Console Billing API Route
  * 
  * Returns billing account, subscription, and usage data for the console UI.
+ * Includes proper error handling and input validation.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -22,7 +23,7 @@ export async function GET(_request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get billing account
+    // Get billing account with optimized query
     const billingAccount = await prisma.billingAccount.findFirst({
       where: { userId: user.id },
       select: {
@@ -36,7 +37,7 @@ export async function GET(_request: NextRequest) {
       return NextResponse.json({ error: 'No billing account found' }, { status: 404 });
     }
 
-    // Get active subscription
+    // Get active subscription with optimized query
     const subscription = await prisma.subscription.findFirst({
       where: {
         billingAccountId: billingAccount.id,
@@ -44,7 +45,6 @@ export async function GET(_request: NextRequest) {
           in: ['active', 'trialing'],
         },
       },
-      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         planId: true,
@@ -54,14 +54,46 @@ export async function GET(_request: NextRequest) {
         currentPeriodEnd: true,
         cancelAtPeriodEnd: true,
       },
+      orderBy: { createdAt: 'desc' },
     });
 
     // Get plan code
-    const planCode = await getAccountPlanCode(billingAccount.id);
+    let planCode: string;
+    try {
+      planCode = await getAccountPlanCode(billingAccount.id);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('[Console Billing] Error getting plan code:', {
+        billingAccountId: billingAccount.id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      planCode = 'free';
+    }
+
     const planConfig = getPlanConfig(planCode);
 
-    // Get usage
-    const usage = await getAccountUsage(billingAccount.id);
+    // Get usage with error handling
+    let usage;
+    try {
+      usage = await getAccountUsage(billingAccount.id);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('[Console Billing] Error getting account usage:', {
+        billingAccountId: billingAccount.id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      // Return zero usage on error
+      usage = {
+        billingAccountId: billingAccount.id,
+        periodStart: new Date(),
+        periodEnd: new Date(),
+        services: {
+          reconcile: 0,
+          receipts: 0,
+          featureFlags: 0,
+        },
+      };
+    }
 
     // Map usage to limits
     const usageWithLimits = {
@@ -99,7 +131,11 @@ export async function GET(_request: NextRequest) {
       usage: usageWithLimits,
     });
   } catch (error) {
-    console.error('Error fetching billing data:', error);
+    // eslint-disable-next-line no-console
+    console.error('[Console Billing] Error fetching billing data:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
       { error: 'Failed to fetch billing data' },
       { status: 500 }

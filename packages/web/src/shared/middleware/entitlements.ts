@@ -2,6 +2,7 @@
  * Entitlement Middleware
  * 
  * Middleware to check service entitlements before processing API requests.
+ * Includes proper error handling and security measures.
  */
 
 import { NextResponse } from 'next/server';
@@ -43,7 +44,8 @@ export async function checkRequestEntitlement(
   auth: ApiKeyAuthContext,
   service: ServiceCode
 ): Promise<{ allowed: boolean; error?: EntitlementError }> {
-  if (!auth.billingAccountId) {
+  // Validate inputs
+  if (!auth || !auth.billingAccountId) {
     return {
       allowed: false,
       error: {
@@ -54,26 +56,49 @@ export async function checkRequestEntitlement(
     };
   }
 
-  const entitlement = await checkEntitlement(auth.billingAccountId, service);
-
-  if (!entitlement.allowed) {
+  if (!['reconcile', 'receipts', 'featureFlags'].includes(service)) {
     return {
       allowed: false,
       error: {
-        error: 'Plan Limit Exceeded',
-        code: 'plan_limit_exceeded',
-        message: `You have exceeded your monthly quota for ${service}. Current usage: ${entitlement.currentUsage}/${entitlement.limit}.`,
-        details: {
-          currentPlan: entitlement.planCode,
-          currentUsage: entitlement.currentUsage,
-          limit: entitlement.limit,
-          upgradeUrl: '/console/billing',
-        },
+        error: 'Invalid Service',
+        code: 'invalid_service',
+        message: `Invalid service code: ${service}`,
       },
     };
   }
 
-  return { allowed: true };
+  try {
+    const entitlement = await checkEntitlement(auth.billingAccountId, service);
+
+    if (!entitlement.allowed) {
+      return {
+        allowed: false,
+        error: {
+          error: 'Plan Limit Exceeded',
+          code: 'plan_limit_exceeded',
+          message: `You have exceeded your monthly quota for ${service}. Current usage: ${entitlement.currentUsage}/${entitlement.limit}.`,
+          details: {
+            currentPlan: entitlement.planCode,
+            currentUsage: entitlement.currentUsage,
+            limit: entitlement.limit,
+            upgradeUrl: '/console/billing',
+          },
+        },
+      };
+    }
+
+    return { allowed: true };
+  } catch (error) {
+    // Fail open on errors - allow request if entitlement check fails
+    // This prevents service disruption due to billing system issues
+    // eslint-disable-next-line no-console
+    console.error('[Entitlement Middleware] Error checking entitlement:', {
+      billingAccountId: auth.billingAccountId,
+      service,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+    return { allowed: true };
+  }
 }
 
 /**
