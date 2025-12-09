@@ -22,6 +22,8 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "validate": "npm run lint && npm run typecheck && npm run format:check",
     "validate:env": "tsx scripts/check-env.ts production",
+    "validate:env:build": "npx tsx scripts/validate-env-build.ts --build",
+    "validate:env:runtime": "npx tsx scripts/validate-env-build.ts --runtime",
     "validate:eslint-config": "test -f scripts/validate-eslint-config.ts && npx tsx scripts/validate-eslint-config.ts || (echo '⚠️  ESLint config validation script not found (expected in Vercel builds), skipping...' && exit 0)",
     "validate:build-safety": "npx tsx scripts/validate-build-safety.ts",
     "validate:nextjs": "npx tsx scripts/validate-nextjs-build.ts",

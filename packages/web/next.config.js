@@ -43,10 +43,11 @@ const nextConfig = {
     tsconfigPath: './tsconfig.json',
   },
   // Environment variables configuration
+  // Note: Runtime-only env vars (DB_PASSWORD, ENCRYPTION_KEY, JWT_SECRET, etc.)
+  // are not required during build and will be validated at runtime
   env: {
-    // Allow build to proceed without runtime-only env vars
-    // These will be validated at runtime, not build time
-    SKIP_ENV_VALIDATION: 'true',
+    // Flag to indicate build context (used by env validation helpers)
+    SKIP_ENV_VALIDATION: process.env.VERCEL ? 'true' : undefined,
   },
   transpilePackages: [
     '@settler/api',
