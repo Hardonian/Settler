@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
-      flags: flags.map((flag) => ({
+      flags: flags.map((flag: (typeof flags)[number]) => ({
         id: flag.id,
         key: flag.key,
         name: flag.name,

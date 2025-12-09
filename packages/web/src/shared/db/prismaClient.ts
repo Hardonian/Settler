@@ -8,6 +8,8 @@
  * Run `npm run prisma:generate` at the root to generate the client.
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 
 // Prevent multiple instances in development
