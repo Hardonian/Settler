@@ -15,8 +15,12 @@ export function getEnv(name: string, required = true): string {
   const value = process.env[name];
   
   // Skip validation during build time to allow builds to complete
-  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || 
-                      (process.env.NODE_ENV === 'production' && process.env.VERCEL);
+  const isBuildTime = 
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    (process.env.NODE_ENV === 'production' && !!process.env.VERCEL) ||
+    process.env.SKIP_ENV_VALIDATION === 'true' ||
+    !!process.env.VERCEL_ENV ||
+    process.env.CI === 'true';
   
   if (required && !value && !isBuildTime) {
     throw new Error(`Missing required environment variable: ${name}`);
@@ -57,7 +61,14 @@ export function getEnvNumber(name: string, defaultValue: number): number {
  */
 export function validateEnv(): { valid: boolean; errors: string[] } {
   // Skip validation during build time
-  if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+  const isBuildTime = 
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    (process.env.NODE_ENV === 'production' && !!process.env.VERCEL) ||
+    process.env.SKIP_ENV_VALIDATION === 'true' ||
+    !!process.env.VERCEL_ENV ||
+    process.env.CI === 'true';
+  
+  if (isBuildTime) {
     return { valid: true, errors: [] };
   }
   

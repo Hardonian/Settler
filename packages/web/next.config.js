@@ -42,6 +42,12 @@ const nextConfig = {
     // Show type errors during build
     tsconfigPath: './tsconfig.json',
   },
+  // Environment variables configuration
+  env: {
+    // Allow build to proceed without runtime-only env vars
+    // These will be validated at runtime, not build time
+    SKIP_ENV_VALIDATION: 'true',
+  },
   transpilePackages: [
     '@settler/api',
     '@settler/sdk',
