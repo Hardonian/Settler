@@ -39,6 +39,8 @@ tests/
 
 # Scripts (not needed in deployment)
 scripts/
+# But include build-time scripts
+!scripts/vercel-prisma-postinstall.js
 
 # Other
 .DS_Store
