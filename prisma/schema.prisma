@@ -467,3 +467,148 @@ model WorkflowRun {
   @@index([startedAt(sort: Desc)])
   @@map("workflow_runs")
 }
+
+// ============================================================================
+// RECEIPTS API MODELS
+// Receipt parsing and storage for Settler Receipts API
+// ============================================================================
+
+model ReceiptUpload {
+  id                String    @id @default(uuid())
+  apiKeyId          String?   @db.Uuid // Optional: can be created without API key for testing
+  billingAccountId  String?   @db.Uuid // Optional: for usage tracking
+  storageLocation   String    // URL or storage key
+  originalFilename  String
+  mimeType          String
+  sizeBytes         Int
+  status            String    @default("pending") // pending, processing, completed, failed
+  errorMessage      String?   @db.Text
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  receipt           Receipt?
+
+  @@index([apiKeyId])
+  @@index([billingAccountId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("receipt_uploads")
+}
+
+model Receipt {
+  id                String    @id @default(uuid())
+  uploadId           String    @db.Uuid @unique
+  vendor             String?
+  date               DateTime?
+  currency           String?
+  subtotal           Decimal?  @db.Decimal(15, 2)
+  tax                Decimal?  @db.Decimal(15, 2)
+  total              Decimal?  @db.Decimal(15, 2)
+  paymentMethod      String?
+  confidenceScore    Decimal?  @db.Decimal(5, 4) // 0.0000 to 1.0000
+  rawText            String?   @db.Text
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  upload             ReceiptUpload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  items              ReceiptItem[]
+
+  @@index([uploadId])
+  @@index([vendor])
+  @@index([date])
+  @@index([createdAt])
+  @@map("receipts")
+}
+
+model ReceiptItem {
+  id                String    @id @default(uuid())
+  receiptId         String    @db.Uuid
+  name              String
+  quantity          Decimal?  @db.Decimal(10, 3)
+  unitPrice         Decimal?  @db.Decimal(15, 2)
+  lineTotal         Decimal?  @db.Decimal(15, 2)
+  category          String?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  receipt           Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@index([receiptId])
+  @@index([category])
+  @@map("receipt_items")
+}
+
+// ============================================================================
+// FEATURE FLAGS API MODELS
+// Feature flag management for Settler Feature Flags API (free developer toolkit)
+// ============================================================================
+
+model FeatureFlag {
+  id                String    @id @default(uuid())
+  billingAccountId  String?   @db.Uuid // Optional: for usage tracking
+  projectId         String?   @db.Uuid // Optional: for project-scoped flags
+  key               String    // e.g., "new-dashboard", "enable-beta-feature"
+  name              String
+  description       String?
+  type              String    @default("boolean") // boolean, string, number
+  isGlobal          Boolean   @default(false) // true if applies to all projects
+  defaultValue      Json?     // Default value for the flag
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  environments      FeatureFlagEnvironment[]
+  overrides         FeatureFlagOverride[]
+
+  @@unique([billingAccountId, projectId, key])
+  @@index([billingAccountId])
+  @@index([projectId])
+  @@index([key])
+  @@index([isGlobal])
+  @@index([deletedAt])
+  @@map("feature_flags")
+}
+
+model FeatureFlagEnvironment {
+  id                String    @id @default(uuid())
+  flagId            String    @db.Uuid
+  environment       String    // e.g., "production", "staging", "development"
+  enabled           Boolean   @default(false)
+  variant           Json?     // For string/number flags, the variant value
+  config            Json      @default("{}") // Additional environment-specific config
+  updatedAt         DateTime  @updatedAt
+  updatedBy         String?   @db.Uuid
+
+  flag              FeatureFlag @relation(fields: [flagId], references: [id], onDelete: Cascade)
+
+  @@unique([flagId, environment])
+  @@index([flagId])
+  @@index([environment])
+  @@index([enabled])
+  @@map("feature_flag_environments")
+}
+
+model FeatureFlagOverride {
+  id                String    @id @default(uuid())
+  flagId            String    @db.Uuid
+  environment       String
+  targetKey         String    // userId, tenantId, or other identifier
+  targetType        String    @default("user") // user, tenant, segment, etc.
+  value             Json      // The override value
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  expiresAt         DateTime?
+
+  flag              FeatureFlag @relation(fields: [flagId], references: [id], onDelete: Cascade)
+
+  @@unique([flagId, environment, targetKey, targetType])
+  @@index([flagId])
+  @@index([environment])
+  @@index([targetKey])
+  @@index([expiresAt])
+  @@map("feature_flag_overrides")
+}

@@ -10,6 +10,8 @@ import { Menu, X } from "lucide-react";
 const navigationItems = [
   { href: '/docs', label: 'Docs' },
   { href: '/cookbooks', label: 'Cookbooks' },
+  { href: '/receipts', label: 'Receipts API' },
+  { href: '/feature-flags', label: 'Feature Flags' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/enterprise', label: 'Enterprise' },
   { href: '/community', label: 'Community' },
