@@ -102,10 +102,10 @@ export default function SignUpPage() {
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 border border-slate-200 dark:border-slate-700">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-              Join the Community
+              Start Your Free Trial
             </h1>
             <p className="text-slate-600 dark:text-slate-400">
-              Create your account to participate in the ecosystem
+              Create your account and start automating reconciliation in minutes. No credit card required.
             </p>
           </div>
 
@@ -116,9 +116,9 @@ export default function SignUpPage() {
               Already have an account?{' '}
               <Link
                 href="/dashboard"
-                className="text-blue-600 dark:text-electric-cyan hover:underline"
+                className="text-blue-600 dark:text-electric-cyan hover:underline font-medium"
               >
-                Go to Dashboard
+                Sign in to Dashboard
               </Link>
             </p>
           </div>
