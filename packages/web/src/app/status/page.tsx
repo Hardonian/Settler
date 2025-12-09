@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 interface SystemStatus {
   name: string;
@@ -77,7 +79,14 @@ export default function StatusPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
       <Navigation />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Status' }]} />
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Overall Status */}
         <Card className="mb-8">
           <CardHeader>
@@ -106,7 +115,9 @@ export default function StatusPage() {
         {/* System Statuses */}
         <div className="space-y-4">
           {loading ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">Loading...</div>
+            <div className="text-center py-8">
+              <LoadingSpinner size="lg" text="Loading system status..." />
+            </div>
           ) : (
             systems.map((system) => {
               const config = statusConfig[system.status];

@@ -10,6 +10,7 @@ import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { AnimatedSidebar } from "@/components/AnimatedSidebar";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import Link from "next/link";
 
 export default function Docs() {
@@ -236,6 +237,13 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
     <AnimatedPageWrapper aria-label="Documentation page">
       <Navigation />
 
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Documentation' }]} />
+        </div>
+      </section>
+
       {/* Hero Section */}
       <AnimatedHero
         badge="Developer Documentation"
@@ -288,11 +296,11 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
         <div className="max-w-4xl mx-auto">
           <ConversionCTA
             title="Ready to Get Started?"
-            description="Try Settler in our interactive playground. No signup required."
-            primaryAction="Try Playground"
-            primaryLink="/playground"
-            secondaryAction="View Pricing"
-            secondaryLink="/pricing"
+            description="Start your free trial and integrate Settler in minutes. No credit card required."
+            primaryAction="Start Free Trial"
+            primaryLink="/signup"
+            secondaryAction="Try Playground"
+            secondaryLink="/playground"
             variant="gradient"
           />
         </div>
