@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { ESLintConfigValidator } from './validate-eslint-config';
 import { NextJSBuildValidator } from './validate-nextjs-build';
+import { ComprehensiveBuildValidator } from './validate-comprehensive-build';
 
 interface BuildIssue {
   severity: 'error' | 'warning' | 'info';
@@ -42,6 +43,7 @@ class BuildGuardian {
     this.checkDependencies();
     this.checkESLintConfigs();
     this.checkNextJSBuild();
+    this.checkComprehensiveBuild();
 
     this.report();
     return this.issues.filter(i => i.severity === 'error').length === 0;
@@ -258,6 +260,36 @@ class BuildGuardian {
         severity: 'warning',
         category: 'nextjs',
         message: `Failed to validate Next.js build config: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    }
+  }
+
+  /**
+   * Check comprehensive build issues
+   */
+  private checkComprehensiveBuild(): void {
+    const validatorPath = join(this.rootDir, 'scripts', 'validate-comprehensive-build.ts');
+    if (!existsSync(validatorPath)) {
+      return;
+    }
+
+    try {
+      const validator = new ComprehensiveBuildValidator(this.rootDir);
+      const isValid = validator.validate();
+      
+      if (!isValid) {
+        this.issues.push({
+          severity: 'error',
+          category: 'build',
+          message: 'Comprehensive build validation found issues. Run: npm run validate:comprehensive',
+          fix: 'npm run validate:comprehensive',
+        });
+      }
+    } catch (error) {
+      this.issues.push({
+        severity: 'warning',
+        category: 'build',
+        message: `Failed to run comprehensive build validation: ${error instanceof Error ? error.message : String(error)}`,
       });
     }
   }
