@@ -18,21 +18,21 @@ exports.deepClone = deepClone;
  * Sanitize string input to prevent XSS
  */
 function sanitizeString(input) {
-    if (typeof input !== "string") {
-        return "";
+    if (typeof input !== 'string') {
+        return '';
     }
     // Remove potentially dangerous characters
     return input
-        .replace(/[<>]/g, "") // Remove < and >
-        .replace(/javascript:/gi, "") // Remove javascript: protocol
-        .replace(/on\w+=/gi, "") // Remove event handlers
+        .replace(/[<>]/g, '') // Remove < and >
+        .replace(/javascript:/gi, '') // Remove javascript: protocol
+        .replace(/on\w+=/gi, '') // Remove event handlers
         .trim();
 }
 /**
  * Validate ISO 8601 date string
  */
 function isValidISODate(dateString) {
-    if (!dateString || typeof dateString !== "string") {
+    if (!dateString || typeof dateString !== 'string') {
         return false;
     }
     const date = new Date(dateString);
@@ -42,7 +42,7 @@ function isValidISODate(dateString) {
  * Validate currency code (ISO 4217)
  */
 function isValidCurrency(currency) {
-    if (!currency || typeof currency !== "string") {
+    if (!currency || typeof currency !== 'string') {
         return false;
     }
     // Basic ISO 4217 validation (3 uppercase letters)
@@ -52,10 +52,10 @@ function isValidCurrency(currency) {
  * Validate money amount
  */
 function isValidMoney(money) {
-    if (!money || typeof money !== "object") {
+    if (!money || typeof money !== 'object') {
         return false;
     }
-    if (typeof money.value !== "number" || isNaN(money.value) || !isFinite(money.value)) {
+    if (typeof money.value !== 'number' || isNaN(money.value) || !isFinite(money.value)) {
         return false;
     }
     if (money.value < 0) {
@@ -66,14 +66,14 @@ function isValidMoney(money) {
 /**
  * Format money for display
  */
-function formatMoney(money, locale = "en-US") {
+function formatMoney(money, locale = 'en-US') {
     if (!isValidMoney(money)) {
-        return "Invalid";
+        return 'Invalid';
     }
     try {
         return new Intl.NumberFormat(locale, {
-            style: "currency",
-            currency: money.currency,
+            style: 'currency',
+            currency: money.currency
         }).format(money.value);
     }
     catch {
@@ -84,7 +84,7 @@ function formatMoney(money, locale = "en-US") {
  * Sanitize transaction metadata
  */
 function sanitizeTransactionMetadata(metadata) {
-    if (!metadata || typeof metadata !== "object") {
+    if (!metadata || typeof metadata !== 'object') {
         return undefined;
     }
     const sanitized = {};
@@ -94,10 +94,10 @@ function sanitizeTransactionMetadata(metadata) {
         if (!sanitizedKey)
             continue;
         // Sanitize values
-        if (typeof value === "string") {
+        if (typeof value === 'string') {
             sanitized[sanitizedKey] = sanitizeString(value);
         }
-        else if (typeof value === "number" || typeof value === "boolean") {
+        else if (typeof value === 'number' || typeof value === 'boolean') {
             sanitized[sanitizedKey] = value;
         }
         else if (value === null) {
@@ -111,7 +111,7 @@ function sanitizeTransactionMetadata(metadata) {
  * Validate transaction ID format
  */
 function validateTransactionId(id) {
-    if (!id || typeof id !== "string") {
+    if (!id || typeof id !== 'string') {
         return false;
     }
     // Basic validation: non-empty, reasonable length
@@ -120,13 +120,13 @@ function validateTransactionId(id) {
 /**
  * Mask PII in strings
  */
-function maskPII(input, maskChar = "*") {
-    if (!input || typeof input !== "string") {
-        return "";
+function maskPII(input, maskChar = '*') {
+    if (!input || typeof input !== 'string') {
+        return '';
     }
     // Mask email addresses
     input = input.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, (email) => {
-        const [local, domain] = email.split("@");
+        const [local, domain] = email.split('@');
         if (!local || !domain)
             return email;
         return `${local[0]}${maskChar.repeat(Math.max(0, local.length - 2))}@${domain}`;
@@ -140,9 +140,9 @@ function maskPII(input, maskChar = "*") {
 /**
  * Generate secure random ID
  */
-function generateSecureId(prefix = "id") {
+function generateSecureId(prefix = 'id') {
     const randomBytes = new Uint8Array(16);
-    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
         crypto.getRandomValues(randomBytes);
     }
     else {
@@ -152,24 +152,24 @@ function generateSecureId(prefix = "id") {
         }
     }
     const hex = Array.from(randomBytes)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
     return `${prefix}_${hex}`;
 }
 /**
  * Deep clone object (for immutable updates)
  */
 function deepClone(obj) {
-    if (obj === null || typeof obj !== "object") {
+    if (obj === null || typeof obj !== 'object') {
         return obj;
     }
     if (obj instanceof Date) {
         return new Date(obj.getTime());
     }
     if (obj instanceof Array) {
-        return obj.map((item) => deepClone(item));
+        return obj.map(item => deepClone(item));
     }
-    if (typeof obj === "object") {
+    if (typeof obj === 'object') {
         const cloned = {};
         for (const key in obj) {
             if (Object.prototype.hasOwnProperty.call(obj, key)) {

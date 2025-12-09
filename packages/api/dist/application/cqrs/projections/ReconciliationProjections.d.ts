@@ -2,13 +2,13 @@
  * Reconciliation Read Model Projections
  * Event handlers that update read models
  */
-import { Pool } from "pg";
-import { DomainEvent } from "../../../domain/events/DomainEvent";
-import { EventEnvelope } from "../../../domain/eventsourcing/EventEnvelope";
+import { Pool } from 'pg';
+import { DomainEvent } from '../../../domain/events/DomainEvent';
+import { EventEnvelope } from '../../../domain/eventsourcing/EventEnvelope';
 export interface ReconciliationSummary {
     reconciliation_id: string;
     job_id: string;
-    status: "running" | "completed" | "failed" | "cancelled";
+    status: 'running' | 'completed' | 'failed' | 'cancelled';
     total_source_records: number;
     total_target_records: number;
     matched_count: number;

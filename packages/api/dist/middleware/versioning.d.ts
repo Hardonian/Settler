@@ -2,7 +2,7 @@
  * API Versioning Middleware
  * Handles version routing and deprecation headers
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 export interface VersionedRequest extends Request {
     apiVersion?: string;
 }

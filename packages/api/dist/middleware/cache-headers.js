@@ -13,19 +13,19 @@ exports.cacheMiddleware = cacheMiddleware;
 function setCacheHeaders(res, options = {}) {
     const { maxAge = 0, sMaxAge, staleWhileRevalidate, mustRevalidate = false, noCache = false, noStore = false, private: isPrivate = false, } = options;
     if (noStore) {
-        res.setHeader("Cache-Control", "no-store");
+        res.setHeader('Cache-Control', 'no-store');
         return;
     }
     if (noCache) {
-        res.setHeader("Cache-Control", "no-cache, must-revalidate");
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
         return;
     }
     const directives = [];
     if (isPrivate) {
-        directives.push("private");
+        directives.push('private');
     }
     else {
-        directives.push("public");
+        directives.push('public');
     }
     if (maxAge > 0) {
         directives.push(`max-age=${maxAge}`);
@@ -37,9 +37,9 @@ function setCacheHeaders(res, options = {}) {
         directives.push(`stale-while-revalidate=${staleWhileRevalidate}`);
     }
     if (mustRevalidate) {
-        directives.push("must-revalidate");
+        directives.push('must-revalidate');
     }
-    res.setHeader("Cache-Control", directives.join(", "));
+    res.setHeader('Cache-Control', directives.join(', '));
 }
 /**
  * Cache middleware factory
@@ -47,7 +47,7 @@ function setCacheHeaders(res, options = {}) {
 function cacheMiddleware(options = {}) {
     return (req, res, next) => {
         // Only apply to GET/HEAD requests
-        if (req.method !== "GET" && req.method !== "HEAD") {
+        if (req.method !== 'GET' && req.method !== 'HEAD') {
             return next();
         }
         setCacheHeaders(res, options);

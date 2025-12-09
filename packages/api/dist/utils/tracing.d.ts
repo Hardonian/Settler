@@ -1,4 +1,4 @@
-import { AuthRequest } from "../middleware/auth";
+import { AuthRequest } from '../middleware/auth';
 export interface TraceContext {
     traceId: string;
     spanId: string;

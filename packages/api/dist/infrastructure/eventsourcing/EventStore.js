@@ -42,7 +42,7 @@ class PostgresEventStore {
             return;
         const client = await this.db.connect();
         try {
-            await client.query("BEGIN");
+            await client.query('BEGIN');
             for (const event of events) {
                 await client.query(`
           INSERT INTO event_store (
@@ -68,10 +68,10 @@ class PostgresEventStore {
                     event.created_at,
                 ]);
             }
-            await client.query("COMMIT");
+            await client.query('COMMIT');
         }
         catch (error) {
-            await client.query("ROLLBACK");
+            await client.query('ROLLBACK');
             throw error;
         }
         finally {
@@ -183,9 +183,7 @@ class PostgresEventStore {
         created_at = EXCLUDED.created_at
     `;
         // Extract tenant_id from event metadata if available
-        const event = await this.db.query("SELECT metadata FROM event_store WHERE event_id = $1", [
-            snapshot.event_id,
-        ]);
+        const event = await this.db.query('SELECT metadata FROM event_store WHERE event_id = $1', [snapshot.event_id]);
         const tenantId = event.rows[0]?.metadata?.tenant_id || null;
         await this.db.query(query, [
             snapshot.aggregate_id,
@@ -239,7 +237,7 @@ class PostgresEventStore {
         }
         const snapshotEventId = snapshotResult.rows[0].event_id;
         // Get the event_store.id for the snapshot event
-        const eventStoreIdResult = await this.db.query("SELECT id FROM event_store WHERE event_id = $1", [snapshotEventId]);
+        const eventStoreIdResult = await this.db.query('SELECT id FROM event_store WHERE event_id = $1', [snapshotEventId]);
         if (eventStoreIdResult.rows.length === 0) {
             return this.getEvents(aggregateId, aggregateType);
         }
@@ -261,7 +259,11 @@ class PostgresEventStore {
         AND id > $3
       ORDER BY id ASC
     `;
-        const result = await this.db.query(query, [aggregateId, aggregateType, snapshotEventStoreId]);
+        const result = await this.db.query(query, [
+            aggregateId,
+            aggregateType,
+            snapshotEventStoreId,
+        ]);
         return result.rows.map((row) => ({
             id: row.id,
             aggregate_id: row.aggregate_id,

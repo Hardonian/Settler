@@ -17,20 +17,20 @@ function versionMiddleware(req, res, next) {
     }
     else {
         // Check version header
-        const versionHeader = req.get("Settler-Version") || req.get("API-Version");
+        const versionHeader = req.get('Settler-Version') || req.get('API-Version');
         if (versionHeader) {
-            req.apiVersion = versionHeader.startsWith("v") ? versionHeader : `v${versionHeader}`;
+            req.apiVersion = versionHeader.startsWith('v') ? versionHeader : `v${versionHeader}`;
         }
         else {
             // Default to v1
-            req.apiVersion = "v1";
+            req.apiVersion = 'v1';
         }
     }
     // Set version in response headers
-    res.setHeader("Settler-Version", req.apiVersion);
-    res.setHeader("API-Version", req.apiVersion);
+    res.setHeader('Settler-Version', req.apiVersion);
+    res.setHeader('API-Version', req.apiVersion);
     // Add deprecation headers if needed
-    if (req.apiVersion === "v1") {
+    if (req.apiVersion === 'v1') {
         // v1 is current, no deprecation yet
         // When v2 is ready, add:
         // res.setHeader('Deprecation', 'true');
@@ -44,10 +44,10 @@ function versionMiddleware(req, res, next) {
  */
 function deprecateEndpoint(sunsetDate, migrationGuideUrl) {
     return (_req, res, next) => {
-        res.setHeader("Deprecation", "true");
-        res.setHeader("Sunset", sunsetDate);
+        res.setHeader('Deprecation', 'true');
+        res.setHeader('Sunset', sunsetDate);
         if (migrationGuideUrl) {
-            res.setHeader("Link", `<${migrationGuideUrl}>; rel="deprecation"`);
+            res.setHeader('Link', `<${migrationGuideUrl}>; rel="deprecation"`);
         }
         next();
     };

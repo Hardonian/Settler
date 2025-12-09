@@ -27,7 +27,7 @@ export default function PaymentMethodsPage() {
     void fetchPaymentMethods();
   }, []);
 
-  const fetchPaymentMethods = async () => {
+  const fetchPaymentMethods = () => {
     try {
       setIsLoading(true);
       // In production, fetch from API

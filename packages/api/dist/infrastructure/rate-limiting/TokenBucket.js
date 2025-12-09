@@ -64,7 +64,7 @@ class TokenBucket {
         return {0, currentTokens, lastRefill + windowMs}
       end
     `;
-        const result = (await this.redis.eval(luaScript, 1, redisKey, tokens.toString(), config.capacity.toString(), config.refillRate.toString(), now.toString(), windowMs.toString()));
+        const result = await this.redis.eval(luaScript, 1, redisKey, tokens.toString(), config.capacity.toString(), config.refillRate.toString(), now.toString(), windowMs.toString());
         const allowed = result[0] === 1;
         const remaining = result[1];
         const resetAt = new Date(result[2]);
@@ -77,7 +77,7 @@ class TokenBucket {
         const now = Date.now();
         const windowMs = (config.capacity / config.refillRate) * 1000;
         const redisKey = `rate_limit:${key}`;
-        const bucket = await this.redis.hmget(redisKey, "tokens", "lastRefill");
+        const bucket = await this.redis.hmget(redisKey, 'tokens', 'lastRefill');
         const currentTokens = bucket[0] ? parseFloat(bucket[0]) : config.capacity;
         const lastRefill = bucket[1] ? parseFloat(bucket[1]) : now;
         // Calculate tokens to add

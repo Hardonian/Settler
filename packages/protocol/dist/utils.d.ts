@@ -2,7 +2,7 @@
  * Protocol Utilities
  * Helper functions for working with protocol types
  */
-import { Money } from "./index";
+import { Money } from './index';
 /**
  * Sanitize string input to prevent XSS
  */

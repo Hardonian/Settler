@@ -6,7 +6,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TenantContext = void 0;
 class TenantContext {
-    static TENANT_ID_KEY = "app.current_tenant_id";
+    static TENANT_ID_KEY = 'app.current_tenant_id';
     /**
      * Set tenant context for a database connection
      * This enables RLS policies to filter data by tenant

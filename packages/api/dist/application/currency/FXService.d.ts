@@ -4,7 +4,7 @@
  * Handles multi-currency operations: FX rate tracking, base-currency conversion,
  * and currency-aware matching as specified in the Product & Technical Specification.
  */
-import { FXConversion, Money } from "@settler/types";
+import { FXConversion, Money } from '@settler/types';
 export interface FXRate {
     fromCurrency: string;
     toCurrency: string;
@@ -19,7 +19,6 @@ export declare class FXService {
     recordFXConversion(tenantId: string, transactionId: string, fromCurrency: string, toCurrency: string, fromAmount: number, toAmount: number, fxRate: number, provider?: string, rateDate?: Date): Promise<FXConversion>;
     /**
      * Get FX rate for currency pair
-     * First checks database, then fetches from external provider if not found
      */
     getFXRate(tenantId: string, fromCurrency: string, toCurrency: string, date?: Date): Promise<number | null>;
     /**
@@ -32,14 +31,12 @@ export declare class FXService {
     getBaseCurrency(tenantId: string): Promise<string>;
     /**
      * Get all FX rates for a tenant
-     * Fetches missing rates from external provider if needed
      */
     getFXRates(tenantId: string, date?: Date): Promise<FXRate[]>;
     /**
-     * Sync FX rates from external provider
-     * Fetches and stores rates for common currency pairs
+     * Sync FX rates for a tenant
      */
-    syncFXRates(tenantId: string, baseCurrency?: string, date?: Date): Promise<number>;
+    syncFXRates(_tenantId: string, _baseCurrency: string): Promise<number>;
     /**
      * Generate ID
      */

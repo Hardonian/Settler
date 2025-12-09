@@ -15,13 +15,13 @@ const db_1 = require("../../db");
 class ZeroTrustAuth {
     static ACCESS_TOKEN_TTL = 15 * 60; // 15 minutes
     static REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60; // 7 days
-    static JWT_ALGORITHM = "HS256";
+    static JWT_ALGORITHM = 'HS256';
     /**
      * Generate short-lived access token (15 minutes)
      */
     static generateAccessToken(user, scopes) {
         if (!config_1.config.jwt.secret) {
-            throw new Error("JWT_SECRET not configured");
+            throw new Error('JWT_SECRET not configured');
         }
         const jti = crypto.randomUUID();
         const now = Math.floor(Date.now() / 1000);
@@ -30,15 +30,15 @@ class ZeroTrustAuth {
             tenantId: user.tenantId,
             role: user.role,
             scopes,
-            type: "access",
+            type: 'access',
             jti,
             iat: now,
             exp: now + this.ACCESS_TOKEN_TTL,
         };
         return jsonwebtoken_1.default.sign(payload, config_1.config.jwt.secret, {
             algorithm: this.JWT_ALGORITHM,
-            issuer: "settler-api",
-            audience: "settler-client",
+            issuer: 'settler-api',
+            audience: 'settler-client',
         });
     }
     /**
@@ -46,7 +46,7 @@ class ZeroTrustAuth {
      */
     static generateRefreshToken(user) {
         if (!config_1.config.jwt.refreshSecret) {
-            throw new Error("JWT_REFRESH_SECRET not configured");
+            throw new Error('JWT_REFRESH_SECRET not configured');
         }
         const jti = crypto.randomUUID();
         const now = Math.floor(Date.now() / 1000);
@@ -55,15 +55,15 @@ class ZeroTrustAuth {
             tenantId: user.tenantId,
             role: user.role,
             scopes: [], // Refresh tokens don't have scopes
-            type: "refresh",
+            type: 'refresh',
             jti,
             iat: now,
             exp: now + this.REFRESH_TOKEN_TTL,
         };
         return jsonwebtoken_1.default.sign(payload, config_1.config.jwt.refreshSecret, {
             algorithm: this.JWT_ALGORITHM,
-            issuer: "settler-api",
-            audience: "settler-client",
+            issuer: 'settler-api',
+            audience: 'settler-client',
         });
     }
     /**
@@ -71,27 +71,27 @@ class ZeroTrustAuth {
      */
     static verifyAccessToken(token) {
         if (!config_1.config.jwt.secret) {
-            throw new Error("JWT_SECRET not configured");
+            throw new Error('JWT_SECRET not configured');
         }
         try {
             const decoded = jsonwebtoken_1.default.verify(token, config_1.config.jwt.secret, {
                 algorithms: [this.JWT_ALGORITHM],
-                issuer: "settler-api",
-                audience: "settler-client",
+                issuer: 'settler-api',
+                audience: 'settler-client',
             });
-            if (decoded.type !== "access") {
-                throw new Error("Invalid token type");
+            if (decoded.type !== 'access') {
+                throw new Error('Invalid token type');
             }
             // Check if token is revoked (in production, check Redis/DB)
             // For now, we'll implement revocation checking separately
             return decoded;
         }
         catch (error) {
-            if (error.name === "TokenExpiredError") {
-                throw new Error("Access token expired");
+            if (error.name === 'TokenExpiredError') {
+                throw new Error('Access token expired');
             }
-            if (error.name === "JsonWebTokenError") {
-                throw new Error("Invalid access token");
+            if (error.name === 'JsonWebTokenError') {
+                throw new Error('Invalid access token');
             }
             throw error;
         }
@@ -101,25 +101,25 @@ class ZeroTrustAuth {
      */
     static verifyRefreshToken(token) {
         if (!config_1.config.jwt.refreshSecret) {
-            throw new Error("JWT_REFRESH_SECRET not configured");
+            throw new Error('JWT_REFRESH_SECRET not configured');
         }
         try {
             const decoded = jsonwebtoken_1.default.verify(token, config_1.config.jwt.refreshSecret, {
                 algorithms: [this.JWT_ALGORITHM],
-                issuer: "settler-api",
-                audience: "settler-client",
+                issuer: 'settler-api',
+                audience: 'settler-client',
             });
-            if (decoded.type !== "refresh") {
-                throw new Error("Invalid token type");
+            if (decoded.type !== 'refresh') {
+                throw new Error('Invalid token type');
             }
             return decoded;
         }
         catch (error) {
-            if (error.name === "TokenExpiredError") {
-                throw new Error("Refresh token expired");
+            if (error.name === 'TokenExpiredError') {
+                throw new Error('Refresh token expired');
             }
-            if (error.name === "JsonWebTokenError") {
-                throw new Error("Invalid refresh token");
+            if (error.name === 'JsonWebTokenError') {
+                throw new Error('Invalid refresh token');
             }
             throw error;
         }
@@ -129,8 +129,8 @@ class ZeroTrustAuth {
      */
     static async validateApiKey(apiKey, ipAddress, userAgent) {
         // Never trust - always verify
-        if (!apiKey.startsWith("rk_")) {
-            throw new Error("Invalid API key format");
+        if (!apiKey.startsWith('rk_')) {
+            throw new Error('Invalid API key format');
         }
         const prefix = apiKey.substring(0, 12);
         // Lookup API key
@@ -143,34 +143,34 @@ class ZeroTrustAuth {
         if (keys.length === 0) {
             // Log failed attempt
             await (0, db_1.query)(`INSERT INTO audit_logs (event, ip, user_agent, metadata)
-         VALUES ($1, $2, $3, $4)`, ["api_key_auth_failed", ipAddress, userAgent, JSON.stringify({ prefix })]);
-            throw new Error("Invalid API key");
+         VALUES ($1, $2, $3, $4)`, ['api_key_auth_failed', ipAddress, userAgent, JSON.stringify({ prefix })]);
+            throw new Error('Invalid API key');
         }
         if (!keys[0]) {
-            throw new Error("API key not found");
+            throw new Error('API key not found');
         }
         const keyRecord = keys[0];
         // Verify key hash
         const isValid = await (0, hash_1.verifyApiKey)(apiKey, keyRecord.key_hash);
         if (!isValid) {
             await (0, db_1.query)(`INSERT INTO audit_logs (event, api_key_id, ip, user_agent, metadata)
-         VALUES ($1, $2, $3, $4, $5)`, ["api_key_auth_failed", keyRecord.id, ipAddress, userAgent, JSON.stringify({ prefix })]);
-            throw new Error("Invalid API key");
+         VALUES ($1, $2, $3, $4, $5)`, ['api_key_auth_failed', keyRecord.id, ipAddress, userAgent, JSON.stringify({ prefix })]);
+            throw new Error('Invalid API key');
         }
         // Check revocation
         if (keyRecord.revoked_at) {
-            throw new Error("API key revoked");
+            throw new Error('API key revoked');
         }
         // Check expiration
         if (keyRecord.expires_at && new Date(keyRecord.expires_at) < new Date()) {
-            throw new Error("API key expired");
+            throw new Error('API key expired');
         }
         // Check IP whitelist (least privilege)
         if (keyRecord.ip_whitelist && keyRecord.ip_whitelist.length > 0) {
             if (!keyRecord.ip_whitelist.includes(ipAddress)) {
                 await (0, db_1.query)(`INSERT INTO audit_logs (event, api_key_id, ip, user_agent, metadata)
-           VALUES ($1, $2, $3, $4, $5)`, ["api_key_ip_blocked", keyRecord.id, ipAddress, userAgent, JSON.stringify({ ipAddress })]);
-                throw new Error("IP address not whitelisted");
+           VALUES ($1, $2, $3, $4, $5)`, ['api_key_ip_blocked', keyRecord.id, ipAddress, userAgent, JSON.stringify({ ipAddress })]);
+                throw new Error('IP address not whitelisted');
             }
         }
         // Update last used

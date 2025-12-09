@@ -4,7 +4,7 @@
  * Lightweight agent that runs in customer infrastructure to perform
  * reconciliation locally without sending data to Settler cloud.
  */
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface EdgeAgentConfig {
     customerId: string;
     apiKey: string;
@@ -14,7 +14,7 @@ export interface EdgeAgentConfig {
 }
 export interface ReconciliationRule {
     field: string;
-    type: "exact" | "fuzzy" | "range" | "date_range";
+    type: 'exact' | 'fuzzy' | 'range' | 'date_range';
     threshold?: number;
     tolerance?: number;
     days?: number;

@@ -27,7 +27,7 @@ export declare function getJobPerformance(jobId: string, options?: QueryOptions)
 /**
  * Get tenant usage metrics using materialized view
  */
-export declare function getTenantUsage(tenantId: string, timeRange?: "hour" | "day" | "week", options?: QueryOptions): Promise<any>;
+export declare function getTenantUsage(tenantId: string, timeRange?: 'hour' | 'day' | 'week', options?: QueryOptions): Promise<any>;
 /**
  * Get match accuracy by job using materialized view
  */

@@ -2,10 +2,10 @@
  * Admin Service
  * Provides admin/debug endpoints for inspecting and managing sagas and events
  */
-import { SagaOrchestrator } from "../sagas/SagaOrchestrator";
-import { IEventStore } from "../../infrastructure/eventsourcing/EventStore";
-import { DeadLetterQueue } from "../../infrastructure/resilience/DeadLetterQueue";
-import { EventEnvelope } from "../../domain/eventsourcing/EventEnvelope";
+import { SagaOrchestrator } from '../sagas/SagaOrchestrator';
+import { IEventStore } from '../../infrastructure/eventsourcing/EventStore';
+import { DeadLetterQueue } from '../../infrastructure/resilience/DeadLetterQueue';
+import { EventEnvelope } from '../../domain/eventsourcing/EventEnvelope';
 export declare class AdminService {
     private sagaOrchestrator;
     private eventStore;

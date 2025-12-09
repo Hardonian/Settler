@@ -3,7 +3,7 @@
  * Redis-based request caching for API responses
  * Provides performant query layers with intelligent cache invalidation
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 export interface CacheConfig {
     /** Cache TTL in seconds */
     ttl?: number;

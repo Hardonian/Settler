@@ -7,11 +7,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AnomalyDetectorAgent = void 0;
 const orchestrator_1 = require("./orchestrator");
-const logger_1 = require("../../utils/logger");
 class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
-    id = "anomaly-detector";
-    name = "Anomaly & Exploit Detector";
-    type = "anomaly";
+    id = 'anomaly-detector';
+    name = 'Anomaly & Exploit Detector';
+    type = 'anomaly';
     detectedAnomalies = [];
     lastDetection;
     // Reserved for future rule-based detection
@@ -23,8 +22,8 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
         // Start periodic anomaly detection
         setInterval(() => {
             if (this.enabled) {
-                this.detectAnomalies().catch((error) => {
-                    (0, logger_1.logError)("Anomaly detection failed", error);
+                this.detectAnomalies().catch(error => {
+                    console.error('Anomaly detection failed:', error);
                 });
             }
         }, 60000); // Every minute
@@ -32,17 +31,17 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
     }
     async execute(action, params) {
         switch (action) {
-            case "detect":
+            case 'detect':
                 return await this.detectAnomalies();
-            case "get_anomalies":
-                return this.detectedAnomalies.filter((a) => {
+            case 'get_anomalies':
+                return this.detectedAnomalies.filter(a => {
                     if (params.severity)
                         return a.severity === params.severity;
                     if (params.type)
                         return a.type === params.type;
                     return true;
                 });
-            case "get_stats":
+            case 'get_stats':
                 return await this.getStatus();
             default:
                 throw new Error(`Unknown action: ${action}`);
@@ -57,7 +56,7 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
         }
         status.metrics = {
             totalAnomalies: this.detectedAnomalies.length,
-            criticalAnomalies: this.detectedAnomalies.filter((a) => a.severity === "critical").length,
+            criticalAnomalies: this.detectedAnomalies.filter(a => a.severity === 'critical').length,
             falsePositiveRate: 0.05, // TODO: Calculate actual rate
         };
         return status;
@@ -83,8 +82,8 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
         this.lastDetection = new Date();
         // Alert on critical/high severity anomalies
         for (const anomaly of anomalies) {
-            if (anomaly.severity === "critical" || anomaly.severity === "high") {
-                this.emit("anomaly_detected", anomaly);
+            if (anomaly.severity === 'critical' || anomaly.severity === 'high') {
+                this.emit('anomaly_detected', anomaly);
                 await this.sendAlert(anomaly);
             }
         }
@@ -98,19 +97,19 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
         // Check for sudden drops in accuracy, unusual matching patterns, etc.
         return [
             {
-                id: "anom_recon_1",
-                type: "reconciliation",
-                severity: "high",
-                description: "Sudden drop in reconciliation accuracy detected",
+                id: 'anom_recon_1',
+                type: 'reconciliation',
+                severity: 'high',
+                description: 'Sudden drop in reconciliation accuracy detected',
                 detectedAt: new Date(),
                 evidence: {
                     previousAccuracy: 0.98,
                     currentAccuracy: 0.85,
                     dropPercentage: 13.3,
-                    jobId: "job_123",
+                    jobId: 'job_123',
                 },
                 confidence: 85,
-                recommendedAction: "Review matching rules and data quality",
+                recommendedAction: 'Review matching rules and data quality',
             },
         ];
     }
@@ -145,16 +144,16 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
         // TODO: Load from database or config
         return [
             {
-                id: "rule_1",
-                type: "reconciliation",
-                condition: "accuracy < 0.9",
-                severity: "high",
+                id: 'rule_1',
+                type: 'reconciliation',
+                condition: 'accuracy < 0.9',
+                severity: 'high',
             },
             {
-                id: "rule_2",
-                type: "security",
-                condition: "api_calls_per_minute > 1000",
-                severity: "medium",
+                id: 'rule_2',
+                type: 'security',
+                condition: 'api_calls_per_minute > 1000',
+                severity: 'medium',
             },
         ];
     }
@@ -163,12 +162,8 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
      */
     async sendAlert(anomaly) {
         // TODO: Send to alerting system (PagerDuty, Slack, etc.)
-        (0, logger_1.logInfo)(`ALERT: ${anomaly.severity.toUpperCase()} - ${anomaly.description}`, {
-            anomalyId: anomaly.id,
-            severity: anomaly.severity,
-            type: anomaly.type,
-        });
-        this.emit("alert_sent", anomaly);
+        console.log(`ALERT: ${anomaly.severity.toUpperCase()} - ${anomaly.description}`);
+        this.emit('alert_sent', anomaly);
     }
 }
 exports.AnomalyDetectorAgent = AnomalyDetectorAgent;

@@ -2,10 +2,10 @@
  * User Service
  * Application service for user operations
  */
-import { User } from "../../domain/entities/User";
-import { IUserRepository } from "../../domain/repositories/IUserRepository";
-import { CreateUserCommand, CreateUserCommandResult } from "../commands/CreateUserCommand";
-import { IEventBus } from "../../infrastructure/events/IEventBus";
+import { User } from '../../domain/entities/User';
+import { IUserRepository } from '../../domain/repositories/IUserRepository';
+import { CreateUserCommand, CreateUserCommandResult } from '../commands/CreateUserCommand';
+import { IEventBus } from '../../infrastructure/events/IEventBus';
 export declare class UserService {
     private userRepository;
     private eventBus;

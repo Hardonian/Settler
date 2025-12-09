@@ -43,9 +43,7 @@ const createApiKeySchema = zod_1.z.object({
 router.post("/login", (0, validation_1.validateRequest)(loginSchema), async (req, res) => {
     try {
         const { email, password } = req.body;
-        const users = await (0, db_1.query)(`SELECT id, password_hash, role FROM users WHERE email = $1 AND deleted_at IS NULL`, [
-            email,
-        ]);
+        const users = await (0, db_1.query)(`SELECT id, password_hash, role FROM users WHERE email = $1 AND deleted_at IS NULL`, [email]);
         if (users.length === 0 || !users[0]) {
             res.status(401).json({ error: "Invalid credentials" });
             return;
@@ -57,39 +55,39 @@ router.post("/login", (0, validation_1.validateRequest)(loginSchema), async (req
             return;
         }
         if (!config_1.config.jwt.secret) {
-            throw new Error("JWT secret not configured");
+            throw new Error('JWT secret not configured');
         }
         const jwtSecret = config_1.config.jwt.secret;
-        const accessTokenExpiry = typeof config_1.config.jwt.accessTokenExpiry === "string"
+        const accessTokenExpiry = typeof config_1.config.jwt.accessTokenExpiry === 'string'
             ? config_1.config.jwt.accessTokenExpiry
-            : typeof config_1.config.jwt.accessTokenExpiry === "number"
-                ? config_1.config.jwt.accessTokenExpiry
-                : "15m";
+            : (typeof config_1.config.jwt.accessTokenExpiry === 'number' ? config_1.config.jwt.accessTokenExpiry : '15m');
         const refreshSecret = (config_1.config.jwt.refreshSecret || jwtSecret);
-        const refreshTokenExpiry = typeof config_1.config.jwt.refreshTokenExpiry === "string"
+        const refreshTokenExpiry = typeof config_1.config.jwt.refreshTokenExpiry === 'string'
             ? config_1.config.jwt.refreshTokenExpiry
-            : typeof config_1.config.jwt.refreshTokenExpiry === "number"
-                ? config_1.config.jwt.refreshTokenExpiry
-                : "7d";
+            : (typeof config_1.config.jwt.refreshTokenExpiry === 'number' ? config_1.config.jwt.refreshTokenExpiry : '7d');
         // Generate access token (15 minutes)
-        const accessToken = jsonwebtoken_1.default.sign({ userId: user.id, type: "access" }, jwtSecret, {
+        const accessToken = jsonwebtoken_1.default.sign({ userId: user.id, type: 'access' }, jwtSecret, {
             expiresIn: accessTokenExpiry,
-            issuer: "settler-api",
-            audience: "settler-client",
+            issuer: 'settler-api',
+            audience: 'settler-client',
         });
         // Generate refresh token with rotation support
         const refreshTokenId = (0, uuid_1.v4)();
-        const refreshToken = jsonwebtoken_1.default.sign({ userId: user.id, tokenId: refreshTokenId, type: "refresh" }, refreshSecret, {
+        const refreshToken = jsonwebtoken_1.default.sign({ userId: user.id, tokenId: refreshTokenId, type: 'refresh' }, refreshSecret, {
             expiresIn: refreshTokenExpiry,
-            issuer: "settler-api",
-            audience: "settler-client",
+            issuer: 'settler-api',
+            audience: 'settler-client',
         });
         // Store refresh token in database for rotation
         await (0, token_rotation_1.storeRefreshToken)(user.id, refreshTokenId, 7);
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, ["user_login", user.id, JSON.stringify({ ip: req.ip })]);
-        (0, logger_1.logInfo)("User logged in", { userId: user.id });
+         VALUES ($1, $2, $3)`, [
+            'user_login',
+            user.id,
+            JSON.stringify({ ip: req.ip }),
+        ]);
+        (0, logger_1.logInfo)('User logged in', { userId: user.id });
         (0, api_response_1.sendSuccess)(res, {
             accessToken,
             refreshToken,
@@ -112,7 +110,7 @@ router.post("/refresh", (0, validation_1.validateRequest)(refreshTokenSchema), a
         // Rotate refresh token (invalidates old, issues new)
         const tokenPair = await (0, token_rotation_1.rotateRefreshToken)(refreshToken);
         if (!tokenPair) {
-            return (0, api_response_1.sendError)(res, 401, "INVALID_TOKEN", "Invalid or expired refresh token");
+            return (0, api_response_1.sendError)(res, 401, 'INVALID_TOKEN', 'Invalid or expired refresh token');
         }
         (0, api_response_1.sendSuccess)(res, {
             accessToken: tokenPair.accessToken,
@@ -138,25 +136,29 @@ router.post("/api-keys", (0, authorization_1.requirePermission)(Permissions_1.Pe
             prefix,
             keyHash,
             name,
-            scopes || ["jobs:read", "jobs:write", "reports:read"],
+            scopes || ['jobs:read', 'jobs:write', 'reports:read'],
             rateLimit || 1000,
             expiresAt ? new Date(expiresAt) : null,
         ]);
         if (!result[0]) {
-            throw new Error("Failed to create API key");
+            throw new Error('Failed to create API key');
         }
         const apiKeyId = result[0].id;
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, ["api_key_created", userId, JSON.stringify({ apiKeyId, name })]);
-        (0, logger_1.logInfo)("API key created", { userId, apiKeyId });
+         VALUES ($1, $2, $3)`, [
+            'api_key_created',
+            userId,
+            JSON.stringify({ apiKeyId, name }),
+        ]);
+        (0, logger_1.logInfo)('API key created', { userId, apiKeyId });
         // Return key only once (never again)
         res.status(201).json({
             data: {
                 id: apiKeyId,
                 key, // Only returned on creation
                 name,
-                scopes: scopes || ["jobs:read", "jobs:write", "reports:read"],
+                scopes: scopes || ['jobs:read', 'jobs:write', 'reports:read'],
                 rateLimit: rateLimit || 1000,
                 createdAt: new Date().toISOString(),
             },

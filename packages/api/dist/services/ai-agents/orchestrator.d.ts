@@ -3,11 +3,11 @@
  *
  * Manages the lifecycle and coordination of all AI agents in Settler.
  */
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface AgentConfig {
     id: string;
     name: string;
-    type: "infrastructure" | "anomaly" | "synthetic" | "support" | "qa";
+    type: 'infrastructure' | 'anomaly' | 'synthetic' | 'support' | 'qa';
     enabled: boolean;
     config: Record<string, unknown>;
 }
@@ -28,10 +28,10 @@ export interface AgentResponse {
 export declare abstract class BaseAgent extends EventEmitter {
     abstract id: string;
     abstract name: string;
-    abstract type: AgentConfig["type"];
-    protected config: AgentConfig["config"];
+    abstract type: AgentConfig['type'];
+    protected config: AgentConfig['config'];
     protected enabled: boolean;
-    constructor(config?: AgentConfig["config"]);
+    constructor(config?: AgentConfig['config']);
     /**
      * Initialize the agent
      */
@@ -59,7 +59,7 @@ export declare abstract class BaseAgent extends EventEmitter {
     /**
      * Update configuration
      */
-    updateConfig(config: Partial<AgentConfig["config"]>): void;
+    updateConfig(config: Partial<AgentConfig['config']>): void;
 }
 export declare class AgentOrchestrator extends EventEmitter {
     private agents;

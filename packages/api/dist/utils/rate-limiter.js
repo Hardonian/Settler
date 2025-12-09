@@ -18,7 +18,7 @@ async function checkRateLimit(req) {
     // Get rate limit from API key if available
     let limit = config_1.config.rateLimiting.defaultLimit;
     if (req.apiKeyId) {
-        const keys = await (0, db_1.query)("SELECT rate_limit FROM api_keys WHERE id = $1", [req.apiKeyId]);
+        const keys = await (0, db_1.query)('SELECT rate_limit FROM api_keys WHERE id = $1', [req.apiKeyId]);
         if (keys.length > 0 && keys[0]) {
             limit = keys[0].rate_limit;
         }
@@ -61,13 +61,13 @@ async function checkRateLimit(req) {
 function rateLimitMiddleware() {
     return async (req, res, next) => {
         const result = await checkRateLimit(req);
-        res.setHeader("X-RateLimit-Limit", config_1.config.rateLimiting.defaultLimit);
-        res.setHeader("X-RateLimit-Remaining", result.remaining);
-        res.setHeader("X-RateLimit-Reset", new Date(result.resetAt).toISOString());
+        res.setHeader('X-RateLimit-Limit', config_1.config.rateLimiting.defaultLimit);
+        res.setHeader('X-RateLimit-Remaining', result.remaining);
+        res.setHeader('X-RateLimit-Reset', new Date(result.resetAt).toISOString());
         if (!result.allowed) {
             res.status(429).json({
-                error: "Too Many Requests",
-                message: "Rate limit exceeded",
+                error: 'Too Many Requests',
+                message: 'Rate limit exceeded',
                 retryAfter: Math.ceil((result.resetAt - Date.now()) / 1000),
             });
             return;

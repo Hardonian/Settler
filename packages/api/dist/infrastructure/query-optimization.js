@@ -19,7 +19,7 @@ const logger_1 = require("../utils/logger");
 async function getReconciliationSummary(jobId, dateRange, options = {}) {
     const { useMaterializedView = true, refreshView = false } = options;
     if (refreshView && useMaterializedView) {
-        await refreshMaterializedView("mv_reconciliation_summary_daily");
+        await refreshMaterializedView('mv_reconciliation_summary_daily');
     }
     if (useMaterializedView) {
         // Use materialized view for fast aggregation
@@ -35,13 +35,15 @@ async function getReconciliationSummary(jobId, dateRange, options = {}) {
         avg_processing_time_ms
       FROM mv_reconciliation_summary_daily
       WHERE job_id = $1
-      ${dateRange ? "AND date BETWEEN $2 AND $3" : ""}
+      ${dateRange ? 'AND date BETWEEN $2 AND $3' : ''}
       ORDER BY date DESC
       LIMIT 100
     `;
-        const params = dateRange ? [jobId, dateRange.start, dateRange.end] : [jobId];
+        const params = dateRange
+            ? [jobId, dateRange.start, dateRange.end]
+            : [jobId];
         const result = await (0, db_1.query)(viewQuery, params);
-        (0, logger_1.logDebug)("Used materialized view for reconciliation summary", { jobId });
+        (0, logger_1.logDebug)('Used materialized view for reconciliation summary', { jobId });
         return result;
     }
     // Fallback to regular query
@@ -57,12 +59,14 @@ async function getReconciliationSummary(jobId, dateRange, options = {}) {
       AVG(processing_time_ms) as avg_processing_time_ms
     FROM reconciliation_results
     WHERE job_id = $1
-    ${dateRange ? "AND created_at BETWEEN $2 AND $3" : ""}
+    ${dateRange ? 'AND created_at BETWEEN $2 AND $3' : ''}
     GROUP BY job_id, DATE(created_at)
     ORDER BY date DESC
     LIMIT 100
   `;
-    const params = dateRange ? [jobId, dateRange.start, dateRange.end] : [jobId];
+    const params = dateRange
+        ? [jobId, dateRange.start, dateRange.end]
+        : [jobId];
     return (0, db_1.query)(regularQuery, params);
 }
 /**
@@ -71,7 +75,7 @@ async function getReconciliationSummary(jobId, dateRange, options = {}) {
 async function getJobPerformance(jobId, options = {}) {
     const { useMaterializedView = true, refreshView = false } = options;
     if (refreshView && useMaterializedView) {
-        await refreshMaterializedView("mv_job_performance");
+        await refreshMaterializedView('mv_job_performance');
     }
     if (useMaterializedView) {
         const result = await (0, db_1.query)(`
@@ -86,7 +90,7 @@ async function getJobPerformance(jobId, options = {}) {
       FROM mv_job_performance
       WHERE job_id = $1
     `, [jobId]);
-        (0, logger_1.logDebug)("Used materialized view for job performance", { jobId });
+        (0, logger_1.logDebug)('Used materialized view for job performance', { jobId });
         return result[0] || null;
     }
     // Fallback to regular query
@@ -107,33 +111,33 @@ async function getJobPerformance(jobId, options = {}) {
 /**
  * Get tenant usage metrics using materialized view
  */
-async function getTenantUsage(tenantId, timeRange = "hour", options = {}) {
+async function getTenantUsage(tenantId, timeRange = 'hour', options = {}) {
     const { useMaterializedView = true, refreshView = false } = options;
     if (refreshView && useMaterializedView) {
-        await refreshMaterializedView("mv_tenant_usage_hourly");
+        await refreshMaterializedView('mv_tenant_usage_hourly');
     }
-    let viewName = "mv_tenant_usage_hourly";
-    let groupBy = "hour";
-    if (timeRange === "day") {
+    let viewName = 'mv_tenant_usage_hourly';
+    let groupBy = 'hour';
+    if (timeRange === 'day') {
         // Aggregate hourly data by day
-        viewName = "mv_tenant_usage_hourly";
-        groupBy = "day";
+        viewName = 'mv_tenant_usage_hourly';
+        groupBy = 'day';
     }
     if (useMaterializedView) {
         const result = await (0, db_1.query)(`
       SELECT 
         tenant_id,
-        ${groupBy === "hour" ? "hour" : "DATE_TRUNC('day', hour) as day"},
+        ${groupBy === 'hour' ? 'hour' : "DATE_TRUNC('day', hour) as day"},
         total_requests,
         total_reconciliations,
         total_errors,
         avg_response_time_ms
       FROM ${viewName}
       WHERE tenant_id = $1
-      ORDER BY ${groupBy === "hour" ? "hour" : "day"} DESC
+      ORDER BY ${groupBy === 'hour' ? 'hour' : 'day'} DESC
       LIMIT 100
     `, [tenantId]);
-        (0, logger_1.logDebug)("Used materialized view for tenant usage", { tenantId, timeRange });
+        (0, logger_1.logDebug)('Used materialized view for tenant usage', { tenantId, timeRange });
         return result;
     }
     // Fallback to regular query
@@ -159,7 +163,7 @@ async function getTenantUsage(tenantId, timeRange = "hour", options = {}) {
 async function getMatchAccuracy(jobId, options = {}) {
     const { useMaterializedView = true, refreshView = false } = options;
     if (refreshView && useMaterializedView) {
-        await refreshMaterializedView("mv_match_accuracy_by_job");
+        await refreshMaterializedView('mv_match_accuracy_by_job');
     }
     if (useMaterializedView) {
         const queryStr = jobId
@@ -188,7 +192,7 @@ async function getMatchAccuracy(jobId, options = {}) {
       `;
         const params = jobId ? [jobId] : [];
         const result = await (0, db_1.query)(queryStr, params);
-        (0, logger_1.logDebug)("Used materialized view for match accuracy", { jobId });
+        (0, logger_1.logDebug)('Used materialized view for match accuracy', { jobId });
         return jobId ? result[0] || null : result;
     }
     // Fallback to regular query
@@ -227,13 +231,13 @@ async function getMatchAccuracy(jobId, options = {}) {
 async function refreshMaterializedView(viewName) {
     try {
         await (0, db_1.query)(`REFRESH MATERIALIZED VIEW CONCURRENTLY ${viewName}`);
-        (0, logger_1.logInfo)("Materialized view refreshed", { viewName });
+        (0, logger_1.logInfo)('Materialized view refreshed', { viewName });
     }
     catch (error) {
         // If CONCURRENTLY fails (no unique index), try without it
-        if (error.message.includes("CONCURRENTLY")) {
+        if (error.message.includes('CONCURRENTLY')) {
             await (0, db_1.query)(`REFRESH MATERIALIZED VIEW ${viewName}`);
-            (0, logger_1.logInfo)("Materialized view refreshed (non-concurrent)", { viewName });
+            (0, logger_1.logInfo)('Materialized view refreshed (non-concurrent)', { viewName });
         }
         else {
             throw error;
@@ -245,19 +249,19 @@ async function refreshMaterializedView(viewName) {
  */
 async function refreshAllMaterializedViews() {
     const views = [
-        "mv_reconciliation_summary_daily",
-        "mv_job_performance",
-        "mv_tenant_usage_hourly",
-        "mv_match_accuracy_by_job",
+        'mv_reconciliation_summary_daily',
+        'mv_job_performance',
+        'mv_tenant_usage_hourly',
+        'mv_match_accuracy_by_job',
     ];
     for (const view of views) {
         try {
             await refreshMaterializedView(view);
         }
         catch (error) {
-            (0, logger_1.logDebug)("Failed to refresh materialized view", { view, error });
+            (0, logger_1.logDebug)('Failed to refresh materialized view', { view, error });
         }
     }
-    (0, logger_1.logInfo)("All materialized views refreshed");
+    (0, logger_1.logInfo)('All materialized views refreshed');
 }
 //# sourceMappingURL=query-optimization.js.map

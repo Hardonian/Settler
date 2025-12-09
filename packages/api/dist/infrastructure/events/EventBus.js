@@ -11,7 +11,7 @@ class EventBus {
     async publish(event) {
         const eventName = event.eventName;
         const handlers = this.handlers.get(eventName) || [];
-        (0, logger_1.logInfo)("Publishing domain event", {
+        (0, logger_1.logInfo)('Publishing domain event', {
             eventName,
             eventId: event.eventId,
             handlersCount: handlers.length,
@@ -22,7 +22,7 @@ class EventBus {
                 await handler(event);
             }
             catch (error) {
-                (0, logger_1.logError)("Event handler failed", error, {
+                (0, logger_1.logError)('Event handler failed', error, {
                     eventName,
                     eventId: event.eventId,
                 });
@@ -34,7 +34,7 @@ class EventBus {
             this.handlers.set(eventName, []);
         }
         this.handlers.get(eventName).push(handler);
-        (0, logger_1.logInfo)("Subscribed to event", { eventName });
+        (0, logger_1.logInfo)('Subscribed to event', { eventName });
     }
 }
 exports.EventBus = EventBus;

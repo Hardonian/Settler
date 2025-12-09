@@ -2,7 +2,7 @@
  * Error Standardization Utilities
  * Ensures consistent error handling across the application
  */
-import { Response } from "express";
+import { Response } from 'express';
 export declare enum ErrorCode {
     VALIDATION_ERROR = "VALIDATION_ERROR",
     UNAUTHORIZED = "UNAUTHORIZED",

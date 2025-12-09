@@ -33,7 +33,7 @@ router.get("/alerts/rules", (0, authorization_1.requirePermission)(Permissions_1
          WHERE user_id = $1
          ORDER BY created_at DESC`, [userId]);
         res.json({
-            data: rules.map((r) => ({
+            data: rules.map(r => ({
                 id: r.id,
                 name: r.name,
                 metric: r.metric,
@@ -58,7 +58,7 @@ router.post("/alerts/rules", (0, authorization_1.requirePermission)(Permissions_
          VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING id`, [userId, name, metric, threshold, operator, channels, enabled]);
         if (!result[0]) {
-            throw new Error("Failed to create alert rule");
+            throw new Error('Failed to create alert rule');
         }
         res.status(201).json({
             data: {
@@ -83,7 +83,7 @@ router.get("/alerts/history", (0, authorization_1.requirePermission)(Permissions
          ORDER BY a.triggered_at DESC
          LIMIT $2 OFFSET $3`, [userId, limit, offset]);
         res.json({
-            data: alerts.map((a) => ({
+            data: alerts.map(a => ({
                 id: a.id,
                 ruleId: a.rule_id,
                 metric: a.metric,

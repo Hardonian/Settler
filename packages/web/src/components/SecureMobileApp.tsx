@@ -40,6 +40,43 @@ export default function SecureMobileApp({
   const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   const [securityHeaders, setSecurityHeaders] = useState<SecurityHeaders | null>(null);
 
+  // Build Content Security Policy
+  const buildCSP = useCallback((policy?: SecurityPolicy): string => {
+    const csp = policy?.contentSecurityPolicy;
+    const defaultCSP = {
+      "default-src": ["'self'"],
+      "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Next.js requires this
+      "style-src": ["'self'", "'unsafe-inline'"],
+      "img-src": ["'self'", "data:", "https:"],
+      "connect-src": [
+        "'self'",
+        baseURL,
+        "https://api.settler.io",
+        "wss://api.settler.io",
+      ],
+      "font-src": ["'self'", "data:"],
+      "object-src": ["'none'"],
+      "base-uri": ["'self'"],
+      "form-action": ["'self'"],
+      "frame-ancestors": ["'none'"],
+      "upgrade-insecure-requests": [],
+    };
+
+    if (csp) {
+      if (csp.scriptSrc) defaultCSP["script-src"] = csp.scriptSrc;
+      if (csp.styleSrc) defaultCSP["style-src"] = csp.styleSrc;
+      if (csp.imgSrc) defaultCSP["img-src"] = csp.imgSrc;
+      if (csp.connectSrc) defaultCSP["connect-src"] = csp.connectSrc;
+    }
+
+    return Object.entries(defaultCSP)
+      .map(([key, values]) => {
+        const keyFormatted = key.replace(/([A-Z])/g, "-$1").toLowerCase();
+        return `${keyFormatted} ${values.join(" ")}`;
+      })
+      .join("; ");
+  }, [baseURL]);
+
   // Initialize secure client
   useEffect(() => {
     const secureClient = new SettlerClient({
@@ -57,7 +94,7 @@ export default function SecureMobileApp({
     };
     setSecurityHeaders(headers);
     setClient(secureClient);
-  }, [apiKey, baseURL, securityPolicy]);
+  }, [apiKey, baseURL, securityPolicy, buildCSP]);
 
   // Register service worker for PWA
   useEffect(() => {
@@ -77,8 +114,11 @@ export default function SecureMobileApp({
   useEffect(() => {
     if (typeof window !== "undefined") {
       // Check if running as standalone (installed PWA)
+      interface NavigatorStandalone extends Navigator {
+        standalone?: boolean;
+      }
       const isStandalone = window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as any).standalone ||
+        (window.navigator as NavigatorStandalone).standalone === true ||
         document.referrer.includes("android-app://");
 
       setIsPWAInstalled(isStandalone);
@@ -139,42 +179,6 @@ export default function SecureMobileApp({
     setInstallPrompt(null);
   }, [installPrompt]);
 
-  // Build Content Security Policy
-  const buildCSP = (policy?: SecurityPolicy): string => {
-    const csp = policy?.contentSecurityPolicy;
-    const defaultCSP = {
-      "default-src": ["'self'"],
-      "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Next.js requires this
-      "style-src": ["'self'", "'unsafe-inline'"],
-      "img-src": ["'self'", "data:", "https:"],
-      "connect-src": [
-        "'self'",
-        baseURL,
-        "https://api.settler.io",
-        "wss://api.settler.io",
-      ],
-      "font-src": ["'self'", "data:"],
-      "object-src": ["'none'"],
-      "base-uri": ["'self'"],
-      "form-action": ["'self'"],
-      "frame-ancestors": ["'none'"],
-      "upgrade-insecure-requests": [],
-    };
-
-    if (csp) {
-      if (csp.scriptSrc) defaultCSP["script-src"] = csp.scriptSrc;
-      if (csp.styleSrc) defaultCSP["style-src"] = csp.styleSrc;
-      if (csp.imgSrc) defaultCSP["img-src"] = csp.imgSrc;
-      if (csp.connectSrc) defaultCSP["connect-src"] = csp.connectSrc;
-    }
-
-    return Object.entries(defaultCSP)
-      .map(([key, values]) => {
-        const keyFormatted = key.replace(/([A-Z])/g, "-$1").toLowerCase();
-        return `${keyFormatted} ${values.join(" ")}`;
-      })
-      .join("; ");
-  };
 
   if (!client) {
     return (

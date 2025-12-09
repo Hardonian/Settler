@@ -19,27 +19,19 @@ class ReconciliationService {
         const shopifyStripeSaga = new ShopifyStripeReconciliationSaga_1.ShopifyStripeReconciliationSaga(eventStore, shopifyAdapter, stripeAdapter);
         this.sagaOrchestrator.registerSaga(shopifyStripeSaga.createDefinition());
         // Subscribe to reconciliation started events to trigger saga
-        eventBus.subscribe("reconciliation.started", async (event) => {
+        eventBus.subscribe('reconciliation.started', async (event) => {
             // Type guard to check if event has required properties
-            if ("reconciliationId" in event && "jobId" in event && "correlationId" in event) {
+            if ('reconciliationId' in event && 'jobId' in event && 'correlationId' in event) {
                 const reconciliationId = event.reconciliationId;
                 const jobId = event.jobId;
                 const correlationId = event.correlationId;
-                const tenantId = "tenantId" in event ? event.tenantId : "default";
-                const dateRange = "dateRange" in event
-                    ? event.dateRange
-                    : undefined;
-                const shopifyConfig = "shopifyConfig" in event
-                    ? event.shopifyConfig
-                    : undefined;
-                const stripeConfig = "stripeConfig" in event
-                    ? event.stripeConfig
-                    : undefined;
-                const matchingRules = "matchingRules" in event
-                    ? event.matchingRules
-                    : undefined;
+                const tenantId = 'tenantId' in event ? event.tenantId : 'default';
+                const dateRange = 'dateRange' in event ? event.dateRange : undefined;
+                const shopifyConfig = 'shopifyConfig' in event ? event.shopifyConfig : undefined;
+                const stripeConfig = 'stripeConfig' in event ? event.stripeConfig : undefined;
+                const matchingRules = 'matchingRules' in event ? event.matchingRules : undefined;
                 // Start saga
-                await this.sagaOrchestrator.startSaga("shopify_stripe_monthly_reconciliation", reconciliationId, {
+                await this.sagaOrchestrator.startSaga('shopify_stripe_monthly_reconciliation', reconciliationId, {
                     job_id: jobId,
                     started_at: Date.now(),
                     date_range: dateRange || {},

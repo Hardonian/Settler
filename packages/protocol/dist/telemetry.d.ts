@@ -16,7 +16,7 @@ export interface TelemetryEvent {
     sessionId?: string;
     context?: TelemetryContext;
 }
-export type TelemetryEventType = "pageview" | "component.render" | "component.interaction" | "api.call" | "error" | "performance" | "custom";
+export type TelemetryEventType = 'pageview' | 'component.render' | 'component.interaction' | 'api.call' | 'error' | 'performance' | 'custom';
 export interface TelemetryContext {
     page?: string;
     component?: string;

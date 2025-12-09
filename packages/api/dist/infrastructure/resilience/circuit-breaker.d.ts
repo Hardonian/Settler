@@ -2,7 +2,7 @@
  * Circuit Breaker Implementation
  * Prevents cascading failures by opening circuit after threshold failures
  */
-import { CircuitBreaker } from "opossum";
+import { CircuitBreaker } from 'opossum';
 export interface CircuitBreakerConfig {
     timeout?: number;
     errorThresholdPercentage?: number;

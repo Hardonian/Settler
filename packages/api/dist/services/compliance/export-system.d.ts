@@ -3,13 +3,13 @@
  *
  * One-click compliance exports for any jurisdiction (GDPR, CCPA, SOC 2, etc.)
  */
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface ComplianceExport {
     id: string;
     customerId: string;
-    jurisdiction: "GDPR" | "CCPA" | "SOC2" | "PCI-DSS" | "HIPAA" | "custom";
-    format: "json" | "csv" | "xml" | "pdf";
-    status: "pending" | "processing" | "completed" | "failed";
+    jurisdiction: 'GDPR' | 'CCPA' | 'SOC2' | 'PCI-DSS' | 'HIPAA' | 'custom';
+    format: 'json' | 'csv' | 'xml' | 'pdf';
+    status: 'pending' | 'processing' | 'completed' | 'failed';
     createdAt: Date;
     completedAt?: Date;
     downloadUrl?: string;
@@ -18,7 +18,7 @@ export interface ComplianceExport {
 export interface ExportTemplate {
     jurisdiction: string;
     fields: string[];
-    format: ComplianceExport["format"];
+    format: ComplianceExport['format'];
     description: string;
 }
 export declare class ComplianceExportSystem extends EventEmitter {
@@ -32,7 +32,7 @@ export declare class ComplianceExportSystem extends EventEmitter {
     /**
      * Create a compliance export
      */
-    createExport(customerId: string, jurisdiction: ComplianceExport["jurisdiction"], format?: ComplianceExport["format"]): Promise<ComplianceExport>;
+    createExport(customerId: string, jurisdiction: ComplianceExport['jurisdiction'], format?: ComplianceExport['format']): Promise<ComplianceExport>;
     /**
      * Process an export
      */

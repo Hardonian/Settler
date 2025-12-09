@@ -3,76 +3,44 @@ npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
 
-> @settler/web@1.0.0 build
-> next build
+> @settler/web@1.0.0 prebuild
+> npm run validate:prebuild
 
-  ▲ Next.js 14.2.33
-  - Experiments (use with caution):
-    · instrumentationHook
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
 
-   Creating an optimized production build ...
- ✓ Compiled successfully
-   Skipping linting
-   Checking validity of types ...
- ⚠ TypeScript project references are not fully supported. Attempting to build in incremental mode.
-   Collecting page data ...
-2025-12-06T02:59:43.872Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
-2025-12-06T02:59:43.881Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
-2025-12-06T02:59:43.889Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
-   Generating static pages (0/30) ...
-[ERROR] Email lifecycle cron job failed {
-  error: "Dynamic server usage: Route /api/cron/email-lifecycle couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error"
-}
-[ERROR] Monthly summary cron job failed {
-  error: "Dynamic server usage: Route /api/cron/monthly-summary couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error"
-}
-[ERROR] Low activity cron job failed {
-  error: "Dynamic server usage: Route /api/cron/low-activity couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error"
-}
-   Generating static pages (7/30) 
-   Generating static pages (14/30) 
-   Generating static pages (22/30) 
- ✓ Generating static pages (30/30)
-   Finalizing page optimization ...
-   Collecting build traces ...
+> @settler/web@1.0.0 validate:prebuild
+> npm run typecheck:ci && npm run lint
 
-Route (app)                              Size     First Load JS
-┌ ○ /                                    49.1 kB         159 kB
-├ ○ /_not-found                          876 B          88.4 kB
-├ ƒ /api/analytics                       0 B                0 B
-├ ƒ /api/cron/email-lifecycle            0 B                0 B
-├ ƒ /api/cron/low-activity               0 B                0 B
-├ ƒ /api/cron/monthly-summary            0 B                0 B
-├ ƒ /api/status/health                   0 B                0 B
-├ ƒ /api/user/pre-test                   0 B                0 B
-├ ƒ /api/user/upgrade                    0 B                0 B
-├ ○ /community                           55.4 kB         166 kB
-├ ○ /cookbooks                           9.12 kB         116 kB
-├ ○ /dashboard                           147 B          87.6 kB
-├ ƒ /dashboard/user                      7.72 kB         111 kB
-├ ○ /docs                                5.8 kB          112 kB
-├ ○ /edge-ai                             182 B          96.4 kB
-├ ○ /edge-ai/nodes                       182 B          96.4 kB
-├ ○ /edge-ai/nodes/new                   3.78 kB         107 kB
-├ ○ /enterprise                          6.9 kB          117 kB
-├ ○ /legal/license                       2.79 kB         106 kB
-├ ○ /legal/privacy                       2.79 kB         106 kB
-├ ○ /legal/terms                         2.79 kB         106 kB
-├ ○ /mobile                              5.71 kB         229 kB
-├ ○ /playground                          5.25 kB         112 kB
-├ ○ /pricing                             7.24 kB         117 kB
-├ ○ /react-settler-demo                  20.7 kB         269 kB
-├ ƒ /realtime-dashboard                  2.39 kB         109 kB
-├ ○ /robots.txt                          0 B                0 B
-├ ○ /signup                              2.6 kB          106 kB
-├ ○ /sitemap.xml                         0 B                0 B
-└ ○ /support                             6.82 kB         113 kB
-+ First Load JS shared by all            87.5 kB
-  ├ chunks/1528-fad2963338cdfd0a.js      31.7 kB
-  ├ chunks/1dd3208c-8c82fb782261432e.js  53.6 kB
-  └ other shared chunks (total)          2.15 kB
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
 
+> @settler/web@1.0.0 typecheck:ci
+> tsc --noEmit
 
-○  (Static)   prerendered as static content
-ƒ  (Dynamic)  server-rendered on demand
-
+src/app/api/analytics/churn-risk/route.ts(41,75): error TS2345: Argument of type '{ user_id: string; }' is not assignable to parameter of type 'undefined'.
+npm error Lifecycle script `typecheck:ci` failed with error:
+npm error code 2
+npm error path /workspace/packages/web
+npm error workspace @settler/web@1.0.0
+npm error location /workspace/packages/web
+npm error command failed
+npm error command sh -c tsc --noEmit
+npm error Lifecycle script `validate:prebuild` failed with error:
+npm error code 2
+npm error path /workspace/packages/web
+npm error workspace @settler/web@1.0.0
+npm error location /workspace/packages/web
+npm error command failed
+npm error command sh -c npm run typecheck:ci && npm run lint
+npm error Lifecycle script `build` failed with error:
+npm error code 2
+npm error path /workspace/packages/web
+npm error workspace @settler/web@1.0.0
+npm error location /workspace/packages/web
+npm error command failed
+npm error command sh -c npm run validate:prebuild

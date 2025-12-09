@@ -2,8 +2,8 @@
  * Event Store Repository
  * Append-only event store backed by Postgres
  */
-import { Pool } from "pg";
-import { EventEnvelope, SnapshotEnvelope } from "../../domain/eventsourcing/EventEnvelope";
+import { Pool } from 'pg';
+import { EventEnvelope, SnapshotEnvelope } from '../../domain/eventsourcing/EventEnvelope';
 export interface IEventStore {
     append(event: EventEnvelope): Promise<void>;
     appendMany(events: EventEnvelope[]): Promise<void>;

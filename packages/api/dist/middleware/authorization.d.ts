@@ -2,10 +2,10 @@
  * Authorization Middleware
  * Enforces least privilege access control
  */
-import { Response, NextFunction } from "express";
-import { TenantRequest } from "./tenant";
-import { Permission } from "../infrastructure/security/Permissions";
-import { UserRole } from "../domain/entities/User";
+import { Response, NextFunction } from 'express';
+import { TenantRequest } from './tenant';
+import { Permission } from '../infrastructure/security/Permissions';
+import { UserRole } from '../domain/entities/User';
 export interface AuthorizedRequest extends TenantRequest {
     permissions?: Permission[];
 }

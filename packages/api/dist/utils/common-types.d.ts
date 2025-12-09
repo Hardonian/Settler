@@ -25,23 +25,23 @@ export type Branded<T, B> = T & {
 /**
  * User ID type
  */
-export type UserId = Branded<string, "UserId">;
+export type UserId = Branded<string, 'UserId'>;
 /**
  * Tenant ID type
  */
-export type TenantId = Branded<string, "TenantId">;
+export type TenantId = Branded<string, 'TenantId'>;
 /**
  * Job ID type
  */
-export type JobId = Branded<string, "JobId">;
+export type JobId = Branded<string, 'JobId'>;
 /**
  * Execution ID type
  */
-export type ExecutionId = Branded<string, "ExecutionId">;
+export type ExecutionId = Branded<string, 'ExecutionId'>;
 /**
  * Webhook ID type
  */
-export type WebhookId = Branded<string, "WebhookId">;
+export type WebhookId = Branded<string, 'WebhookId'>;
 /**
  * Paginated response type
  */

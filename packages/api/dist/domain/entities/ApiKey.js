@@ -73,7 +73,7 @@ class ApiKey {
         return !this.isRevoked() && !this.isExpired();
     }
     hasScope(scope) {
-        return this.props.scopes.includes(scope) || this.props.scopes.includes("*");
+        return this.props.scopes.includes(scope) || this.props.scopes.includes('*');
     }
     isIpAllowed(ip) {
         if (!this.props.ipWhitelist || this.props.ipWhitelist.length === 0) {

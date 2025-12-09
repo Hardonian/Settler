@@ -8,19 +8,19 @@ exports.observabilityMiddleware = observabilityMiddleware;
 const api_1 = require("@opentelemetry/api");
 const metrics_1 = require("../infrastructure/observability/metrics");
 const logger_1 = require("../utils/logger");
-const tracer = api_1.trace.getTracer("settler-api");
+const tracer = api_1.trace.getTracer('settler-api');
 function observabilityMiddleware(req, res, next) {
     const startTime = Date.now();
     const method = req.method;
     const route = req.route?.path || req.path;
-    const tenantId = req.tenantId || req.userId || "unknown";
+    const tenantId = req.tenantId || req.userId || 'unknown';
     // Create span for this request
     const span = tracer.startSpan(`http.${method.toLowerCase()}`, {
         attributes: {
-            "http.method": method,
-            "http.route": route,
-            "http.url": req.url,
-            "tenant.id": tenantId,
+            'http.method': method,
+            'http.route': route,
+            'http.url': req.url,
+            'tenant.id': tenantId,
         },
     });
     // Set span in context
@@ -39,11 +39,11 @@ function observabilityMiddleware(req, res, next) {
     };
     res.end = function (chunk, encoding, cb) {
         recordMetrics();
-        if (typeof encoding === "function") {
+        if (typeof encoding === 'function') {
             // encoding is actually a callback function (two-arg overload: end(chunk, cb))
             originalEnd(chunk, encoding);
         }
-        else if (encoding !== undefined && typeof encoding === "string") {
+        else if (encoding !== undefined && typeof encoding === 'string') {
             // encoding is a BufferEncoding string (three-arg overload: end(chunk, encoding, cb))
             originalEnd(chunk, encoding, cb);
         }
@@ -60,8 +60,8 @@ function observabilityMiddleware(req, res, next) {
         const duration = (Date.now() - startTime) / 1000;
         const statusCode = res.statusCode;
         // Update span
-        span.setAttribute("http.status_code", statusCode);
-        span.setAttribute("http.response_size", res.get("content-length") || 0);
+        span.setAttribute('http.status_code', statusCode);
+        span.setAttribute('http.response_size', res.get('content-length') || 0);
         if (statusCode >= 400) {
             span.setStatus({
                 code: api_1.SpanStatusCode.ERROR,
@@ -72,7 +72,7 @@ function observabilityMiddleware(req, res, next) {
             metrics_1.httpRequestErrors.inc({
                 method,
                 route,
-                error_type: statusCode >= 500 ? "server_error" : "client_error",
+                error_type: statusCode >= 500 ? 'server_error' : 'client_error',
                 tenant_id: tenantId,
             });
         }
@@ -103,7 +103,7 @@ function observabilityMiddleware(req, res, next) {
         span.end();
     }
     // Handle errors
-    res.on("finish", () => {
+    res.on('finish', () => {
         if (!res.headersSent) {
             recordMetrics();
         }

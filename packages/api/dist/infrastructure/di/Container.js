@@ -25,17 +25,17 @@ class Container {
     initializeServices() {
         // Infrastructure services
         const eventBus = new EventBus_1.EventBus();
-        this.register("eventBus", eventBus);
+        this.register('eventBus', eventBus);
         // Repositories
         const userRepository = new UserRepository_1.UserRepository();
-        this.register("userRepository", userRepository);
+        this.register('userRepository', userRepository);
         const jobRepository = new JobRepository_1.JobRepository();
-        this.register("jobRepository", jobRepository);
+        this.register('jobRepository', jobRepository);
         // Application services
         const userService = new UserService_1.UserService(userRepository, eventBus);
-        this.register("userService", userService);
+        this.register('userService', userService);
         const jobService = new JobService_1.JobService(jobRepository, eventBus);
-        this.register("jobService", jobService);
+        this.register('jobService', jobService);
     }
     register(name, service) {
         this.services.set(name, service);
@@ -49,19 +49,19 @@ class Container {
     }
     // Convenience getters
     getEventBus() {
-        return this.get("eventBus");
+        return this.get('eventBus');
     }
     getUserRepository() {
-        return this.get("userRepository");
+        return this.get('userRepository');
     }
     getJobRepository() {
-        return this.get("jobRepository");
+        return this.get('jobRepository');
     }
     getUserService() {
-        return this.get("userService");
+        return this.get('userService');
     }
     getJobService() {
-        return this.get("jobService");
+        return this.get('jobService');
     }
 }
 exports.Container = Container;

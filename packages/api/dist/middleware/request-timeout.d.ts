@@ -2,7 +2,7 @@
  * Request Timeout Middleware
  * Ensures requests don't hang indefinitely
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 interface TimeoutRequest extends Request {
     timeout?: NodeJS.Timeout;
     startTime?: number;

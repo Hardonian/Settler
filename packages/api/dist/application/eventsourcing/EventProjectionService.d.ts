@@ -2,9 +2,9 @@
  * Event Projection Service
  * Wires up event handlers to update projections
  */
-import { IEventBus } from "../../infrastructure/events/IEventBus";
-import { IEventStore } from "../../infrastructure/eventsourcing/EventStore";
-import { EventEnvelope } from "../../domain/eventsourcing/EventEnvelope";
+import { IEventBus } from '../../infrastructure/events/IEventBus';
+import { IEventStore } from '../../infrastructure/eventsourcing/EventStore';
+import { EventEnvelope } from '../../domain/eventsourcing/EventEnvelope';
 export declare class EventProjectionService {
     private eventBus;
     private eventStore;

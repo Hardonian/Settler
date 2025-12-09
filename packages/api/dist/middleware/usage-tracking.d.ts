@@ -8,7 +8,7 @@
  * - Feature usage
  * - Cost attribution
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 export interface UsageMetrics {
     tenantId: string;
     endpoint: string;
@@ -29,7 +29,7 @@ export interface UsageTrackingRequest extends Request {
 export interface UsageTrackingService {
     recordUsage(metrics: UsageMetrics): Promise<void>;
     getUsage(tenantId: string, startDate: Date, endDate: Date): Promise<UsageMetrics[]>;
-    getUsageSummary(tenantId: string, period: "day" | "week" | "month"): Promise<{
+    getUsageSummary(tenantId: string, period: 'day' | 'week' | 'month'): Promise<{
         totalRequests: number;
         totalCost: number;
         byEndpoint: Record<string, number>;
@@ -46,7 +46,7 @@ export declare function usageTrackingMiddleware(): (req: UsageTrackingRequest, r
 /**
  * Get usage for current tenant
  */
-export declare function getCurrentUsage(req: UsageTrackingRequest, period?: "day" | "week" | "month"): Promise<{
+export declare function getCurrentUsage(req: UsageTrackingRequest, period?: 'day' | 'week' | 'month'): Promise<{
     totalRequests: number;
     totalCost: number;
     byEndpoint: Record<string, number>;

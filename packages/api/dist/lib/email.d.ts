@@ -42,9 +42,8 @@ export declare function sendPasswordResetEmail(email: string, resetLink: string,
 } | null>;
 /**
  * Welcome email (after verification)
- * Now uses lifecycle email system for trial users
  */
-export declare function sendWelcomeEmail(email: string, userName?: string, dashboardLink?: string, isTrialUser?: boolean, trialEndDate?: string): Promise<{
+export declare function sendWelcomeEmail(email: string, userName?: string, dashboardLink?: string): Promise<{
     id: string;
 } | null>;
 /**

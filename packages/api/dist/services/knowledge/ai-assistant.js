@@ -28,8 +28,8 @@ class AIKnowledgeAssistant extends events_1.EventEmitter {
         return {
             answer,
             confidence: 85, // Mock confidence
-            sources: decisions.slice(0, 3).map((d) => ({
-                type: "decision",
+            sources: decisions.slice(0, 3).map(d => ({
+                type: 'decision',
                 id: d.id,
                 relevance: 0.9,
             })),
@@ -47,7 +47,7 @@ class AIKnowledgeAssistant extends events_1.EventEmitter {
 
 ${decisions.length > 0
             ? `We have ${decisions.length} related decisions that might help answer your question.`
-            : "I couldn't find specific decisions related to your question."}
+            : 'I couldn\'t find specific decisions related to your question.'}
 
 For "${query.question}", I recommend reviewing our decision logs and documentation.`;
     }
@@ -58,9 +58,9 @@ For "${query.question}", I recommend reviewing our decision logs and documentati
         // Mock related questions
         // In production, would use LLM to generate related questions
         return [
-            "How do we handle similar situations?",
-            "What decisions have we made about this topic?",
-            "Are there any related incidents?",
+            'How do we handle similar situations?',
+            'What decisions have we made about this topic?',
+            'Are there any related incidents?',
         ];
     }
     /**
@@ -68,7 +68,7 @@ For "${query.question}", I recommend reviewing our decision logs and documentati
      */
     async indexKnowledge(type, id, content) {
         this.knowledgeBase.set(`${type}:${id}`, content);
-        this.emit("knowledge_indexed", { type, id });
+        this.emit('knowledge_indexed', { type, id });
     }
     /**
      * Get knowledge base stats
@@ -76,7 +76,7 @@ For "${query.question}", I recommend reviewing our decision logs and documentati
     getStats() {
         const byType = {};
         for (const key of this.knowledgeBase.keys()) {
-            const parts = key.split(":");
+            const parts = key.split(':');
             const type = parts[0];
             if (type) {
                 byType[type] = (byType[type] || 0) + 1;

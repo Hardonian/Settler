@@ -11,26 +11,26 @@ const crypto_1 = require("crypto");
  * Generate ETag from response body
  */
 function generateETag(body) {
-    return `"${(0, crypto_1.createHash)("md5").update(body).digest("hex")}"`;
+    return `"${(0, crypto_1.createHash)('md5').update(body).digest('hex')}"`;
 }
 /**
  * ETag middleware for GET requests
  */
 function etagMiddleware(req, res, next) {
     // Only apply to GET/HEAD requests
-    if (req.method !== "GET" && req.method !== "HEAD") {
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
         return next();
     }
     const originalSend = res.send;
     const originalJson = res.json;
     // Override res.send
     res.send = function (body) {
-        const bodyString = typeof body === "string" ? body : JSON.stringify(body);
+        const bodyString = typeof body === 'string' ? body : JSON.stringify(body);
         const etag = generateETag(bodyString);
         // Set ETag header
-        res.setHeader("ETag", etag);
+        res.setHeader('ETag', etag);
         // Check if client sent If-None-Match header
-        const clientETag = req.headers["if-none-match"];
+        const clientETag = req.headers['if-none-match'];
         if (clientETag === etag || clientETag === `W/${etag}`) {
             // Resource hasn't changed
             res.status(304).end();
@@ -42,8 +42,8 @@ function etagMiddleware(req, res, next) {
     res.json = function (body) {
         const bodyString = JSON.stringify(body);
         const etag = generateETag(bodyString);
-        res.setHeader("ETag", etag);
-        const clientETag = req.headers["if-none-match"];
+        res.setHeader('ETag', etag);
+        const clientETag = req.headers['if-none-match'];
         if (clientETag === etag || clientETag === `W/${etag}`) {
             res.status(304).end();
             return res;

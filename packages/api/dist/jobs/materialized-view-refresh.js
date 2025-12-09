@@ -14,12 +14,12 @@ const logger_1 = require("../utils/logger");
  */
 async function refreshMaterializedViewsJob() {
     try {
-        (0, logger_1.logInfo)("Starting materialized view refresh job");
+        (0, logger_1.logInfo)('Starting materialized view refresh job');
         await (0, query_optimization_1.refreshAllMaterializedViews)();
-        (0, logger_1.logInfo)("Materialized view refresh job completed");
+        (0, logger_1.logInfo)('Materialized view refresh job completed');
     }
     catch (error) {
-        (0, logger_1.logError)("Materialized view refresh job failed", error);
+        (0, logger_1.logError)('Materialized view refresh job failed', error);
         throw error;
     }
 }
@@ -30,16 +30,16 @@ async function refreshMaterializedViewsJob() {
 function startMaterializedViewRefreshJob() {
     // Run immediately on startup
     refreshMaterializedViewsJob().catch((error) => {
-        (0, logger_1.logError)("Initial materialized view refresh failed", error);
+        (0, logger_1.logError)('Initial materialized view refresh failed', error);
     });
     // Then run every 15 minutes
     const interval = setInterval(() => {
         refreshMaterializedViewsJob().catch((error) => {
-            (0, logger_1.logError)("Periodic materialized view refresh failed", error);
+            (0, logger_1.logError)('Periodic materialized view refresh failed', error);
         });
     }, 15 * 60 * 1000); // 15 minutes
     // Cleanup on process exit
-    process.on("SIGTERM", () => {
+    process.on('SIGTERM', () => {
         clearInterval(interval);
     });
 }

@@ -2,7 +2,7 @@
  * Job Repository Implementation
  * PostgreSQL implementation of IJobRepository
  */
-import { IJobRepository } from "../../domain/repositories/IJobRepository";
+import { IJobRepository } from '../../domain/repositories/IJobRepository';
 export interface Job {
     id: string;
     userId: string;
@@ -22,7 +22,7 @@ export declare class JobRepository implements IJobRepository {
         jobs: Job[];
         total: number;
     }>;
-    create(job: Omit<Job, "id" | "createdAt" | "updatedAt">): Promise<Job>;
+    create(job: Omit<Job, 'id' | 'createdAt' | 'updatedAt'>): Promise<Job>;
     updateStatus(id: string, userId: string, status: string, expectedVersion: number): Promise<Job | null>;
     delete(id: string, userId: string): Promise<boolean>;
 }

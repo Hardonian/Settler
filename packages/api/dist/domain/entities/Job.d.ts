@@ -9,14 +9,14 @@ export declare enum JobStatus {
 }
 export interface MatchingRule {
     field: string;
-    type: "exact" | "fuzzy" | "range";
+    type: 'exact' | 'fuzzy' | 'range';
     tolerance?: number;
     threshold?: number;
     days?: number;
 }
 export interface ReconciliationRules {
     matching: MatchingRule[];
-    conflictResolution: "first-wins" | "last-wins" | "manual-review";
+    conflictResolution: 'first-wins' | 'last-wins' | 'manual-review';
 }
 export interface JobProps {
     id: string;
@@ -36,7 +36,7 @@ export interface JobProps {
 export declare class Job {
     private props;
     private constructor();
-    static create(props: Omit<JobProps, "id" | "status" | "version" | "createdAt" | "updatedAt">): Job;
+    static create(props: Omit<JobProps, 'id' | 'status' | 'version' | 'createdAt' | 'updatedAt'>): Job;
     static fromPersistence(props: JobProps): Job;
     get id(): string;
     get userId(): string;

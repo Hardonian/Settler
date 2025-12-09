@@ -28,11 +28,16 @@ async function trackEvent(userId, eventName, properties = {}, tenantId) {
             }
         }
         await (0, db_1.query)(`INSERT INTO events (user_id, tenant_id, event_name, properties, timestamp)
-       VALUES ($1, $2, $3, $4, NOW())`, [userId, finalTenantId || null, eventName, JSON.stringify(properties)]);
+       VALUES ($1, $2, $3, $4, NOW())`, [
+            userId,
+            finalTenantId || null,
+            eventName,
+            JSON.stringify(properties),
+        ]);
     }
     catch (error) {
         // Don't throw - event tracking should never break the main flow
-        (0, logger_1.logError)("Failed to track event", error, {
+        (0, logger_1.logError)('Failed to track event', error, {
             userId,
             eventName,
             properties,
@@ -64,10 +69,10 @@ async function trackEvents(events) {
             values.push(event.userId, event.tenantId || null, event.eventName, JSON.stringify(event.properties || {}));
         }
         await (0, db_1.query)(`INSERT INTO events (user_id, tenant_id, event_name, properties, timestamp)
-       VALUES ${placeholders.join(", ")}`, values);
+       VALUES ${placeholders.join(', ')}`, values);
     }
     catch (error) {
-        (0, logger_1.logError)("Failed to track events batch", error, { eventCount: events.length });
+        (0, logger_1.logError)('Failed to track events batch', error, { eventCount: events.length });
     }
 }
 //# sourceMappingURL=event-tracker.js.map

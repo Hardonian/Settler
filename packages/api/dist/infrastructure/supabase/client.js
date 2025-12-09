@@ -17,9 +17,9 @@ const supabase_js_1 = require("@supabase/supabase-js");
 const config_1 = require("../../config");
 // Supabase configuration
 const supabaseUrl = process.env.SUPABASE_URL || config_1.config.database.host;
-const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_ANON_KEY environment variables.");
+    throw new Error('Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_ANON_KEY environment variables.');
 }
 /**
  * Supabase client for database operations
@@ -30,11 +30,11 @@ exports.supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseKey, {
         persistSession: false, // Server-side, no session persistence needed
     },
     db: {
-        schema: "public",
+        schema: 'public',
     },
     global: {
         headers: {
-            "x-client-info": "settler-api@1.0.0",
+            'x-client-info': 'settler-api@1.0.0',
         },
     },
 });
@@ -53,7 +53,7 @@ exports.supabaseRealtime = (0, supabase_js_1.createClient)(supabaseUrl, supabase
  * Helper function to execute SQL queries
  */
 async function executeSQL(query, params) {
-    const { data, error } = await exports.supabase.rpc("execute_sql", {
+    const { data, error } = await exports.supabase.rpc('execute_sql', {
         query_text: query,
         query_params: params || [],
     });
@@ -76,22 +76,22 @@ async function transaction(callback) {
 async function initializeSupabaseExtensions() {
     // Enable pgvector extension for vector database
     try {
-        await exports.supabase.rpc("exec_sql", {
-            sql: "CREATE EXTENSION IF NOT EXISTS vector;",
+        await exports.supabase.rpc('exec_sql', {
+            sql: 'CREATE EXTENSION IF NOT EXISTS vector;',
         });
     }
     catch {
         // Extension might already exist or not be available
-        console.warn("pgvector extension not available or already enabled");
+        console.warn('pgvector extension not available or already enabled');
     }
     // Enable uuid-ossp extension (if not already enabled)
     try {
-        await exports.supabase.rpc("exec_sql", {
+        await exports.supabase.rpc('exec_sql', {
             sql: 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";',
         });
     }
     catch {
-        console.warn("uuid-ossp extension not available or already enabled");
+        console.warn('uuid-ossp extension not available or already enabled');
     }
 }
 //# sourceMappingURL=client.js.map

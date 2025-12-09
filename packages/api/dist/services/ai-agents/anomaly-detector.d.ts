@@ -3,11 +3,11 @@
  *
  * Detects anomalies in reconciliation data, API usage patterns, and security threats.
  */
-import { BaseAgent } from "./orchestrator";
+import { BaseAgent } from './orchestrator';
 export interface Anomaly {
     id: string;
-    type: "reconciliation" | "security" | "data_quality" | "business_logic";
-    severity: "critical" | "high" | "medium" | "low";
+    type: 'reconciliation' | 'security' | 'data_quality' | 'business_logic';
+    severity: 'critical' | 'high' | 'medium' | 'low';
     description: string;
     detectedAt: Date;
     evidence: Record<string, unknown>;

@@ -24,7 +24,7 @@ class FeatureFlagService {
         if (tenantFlag) {
             // Check rollout percentage for A/B testing
             if (tenantFlag.rolloutPercentage < 100) {
-                const hash = this.hashString(`${tenantId}:${userId || ""}:${flagName}`);
+                const hash = this.hashString(`${tenantId}:${userId || ''}:${flagName}`);
                 const percentage = (hash % 100) + 1;
                 return percentage <= tenantFlag.rolloutPercentage;
             }
@@ -34,7 +34,7 @@ class FeatureFlagService {
         const globalFlag = await this.getFlag(flagName);
         if (globalFlag) {
             if (globalFlag.rolloutPercentage < 100) {
-                const hash = this.hashString(`${tenantId}:${userId || ""}:${flagName}`);
+                const hash = this.hashString(`${tenantId}:${userId || ''}:${flagName}`);
                 const percentage = (hash % 100) + 1;
                 return percentage <= globalFlag.rolloutPercentage;
             }
@@ -95,7 +95,7 @@ class FeatureFlagService {
                 JSON.stringify(newValue),
                 options.reason || null,
             ]);
-            (0, logger_1.logInfo)("Feature flag updated", {
+            (0, logger_1.logInfo)('Feature flag updated', {
                 flagName,
                 tenantId: options.tenantId,
                 userId: options.userId,
@@ -125,9 +125,9 @@ class FeatureFlagService {
                 options.changedBy || null,
                 JSON.stringify({ enabled: false }),
                 JSON.stringify({ enabled, rolloutPercentage: options.rolloutPercentage || 100 }),
-                options.reason || "Flag created",
+                options.reason || 'Flag created',
             ]);
-            (0, logger_1.logInfo)("Feature flag created", {
+            (0, logger_1.logInfo)('Feature flag created', {
                 flagName,
                 tenantId: options.tenantId,
                 userId: options.userId,
@@ -149,7 +149,7 @@ class FeatureFlagService {
         SELECT id, $1, '{}', '{"enabled": false, "killSwitch": true}', $2
         FROM feature_flags WHERE name = $3 AND deleted_at IS NULL
       )`, [changedBy || null, reason, flagName]);
-        (0, logger_1.logWarn)("Kill switch activated", { flagName, reason, changedBy });
+        (0, logger_1.logWarn)('Kill switch activated', { flagName, reason, changedBy });
     }
     /**
      * Get all flags for a tenant
@@ -169,7 +169,7 @@ class FeatureFlagService {
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
             const char = str.charCodeAt(i);
-            hash = (hash << 5) - hash + char;
+            hash = ((hash << 5) - hash) + char;
             hash = hash & hash; // Convert to 32-bit integer
         }
         return Math.abs(hash);

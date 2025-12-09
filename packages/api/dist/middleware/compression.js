@@ -45,17 +45,16 @@ exports.brotliCompressionMiddleware = brotliCompressionMiddleware;
 const compression_1 = __importDefault(require("compression"));
 const zlib = __importStar(require("zlib"));
 const util_1 = require("util");
-const logger_1 = require("../utils/logger");
 const brotliCompress = (0, util_1.promisify)(zlib.brotliCompress);
 // Check if client accepts Brotli
 function acceptsBrotli(req) {
-    const acceptEncoding = req.headers["accept-encoding"] || "";
-    return acceptEncoding.includes("br");
+    const acceptEncoding = req.headers['accept-encoding'] || '';
+    return acceptEncoding.includes('br');
 }
 // Check if client accepts Gzip
 function acceptsGzip(req) {
-    const acceptEncoding = req.headers["accept-encoding"] || "";
-    return acceptEncoding.includes("gzip");
+    const acceptEncoding = req.headers['accept-encoding'] || '';
+    return acceptEncoding.includes('gzip');
 }
 // Standard compression middleware (Gzip)
 exports.compressionMiddleware = (0, compression_1.default)({
@@ -65,16 +64,16 @@ exports.compressionMiddleware = (0, compression_1.default)({
             return false;
         }
         // Don't compress if response is already compressed
-        if (res.getHeader("content-encoding")) {
+        if (res.getHeader('content-encoding')) {
             return false;
         }
         // Don't compress small responses (< 1KB)
-        const contentLength = res.getHeader("content-length");
+        const contentLength = res.getHeader('content-length');
         if (contentLength && parseInt(contentLength, 10) < 1024) {
             return false;
         }
         // Compress JSON, text, and HTML responses
-        const contentType = res.getHeader("content-type") || "";
+        const contentType = res.getHeader('content-type') || '';
         return /json|text|html/.test(contentType);
     },
     level: 6, // Balance between speed and compression ratio
@@ -89,25 +88,25 @@ async function brotliCompressionMiddleware(req, res, next) {
     const originalSend = res.send;
     res.send = function (body) {
         // Only compress JSON/text responses
-        const contentType = res.getHeader("content-type") || "";
+        const contentType = res.getHeader('content-type') || '';
         if (!/json|text|html/.test(contentType)) {
             return originalSend.call(this, body);
         }
         // Only compress if body is large enough
-        const bodyString = typeof body === "string" ? body : JSON.stringify(body);
+        const bodyString = typeof body === 'string' ? body : JSON.stringify(body);
         if (bodyString.length < 1024) {
             return originalSend.call(this, body);
         }
         // Compress with Brotli
         brotliCompress(Buffer.from(bodyString))
             .then((compressed) => {
-            res.setHeader("content-encoding", "br");
-            res.setHeader("content-length", compressed.length.toString());
+            res.setHeader('content-encoding', 'br');
+            res.setHeader('content-length', compressed.length.toString());
             originalSend.call(this, compressed);
         })
             .catch((error) => {
             // Fallback to uncompressed
-            (0, logger_1.logError)("Brotli compression failed", error);
+            console.error('Brotli compression failed:', error);
             originalSend.call(this, body);
         });
         return res;

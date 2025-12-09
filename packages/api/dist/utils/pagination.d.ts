@@ -5,7 +5,7 @@
 export interface CursorPaginationParams {
     cursor?: string;
     limit?: number;
-    direction?: "next" | "prev";
+    direction?: 'next' | 'prev';
 }
 export interface CursorPaginationResult<T> {
     items: T[];
@@ -54,14 +54,14 @@ export declare function buildCursorWhereClause(params: CursorPaginationParams, t
 /**
  * Build cursor-based ORDER BY clause
  */
-export declare function buildCursorOrderBy(direction?: "next" | "prev", tableAlias?: string): string;
+export declare function buildCursorOrderBy(direction?: 'next' | 'prev', tableAlias?: string): string;
 /**
  * Generate pagination response with cursors
  */
 export declare function createCursorPaginationResponse<T extends {
     created_at: Date | string;
     id: string;
-}>(items: T[], limit: number, direction?: "next" | "prev"): CursorPaginationResult<T>;
+}>(items: T[], limit: number, direction?: 'next' | 'prev'): CursorPaginationResult<T>;
 /**
  * Parse pagination params from query string
  */

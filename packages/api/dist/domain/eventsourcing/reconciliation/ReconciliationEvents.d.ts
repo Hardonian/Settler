@@ -2,7 +2,7 @@
  * Reconciliation Domain Events
  * Core lifecycle events for reconciliation flows
  */
-import { EventEnvelope } from "../EventEnvelope";
+import { EventEnvelope } from '../EventEnvelope';
 export interface ReconciliationStartedData {
     reconciliation_id: string;
     job_id: string;
@@ -16,7 +16,7 @@ export interface ReconciliationStartedData {
 }
 export interface OrdersFetchedData {
     reconciliation_id: string;
-    source: "shopify" | "stripe" | string;
+    source: 'shopify' | 'stripe' | string;
     count: number;
     orders: Array<{
         id: string;
@@ -29,7 +29,7 @@ export interface OrdersFetchedData {
 }
 export interface PaymentsFetchedData {
     reconciliation_id: string;
-    source: "stripe" | "paypal" | string;
+    source: 'stripe' | 'paypal' | string;
     count: number;
     payments: Array<{
         id: string;

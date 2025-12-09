@@ -4,7 +4,7 @@
  */
 export interface ValidationResult {
     name: string;
-    status: "ok" | "warning" | "error";
+    status: 'ok' | 'warning' | 'error';
     message: string;
 }
 export interface StartupValidation {

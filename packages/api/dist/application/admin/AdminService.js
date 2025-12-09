@@ -76,13 +76,13 @@ class AdminService {
         let errors = 0;
         for (const event of events) {
             switch (event.event_type) {
-                case "RecordMatched":
+                case 'RecordMatched':
                     matched++;
                     break;
-                case "RecordUnmatched":
+                case 'RecordUnmatched':
                     unmatched++;
                     break;
-                case "ReconciliationFailed":
+                case 'ReconciliationFailed':
                     errors++;
                     break;
             }

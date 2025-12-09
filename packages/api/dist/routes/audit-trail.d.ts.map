@@ -1,1 +1,1 @@
-{"version":3,"file":"audit-trail.d.ts","sourceRoot":"","sources":["../../src/routes/audit-trail.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAWH,QAAA,MAAM,MAAM,4CAAW,CAAC;AAgPxB,OAAO,EAAE,MAAM,IAAI,gBAAgB,EAAE,CAAC"}
+{"version":3,"file":"audit-trail.d.ts","sourceRoot":"","sources":["../../src/routes/audit-trail.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAWH,QAAA,MAAM,MAAM,4CAAW,CAAC;AA+OxB,OAAO,EAAE,MAAM,IAAI,gBAAgB,EAAE,CAAC"}

@@ -15,18 +15,19 @@ class StripeAdapter {
             throw new Error("Stripe API key is required");
         }
         const stripe = new stripe_1.default(apiKey, {
-            apiVersion: "2023-10-16",
+            apiVersion: "2024-11-20.acacia",
         });
-        const listParams = {
-            limit: 100,
-        };
-        if (dateRange?.start && dateRange?.end) {
-            listParams.created = {
-                gte: Math.floor(dateRange.start.getTime() / 1000),
-                lte: Math.floor(dateRange.end.getTime() / 1000),
-            };
+        const createdParams = {};
+        if (dateRange?.start) {
+            createdParams.gte = Math.floor(dateRange.start.getTime() / 1000);
         }
-        const charges = await stripe.charges.list(listParams);
+        if (dateRange?.end) {
+            createdParams.lte = Math.floor(dateRange.end.getTime() / 1000);
+        }
+        const charges = await stripe.charges.list({
+            created: Object.keys(createdParams).length > 0 ? createdParams : undefined,
+            limit: 100,
+        });
         return charges.data.map((charge) => this.normalize(charge));
     }
     normalize(data) {

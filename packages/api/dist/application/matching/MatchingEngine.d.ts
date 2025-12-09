@@ -7,7 +7,7 @@
  * - Many-to-1 matching (multiple transactions → single settlement)
  * - Fuzzy matching (reference ID variations, amount tolerance)
  */
-import { Transaction, Settlement, ReconciliationMatch, MatchingRulesConfig, Exception } from "@settler/types";
+import { Transaction, Settlement, ReconciliationMatch, MatchingRulesConfig, Exception } from '@settler/types';
 export interface MatchResult {
     match: ReconciliationMatch;
     confidence: number;

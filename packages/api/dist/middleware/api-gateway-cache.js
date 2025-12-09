@@ -18,53 +18,53 @@ function generateRequestCacheKey(req, config) {
     if (config.keyGenerator) {
         return config.keyGenerator(req);
     }
-    const parts = ["api", req.method.toLowerCase(), req.path];
+    const parts = ['api', req.method.toLowerCase(), req.path];
     // Include query params if specified
     if (config.includeQueryParams && Object.keys(req.query).length > 0) {
         const sortedQuery = Object.keys(req.query)
             .sort()
             .map((key) => `${key}=${req.query[key]}`)
-            .join("&");
+            .join('&');
         parts.push(sortedQuery);
     }
     // Include user ID if specified
     if (config.includeUserId && req.userId) {
         parts.push(`user:${req.userId}`);
     }
-    return parts.join(":");
+    return parts.join(':');
 }
 /**
  * API Gateway Cache Middleware
  * Caches GET request responses in Redis
  */
 function apiGatewayCache(config = {}) {
-    const { ttl = DEFAULT_TTL, enabled = true, tags = [] } = config;
+    const { ttl = DEFAULT_TTL, enabled = true, tags = [], } = config;
     return async (req, res, next) => {
         // Only cache GET requests
-        if (req.method !== "GET" || !enabled) {
+        if (req.method !== 'GET' || !enabled) {
             return next();
         }
         // Skip caching for authenticated endpoints that require fresh data
-        if (req.path.includes("/auth/") || req.path.includes("/webhooks/")) {
+        if (req.path.includes('/auth/') || req.path.includes('/webhooks/')) {
             return next();
         }
         try {
             const cacheKey = generateRequestCacheKey(req, config);
             const cached = await (0, cache_1.get)(cacheKey);
             if (cached) {
-                (0, logger_1.logDebug)("Cache hit", { key: cacheKey, path: req.path });
-                res.setHeader("X-Cache", "HIT");
+                (0, logger_1.logDebug)('Cache hit', { key: cacheKey, path: req.path });
+                res.setHeader('X-Cache', 'HIT');
                 res.json(cached);
                 return;
             }
             // Cache miss - intercept response
-            res.setHeader("X-Cache", "MISS");
+            res.setHeader('X-Cache', 'MISS');
             const originalJson = res.json.bind(res);
             res.json = function (body) {
                 // Cache successful responses
                 if (res.statusCode >= 200 && res.statusCode < 300) {
                     (0, cache_1.set)(cacheKey, body, ttl).catch((error) => {
-                        (0, logger_1.logDebug)("Cache set failed", { error, key: cacheKey });
+                        (0, logger_1.logDebug)('Cache set failed', { error, key: cacheKey });
                     });
                     // Store cache tags for invalidation
                     if (tags.length > 0) {
@@ -85,7 +85,7 @@ function apiGatewayCache(config = {}) {
             next();
         }
         catch (error) {
-            (0, logger_1.logDebug)("Cache middleware error", { error });
+            (0, logger_1.logDebug)('Cache middleware error', { error });
             // Continue without caching on error
             next();
         }
@@ -98,7 +98,7 @@ function apiGatewayCache(config = {}) {
 function cacheInvalidation(tags = []) {
     return async (req, res, next) => {
         // Only invalidate on state-changing methods
-        if (!["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
+        if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
             return next();
         }
         const originalEnd = res.end.bind(res);
@@ -106,10 +106,10 @@ function cacheInvalidation(tags = []) {
             // Invalidate cache on successful state changes
             if (res.statusCode >= 200 && res.statusCode < 300) {
                 invalidateCache(req, tags).catch((error) => {
-                    (0, logger_1.logDebug)("Cache invalidation error", { error });
+                    (0, logger_1.logDebug)('Cache invalidation error', { error });
                 });
             }
-            if (encoding !== undefined && typeof encoding === "string") {
+            if (encoding !== undefined && typeof encoding === 'string') {
                 originalEnd(chunk, encoding, cb);
             }
             else if (cb !== undefined) {
@@ -145,10 +145,10 @@ async function invalidateCache(req, tags) {
             // For now, skip pattern-based invalidation
             // await delPattern(pattern);
         }
-        (0, logger_1.logInfo)("Cache invalidated", { tags, patterns, path: req.path });
+        (0, logger_1.logInfo)('Cache invalidated', { tags, patterns, path: req.path });
     }
     catch (error) {
-        (0, logger_1.logDebug)("Cache invalidation failed", { error });
+        (0, logger_1.logDebug)('Cache invalidation failed', { error });
     }
 }
 /**
@@ -178,34 +178,34 @@ exports.cacheConfigs = {
         ttl: 60, // 1 minute
         includeQueryParams: true,
         includeUserId: true,
-        tags: ["jobs"],
+        tags: ['jobs'],
     }),
     jobGet: () => ({
         ttl: 300, // 5 minutes
         includeUserId: true,
-        tags: ["jobs"],
+        tags: ['jobs'],
     }),
     // Reports endpoints
     reportGet: () => ({
         ttl: 60, // 1 minute (reports change frequently)
         includeUserId: true,
-        tags: ["reports"],
+        tags: ['reports'],
     }),
     // Adapters endpoints (rarely change)
     adaptersList: () => ({
         ttl: 3600, // 1 hour
-        tags: ["adapters"],
+        tags: ['adapters'],
     }),
     adapterGet: () => ({
         ttl: 3600, // 1 hour
-        tags: ["adapters"],
+        tags: ['adapters'],
     }),
     // Reconciliation summary (cached aggressively)
     reconciliationSummary: () => ({
         ttl: 30, // 30 seconds
         includeQueryParams: true,
         includeUserId: true,
-        tags: ["reconciliation", "summary"],
+        tags: ['reconciliation', 'summary'],
     }),
 };
 //# sourceMappingURL=api-gateway-cache.js.map

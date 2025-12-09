@@ -14,9 +14,9 @@ class WebhookIngestionService {
     constructor() {
         this.adapters = new Map();
         // Register adapters
-        this.adapters.set("stripe", new adapters_1.StripeEnhancedAdapter());
-        this.adapters.set("paypal", new adapters_1.PayPalEnhancedAdapter());
-        this.adapters.set("square", new adapters_1.SquareEnhancedAdapter());
+        this.adapters.set('stripe', new adapters_1.StripeEnhancedAdapter());
+        this.adapters.set('paypal', new adapters_1.PayPalEnhancedAdapter());
+        this.adapters.set('square', new adapters_1.SquareEnhancedAdapter());
     }
     /**
      * Register a custom adapter
@@ -37,7 +37,7 @@ class WebhookIngestionService {
             };
         }
         // Verify webhook signature
-        const payloadString = typeof payload === "string"
+        const payloadString = typeof payload === 'string'
             ? payload
             : Buffer.isBuffer(payload)
                 ? payload.toString()
@@ -47,11 +47,11 @@ class WebhookIngestionService {
             return {
                 success: false,
                 events: [],
-                errors: ["Invalid webhook signature"],
+                errors: ['Invalid webhook signature'],
             };
         }
         // Parse payload if needed
-        const payloadObj = typeof payload === "object" && !Buffer.isBuffer(payload)
+        const payloadObj = typeof payload === 'object' && !Buffer.isBuffer(payload)
             ? payload
             : JSON.parse(payloadString);
         // Check idempotency
@@ -71,7 +71,7 @@ class WebhookIngestionService {
             events = adapter.normalizeWebhook(payloadObj, tenantId);
         }
         catch (error) {
-            const message = error instanceof Error ? error.message : "Unknown error";
+            const message = error instanceof Error ? error.message : 'Unknown error';
             return {
                 success: false,
                 events: [],
@@ -87,7 +87,7 @@ class WebhookIngestionService {
                 await this.processEvent(event, tenantId);
             }
             catch (error) {
-                const message = error instanceof Error ? error.message : "Unknown error";
+                const message = error instanceof Error ? error.message : 'Unknown error';
                 errors.push(`Failed to process event ${event.type}: ${message}`);
             }
         }
@@ -245,22 +245,14 @@ class WebhookIngestionService {
     extractIdempotencyKey(payload, adapterName) {
         // Provider-specific idempotency key extraction
         switch (adapterName) {
-            case "stripe":
-                return typeof payload.id === "string" ? payload.id : null;
-            case "paypal":
-                return typeof payload.id === "string"
-                    ? payload.id
-                    : typeof payload.webhook_id === "string"
-                        ? payload.webhook_id
-                        : null;
-            case "square":
-                return typeof payload.event_id === "string"
-                    ? payload.event_id
-                    : typeof payload.id === "string"
-                        ? payload.id
-                        : null;
+            case 'stripe':
+                return (typeof payload.id === 'string' ? payload.id : null);
+            case 'paypal':
+                return (typeof payload.id === 'string' ? payload.id : (typeof payload.webhook_id === 'string' ? payload.webhook_id : null));
+            case 'square':
+                return (typeof payload.event_id === 'string' ? payload.event_id : (typeof payload.id === 'string' ? payload.id : null));
             default:
-                return typeof payload.id === "string" ? payload.id : null;
+                return (typeof payload.id === 'string' ? payload.id : null);
         }
     }
     /**

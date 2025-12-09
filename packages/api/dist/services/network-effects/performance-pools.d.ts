@@ -4,7 +4,7 @@
  * Aggregates performance data across all customers to improve matching algorithms.
  * Customers benefit from collective tuning.
  */
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface PerformanceMetric {
     jobId: string;
     customerId: string;
@@ -38,7 +38,7 @@ export declare class PerformanceTuningPools extends EventEmitter {
     /**
      * Submit performance metrics
      */
-    submitMetrics(customerId: string, metrics: Omit<PerformanceMetric, "customerId" | "timestamp">): void;
+    submitMetrics(customerId: string, metrics: Omit<PerformanceMetric, 'customerId' | 'timestamp'>): void;
     /**
      * Get performance insights for an adapter/rule combination
      */

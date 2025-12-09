@@ -8,9 +8,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayPalEnhancedAdapter = void 0;
 class PayPalEnhancedAdapter {
-    name = "paypal";
-    version = "1.0.0";
-    supportedVersions = ["v2", "v1"]; // Supported API versions
+    name = 'paypal';
+    version = '1.0.0';
+    supportedVersions = ['v2', 'v1']; // Supported API versions
     /**
      * Verify webhook signature
      */
@@ -19,7 +19,7 @@ class PayPalEnhancedAdapter {
             // PayPal webhook signature verification
             // PayPal uses a certificate-based signature verification
             // For MVP, we'll verify the webhook_id matches
-            const payloadObj = typeof payload === "string" ? JSON.parse(payload) : JSON.parse(payload.toString());
+            const payloadObj = typeof payload === 'string' ? JSON.parse(payload) : JSON.parse(payload.toString());
             const webhookId = payloadObj.id || payloadObj.webhook_id;
             // In production, verify using PayPal's webhook verification API
             // For now, verify webhook_id matches expected
@@ -37,36 +37,36 @@ class PayPalEnhancedAdapter {
         const eventType = payload.event_type || payload.eventType;
         const resource = payload.resource || payload;
         switch (eventType) {
-            case "PAYMENT.CAPTURE.COMPLETED":
-            case "PAYMENT.SALE.COMPLETED":
+            case 'PAYMENT.CAPTURE.COMPLETED':
+            case 'PAYMENT.SALE.COMPLETED':
                 events.push({
-                    type: "capture",
+                    type: 'capture',
                     transaction: this.normalizeTransaction(resource, tenantId),
                     rawPayload: payload,
                     timestamp: new Date(payload.create_time || Date.now()),
                 });
                 break;
-            case "PAYMENT.CAPTURE.REFUNDED":
-            case "PAYMENT.SALE.REFUNDED":
+            case 'PAYMENT.CAPTURE.REFUNDED':
+            case 'PAYMENT.SALE.REFUNDED':
                 events.push({
-                    type: "refund",
-                    refundDispute: this.normalizeRefundDispute(resource, tenantId, "refund"),
+                    type: 'refund',
+                    refundDispute: this.normalizeRefundDispute(resource, tenantId, 'refund'),
                     rawPayload: payload,
                     timestamp: new Date(payload.create_time || Date.now()),
                 });
                 break;
-            case "PAYMENT.CAPTURE.DENIED":
-            case "PAYMENT.SALE.DENIED":
+            case 'PAYMENT.CAPTURE.DENIED':
+            case 'PAYMENT.SALE.DENIED':
                 events.push({
-                    type: "chargeback",
-                    refundDispute: this.normalizeRefundDispute(resource, tenantId, "chargeback"),
+                    type: 'chargeback',
+                    refundDispute: this.normalizeRefundDispute(resource, tenantId, 'chargeback'),
                     rawPayload: payload,
                     timestamp: new Date(payload.create_time || Date.now()),
                 });
                 break;
-            case "PAYMENT.PAYOUTS-ITEM.SUCCESS":
+            case 'PAYMENT.PAYOUTS-ITEM.SUCCESS':
                 events.push({
-                    type: "payout",
+                    type: 'payout',
                     settlement: this.normalizeSettlement(resource, tenantId),
                     rawPayload: payload,
                     timestamp: new Date(payload.create_time || Date.now()),
@@ -76,7 +76,7 @@ class PayPalEnhancedAdapter {
                 // Unknown event type, but still normalize if possible
                 if (resource.id && resource.amount) {
                     events.push({
-                        type: "capture",
+                        type: 'capture',
                         transaction: this.normalizeTransaction(resource, tenantId),
                         rawPayload: payload,
                         timestamp: new Date(payload.create_time || Date.now()),
@@ -92,13 +92,13 @@ class PayPalEnhancedAdapter {
         const clientId = config.clientId;
         const clientSecret = config.clientSecret;
         if (!clientId || !clientSecret) {
-            throw new Error("PayPal client ID and secret are required");
+            throw new Error('PayPal client ID and secret are required');
         }
         // In production, use PayPal SDK
         // const paypal = require('@paypal/checkout-server-sdk');
         // const environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
         // const client = new paypal.core.PayPalHttpClient(environment);
-        //
+        // 
         // const request = new paypal.orders.OrdersGetRequest();
         // request.startTime = dateRange.start.toISOString();
         // request.endTime = dateRange.end.toISOString();
@@ -113,13 +113,13 @@ class PayPalEnhancedAdapter {
         const clientId = config.clientId;
         const clientSecret = config.clientSecret;
         if (!clientId || !clientSecret) {
-            throw new Error("PayPal client ID and secret are required");
+            throw new Error('PayPal client ID and secret are required');
         }
         // In production, use PayPal SDK
         // const paypal = require('@paypal/payouts-sdk');
         // const environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
         // const client = new paypal.core.PayPalHttpClient(environment);
-        //
+        // 
         // const request = new paypal.payouts.PayoutsGetRequest();
         // request.startTime = dateRange.start.toISOString();
         // request.endTime = dateRange.end.toISOString();
@@ -135,18 +135,18 @@ class PayPalEnhancedAdapter {
         const payload = transaction.rawPayload;
         // PayPal fee structure
         if (payload.transaction_fee) {
-            const feeAmount = parseFloat(payload.transaction_fee.value || "0");
+            const feeAmount = parseFloat(payload.transaction_fee.value || '0');
             const feeCurrency = payload.transaction_fee.currency || transaction.amount.currency;
             fees.push({
                 id: this.generateId(),
                 tenantId,
                 transactionId: transaction.id,
-                type: "processing",
+                type: 'processing',
                 amount: {
                     value: feeAmount,
                     currency: feeCurrency,
                 },
-                description: "PayPal processing fee",
+                description: 'PayPal processing fee',
                 rate: transaction.amount.value > 0 ? (feeAmount / transaction.amount.value) * 100 : 0,
                 rawPayload: payload.transaction_fee,
                 createdAt: new Date(),
@@ -159,12 +159,12 @@ class PayPalEnhancedAdapter {
                 id: this.generateId(),
                 tenantId,
                 transactionId: transaction.id,
-                type: "fx",
+                type: 'fx',
                 amount: {
                     value: transaction.amount.value * estimatedFXRate,
                     currency: transaction.amount.currency,
                 },
-                description: "PayPal FX conversion fee",
+                description: 'PayPal FX conversion fee',
                 rawPayload: payload,
                 createdAt: new Date(),
             });
@@ -180,12 +180,12 @@ class PayPalEnhancedAdapter {
             id: this.generateId(),
             tenantId,
             paymentId: payment.invoice_id || payment.custom_id,
-            provider: "paypal",
+            provider: 'paypal',
             providerTransactionId: payment.id || payment.transaction_id,
             type: this.mapTransactionType(payment),
             amount: {
-                value: parseFloat(payment.amount?.value || payment.amount || "0"),
-                currency: (payment.amount?.currency || payment.currency || "USD").toUpperCase(),
+                value: parseFloat(payment.amount?.value || payment.amount || '0'),
+                currency: (payment.amount?.currency || payment.currency || 'USD').toUpperCase(),
             },
             status: this.mapTransactionStatus(payment),
             rawPayload: payment,
@@ -194,9 +194,8 @@ class PayPalEnhancedAdapter {
         };
         if (payment.transaction_fee) {
             transaction.netAmount = {
-                value: parseFloat(payment.amount?.value || payment.amount || "0") -
-                    parseFloat(payment.transaction_fee.value || "0"),
-                currency: (payment.amount?.currency || payment.currency || "USD").toUpperCase(),
+                value: parseFloat(payment.amount?.value || payment.amount || '0') - parseFloat(payment.transaction_fee.value || '0'),
+                currency: (payment.amount?.currency || payment.currency || 'USD').toUpperCase(),
             };
         }
         return transaction;
@@ -209,13 +208,13 @@ class PayPalEnhancedAdapter {
         return {
             id: this.generateId(),
             tenantId,
-            provider: "paypal",
+            provider: 'paypal',
             providerSettlementId: payout.payout_batch_id || payout.id,
             amount: {
-                value: parseFloat(payout.amount?.value || payout.amount || "0"),
-                currency: (payout.amount?.currency || payout.currency || "USD").toUpperCase(),
+                value: parseFloat(payout.amount?.value || payout.amount || '0'),
+                currency: (payout.amount?.currency || payout.currency || 'USD').toUpperCase(),
             },
-            currency: (payout.amount?.currency || payout.currency || "USD").toUpperCase(),
+            currency: (payout.amount?.currency || payout.currency || 'USD').toUpperCase(),
             fxRate: payout.exchange_rate,
             settlementDate: new Date(payout.time_processed || payout.processed_time || Date.now()),
             expectedDate: new Date(payout.time_processed || payout.processed_time || Date.now()),
@@ -235,13 +234,13 @@ class PayPalEnhancedAdapter {
             transactionId: raw.parent_payment || raw.transaction_id,
             type,
             amount: {
-                value: parseFloat(raw.amount?.value || raw.amount || "0"),
-                currency: (raw.amount?.currency || raw.currency || "USD").toUpperCase(),
+                value: parseFloat(raw.amount?.value || raw.amount || '0'),
+                currency: (raw.amount?.currency || raw.currency || 'USD').toUpperCase(),
             },
             status: this.mapRefundDisputeStatus(raw),
             reason: raw.reason_code || raw.reason,
-            providerRefundId: type === "refund" ? raw.id : undefined,
-            providerDisputeId: type === "chargeback" ? raw.id : undefined,
+            providerRefundId: type === 'refund' ? raw.id : undefined,
+            providerDisputeId: type === 'chargeback' ? raw.id : undefined,
             rawPayload: raw,
             createdAt: new Date(raw.create_time || raw.created_time || Date.now()),
             updatedAt: new Date(raw.update_time || raw.updated_time || Date.now()),
@@ -252,54 +251,54 @@ class PayPalEnhancedAdapter {
      */
     handleVersionChange(_oldVersion, newVersion) {
         if (!this.supportedVersions.includes(newVersion)) {
-            console.warn(`PayPal API version ${newVersion} is not officially supported. Supported versions: ${this.supportedVersions.join(", ")}`);
+            console.warn(`PayPal API version ${newVersion} is not officially supported. Supported versions: ${this.supportedVersions.join(', ')}`);
         }
     }
     /**
      * Map PayPal transaction type to canonical type
      */
     mapTransactionType(payment) {
-        if (payment.state === "refunded")
-            return "refund";
-        if (payment.state === "denied" || payment.state === "failed")
-            return "chargeback";
-        if (payment.state === "completed" || payment.state === "approved")
-            return "capture";
-        return "authorization";
+        if (payment.state === 'refunded')
+            return 'refund';
+        if (payment.state === 'denied' || payment.state === 'failed')
+            return 'chargeback';
+        if (payment.state === 'completed' || payment.state === 'approved')
+            return 'capture';
+        return 'authorization';
     }
     /**
      * Map PayPal status to canonical status
      */
     mapTransactionStatus(payment) {
-        if (payment.state === "refunded")
-            return "refunded";
-        if (payment.state === "denied" || payment.state === "failed")
-            return "failed";
-        if (payment.state === "completed" || payment.state === "approved")
-            return "succeeded";
-        return "pending";
+        if (payment.state === 'refunded')
+            return 'refunded';
+        if (payment.state === 'denied' || payment.state === 'failed')
+            return 'failed';
+        if (payment.state === 'completed' || payment.state === 'approved')
+            return 'succeeded';
+        return 'pending';
     }
     /**
      * Map PayPal payout status to canonical status
      */
     mapSettlementStatus(payout) {
-        if (payout.payout_status === "SUCCESS" || payout.status === "COMPLETED")
-            return "completed";
-        if (payout.payout_status === "FAILED" || payout.status === "FAILED")
-            return "failed";
-        return "pending";
+        if (payout.payout_status === 'SUCCESS' || payout.status === 'COMPLETED')
+            return 'completed';
+        if (payout.payout_status === 'FAILED' || payout.status === 'FAILED')
+            return 'failed';
+        return 'pending';
     }
     /**
      * Map PayPal refund/dispute status to canonical status
      */
     mapRefundDisputeStatus(raw) {
-        if (raw.state === "completed" || raw.status === "COMPLETED")
-            return "completed";
-        if (raw.state === "failed" || raw.status === "FAILED")
-            return "lost";
-        if (raw.state === "cancelled" || raw.status === "CANCELLED")
-            return "reversed";
-        return "pending";
+        if (raw.state === 'completed' || raw.status === 'COMPLETED')
+            return 'completed';
+        if (raw.state === 'failed' || raw.status === 'FAILED')
+            return 'lost';
+        if (raw.state === 'cancelled' || raw.status === 'CANCELLED')
+            return 'reversed';
+        return 'pending';
     }
     /**
      * Generate ID

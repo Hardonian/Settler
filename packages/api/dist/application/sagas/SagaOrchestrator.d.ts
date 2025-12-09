@@ -2,9 +2,9 @@
  * Saga Orchestrator
  * Manages distributed workflows with compensation and retry logic
  */
-import { Pool } from "pg";
-import { IEventStore } from "../../infrastructure/eventsourcing/EventStore";
-import { IEventBus } from "../../infrastructure/events/IEventBus";
+import { Pool } from 'pg';
+import { IEventStore } from '../../infrastructure/eventsourcing/EventStore';
+import { IEventBus } from '../../infrastructure/events/IEventBus';
 export declare enum SagaStatus {
     RUNNING = "running",
     COMPLETED = "completed",
@@ -37,7 +37,7 @@ export interface SagaState {
     status?: SagaStatus;
     stepHistory: Array<{
         step: string;
-        status: "started" | "completed" | "failed" | "compensated";
+        status: 'started' | 'completed' | 'failed' | 'compensated';
         timestamp: Date;
         error?: string;
     }>;

@@ -17,7 +17,7 @@ class PerformanceTuningPools extends events_1.EventEmitter {
      */
     optIn(customerId) {
         this.optInCustomers.add(customerId);
-        this.emit("customer_opted_in", customerId);
+        this.emit('customer_opted_in', customerId);
     }
     /**
      * Opt-out a customer
@@ -25,8 +25,8 @@ class PerformanceTuningPools extends events_1.EventEmitter {
     optOut(customerId) {
         this.optInCustomers.delete(customerId);
         // Remove customer's metrics
-        this.metrics = this.metrics.filter((m) => m.customerId !== customerId);
-        this.emit("customer_opted_out", customerId);
+        this.metrics = this.metrics.filter(m => m.customerId !== customerId);
+        this.emit('customer_opted_out', customerId);
     }
     /**
      * Submit performance metrics
@@ -45,13 +45,13 @@ class PerformanceTuningPools extends events_1.EventEmitter {
         if (this.metrics.length > this.maxMetrics) {
             this.metrics = this.metrics.slice(-this.maxMetrics);
         }
-        this.emit("metrics_submitted", metric);
+        this.emit('metrics_submitted', metric);
     }
     /**
      * Get performance insights for an adapter/rule combination
      */
     getInsights(adapter, ruleType) {
-        const relevantMetrics = this.metrics.filter((m) => {
+        const relevantMetrics = this.metrics.filter(m => {
             if (m.adapter !== adapter)
                 return false;
             if (ruleType && m.ruleType !== ruleType)
@@ -90,7 +90,7 @@ class PerformanceTuningPools extends events_1.EventEmitter {
     getRecommendedRules(adapter, _useCase) {
         const insights = this.getInsights(adapter);
         return insights
-            .map((insight) => ({
+            .map(insight => ({
             ruleType: insight.ruleType,
             confidence: Math.min(100, insight.sampleSize / 10), // More samples = higher confidence
             expectedAccuracy: insight.avgAccuracy,
@@ -104,21 +104,21 @@ class PerformanceTuningPools extends events_1.EventEmitter {
     generateRecommendation(accuracy, latency) {
         const recommendations = [];
         if (accuracy < 0.9) {
-            recommendations.push("Consider using fuzzy matching or ML-based matching for better accuracy");
+            recommendations.push('Consider using fuzzy matching or ML-based matching for better accuracy');
         }
         if (latency > 100) {
-            recommendations.push("Consider adding indexes or caching to improve latency");
+            recommendations.push('Consider adding indexes or caching to improve latency');
         }
         if (accuracy >= 0.95 && latency < 50) {
-            recommendations.push("Performance is excellent. Consider sharing your configuration as a best practice.");
+            recommendations.push('Performance is excellent. Consider sharing your configuration as a best practice.');
         }
-        return recommendations.join(". ") || "Performance is within acceptable range.";
+        return recommendations.join('. ') || 'Performance is within acceptable range.';
     }
     /**
      * Get aggregate statistics
      */
     getStats() {
-        const adapters = new Set(this.metrics.map((m) => m.adapter));
+        const adapters = new Set(this.metrics.map(m => m.adapter));
         // Calculate top performers
         const adapterRuleStats = new Map();
         for (const metric of this.metrics) {
@@ -132,7 +132,7 @@ class PerformanceTuningPools extends events_1.EventEmitter {
         }
         const topPerformers = Array.from(adapterRuleStats.entries())
             .map(([key, stats]) => {
-            const parts = key.split(":");
+            const parts = key.split(':');
             const adapter = parts[0];
             const ruleType = parts[1];
             if (!adapter || !ruleType) {

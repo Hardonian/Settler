@@ -4,7 +4,7 @@
  * Automatically extracts, normalizes, and reports fee components per transaction
  * as specified in the Product & Technical Specification.
  */
-import { Transaction, Fee, Money } from "@settler/types";
+import { Transaction, Fee, Money } from '@settler/types';
 export interface FeeExtractionResult {
     fees: Fee[];
     totalFees: Money;

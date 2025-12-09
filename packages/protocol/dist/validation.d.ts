@@ -2,7 +2,7 @@
  * Validation Types and Schemas
  * Runtime validation for reconciliation data
  */
-import { ReconciliationTransaction, ReconciliationSettlement, ReconciliationException, ReconciliationRule, Money } from "./index";
+import { ReconciliationTransaction, ReconciliationSettlement, ReconciliationException, ReconciliationRule, Money } from './index';
 /**
  * Validation Result
  */

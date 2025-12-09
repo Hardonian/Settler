@@ -4,7 +4,7 @@
  * Future-forward: Drag-and-drop interface, AI rule generation, real-time impact analysis
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,34 +51,36 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
   const [impactAnalysis, setImpactAnalysis] = useState<ImpactAnalysis | null>(null);
   const [aiSuggestions, setAiSuggestions] = useState<MatchingRule[]>([]);
 
-  useEffect(() => {
-    loadTemplates();
-    loadAISuggestions();
-  }, [jobId]);
-
-  const loadTemplates = async () => {
+  const loadTemplates = useCallback(async () => {
     try {
       const response = await fetch('/api/v1/rules/templates');
-      const data = await response.json();
+      const data = (await response.json()) as { data?: RuleTemplate[] };
       setTemplates(data.data || []);
     } catch (error) {
       console.error('Failed to load templates:', error);
     }
-  };
+  }, []);
 
-  const loadAISuggestions = async () => {
+  const loadAISuggestions = useCallback(async () => {
     try {
       const response = await fetch('/api/v1/rules/suggest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobId }),
       });
-      const data = await response.json();
+      const data = (await response.json()) as {
+        data?: { suggestions?: Array<{ rules?: MatchingRule[] }> };
+      };
       setAiSuggestions(data.data?.suggestions?.[0]?.rules || []);
     } catch (error) {
       console.error('Failed to load AI suggestions:', error);
     }
-  };
+  }, [jobId]);
+
+  useEffect(() => {
+    void loadTemplates();
+    void loadAISuggestions();
+  }, [loadTemplates, loadAISuggestions]);
 
   const applyTemplate = (templateId: string) => {
     const template = templates.find(t => t.id === templateId);
@@ -132,7 +134,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
           },
         }),
       });
-      const data = await response.json();
+      const data = (await response.json()) as { data?: { insights?: PreviewResult } };
       setPreviewResult(data.data?.insights || null);
     } catch (error) {
       console.error('Failed to preview rules:', error);
@@ -146,7 +148,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rules }),
       });
-      const data = await response.json();
+      const data = (await response.json()) as { data?: { impact?: ImpactAnalysis } };
       setImpactAnalysis(data.data?.impact || null);
     } catch (error) {
       console.error('Failed to analyze impact:', error);

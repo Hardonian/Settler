@@ -17,8 +17,8 @@ const router = (0, express_1.Router)();
 // Validation schemas
 const getFeesSchema = zod_1.z.object({
     query: zod_1.z.object({
-        page: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default("1"),
-        limit: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default("100"),
+        page: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default('1'),
+        limit: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default('100'),
         transactionId: zod_1.z.string().uuid().optional(),
         settlementId: zod_1.z.string().uuid().optional(),
         type: zod_1.z.string().optional(),
@@ -38,13 +38,13 @@ const getEffectiveRateSchema = zod_1.z.object({
  * GET /api/v1/fees
  * List fees with filtering and pagination
  */
-router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getFeesSchema), async (req, res) => {
+router.get('/', (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getFeesSchema), async (req, res) => {
     try {
         const queryParams = getFeesSchema.parse({ query: req.query });
         const { page, limit, transactionId, settlementId, type, startDate, endDate } = queryParams.query;
         const tenantId = req.tenantId;
         const offset = (page - 1) * limit;
-        let whereClause = "tenant_id = $1";
+        let whereClause = 'tenant_id = $1';
         const params = [tenantId];
         let paramIndex = 2;
         if (transactionId) {
@@ -75,7 +75,7 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
         // Get total count
         const countResult = await (0, db_1.query)(`SELECT COUNT(*) as count FROM fees WHERE ${whereClause}`, params);
         if (!countResult[0]) {
-            throw new Error("Failed to get fee count");
+            throw new Error('Failed to get fee count');
         }
         const total = parseInt(countResult[0].count, 10);
         // Get fees
@@ -99,19 +99,19 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to fetch fees", 500);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to fetch fees', 500);
     }
 });
 /**
  * GET /api/v1/fees/effective-rate
  * Calculate effective rate for transactions
  */
-router.get("/effective-rate", (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getEffectiveRateSchema), async (req, res) => {
+router.get('/effective-rate', (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getEffectiveRateSchema), async (req, res) => {
     try {
         const queryParams = getEffectiveRateSchema.parse({ query: req.query });
         const { transactionId, provider, startDate, endDate } = queryParams.query;
         const tenantId = req.tenantId;
-        let whereClause = "t.tenant_id = $1";
+        let whereClause = 't.tenant_id = $1';
         const params = [tenantId];
         let paramIndex = 2;
         if (transactionId) {
@@ -153,7 +153,7 @@ router.get("/effective-rate", (0, authorization_1.requirePermission)(Permissions
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to calculate effective rate", 500);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to calculate effective rate', 500);
         return;
     }
 });

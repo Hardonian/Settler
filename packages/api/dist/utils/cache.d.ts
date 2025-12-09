@@ -2,7 +2,7 @@
  * Cache Implementation
  * Supports both in-memory (dev) and Redis (production) caching
  */
-import Redis from "ioredis";
+import Redis from 'ioredis';
 export declare function getRedisClient(): Redis | null;
 /**
  * Get value from cache

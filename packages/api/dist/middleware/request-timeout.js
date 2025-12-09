@@ -17,7 +17,7 @@ const MAX_TIMEOUT = 300000; // 5 minutes
 function requestTimeoutMiddleware(timeoutMs = DEFAULT_TIMEOUT) {
     return (req, res, next) => {
         // Skip timeout for health checks and metrics
-        if (req.path === "/health" || req.path === "/metrics") {
+        if (req.path === '/health' || req.path === '/metrics') {
             return next();
         }
         // Validate timeout
@@ -26,14 +26,14 @@ function requestTimeoutMiddleware(timeoutMs = DEFAULT_TIMEOUT) {
         // Set timeout
         req.timeout = setTimeout(() => {
             if (!res.headersSent) {
-                (0, logger_1.logWarn)("Request timeout", {
+                (0, logger_1.logWarn)('Request timeout', {
                     method: req.method,
                     path: req.path,
                     timeout: timeout,
                     duration: Date.now() - (req.startTime || 0),
                 });
                 res.status(408).json({
-                    error: "Request Timeout",
+                    error: 'Request Timeout',
                     message: `Request exceeded timeout of ${timeout}ms`,
                     timeout: timeout,
                 });
@@ -45,7 +45,7 @@ function requestTimeoutMiddleware(timeoutMs = DEFAULT_TIMEOUT) {
             if (req.timeout) {
                 clearTimeout(req.timeout);
             }
-            if (encoding !== undefined && typeof encoding === "string") {
+            if (encoding !== undefined && typeof encoding === 'string') {
                 originalEnd(chunk, encoding, cb);
             }
             else if (cb !== undefined) {
@@ -63,11 +63,11 @@ function requestTimeoutMiddleware(timeoutMs = DEFAULT_TIMEOUT) {
  */
 function getRequestTimeout(path, method) {
     // Longer timeout for reconciliation jobs
-    if (path.includes("/jobs") && method === "POST") {
+    if (path.includes('/jobs') && method === 'POST') {
         return 60000; // 60 seconds
     }
     // Longer timeout for reports
-    if (path.includes("/reports") && method === "GET") {
+    if (path.includes('/reports') && method === 'GET') {
         return 45000; // 45 seconds
     }
     // Default timeout

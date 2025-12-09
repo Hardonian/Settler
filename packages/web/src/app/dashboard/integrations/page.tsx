@@ -44,7 +44,7 @@ export default function IntegrationsPage() {
     }
   }, [searchQuery, integrations]);
 
-  const fetchIntegrations = async () => {
+  const fetchIntegrations = () => {
     try {
       setIsLoading(true);
       // In production, fetch from API

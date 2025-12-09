@@ -14,23 +14,23 @@ const router = (0, express_1.Router)();
  * POST /api/v2/knowledge/decisions
  * Create a new decision
  */
-router.post("/decisions", async (req, res) => {
+router.post('/decisions', async (req, res) => {
     try {
         const decision = await decision_log_1.decisionLog.createDecision(req.body);
         res.status(201).json({
             data: decision,
-            message: "Decision created successfully",
+            message: 'Decision created successfully',
         });
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to create decision", 400);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to create decision', 400);
     }
 });
 /**
  * GET /api/v2/knowledge/decisions
  * Query decisions
  */
-router.get("/decisions", async (req, res) => {
+router.get('/decisions', async (req, res) => {
     try {
         const queryOptions = {};
         if (req.query.status) {
@@ -59,7 +59,7 @@ router.get("/decisions", async (req, res) => {
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to query decisions", 400);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to query decisions', 400);
         return;
     }
 });
@@ -67,16 +67,16 @@ router.get("/decisions", async (req, res) => {
  * GET /api/v2/knowledge/decisions/:id
  * Get a decision by ID
  */
-router.get("/decisions/:id", async (req, res) => {
+router.get('/decisions/:id', async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {
-            return res.status(400).json({ error: "Decision ID is required" });
+            return res.status(400).json({ error: 'Decision ID is required' });
         }
         const decision = decision_log_1.decisionLog.getDecision(id);
         if (!decision) {
             return res.status(404).json({
-                error: "Decision not found",
+                error: 'Decision not found',
                 message: `Decision ${id} not found`,
             });
         }
@@ -90,7 +90,7 @@ router.get("/decisions/:id", async (req, res) => {
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to get decision", 400);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to get decision', 400);
         return;
     }
 });
@@ -98,27 +98,27 @@ router.get("/decisions/:id", async (req, res) => {
  * PATCH /api/v2/knowledge/decisions/:id/outcomes
  * Update decision outcomes
  */
-router.patch("/decisions/:id/outcomes", async (req, res) => {
+router.patch('/decisions/:id/outcomes', async (req, res) => {
     try {
         const { id } = req.params;
         const { outcome } = req.body;
         if (!id) {
-            return res.status(400).json({ error: "Decision ID is required" });
+            return res.status(400).json({ error: 'Decision ID is required' });
         }
         if (!outcome) {
             return res.status(400).json({
-                error: "Missing outcome",
+                error: 'Missing outcome',
             });
         }
         const decision = await decision_log_1.decisionLog.updateOutcomes(id, outcome);
         res.json({
             data: decision,
-            message: "Outcome updated successfully",
+            message: 'Outcome updated successfully',
         });
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to update outcome", 400);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to update outcome', 400);
         return;
     }
 });
@@ -126,12 +126,12 @@ router.patch("/decisions/:id/outcomes", async (req, res) => {
  * POST /api/v2/knowledge/assistant/query
  * Query the AI knowledge assistant
  */
-router.post("/assistant/query", async (req, res) => {
+router.post('/assistant/query', async (req, res) => {
     try {
         const { question, context } = req.body;
-        if (!question || typeof question !== "string") {
+        if (!question || typeof question !== 'string') {
             return res.status(400).json({
-                error: "Missing question",
+                error: 'Missing question',
             });
         }
         const response = await ai_assistant_1.aiKnowledgeAssistant.query({
@@ -144,7 +144,7 @@ router.post("/assistant/query", async (req, res) => {
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to query assistant", 400);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to query assistant', 400);
         return;
     }
 });
@@ -152,7 +152,7 @@ router.post("/assistant/query", async (req, res) => {
  * GET /api/v2/knowledge/stats
  * Get knowledge base statistics
  */
-router.get("/stats", async (_req, res) => {
+router.get('/stats', async (_req, res) => {
     try {
         const assistantStats = ai_assistant_1.aiKnowledgeAssistant.getStats();
         // Get decision stats
@@ -173,7 +173,7 @@ router.get("/stats", async (_req, res) => {
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to get stats", 500);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to get stats', 500);
         return;
     }
 });

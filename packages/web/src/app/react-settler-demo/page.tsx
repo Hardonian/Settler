@@ -50,7 +50,7 @@ export default function ReactSettlerDemoPage() {
     if (!jobsQuery.data) return [];
     return jobsQuery.data.map((job, idx) => ({
       id: `tx-${job.id}`,
-      provider: ((job.source as unknown) as Record<string, unknown>)?.adapter as string || 'stripe',
+      provider: (job.source as Record<string, unknown>)?.adapter as string || 'stripe',
       providerTransactionId: `ch_${job.id.slice(0, 10)}`,
       amount: { value: 100.0 * (idx + 1), currency: 'USD' },
       currency: 'USD',

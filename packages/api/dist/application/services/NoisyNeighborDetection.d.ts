@@ -9,7 +9,7 @@ export interface NoisyNeighborAlert {
     currentUsage: number;
     averageUsage: number;
     threshold: number;
-    severity: "warning" | "critical";
+    severity: 'warning' | 'critical';
     timestamp: Date;
 }
 export declare class NoisyNeighborDetection {

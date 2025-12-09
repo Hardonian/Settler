@@ -3,21 +3,21 @@
  *
  * Persists anonymized patterns to Supabase PostgreSQL
  */
-import { AnonymizedPattern, PatternMatch } from "./cross-customer-intelligence";
-import { EventEmitter } from "events";
+import { AnonymizedPattern, PatternMatch } from './cross-customer-intelligence';
+import { EventEmitter } from 'events';
 export declare class CrossCustomerIntelligenceSupabase extends EventEmitter {
     /**
      * Submit a pattern from a customer (anonymized)
      */
     submitPattern(customerId: string, pattern: {
-        type: AnonymizedPattern["patternType"];
+        type: AnonymizedPattern['patternType'];
         data: Record<string, unknown>;
     }): Promise<string>;
     /**
      * Check if a pattern matches known patterns
      */
     checkPattern(pattern: {
-        type: AnonymizedPattern["patternType"];
+        type: AnonymizedPattern['patternType'];
         data: Record<string, unknown>;
     }): Promise<PatternMatch | null>;
     /**

@@ -16,12 +16,12 @@ export interface CreateJobRequest {
     rules: {
         matching: Array<{
             field: string;
-            type: "exact" | "fuzzy" | "range";
+            type: 'exact' | 'fuzzy' | 'range';
             tolerance?: number;
             days?: number;
             threshold?: number;
         }>;
-        conflictResolution?: "first-wins" | "last-wins" | "manual-review";
+        conflictResolution?: 'first-wins' | 'last-wins' | 'manual-review';
     };
     schedule?: string;
 }
@@ -37,7 +37,7 @@ export interface JobResponse {
         adapter: string;
         config?: Record<string, unknown>;
     };
-    rules: CreateJobRequest["rules"];
+    rules: CreateJobRequest['rules'];
     schedule?: string;
     status: string;
     createdAt: string;

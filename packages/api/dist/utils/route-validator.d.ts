@@ -2,7 +2,7 @@
  * Route Validator
  * Validates that all routes are properly wired and accessible
  */
-import { Express } from "express";
+import { Express } from 'express';
 export interface RouteInfo {
     method: string;
     path: string;
@@ -11,7 +11,7 @@ export interface RouteInfo {
 }
 export interface RouteValidationResult {
     route: RouteInfo;
-    status: "ok" | "warning" | "error";
+    status: 'ok' | 'warning' | 'error';
     message: string;
 }
 /**

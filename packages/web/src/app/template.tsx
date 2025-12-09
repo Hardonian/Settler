@@ -16,6 +16,9 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Skip if pathname is null
+    if (!pathname) return;
+
     // Track page view
     analytics.trackPageView(pathname, {
       title: document.title,

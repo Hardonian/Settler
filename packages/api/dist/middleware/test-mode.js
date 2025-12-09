@@ -19,7 +19,7 @@ async function checkTestMode(req) {
     try {
         const users = await (0, db_1.query)(`SELECT COALESCE(test_mode_enabled, false) as test_mode_enabled
        FROM users WHERE id = $1`, [req.userId]);
-        return users.length > 0 && users[0] ? users[0].test_mode_enabled === true : false;
+        return users.length > 0 && users[0] ? (users[0].test_mode_enabled === true) : false;
     }
     catch {
         return false;

@@ -2,7 +2,7 @@
  * Route Helper Utilities
  * Provides utilities for mounting routes consistently
  */
-import { Express, Router } from "express";
+import { Express, Router } from 'express';
 /**
  * Mount routes for both v1 and v2 API versions with consistent middleware
  *
@@ -26,5 +26,5 @@ export declare function mountVersionedRoutes(app: Express, path: string, router:
  * @param router - Express router to mount
  * @param middleware - Middleware functions to apply
  */
-export declare function mountRoute(app: Express, version: "v1" | "v2", path: string, router: Router, ...middleware: Array<(req: any, res: any, next: any) => void>): void;
+export declare function mountRoute(app: Express, version: 'v1' | 'v2', path: string, router: Router, ...middleware: Array<(req: any, res: any, next: any) => void>): void;
 //# sourceMappingURL=route-helpers.d.ts.map

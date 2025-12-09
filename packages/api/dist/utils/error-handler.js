@@ -18,10 +18,10 @@ function getErrorMessage(error) {
     if (error instanceof Error) {
         return error.message;
     }
-    if (typeof error === "string") {
+    if (typeof error === 'string') {
         return error;
     }
-    return "An unexpected error occurred";
+    return 'An unexpected error occurred';
 }
 /**
  * Safely extracts error stack trace
@@ -33,19 +33,18 @@ function getErrorStack(error) {
     return undefined;
 }
 function isHttpError(error) {
-    return ((0, typed_errors_1.isApiError)(error) ||
-        (error instanceof Error &&
-            "statusCode" in error &&
-            typeof error.statusCode === "number"));
+    return (0, typed_errors_1.isApiError)(error) || (error instanceof Error &&
+        'statusCode' in error &&
+        typeof error.statusCode === 'number');
 }
 /**
  * Handles errors in route handlers with proper typing
  */
-function handleRouteError(res, error, defaultMessage = "An error occurred", _defaultStatusCode = 500, context) {
+function handleRouteError(res, error, defaultMessage = 'An error occurred', _defaultStatusCode = 500, context) {
     const apiError = (0, typed_errors_1.toApiError)(error);
     const message = apiError.message || defaultMessage;
     const statusCode = apiError.statusCode ?? _defaultStatusCode;
-    const errorCode = apiError.errorCode || "INTERNAL_ERROR";
+    const errorCode = apiError.errorCode || 'INTERNAL_ERROR';
     const details = apiError.details;
     (0, logger_1.logError)(defaultMessage, error, context);
     // Extract traceId from request if available

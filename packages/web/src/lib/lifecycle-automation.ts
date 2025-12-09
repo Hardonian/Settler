@@ -84,10 +84,10 @@ export async function transitionLifecycleStage(
     updateData.last_active_at = new Date().toISOString();
   }
 
-  await supabase.from("user_lifecycle").upsert({
+  await (supabase.from("user_lifecycle") as any).upsert({
     user_id: userId,
     ...updateData,
-  } as UserLifecycle as never);
+  });
 
   // Log transition
   console.log(`Lifecycle transition: ${userId} ${fromStage} → ${newStage} (trigger: ${trigger})`);
@@ -108,10 +108,10 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
 
   if (!lifecycle) {
     // Initialize lifecycle
-    await supabase.from("user_lifecycle").insert({
+    await (supabase.from("user_lifecycle") as any).insert({
       user_id: userId,
       current_stage: "signup",
-    } as UserLifecycle as never);
+    });
     return "signup";
   }
 
@@ -119,7 +119,7 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
   const currentStage = (lifecycleData.current_stage as LifecycleStage) || "signup";
 
   // Get user activity metrics
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
+  const { data: metrics } = await (supabase.rpc as any)("get_user_activity_metrics", {
     user_id: userId,
   });
 
@@ -189,7 +189,7 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
   const supabase = createClient();
 
   // Get user metrics
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
+  const { data: metrics } = await (supabase.rpc as any)("get_user_activity_metrics", {
     user_id: userId,
   });
   const { data: lifecycle } = await supabase
@@ -235,13 +235,13 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
   }
 
   // Update churn risk
-  await supabase
-    .from("user_lifecycle")
+  await (supabase
+    .from("user_lifecycle") as any)
     .update({
       churn_risk_score: Math.min(riskScore, 1.0),
       churn_risk_reasons: reasons,
       updated_at: new Date().toISOString(),
-    } as Partial<UserLifecycle> as never)
+    })
     .eq("user_id", userId);
 
   return Math.min(riskScore, 1.0);
@@ -253,7 +253,7 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
 export async function calculateExpansionOpportunity(userId: string): Promise<number> {
   const supabase = createClient();
 
-  const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
+  const { data: metrics } = await (supabase.rpc as any)("get_user_activity_metrics", {
     user_id: userId,
   });
 
@@ -286,12 +286,12 @@ export async function calculateExpansionOpportunity(userId: string): Promise<num
   }
 
   // Update expansion score
-  await supabase
-    .from("user_lifecycle")
+  await (supabase
+    .from("user_lifecycle") as any)
     .update({
       expansion_opportunity_score: Math.min(opportunityScore, 1.0),
       updated_at: new Date().toISOString(),
-    } as Partial<UserLifecycle> as never)
+    })
     .eq("user_id", userId);
 
   return Math.min(opportunityScore, 1.0);

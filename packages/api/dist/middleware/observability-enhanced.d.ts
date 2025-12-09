@@ -2,7 +2,7 @@
  * Enhanced Observability Middleware
  * Tracks cache hits/misses and additional metrics
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 /**
  * Track cache hit/miss
  */
@@ -12,7 +12,7 @@ export declare function trackCacheMiss(endpoint: string): void;
  * Track reconciliation metrics
  */
 export declare function trackReconciliationStart(jobId: string, adapter: string): void;
-export declare function trackReconciliationEnd(jobId: string, status: "completed" | "failed", durationSeconds: number): void;
+export declare function trackReconciliationEnd(jobId: string, status: 'completed' | 'failed', durationSeconds: number): void;
 /**
  * Enhanced observability middleware
  * Tracks additional metrics beyond basic request/response

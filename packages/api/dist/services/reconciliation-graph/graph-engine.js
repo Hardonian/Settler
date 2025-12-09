@@ -8,7 +8,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.graphEngine = exports.ReconciliationGraphEngine = void 0;
 const events_1 = require("events");
-const logger_1 = require("../../utils/logger");
 class ReconciliationGraphEngine extends events_1.EventEmitter {
     graphs = new Map();
     updateSubscribers = new Map();
@@ -33,13 +32,13 @@ class ReconciliationGraphEngine extends events_1.EventEmitter {
         const graph = this.getOrCreateGraph(jobId);
         graph.nodes.set(node.id, node);
         graph.updatedAt = new Date();
-        this.emit("node_added", {
-            type: "node_added",
+        this.emit('node_added', {
+            type: 'node_added',
             data: node,
             timestamp: new Date(),
         });
         this.notifySubscribers(jobId, {
-            type: "node_added",
+            type: 'node_added',
             data: node,
             timestamp: new Date(),
         });
@@ -55,13 +54,13 @@ class ReconciliationGraphEngine extends events_1.EventEmitter {
         }
         graph.edges.set(edge.id, edge);
         graph.updatedAt = new Date();
-        this.emit("edge_added", {
-            type: "edge_added",
+        this.emit('edge_added', {
+            type: 'edge_added',
             data: edge,
             timestamp: new Date(),
         });
         this.notifySubscribers(jobId, {
-            type: "edge_added",
+            type: 'edge_added',
             data: edge,
             timestamp: new Date(),
         });
@@ -77,24 +76,23 @@ class ReconciliationGraphEngine extends events_1.EventEmitter {
         }
         const matches = [];
         // Reserved for future source node filtering
-        const _sourceNodes = Array.from(graph.nodes.values()).filter((n) => n.jobId === jobId && n.type === "transaction" && n.sourceId);
+        const _sourceNodes = Array.from(graph.nodes.values()).filter(n => n.jobId === jobId && n.type === 'transaction' && n.sourceId);
         void _sourceNodes;
-        const targetNodes = Array.from(graph.nodes.values()).filter((n) => n.jobId === jobId && n.type === "transaction" && n.targetId);
+        const targetNodes = Array.from(graph.nodes.values()).filter(n => n.jobId === jobId && n.type === 'transaction' && n.targetId);
         for (const targetNode of targetNodes) {
             if (targetNode.id === sourceNodeId)
                 continue;
             const confidence = this.calculateMatchConfidence(sourceNode, targetNode, matchingRules);
-            if (confidence > 0.5) {
-                // Threshold for match
+            if (confidence > 0.5) { // Threshold for match
                 const edge = {
                     id: `edge_${sourceNode.id}_${targetNode.id}`,
                     source: sourceNode.id,
                     target: targetNode.id,
-                    type: "matches",
+                    type: 'matches',
                     confidence,
                     metadata: {
                         matchedAt: new Date(),
-                        rules: matchingRules.map((r) => r.field),
+                        rules: matchingRules.map(r => r.field),
                     },
                     createdAt: new Date(),
                 };
@@ -124,11 +122,11 @@ class ReconciliationGraphEngine extends events_1.EventEmitter {
      * Get field value from node data
      */
     getFieldValue(node, field) {
-        if (field === "amount")
+        if (field === 'amount')
             return node.amount;
-        if (field === "currency")
+        if (field === 'currency')
             return node.currency;
-        if (field === "timestamp")
+        if (field === 'timestamp')
             return node.timestamp;
         return node.data[field];
     }
@@ -139,21 +137,21 @@ class ReconciliationGraphEngine extends events_1.EventEmitter {
         if (sourceValue === undefined || targetValue === undefined)
             return false;
         switch (rule.type) {
-            case "exact":
+            case 'exact':
                 return sourceValue === targetValue;
-            case "fuzzy":
-                if (typeof sourceValue === "string" && typeof targetValue === "string") {
+            case 'fuzzy':
+                if (typeof sourceValue === 'string' && typeof targetValue === 'string') {
                     const similarity = this.stringSimilarity(sourceValue, targetValue);
                     return similarity >= (rule.threshold || 0.8);
                 }
                 return false;
-            case "range":
-                if (typeof sourceValue === "number" && typeof targetValue === "number") {
+            case 'range':
+                if (typeof sourceValue === 'number' && typeof targetValue === 'number') {
                     const diff = Math.abs(sourceValue - targetValue);
                     return diff <= (rule.tolerance || 0.01);
                 }
                 return false;
-            case "date_range":
+            case 'date_range':
                 if (sourceValue instanceof Date && targetValue instanceof Date) {
                     const diffDays = Math.abs((sourceValue.getTime() - targetValue.getTime()) / (1000 * 60 * 60 * 24));
                     return diffDays <= (rule.days || 1);
@@ -209,18 +207,19 @@ class ReconciliationGraphEngine extends events_1.EventEmitter {
         let edges = Array.from(graph.edges.values());
         // Filter by node type
         if (query.nodeType) {
-            nodes = nodes.filter((n) => n.type === query.nodeType);
+            nodes = nodes.filter(n => n.type === query.nodeType);
         }
         // Filter by source/target ID
         if (query.sourceId) {
-            nodes = nodes.filter((n) => n.sourceId === query.sourceId);
+            nodes = nodes.filter(n => n.sourceId === query.sourceId);
         }
         if (query.targetId) {
-            nodes = nodes.filter((n) => n.targetId === query.targetId);
+            nodes = nodes.filter(n => n.targetId === query.targetId);
         }
         // Filter by date range
         if (query.dateRange) {
-            nodes = nodes.filter((n) => n.timestamp >= query.dateRange.start && n.timestamp <= query.dateRange.end);
+            nodes = nodes.filter(n => n.timestamp >= query.dateRange.start &&
+                n.timestamp <= query.dateRange.end);
         }
         // Pagination
         if (query.offset) {
@@ -250,12 +249,12 @@ class ReconciliationGraphEngine extends events_1.EventEmitter {
     notifySubscribers(jobId, update) {
         const subscribers = this.updateSubscribers.get(jobId);
         if (subscribers) {
-            subscribers.forEach((callback) => {
+            subscribers.forEach(callback => {
                 try {
                     callback(update);
                 }
                 catch (error) {
-                    (0, logger_1.logError)("Error notifying subscriber", error, { jobId });
+                    console.error('Error notifying subscriber:', error);
                 }
             });
         }

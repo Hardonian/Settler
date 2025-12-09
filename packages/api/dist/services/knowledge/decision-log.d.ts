@@ -4,13 +4,13 @@
  * Captures every significant decision with context, rationale, and outcomes.
  * Ensures institutional knowledge persists as the team grows.
  */
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface Decision {
     id: string;
     title: string;
     date: Date;
     decisionMakers: string[];
-    status: "proposed" | "accepted" | "rejected" | "superseded";
+    status: 'proposed' | 'accepted' | 'rejected' | 'superseded';
     context: string;
     decision: string;
     rationale: string;
@@ -34,7 +34,7 @@ export declare class DecisionLog extends EventEmitter {
     /**
      * Create a new decision
      */
-    createDecision(decision: Omit<Decision, "id" | "date">): Promise<Decision>;
+    createDecision(decision: Omit<Decision, 'id' | 'date'>): Promise<Decision>;
     /**
      * Update decision outcomes
      */
@@ -42,7 +42,7 @@ export declare class DecisionLog extends EventEmitter {
     /**
      * Update decision status
      */
-    updateStatus(decisionId: string, status: Decision["status"]): Promise<Decision>;
+    updateStatus(decisionId: string, status: Decision['status']): Promise<Decision>;
     /**
      * Get a decision by ID
      */
@@ -51,7 +51,7 @@ export declare class DecisionLog extends EventEmitter {
      * Query decisions
      */
     queryDecisions(query: {
-        status?: Decision["status"];
+        status?: Decision['status'];
         decisionMaker?: string;
         tag?: string;
         dateRange?: {

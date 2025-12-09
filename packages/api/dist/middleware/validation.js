@@ -15,7 +15,7 @@ const validateRequest = (schema) => {
         }
         catch (error) {
             if (error instanceof zod_1.ZodError) {
-                (0, logger_1.logWarn)("Validation error", {
+                (0, logger_1.logWarn)('Validation error', {
                     path: req.path,
                     method: req.method,
                     errors: error.errors,
@@ -24,8 +24,8 @@ const validateRequest = (schema) => {
                 res.status(400).json({
                     error: "Validation Error",
                     message: "Invalid request data",
-                    details: error.errors.map((e) => ({
-                        path: e.path.join("."),
+                    details: error.errors.map(e => ({
+                        path: e.path.join('.'),
                         message: e.message,
                     })),
                 });

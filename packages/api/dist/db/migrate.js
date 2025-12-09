@@ -62,12 +62,12 @@ async function executeMigration(migrationPath, migrationName, useSupabase) {
         if (!fs.existsSync(migrationPath)) {
             throw new Error(`Migration file not found: ${migrationPath}`);
         }
-        const migrationSQL = fs.readFileSync(migrationPath, "utf8");
+        const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
         // Split by semicolon, but preserve function bodies and other multi-statement constructs
         const statements = migrationSQL
             .split(/;(?![^$]*\$\$)/) // Split on semicolon, but not inside $$ blocks
-            .map((s) => s.trim())
-            .filter((s) => s.length > 0 && !s.startsWith("--"));
+            .map(s => s.trim())
+            .filter(s => s.length > 0 && !s.startsWith('--'));
         (0, logger_1.logInfo)(`Running migration: ${migrationName}`, { statements: statements.length });
         // Use PostgreSQL pool (works for both Supabase and regular PostgreSQL)
         // Supabase is PostgreSQL, so we can use pg directly
@@ -78,9 +78,11 @@ async function executeMigration(migrationPath, migrationName, useSupabase) {
             // Supabase provides direct database connection via DATABASE_URL or we can construct it
             if (process.env.SUPABASE_DB_PASSWORD) {
                 // Extract host from SUPABASE_URL (format: https://project-id.supabase.co)
-                const supabaseUrl = process.env.SUPABASE_URL || "";
+                const supabaseUrl = process.env.SUPABASE_URL || '';
                 const hostMatch = supabaseUrl.match(/https?:\/\/([^.]+)\.supabase\.co/);
-                const host = hostMatch ? `${hostMatch[1]}.supabase.co` : config_1.config.database.host;
+                const host = hostMatch
+                    ? `${hostMatch[1]}.supabase.co`
+                    : config_1.config.database.host;
                 connectionString = `postgresql://postgres:${process.env.SUPABASE_DB_PASSWORD}@${host}:${config_1.config.database.port || 5432}/postgres`;
             }
             else {
@@ -94,24 +96,22 @@ async function executeMigration(migrationPath, migrationName, useSupabase) {
         }
         const pool = new pg_1.Pool({
             connectionString: connectionString,
-            ssl: config_1.config.database.ssl || useSupabase
-                ? {
-                    rejectUnauthorized: config_1.config.nodeEnv === "production" || config_1.config.nodeEnv === "preview",
-                }
-                : false,
+            ssl: config_1.config.database.ssl || useSupabase ? {
+                rejectUnauthorized: config_1.config.nodeEnv === 'production' || config_1.config.nodeEnv === 'preview',
+            } : false,
         });
         for (const statement of statements) {
-            if (statement.trim() && !statement.trim().startsWith("--")) {
+            if (statement.trim() && !statement.trim().startsWith('--')) {
                 try {
                     await pool.query(statement);
                     result.statementsExecuted++;
                 }
                 catch (error) {
                     // Ignore "already exists" errors (idempotent migration)
-                    if (error.message.includes("already exists") ||
-                        error.message.includes("duplicate") ||
-                        error.message.includes("already enabled") ||
-                        (error.message.includes("does not exist") && error.message.includes("DROP"))) {
+                    if (error.message.includes('already exists') ||
+                        error.message.includes('duplicate') ||
+                        error.message.includes('already enabled') ||
+                        error.message.includes('does not exist') && error.message.includes('DROP')) {
                         (0, logger_1.logWarn)(`Migration warning (ignored): ${error.message}`);
                         continue;
                     }
@@ -135,12 +135,12 @@ async function executeMigration(migrationPath, migrationName, useSupabase) {
  */
 async function initializeSupabaseExtensions() {
     try {
-        (0, logger_1.logInfo)("Initializing Supabase extensions...");
+        (0, logger_1.logInfo)('Initializing Supabase extensions...');
         // Try to use Supabase RPC if available
         const extensions = [
-            { name: "uuid-ossp", sql: 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' },
-            { name: "pgcrypto", sql: 'CREATE EXTENSION IF NOT EXISTS "pgcrypto";' },
-            { name: "vector", sql: "CREATE EXTENSION IF NOT EXISTS vector;" },
+            { name: 'uuid-ossp', sql: 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' },
+            { name: 'pgcrypto', sql: 'CREATE EXTENSION IF NOT EXISTS "pgcrypto";' },
+            { name: 'vector', sql: 'CREATE EXTENSION IF NOT EXISTS vector;' },
         ];
         // Use direct PostgreSQL connection for extensions
         // Use same connection string logic as migrations
@@ -148,9 +148,11 @@ async function initializeSupabaseExtensions() {
         const useSupabase = !!process.env.SUPABASE_URL;
         if (!connectionString && useSupabase) {
             if (process.env.SUPABASE_DB_PASSWORD) {
-                const supabaseUrl = process.env.SUPABASE_URL || "";
+                const supabaseUrl = process.env.SUPABASE_URL || '';
                 const hostMatch = supabaseUrl.match(/https?:\/\/([^.]+)\.supabase\.co/);
-                const host = hostMatch ? `${hostMatch[1]}.supabase.co` : config_1.config.database.host;
+                const host = hostMatch
+                    ? `${hostMatch[1]}.supabase.co`
+                    : config_1.config.database.host;
                 connectionString = `postgresql://postgres:${process.env.SUPABASE_DB_PASSWORD}@${host}:${config_1.config.database.port || 5432}/postgres`;
             }
             else {
@@ -162,11 +164,9 @@ async function initializeSupabaseExtensions() {
         }
         const pool = new pg_1.Pool({
             connectionString: connectionString,
-            ssl: config_1.config.database.ssl || useSupabase
-                ? {
-                    rejectUnauthorized: config_1.config.nodeEnv === "production" || config_1.config.nodeEnv === "preview",
-                }
-                : false,
+            ssl: config_1.config.database.ssl || useSupabase ? {
+                rejectUnauthorized: config_1.config.nodeEnv === 'production' || config_1.config.nodeEnv === 'preview',
+            } : false,
         });
         for (const ext of extensions) {
             try {
@@ -174,8 +174,8 @@ async function initializeSupabaseExtensions() {
                 (0, logger_1.logInfo)(`Extension enabled: ${ext.name}`);
             }
             catch (error) {
-                if (error.message.includes("already exists") ||
-                    error.message.includes("permission denied")) {
+                if (error.message.includes('already exists') ||
+                    error.message.includes('permission denied')) {
                     (0, logger_1.logWarn)(`Extension ${ext.name}: ${error.message}`);
                 }
                 else {
@@ -186,7 +186,7 @@ async function initializeSupabaseExtensions() {
         await pool.end();
     }
     catch (error) {
-        (0, logger_1.logWarn)("Supabase extension initialization warning", error);
+        (0, logger_1.logWarn)('Supabase extension initialization warning', error);
         // Don't fail if extensions can't be initialized
     }
 }
@@ -196,18 +196,18 @@ async function initializeSupabaseExtensions() {
 async function runMigrations() {
     const results = [];
     const useSupabase = !!process.env.SUPABASE_URL;
-    (0, logger_1.logInfo)("Starting database migrations...", { useSupabase });
+    (0, logger_1.logInfo)('Starting database migrations...', { useSupabase });
     // Initialize Supabase extensions if using Supabase
     if (useSupabase) {
         await initializeSupabaseExtensions();
     }
     // Migration files in order
     const migrations = [
-        "001-initial-schema.sql",
-        "002-strategic-initiatives.sql",
-        "003-canonical-data-model.sql",
+        '001-initial-schema.sql',
+        '002-strategic-initiatives.sql',
+        '003-canonical-data-model.sql',
     ];
-    const migrationsDir = path.join(__dirname, "migrations");
+    const migrationsDir = path.join(__dirname, 'migrations');
     for (const migrationFile of migrations) {
         const migrationPath = path.join(migrationsDir, migrationFile);
         try {
@@ -229,9 +229,9 @@ async function runMigrations() {
             throw error;
         }
     }
-    const successCount = results.filter((r) => r.success).length;
-    const failCount = results.filter((r) => !r.success).length;
-    (0, logger_1.logInfo)("Migration process completed", {
+    const successCount = results.filter(r => r.success).length;
+    const failCount = results.filter(r => !r.success).length;
+    (0, logger_1.logInfo)('Migration process completed', {
         total: results.length,
         successful: successCount,
         failed: failCount,
@@ -244,19 +244,19 @@ async function runMigrations() {
 if (require.main === module) {
     runMigrations()
         .then((results) => {
-        const failed = results.filter((r) => !r.success);
+        const failed = results.filter(r => !r.success);
         if (failed.length > 0) {
-            console.error("Some migrations failed:");
-            failed.forEach((r) => console.error(`  - ${r.migration}: ${r.error}`));
+            console.error('Some migrations failed:');
+            failed.forEach(r => console.error(`  - ${r.migration}: ${r.error}`));
             process.exit(1);
         }
         else {
-            console.log("All migrations completed successfully");
+            console.log('All migrations completed successfully');
             process.exit(0);
         }
     })
         .catch((error) => {
-        console.error("Migration process failed:", error);
+        console.error('Migration process failed:', error);
         process.exit(1);
     });
 }

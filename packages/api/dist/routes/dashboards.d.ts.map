@@ -1,1 +1,1 @@
-{"version":3,"file":"dashboards.d.ts","sourceRoot":"","sources":["../../src/routes/dashboards.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAWH,QAAA,MAAM,MAAM,4CAAW,CAAC;AAiWxB,OAAO,EAAE,MAAM,IAAI,gBAAgB,EAAE,CAAC"}
+{"version":3,"file":"dashboards.d.ts","sourceRoot":"","sources":["../../src/routes/dashboards.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAWH,QAAA,MAAM,MAAM,4CAAW,CAAC;AAyVxB,OAAO,EAAE,MAAM,IAAI,gBAAgB,EAAE,CAAC"}

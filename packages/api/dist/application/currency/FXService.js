@@ -8,8 +8,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FXService = void 0;
 const db_1 = require("../../db");
-const fx_rate_provider_1 = require("../../services/currency/fx-rate-provider");
-const logger_1 = require("../../utils/logger");
 class FXService {
     /**
      * Record FX conversion
@@ -51,49 +49,23 @@ class FXService {
     }
     /**
      * Get FX rate for currency pair
-     * First checks database, then fetches from external provider if not found
      */
     async getFXRate(tenantId, fromCurrency, toCurrency, date) {
         if (fromCurrency === toCurrency) {
             return 1.0;
         }
         const targetDate = date || new Date();
-        // First, check database for existing rate
-        const result = await (0, db_1.query)(`SELECT fx_rate, provider FROM fx_conversions
+        const result = await (0, db_1.query)(`SELECT fx_rate FROM fx_conversions
        WHERE tenant_id = $1 
          AND from_currency = $2 
          AND to_currency = $3
          AND rate_date <= $4
        ORDER BY rate_date DESC
        LIMIT 1`, [tenantId, fromCurrency, toCurrency, targetDate]);
-        if (result.length > 0 && result[0]) {
-            return result[0].fx_rate;
+        if (result.length === 0 || !result[0]) {
+            return null; // No FX rate available
         }
-        // Rate not in database - fetch from external provider
-        (0, logger_1.logInfo)("FX rate not found in database, fetching from provider", {
-            tenantId,
-            fromCurrency,
-            toCurrency,
-            date: targetDate.toISOString(),
-        });
-        try {
-            const fetched = await fx_rate_provider_1.fxRateProviderManager.fetchRate(fromCurrency, toCurrency, targetDate);
-            if (fetched) {
-                // Store fetched rate in database for future use
-                await this.recordFXConversion(tenantId, `auto_${Date.now()}`, fromCurrency, toCurrency, 1.0, // fromAmount (not used for rate storage)
-                fetched.rate, // toAmount (not used for rate storage)
-                fetched.rate, fetched.provider, targetDate);
-                return fetched.rate;
-            }
-        }
-        catch (error) {
-            (0, logger_1.logWarn)("Failed to fetch FX rate from provider", {
-                fromCurrency,
-                toCurrency,
-                error: error instanceof Error ? error.message : String(error),
-            });
-        }
-        return null; // No FX rate available
+        return result[0].fx_rate;
     }
     /**
      * Convert amount to base currency
@@ -119,15 +91,14 @@ class FXService {
         const result = await (0, db_1.query)(`SELECT config FROM tenants WHERE id = $1 LIMIT 1`, [tenantId]);
         if (result.length > 0 && result[0]?.config?.baseCurrency) {
             const baseCurrency = result[0].config.baseCurrency;
-            if (typeof baseCurrency === "string") {
+            if (typeof baseCurrency === 'string') {
                 return baseCurrency;
             }
         }
-        return "USD"; // Default
+        return 'USD'; // Default
     }
     /**
      * Get all FX rates for a tenant
-     * Fetches missing rates from external provider if needed
      */
     async getFXRates(tenantId, date) {
         const targetDate = date || new Date();
@@ -136,52 +107,23 @@ class FXService {
        FROM fx_conversions
        WHERE tenant_id = $1 AND rate_date <= $2
        ORDER BY from_currency, to_currency, rate_date DESC`, [tenantId, targetDate]);
-        return result.map((row) => ({
+        return result.map(row => ({
             fromCurrency: row.from_currency,
             toCurrency: row.to_currency,
             rate: row.fx_rate,
             rateDate: row.rate_date,
-            provider: row.provider ?? "unknown",
+            provider: row.provider ?? 'unknown',
         }));
     }
     /**
-     * Sync FX rates from external provider
-     * Fetches and stores rates for common currency pairs
+     * Sync FX rates for a tenant
      */
-    async syncFXRates(tenantId, baseCurrency = "USD", date) {
-        const targetDate = date || new Date();
-        const commonCurrencies = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY"];
-        (0, logger_1.logInfo)("Syncing FX rates from provider", {
-            tenantId,
-            baseCurrency,
-            date: targetDate.toISOString(),
-        });
-        let syncedCount = 0;
-        for (const targetCurrency of commonCurrencies) {
-            if (targetCurrency === baseCurrency) {
-                continue;
-            }
-            try {
-                const fetched = await fx_rate_provider_1.fxRateProviderManager.fetchRate(baseCurrency, targetCurrency, targetDate);
-                if (fetched) {
-                    await this.recordFXConversion(tenantId, `sync_${Date.now()}_${targetCurrency}`, baseCurrency, targetCurrency, 1.0, fetched.rate, fetched.rate, fetched.provider, targetDate);
-                    syncedCount++;
-                }
-            }
-            catch (error) {
-                (0, logger_1.logWarn)("Failed to sync FX rate", {
-                    baseCurrency,
-                    targetCurrency,
-                    error: error instanceof Error ? error.message : String(error),
-                });
-            }
-        }
-        (0, logger_1.logInfo)("FX rate sync completed", {
-            tenantId,
-            syncedCount,
-            totalAttempted: commonCurrencies.length - 1,
-        });
-        return syncedCount;
+    async syncFXRates(_tenantId, _baseCurrency) {
+        // This would typically fetch rates from an external provider
+        // For now, return 0 as a placeholder
+        // TODO: Implement actual FX rate syncing from provider
+        // Parameters are prefixed with _ to indicate they're intentionally unused for now
+        return 0;
     }
     /**
      * Generate ID

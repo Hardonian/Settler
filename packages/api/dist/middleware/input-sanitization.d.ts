@@ -2,7 +2,7 @@
  * Input Sanitization Middleware
  * Provides additional input sanitization beyond Zod validation
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 /**
  * Sanitize request body to prevent XSS and injection attacks
  * This is a defense-in-depth measure - Zod validation is primary

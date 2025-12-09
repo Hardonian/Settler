@@ -40,7 +40,7 @@ async function testAdapterConnection(adapter, config) {
     catch (error) {
         const latency = Date.now() - startTime;
         const message = error instanceof Error ? error.message : "Unknown error";
-        (0, logger_1.logError)("Adapter connection test failed", error, { adapter });
+        (0, logger_1.logError)('Adapter connection test failed', error, { adapter });
         return {
             success: false,
             error: message,

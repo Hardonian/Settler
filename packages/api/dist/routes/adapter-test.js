@@ -53,9 +53,7 @@ router.post("/adapters/:adapter/test", (0, authorization_1.requirePermission)(Pe
         }
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to test adapter connection", 500, {
-            userId: req.userId,
-        });
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to test adapter connection", 500, { userId: req.userId });
     }
 });
 //# sourceMappingURL=adapter-test.js.map

@@ -13,7 +13,7 @@ const errorHandler = (err, req, res, _next) => {
         (0, sentry_1.setSentryUser)(authReq);
     }
     // Log error with context
-    (0, logger_1.logError)("Request error", err, {
+    (0, logger_1.logError)('Request error', err, {
         method: req.method,
         path: req.path,
         ip: req.ip,

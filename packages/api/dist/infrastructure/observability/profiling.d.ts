@@ -2,7 +2,7 @@
  * Performance Profiling Utilities
  * Provides request duration tracking, database query profiling, and memory monitoring
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 export interface ProfileMetrics {
     requestDuration: number;
     databaseQueries?: number;

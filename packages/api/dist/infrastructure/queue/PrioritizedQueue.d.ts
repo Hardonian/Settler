@@ -2,8 +2,8 @@
  * Prioritized Queue System
  * Queue with priority levels and enterprise bypass
  */
-import { Job } from "bullmq";
-import { TenantTier } from "../../domain/entities/Tenant";
+import { Job } from 'bullmq';
+import { TenantTier } from '../../domain/entities/Tenant';
 export declare enum QueuePriority {
     LOW = 1,
     NORMAL = 5,

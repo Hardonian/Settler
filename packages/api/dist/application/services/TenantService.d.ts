@@ -2,10 +2,10 @@
  * Tenant Service
  * Business logic for tenant management and onboarding
  */
-import { Tenant, TenantTier } from "../../domain/entities/Tenant";
-import { ITenantRepository } from "../../domain/repositories/ITenantRepository";
-import { IUserRepository } from "../../domain/repositories/IUserRepository";
-import { User } from "../../domain/entities/User";
+import { Tenant, TenantTier } from '../../domain/entities/Tenant';
+import { ITenantRepository } from '../../domain/repositories/ITenantRepository';
+import { IUserRepository } from '../../domain/repositories/IUserRepository';
+import { User } from '../../domain/entities/User';
 export declare class TenantService {
     private tenantRepo;
     private userRepo;

@@ -32,26 +32,22 @@ router.delete("/:id/data", (0, authorization_1.requirePermission)(Permissions_1.
         // Users can only delete their own data (or admins)
         if (id !== userId) {
             // Check if user is admin
-            const users = await (0, db_1.query)("SELECT role FROM users WHERE id = $1", [
-                userId,
-            ]);
-            if (users.length === 0 ||
-                !users[0] ||
-                (users[0].role !== User_1.UserRole.ADMIN && users[0].role !== User_1.UserRole.OWNER)) {
-                return res.status(403).json({ error: "Forbidden" });
+            const users = await (0, db_1.query)('SELECT role FROM users WHERE id = $1', [userId]);
+            if (users.length === 0 || !users[0] || (users[0].role !== User_1.UserRole.ADMIN && users[0].role !== User_1.UserRole.OWNER)) {
+                return res.status(403).json({ error: 'Forbidden' });
             }
         }
         if (!id || !userId) {
-            return res.status(400).json({ error: "User ID is required" });
+            return res.status(400).json({ error: 'User ID is required' });
         }
         // Verify password
-        const targetUsers = await (0, db_1.query)("SELECT password_hash FROM users WHERE id = $1", [id]);
+        const targetUsers = await (0, db_1.query)('SELECT password_hash FROM users WHERE id = $1', [id]);
         if (targetUsers.length === 0 || !targetUsers[0]) {
-            return res.status(404).json({ error: "User not found" });
+            return res.status(404).json({ error: 'User not found' });
         }
         const isValid = await (0, hash_1.verifyPassword)(password, targetUsers[0].password_hash);
         if (!isValid) {
-            return res.status(401).json({ error: "Invalid password" });
+            return res.status(401).json({ error: 'Invalid password' });
         }
         // Soft delete with 30-day grace period
         await (0, db_1.transaction)(async (client) => {
@@ -65,17 +61,21 @@ router.delete("/:id/data", (0, authorization_1.requirePermission)(Permissions_1.
             // Schedule hard deletion
             await client.query(`INSERT INTO audit_logs (event, user_id, metadata)
            VALUES ($1, $2, $3)`, [
-                "user_deletion_scheduled",
+                'user_deletion_scheduled',
                 id,
                 JSON.stringify({ scheduledAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }),
             ]);
         });
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, ["user_data_deletion_requested", userId, JSON.stringify({ targetUserId: id })]);
-        (0, logger_1.logInfo)("User data deletion scheduled", { userId: id, requestedBy: userId });
+         VALUES ($1, $2, $3)`, [
+            'user_data_deletion_requested',
+            userId,
+            JSON.stringify({ targetUserId: id }),
+        ]);
+        (0, logger_1.logInfo)('User data deletion scheduled', { userId: id, requestedBy: userId });
         res.json({
-            message: "Deletion scheduled. Data will be permanently deleted in 30 days.",
+            message: 'Deletion scheduled. Data will be permanently deleted in 30 days.',
             deletionDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         });
         return;
@@ -92,7 +92,7 @@ router.get("/:id/data-export", (0, authorization_1.requirePermission)(Permission
         const userId = req.userId;
         // Users can only export their own data
         if (id !== userId) {
-            return res.status(403).json({ error: "Forbidden" });
+            return res.status(403).json({ error: 'Forbidden' });
         }
         // Fetch all user data
         const [users, jobs, reports, webhooks, apiKeys, auditLogs] = await Promise.all([
@@ -119,7 +119,7 @@ router.get("/:id/data-export", (0, authorization_1.requirePermission)(Permission
             jobs: jobs,
             reports: reports,
             webhooks: webhooks,
-            apiKeys: apiKeys.map((k) => ({
+            apiKeys: apiKeys.map(k => ({
                 id: k.id,
                 name: k.name,
                 scopes: k.scopes,
@@ -132,8 +132,12 @@ router.get("/:id/data-export", (0, authorization_1.requirePermission)(Permission
         };
         // Log export
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, ["user_data_exported", userId, JSON.stringify({ exportedAt: new Date() })]);
-        (0, logger_1.logInfo)("User data exported", { userId });
+         VALUES ($1, $2, $3)`, [
+            'user_data_exported',
+            userId,
+            JSON.stringify({ exportedAt: new Date() }),
+        ]);
+        (0, logger_1.logInfo)('User data exported', { userId });
         res.json({ data: exportData });
         return;
     }

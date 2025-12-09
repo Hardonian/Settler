@@ -39,9 +39,7 @@ router.get("/:jobId", (0, authorization_1.requirePermission)(Permissions_1.Permi
             return res.status(400).json({ error: "Job ID and User ID are required" });
         }
         // Check job ownership
-        const jobs = await (0, db_1.query)(`SELECT user_id FROM jobs WHERE id = $1`, [
-            jobId,
-        ]);
+        const jobs = await (0, db_1.query)(`SELECT user_id FROM jobs WHERE id = $1`, [jobId]);
         if (jobs.length === 0 || !jobs[0]) {
             return res.status(404).json({ error: "Job not found" });
         }
@@ -78,30 +76,28 @@ router.get("/:jobId", (0, authorization_1.requirePermission)(Permissions_1.Permi
            ORDER BY created_at DESC
            LIMIT $2 OFFSET $3`, [executionId, limit, offset]),
             (0, db_1.query)(`SELECT id, error FROM executions WHERE id = $1 AND error IS NOT NULL`, [executionId]),
-            (0, db_1.query)(`SELECT COUNT(*) as count FROM matches WHERE execution_id = $1`, [
-                executionId,
-            ]),
+            (0, db_1.query)(`SELECT COUNT(*) as count FROM matches WHERE execution_id = $1`, [executionId]),
         ]);
         if (!totalMatches[0]) {
-            throw new Error("Failed to get match count");
+            throw new Error('Failed to get match count');
         }
         const total = parseInt(totalMatches[0].count);
         const summary = execution.summary || {
             matched: matches.length,
             unmatched: unmatched.length,
             errors: errors.length,
-            accuracy: (matches.length / (matches.length + unmatched.length)) * 100,
+            accuracy: matches.length / (matches.length + unmatched.length) * 100,
             totalTransactions: matches.length + unmatched.length,
         };
         if (format === "csv") {
             res.setHeader("Content-Type", "text/csv");
             res.setHeader("Content-Disposition", `attachment; filename="report-${jobId}.csv"`);
             let csv = "id,sourceId,targetId,amount,currency,status\n";
-            matches.forEach((m) => {
+            matches.forEach(m => {
                 csv += `${m.id},${m.source_id},${m.target_id},${m.amount},${m.currency},matched\n`;
             });
-            unmatched.forEach((u) => {
-                csv += `${u.id},${u.source_id || ""},${u.target_id || ""},${u.amount || ""},${u.currency || ""},unmatched\n`;
+            unmatched.forEach(u => {
+                csv += `${u.id},${u.source_id || ''},${u.target_id || ''},${u.amount || ''},${u.currency || ''},unmatched\n`;
             });
             res.send(csv);
             return;
@@ -116,7 +112,7 @@ router.get("/:jobId", (0, authorization_1.requirePermission)(Permissions_1.Permi
                         end: dateEnd,
                     },
                     summary,
-                    matches: matches.map((m) => ({
+                    matches: matches.map(m => ({
                         id: m.id,
                         sourceId: m.source_id,
                         targetId: m.target_id,
@@ -125,7 +121,7 @@ router.get("/:jobId", (0, authorization_1.requirePermission)(Permissions_1.Permi
                         matchedAt: m.matched_at.toISOString(),
                         confidence: m.confidence,
                     })),
-                    unmatched: unmatched.map((u) => ({
+                    unmatched: unmatched.map(u => ({
                         id: u.id,
                         sourceId: u.source_id,
                         targetId: u.target_id,
@@ -133,7 +129,7 @@ router.get("/:jobId", (0, authorization_1.requirePermission)(Permissions_1.Permi
                         currency: u.currency,
                         reason: u.reason,
                     })),
-                    errors: errors.map((e) => ({
+                    errors: errors.map(e => ({
                         id: e.id,
                         message: e.error,
                     })),
@@ -150,10 +146,7 @@ router.get("/:jobId", (0, authorization_1.requirePermission)(Permissions_1.Permi
         }
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to generate report", 500, {
-            userId: req.userId,
-            jobId: req.params.jobId,
-        });
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to generate report", 500, { userId: req.userId, jobId: req.params.jobId });
         return;
     }
 });
@@ -178,11 +171,11 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
            WHERE j.user_id = $1`, [userId]),
         ]);
         if (!totalResult[0]) {
-            throw new Error("Failed to get report count");
+            throw new Error('Failed to get report count');
         }
         const total = parseInt(totalResult[0].count);
         res.json({
-            data: reports.map((r) => ({
+            data: reports.map(r => ({
                 id: r.id,
                 jobId: r.job_id,
                 summary: r.summary,

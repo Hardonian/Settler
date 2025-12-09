@@ -173,10 +173,10 @@ function explainConfidenceScore(confidence) {
     if (score >= 0.95) {
         return `High confidence (${(score * 100).toFixed(1)}%): ${factors.exactMatches} exact matches, all rules satisfied.`;
     }
-    else if (score >= 0.8) {
+    else if (score >= 0.80) {
         return `Medium confidence (${(score * 100).toFixed(1)}%): ${factors.exactMatches} exact matches, ${factors.fuzzyMatches} fuzzy matches.`;
     }
-    else if (score >= 0.5) {
+    else if (score >= 0.50) {
         return `Low confidence (${(score * 100).toFixed(1)}%): Some matches found but not all rules satisfied. Review recommended.`;
     }
     else {

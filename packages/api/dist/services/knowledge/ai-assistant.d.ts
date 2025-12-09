@@ -4,7 +4,7 @@
  * LLM-powered assistant that helps team members discover knowledge,
  * answer questions, and learn from past decisions and incidents.
  */
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface KnowledgeQuery {
     question: string;
     context?: {
@@ -17,7 +17,7 @@ export interface KnowledgeResponse {
     answer: string;
     confidence: number;
     sources: Array<{
-        type: "decision" | "documentation" | "incident" | "pattern";
+        type: 'decision' | 'documentation' | 'incident' | 'pattern';
         id: string;
         relevance: number;
     }>;

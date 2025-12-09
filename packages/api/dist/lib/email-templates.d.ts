@@ -82,7 +82,7 @@ export interface EmailTemplateData {
         consultation_url?: string;
         insights_url?: string;
     };
-    [key: string]: any;
+    [key: string]: unknown;
 }
 /**
  * Render email template with data

@@ -2,7 +2,7 @@
  * Standardized Error Handling Utilities
  * Provides type-safe error extraction and handling
  */
-import { Response } from "express";
+import { Response } from 'express';
 /**
  * Safely extracts error message from unknown error type
  */

@@ -8,7 +8,7 @@ const adapter_config_validator_1 = require("../utils/adapter-config-validator");
 const router = (0, express_1.Router)();
 exports.adaptersRouter = router;
 // Get adapters from validator (UX-002)
-const ADAPTERS = (0, adapter_config_validator_1.listAdapters)().map((adapter) => ({
+const ADAPTERS = (0, adapter_config_validator_1.listAdapters)().map(adapter => ({
     id: adapter.id,
     name: adapter.name,
     description: `Reconcile ${adapter.name} transactions`,
@@ -18,20 +18,20 @@ const ADAPTERS = (0, adapter_config_validator_1.listAdapters)().map((adapter) =>
         optional: adapter.configSchema.optional || [],
         fields: adapter.configSchema.fields,
     },
-    supportedEvents: adapter.id === "stripe"
+    supportedEvents: adapter.id === 'stripe'
         ? ["payment.succeeded", "charge.refunded"]
-        : adapter.id === "shopify"
+        : adapter.id === 'shopify'
             ? ["order.created", "order.updated", "transaction.created"]
-            : adapter.id === "quickbooks"
+            : adapter.id === 'quickbooks'
                 ? ["transaction.created", "transaction.updated"]
-                : adapter.id === "paypal"
+                : adapter.id === 'paypal'
                     ? ["payment.completed", "refund.completed"]
                     : [],
 }));
 // List available adapters (cached)
 router.get("/", async (_req, res) => {
     try {
-        const cacheKey = "adapters:list";
+        const cacheKey = 'adapters:list';
         const cached = await (0, cache_1.get)(cacheKey);
         if (cached) {
             res.json({

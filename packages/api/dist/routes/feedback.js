@@ -17,23 +17,14 @@ const router = (0, express_1.Router)();
 exports.feedbackRouter = router;
 const createFeedbackSchema = zod_1.z.object({
     body: zod_1.z.object({
-        source: zod_1.z.enum([
-            "sales_call",
-            "user_interview",
-            "support_ticket",
-            "github_issue",
-            "community",
-            "survey",
-        ]),
+        source: zod_1.z.enum(["sales_call", "user_interview", "support_ticket", "github_issue", "community", "survey"]),
         persona: zod_1.z.enum(["cto", "cfo", "finance_ops", "developer"]).optional(),
         company: zod_1.z.string().max(255).optional(),
-        context: zod_1.z
-            .object({
+        context: zod_1.z.object({
             stage: zod_1.z.enum(["evaluating", "onboarding", "active", "churned"]).optional(),
             useCase: zod_1.z.string().optional(),
             transactionVolume: zod_1.z.string().optional(),
-        })
-            .optional(),
+        }).optional(),
         pain: zod_1.z.object({
             description: zod_1.z.string().min(1),
             severity: zod_1.z.enum(["high", "medium", "low"]),
@@ -43,20 +34,16 @@ const createFeedbackSchema = zod_1.z.object({
             description: zod_1.z.string().min(1),
             successMetric: zod_1.z.string().optional(),
         }),
-        workaround: zod_1.z
-            .object({
+        workaround: zod_1.z.object({
             description: zod_1.z.string(),
             painPoints: zod_1.z.array(zod_1.z.string()),
-        })
-            .optional(),
+        }).optional(),
         quotes: zod_1.z.array(zod_1.z.string()).optional(),
-        featureRequests: zod_1.z
-            .array(zod_1.z.object({
+        featureRequests: zod_1.z.array(zod_1.z.object({
             feature: zod_1.z.string(),
             priority: zod_1.z.enum(["high", "medium", "low"]),
             rationale: zod_1.z.string(),
-        }))
-            .optional(),
+        })).optional(),
         tags: zod_1.z.array(zod_1.z.string()).optional(),
     }),
 });
@@ -94,10 +81,10 @@ router.post("/feedback", (0, authorization_1.requirePermission)(Permissions_1.Pe
             feedback.tags || [],
         ]);
         if (!result[0]) {
-            throw new Error("Failed to create feedback");
+            throw new Error('Failed to create feedback');
         }
         // Track event
-        (0, event_tracker_1.trackEventAsync)(userId, "FeedbackCreated", {
+        (0, event_tracker_1.trackEventAsync)(userId, 'FeedbackCreated', {
             feedbackId: result[0].id,
             source: feedback.source,
             persona: feedback.persona,
@@ -141,7 +128,7 @@ router.get("/feedback", (0, authorization_1.requirePermission)(Permissions_1.Per
             conditions.push(`created_at <= $${paramCount++}`);
             values.push(new Date(endDate));
         }
-        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
         const feedback = await (0, db_1.query)(`SELECT id, source, persona, company, context,
                 pain, desired_outcome, workaround, quotes, feature_requests, tags,
                 created_at
@@ -151,12 +138,11 @@ router.get("/feedback", (0, authorization_1.requirePermission)(Permissions_1.Per
          LIMIT $${paramCount++} OFFSET $${paramCount++}`, [...values, limit, offset]);
         const countResult = await (0, db_1.query)(`SELECT COUNT(*) as count FROM feedback ${whereClause}`, values);
         if (!countResult[0]) {
-            throw new Error("Failed to get feedback count");
+            throw new Error('Failed to get feedback count');
         }
         const total = parseInt(countResult[0].count);
         res.json({
-            data: feedback
-                .map((f) => {
+            data: feedback.map((f) => {
                 if (!f)
                     return null;
                 return {
@@ -173,8 +159,7 @@ router.get("/feedback", (0, authorization_1.requirePermission)(Permissions_1.Per
                     tags: f.tags,
                     createdAt: f.created_at.toISOString(),
                 };
-            })
-                .filter((f) => f !== null),
+            }).filter((f) => f !== null),
             pagination: {
                 limit,
                 offset,
@@ -192,9 +177,7 @@ router.get("/feedback/insights", (0, authorization_1.requirePermission)(Permissi
     try {
         const userId = req.userId;
         const { startDate, endDate } = req.query;
-        const start = startDate
-            ? new Date(startDate)
-            : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const end = endDate ? new Date(endDate) : new Date();
         // Top pains by frequency
         const topPains = await (0, db_1.query)(`SELECT 
@@ -227,12 +210,12 @@ router.get("/feedback/insights", (0, authorization_1.requirePermission)(Permissi
          LIMIT 10`, [userId, start, end]);
         res.json({
             data: {
-                topPains: topPains.map((p) => ({
+                topPains: topPains.map(p => ({
                     description: p.pain_description,
                     count: parseInt(p.count),
                     avgSeverity: parseFloat(p.avg_severity),
                 })),
-                topFeatureRequests: topFeatureRequests.map((f) => ({
+                topFeatureRequests: topFeatureRequests.map(f => ({
                     feature: f.feature,
                     count: parseInt(f.count),
                     avgPriority: parseFloat(f.avg_priority),

@@ -43,11 +43,10 @@ exports.decisionLog = exports.DecisionLog = void 0;
 const events_1 = require("events");
 const fs = __importStar(require("fs/promises"));
 const path = __importStar(require("path"));
-const logger_1 = require("../../utils/logger");
 class DecisionLog extends events_1.EventEmitter {
     decisions = new Map();
     logDirectory;
-    constructor(logDirectory = "./decisions") {
+    constructor(logDirectory = './decisions') {
         super();
         this.logDirectory = logDirectory;
         this.ensureDirectoryExists();
@@ -64,7 +63,7 @@ class DecisionLog extends events_1.EventEmitter {
         this.decisions.set(fullDecision.id, fullDecision);
         // Save to file
         await this.saveDecision(fullDecision);
-        this.emit("decision_created", fullDecision);
+        this.emit('decision_created', fullDecision);
         return fullDecision;
     }
     /**
@@ -81,7 +80,7 @@ class DecisionLog extends events_1.EventEmitter {
         });
         // Save to file
         await this.saveDecision(decision);
-        this.emit("decision_updated", decision);
+        this.emit('decision_updated', decision);
         return decision;
     }
     /**
@@ -95,7 +94,7 @@ class DecisionLog extends events_1.EventEmitter {
         decision.status = status;
         // Save to file
         await this.saveDecision(decision);
-        this.emit("decision_status_updated", decision);
+        this.emit('decision_status_updated', decision);
         return decision;
     }
     /**
@@ -110,20 +109,20 @@ class DecisionLog extends events_1.EventEmitter {
     queryDecisions(query) {
         let decisions = Array.from(this.decisions.values());
         if (query.status) {
-            decisions = decisions.filter((d) => d.status === query.status);
+            decisions = decisions.filter(d => d.status === query.status);
         }
         if (query.decisionMaker) {
-            decisions = decisions.filter((d) => d.decisionMakers.includes(query.decisionMaker));
+            decisions = decisions.filter(d => d.decisionMakers.includes(query.decisionMaker));
         }
         if (query.tag) {
-            decisions = decisions.filter((d) => d.tags.includes(query.tag));
+            decisions = decisions.filter(d => d.tags.includes(query.tag));
         }
         if (query.dateRange) {
-            decisions = decisions.filter((d) => d.date >= query.dateRange.start && d.date <= query.dateRange.end);
+            decisions = decisions.filter(d => d.date >= query.dateRange.start && d.date <= query.dateRange.end);
         }
         if (query.search) {
             const searchLower = query.search.toLowerCase();
-            decisions = decisions.filter((d) => d.title.toLowerCase().includes(searchLower) ||
+            decisions = decisions.filter(d => d.title.toLowerCase().includes(searchLower) ||
                 d.context.toLowerCase().includes(searchLower) ||
                 d.decision.toLowerCase().includes(searchLower));
         }
@@ -138,7 +137,7 @@ class DecisionLog extends events_1.EventEmitter {
             return [];
         }
         return decision.relatedDecisions
-            .map((id) => this.decisions.get(id))
+            .map(id => this.decisions.get(id))
             .filter((d) => d !== undefined);
     }
     /**
@@ -148,7 +147,7 @@ class DecisionLog extends events_1.EventEmitter {
         const filename = `${decision.id}.md`;
         const filepath = path.join(this.logDirectory, filename);
         const markdown = this.decisionToMarkdown(decision);
-        await fs.writeFile(filepath, markdown, "utf-8");
+        await fs.writeFile(filepath, markdown, 'utf-8');
     }
     /**
      * Convert decision to markdown
@@ -157,7 +156,7 @@ class DecisionLog extends events_1.EventEmitter {
         return `# Decision: ${decision.title}
 
 **Date:** ${decision.date.toISOString()}
-**Decision Makers:** ${decision.decisionMakers.join(", ")}
+**Decision Makers:** ${decision.decisionMakers.join(', ')}
 **Status:** ${decision.status}
 
 ## Context
@@ -170,22 +169,22 @@ ${decision.decision}
 ${decision.rationale}
 
 ## Alternatives Considered
-${decision.alternativesConsidered.map((alt) => `- **${alt.option}** - ${alt.whyNot}`).join("\n")}
+${decision.alternativesConsidered.map(alt => `- **${alt.option}** - ${alt.whyNot}`).join('\n')}
 
 ## Expected Outcomes
 ${decision.expectedOutcomes}
 
 ## Actual Outcomes
-${decision.actualOutcomes.map((outcome) => `- **${outcome.date.toISOString()}:** ${outcome.outcome}`).join("\n")}
+${decision.actualOutcomes.map(outcome => `- **${outcome.date.toISOString()}:** ${outcome.outcome}`).join('\n')}
 
 ## Lessons Learned
 ${decision.lessonsLearned}
 
 ## Related Decisions
-${decision.relatedDecisions.map((id) => `- [${id}](./${id}.md)`).join("\n")}
+${decision.relatedDecisions.map(id => `- [${id}](./${id}.md)`).join('\n')}
 
 ## Tags
-${decision.tags.map((tag) => `\`${tag}\``).join(", ")}
+${decision.tags.map(tag => `\`${tag}\``).join(', ')}
 `;
     }
     /**
@@ -205,20 +204,20 @@ ${decision.tags.map((tag) => `\`${tag}\``).join(", ")}
     async loadDecisions() {
         try {
             const files = await fs.readdir(this.logDirectory);
-            const markdownFiles = files.filter((f) => f.endsWith(".md"));
+            const markdownFiles = files.filter(f => f.endsWith('.md'));
             for (const file of markdownFiles) {
                 const filepath = path.join(this.logDirectory, file);
-                const _content = await fs.readFile(filepath, "utf-8");
+                const _content = await fs.readFile(filepath, 'utf-8');
                 void _content;
                 // TODO: Parse markdown back to Decision object
                 // For now, skip parsing
             }
         }
         catch (error) {
-            (0, logger_1.logError)("Failed to load decisions", error);
+            console.error('Failed to load decisions:', error);
         }
     }
 }
 exports.DecisionLog = DecisionLog;
-exports.decisionLog = new DecisionLog("./decisions");
+exports.decisionLog = new DecisionLog('./decisions');
 //# sourceMappingURL=decision-log.js.map

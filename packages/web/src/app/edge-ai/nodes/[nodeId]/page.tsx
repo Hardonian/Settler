@@ -39,7 +39,7 @@ export default function NodeDetailPage() {
     }
   }, [nodeId]);
 
-  const fetchNodeDetail = async (id: string) => {
+  const fetchNodeDetail = (id: string) => {
     try {
       setIsLoading(true);
       // In production, fetch from API: `/api/edge-ai/nodes/${id}`

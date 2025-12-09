@@ -49,7 +49,7 @@ export interface TenantProps {
 export declare class Tenant {
     private props;
     private constructor();
-    static create(props: Omit<TenantProps, "id" | "createdAt" | "updatedAt">): Tenant;
+    static create(props: Omit<TenantProps, 'id' | 'createdAt' | 'updatedAt'>): Tenant;
     static fromPersistence(props: TenantProps): Tenant;
     get id(): string;
     get name(): string;
