@@ -2,7 +2,7 @@
  * Role-Based Access Control (RBAC) and Scope-Based Permissions
  * Implements least privilege principle
  */
-import { UserRole } from "../../domain/entities/User";
+import { UserRole } from '../../domain/entities/User';
 export declare enum Permission {
     JOBS_READ = "jobs:read",
     JOBS_WRITE = "jobs:write",
@@ -23,12 +23,10 @@ export declare enum Permission {
     ADMIN_READ = "admin:read",
     ADMIN_WRITE = "admin:write",
     ADMIN_AUDIT = "admin:audit",
-    EDGE_NODES_READ = "edge_nodes:read",
-    EDGE_NODES_WRITE = "edge_nodes:write",
-    EDGE_NODES_DELETE = "edge_nodes:delete",
-    EDGE_MODELS_READ = "edge_models:read",
-    EDGE_MODELS_WRITE = "edge_models:write",
-    EDGE_AIAS_ACCESS = "edge_aias:access"
+    EDGE_AIAS_ACCESS = "edge:aias:access",
+    EDGE_MODELS_READ = "edge:models:read",
+    EDGE_NODES_READ = "edge:nodes:read",
+    EDGE_NODES_WRITE = "edge:nodes:write"
 }
 export declare const ROLE_PERMISSIONS: Record<UserRole, Permission[]>;
 export declare class PermissionChecker {

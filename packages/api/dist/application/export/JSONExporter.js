@@ -78,9 +78,9 @@ class JSONExporter {
             // Add fees if included
             if (includeFees && match.transactionId) {
                 const fees = await (0, db_1.query)(`SELECT * FROM fees WHERE transaction_id = $1 AND tenant_id = $2`, [match.transactionId, tenantId]);
-                matchEntry.fees = fees.map((fee) => {
+                matchEntry.fees = fees.map(fee => {
                     const feeObj = { ...fee };
-                    if (!includeRawPayloads && "rawPayload" in feeObj) {
+                    if (!includeRawPayloads && 'rawPayload' in feeObj) {
                         delete feeObj.rawPayload;
                     }
                     return feeObj;
@@ -128,9 +128,9 @@ class JSONExporter {
            AND t.created_at >= $2
            AND t.created_at <= $3
          ORDER BY t.created_at DESC`, [tenantId, dateRange.start, dateRange.end]);
-            result.unmatched = unmatched.map((tx) => {
+            result.unmatched = unmatched.map(tx => {
                 const txObj = { ...tx };
-                if (!includeRawPayloads && "rawPayload" in txObj) {
+                if (!includeRawPayloads && 'rawPayload' in txObj) {
                     delete txObj.rawPayload;
                 }
                 return txObj;

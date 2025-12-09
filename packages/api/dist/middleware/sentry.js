@@ -56,14 +56,14 @@ function initializeSentry() {
         return;
     }
     if (!validation_1.validatedConfig.sentry.dsn) {
-        console.log("Sentry DSN not configured, skipping Sentry initialization");
+        console.log('Sentry DSN not configured, skipping Sentry initialization');
         return;
     }
     Sentry.init({
         dsn: validation_1.validatedConfig.sentry.dsn,
         environment: validation_1.validatedConfig.sentry.environment,
         tracesSampleRate: validation_1.validatedConfig.sentry.tracesSampleRate,
-        profilesSampleRate: validation_1.validatedConfig.sentry.environment === "production" ? 0.1 : 1.0,
+        profilesSampleRate: validation_1.validatedConfig.sentry.environment === 'production' ? 0.1 : 1.0,
         integrations: [
             new profiling_node_1.ProfilingIntegration(),
             new Sentry.Integrations.Http({ tracing: true }),
@@ -71,14 +71,14 @@ function initializeSentry() {
         ],
         beforeSend(event, _hint) {
             // Don't send events in development unless explicitly enabled
-            if (validation_1.validatedConfig.nodeEnv === "development" && !process.env.SENTRY_ENABLE_DEV) {
+            if (validation_1.validatedConfig.nodeEnv === 'development' && !process.env.SENTRY_ENABLE_DEV) {
                 return null;
             }
             return event;
         },
     });
     sentryInitialized = true;
-    console.log("Sentry initialized");
+    console.log('Sentry initialized');
 }
 /**
  * Sentry request handler middleware
@@ -89,7 +89,7 @@ function sentryRequestHandler() {
         return (_req, _res, next) => next();
     }
     return Sentry.Handlers.requestHandler({
-        user: ["id", "email"],
+        user: ['id', 'email'],
         ip: true,
     });
 }
@@ -158,7 +158,7 @@ function captureException(error, context) {
 /**
  * Capture message to Sentry
  */
-function captureMessage(message, level = "info", context) {
+function captureMessage(message, level = 'info', context) {
     if (!sentryInitialized) {
         return;
     }

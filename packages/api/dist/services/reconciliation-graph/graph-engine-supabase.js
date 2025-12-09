@@ -8,7 +8,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.graphEngineSupabase = exports.ReconciliationGraphEngineSupabase = void 0;
 const client_1 = require("../../infrastructure/supabase/client");
 const events_1 = require("events");
-const logger_1 = require("../../utils/logger");
 class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
     updateSubscribers = new Map();
     /**
@@ -18,15 +17,15 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
         // Subscribe to node updates
         const _nodesChannel = client_1.supabaseRealtime
             .channel(`reconciliation-graph-nodes-${jobId}`)
-            .on("postgres_changes", {
-            event: "*",
-            schema: "public",
-            table: "reconciliation_graph_nodes",
+            .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'reconciliation_graph_nodes',
             filter: `job_id=eq.${jobId}`,
         }, (payload) => {
-            this.emit("node_updated", payload);
+            this.emit('node_updated', payload);
             this.notifySubscribers(jobId, {
-                type: payload.eventType === "INSERT" ? "node_added" : "node_updated",
+                type: payload.eventType === 'INSERT' ? 'node_added' : 'node_updated',
                 data: payload.new,
                 timestamp: new Date(),
             });
@@ -36,14 +35,14 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
         // Subscribe to edge updates
         const _edgesChannel = client_1.supabaseRealtime
             .channel(`reconciliation-graph-edges-${jobId}`)
-            .on("postgres_changes", {
-            event: "*",
-            schema: "public",
-            table: "reconciliation_graph_edges",
+            .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'reconciliation_graph_edges',
         }, (payload) => {
-            this.emit("edge_updated", payload);
+            this.emit('edge_updated', payload);
             this.notifySubscribers(jobId, {
-                type: payload.eventType === "INSERT" ? "edge_added" : "edge_updated",
+                type: payload.eventType === 'INSERT' ? 'edge_added' : 'edge_updated',
                 data: payload.new,
                 timestamp: new Date(),
             });
@@ -56,7 +55,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
      */
     async addNode(jobId, node) {
         const { data, error } = await client_1.supabase
-            .from("reconciliation_graph_nodes")
+            .from('reconciliation_graph_nodes')
             .upsert({
             id: node.id,
             job_id: jobId,
@@ -70,7 +69,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
             confidence: node.confidence,
             metadata: node.metadata || {},
         }, {
-            onConflict: "id",
+            onConflict: 'id',
         })
             .select()
             .single();
@@ -90,7 +89,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
             confidence: data.confidence,
             metadata: data.metadata,
         };
-        this.emit("node_added", savedNode);
+        this.emit('node_added', savedNode);
         return savedNode;
     }
     /**
@@ -99,20 +98,20 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
     async addEdge(_jobId, edge) {
         // Verify nodes exist
         const { data: sourceNode } = await client_1.supabase
-            .from("reconciliation_graph_nodes")
-            .select("id")
-            .eq("id", edge.source)
+            .from('reconciliation_graph_nodes')
+            .select('id')
+            .eq('id', edge.source)
             .single();
         const { data: targetNode } = await client_1.supabase
-            .from("reconciliation_graph_nodes")
-            .select("id")
-            .eq("id", edge.target)
+            .from('reconciliation_graph_nodes')
+            .select('id')
+            .eq('id', edge.target)
             .single();
         if (!sourceNode || !targetNode) {
             throw new Error(`Nodes ${edge.source} or ${edge.target} do not exist`);
         }
         const { data, error } = await client_1.supabase
-            .from("reconciliation_graph_edges")
+            .from('reconciliation_graph_edges')
             .upsert({
             id: edge.id,
             source_node_id: edge.source,
@@ -121,7 +120,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
             confidence: edge.confidence,
             metadata: edge.metadata || {},
         }, {
-            onConflict: "id",
+            onConflict: 'id',
         })
             .select()
             .single();
@@ -137,7 +136,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
             metadata: data.metadata,
             createdAt: new Date(data.created_at),
         };
-        this.emit("edge_added", savedEdge);
+        this.emit('edge_added', savedEdge);
         return savedEdge;
     }
     /**
@@ -145,22 +144,22 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
      */
     async query(query) {
         let nodesQuery = client_1.supabase
-            .from("reconciliation_graph_nodes")
-            .select("*")
-            .eq("job_id", query.jobId);
+            .from('reconciliation_graph_nodes')
+            .select('*')
+            .eq('job_id', query.jobId);
         if (query.nodeType) {
-            nodesQuery = nodesQuery.eq("node_type", query.nodeType);
+            nodesQuery = nodesQuery.eq('node_type', query.nodeType);
         }
         if (query.sourceId) {
-            nodesQuery = nodesQuery.eq("source_id", query.sourceId);
+            nodesQuery = nodesQuery.eq('source_id', query.sourceId);
         }
         if (query.targetId) {
-            nodesQuery = nodesQuery.eq("target_id", query.targetId);
+            nodesQuery = nodesQuery.eq('target_id', query.targetId);
         }
         if (query.dateRange) {
             nodesQuery = nodesQuery
-                .gte("timestamp", query.dateRange.start.toISOString())
-                .lte("timestamp", query.dateRange.end.toISOString());
+                .gte('timestamp', query.dateRange.start.toISOString())
+                .lte('timestamp', query.dateRange.end.toISOString());
         }
         if (query.offset) {
             nodesQuery = nodesQuery.range(query.offset, query.offset + (query.limit || 100) - 1);
@@ -186,12 +185,12 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
             metadata: n.metadata,
         }));
         // Get edges for these nodes
-        const nodeIds = nodes.map((n) => n.id);
+        const nodeIds = nodes.map(n => n.id);
         const { data: edgesData, error: edgesError } = await client_1.supabase
-            .from("reconciliation_graph_edges")
-            .select("*")
-            .in("source_node_id", nodeIds)
-            .in("target_node_id", nodeIds);
+            .from('reconciliation_graph_edges')
+            .select('*')
+            .in('source_node_id', nodeIds)
+            .in('target_node_id', nodeIds);
         if (edgesError) {
             throw new Error(`Failed to query edges: ${edgesError.message}`);
         }
@@ -214,8 +213,8 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
         if (nodes.length === 0) {
             return null;
         }
-        const nodeMap = new Map(nodes.map((n) => [n.id, n]));
-        const edgeMap = new Map(edges.map((e) => [e.id, e]));
+        const nodeMap = new Map(nodes.map(n => [n.id, n]));
+        const edgeMap = new Map(edges.map(e => [e.id, e]));
         return {
             nodes: nodeMap,
             edges: edgeMap,
@@ -229,9 +228,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
     subscribe(jobId, callback) {
         if (!this.updateSubscribers.has(jobId)) {
             this.updateSubscribers.set(jobId, new Set());
-            this.initialize(jobId).catch((error) => {
-                (0, logger_1.logError)("Failed to initialize graph engine", error, { jobId });
-            });
+            this.initialize(jobId).catch(console.error);
         }
         this.updateSubscribers.get(jobId).add(callback);
         return () => {
@@ -244,12 +241,12 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
     notifySubscribers(jobId, update) {
         const subscribers = this.updateSubscribers.get(jobId);
         if (subscribers) {
-            subscribers.forEach((callback) => {
+            subscribers.forEach(callback => {
                 try {
                     callback(update);
                 }
                 catch (error) {
-                    (0, logger_1.logError)("Error notifying subscriber", error, { jobId });
+                    console.error('Error notifying subscriber:', error);
                 }
             });
         }

@@ -5,7 +5,7 @@ interface AlertThresholds {
     databaseConnections: number;
 }
 interface Alert {
-    severity: "low" | "medium" | "high" | "critical";
+    severity: 'low' | 'medium' | 'high' | 'critical';
     title: string;
     message: string;
     metadata?: Record<string, unknown>;

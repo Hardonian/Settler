@@ -1,1 +1,1 @@
-{"version":3,"file":"ai-assistant.d.ts","sourceRoot":"","sources":["../../src/routes/ai-assistant.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAWH,QAAA,MAAM,MAAM,4CAAW,CAAC;AA+TxB,OAAO,EAAE,MAAM,IAAI,iBAAiB,EAAE,CAAC"}
+{"version":3,"file":"ai-assistant.d.ts","sourceRoot":"","sources":["../../src/routes/ai-assistant.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAWH,QAAA,MAAM,MAAM,4CAAW,CAAC;AAgSxB,OAAO,EAAE,MAAM,IAAI,iBAAiB,EAAE,CAAC"}

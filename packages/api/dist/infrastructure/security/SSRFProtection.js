@@ -24,7 +24,12 @@ const PRIVATE_IP_RANGES = [
     /^fe80:/,
 ];
 // Reserved/localhost domains
-const RESERVED_DOMAINS = ["localhost", "127.0.0.1", "0.0.0.0", "::1"];
+const RESERVED_DOMAINS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    '::1',
+];
 /**
  * Check if hostname is an internal IP
  */
@@ -43,7 +48,7 @@ async function validateExternalUrl(url) {
     try {
         const parsed = new URL(url);
         // Must use HTTPS (except for localhost in dev)
-        if (parsed.protocol !== "https:" && parsed.hostname !== "localhost") {
+        if (parsed.protocol !== 'https:' && parsed.hostname !== 'localhost') {
             return false;
         }
         // Check if hostname is internal
@@ -76,7 +81,7 @@ function isAllowedUrl(url, allowedDomains = []) {
         const parsed = new URL(url);
         // If allowlist is empty, use general validation
         if (allowedDomains.length === 0) {
-            return parsed.protocol === "https:" && !isInternalIP(parsed.hostname);
+            return parsed.protocol === 'https:' && !isInternalIP(parsed.hostname);
         }
         // Check if hostname is in allowlist
         return allowedDomains.some((domain) => {

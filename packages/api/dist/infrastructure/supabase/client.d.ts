@@ -7,7 +7,7 @@
  * - pgvector extension (vector database for AI)
  * - Edge Functions (serverless compute)
  */
-import { SupabaseClient } from "@supabase/supabase-js";
+import { SupabaseClient } from '@supabase/supabase-js';
 /**
  * Supabase client for database operations
  */

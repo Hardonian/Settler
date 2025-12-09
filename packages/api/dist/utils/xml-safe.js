@@ -42,16 +42,16 @@ function validateXMLForXXE(xml) {
     // Check for external entity declarations
     const externalEntityPattern = /<!ENTITY\s+\S+\s+SYSTEM\s+["']/i;
     if (externalEntityPattern.test(xml)) {
-        return { safe: false, reason: "External entity declarations detected" };
+        return { safe: false, reason: 'External entity declarations detected' };
     }
     // Check for file:// protocol
-    if (xml.includes("file://")) {
-        return { safe: false, reason: "file:// protocol detected" };
+    if (xml.includes('file://')) {
+        return { safe: false, reason: 'file:// protocol detected' };
     }
     // Check for local file paths
     const localPathPattern = /(\.\.\/|\.\.\\|C:\\|\\etc\\|\\windows\\)/i;
     if (localPathPattern.test(xml)) {
-        return { safe: false, reason: "Local file path detected" };
+        return { safe: false, reason: 'Local file path detected' };
     }
     return { safe: true };
 }
@@ -60,9 +60,9 @@ function validateXMLForXXE(xml) {
  */
 function sanitizeXML(xml) {
     // Remove DOCTYPE declarations (they can contain entity definitions)
-    let sanitized = xml.replace(/<!DOCTYPE[^>]*>/gi, "");
+    let sanitized = xml.replace(/<!DOCTYPE[^>]*>/gi, '');
     // Remove entity declarations
-    sanitized = sanitized.replace(/<!ENTITY[^>]*>/gi, "");
+    sanitized = sanitized.replace(/<!ENTITY[^>]*>/gi, '');
     return sanitized;
 }
 //# sourceMappingURL=xml-safe.js.map

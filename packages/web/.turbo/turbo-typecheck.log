@@ -1,4 +1,25 @@
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
 
 > @settler/web@1.0.0 typecheck
-> tsc --noEmit
+> tsc --noEmit --incremental
 
+src/components/ui/__tests__/button.test.tsx(15,63): error TS2339: Property 'toBeInTheDocument' does not exist on type 'JestMatchers<HTMLElement>'.
+src/components/ui/__tests__/button.test.tsx(21,20): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<HTMLElement>'.
+src/components/ui/__tests__/button.test.tsx(27,20): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<HTMLElement>'.
+src/components/ui/__tests__/button.test.tsx(31,20): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<HTMLElement>'.
+src/components/ui/__tests__/button.test.tsx(37,20): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<HTMLElement>'.
+src/components/ui/__tests__/button.test.tsx(41,20): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<HTMLElement>'.
+src/components/ui/__tests__/button.test.tsx(58,20): error TS2339: Property 'toBeDisabled' does not exist on type 'JestMatchers<HTMLElement>'.
+src/components/ui/__tests__/button.test.tsx(59,20): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<HTMLElement>'.
+src/components/ui/__tests__/button.test.tsx(65,20): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<HTMLElement>'.
+src/components/ui/__tests__/button.test.tsx(77,20): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<HTMLElement>'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /workspace/packages/web
+npm error workspace @settler/web@1.0.0
+npm error location /workspace/packages/web
+npm error command failed
+npm error command sh -c tsc --noEmit --incremental

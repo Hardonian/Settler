@@ -1,5 +1,5 @@
-import { ITenantRepository } from "../../domain/repositories/ITenantRepository";
-import { Tenant } from "../../domain/entities/Tenant";
+import { ITenantRepository } from '../../domain/repositories/ITenantRepository';
+import { Tenant } from '../../domain/entities/Tenant';
 export declare class TenantRepository implements ITenantRepository {
     findById(id: string): Promise<Tenant | null>;
     findBySlug(slug: string): Promise<Tenant | null>;

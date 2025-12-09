@@ -2,7 +2,7 @@
  * Tenant-Aware Connection Pool
  * Manages database connections with tenant context for RLS
  */
-import { Pool, PoolClient } from "pg";
+import { Pool, PoolClient } from 'pg';
 export declare class TenantConnectionPool {
     private pool;
     private tenantPools;

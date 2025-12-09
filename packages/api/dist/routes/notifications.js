@@ -20,11 +20,11 @@ exports.notificationsRouter = router;
  * Test notification endpoint
  * POST /api/v1/notifications/test
  */
-router.post("/test", auth_1.authMiddleware, async (req, res) => {
+router.post('/test', auth_1.authMiddleware, async (req, res) => {
     try {
         const { type } = req.body;
         // In production, this would send actual notifications
-        (0, logger_1.logInfo)("Test notification requested", {
+        (0, logger_1.logInfo)('Test notification requested', {
             type,
             tenantId: req.tenantId,
         });
@@ -36,10 +36,10 @@ router.post("/test", auth_1.authMiddleware, async (req, res) => {
         });
     }
     catch (error) {
-        (0, logger_1.logError)("Test notification failed", error);
+        (0, logger_1.logError)('Test notification failed', error);
         return res.status(500).json({
-            error: "Internal Server Error",
-            message: "Failed to send test notification",
+            error: 'Internal Server Error',
+            message: 'Failed to send test notification',
         });
     }
 });
@@ -47,11 +47,11 @@ router.post("/test", auth_1.authMiddleware, async (req, res) => {
  * Configure notification channels
  * POST /api/v1/notifications/channels
  */
-router.post("/channels", auth_1.authMiddleware, async (req, res) => {
+router.post('/channels', auth_1.authMiddleware, async (req, res) => {
     try {
         const { channel } = req.body;
         // In production, save to database
-        (0, logger_1.logInfo)("Notification channel configured", {
+        (0, logger_1.logInfo)('Notification channel configured', {
             channel,
             tenantId: req.tenantId,
         });
@@ -62,10 +62,10 @@ router.post("/channels", auth_1.authMiddleware, async (req, res) => {
         });
     }
     catch (error) {
-        (0, logger_1.logError)("Failed to configure notification channel", error);
+        (0, logger_1.logError)('Failed to configure notification channel', error);
         return res.status(500).json({
-            error: "Internal Server Error",
-            message: "Failed to configure notification channel",
+            error: 'Internal Server Error',
+            message: 'Failed to configure notification channel',
         });
     }
 });
@@ -73,7 +73,7 @@ router.post("/channels", auth_1.authMiddleware, async (req, res) => {
  * Get notification preferences
  * GET /api/v1/notifications/preferences
  */
-router.get("/preferences", auth_1.authMiddleware, async (_req, res) => {
+router.get('/preferences', auth_1.authMiddleware, async (_req, res) => {
     try {
         // In production, fetch from database
         return res.json({
@@ -85,10 +85,10 @@ router.get("/preferences", auth_1.authMiddleware, async (_req, res) => {
         });
     }
     catch (error) {
-        (0, logger_1.logError)("Failed to get notification preferences", error);
+        (0, logger_1.logError)('Failed to get notification preferences', error);
         return res.status(500).json({
-            error: "Internal Server Error",
-            message: "Failed to get notification preferences",
+            error: 'Internal Server Error',
+            message: 'Failed to get notification preferences',
         });
     }
 });

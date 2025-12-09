@@ -50,7 +50,7 @@ class InMemoryFeatureFlagService {
         // Check rollout percentage
         if (flag.rolloutPercentage !== undefined) {
             const hash = this.hashContext(key, context);
-            const percentage = hash % 100;
+            const percentage = (hash % 100);
             if (percentage >= flag.rolloutPercentage) {
                 return false;
             }
@@ -80,11 +80,11 @@ class InMemoryFeatureFlagService {
         return result;
     }
     hashContext(key, context) {
-        const str = `${key}:${context.tenantId || ""}:${context.userId || ""}`;
+        const str = `${key}:${context.tenantId || ''}:${context.userId || ''}`;
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
             const char = str.charCodeAt(i);
-            hash = (hash << 5) - hash + char;
+            hash = ((hash << 5) - hash) + char;
             hash = hash & hash; // Convert to 32-bit integer
         }
         return Math.abs(hash);
@@ -113,12 +113,12 @@ function featureFlagsMiddleware() {
             const context = {
                 tenantId: req.tenantId || req.user?.tenantId,
                 userId: req.userId || req.user?.id,
-                environment: process.env.NODE_ENV || "development",
+                environment: process.env.NODE_ENV || 'development',
             };
             req.featureFlagContext = context;
             req.featureFlags = await featureFlagService.getFlags(context);
             // Log feature flag access for analytics
-            (0, logger_1.logInfo)("Feature flags loaded", {
+            (0, logger_1.logInfo)('Feature flags loaded', {
                 tenantId: context.tenantId,
                 flagsCount: Object.keys(req.featureFlags).length,
             });
@@ -126,7 +126,7 @@ function featureFlagsMiddleware() {
         }
         catch (error) {
             // Don't fail request if feature flags fail
-            (0, logger_1.logInfo)("Feature flags error (non-blocking)", { error });
+            (0, logger_1.logInfo)('Feature flags error (non-blocking)', { error });
             req.featureFlags = {};
             next();
         }
@@ -137,14 +137,14 @@ function featureFlagsMiddleware() {
  */
 function isFeatureEnabled(req, key) {
     const value = req.featureFlags?.[key];
-    return value === true || value === "enabled";
+    return value === true || value === 'enabled';
 }
 /**
  * Get feature variant (for A/B testing)
  */
 function getFeatureVariant(req, key) {
     const value = req.featureFlags?.[key];
-    if (typeof value === "string" && value !== "enabled" && value !== "disabled") {
+    if (typeof value === 'string' && value !== 'enabled' && value !== 'disabled') {
         return value;
     }
     return null;
@@ -156,7 +156,7 @@ function requireFeatureFlag(key) {
     return (req, res, next) => {
         if (!isFeatureEnabled(req, key)) {
             res.status(403).json({
-                error: "Feature Not Available",
+                error: 'Feature Not Available',
                 message: `Feature flag '${key}' is not enabled for your account`,
             });
         }

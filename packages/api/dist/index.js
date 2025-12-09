@@ -35,7 +35,6 @@ const notifications_1 = require("./routes/notifications");
 const usage_1 = require("./routes/usage");
 const batch_1 = require("./routes/batch");
 const exports_1 = require("./routes/exports");
-const billing_1 = require("./routes/billing");
 const test_mode_2 = require("./middleware/test-mode");
 const feature_flags_1 = require("./middleware/feature-flags");
 const usage_tracking_1 = require("./middleware/usage-tracking");
@@ -47,14 +46,10 @@ const uuid_1 = require("uuid");
 const data_retention_1 = require("./jobs/data-retention");
 const materialized_view_refresh_1 = require("./jobs/materialized-view-refresh");
 const webhook_queue_1 = require("./utils/webhook-queue");
-const scheduler_1 = require("./infrastructure/jobs/scheduler");
-const usage_quota_1 = require("./middleware/usage-quota");
 const versioning_1 = require("./middleware/versioning");
 const v1_1 = require("./routes/v1");
 const v2_1 = require("./routes/v2");
 const reconciliation_summary_1 = require("./routes/reconciliation-summary");
-const edge_ai_1 = require("./routes/edge-ai");
-const aias_1 = require("./routes/aias");
 const SecretsManager_1 = require("./infrastructure/security/SecretsManager");
 const tracing_1 = require("./infrastructure/observability/tracing");
 const compression_1 = require("./middleware/compression");
@@ -77,7 +72,7 @@ const PORT = config_1.config.port;
 // Sentry request and tracing handlers (must be first)
 app.use((0, sentry_1.sentryRequestHandler)());
 app.use((0, sentry_1.sentryTracingHandler)());
-// Security middleware - Enhanced configuration (helmet 7.x compatible)
+// Security middleware
 app.use((0, helmet_1.default)({
     contentSecurityPolicy: {
         directives: {
@@ -85,32 +80,8 @@ app.use((0, helmet_1.default)({
             styleSrc: ["'self'", "'unsafe-inline'"],
             scriptSrc: ["'self'"],
             imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'"],
-            fontSrc: ["'self'"],
-            objectSrc: ["'none'"],
-            mediaSrc: ["'self'"],
-            frameSrc: ["'none'"],
-            baseUri: ["'self'"],
-            formAction: ["'self'"],
-            upgradeInsecureRequests: [],
         },
     },
-    crossOriginEmbedderPolicy: true,
-    crossOriginOpenerPolicy: { policy: "same-origin" },
-    crossOriginResourcePolicy: { policy: "same-origin" },
-    dnsPrefetchControl: true,
-    frameguard: { action: "deny" },
-    hidePoweredBy: true,
-    hsts: {
-        maxAge: 63072000,
-        includeSubDomains: true,
-        preload: true,
-    },
-    ieNoOpen: true,
-    noSniff: true,
-    permittedCrossDomainPolicies: false,
-    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
-    xssFilter: true,
 }));
 app.use((0, cors_1.default)({
     origin: config_1.config.allowedOrigins,
@@ -144,9 +115,9 @@ if (config_1.config.features.enableRequestTimeout) {
 }
 // Trace ID middleware
 app.use((req, res, next) => {
-    const traceId = req.headers["x-trace-id"] || (0, uuid_1.v4)();
+    const traceId = req.headers['x-trace-id'] || (0, uuid_1.v4)();
     req.traceId = traceId;
-    res.setHeader("X-Trace-Id", traceId);
+    res.setHeader('X-Trace-Id', traceId);
     next();
 });
 // Global IP-based rate limiting (backup)
@@ -158,18 +129,12 @@ const ipLimiter = (0, express_rate_limit_1.default)({
     legacyHeaders: false,
 });
 app.use("/api/", ipLimiter);
-// Stripe webhook needs raw body for signature verification
-// Apply raw body middleware specifically for webhook route
-app.post("/api/billing/webhook", express_1.default.raw({ type: "application/json", limit: "1mb" }), (_req, _res, next) => {
-    // Continue to billing router
-    next();
-});
 // Body parsing with size and depth limits
 function countDepth(obj, current = 0) {
-    if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
+    if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
         return current;
     }
-    const depths = Object.values(obj).map((v) => countDepth(v, current + 1));
+    const depths = Object.values(obj).map(v => countDepth(v, current + 1));
     return Math.max(current, ...depths);
 }
 app.use(express_1.default.json({
@@ -179,11 +144,11 @@ app.use(express_1.default.json({
             const parsed = JSON.parse(buf.toString());
             const depth = countDepth(parsed);
             if (depth > 20) {
-                throw new Error("JSON depth exceeds maximum of 20 levels");
+                throw new Error('JSON depth exceeds maximum of 20 levels');
             }
         }
         catch (error) {
-            if (error instanceof Error && error.message.includes("depth")) {
+            if (error instanceof Error && error.message.includes('depth')) {
                 throw error;
             }
             // Ignore JSON parse errors, let express handle them
@@ -197,14 +162,13 @@ app.use(express_1.default.urlencoded({ extended: true, limit: "1mb" }));
 app.use(input_sanitization_1.sanitizeInput);
 app.use(input_sanitization_1.sanitizeUrlParams);
 // Validate secrets at startup (production and preview)
-if (config_1.config.nodeEnv === "production" || config_1.config.nodeEnv === "preview") {
+if (config_1.config.nodeEnv === 'production' || config_1.config.nodeEnv === 'preview') {
     try {
         SecretsManager_1.SecretsManager.validateSecrets(SecretsManager_1.REQUIRED_SECRETS);
     }
     catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
-        // eslint-disable-next-line no-console
-        console.error("Secret validation failed:", message);
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Secret validation failed:', message);
         process.exit(1);
     }
 }
@@ -219,9 +183,6 @@ app.use("/api", versioning_1.versionMiddleware);
 // Idempotency middleware for state-changing operations
 app.use("/api/v1", (0, idempotency_1.idempotencyMiddleware)());
 app.use("/api/v2", (0, idempotency_1.idempotencyMiddleware)());
-// Usage quota checking (before rate limiting)
-app.use("/api/v1", auth_1.authMiddleware, usage_quota_1.checkUsageQuota);
-app.use("/api/v2", auth_1.authMiddleware, usage_quota_1.checkUsageQuota);
 // Rate limiting per API key
 app.use("/api/v1", auth_1.authMiddleware, (0, rate_limiter_1.rateLimitMiddleware)());
 app.use("/api/v2", auth_1.authMiddleware, (0, rate_limiter_1.rateLimitMiddleware)());
@@ -292,15 +253,6 @@ app.use("/api/v2/notifications", auth_1.authMiddleware, notifications_1.notifica
 // Usage tracking routes (requires auth)
 app.use("/api/v1/usage", auth_1.authMiddleware, usage_1.usageRouter);
 app.use("/api/v2/usage", auth_1.authMiddleware, usage_1.usageRouter);
-// Billing routes
-// Note: /api/billing/webhook is handled above with raw body middleware
-app.use("/api/billing", billing_1.billingRouter);
-// Admin billing configuration routes
-const billing_config_1 = require("./routes/admin/billing-config");
-app.use("/api/admin/billing", auth_1.authMiddleware, billing_config_1.adminBillingConfigRouter);
-// User routes (requires auth)
-const user_1 = __importDefault(require("./routes/user"));
-app.use("/api/user", auth_1.authMiddleware, user_1.default);
 // Batch processing routes (requires auth)
 app.use("/api/v1/batch", auth_1.authMiddleware, batch_1.batchRouter);
 app.use("/api/v2/batch", auth_1.authMiddleware, batch_1.batchRouter);
@@ -312,14 +264,6 @@ app.use("/api/v1", auth_1.authMiddleware, v1_1.v1Router);
 app.use("/api/v2", auth_1.authMiddleware, v2_1.v2Router);
 // Optimized reconciliation summary endpoint
 app.use("/api/v1/reconciliations", auth_1.authMiddleware, reconciliation_summary_1.reconciliationSummaryRouter);
-// Edge AI routes (public endpoints for node operations, authenticated by node_key)
-app.use("/api/edge-ai", edge_ai_1.edgeAiRouter);
-// Edge AI routes (requires auth for management)
-app.use("/api/v1/edge-ai", auth_1.authMiddleware, edge_ai_1.edgeAiRouter);
-app.use("/api/v2/edge-ai", auth_1.authMiddleware, edge_ai_1.edgeAiRouter);
-// AIAS Edge AI Accelerator Studio routes (requires auth)
-app.use("/api/v1/aias", auth_1.authMiddleware, aias_1.aiasRouter);
-app.use("/api/v2/aias", auth_1.authMiddleware, aias_1.aiasRouter);
 // Sentry error handler (before custom error handler)
 app.use((0, sentry_1.sentryErrorHandler)());
 // Error handling
@@ -337,41 +281,29 @@ async function startServer() {
         // Run startup validations
         const validation = await (0, startup_validation_1.validateStartup)();
         if (!validation.passed) {
-            (0, logger_1.logError)("Startup validation failed", undefined, { validation });
-            if (config_1.config.nodeEnv === "production") {
+            (0, logger_1.logError)('Startup validation failed', undefined, { validation });
+            if (config_1.config.nodeEnv === 'production') {
                 process.exit(1);
             }
             else {
-                (0, logger_1.logWarn)("Continuing despite validation failures (non-production mode)");
+                (0, logger_1.logWarn)('Continuing despite validation failures (non-production mode)');
             }
         }
         await (0, db_1.initDatabase)();
-        (0, logger_1.logInfo)("Database initialized");
-        // Initialize BullMQ scheduled jobs (replaces setTimeout/setInterval)
-        try {
-            await (0, scheduler_1.initializeScheduledJobs)();
-            (0, logger_1.logInfo)("Scheduled jobs initialized");
-        }
-        catch (error) {
-            (0, logger_1.logError)("Failed to initialize scheduled jobs", error);
-            // Fallback to old system if BullMQ fails
-            (0, data_retention_1.startDataRetentionJob)();
-            (0, materialized_view_refresh_1.startMaterializedViewRefreshJob)();
-        }
-        // Process pending webhooks (now handled by BullMQ, but keep as fallback)
+        (0, logger_1.logInfo)('Database initialized');
+        // Start background jobs
+        (0, data_retention_1.startDataRetentionJob)();
+        (0, materialized_view_refresh_1.startMaterializedViewRefreshJob)();
+        // Process pending webhooks every minute
         const webhookInterval = setInterval(() => {
-            (0, webhook_queue_1.processPendingWebhooks)().catch((error) => {
-                (0, logger_1.logError)("Failed to process pending webhooks", error);
+            (0, webhook_queue_1.processPendingWebhooks)().catch(error => {
+                (0, logger_1.logError)('Failed to process pending webhooks', error);
             });
         }, 60000);
         // Register webhook interval cleanup
         (0, graceful_shutdown_1.registerShutdownHandler)(async () => {
             clearInterval(webhookInterval);
-            (0, logger_1.logInfo)("Webhook processing stopped");
-        });
-        // Register scheduler shutdown
-        (0, graceful_shutdown_1.registerShutdownHandler)(async () => {
-            await (0, scheduler_1.shutdownScheduler)();
+            (0, logger_1.logInfo)('Webhook processing stopped');
         });
         const httpServer = (0, http_1.createServer)(app);
         // Initialize WebSocket server
@@ -383,13 +315,13 @@ async function startServer() {
         (0, graceful_shutdown_1.setupSignalHandlers)(server, {
             timeout: 30000, // 30 seconds
             onShutdown: async () => {
-                (0, logger_1.logInfo)("Custom shutdown tasks completed");
+                (0, logger_1.logInfo)('Custom shutdown tasks completed');
             },
         });
         return server;
     }
     catch (error) {
-        console.error("Failed to start server:", error);
+        console.error('Failed to start server:', error);
         process.exit(1);
     }
 }

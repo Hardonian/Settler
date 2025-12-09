@@ -43,19 +43,16 @@ exports.logger = winston_1.default.createLogger({
     level: config_1.config.logging.level,
     format: logFormat,
     defaultMeta: {
-        service: "settler-api",
+        service: 'settler-api',
         environment: config_1.config.nodeEnv,
     },
     transports: [
         new winston_1.default.transports.Console({
-            format: winston_1.default.format.combine(winston_1.default.format.colorize(), winston_1.default.format.printf((info) => {
-                const { timestamp, level, message, trace_id, span_id, tenant_id, ...meta } = info;
-                const metaStr = Object.keys(meta).length ? JSON.stringify((0, redaction_1.redact)(meta)) : "";
-                const traceInfo = trace_id && typeof trace_id === "string"
-                    ? `[trace_id=${trace_id.substring(0, 16)}]`
-                    : "";
-                const spanInfo = span_id && typeof span_id === "string" ? `[span_id=${span_id.substring(0, 16)}]` : "";
-                const tenantInfo = tenant_id ? `[tenant_id=${tenant_id}]` : "";
+            format: winston_1.default.format.combine(winston_1.default.format.colorize(), winston_1.default.format.printf(({ timestamp, level, message, trace_id, span_id, tenant_id, ...meta }) => {
+                const metaStr = Object.keys(meta).length ? JSON.stringify((0, redaction_1.redact)(meta)) : '';
+                const traceInfo = trace_id && typeof trace_id === 'string' ? `[trace_id=${trace_id.substring(0, 16)}]` : '';
+                const spanInfo = span_id && typeof span_id === 'string' ? `[span_id=${span_id.substring(0, 16)}]` : '';
+                const tenantInfo = tenant_id ? `[tenant_id=${tenant_id}]` : '';
                 return `${timestamp} [${level}]${traceInfo}${spanInfo}${tenantInfo}: ${message} ${metaStr}`;
             })),
         }),
@@ -81,9 +78,7 @@ function logError(message, error, meta) {
     exports.logger.error(message, {
         ...(0, redaction_1.redact)(meta),
         error: errorObj.message,
-        stack: error instanceof Error && "stack" in errorObj && errorObj.stack
-            ? String(errorObj.stack)
-            : undefined,
+        stack: error instanceof Error && 'stack' in errorObj && errorObj.stack ? String(errorObj.stack) : undefined,
     });
 }
 function logWarn(message, meta) {

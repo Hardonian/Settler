@@ -8,7 +8,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.streamProcessor = exports.StreamProcessor = void 0;
 const graph_engine_1 = require("./graph-engine");
 const events_1 = require("events");
-const logger_1 = require("../../utils/logger");
 class StreamProcessor extends events_1.EventEmitter {
     processingQueue = [];
     isProcessing = false;
@@ -23,7 +22,7 @@ class StreamProcessor extends events_1.EventEmitter {
      */
     async addEvent(event) {
         this.processingQueue.push(event);
-        this.emit("event_added", event);
+        this.emit('event_added', event);
     }
     /**
      * Start processing queue
@@ -49,8 +48,8 @@ class StreamProcessor extends events_1.EventEmitter {
             }
         }
         catch (error) {
-            (0, logger_1.logError)("Error processing batch", error);
-            this.emit("processing_error", error);
+            console.error('Error processing batch:', error);
+            this.emit('processing_error', error);
         }
         finally {
             this.isProcessing = false;
@@ -63,7 +62,7 @@ class StreamProcessor extends events_1.EventEmitter {
         // Create node from event
         const node = {
             id: event.id,
-            type: "transaction",
+            type: 'transaction',
             jobId: event.jobId,
             ...(event.sourceId !== undefined && { sourceId: event.sourceId }),
             ...(event.targetId !== undefined && { targetId: event.targetId }),
@@ -90,12 +89,12 @@ class StreamProcessor extends events_1.EventEmitter {
                 if (sourceNode && targetNode) {
                     sourceNode.confidence = match.confidence;
                     targetNode.confidence = match.confidence;
-                    sourceNode.type = "match";
-                    targetNode.type = "match";
+                    sourceNode.type = 'match';
+                    targetNode.type = 'match';
                 }
             }
         }
-        this.emit("event_processed", event);
+        this.emit('event_processed', event);
     }
     /**
      * Get matching rules for a job
@@ -106,14 +105,14 @@ class StreamProcessor extends events_1.EventEmitter {
         // For now, return default rules
         return [
             {
-                field: "amount",
-                type: "range",
+                field: 'amount',
+                type: 'range',
                 tolerance: 0.01,
                 weight: 1,
             },
             {
-                field: "referenceId",
-                type: "exact",
+                field: 'referenceId',
+                type: 'exact',
                 weight: 2,
             },
         ];

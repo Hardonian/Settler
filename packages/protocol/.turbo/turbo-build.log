@@ -6,11 +6,3 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/protocol@0.1.0 build
 > tsc
 
-sh: 1: tsc: not found
-npm error Lifecycle script `build` failed with error:
-npm error code 127
-npm error path /workspace/packages/protocol
-npm error workspace @settler/protocol@0.1.0
-npm error location /workspace/packages/protocol
-npm error command failed
-npm error command sh -c tsc

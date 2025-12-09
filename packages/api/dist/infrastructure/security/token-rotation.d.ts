@@ -13,7 +13,7 @@ export interface TokenPair {
 export interface RefreshTokenPayload {
     userId: string;
     tokenId: string;
-    type: "refresh";
+    type: 'refresh';
 }
 /**
  * Rotate refresh token: invalidate old token and issue new one

@@ -52,11 +52,11 @@ class NoisyNeighborDetection {
                 alerts.push({
                     tenantId: result.tenant_id,
                     tenantTier: result.tier,
-                    resourceType: "database",
+                    resourceType: 'database',
                     currentUsage: result.avg_query_time,
                     averageUsage: globalAvg[0]?.avg || 1,
                     threshold,
-                    severity: result.avg_query_time > threshold * 2 ? "critical" : "warning",
+                    severity: result.avg_query_time > threshold * 2 ? 'critical' : 'warning',
                     timestamp: new Date(),
                 });
             }
@@ -94,11 +94,11 @@ class NoisyNeighborDetection {
                 alerts.push({
                     tenantId: result.tenant_id,
                     tenantTier: result.tier,
-                    resourceType: "api_requests",
+                    resourceType: 'api_requests',
                     currentUsage: result.request_count,
                     averageUsage: avgResult[0]?.avg || 100,
                     threshold,
-                    severity: result.request_count > threshold * 2 ? "critical" : "warning",
+                    severity: result.request_count > threshold * 2 ? 'critical' : 'warning',
                     timestamp: new Date(),
                 });
             }
@@ -126,11 +126,11 @@ class NoisyNeighborDetection {
             alerts.push({
                 tenantId: result.tenant_id,
                 tenantTier: result.tier,
-                resourceType: "concurrent_jobs",
+                resourceType: 'concurrent_jobs',
                 currentUsage: result.concurrent_jobs,
                 averageUsage: result.quota_limit,
                 threshold: result.quota_limit * 0.8,
-                severity: usagePercent > 90 ? "critical" : "warning",
+                severity: usagePercent > 90 ? 'critical' : 'warning',
                 timestamp: new Date(),
             });
         }
@@ -141,7 +141,7 @@ class NoisyNeighborDetection {
      */
     async sendAlerts(alerts) {
         for (const alert of alerts) {
-            (0, logger_1.logWarn)("Noisy neighbor detected", {
+            (0, logger_1.logWarn)('Noisy neighbor detected', {
                 tenantId: alert.tenantId,
                 resourceType: alert.resourceType,
                 currentUsage: alert.currentUsage,

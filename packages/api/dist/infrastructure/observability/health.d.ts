@@ -3,13 +3,13 @@
  * Provides comprehensive health checks for all dependencies
  */
 export interface HealthCheck {
-    status: "healthy" | "unhealthy" | "degraded";
+    status: 'healthy' | 'unhealthy' | 'degraded';
     latency?: number;
     error?: string;
     timestamp: string;
 }
 export interface HealthStatus {
-    status: "healthy" | "degraded" | "unhealthy";
+    status: 'healthy' | 'degraded' | 'unhealthy';
     checks: {
         database: HealthCheck;
         redis?: HealthCheck;
@@ -25,10 +25,10 @@ export declare class HealthCheckService {
     checkSentry(): Promise<HealthCheck>;
     checkAll(): Promise<HealthStatus>;
     checkLive(): Promise<{
-        status: "ok";
+        status: 'ok';
     }>;
     checkReady(): Promise<{
-        status: "ready" | "not_ready";
+        status: 'ready' | 'not_ready';
     }>;
 }
 //# sourceMappingURL=health.d.ts.map

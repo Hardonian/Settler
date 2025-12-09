@@ -48,41 +48,41 @@ const webhookService = new WebhookIngestionService_1.WebhookIngestionService();
  * POST /api/v1/webhooks/receive/:adapter
  * Receive webhook from payment provider
  */
-router.post("/:adapter", async (req, res) => {
+router.post('/:adapter', async (req, res) => {
     try {
         const { adapter } = req.params;
-        const tenantId = req.headers["x-tenant-id"] || req.body.tenant_id;
+        const tenantId = req.headers['x-tenant-id'] || req.body.tenant_id;
         if (!tenantId) {
-            return (0, api_response_1.sendError)(res, 400, "BAD_REQUEST", "Tenant ID required");
+            return (0, api_response_1.sendError)(res, 400, 'BAD_REQUEST', 'Tenant ID required');
         }
         // Get signature from headers (provider-specific)
-        const signature = req.headers["x-signature"] ||
-            req.headers["stripe-signature"] ||
-            req.headers["paypal-transmission-sig"] ||
-            req.headers["x-square-signature"] ||
-            req.headers["x-square-hmacsha256-signature"] ||
-            "";
+        const signature = req.headers['x-signature'] ||
+            req.headers['stripe-signature'] ||
+            req.headers['paypal-transmission-sig'] ||
+            req.headers['x-square-signature'] ||
+            req.headers['x-square-hmacsha256-signature'] ||
+            '';
         if (!adapter || !tenantId) {
-            return (0, api_response_1.sendError)(res, 400, "BAD_REQUEST", "Adapter and Tenant ID are required");
+            return (0, api_response_1.sendError)(res, 400, 'BAD_REQUEST', 'Adapter and Tenant ID are required');
         }
         // Get webhook secret from config or database
         const secret = await getWebhookSecret(adapter, tenantId);
         if (!secret) {
-            return (0, api_response_1.sendError)(res, 401, "UNAUTHORIZED", "Webhook secret not configured");
+            return (0, api_response_1.sendError)(res, 401, 'UNAUTHORIZED', 'Webhook secret not configured');
         }
         // Process webhook
         const result = await webhookService.processWebhook(adapter, req.body, signature, secret, tenantId);
         if (!result.success) {
-            return (0, api_response_1.sendError)(res, 400, "PROCESSING_FAILED", result.errors?.join(", ") || "Failed to process webhook");
+            return (0, api_response_1.sendError)(res, 400, 'PROCESSING_FAILED', result.errors?.join(', ') || 'Failed to process webhook');
         }
         (0, api_response_1.sendSuccess)(res, {
             processed: true,
-            events: result.events.length,
+            events: result.events.length
         });
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to process webhook", 500);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to process webhook', 500);
         return;
     }
 });
@@ -90,7 +90,7 @@ router.post("/:adapter", async (req, res) => {
  * Get webhook secret from database
  */
 async function getWebhookSecret(adapter, _tenantId) {
-    const { query } = await Promise.resolve().then(() => __importStar(require("../../../db")));
+    const { query } = await Promise.resolve().then(() => __importStar(require('../../../db')));
     const result = await query(`SELECT secret FROM webhook_configs WHERE adapter = $1 LIMIT 1`, [adapter]);
     return result.length > 0 && result[0] ? result[0].secret : null;
 }

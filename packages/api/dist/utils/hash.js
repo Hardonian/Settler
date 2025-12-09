@@ -25,7 +25,7 @@ async function verifyPassword(password, hash) {
 }
 function generateApiKey() {
     const randomBytes = crypto_1.default.randomBytes(32);
-    const key = `rk_${randomBytes.toString("base64url")}`;
+    const key = `rk_${randomBytes.toString('base64url')}`;
     const prefix = key.substring(0, 12); // First 12 characters for lookup
     return { key, prefix };
 }

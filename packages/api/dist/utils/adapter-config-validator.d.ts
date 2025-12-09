@@ -7,7 +7,7 @@ export interface AdapterConfigSchema {
     required: string[];
     optional?: string[];
     fields?: Record<string, {
-        type: "string" | "number" | "boolean" | "array";
+        type: 'string' | 'number' | 'boolean' | 'array';
         description?: string;
         example?: unknown;
     }>;

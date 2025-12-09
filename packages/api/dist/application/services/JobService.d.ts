@@ -2,12 +2,12 @@
  * Job Service
  * Application service for reconciliation job operations
  */
-import { Job } from "../../domain/entities/Job";
-import { IJobRepository } from "../../domain/repositories/IJobRepository";
-import { CreateJobCommand, CreateJobCommandResult } from "../commands/CreateJobCommand";
-import { GetJobQuery, GetJobQueryResult } from "../queries/GetJobQuery";
-import { ListJobsQuery, ListJobsQueryResult } from "../queries/ListJobsQuery";
-import { IEventBus } from "../../infrastructure/events/IEventBus";
+import { Job } from '../../domain/entities/Job';
+import { IJobRepository } from '../../domain/repositories/IJobRepository';
+import { CreateJobCommand, CreateJobCommandResult } from '../commands/CreateJobCommand';
+import { GetJobQuery, GetJobQueryResult } from '../queries/GetJobQuery';
+import { ListJobsQuery, ListJobsQueryResult } from '../queries/ListJobsQuery';
+import { IEventBus } from '../../infrastructure/events/IEventBus';
 export declare class JobService {
     private jobRepository;
     private eventBus;
@@ -17,7 +17,7 @@ export declare class JobService {
     listJobs(query: ListJobsQuery): Promise<ListJobsQueryResult>;
     updateJob(jobId: string, userId: string, updates: Partial<{
         name: string;
-        rules: Job["rules"];
+        rules: Job['rules'];
         schedule: string;
         sourceConfig: Record<string, unknown>;
         targetConfig: Record<string, unknown>;

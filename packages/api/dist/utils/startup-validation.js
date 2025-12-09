@@ -43,7 +43,7 @@ const db_1 = require("../db");
 const cache_1 = require("./cache");
 const logger_1 = require("./logger");
 // Import env schema functions - using require to avoid rootDir issues
-const envSchema = require("../../../../config/env.schema");
+const envSchema = require('../../../../config/env.schema');
 const getRequiredEnvVars = envSchema.getRequiredEnvVars;
 const validateEnvVar = envSchema.validateEnvVar;
 /**
@@ -51,37 +51,37 @@ const validateEnvVar = envSchema.validateEnvVar;
  */
 function validateEnvironment() {
     const results = [];
-    const environment = config_1.config.nodeEnv === "production" ? "production" : "development";
+    const environment = config_1.config.nodeEnv === 'production' ? 'production' : 'development';
     const required = getRequiredEnvVars(environment);
     for (const spec of required) {
         const value = process.env[spec.name];
-        const validation = validateEnvVar(spec, value || "");
+        const validation = validateEnvVar(spec, value || '');
         if (!value && spec.required) {
             results.push({
                 name: spec.name,
-                status: "error",
+                status: 'error',
                 message: `Required but not set`,
             });
         }
         else if (!validation.valid) {
             results.push({
                 name: spec.name,
-                status: "error",
-                message: validation.error || "Invalid value",
+                status: 'error',
+                message: validation.error || 'Invalid value',
             });
         }
         else if (!value && spec.defaultValue !== undefined) {
             results.push({
                 name: spec.name,
-                status: "ok",
+                status: 'ok',
                 message: `Using default: ${spec.defaultValue}`,
             });
         }
         else {
             results.push({
                 name: spec.name,
-                status: "ok",
-                message: "Valid",
+                status: 'ok',
+                message: 'Valid',
             });
         }
     }
@@ -94,18 +94,18 @@ async function validateDatabase() {
     try {
         await (0, db_1.initDatabase)();
         // Test query
-        await Promise.resolve().then(() => __importStar(require("../db"))).then(({ query }) => query("SELECT 1"));
+        await Promise.resolve().then(() => __importStar(require('../db'))).then(({ query }) => query('SELECT 1'));
         return {
-            name: "database",
-            status: "ok",
-            message: "Database connection successful",
+            name: 'database',
+            status: 'ok',
+            message: 'Database connection successful',
         };
     }
     catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
+        const message = error instanceof Error ? error.message : 'Unknown error';
         return {
-            name: "database",
-            status: "error",
+            name: 'database',
+            status: 'error',
             message: `Database connection failed: ${message}`,
         };
     }
@@ -117,24 +117,24 @@ async function validateRedis() {
     const redis = (0, cache_1.getRedisClient)();
     if (!redis) {
         return {
-            name: "redis",
-            status: "warning",
-            message: "Redis not configured, using memory cache fallback",
+            name: 'redis',
+            status: 'warning',
+            message: 'Redis not configured, using memory cache fallback',
         };
     }
     try {
         await redis.ping();
         return {
-            name: "redis",
-            status: "ok",
-            message: "Redis connection successful",
+            name: 'redis',
+            status: 'ok',
+            message: 'Redis connection successful',
         };
     }
     catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
+        const message = error instanceof Error ? error.message : 'Unknown error';
         return {
-            name: "redis",
-            status: "warning",
+            name: 'redis',
+            status: 'warning',
             message: `Redis connection failed, using memory cache: ${message}`,
         };
     }
@@ -146,22 +146,22 @@ function validateEncryptionKey() {
     const key = config_1.config.encryption.key;
     if (!key) {
         return {
-            name: "encryption_key",
-            status: "error",
-            message: "ENCRYPTION_KEY is required",
+            name: 'encryption_key',
+            status: 'error',
+            message: 'ENCRYPTION_KEY is required',
         };
     }
     if (key.length !== 32 && key.length !== 64) {
         return {
-            name: "encryption_key",
-            status: "error",
+            name: 'encryption_key',
+            status: 'error',
             message: `ENCRYPTION_KEY must be 32 or 64 characters, got ${key.length}`,
         };
     }
     return {
-        name: "encryption_key",
-        status: "ok",
-        message: "Encryption key format valid",
+        name: 'encryption_key',
+        status: 'ok',
+        message: 'Encryption key format valid',
     };
 }
 /**
@@ -171,29 +171,29 @@ function validateJwtSecret() {
     const secret = config_1.config.jwt.secret;
     if (!secret) {
         return {
-            name: "jwt_secret",
-            status: "error",
-            message: "JWT_SECRET is required",
+            name: 'jwt_secret',
+            status: 'error',
+            message: 'JWT_SECRET is required',
         };
     }
     if (secret.length < 32) {
         return {
-            name: "jwt_secret",
-            status: "error",
+            name: 'jwt_secret',
+            status: 'error',
             message: `JWT_SECRET must be at least 32 characters, got ${secret.length}`,
         };
     }
-    if (secret === "dev-secret-change-in-production" && config_1.config.nodeEnv === "production") {
+    if (secret === 'dev-secret-change-in-production' && config_1.config.nodeEnv === 'production') {
         return {
-            name: "jwt_secret",
-            status: "error",
-            message: "JWT_SECRET must not use default value in production",
+            name: 'jwt_secret',
+            status: 'error',
+            message: 'JWT_SECRET must not use default value in production',
         };
     }
     return {
-        name: "jwt_secret",
-        status: "ok",
-        message: "JWT secret valid",
+        name: 'jwt_secret',
+        status: 'ok',
+        message: 'JWT secret valid',
     };
 }
 /**
@@ -201,7 +201,7 @@ function validateJwtSecret() {
  */
 async function validateStartup() {
     const results = [];
-    (0, logger_1.logInfo)("Running startup validations...");
+    (0, logger_1.logInfo)('Running startup validations...');
     // Environment variables
     const envResults = validateEnvironment();
     results.push(...envResults);
@@ -216,9 +216,9 @@ async function validateStartup() {
     }
     catch (error) {
         results.push({
-            name: "database",
-            status: "error",
-            message: `Database validation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+            name: 'database',
+            status: 'error',
+            message: `Database validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         });
     }
     // Redis (async)
@@ -228,18 +228,18 @@ async function validateStartup() {
     }
     catch (error) {
         results.push({
-            name: "redis",
-            status: "warning",
-            message: `Redis validation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+            name: 'redis',
+            status: 'warning',
+            message: `Redis validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         });
     }
     // Log results
-    const errors = results.filter((r) => r.status === "error");
-    const warnings = results.filter((r) => r.status === "warning");
-    const ok = results.filter((r) => r.status === "ok");
+    const errors = results.filter((r) => r.status === 'error');
+    const warnings = results.filter((r) => r.status === 'warning');
+    const ok = results.filter((r) => r.status === 'ok');
     (0, logger_1.logInfo)(`Startup validation complete: ${ok.length} OK, ${warnings.length} warnings, ${errors.length} errors`);
     if (errors.length > 0) {
-        (0, logger_1.logError)("Startup validation errors:", undefined, { errors });
+        (0, logger_1.logError)('Startup validation errors:', undefined, { errors });
         for (const error of errors) {
             (0, logger_1.logError)(`  ${error.name}: ${error.message}`);
         }

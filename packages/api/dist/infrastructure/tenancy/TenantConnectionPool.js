@@ -25,8 +25,8 @@ class TenantConnectionPool {
             statement_timeout: 30000,
             query_timeout: 30000,
         });
-        this.pool.on("error", (err) => {
-            console.error("Unexpected error on idle client", err);
+        this.pool.on('error', (err) => {
+            console.error('Unexpected error on idle client', err);
         });
     }
     /**
@@ -57,13 +57,13 @@ class TenantConnectionPool {
     async transaction(tenantId, callback) {
         const client = await this.getConnection(tenantId);
         try {
-            await client.query("BEGIN");
+            await client.query('BEGIN');
             const result = await callback(client);
-            await client.query("COMMIT");
+            await client.query('COMMIT');
             return result;
         }
         catch (error) {
-            await client.query("ROLLBACK");
+            await client.query('ROLLBACK');
             throw error;
         }
         finally {

@@ -18,11 +18,11 @@ function eventTrackingMiddleware(req, res, next) {
         // Track API call event
         const authReq = req;
         if (authReq.userId) {
-            (0, event_tracker_1.trackEventAsync)(authReq.userId, "APICall", {
+            (0, event_tracker_1.trackEventAsync)(authReq.userId, 'APICall', {
                 method: req.method,
                 path: req.path,
                 statusCode: res.statusCode,
-                userAgent: req.headers["user-agent"],
+                userAgent: req.headers['user-agent'],
             });
         }
         return originalSend.call(this, body);
@@ -36,10 +36,10 @@ function trackPageView(page) {
     return (req, _res, next) => {
         const authReq = req;
         if (authReq.userId) {
-            (0, event_tracker_1.trackEventAsync)(authReq.userId, "PageViewed", {
+            (0, event_tracker_1.trackEventAsync)(authReq.userId, 'PageViewed', {
                 page,
                 referrer: req.headers.referer,
-                userAgent: req.headers["user-agent"],
+                userAgent: req.headers['user-agent'],
             });
         }
         next();

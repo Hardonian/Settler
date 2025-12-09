@@ -12,7 +12,7 @@ const DEFAULT_CONFIG = {
     timeout: 30000, // 30 seconds
     errorThresholdPercentage: 50, // Open circuit after 50% failures
     resetTimeout: 60000, // Try again after 60 seconds
-    name: "circuit-breaker",
+    name: 'circuit-breaker',
 };
 /**
  * Create a circuit breaker for a function
@@ -27,31 +27,31 @@ function createCircuitBreaker(fn, config = {}) {
     };
     const breaker = new opossum_1.CircuitBreaker(fn, breakerOptions);
     // Event handlers
-    breaker.on("open", () => {
-        (0, logger_1.logWarn)("Circuit breaker opened", {
+    breaker.on('open', () => {
+        (0, logger_1.logWarn)('Circuit breaker opened', {
             name: opts.name,
             failures: breaker.stats.failures,
             fires: breaker.stats.fires,
         });
     });
-    breaker.on("halfOpen", () => {
-        (0, logger_1.logInfo)("Circuit breaker half-open", {
+    breaker.on('halfOpen', () => {
+        (0, logger_1.logInfo)('Circuit breaker half-open', {
             name: opts.name,
         });
     });
-    breaker.on("close", () => {
-        (0, logger_1.logInfo)("Circuit breaker closed", {
+    breaker.on('close', () => {
+        (0, logger_1.logInfo)('Circuit breaker closed', {
             name: opts.name,
         });
     });
-    breaker.on("reject", (error) => {
-        (0, logger_1.logWarn)("Circuit breaker rejected request", {
+    breaker.on('reject', (error) => {
+        (0, logger_1.logWarn)('Circuit breaker rejected request', {
             name: opts.name,
             error: error.message,
         });
     });
-    breaker.on("failure", (error) => {
-        (0, logger_1.logError)("Circuit breaker failure", error, {
+    breaker.on('failure', (error) => {
+        (0, logger_1.logError)('Circuit breaker failure', error, {
             name: opts.name,
         });
     });

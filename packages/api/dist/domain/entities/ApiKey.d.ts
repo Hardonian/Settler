@@ -20,7 +20,7 @@ export interface ApiKeyProps {
 export declare class ApiKey {
     private props;
     private constructor();
-    static create(props: Omit<ApiKeyProps, "id" | "createdAt" | "updatedAt">): ApiKey;
+    static create(props: Omit<ApiKeyProps, 'id' | 'createdAt' | 'updatedAt'>): ApiKey;
     static fromPersistence(props: ApiKeyProps): ApiKey;
     get id(): string;
     get userId(): string;

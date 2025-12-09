@@ -20,8 +20,8 @@ function requirePermission(...permissions) {
         try {
             if (!req.userId || !req.tenantId) {
                 res.status(401).json({
-                    error: "Unauthorized",
-                    message: "Authentication required",
+                    error: 'Unauthorized',
+                    message: 'Authentication required',
                 });
                 return;
             }
@@ -32,8 +32,8 @@ function requirePermission(...permissions) {
          WHERE u.id = $1 AND u.tenant_id = $3`, [req.userId, req.apiKeyId || null, req.tenantId]);
             if (user.length === 0 || !user[0]) {
                 res.status(403).json({
-                    error: "Forbidden",
-                    message: "User not found",
+                    error: 'Forbidden',
+                    message: 'User not found',
                 });
                 return;
             }
@@ -45,17 +45,17 @@ function requirePermission(...permissions) {
                 // Log unauthorized access attempt
                 await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
            VALUES ($1, $2, $3, $4, $5, $6, $7)`, [
-                    "unauthorized_access",
+                    'unauthorized_access',
                     req.userId,
                     req.tenantId,
                     req.ip || null,
-                    req.headers["user-agent"] || null,
+                    req.headers['user-agent'] || null,
                     req.path,
                     JSON.stringify({ requiredPermissions: permissions }),
                 ]);
                 res.status(403).json({
-                    error: "Forbidden",
-                    message: "Insufficient permissions",
+                    error: 'Forbidden',
+                    message: 'Insufficient permissions',
                     required: permissions,
                 });
                 return;
@@ -77,8 +77,8 @@ function requireAnyPermission(...permissions) {
         try {
             if (!req.userId || !req.tenantId) {
                 res.status(401).json({
-                    error: "Unauthorized",
-                    message: "Authentication required",
+                    error: 'Unauthorized',
+                    message: 'Authentication required',
                 });
                 return;
             }
@@ -88,8 +88,8 @@ function requireAnyPermission(...permissions) {
          WHERE u.id = $1 AND u.tenant_id = $3`, [req.userId, req.apiKeyId || null, req.tenantId]);
             if (user.length === 0 || !user[0]) {
                 res.status(403).json({
-                    error: "Forbidden",
-                    message: "User not found",
+                    error: 'Forbidden',
+                    message: 'User not found',
                 });
                 return;
             }
@@ -99,17 +99,17 @@ function requireAnyPermission(...permissions) {
             if (!hasPermission) {
                 await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
            VALUES ($1, $2, $3, $4, $5, $6, $7)`, [
-                    "unauthorized_access",
+                    'unauthorized_access',
                     req.userId,
                     req.tenantId,
                     req.ip || null,
-                    req.headers["user-agent"] || null,
+                    req.headers['user-agent'] || null,
                     req.path,
                     JSON.stringify({ requiredPermissions: permissions }),
                 ]);
                 res.status(403).json({
-                    error: "Forbidden",
-                    message: "Insufficient permissions",
+                    error: 'Forbidden',
+                    message: 'Insufficient permissions',
                 });
                 return;
             }
@@ -130,8 +130,8 @@ function requireResourceOwnership(req, res, next, resourceType, resourceId) {
     (async () => {
         try {
             if (!req.userId || !req.tenantId) {
-                const error = { error: "Unauthorized", message: "Authentication required" };
-                if (typeof next === "function" && next.length === 1) {
+                const error = { error: 'Unauthorized', message: 'Authentication required' };
+                if (typeof next === 'function' && next.length === 1) {
                     // Callback pattern
                     next(error);
                 }
@@ -144,13 +144,13 @@ function requireResourceOwnership(req, res, next, resourceType, resourceId) {
             // Check resource ownership based on type
             let owned = false;
             switch (resourceType) {
-                case "job": {
+                case 'job': {
                     const result = await (0, db_1.query)(`SELECT id FROM reconciliation_jobs 
              WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [resourceId, req.userId, req.tenantId]);
                     owned = result.length > 0;
                     break;
                 }
-                case "webhook": {
+                case 'webhook': {
                     const result = await (0, db_1.query)(`SELECT id FROM webhooks 
              WHERE id = $1 AND tenant_id = $2`, [resourceId, req.tenantId]);
                     owned = result.length > 0;
@@ -164,8 +164,8 @@ function requireResourceOwnership(req, res, next, resourceType, resourceId) {
                     }
             }
             if (!owned) {
-                const error = { error: "Forbidden", message: "Resource not found or access denied" };
-                if (typeof next === "function" && next.length === 1) {
+                const error = { error: 'Forbidden', message: 'Resource not found or access denied' };
+                if (typeof next === 'function' && next.length === 1) {
                     // Callback pattern
                     next(error);
                 }
@@ -176,7 +176,7 @@ function requireResourceOwnership(req, res, next, resourceType, resourceId) {
                 return;
             }
             // Success - call next
-            if (typeof next === "function" && next.length === 1) {
+            if (typeof next === 'function' && next.length === 1) {
                 // Callback pattern
                 next();
             }
@@ -186,7 +186,7 @@ function requireResourceOwnership(req, res, next, resourceType, resourceId) {
             }
         }
         catch (error) {
-            if (typeof next === "function" && next.length === 1) {
+            if (typeof next === 'function' && next.length === 1) {
                 // Callback pattern
                 next(error);
             }

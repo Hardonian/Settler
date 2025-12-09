@@ -4,11 +4,11 @@
  * Aggregates anonymized reconciliation patterns across all customers to detect
  * fraud and anomalies. One customer's anomaly detection improves detection for all.
  */
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface AnonymizedPattern {
     id: string;
     patternHash: string;
-    patternType: "fraud" | "anomaly" | "performance" | "error";
+    patternType: 'fraud' | 'anomaly' | 'performance' | 'error';
     frequency: number;
     firstSeen: Date;
     lastSeen: Date;
@@ -36,14 +36,14 @@ export declare class CrossCustomerIntelligence extends EventEmitter {
      * Submit a pattern from a customer (anonymized)
      */
     submitPattern(customerId: string, pattern: {
-        type: AnonymizedPattern["patternType"];
+        type: AnonymizedPattern['patternType'];
         data: Record<string, unknown>;
     }): string;
     /**
      * Check if a pattern matches known patterns
      */
     checkPattern(pattern: {
-        type: AnonymizedPattern["patternType"];
+        type: AnonymizedPattern['patternType'];
         data: Record<string, unknown>;
     }): PatternMatch | null;
     /**

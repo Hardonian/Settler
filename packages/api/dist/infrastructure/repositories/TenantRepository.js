@@ -22,7 +22,7 @@ class TenantRepository {
     async findSubAccounts(parentTenantId) {
         const rows = await (0, db_1.query)(`SELECT * FROM tenants 
        WHERE parent_tenant_id = $1 AND deleted_at IS NULL`, [parentTenantId]);
-        return rows.map((row) => Tenant_1.Tenant.fromPersistence(row));
+        return rows.map(row => Tenant_1.Tenant.fromPersistence(row));
     }
     async findParentTenant(tenantId) {
         const rows = await (0, db_1.query)(`SELECT parent_tenant_id FROM tenants WHERE id = $1 AND deleted_at IS NULL`, [tenantId]);
@@ -33,7 +33,7 @@ class TenantRepository {
     }
     async findAll() {
         const rows = await (0, db_1.query)(`SELECT * FROM tenants WHERE deleted_at IS NULL`);
-        return rows.map((row) => Tenant_1.Tenant.fromPersistence(row));
+        return rows.map(row => Tenant_1.Tenant.fromPersistence(row));
     }
     async save(tenant) {
         const props = tenant.toPersistence();

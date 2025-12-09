@@ -31,7 +31,7 @@ class AlertManager {
             this.alertHistory = this.alertHistory.slice(-this.maxHistory);
         }
         // Log alert
-        if (alert.severity === "critical" || alert.severity === "high") {
+        if (alert.severity === 'critical' || alert.severity === 'high') {
             (0, logger_1.logError)(`ALERT: ${alert.title}`, new Error(alert.message), alert.metadata);
         }
         else {
@@ -44,16 +44,16 @@ class AlertManager {
         const errorRate = totalRequests > 0 ? errorCount / totalRequests : 0;
         if (errorRate > this.thresholds.errorRate) {
             await this.send({
-                severity: errorRate > 0.1 ? "critical" : "high",
-                title: "High error rate detected",
-                message: `Error rate: ${(errorRate * 100).toFixed(2)}% (threshold: ${this.thresholds.errorRate * 100}%)`,
+                severity: errorRate > 0.1 ? 'critical' : 'high',
+                title: 'High error rate detected',
+                message: `Error rate: ${(errorRate * 100).toFixed(2)}% (threshold: ${(this.thresholds.errorRate * 100)}%)`,
                 metadata: { errorRate, errorCount, totalRequests, windowMs },
             });
         }
         if (errorCount > this.thresholds.errorCount) {
             await this.send({
-                severity: "high",
-                title: "High error count detected",
+                severity: 'high',
+                title: 'High error count detected',
                 message: `${errorCount} errors in ${windowMs}ms`,
                 metadata: { errorCount, windowMs },
             });
@@ -62,8 +62,8 @@ class AlertManager {
     async checkLatency(p95Latency) {
         if (p95Latency > this.thresholds.latencyP95) {
             await this.send({
-                severity: p95Latency > 5000 ? "critical" : "high",
-                title: "High latency detected",
+                severity: p95Latency > 5000 ? 'critical' : 'high',
+                title: 'High latency detected',
                 message: `P95 latency: ${p95Latency}ms (threshold: ${this.thresholds.latencyP95}ms)`,
                 metadata: { p95Latency, threshold: this.thresholds.latencyP95 },
             });
@@ -72,8 +72,8 @@ class AlertManager {
     async checkDatabaseConnections(utilization) {
         if (utilization > this.thresholds.databaseConnections) {
             await this.send({
-                severity: utilization > 0.95 ? "critical" : "high",
-                title: "High database connection pool utilization",
+                severity: utilization > 0.95 ? 'critical' : 'high',
+                title: 'High database connection pool utilization',
                 message: `Pool utilization: ${(utilization * 100).toFixed(1)}%`,
                 metadata: { utilization, threshold: this.thresholds.databaseConnections },
             });

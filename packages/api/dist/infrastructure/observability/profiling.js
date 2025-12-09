@@ -36,7 +36,7 @@ function profilingMiddleware(req, res, next) {
         };
         // Log slow requests
         if (duration > SLOW_REQUEST_THRESHOLD) {
-            (0, logger_1.logWarn)("Slow request detected", {
+            (0, logger_1.logWarn)('Slow request detected', {
                 path: req.path,
                 method: req.method,
                 duration,
@@ -47,21 +47,21 @@ function profilingMiddleware(req, res, next) {
             });
         }
         // Add metrics to response header (for debugging)
-        res.setHeader("X-Request-Duration", `${duration.toFixed(2)}ms`);
+        res.setHeader('X-Request-Duration', `${duration.toFixed(2)}ms`);
         if (queryCount > 0) {
-            res.setHeader("X-DB-Queries", queryCount.toString());
-            res.setHeader("X-DB-Duration", `${dbDuration.toFixed(2)}ms`);
+            res.setHeader('X-DB-Queries', queryCount.toString());
+            res.setHeader('X-DB-Duration', `${dbDuration.toFixed(2)}ms`);
         }
         // Call original end with proper typing
-        if (typeof encoding === "function") {
+        if (typeof encoding === 'function') {
             // encoding is actually a callback function
             originalEnd(chunk, encoding);
         }
-        else if (typeof chunk === "function") {
+        else if (typeof chunk === 'function') {
             // chunk is actually a callback function
             originalEnd(chunk);
         }
-        else if (encoding !== undefined && typeof encoding === "string") {
+        else if (encoding !== undefined && typeof encoding === 'string') {
             // encoding is a BufferEncoding string
             originalEnd(chunk, encoding, cb);
         }
@@ -84,8 +84,8 @@ function profileQuery(queryFn, queryName) {
     return queryFn().then((result) => {
         const duration = perf_hooks_1.performance.now() - start;
         if (duration > SLOW_DB_THRESHOLD) {
-            (0, logger_1.logWarn)("Slow database query detected", {
-                query: queryName || "unknown",
+            (0, logger_1.logWarn)('Slow database query detected', {
+                query: queryName || 'unknown',
                 duration,
             });
         }
@@ -104,9 +104,9 @@ function getMemoryUsage() {
 function formatMemoryUsage(usage) {
     const formatBytes = (bytes) => {
         if (bytes === 0)
-            return "0 B";
+            return '0 B';
         const k = 1024;
-        const sizes = ["B", "KB", "MB", "GB"];
+        const sizes = ['B', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
     };

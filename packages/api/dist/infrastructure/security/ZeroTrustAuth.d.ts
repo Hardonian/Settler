@@ -2,13 +2,13 @@
  * Zero Trust Authentication
  * Implements Zero Trust principles: Never trust, always verify
  */
-import { User, UserRole } from "../../domain/entities/User";
+import { User, UserRole } from '../../domain/entities/User';
 export interface TokenPayload {
     userId: string;
     tenantId: string;
     role: UserRole;
     scopes: string[];
-    type: "access" | "refresh";
+    type: 'access' | 'refresh';
     jti: string;
     iat: number;
     exp: number;

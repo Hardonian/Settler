@@ -24,7 +24,7 @@ exports.parseCursorPaginationParams = parseCursorPaginationParams;
  */
 function decodeCursor(cursor) {
     try {
-        const decoded = Buffer.from(cursor, "base64").toString("utf-8");
+        const decoded = Buffer.from(cursor, 'base64').toString('utf-8');
         return JSON.parse(decoded);
     }
     catch {
@@ -49,24 +49,24 @@ function encodeCursor(created_at, id) {
         created_at: created_at instanceof Date ? created_at.toISOString() : created_at,
         id,
     };
-    return Buffer.from(JSON.stringify(cursor)).toString("base64");
+    return Buffer.from(JSON.stringify(cursor)).toString('base64');
 }
 /**
  * Build cursor-based WHERE clause for SQL
  */
-function buildCursorWhereClause(params, tableAlias = "") {
-    const prefix = tableAlias ? `${tableAlias}.` : "";
+function buildCursorWhereClause(params, tableAlias = '') {
+    const prefix = tableAlias ? `${tableAlias}.` : '';
     // Limit is reserved for future query building
     const _limit = Math.min(params.limit || 100, 1000);
     void _limit;
-    const direction = params.direction || "next";
+    const direction = params.direction || 'next';
     let paramIndex = 1;
     const queryParams = [];
-    let whereClause = "";
+    let whereClause = '';
     if (params.cursor) {
         const decoded = decodeCursor(params.cursor);
         if (decoded) {
-            if (direction === "next") {
+            if (direction === 'next') {
                 // Get items after cursor
                 whereClause = `WHERE (${prefix}created_at, ${prefix}id) < ($${paramIndex}, $${paramIndex + 1})`;
                 queryParams.push(decoded.created_at, decoded.id);
@@ -89,9 +89,9 @@ function buildCursorWhereClause(params, tableAlias = "") {
 /**
  * Build cursor-based ORDER BY clause
  */
-function buildCursorOrderBy(direction = "next", tableAlias = "") {
-    const prefix = tableAlias ? `${tableAlias}.` : "";
-    if (direction === "next") {
+function buildCursorOrderBy(direction = 'next', tableAlias = '') {
+    const prefix = tableAlias ? `${tableAlias}.` : '';
+    if (direction === 'next') {
         return `ORDER BY ${prefix}created_at DESC, ${prefix}id DESC`;
     }
     else {
@@ -101,7 +101,7 @@ function buildCursorOrderBy(direction = "next", tableAlias = "") {
 /**
  * Generate pagination response with cursors
  */
-function createCursorPaginationResponse(items, limit, direction = "next") {
+function createCursorPaginationResponse(items, limit, direction = 'next') {
     const hasMore = items.length > limit;
     const paginatedItems = hasMore ? items.slice(0, limit) : items;
     let nextCursor;
@@ -109,7 +109,7 @@ function createCursorPaginationResponse(items, limit, direction = "next") {
     if (paginatedItems.length > 0) {
         const firstItem = paginatedItems[0];
         const lastItem = paginatedItems[paginatedItems.length - 1];
-        if (direction === "next") {
+        if (direction === 'next') {
             // For next page, use last item as cursor
             if (hasMore && lastItem) {
                 nextCursor = encodeCursor(lastItem.created_at, lastItem.id);
@@ -153,7 +153,7 @@ function parseCursorPaginationParams(req) {
     if (req.query.limit) {
         result.limit = parseInt(req.query.limit, 10);
     }
-    result.direction = req.query.direction || "next";
+    result.direction = req.query.direction || 'next';
     return result;
 }
 //# sourceMappingURL=pagination.js.map

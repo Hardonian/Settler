@@ -1,12 +1,8 @@
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
 
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
-sh: 1: tsc: not found
-npm error Lifecycle script `typecheck` failed with error:
-npm error code 127
-npm error path /workspace/packages/api
-npm error workspace @settler/api@1.0.0
-npm error location /workspace/packages/api
-npm error command failed
-npm error command sh -c tsc --noEmit

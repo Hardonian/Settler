@@ -32,17 +32,17 @@ class ReconciliationCommandHandlers {
         // Append to event store
         await this.eventStore.append(event);
         // Publish to event bus for projections and saga orchestration
-        await this.eventBus.publish(new ReconciliationStartedDomainEvent(command.reconciliation_id, command.job_id, event.metadata.correlation_id, command.tenant_id, command.date_range, command.source_adapter === "shopify" ? { adapter: command.source_adapter } : undefined, command.target_adapter === "stripe" ? { adapter: command.target_adapter } : undefined));
+        await this.eventBus.publish(new ReconciliationStartedDomainEvent(command.reconciliation_id, command.job_id, event.metadata.correlation_id, command.tenant_id, command.date_range, command.source_adapter === 'shopify' ? { adapter: command.source_adapter } : undefined, command.target_adapter === 'stripe' ? { adapter: command.target_adapter } : undefined));
     }
     async handleRetryReconciliation(command) {
         // Get existing events to determine current state
-        const events = await this.eventStore.getEvents(command.reconciliation_id, "reconciliation");
+        const events = await this.eventStore.getEvents(command.reconciliation_id, 'reconciliation');
         if (events.length === 0) {
-            throw new Error("Reconciliation not found");
+            throw new Error('Reconciliation not found');
         }
         const lastEvent = events[events.length - 1];
         if (!lastEvent) {
-            throw new Error("Reconciliation not found");
+            throw new Error('Reconciliation not found');
         }
         const correlationId = command.correlation_id || lastEvent.metadata.correlation_id;
         // Create retry event (could be a new event type)
@@ -61,20 +61,20 @@ class ReconciliationCommandHandlers {
         await this.eventBus.publish(new ReconciliationRetryDomainEvent(command.reconciliation_id, correlationId));
     }
     async handleCancelReconciliation(command) {
-        const events = await this.eventStore.getEvents(command.reconciliation_id, "reconciliation");
+        const events = await this.eventStore.getEvents(command.reconciliation_id, 'reconciliation');
         if (events.length === 0) {
-            throw new Error("Reconciliation not found");
+            throw new Error('Reconciliation not found');
         }
         const lastEvent = events[events.length - 1];
         if (!lastEvent) {
-            throw new Error("Reconciliation not found");
+            throw new Error('Reconciliation not found');
         }
         const correlationId = command.correlation_id || lastEvent.metadata.correlation_id;
         const cancelEvent = ReconciliationEvents_1.ReconciliationEvents.ReconciliationFailed(command.reconciliation_id, {
             reconciliation_id: command.reconciliation_id,
             error: {
-                type: "CancellationError",
-                message: command.reason || "Reconciliation cancelled by user",
+                type: 'CancellationError',
+                message: command.reason || 'Reconciliation cancelled by user',
             },
             failed_at: new Date().toISOString(),
             retryable: false,
@@ -114,7 +114,7 @@ class ReconciliationStartedDomainEvent extends DomainEvent_1.DomainEvent {
         this.matchingRules = matchingRules;
     }
     get eventName() {
-        return "reconciliation.started";
+        return 'reconciliation.started';
     }
 }
 class ReconciliationRetryDomainEvent extends DomainEvent_1.DomainEvent {
@@ -126,7 +126,7 @@ class ReconciliationRetryDomainEvent extends DomainEvent_1.DomainEvent {
         this.correlationId = correlationId;
     }
     get eventName() {
-        return "reconciliation.retry";
+        return 'reconciliation.retry';
     }
 }
 class ReconciliationCancelledDomainEvent extends DomainEvent_1.DomainEvent {
@@ -138,7 +138,7 @@ class ReconciliationCancelledDomainEvent extends DomainEvent_1.DomainEvent {
         this.correlationId = correlationId;
     }
     get eventName() {
-        return "reconciliation.cancelled";
+        return 'reconciliation.cancelled';
     }
 }
 //# sourceMappingURL=ReconciliationCommandHandlers.js.map

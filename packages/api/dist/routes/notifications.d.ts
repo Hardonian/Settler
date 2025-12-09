@@ -17,7 +17,7 @@ export interface NotificationService {
     sendDiscord(message: string, webhookUrl: string): Promise<void>;
     sendPagerDuty(incident: {
         summary: string;
-        severity: "critical" | "error" | "warning" | "info";
+        severity: 'critical' | 'error' | 'warning' | 'info';
         source?: string;
     }): Promise<void>;
     sendEmail(to: string, subject: string, body: string): Promise<void>;

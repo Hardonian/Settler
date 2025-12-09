@@ -17,7 +17,7 @@ const redis_1 = require("@upstash/redis");
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_TOKEN;
 if (!redisUrl || !redisToken) {
-    console.warn("Redis not configured. Some features will be disabled.");
+    console.warn('Redis not configured. Some features will be disabled.');
 }
 /**
  * Upstash Redis client (serverless-friendly)
@@ -34,23 +34,23 @@ exports.redis = redisUrl && redisToken
 let ioredisClient = null;
 if (!exports.redis && process.env.REDIS_HOST) {
     try {
-        const Redis = require("ioredis");
+        const Redis = require('ioredis');
         ioredisClient = new Redis({
-            host: process.env.REDIS_HOST || "localhost",
-            port: parseInt(process.env.REDIS_PORT || "6379"),
+            host: process.env.REDIS_HOST || 'localhost',
+            port: parseInt(process.env.REDIS_PORT || '6379'),
             password: process.env.REDIS_PASSWORD,
-            db: parseInt(process.env.REDIS_DB || "0"),
+            db: parseInt(process.env.REDIS_DB || '0'),
             retryStrategy: (times) => {
                 const delay = Math.min(times * 50, 2000);
                 return delay;
             },
         });
-        ioredisClient.on("error", (err) => {
-            console.error("Redis connection error:", err);
+        ioredisClient.on('error', (err) => {
+            console.error('Redis connection error:', err);
         });
     }
     catch (error) {
-        console.warn("Failed to initialize Redis client:", error);
+        console.warn('Failed to initialize Redis client:', error);
     }
 }
 /**
@@ -86,7 +86,7 @@ exports.cache = {
             }
         }
         catch (error) {
-            console.error("Redis get error:", error);
+            console.error('Redis get error:', error);
             return null;
         }
     },
@@ -117,7 +117,7 @@ exports.cache = {
             }
         }
         catch (error) {
-            console.error("Redis set error:", error);
+            console.error('Redis set error:', error);
         }
     },
     /**
@@ -131,7 +131,7 @@ exports.cache = {
             await client.del(key);
         }
         catch (error) {
-            console.error("Redis del error:", error);
+            console.error('Redis del error:', error);
         }
     },
     /**
@@ -152,7 +152,7 @@ exports.cache = {
             }
         }
         catch (error) {
-            console.error("Redis exists error:", error);
+            console.error('Redis exists error:', error);
             return false;
         }
     },

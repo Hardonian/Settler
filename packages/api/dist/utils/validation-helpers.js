@@ -25,10 +25,10 @@ function parseOrThrow(schema, data, errorMessage) {
         if (errorMessage) {
             // Create a new error with the custom message since message is read-only
             const customError = new zod_1.z.ZodError(result.error.errors);
-            Object.defineProperty(customError, "message", {
+            Object.defineProperty(customError, 'message', {
                 value: errorMessage,
                 writable: true,
-                configurable: true,
+                configurable: true
             });
             throw customError;
         }
@@ -54,12 +54,10 @@ exports.paginationSchema = zod_1.z.object({
 /**
  * Validate date range
  */
-exports.dateRangeSchema = zod_1.z
-    .object({
+exports.dateRangeSchema = zod_1.z.object({
     start: zod_1.z.date(),
     end: zod_1.z.date(),
-})
-    .refine((data) => data.end >= data.start, {
-    message: "End date must be after start date",
+}).refine((data) => data.end >= data.start, {
+    message: 'End date must be after start date',
 });
 //# sourceMappingURL=validation-helpers.js.map

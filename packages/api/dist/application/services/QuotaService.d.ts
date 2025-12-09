@@ -2,7 +2,7 @@
  * Quota Service
  * Enforces resource quotas for tenants
  */
-import { ITenantRepository } from "../../domain/repositories/ITenantRepository";
+import { ITenantRepository } from '../../domain/repositories/ITenantRepository';
 export declare enum QuotaType {
     RATE_LIMIT = "rateLimitRpm",
     STORAGE = "storageBytes",

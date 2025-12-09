@@ -17,8 +17,8 @@ const router = (0, express_1.Router)();
 // Validation schemas
 const getTransactionsSchema = zod_1.z.object({
     query: zod_1.z.object({
-        page: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default("1"),
-        limit: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default("100"),
+        page: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default('1'),
+        limit: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default('100'),
         provider: zod_1.z.string().optional(),
         status: zod_1.z.string().optional(),
         type: zod_1.z.string().optional(),
@@ -36,13 +36,13 @@ const getTransactionSchema = zod_1.z.object({
  * GET /api/v1/transactions
  * List transactions with filtering and pagination
  */
-router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getTransactionsSchema), async (req, res) => {
+router.get('/', (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getTransactionsSchema), async (req, res) => {
     try {
         const queryParams = getTransactionsSchema.parse({ query: req.query });
         const { page, limit, provider, status, type, paymentId, startDate, endDate } = queryParams.query;
         const tenantId = req.tenantId;
         const offset = (page - 1) * limit;
-        let whereClause = "tenant_id = $1";
+        let whereClause = 'tenant_id = $1';
         const params = [tenantId];
         let paramIndex = 2;
         if (provider) {
@@ -78,7 +78,7 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
         // Get total count
         const countResult = await (0, db_1.query)(`SELECT COUNT(*) as count FROM transactions WHERE ${whereClause}`, params);
         if (!countResult[0]) {
-            throw new Error("Failed to get transaction count");
+            throw new Error('Failed to get transaction count');
         }
         const total = parseInt(countResult[0].count, 10);
         // Get transactions
@@ -105,7 +105,7 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to fetch transactions", 500);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to fetch transactions', 500);
         return;
     }
 });
@@ -113,7 +113,7 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
  * GET /api/v1/transactions/:id
  * Get transaction by ID
  */
-router.get("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getTransactionSchema), async (req, res) => {
+router.get('/:id', (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getTransactionSchema), async (req, res) => {
     try {
         const { id } = req.params;
         const tenantId = req.tenantId;
@@ -133,15 +133,15 @@ router.get("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permissi
           created_at as "createdAt",
           updated_at as "updatedAt"
         FROM transactions 
-        WHERE id = $1 AND tenant_id = $2`, [id || "", tenantId]);
+        WHERE id = $1 AND tenant_id = $2`, [id || '', tenantId]);
         if (transactions.length === 0 || !transactions[0]) {
-            return (0, api_response_1.sendError)(res, 404, "NOT_FOUND", "Transaction not found");
+            return (0, api_response_1.sendError)(res, 404, 'NOT_FOUND', 'Transaction not found');
         }
         (0, api_response_1.sendSuccess)(res, transactions[0]);
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to fetch transaction", 500);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to fetch transaction', 500);
     }
 });
 exports.default = router;

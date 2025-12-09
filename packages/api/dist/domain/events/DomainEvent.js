@@ -26,7 +26,7 @@ class UserCreatedEvent extends DomainEvent {
         this.email = email;
     }
     get eventName() {
-        return "user.created";
+        return 'user.created';
     }
 }
 exports.UserCreatedEvent = UserCreatedEvent;
@@ -37,7 +37,7 @@ class UserDeletedEvent extends DomainEvent {
         this.userId = userId;
     }
     get eventName() {
-        return "user.deleted";
+        return 'user.deleted';
     }
 }
 exports.UserDeletedEvent = UserDeletedEvent;
@@ -55,7 +55,7 @@ class JobCreatedEvent extends DomainEvent {
         this.name = name;
     }
     get eventName() {
-        return "job.created";
+        return 'job.created';
     }
 }
 exports.JobCreatedEvent = JobCreatedEvent;
@@ -70,7 +70,7 @@ class JobUpdatedEvent extends DomainEvent {
         this.changes = changes;
     }
     get eventName() {
-        return "job.updated";
+        return 'job.updated';
     }
 }
 exports.JobUpdatedEvent = JobUpdatedEvent;
@@ -83,7 +83,7 @@ class JobExecutionStartedEvent extends DomainEvent {
         this.jobId = jobId;
     }
     get eventName() {
-        return "job.execution.started";
+        return 'job.execution.started';
     }
 }
 exports.JobExecutionStartedEvent = JobExecutionStartedEvent;
@@ -98,7 +98,7 @@ class JobExecutionCompletedEvent extends DomainEvent {
         this.summary = summary;
     }
     get eventName() {
-        return "job.execution.completed";
+        return 'job.execution.completed';
     }
 }
 exports.JobExecutionCompletedEvent = JobExecutionCompletedEvent;
@@ -113,7 +113,7 @@ class JobExecutionFailedEvent extends DomainEvent {
         this.error = error;
     }
     get eventName() {
-        return "job.execution.failed";
+        return 'job.execution.failed';
     }
 }
 exports.JobExecutionFailedEvent = JobExecutionFailedEvent;
@@ -129,7 +129,7 @@ class WebhookReceivedEvent extends DomainEvent {
         this.payloadId = payloadId;
     }
     get eventName() {
-        return "webhook.received";
+        return 'webhook.received';
     }
 }
 exports.WebhookReceivedEvent = WebhookReceivedEvent;
@@ -144,7 +144,7 @@ class WebhookDeliveredEvent extends DomainEvent {
         this.statusCode = statusCode;
     }
     get eventName() {
-        return "webhook.delivered";
+        return 'webhook.delivered';
     }
 }
 exports.WebhookDeliveredEvent = WebhookDeliveredEvent;
@@ -161,7 +161,7 @@ class WebhookDeliveryFailedEvent extends DomainEvent {
         this.attempts = attempts;
     }
     get eventName() {
-        return "webhook.delivery.failed";
+        return 'webhook.delivery.failed';
     }
 }
 exports.WebhookDeliveryFailedEvent = WebhookDeliveryFailedEvent;

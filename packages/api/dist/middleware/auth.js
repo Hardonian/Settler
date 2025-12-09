@@ -35,9 +35,9 @@ const authMiddleware = async (req, res, next) => {
             }
             catch (error) {
                 const message = error instanceof Error ? error.message : "Invalid API key";
-                (0, logger_1.logWarn)("API key validation failed", {
+                (0, logger_1.logWarn)('API key validation failed', {
                     ip: req.ip,
-                    userAgent: req.headers["user-agent"],
+                    userAgent: req.headers['user-agent'],
                     error: message,
                 });
                 res.status(401).json({
@@ -56,9 +56,9 @@ const authMiddleware = async (req, res, next) => {
             }
             catch (error) {
                 const message = error instanceof Error ? error.message : "The provided token is invalid or expired";
-                (0, logger_1.logWarn)("JWT validation failed", {
+                (0, logger_1.logWarn)('JWT validation failed', {
                     ip: req.ip,
-                    userAgent: req.headers["user-agent"],
+                    userAgent: req.headers['user-agent'],
                     error: message,
                 });
                 res.status(401).json({
@@ -75,7 +75,7 @@ const authMiddleware = async (req, res, next) => {
         });
     }
     catch (error) {
-        (0, logger_1.logError)("Auth middleware error", error);
+        (0, logger_1.logError)('Auth middleware error', error);
         next(error);
     }
 };
@@ -94,9 +94,9 @@ async function validateApiKey(req, apiKey) {
         // Log failed attempt for security monitoring
         await (0, db_1.query)(`INSERT INTO audit_logs (event, ip, user_agent, path, metadata)
        VALUES ($1, $2, $3, $4, $5)`, [
-            "api_key_auth_failed",
+            'api_key_auth_failed',
             req.ip || null,
-            req.headers["user-agent"] || null,
+            req.headers['user-agent'] || null,
             req.path,
             JSON.stringify({ keyPrefix: prefix }),
         ]);
@@ -112,10 +112,10 @@ async function validateApiKey(req, apiKey) {
         // Log failed attempt
         await (0, db_1.query)(`INSERT INTO audit_logs (event, api_key_id, ip, user_agent, path, metadata)
        VALUES ($1, $2, $3, $4, $5, $6)`, [
-            "api_key_auth_failed",
+            'api_key_auth_failed',
             keyRecord.id,
             req.ip || null,
-            req.headers["user-agent"] || null,
+            req.headers['user-agent'] || null,
             req.path,
             JSON.stringify({ keyPrefix: prefix }),
         ]);
@@ -136,26 +136,26 @@ async function validateApiKey(req, apiKey) {
     req.apiKey = apiKey;
 }
 async function validateJWT(req, token) {
-    if (!config_1.config.jwt.secret || config_1.config.jwt.secret === "your-secret-key-change-in-production") {
+    if (!config_1.config.jwt.secret || config_1.config.jwt.secret === 'your-secret-key-change-in-production') {
         throw new Error("JWT authentication not configured");
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, config_1.config.jwt.secret, {
-            issuer: "settler-api",
-            audience: "settler-client",
+            issuer: 'settler-api',
+            audience: 'settler-client',
         });
         // Check token type (access vs refresh)
-        if (decoded.type === "refresh") {
+        if (decoded.type === 'refresh') {
             throw new Error("Refresh tokens cannot be used for API access");
         }
         req.userId = decoded.userId;
     }
     catch (error) {
         if (error instanceof Error) {
-            if (error.name === "TokenExpiredError") {
+            if (error.name === 'TokenExpiredError') {
                 throw new Error("Token has expired");
             }
-            if (error.name === "JsonWebTokenError") {
+            if (error.name === 'JsonWebTokenError') {
                 throw new Error("Invalid token");
             }
         }

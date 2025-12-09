@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction } from 'express';
 import { AuthRequest } from "../middleware/auth";
 export declare function checkRateLimit(req: AuthRequest): Promise<{
     allowed: boolean;

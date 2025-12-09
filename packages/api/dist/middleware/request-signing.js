@@ -23,24 +23,27 @@ const logger_1 = require("../utils/logger");
 /**
  * Verify request signature
  */
-function verifyRequestSignature(payload, signature, timestamp, secret, algorithm = "sha256") {
+function verifyRequestSignature(payload, signature, timestamp, secret, algorithm = 'sha256') {
     try {
-        const timestampNum = typeof timestamp === "string" ? parseInt(timestamp, 10) : timestamp;
+        const timestampNum = typeof timestamp === 'string' ? parseInt(timestamp, 10) : timestamp;
         const now = Math.floor(Date.now() / 1000);
         const tolerance = 300; // 5 minutes default
         // Check timestamp freshness
         if (Math.abs(now - timestampNum) > tolerance) {
             return {
                 valid: false,
-                reason: "Timestamp out of tolerance",
+                reason: 'Timestamp out of tolerance',
                 timestamp: timestampNum,
             };
         }
         // Create signed payload
-        const signedPayload = `${timestampNum}.${typeof payload === "string" ? payload : payload.toString()}`;
-        const hash = crypto_1.default.createHmac(algorithm, secret).update(signedPayload).digest("hex");
+        const signedPayload = `${timestampNum}.${typeof payload === 'string' ? payload : payload.toString()}`;
+        const hash = crypto_1.default
+            .createHmac(algorithm, secret)
+            .update(signedPayload)
+            .digest('hex');
         // Extract signature from header (format: v1=signature or just signature)
-        const signatureValue = signature.startsWith("v1=") ? signature.substring(3) : signature;
+        const signatureValue = signature.startsWith('v1=') ? signature.substring(3) : signature;
         // Constant-time comparison
         const isValid = crypto_1.default.timingSafeEqual(Buffer.from(hash), Buffer.from(signatureValue));
         const result = {
@@ -49,24 +52,27 @@ function verifyRequestSignature(payload, signature, timestamp, secret, algorithm
             timestamp: timestampNum,
         };
         if (!isValid) {
-            result.reason = "Signature mismatch";
+            result.reason = 'Signature mismatch';
         }
         return result;
     }
     catch (error) {
         return {
             valid: false,
-            reason: error instanceof Error ? error.message : "Unknown error",
+            reason: error instanceof Error ? error.message : 'Unknown error',
         };
     }
 }
 /**
  * Generate request signature
  */
-function generateRequestSignature(payload, secret, algorithm = "sha256") {
+function generateRequestSignature(payload, secret, algorithm = 'sha256') {
     const timestamp = Math.floor(Date.now() / 1000);
-    const signedPayload = `${timestamp}.${typeof payload === "string" ? payload : payload.toString()}`;
-    const signature = crypto_1.default.createHmac(algorithm, secret).update(signedPayload).digest("hex");
+    const signedPayload = `${timestamp}.${typeof payload === 'string' ? payload : payload.toString()}`;
+    const signature = crypto_1.default
+        .createHmac(algorithm, secret)
+        .update(signedPayload)
+        .digest('hex');
     return {
         signature: `v1=${signature}`,
         timestamp,
@@ -78,42 +84,42 @@ function generateRequestSignature(payload, secret, algorithm = "sha256") {
  */
 function requestSigningMiddleware(config) {
     return (req, res, next) => {
-        const signatureHeader = req.headers[config.headerName || "x-signature"];
-        const timestampHeader = req.headers[config.timestampHeaderName || "x-signature-timestamp"];
+        const signatureHeader = req.headers[config.headerName || 'x-signature'];
+        const timestampHeader = req.headers[config.timestampHeaderName || 'x-signature-timestamp'];
         if (!signatureHeader || !timestampHeader) {
-            (0, logger_1.logWarn)("Missing signature headers", {
+            (0, logger_1.logWarn)('Missing signature headers', {
                 path: req.path,
                 method: req.method,
             });
-            res.status(401).json({
-                error: "Unauthorized",
-                message: "Missing signature headers",
+            return res.status(401).json({
+                error: 'Unauthorized',
+                message: 'Missing signature headers',
             });
-            return;
         }
         // Get request body as string
-        const payload = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+        const payload = typeof req.body === 'string'
+            ? req.body
+            : JSON.stringify(req.body);
         const verification = verifyRequestSignature(payload, signatureHeader, timestampHeader, config.secret, config.algorithm);
         if (!verification.valid) {
-            (0, logger_1.logWarn)("Invalid request signature", {
+            (0, logger_1.logWarn)('Invalid request signature', {
                 path: req.path,
                 method: req.method,
                 reason: verification.reason,
             });
-            res.status(401).json({
-                error: "Unauthorized",
-                message: verification.reason || "Invalid signature",
+            return res.status(401).json({
+                error: 'Unauthorized',
+                message: verification.reason || 'Invalid signature',
             });
-            return;
         }
         // Attach signature info to request
         req.signature = {
-            algorithm: verification.algorithm || config.algorithm || "sha256",
+            algorithm: verification.algorithm || config.algorithm || 'sha256',
             timestamp: verification.timestamp || parseInt(timestampHeader, 10),
             signature: signatureHeader,
             verified: true,
         };
-        next();
+        return next();
     };
 }
 /**
@@ -121,35 +127,35 @@ function requestSigningMiddleware(config) {
  */
 function webhookSignatureMiddleware(secret) {
     return (req, res, next) => {
-        const signature = req.headers["x-webhook-signature"];
-        const timestamp = req.headers["x-webhook-timestamp"];
+        const signature = req.headers['x-webhook-signature'];
+        const timestamp = req.headers['x-webhook-timestamp'];
         if (!signature || !timestamp) {
-            res.status(401).json({
-                error: "Unauthorized",
-                message: "Missing webhook signature",
+            return res.status(401).json({
+                error: 'Unauthorized',
+                message: 'Missing webhook signature',
             });
-            return;
         }
-        const rawBody = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+        const rawBody = typeof req.body === 'string'
+            ? req.body
+            : JSON.stringify(req.body);
         const verification = verifyRequestSignature(rawBody, signature, timestamp, secret);
         if (!verification.valid) {
-            (0, logger_1.logError)("Webhook signature verification failed", undefined, {
+            (0, logger_1.logError)('Webhook signature verification failed', undefined, {
                 path: req.path,
                 reason: verification.reason,
             });
-            res.status(401).json({
-                error: "Unauthorized",
-                message: "Invalid webhook signature",
+            return res.status(401).json({
+                error: 'Unauthorized',
+                message: 'Invalid webhook signature',
             });
-            return;
         }
         req.signature = {
-            algorithm: verification.algorithm || "sha256",
+            algorithm: verification.algorithm || 'sha256',
             timestamp: verification.timestamp || parseInt(timestamp, 10),
             signature,
             verified: true,
         };
-        next();
+        return next();
     };
 }
 //# sourceMappingURL=request-signing.js.map

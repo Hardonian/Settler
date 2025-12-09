@@ -19,22 +19,22 @@ function isNotNull(value) {
  * Type guard for checking if value is a string
  */
 function isString(value) {
-    return typeof value === "string";
+    return typeof value === 'string';
 }
 /**
  * Type guard for checking if value is a number
  */
 function isNumber(value) {
-    return typeof value === "number" && !isNaN(value);
+    return typeof value === 'number' && !isNaN(value);
 }
 /**
  * Type guard for checking if value is a plain object
  */
 function isPlainObject(value) {
-    return (typeof value === "object" &&
+    return (typeof value === 'object' &&
         value !== null &&
         !Array.isArray(value) &&
-        Object.prototype.toString.call(value) === "[object Object]");
+        Object.prototype.toString.call(value) === '[object Object]');
 }
 /**
  * Safe JSON parse with type guard

@@ -31,21 +31,21 @@ var ErrorCode;
 function standardizeError(error) {
     if (error instanceof Error) {
         // Database errors
-        if (error.message.includes("duplicate key") || error.message.includes("unique constraint")) {
+        if (error.message.includes('duplicate key') || error.message.includes('unique constraint')) {
             return {
                 code: ErrorCode.CONFLICT,
-                message: "Resource already exists",
+                message: 'Resource already exists',
                 statusCode: 409,
             };
         }
-        if (error.message.includes("foreign key") || error.message.includes("violates foreign key")) {
+        if (error.message.includes('foreign key') || error.message.includes('violates foreign key')) {
             return {
                 code: ErrorCode.VALIDATION_ERROR,
-                message: "Invalid reference to related resource",
+                message: 'Invalid reference to related resource',
                 statusCode: 400,
             };
         }
-        if (error.message.includes("not found")) {
+        if (error.message.includes('not found')) {
             return {
                 code: ErrorCode.NOT_FOUND,
                 message: error.message,
@@ -53,10 +53,10 @@ function standardizeError(error) {
             };
         }
         // Validation errors
-        if (error.name === "ZodError" || error.message.includes("validation")) {
+        if (error.name === 'ZodError' || error.message.includes('validation')) {
             return {
                 code: ErrorCode.VALIDATION_ERROR,
-                message: "Invalid input",
+                message: 'Invalid input',
                 statusCode: 400,
                 details: error.message,
             };
@@ -65,7 +65,7 @@ function standardizeError(error) {
     // Default to internal error
     return {
         code: ErrorCode.INTERNAL_ERROR,
-        message: "An unexpected error occurred",
+        message: 'An unexpected error occurred',
         statusCode: 500,
     };
 }

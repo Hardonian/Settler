@@ -1,4 +1,4 @@
-import { AuditEvent, AuditLogEntry } from "@settler/protocol";
+import { AuditEvent, AuditLogEntry } from '@settler/protocol';
 /**
  * Set audit log handler
  */

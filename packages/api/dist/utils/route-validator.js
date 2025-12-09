@@ -16,7 +16,7 @@ function validateRoutes(_app) {
     // This is a placeholder - full route introspection would require
     // parsing the Express router stack, which is complex.
     // In practice, this would be done via integration tests.
-    (0, logger_1.logInfo)("Route validation: Routes are validated via integration tests");
+    (0, logger_1.logInfo)('Route validation: Routes are validated via integration tests');
     return results;
 }
 /**
@@ -29,9 +29,9 @@ function checkDeadRoutes() {
     return {
         potentiallyDead: [],
         recommendations: [
-            "Use test coverage reports to identify unused routes",
-            "Run integration tests to verify all routes are accessible",
-            "Check API documentation to ensure all routes are documented",
+            'Use test coverage reports to identify unused routes',
+            'Run integration tests to verify all routes are accessible',
+            'Check API documentation to ensure all routes are documented',
         ],
     };
 }

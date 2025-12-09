@@ -2,8 +2,8 @@
  * Tenant Middleware
  * Extracts tenant context from request and sets it for RLS
  */
-import { Response, NextFunction } from "express";
-import { AuthRequest } from "./auth";
+import { Response, NextFunction } from 'express';
+import { AuthRequest } from './auth';
 export interface TenantRequest extends AuthRequest {
     tenantId?: string;
     tenant?: {

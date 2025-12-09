@@ -3,11 +3,11 @@
  *
  * Processes transaction events in real-time and updates the graph.
  */
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface TransactionEvent {
     id: string;
     jobId: string;
-    type: "source" | "target";
+    type: 'source' | 'target';
     sourceId?: string;
     targetId?: string;
     data: Record<string, unknown>;

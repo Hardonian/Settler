@@ -2,9 +2,9 @@
  * Sentry Error Tracking Integration
  * Captures and reports errors to Sentry
  */
-import * as Sentry from "@sentry/node";
-import { Request, Response, NextFunction } from "express";
-import { AuthRequest } from "./auth";
+import * as Sentry from '@sentry/node';
+import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from './auth';
 /**
  * Initialize Sentry
  */

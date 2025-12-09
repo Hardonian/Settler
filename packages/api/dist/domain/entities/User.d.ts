@@ -25,7 +25,7 @@ export interface UserProps {
 export declare class User {
     private props;
     private constructor();
-    static create(props: Omit<UserProps, "id" | "createdAt" | "updatedAt">): User;
+    static create(props: Omit<UserProps, 'id' | 'createdAt' | 'updatedAt'>): User;
     static fromPersistence(props: UserProps): User;
     get id(): string;
     get tenantId(): string;

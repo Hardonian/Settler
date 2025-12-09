@@ -39,7 +39,7 @@ export interface IJobRepository {
      * @param job - Job entity to create
      * @returns Created job with ID
      */
-    create(job: Omit<Job, "id" | "createdAt" | "updatedAt">): Promise<Job>;
+    create(job: Omit<Job, 'id' | 'createdAt' | 'updatedAt'>): Promise<Job>;
     /**
      * Update job status atomically with optimistic locking
      * @param id - Job ID

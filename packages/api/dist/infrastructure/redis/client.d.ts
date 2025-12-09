@@ -7,7 +7,7 @@
  * - Rate limiting
  * - Session storage
  */
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 /**
  * Upstash Redis client (serverless-friendly)
  */

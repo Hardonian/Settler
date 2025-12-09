@@ -53,14 +53,14 @@ router.post("/test-mode", (0, authorization_1.requirePermission)(Permissions_1.P
          SET test_mode_enabled = $1, updated_at = NOW()
          WHERE id = $2`, [enabled, userId]);
         // Track event
-        (0, event_tracker_1.trackEventAsync)(userId, "TestModeToggled", {
+        (0, event_tracker_1.trackEventAsync)(userId, 'TestModeToggled', {
             enabled,
         });
         res.json({
             data: {
                 enabled,
             },
-            message: `Test mode ${enabled ? "enabled" : "disabled"}`,
+            message: `Test mode ${enabled ? 'enabled' : 'disabled'}`,
         });
     }
     catch (error) {

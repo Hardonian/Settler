@@ -9,7 +9,7 @@
  * - Environment-based flags
  * - Time-based flags (scheduled releases)
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 export interface FeatureFlag {
     key: string;
     enabled: boolean;

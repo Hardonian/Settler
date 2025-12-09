@@ -26,13 +26,13 @@ function initializeTracing() {
     }
     const otlpEndpoint = config_1.config.observability.otlpEndpoint;
     if (!otlpEndpoint) {
-        console.warn("OTLP_ENDPOINT not set, tracing disabled");
+        console.warn('OTLP_ENDPOINT not set, tracing disabled');
         return;
     }
     sdk = new sdk_node_1.NodeSDK({
         resource: new resources_1.Resource({
             [semantic_conventions_1.SemanticResourceAttributes.SERVICE_NAME]: config_1.config.observability.serviceName,
-            [semantic_conventions_1.SemanticResourceAttributes.SERVICE_VERSION]: process.env.npm_package_version || "1.0.0",
+            [semantic_conventions_1.SemanticResourceAttributes.SERVICE_VERSION]: process.env.npm_package_version || '1.0.0',
         }),
         traceExporter: new exporter_trace_otlp_http_1.OTLPTraceExporter({
             url: `${otlpEndpoint}/v1/traces`,
@@ -40,7 +40,7 @@ function initializeTracing() {
         instrumentations: [(0, auto_instrumentations_node_1.getNodeAutoInstrumentations)()],
     });
     sdk.start();
-    console.log("OpenTelemetry tracing initialized");
+    console.log('OpenTelemetry tracing initialized');
 }
 function shutdownTracing() {
     if (sdk) {
@@ -52,7 +52,7 @@ function shutdownTracing() {
  * Create a span for a function execution
  */
 async function traceFunction(name, fn, attributes) {
-    const tracer = api_1.trace.getTracer("settler-api");
+    const tracer = api_1.trace.getTracer('settler-api');
     const spanOptions = {};
     if (attributes) {
         spanOptions.attributes = attributes;
@@ -66,7 +66,7 @@ async function traceFunction(name, fn, attributes) {
     catch (error) {
         span.setStatus({
             code: api_1.SpanStatusCode.ERROR,
-            message: error instanceof Error ? error.message : "Unknown error",
+            message: error instanceof Error ? error.message : 'Unknown error',
         });
         span.recordException(error instanceof Error ? error : new Error(String(error)));
         throw error;
@@ -79,12 +79,12 @@ async function traceFunction(name, fn, attributes) {
  * Create a database span
  */
 async function traceDatabase(operation, query, fn, tenantId) {
-    const tracer = api_1.trace.getTracer("settler-api");
+    const tracer = api_1.trace.getTracer('settler-api');
     const span = tracer.startSpan(`db.${operation}`, {
         attributes: {
-            "db.operation": operation,
-            "db.statement": query.substring(0, 500), // Truncate long queries
-            "tenant.id": tenantId || "",
+            'db.operation': operation,
+            'db.statement': query.substring(0, 500), // Truncate long queries
+            'tenant.id': tenantId || '',
         },
     });
     try {
@@ -95,7 +95,7 @@ async function traceDatabase(operation, query, fn, tenantId) {
     catch (error) {
         span.setStatus({
             code: api_1.SpanStatusCode.ERROR,
-            message: error instanceof Error ? error.message : "Database error",
+            message: error instanceof Error ? error.message : 'Database error',
         });
         span.recordException(error instanceof Error ? error : new Error(String(error)));
         throw error;
@@ -108,12 +108,12 @@ async function traceDatabase(operation, query, fn, tenantId) {
  * Create a cache span
  */
 async function traceCache(operation, key, fn, tenantId) {
-    const tracer = api_1.trace.getTracer("settler-api");
+    const tracer = api_1.trace.getTracer('settler-api');
     const span = tracer.startSpan(`cache.${operation}`, {
         attributes: {
-            "cache.operation": operation,
-            "cache.key": key,
-            "tenant.id": tenantId || "",
+            'cache.operation': operation,
+            'cache.key': key,
+            'tenant.id': tenantId || '',
         },
     });
     try {
@@ -124,7 +124,7 @@ async function traceCache(operation, key, fn, tenantId) {
     catch (error) {
         span.setStatus({
             code: api_1.SpanStatusCode.ERROR,
-            message: error instanceof Error ? error.message : "Cache error",
+            message: error instanceof Error ? error.message : 'Cache error',
         });
         span.recordException(error instanceof Error ? error : new Error(String(error)));
         throw error;
@@ -137,13 +137,13 @@ async function traceCache(operation, key, fn, tenantId) {
  * Create a queue span
  */
 async function traceQueue(queueName, operation, fn, tenantId, jobId) {
-    const tracer = api_1.trace.getTracer("settler-api");
+    const tracer = api_1.trace.getTracer('settler-api');
     const span = tracer.startSpan(`queue.${queueName}.${operation}`, {
         attributes: {
-            "queue.name": queueName,
-            "queue.operation": operation,
-            "tenant.id": tenantId || "",
-            "job.id": jobId || "",
+            'queue.name': queueName,
+            'queue.operation': operation,
+            'tenant.id': tenantId || '',
+            'job.id': jobId || '',
         },
     });
     try {
@@ -154,7 +154,7 @@ async function traceQueue(queueName, operation, fn, tenantId, jobId) {
     catch (error) {
         span.setStatus({
             code: api_1.SpanStatusCode.ERROR,
-            message: error instanceof Error ? error.message : "Queue error",
+            message: error instanceof Error ? error.message : 'Queue error',
         });
         span.recordException(error instanceof Error ? error : new Error(String(error)));
         throw error;
@@ -167,11 +167,11 @@ async function traceQueue(queueName, operation, fn, tenantId, jobId) {
  * Create a business span (for domain-specific operations)
  */
 async function traceBusiness(operation, fn, attributes, tenantId) {
-    const tracer = api_1.trace.getTracer("settler-api");
+    const tracer = api_1.trace.getTracer('settler-api');
     const span = tracer.startSpan(`business.${operation}`, {
         attributes: {
             ...attributes,
-            "tenant.id": tenantId || "",
+            'tenant.id': tenantId || '',
         },
     });
     try {
@@ -182,7 +182,7 @@ async function traceBusiness(operation, fn, attributes, tenantId) {
     catch (error) {
         span.setStatus({
             code: api_1.SpanStatusCode.ERROR,
-            message: error instanceof Error ? error.message : "Business logic error",
+            message: error instanceof Error ? error.message : 'Business logic error',
         });
         span.recordException(error instanceof Error ? error : new Error(String(error)));
         throw error;

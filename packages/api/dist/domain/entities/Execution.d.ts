@@ -27,7 +27,7 @@ export interface ExecutionProps {
 export declare class Execution {
     private props;
     private constructor();
-    static create(props: Omit<ExecutionProps, "id" | "status" | "startedAt" | "createdAt">): Execution;
+    static create(props: Omit<ExecutionProps, 'id' | 'status' | 'startedAt' | 'createdAt'>): Execution;
     static fromPersistence(props: ExecutionProps): Execution;
     get id(): string;
     get jobId(): string;

@@ -2,7 +2,7 @@
  * Middleware Setup Module
  * Extracts middleware configuration from index.ts for better organization
  */
-import { Express } from "express";
+import { Express } from 'express';
 /**
  * Setup all middleware and routes
  *

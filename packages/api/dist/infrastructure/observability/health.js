@@ -15,18 +15,18 @@ class HealthCheckService {
     async checkDatabase() {
         const start = Date.now();
         try {
-            await (0, db_1.query)("SELECT 1");
+            await (0, db_1.query)('SELECT 1');
             const latency = Date.now() - start;
             return {
-                status: "healthy",
+                status: 'healthy',
                 latency,
                 timestamp: new Date().toISOString(),
             };
         }
         catch (error) {
             return {
-                status: "unhealthy",
-                error: error instanceof Error ? error.message : "Unknown error",
+                status: 'unhealthy',
+                error: error instanceof Error ? error.message : 'Unknown error',
                 timestamp: new Date().toISOString(),
             };
         }
@@ -35,8 +35,8 @@ class HealthCheckService {
         const redisClient = this.getRedisClient();
         if (!redisClient) {
             return {
-                status: "degraded",
-                error: "Redis not configured",
+                status: 'degraded',
+                error: 'Redis not configured',
                 timestamp: new Date().toISOString(),
             };
         }
@@ -45,15 +45,15 @@ class HealthCheckService {
             await redisClient.ping();
             const latency = Date.now() - start;
             return {
-                status: "healthy",
+                status: 'healthy',
                 latency,
                 timestamp: new Date().toISOString(),
             };
         }
         catch (error) {
             return {
-                status: "unhealthy",
-                error: error instanceof Error ? error.message : "Unknown error",
+                status: 'unhealthy',
+                error: error instanceof Error ? error.message : 'Unknown error',
                 timestamp: new Date().toISOString(),
             };
         }
@@ -65,8 +65,8 @@ class HealthCheckService {
             const sentryDsn = process.env.SENTRY_DSN;
             if (!sentryDsn) {
                 return {
-                    status: "degraded",
-                    error: "Sentry not configured",
+                    status: 'degraded',
+                    error: 'Sentry not configured',
                     timestamp: new Date().toISOString(),
                 };
             }
@@ -74,15 +74,15 @@ class HealthCheckService {
             // We can't directly test Sentry connectivity, but we can verify it's configured
             const latency = Date.now() - start;
             return {
-                status: "healthy",
+                status: 'healthy',
                 latency,
                 timestamp: new Date().toISOString(),
             };
         }
         catch (error) {
             return {
-                status: "degraded",
-                error: error instanceof Error ? error.message : "Unknown error",
+                status: 'degraded',
+                error: error instanceof Error ? error.message : 'Unknown error',
                 timestamp: new Date().toISOString(),
             };
         }
@@ -91,13 +91,11 @@ class HealthCheckService {
         const redisClient = this.getRedisClient();
         const [database, redis, sentry] = await Promise.all([
             this.checkDatabase(),
-            redisClient
-                ? this.checkRedis()
-                : Promise.resolve({
-                    status: "degraded",
-                    error: "Redis not configured",
-                    timestamp: new Date().toISOString(),
-                }),
+            redisClient ? this.checkRedis() : Promise.resolve({
+                status: 'degraded',
+                error: 'Redis not configured',
+                timestamp: new Date().toISOString(),
+            }),
             this.checkSentry(),
         ]);
         const checks = {
@@ -105,9 +103,13 @@ class HealthCheckService {
             redis,
             sentry,
         };
-        const allHealthy = Object.values(checks).every((check) => check.status === "healthy");
-        const anyUnhealthy = Object.values(checks).some((check) => check.status === "unhealthy");
-        const overallStatus = anyUnhealthy ? "unhealthy" : allHealthy ? "healthy" : "degraded";
+        const allHealthy = Object.values(checks).every((check) => check.status === 'healthy');
+        const anyUnhealthy = Object.values(checks).some((check) => check.status === 'unhealthy');
+        const overallStatus = anyUnhealthy
+            ? 'unhealthy'
+            : allHealthy
+                ? 'healthy'
+                : 'degraded';
         return {
             status: overallStatus,
             checks,
@@ -116,13 +118,13 @@ class HealthCheckService {
     }
     async checkLive() {
         // Liveness check - always returns OK if process is alive
-        return { status: "ok" };
+        return { status: 'ok' };
     }
     async checkReady() {
         // Readiness check - only returns ready if critical dependencies are healthy
         const health = await this.checkAll();
         return {
-            status: health.status === "healthy" ? "ready" : "not_ready",
+            status: health.status === 'healthy' ? 'ready' : 'not_ready',
         };
     }
 }

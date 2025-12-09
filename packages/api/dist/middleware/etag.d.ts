@@ -2,7 +2,7 @@
  * ETag Middleware
  * Implements HTTP ETags for cache validation on GET requests
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 export interface ETagRequest extends Request {
     etag?: string;
 }

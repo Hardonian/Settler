@@ -30,7 +30,7 @@ router.get("/cli/wizard/steps", (0, authorization_1.requirePermission)(Permissio
                 title: "Choose Source Platform",
                 description: "Where are your transactions coming from?",
                 type: "select",
-                options: (0, adapter_config_validator_1.listAdapters)().map((a) => ({
+                options: (0, adapter_config_validator_1.listAdapters)().map(a => ({
                     value: a.id,
                     label: a.name,
                     description: `Reconcile ${a.name} transactions`,
@@ -42,7 +42,7 @@ router.get("/cli/wizard/steps", (0, authorization_1.requirePermission)(Permissio
                 title: "Choose Target Platform",
                 description: "Where should transactions be matched against?",
                 type: "select",
-                options: (0, adapter_config_validator_1.listAdapters)().map((a) => ({
+                options: (0, adapter_config_validator_1.listAdapters)().map(a => ({
                     value: a.id,
                     label: a.name,
                     description: `Match against ${a.name} transactions`,
@@ -59,7 +59,7 @@ router.get("/cli/wizard/steps", (0, authorization_1.requirePermission)(Permissio
                     const schema = (0, adapter_config_validator_1.getAdapterConfigSchema)(adapter);
                     if (!schema)
                         return [];
-                    return schema.required.map((field) => ({
+                    return schema.required.map(field => ({
                         name: field,
                         label: schema.fields?.[field]?.description || field,
                         type: schema.fields?.[field]?.type || "string",
@@ -79,7 +79,7 @@ router.get("/cli/wizard/steps", (0, authorization_1.requirePermission)(Permissio
                     const schema = (0, adapter_config_validator_1.getAdapterConfigSchema)(adapter);
                     if (!schema)
                         return [];
-                    return schema.required.map((field) => ({
+                    return schema.required.map(field => ({
                         name: field,
                         label: schema.fields?.[field]?.description || field,
                         type: schema.fields?.[field]?.type || "string",
@@ -305,7 +305,7 @@ function generateJobConfig(answers) {
             matching: answers.rules || [],
         },
     };
-    if (answers.schedule && typeof answers.schedule === "object" && answers.schedule !== null) {
+    if (answers.schedule && typeof answers.schedule === 'object' && answers.schedule !== null) {
         config.schedule = answers.schedule;
     }
     return config;
@@ -313,9 +313,9 @@ function generateJobConfig(answers) {
 function generateCLICommand(jobConfig) {
     const source = jobConfig.source;
     const target = jobConfig.target;
-    const sourceAdapter = source?.adapter ?? "unknown";
+    const sourceAdapter = source?.adapter ?? 'unknown';
     const sourceConfig = source?.config ?? {};
-    const targetAdapter = target?.adapter ?? "unknown";
+    const targetAdapter = target?.adapter ?? 'unknown';
     const targetConfig = target?.config ?? {};
     return `settler jobs create \\
   --name "${jobConfig.name}" \\

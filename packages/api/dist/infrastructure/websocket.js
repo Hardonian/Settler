@@ -22,25 +22,25 @@ let wsServer = null;
 function initializeWebSocket(httpServer) {
     const io = new socket_io_1.Server(httpServer, {
         cors: {
-            origin: process.env.ALLOWED_ORIGINS?.split(",") || "*",
-            methods: ["GET", "POST"],
+            origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+            methods: ['GET', 'POST'],
             credentials: true,
         },
-        transports: ["websocket", "polling"],
+        transports: ['websocket', 'polling'],
     });
     // Authentication middleware
     io.use((socket, next) => {
-        const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.replace("Bearer ", "");
+        const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.replace('Bearer ', '');
         if (!token) {
-            return next(new Error("Authentication required"));
+            return next(new Error('Authentication required'));
         }
         // In production, verify JWT token
         // For now, allow connection
         next();
     });
-    io.on("connection", (socket) => {
+    io.on('connection', (socket) => {
         const tenantId = socket.handshake.auth.tenantId;
-        (0, logger_1.logInfo)("WebSocket client connected", {
+        (0, logger_1.logInfo)('WebSocket client connected', {
             socketId: socket.id,
             tenantId,
         });
@@ -49,22 +49,22 @@ function initializeWebSocket(httpServer) {
             socket.join(`tenant:${tenantId}`);
         }
         // Handle room subscriptions
-        socket.on("subscribe", (room) => {
+        socket.on('subscribe', (room) => {
             socket.join(room);
-            (0, logger_1.logInfo)("Client subscribed to room", {
+            (0, logger_1.logInfo)('Client subscribed to room', {
                 socketId: socket.id,
                 room,
             });
         });
-        socket.on("unsubscribe", (room) => {
+        socket.on('unsubscribe', (room) => {
             socket.leave(room);
-            (0, logger_1.logInfo)("Client unsubscribed from room", {
+            (0, logger_1.logInfo)('Client unsubscribed from room', {
                 socketId: socket.id,
                 room,
             });
         });
-        socket.on("disconnect", () => {
-            (0, logger_1.logInfo)("WebSocket client disconnected", {
+        socket.on('disconnect', () => {
+            (0, logger_1.logInfo)('WebSocket client disconnected', {
                 socketId: socket.id,
             });
         });
@@ -96,7 +96,7 @@ function broadcastJobUpdate(tenantId, jobId, status, data) {
     if (!wsServer) {
         return;
     }
-    wsServer.broadcastToTenant(tenantId, "job:update", {
+    wsServer.broadcastToTenant(tenantId, 'job:update', {
         jobId,
         status,
         data,
@@ -110,7 +110,7 @@ function broadcastWebhookUpdate(tenantId, webhookId, status) {
     if (!wsServer) {
         return;
     }
-    wsServer.broadcastToTenant(tenantId, "webhook:update", {
+    wsServer.broadcastToTenant(tenantId, 'webhook:update', {
         webhookId,
         status,
         timestamp: new Date().toISOString(),

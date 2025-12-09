@@ -175,9 +175,9 @@ export async function savePreTestAnswers(
       ...(answers.industry && { industry: answers.industry }),
     };
 
-    const { error } = await supabase
-      .from("profiles")
-      .update(updateData as any)
+    const { error } = await (supabase
+      .from("profiles") as any)
+      .update(updateData)
       .eq("id", user.id);
 
     if (error) {

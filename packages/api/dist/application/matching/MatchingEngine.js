@@ -24,8 +24,8 @@ class MatchingEngine {
         const matchedTransactionIds = new Set();
         const matchedSettlementIds = new Set();
         // First pass: Try exact matching
-        for (const rule of sortedRules.filter((r) => r.type === "exact")) {
-            const ruleMatches = await this.applyRule(transactions.filter((t) => !matchedTransactionIds.has(t.id)), settlements.filter((s) => !matchedSettlementIds.has(s.id)), rule, tenantId, executionId, jobId);
+        for (const rule of sortedRules.filter(r => r.type === 'exact')) {
+            const ruleMatches = await this.applyRule(transactions.filter(t => !matchedTransactionIds.has(t.id)), settlements.filter(s => !matchedSettlementIds.has(s.id)), rule, tenantId, executionId, jobId);
             for (const match of ruleMatches.matches) {
                 matches.push(match);
                 if (match.transactionId)
@@ -36,8 +36,8 @@ class MatchingEngine {
             exceptions.push(...ruleMatches.exceptions);
         }
         // Second pass: Try fuzzy matching
-        for (const rule of sortedRules.filter((r) => r.type === "fuzzy")) {
-            const ruleMatches = await this.applyRule(transactions.filter((t) => !matchedTransactionIds.has(t.id)), settlements.filter((s) => !matchedSettlementIds.has(s.id)), rule, tenantId, executionId, jobId);
+        for (const rule of sortedRules.filter(r => r.type === 'fuzzy')) {
+            const ruleMatches = await this.applyRule(transactions.filter(t => !matchedTransactionIds.has(t.id)), settlements.filter(s => !matchedSettlementIds.has(s.id)), rule, tenantId, executionId, jobId);
             for (const match of ruleMatches.matches) {
                 matches.push(match);
                 if (match.transactionId)
@@ -48,17 +48,17 @@ class MatchingEngine {
             exceptions.push(...ruleMatches.exceptions);
         }
         // Create exceptions for unmatched items
-        const unmatchedTransactions = transactions.filter((t) => !matchedTransactionIds.has(t.id));
-        const unmatchedSettlements = settlements.filter((s) => !matchedSettlementIds.has(s.id));
+        const unmatchedTransactions = transactions.filter(t => !matchedTransactionIds.has(t.id));
+        const unmatchedSettlements = settlements.filter(s => !matchedSettlementIds.has(s.id));
         for (const transaction of unmatchedTransactions) {
             const exception = {
                 id: this.generateId(),
                 tenantId,
                 transactionId: transaction.id,
-                category: "missing_settlement",
-                severity: "medium",
+                category: 'missing_settlement',
+                severity: 'medium',
                 description: `Transaction ${transaction.providerTransactionId} could not be matched to any settlement`,
-                resolutionStatus: "open",
+                resolutionStatus: 'open',
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
@@ -75,10 +75,10 @@ class MatchingEngine {
                 id: this.generateId(),
                 tenantId,
                 settlementId: settlement.id,
-                category: "missing_transaction",
-                severity: "medium",
+                category: 'missing_transaction',
+                severity: 'medium',
                 description: `Settlement ${settlement.providerSettlementId} could not be matched to any transaction`,
-                resolutionStatus: "open",
+                resolutionStatus: 'open',
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
@@ -97,15 +97,15 @@ class MatchingEngine {
      */
     async applyRule(transactions, settlements, rule, tenantId, executionId, jobId) {
         switch (rule.field) {
-            case "transactionId":
-            case "providerTransactionId":
+            case 'transactionId':
+            case 'providerTransactionId':
                 return this.matchByTransactionId(transactions, settlements, rule, tenantId, executionId, jobId);
-            case "amount":
+            case 'amount':
                 return this.matchByAmount(transactions, settlements, rule, tenantId, executionId, jobId);
-            case "date":
+            case 'date':
                 return this.matchByDate(transactions, settlements, rule, tenantId, executionId, jobId);
-            case "referenceId":
-            case "externalId":
+            case 'referenceId':
+            case 'externalId':
                 return this.matchByReferenceId(transactions, settlements, rule, tenantId, executionId, jobId);
             default:
                 // Try multi-field matching
@@ -137,9 +137,9 @@ class MatchingEngine {
                     tenantId,
                     transactionId: transaction.id,
                     settlementId: settlement.id,
-                    matchType: "1-to-1",
+                    matchType: '1-to-1',
                     confidenceScore: 1.0,
-                    matchingRules: { rule: "transactionId", type: "exact" },
+                    matchingRules: { rule: 'transactionId', type: 'exact' },
                     matchedAt: new Date(),
                     createdAt: new Date(),
                 };
@@ -179,16 +179,16 @@ class MatchingEngine {
                 const amountDiff = Math.abs(transactionAmount - settlementAmount);
                 const amountMatch = amountDiff <= tolerance;
                 if (amountMatch) {
-                    const confidence = 1.0 - amountDiff / Math.max(transactionAmount, settlementAmount);
+                    const confidence = 1.0 - (amountDiff / Math.max(transactionAmount, settlementAmount));
                     if (confidence >= threshold) {
                         const match = {
                             id: this.generateId(),
                             tenantId,
                             transactionId: transaction.id,
                             settlementId: settlement.id,
-                            matchType: "1-to-1",
+                            matchType: '1-to-1',
                             confidenceScore: Math.max(confidence, threshold),
-                            matchingRules: { rule: "amount", type: rule.type, tolerance },
+                            matchingRules: { rule: 'amount', type: rule.type, tolerance },
                             matchedAt: new Date(),
                             createdAt: new Date(),
                         };
@@ -220,16 +220,16 @@ class MatchingEngine {
                 const settlementDate = settlement.settlementDate;
                 const daysDiff = Math.abs((settlementDate.getTime() - transactionDate.getTime()) / (1000 * 60 * 60 * 24));
                 if (daysDiff <= toleranceDays) {
-                    const confidence = 1.0 - daysDiff / toleranceDays;
+                    const confidence = 1.0 - (daysDiff / toleranceDays);
                     if (confidence >= threshold) {
                         const match = {
                             id: this.generateId(),
                             tenantId,
                             transactionId: transaction.id,
                             settlementId: settlement.id,
-                            matchType: "1-to-1",
+                            matchType: '1-to-1',
                             confidenceScore: Math.max(confidence, threshold),
-                            matchingRules: { rule: "date", type: rule.type, toleranceDays },
+                            matchingRules: { rule: 'date', type: rule.type, toleranceDays },
                             matchedAt: new Date(),
                             createdAt: new Date(),
                         };
@@ -268,9 +268,9 @@ class MatchingEngine {
                         tenantId,
                         transactionId: transaction.id,
                         settlementId: settlement.id,
-                        matchType: "1-to-1",
+                        matchType: '1-to-1',
                         confidenceScore: similarity,
-                        matchingRules: { rule: "referenceId", type: "fuzzy", threshold },
+                        matchingRules: { rule: 'referenceId', type: 'fuzzy', threshold },
                         matchedAt: new Date(),
                         createdAt: new Date(),
                     };
@@ -315,15 +315,15 @@ class MatchingEngine {
      * Extract reference ID from transaction or settlement
      */
     extractReferenceId(item) {
-        if ("rawPayload" in item && item.rawPayload) {
+        if ('rawPayload' in item && item.rawPayload) {
             const payload = item.rawPayload;
-            if (typeof payload.reference_id === "string") {
+            if (typeof payload.reference_id === 'string') {
                 return payload.reference_id;
             }
-            if (typeof payload.order_id === "string") {
+            if (typeof payload.order_id === 'string') {
                 return payload.order_id;
             }
-            if (typeof payload.external_id === "string") {
+            if (typeof payload.external_id === 'string') {
                 return payload.external_id;
             }
         }
@@ -377,20 +377,20 @@ class MatchingEngine {
      */
     sortRules(rules) {
         const sorted = [...rules.strategies];
-        if (rules.priority === "exact-first") {
+        if (rules.priority === 'exact-first') {
             sorted.sort((a, b) => {
-                if (a.type === "exact" && b.type !== "exact")
+                if (a.type === 'exact' && b.type !== 'exact')
                     return -1;
-                if (a.type !== "exact" && b.type === "exact")
+                if (a.type !== 'exact' && b.type === 'exact')
                     return 1;
                 return 0;
             });
         }
-        else if (rules.priority === "fuzzy-first") {
+        else if (rules.priority === 'fuzzy-first') {
             sorted.sort((a, b) => {
-                if (a.type === "fuzzy" && b.type !== "fuzzy")
+                if (a.type === 'fuzzy' && b.type !== 'fuzzy')
                     return -1;
-                if (a.type !== "fuzzy" && b.type === "fuzzy")
+                if (a.type !== 'fuzzy' && b.type === 'fuzzy')
                     return 1;
                 return 0;
             });

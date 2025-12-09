@@ -2,7 +2,7 @@
  * Tenant Context Management
  * Manages tenant context for request isolation and RLS
  */
-import { PoolClient } from "pg";
+import { PoolClient } from 'pg';
 export declare class TenantContext {
     private static readonly TENANT_ID_KEY;
     /**

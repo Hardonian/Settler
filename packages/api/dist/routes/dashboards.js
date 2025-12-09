@@ -26,9 +26,7 @@ router.get("/dashboards/activation", (0, authorization_1.requirePermission)(Perm
     try {
         const userId = req.userId;
         const { startDate, endDate } = req.query;
-        const start = startDate
-            ? new Date(startDate)
-            : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const end = endDate ? new Date(endDate) : new Date();
         // Signup funnel
         const signupFunnel = await (0, db_1.query)(`SELECT 
@@ -86,7 +84,7 @@ router.get("/dashboards/activation", (0, authorization_1.requirePermission)(Perm
                     p75_hours: 0,
                     p95_hours: 0,
                 },
-                activationByChannel: activationByChannel.map((c) => ({
+                activationByChannel: activationByChannel.map(c => ({
                     channel: c.channel,
                     signups: parseInt(c.signups),
                     activated: parseInt(c.activated),
@@ -96,9 +94,7 @@ router.get("/dashboards/activation", (0, authorization_1.requirePermission)(Perm
         });
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to get activation dashboard", 500, {
-            userId: req.userId,
-        });
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to get activation dashboard", 500, { userId: req.userId });
     }
 });
 // Usage Dashboard
@@ -106,9 +102,7 @@ router.get("/dashboards/usage", (0, authorization_1.requirePermission)(Permissio
     try {
         const userId = req.userId;
         const { startDate, endDate } = req.query;
-        const start = startDate
-            ? new Date(startDate)
-            : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const end = endDate ? new Date(endDate) : new Date();
         // Reconciliation volume
         const reconciliationVolume = await (0, db_1.query)(`SELECT 
@@ -153,22 +147,22 @@ router.get("/dashboards/usage", (0, authorization_1.requirePermission)(Permissio
          GROUP BY reason`, [userId, start, end]);
         res.json({
             data: {
-                reconciliationVolume: reconciliationVolume.map((v) => ({
-                    date: v.date.toISOString().split("T")[0],
+                reconciliationVolume: reconciliationVolume.map(v => ({
+                    date: v.date.toISOString().split('T')[0],
                     count: parseInt(v.count),
                     adapterCombination: v.adapter_combination,
                 })),
-                accuracyTrends: accuracyTrends.map((t) => ({
-                    date: t.date.toISOString().split("T")[0],
+                accuracyTrends: accuracyTrends.map(t => ({
+                    date: t.date.toISOString().split('T')[0],
                     avgAccuracy: t.avg_accuracy,
                     jobType: t.job_type,
                 })),
-                errorRate: errorRate.map((e) => ({
+                errorRate: errorRate.map(e => ({
                     errorType: e.error_type,
                     count: parseInt(e.count),
                     percentage: e.percentage,
                 })),
-                exceptionRate: exceptionRate.map((e) => ({
+                exceptionRate: exceptionRate.map(e => ({
                     reason: e.reason,
                     count: parseInt(e.count),
                     percentage: e.percentage,
@@ -211,9 +205,7 @@ router.get("/dashboards/support", (0, authorization_1.requirePermission)(Permiss
     try {
         const userId = req.userId;
         const { startDate, endDate } = req.query;
-        const start = startDate
-            ? new Date(startDate)
-            : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const end = endDate ? new Date(endDate) : new Date();
         // Support ticket volume (if tracking)
         const ticketVolume = await (0, db_1.query)(`SELECT 
@@ -237,8 +229,8 @@ router.get("/dashboards/support", (0, authorization_1.requirePermission)(Permiss
            AND e.resolved_at >= $2 AND e.resolved_at <= $3`, [userId, start, end]);
         res.json({
             data: {
-                ticketVolume: ticketVolume.map((t) => ({
-                    date: t.date.toISOString().split("T")[0],
+                ticketVolume: ticketVolume.map(t => ({
+                    date: t.date.toISOString().split('T')[0],
                     category: t.category,
                     count: parseInt(t.count),
                 })),

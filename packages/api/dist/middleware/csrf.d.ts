@@ -7,7 +7,7 @@
  * 2. Client sends token in header (X-CSRF-Token)
  * 3. Server validates token matches cookie value
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 declare global {
     namespace Express {
         interface Request {

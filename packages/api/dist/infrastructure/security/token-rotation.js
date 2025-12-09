@@ -29,11 +29,11 @@ async function rotateRefreshToken(oldRefreshToken) {
     try {
         // Verify and decode the old refresh token
         const decoded = jsonwebtoken_1.default.verify(oldRefreshToken, config_1.config.jwt.refreshSecret || config_1.config.jwt.secret, {
-            issuer: "settler-api",
-            audience: "settler-client",
+            issuer: 'settler-api',
+            audience: 'settler-client',
         });
-        if (decoded.type !== "refresh") {
-            (0, logger_1.logWarn)("Invalid token type for rotation", { type: decoded.type });
+        if (decoded.type !== 'refresh') {
+            (0, logger_1.logWarn)('Invalid token type for rotation', { type: decoded.type });
             return null;
         }
         // Check if token exists and is valid in database
@@ -41,7 +41,7 @@ async function rotateRefreshToken(oldRefreshToken) {
        FROM refresh_tokens
        WHERE id = $1 AND user_id = $2`, [decoded.tokenId, decoded.userId]);
         if (tokens.length === 0) {
-            (0, logger_1.logWarn)("Refresh token not found in database", { tokenId: decoded.tokenId });
+            (0, logger_1.logWarn)('Refresh token not found in database', { tokenId: decoded.tokenId });
             return null;
         }
         if (!tokens[0]) {
@@ -50,12 +50,12 @@ async function rotateRefreshToken(oldRefreshToken) {
         const tokenRecord = tokens[0];
         // Check if token is revoked
         if (tokenRecord.revoked_at) {
-            (0, logger_1.logWarn)("Attempted use of revoked refresh token", { tokenId: decoded.tokenId });
+            (0, logger_1.logWarn)('Attempted use of revoked refresh token', { tokenId: decoded.tokenId });
             return null;
         }
         // Check if token is expired
         if (new Date(tokenRecord.expires_at) < new Date()) {
-            (0, logger_1.logWarn)("Attempted use of expired refresh token", { tokenId: decoded.tokenId });
+            (0, logger_1.logWarn)('Attempted use of expired refresh token', { tokenId: decoded.tokenId });
             return null;
         }
         // Revoke the old token
@@ -65,29 +65,25 @@ async function rotateRefreshToken(oldRefreshToken) {
         // Generate new token pair
         const newRefreshTokenId = (0, uuid_1.v4)();
         if (!config_1.config.jwt.secret) {
-            throw new Error("JWT secret not configured");
+            throw new Error('JWT secret not configured');
         }
         const jwtSecret = config_1.config.jwt.secret;
-        const accessTokenExpiry = typeof config_1.config.jwt.accessTokenExpiry === "string"
+        const accessTokenExpiry = typeof config_1.config.jwt.accessTokenExpiry === 'string'
             ? config_1.config.jwt.accessTokenExpiry
-            : typeof config_1.config.jwt.accessTokenExpiry === "number"
-                ? config_1.config.jwt.accessTokenExpiry
-                : "15m";
-        const newAccessToken = jsonwebtoken_1.default.sign({ userId: decoded.userId, type: "access" }, jwtSecret, {
+            : (typeof config_1.config.jwt.accessTokenExpiry === 'number' ? config_1.config.jwt.accessTokenExpiry : '15m');
+        const newAccessToken = jsonwebtoken_1.default.sign({ userId: decoded.userId, type: 'access' }, jwtSecret, {
             expiresIn: accessTokenExpiry,
-            issuer: "settler-api",
-            audience: "settler-client",
+            issuer: 'settler-api',
+            audience: 'settler-client',
         });
         const refreshSecret = (config_1.config.jwt.refreshSecret || jwtSecret);
-        const refreshTokenExpiry = typeof config_1.config.jwt.refreshTokenExpiry === "string"
+        const refreshTokenExpiry = typeof config_1.config.jwt.refreshTokenExpiry === 'string'
             ? config_1.config.jwt.refreshTokenExpiry
-            : typeof config_1.config.jwt.refreshTokenExpiry === "number"
-                ? config_1.config.jwt.refreshTokenExpiry
-                : "7d";
-        const newRefreshToken = jsonwebtoken_1.default.sign({ userId: decoded.userId, tokenId: newRefreshTokenId, type: "refresh" }, refreshSecret, {
+            : (typeof config_1.config.jwt.refreshTokenExpiry === 'number' ? config_1.config.jwt.refreshTokenExpiry : '7d');
+        const newRefreshToken = jsonwebtoken_1.default.sign({ userId: decoded.userId, tokenId: newRefreshTokenId, type: 'refresh' }, refreshSecret, {
             expiresIn: refreshTokenExpiry,
-            issuer: "settler-api",
-            audience: "settler-client",
+            issuer: 'settler-api',
+            audience: 'settler-client',
         });
         // Store new refresh token in database
         const expiresAt = new Date();
@@ -97,7 +93,7 @@ async function rotateRefreshToken(oldRefreshToken) {
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
        VALUES ($1, $2, $3)`, [
-            "token_rotated",
+            'token_rotated',
             decoded.userId,
             JSON.stringify({ oldTokenId: decoded.tokenId, newTokenId: newRefreshTokenId }),
         ]);
@@ -108,7 +104,7 @@ async function rotateRefreshToken(oldRefreshToken) {
         };
     }
     catch (error) {
-        (0, logger_1.logError)("Token rotation failed", error);
+        (0, logger_1.logError)('Token rotation failed', error);
         return null;
     }
 }

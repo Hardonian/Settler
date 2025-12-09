@@ -84,7 +84,7 @@ async function warmCache(warmupFn, ttlSeconds = 3600) {
         (0, logger_1.logInfo)(`Warmed cache with ${entries.length} entries`);
     }
     catch (error) {
-        (0, logger_1.logWarn)("Cache warming failed", { error });
+        (0, logger_1.logWarn)('Cache warming failed', { error });
     }
 }
 /**
@@ -103,13 +103,13 @@ async function checkCoherency(key, validator) {
         const isValid = await validator(cached);
         if (!isValid) {
             await (0, cache_1.del)(key);
-            (0, logger_1.logWarn)("Cache coherency check failed, invalidated", { key });
+            (0, logger_1.logWarn)('Cache coherency check failed, invalidated', { key });
             return false;
         }
         return true;
     }
     catch (error) {
-        (0, logger_1.logWarn)("Cache coherency check error", { key, error });
+        (0, logger_1.logWarn)('Cache coherency check error', { key, error });
         return false;
     }
 }

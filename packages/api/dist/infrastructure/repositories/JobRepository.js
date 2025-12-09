@@ -53,7 +53,7 @@ class JobRepository {
                 createdAt: row.created_at,
                 updatedAt: row.updated_at,
             })),
-            total: parseInt(countResult[0]?.count || "0", 10),
+            total: parseInt(countResult[0]?.count || '0', 10),
         };
     }
     async create(job) {
@@ -66,11 +66,11 @@ class JobRepository {
             JSON.stringify(job.target),
             JSON.stringify(job.rules),
             job.schedule || null,
-            job.status || "active",
+            job.status || 'active',
             1,
         ]);
         if (!result[0]) {
-            throw new Error("Failed to create job");
+            throw new Error('Failed to create job');
         }
         const row = result[0];
         return {

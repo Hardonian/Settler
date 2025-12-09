@@ -4,8 +4,8 @@
  * Maintains a real-time graph of transactions and their relationships.
  * Updates continuously as new transactions arrive.
  */
-import { ReconciliationNode, ReconciliationEdge, ReconciliationGraph, GraphQuery, RealTimeUpdate } from "./types";
-import { EventEmitter } from "events";
+import { ReconciliationNode, ReconciliationEdge, ReconciliationGraph, GraphQuery, RealTimeUpdate } from './types';
+import { EventEmitter } from 'events';
 export declare class ReconciliationGraphEngine extends EventEmitter {
     private graphs;
     private updateSubscribers;
@@ -67,7 +67,7 @@ export declare class ReconciliationGraphEngine extends EventEmitter {
 }
 export interface MatchingRule {
     field: string;
-    type: "exact" | "fuzzy" | "range" | "date_range";
+    type: 'exact' | 'fuzzy' | 'range' | 'date_range';
     weight?: number;
     threshold?: number;
     tolerance?: number;

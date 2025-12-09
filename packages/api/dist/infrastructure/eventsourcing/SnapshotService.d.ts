@@ -2,7 +2,7 @@
  * Snapshot Service
  * Manages snapshots for event-sourced aggregates
  */
-import { IEventStore } from "./EventStore";
+import { IEventStore } from './EventStore';
 export interface SnapshotPolicy {
     snapshotEveryNEvents: number;
     maxEventsWithoutSnapshot: number;

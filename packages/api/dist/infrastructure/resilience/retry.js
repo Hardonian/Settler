@@ -75,7 +75,7 @@ async function retryWithBackoff(fn, options = {}) {
         maxTimeout: opts.maxTimeout,
         factor: opts.factor,
         onFailedAttempt: (error) => {
-            (0, logger_1.logWarn)("Retry attempt failed", {
+            (0, logger_1.logWarn)('Retry attempt failed', {
                 attempt: error.attemptNumber,
                 retriesLeft: error.retriesLeft,
                 error: error.message,
@@ -89,12 +89,12 @@ async function retryWithBackoff(fn, options = {}) {
  */
 function isRetryableError(error) {
     const retryableMessages = [
-        "timeout",
-        "ECONNRESET",
-        "ETIMEDOUT",
-        "ENOTFOUND",
-        "ECONNREFUSED",
-        "EAI_AGAIN",
+        'timeout',
+        'ECONNRESET',
+        'ETIMEDOUT',
+        'ENOTFOUND',
+        'ECONNREFUSED',
+        'EAI_AGAIN',
     ];
     const message = error.message.toLowerCase();
     const name = error.name.toLowerCase();

@@ -2,7 +2,7 @@
  * Cache Headers Middleware
  * Sets appropriate cache headers for safe GET endpoints
  */
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 export interface CacheOptions {
     maxAge?: number;
     sMaxAge?: number;

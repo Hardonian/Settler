@@ -13,26 +13,26 @@ exports.StripeEnhancedAdapter = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const stripe_1 = __importDefault(require("stripe"));
 class StripeEnhancedAdapter {
-    name = "stripe";
-    version = "1.0.0";
-    supportedVersions = ["2023-10-16", "2024-01-01"]; // Supported API versions
+    name = 'stripe';
+    version = '1.0.0';
+    supportedVersions = ['2023-10-16', '2024-01-01']; // Supported API versions
     /**
      * Verify webhook signature
      */
     verifyWebhook(payload, signature, secret) {
         try {
-            const elements = signature.split(",");
-            const timestamp = elements.find((e) => e.startsWith("t="))?.substring(2);
-            const signatures = elements.filter((e) => e.startsWith("v1=")).map((e) => e.substring(3));
+            const elements = signature.split(',');
+            const timestamp = elements.find(e => e.startsWith('t='))?.substring(2);
+            const signatures = elements.filter(e => e.startsWith('v1=')).map(e => e.substring(3));
             if (!timestamp || signatures.length === 0) {
                 return false;
             }
-            const signedPayload = `${timestamp}.${typeof payload === "string" ? payload : payload.toString()}`;
+            const signedPayload = `${timestamp}.${typeof payload === 'string' ? payload : payload.toString()}`;
             const expectedSignature = crypto_1.default
-                .createHmac("sha256", secret)
+                .createHmac('sha256', secret)
                 .update(signedPayload)
-                .digest("hex");
-            return signatures.some((sig) => crypto_1.default.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSignature)));
+                .digest('hex');
+            return signatures.some(sig => crypto_1.default.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSignature)));
         }
         catch (error) {
             return false;
@@ -46,35 +46,35 @@ class StripeEnhancedAdapter {
         const eventType = payload.type;
         const data = payload.data?.object || payload;
         switch (eventType) {
-            case "charge.succeeded":
-            case "payment_intent.succeeded":
+            case 'charge.succeeded':
+            case 'payment_intent.succeeded':
                 events.push({
-                    type: "capture",
+                    type: 'capture',
                     transaction: this.normalizeTransaction(data, tenantId),
                     rawPayload: payload,
                     timestamp: new Date(payload.created * 1000),
                 });
                 break;
-            case "charge.refunded":
-            case "refund.created":
+            case 'charge.refunded':
+            case 'refund.created':
                 events.push({
-                    type: "refund",
-                    refundDispute: this.normalizeRefundDispute(data, tenantId, "refund"),
+                    type: 'refund',
+                    refundDispute: this.normalizeRefundDispute(data, tenantId, 'refund'),
                     rawPayload: payload,
                     timestamp: new Date(payload.created * 1000),
                 });
                 break;
-            case "charge.dispute.created":
+            case 'charge.dispute.created':
                 events.push({
-                    type: "chargeback",
-                    refundDispute: this.normalizeRefundDispute(data, tenantId, "chargeback"),
+                    type: 'chargeback',
+                    refundDispute: this.normalizeRefundDispute(data, tenantId, 'chargeback'),
                     rawPayload: payload,
                     timestamp: new Date(payload.created * 1000),
                 });
                 break;
-            case "payout.paid":
+            case 'payout.paid':
                 events.push({
-                    type: "payout",
+                    type: 'payout',
                     settlement: this.normalizeSettlement(data, tenantId),
                     rawPayload: payload,
                     timestamp: new Date(payload.created * 1000),
@@ -84,7 +84,7 @@ class StripeEnhancedAdapter {
                 // Unknown event type, but still normalize if possible
                 if (data.id && data.amount) {
                     events.push({
-                        type: "capture",
+                        type: 'capture',
                         transaction: this.normalizeTransaction(data, tenantId),
                         rawPayload: payload,
                         timestamp: new Date(payload.created * 1000),
@@ -99,10 +99,10 @@ class StripeEnhancedAdapter {
     async pollTransactions(config, dateRange) {
         const apiKey = config.apiKey;
         if (!apiKey) {
-            throw new Error("Stripe API key is required");
+            throw new Error('Stripe API key is required');
         }
         const stripe = new stripe_1.default(apiKey, {
-            apiVersion: "2023-10-16",
+            apiVersion: '2024-11-20.acacia',
         });
         const charges = await stripe.charges.list({
             created: {
@@ -111,7 +111,7 @@ class StripeEnhancedAdapter {
             },
             limit: 100,
         });
-        return charges.data.map((charge) => this.normalizeTransaction(charge, config.tenantId || "default"));
+        return charges.data.map((charge) => this.normalizeTransaction(charge, config.tenantId || 'default'));
     }
     /**
      * Poll settlements from Stripe API
@@ -119,10 +119,10 @@ class StripeEnhancedAdapter {
     async pollSettlements(config, dateRange) {
         const apiKey = config.apiKey;
         if (!apiKey) {
-            throw new Error("Stripe API key is required");
+            throw new Error('Stripe API key is required');
         }
         const stripe = new stripe_1.default(apiKey, {
-            apiVersion: "2023-10-16",
+            apiVersion: '2024-11-20.acacia',
         });
         const payouts = await stripe.payouts.list({
             created: {
@@ -131,7 +131,7 @@ class StripeEnhancedAdapter {
             },
             limit: 100,
         });
-        return payouts.data.map((payout) => this.normalizeSettlement(payout, config.tenantId || "default"));
+        return payouts.data.map((payout) => this.normalizeSettlement(payout, config.tenantId || 'default'));
     }
     /**
      * Extract fees from transaction payload
@@ -146,15 +146,13 @@ class StripeEnhancedAdapter {
                     id: this.generateId(),
                     tenantId,
                     transactionId: transaction.id,
-                    type: "processing",
+                    type: 'processing',
                     amount: {
                         value: balanceTx.fee / 100,
                         currency: transaction.amount.currency,
                     },
-                    description: "Stripe processing fee",
-                    rate: transaction.amount.value > 0
-                        ? (balanceTx.fee / 100 / transaction.amount.value) * 100
-                        : 0,
+                    description: 'Stripe processing fee',
+                    rate: transaction.amount.value > 0 ? (balanceTx.fee / 100) / transaction.amount.value * 100 : 0,
                     rawPayload: balanceTx,
                     createdAt: new Date(),
                 });
@@ -171,7 +169,7 @@ class StripeEnhancedAdapter {
             id: this.generateId(),
             tenantId,
             paymentId: charge.metadata?.payment_id,
-            provider: "stripe",
+            provider: 'stripe',
             providerTransactionId: charge.id,
             type: this.mapTransactionType(charge),
             amount: {
@@ -199,7 +197,7 @@ class StripeEnhancedAdapter {
         return {
             id: this.generateId(),
             tenantId,
-            provider: "stripe",
+            provider: 'stripe',
             providerSettlementId: payout.id,
             amount: {
                 value: payout.amount / 100,
@@ -226,12 +224,12 @@ class StripeEnhancedAdapter {
             type,
             amount: {
                 value: raw.amount ? raw.amount / 100 : 0,
-                currency: raw.currency ? raw.currency.toUpperCase() : "USD",
+                currency: raw.currency ? raw.currency.toUpperCase() : 'USD',
             },
             status: this.mapRefundDisputeStatus(raw),
             reason: raw.reason || raw.dispute_reason,
-            providerRefundId: type === "refund" ? raw.id : undefined,
-            providerDisputeId: type === "chargeback" ? raw.id : undefined,
+            providerRefundId: type === 'refund' ? raw.id : undefined,
+            providerDisputeId: type === 'chargeback' ? raw.id : undefined,
             rawPayload: raw,
             createdAt: new Date(raw.created * 1000),
             updatedAt: new Date(raw.updated || raw.created * 1000),
@@ -242,7 +240,7 @@ class StripeEnhancedAdapter {
      */
     handleVersionChange(_oldVersion, newVersion) {
         if (!this.supportedVersions.includes(newVersion)) {
-            console.warn(`Stripe API version ${newVersion} is not officially supported. Supported versions: ${this.supportedVersions.join(", ")}`);
+            console.warn(`Stripe API version ${newVersion} is not officially supported. Supported versions: ${this.supportedVersions.join(', ')}`);
         }
     }
     /**
@@ -250,48 +248,48 @@ class StripeEnhancedAdapter {
      */
     mapTransactionType(charge) {
         if (charge.refunded)
-            return "refund";
+            return 'refund';
         if (charge.disputed)
-            return "chargeback";
+            return 'chargeback';
         if (charge.captured)
-            return "capture";
-        return "authorization";
+            return 'capture';
+        return 'authorization';
     }
     /**
      * Map Stripe status to canonical status
      */
     mapTransactionStatus(charge) {
         if (charge.refunded)
-            return "refunded";
+            return 'refunded';
         if (charge.disputed)
-            return "disputed";
+            return 'disputed';
         if (charge.paid)
-            return "succeeded";
+            return 'succeeded';
         if (charge.failed)
-            return "failed";
-        return "pending";
+            return 'failed';
+        return 'pending';
     }
     /**
      * Map Stripe payout status to canonical status
      */
     mapSettlementStatus(payout) {
-        if (payout.status === "paid")
-            return "completed";
-        if (payout.status === "failed")
-            return "failed";
-        return "pending";
+        if (payout.status === 'paid')
+            return 'completed';
+        if (payout.status === 'failed')
+            return 'failed';
+        return 'pending';
     }
     /**
      * Map Stripe refund/dispute status to canonical status
      */
     mapRefundDisputeStatus(raw) {
-        if (raw.status === "succeeded" || raw.status === "won")
-            return "completed";
-        if (raw.status === "failed" || raw.status === "lost")
-            return "lost";
-        if (raw.status === "canceled")
-            return "reversed";
-        return "pending";
+        if (raw.status === 'succeeded' || raw.status === 'won')
+            return 'completed';
+        if (raw.status === 'failed' || raw.status === 'lost')
+            return 'lost';
+        if (raw.status === 'canceled')
+            return 'reversed';
+        return 'pending';
     }
     /**
      * Generate ID

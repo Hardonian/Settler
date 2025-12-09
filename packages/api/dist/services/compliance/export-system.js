@@ -7,7 +7,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.complianceExportSystem = exports.ComplianceExportSystem = void 0;
 const events_1 = require("events");
-const logger_1 = require("../../utils/logger");
 class ComplianceExportSystem extends events_1.EventEmitter {
     exports = new Map();
     templates = new Map();
@@ -20,39 +19,50 @@ class ComplianceExportSystem extends events_1.EventEmitter {
      */
     initializeTemplates() {
         // GDPR Template
-        this.templates.set("GDPR", {
-            jurisdiction: "GDPR",
+        this.templates.set('GDPR', {
+            jurisdiction: 'GDPR',
             fields: [
-                "user_id",
-                "email",
-                "created_at",
-                "reconciliation_jobs",
-                "reports",
-                "webhooks",
-                "api_keys",
+                'user_id',
+                'email',
+                'created_at',
+                'reconciliation_jobs',
+                'reports',
+                'webhooks',
+                'api_keys',
             ],
-            format: "json",
-            description: "GDPR data export - all user data",
+            format: 'json',
+            description: 'GDPR data export - all user data',
         });
         // CCPA Template
-        this.templates.set("CCPA", {
-            jurisdiction: "CCPA",
-            fields: ["user_id", "email", "created_at", "reconciliation_jobs", "reports"],
-            format: "json",
-            description: "CCPA data export - California privacy rights",
+        this.templates.set('CCPA', {
+            jurisdiction: 'CCPA',
+            fields: [
+                'user_id',
+                'email',
+                'created_at',
+                'reconciliation_jobs',
+                'reports',
+            ],
+            format: 'json',
+            description: 'CCPA data export - California privacy rights',
         });
         // SOC 2 Template
-        this.templates.set("SOC2", {
-            jurisdiction: "SOC2",
-            fields: ["audit_logs", "access_logs", "configuration_changes", "security_events"],
-            format: "json",
-            description: "SOC 2 audit logs and security events",
+        this.templates.set('SOC2', {
+            jurisdiction: 'SOC2',
+            fields: [
+                'audit_logs',
+                'access_logs',
+                'configuration_changes',
+                'security_events',
+            ],
+            format: 'json',
+            description: 'SOC 2 audit logs and security events',
         });
     }
     /**
      * Create a compliance export
      */
-    async createExport(customerId, jurisdiction, format = "json") {
+    async createExport(customerId, jurisdiction, format = 'json') {
         const template = this.templates.get(jurisdiction);
         if (!template) {
             throw new Error(`No template found for jurisdiction: ${jurisdiction}`);
@@ -62,26 +72,26 @@ class ComplianceExportSystem extends events_1.EventEmitter {
             customerId,
             jurisdiction,
             format,
-            status: "pending",
+            status: 'pending',
             createdAt: new Date(),
             data: {},
         };
         this.exports.set(export_.id, export_);
         // Process export asynchronously
-        this.processExport(export_).catch((error) => {
-            (0, logger_1.logError)(`Failed to process export ${export_.id}`, error, { exportId: export_.id });
-            export_.status = "failed";
-            this.emit("export_failed", export_);
+        this.processExport(export_).catch(error => {
+            console.error(`Failed to process export ${export_.id}:`, error);
+            export_.status = 'failed';
+            this.emit('export_failed', export_);
         });
-        this.emit("export_created", export_);
+        this.emit('export_created', export_);
         return export_;
     }
     /**
      * Process an export
      */
     async processExport(export_) {
-        export_.status = "processing";
-        this.emit("export_processing", export_);
+        export_.status = 'processing';
+        this.emit('export_processing', export_);
         try {
             // Fetch data (would query database in production)
             const data = await this.fetchExportData(export_.customerId, export_.jurisdiction);
@@ -89,15 +99,15 @@ class ComplianceExportSystem extends events_1.EventEmitter {
             const formattedData = this.formatData(data, export_.jurisdiction, export_.format);
             // Generate download URL (would upload to S3/R2 in production)
             const downloadUrl = await this.generateDownloadUrl(export_.id, formattedData, export_.format);
-            export_.status = "completed";
+            export_.status = 'completed';
             export_.completedAt = new Date();
             export_.data = formattedData;
             export_.downloadUrl = downloadUrl;
-            this.emit("export_completed", export_);
+            this.emit('export_completed', export_);
         }
         catch (error) {
-            export_.status = "failed";
-            this.emit("export_failed", { export_, error });
+            export_.status = 'failed';
+            this.emit('export_failed', { export_, error });
             throw error;
         }
     }
@@ -122,22 +132,22 @@ class ComplianceExportSystem extends events_1.EventEmitter {
      */
     formatData(data, _jurisdiction, format) {
         switch (format) {
-            case "json":
+            case 'json':
                 return data;
-            case "csv":
+            case 'csv':
                 // Convert to CSV format
                 return {
                     csv: this.objectToCSV(data),
                 };
-            case "xml":
+            case 'xml':
                 // Convert to XML format
                 return {
                     xml: this.objectToXML(data),
                 };
-            case "pdf":
+            case 'pdf':
                 // Would generate PDF
                 return {
-                    pdf: "base64_encoded_pdf",
+                    pdf: 'base64_encoded_pdf',
                 };
             default:
                 return data;
@@ -148,8 +158,8 @@ class ComplianceExportSystem extends events_1.EventEmitter {
      */
     objectToCSV(data) {
         const headers = Object.keys(data);
-        const values = headers.map((h) => String(data[h] || ""));
-        return `${headers.join(",")}\n${values.join(",")}`;
+        const values = headers.map(h => String(data[h] || ''));
+        return `${headers.join(',')}\n${values.join(',')}`;
     }
     /**
      * Convert object to XML
@@ -159,7 +169,7 @@ class ComplianceExportSystem extends events_1.EventEmitter {
         for (const [key, value] of Object.entries(data)) {
             xml += `  <${key}>${value}</${key}>\n`;
         }
-        xml += "</data>";
+        xml += '</data>';
         return xml;
     }
     /**
@@ -181,7 +191,7 @@ class ComplianceExportSystem extends events_1.EventEmitter {
      */
     listExports(customerId) {
         return Array.from(this.exports.values())
-            .filter((e) => e.customerId === customerId)
+            .filter(e => e.customerId === customerId)
             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     }
     /**

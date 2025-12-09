@@ -6,3 +6,15 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/edge-ai-core@1.0.0 prebuild
 > npm run typecheck
 
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
+
+> @settler/edge-ai-core@1.0.0 typecheck
+> tsc --noEmit
+
+
+> @settler/edge-ai-core@1.0.0 build
+> tsc
+

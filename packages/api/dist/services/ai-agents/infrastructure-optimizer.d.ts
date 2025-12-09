@@ -7,19 +7,19 @@
  * - Performance tuning
  * - Capacity planning
  */
-import { BaseAgent } from "./orchestrator";
+import { BaseAgent } from './orchestrator';
 export interface OptimizationOpportunity {
     id: string;
-    type: "query" | "cost" | "performance" | "capacity";
+    type: 'query' | 'cost' | 'performance' | 'capacity';
     description: string;
     currentState: Record<string, unknown>;
     proposedChange: Record<string, unknown>;
     expectedImpact: {
         costSavings?: number;
         performanceImprovement?: number;
-        riskLevel: "low" | "medium" | "high";
+        riskLevel: 'low' | 'medium' | 'high';
     };
-    recommendedAction: "auto-apply" | "human-review";
+    recommendedAction: 'auto-apply' | 'human-review';
 }
 export declare class InfrastructureOptimizerAgent extends BaseAgent {
     id: string;

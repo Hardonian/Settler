@@ -32,13 +32,17 @@ class JobRouteService {
                 schedule || null,
             ]);
             if (!result[0]) {
-                throw new Error("Failed to create job");
+                throw new Error('Failed to create job');
             }
             const jobId = result[0].id;
             // Log audit event
             await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, ["job_created", userId, JSON.stringify({ jobId, name })]);
-            (0, logger_1.logInfo)("Job created", { jobId, userId, name });
+         VALUES ($1, $2, $3)`, [
+                'job_created',
+                userId,
+                JSON.stringify({ jobId, name }),
+            ]);
+            (0, logger_1.logInfo)('Job created', { jobId, userId, name });
             const response = {
                 id: jobId,
                 userId,
@@ -46,7 +50,7 @@ class JobRouteService {
                 source: { adapter: source.adapter },
                 target: { adapter: target.adapter },
                 rules,
-                status: "active",
+                status: 'active',
                 createdAt: new Date().toISOString(),
             };
             if (schedule !== undefined) {
@@ -55,8 +59,8 @@ class JobRouteService {
             return response;
         }
         catch (error) {
-            (0, logger_1.logError)("Failed to create job", error, { userId });
-            const message = error instanceof Error ? error.message : "Failed to create reconciliation job";
+            (0, logger_1.logError)('Failed to create job', error, { userId });
+            const message = error instanceof Error ? error.message : 'Failed to create reconciliation job';
             throw new Error(message);
         }
     }
@@ -80,11 +84,15 @@ class JobRouteService {
         // Redact sensitive fields
         const redactedSourceConfig = Object.fromEntries(Object.entries(sourceConfig).map(([key, value]) => [
             key,
-            key.toLowerCase().includes("key") || key.toLowerCase().includes("secret") ? "***" : value,
+            key.toLowerCase().includes('key') || key.toLowerCase().includes('secret')
+                ? '***'
+                : value,
         ]));
         const redactedTargetConfig = Object.fromEntries(Object.entries(targetConfig).map(([key, value]) => [
             key,
-            key.toLowerCase().includes("key") || key.toLowerCase().includes("secret") ? "***" : value,
+            key.toLowerCase().includes('key') || key.toLowerCase().includes('secret')
+                ? '***'
+                : value,
         ]));
         const response = {
             id: job.id,
@@ -156,8 +164,12 @@ class JobRouteService {
         }
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-       VALUES ($1, $2, $3)`, ["job_deleted", userId, JSON.stringify({ jobId })]);
-        (0, logger_1.logInfo)("Job deleted", { jobId, userId });
+       VALUES ($1, $2, $3)`, [
+            'job_deleted',
+            userId,
+            JSON.stringify({ jobId }),
+        ]);
+        (0, logger_1.logInfo)('Job deleted', { jobId, userId });
         return true;
     }
 }

@@ -19,14 +19,12 @@ exports.pool = new pg_1.Pool({
     connectionTimeoutMillis: config_1.config.database.connectionTimeout,
     statement_timeout: config_1.config.database.statementTimeout,
     query_timeout: config_1.config.database.statementTimeout,
-    ssl: config_1.config.database.ssl
-        ? {
-            rejectUnauthorized: config_1.config.nodeEnv === "production" || config_1.config.nodeEnv === "preview",
-        }
-        : false,
+    ssl: config_1.config.database.ssl ? {
+        rejectUnauthorized: config_1.config.nodeEnv === 'production' || config_1.config.nodeEnv === 'preview',
+    } : false,
 });
-exports.pool.on("error", (err) => {
-    console.error("Unexpected error on idle client", err);
+exports.pool.on('error', (err) => {
+    console.error('Unexpected error on idle client', err);
     process.exit(-1);
 });
 // Helper function to execute queries
@@ -44,13 +42,13 @@ async function query(text, params) {
 async function transaction(callback) {
     const client = await exports.pool.connect();
     try {
-        await client.query("BEGIN");
+        await client.query('BEGIN');
         const result = await callback(client);
-        await client.query("COMMIT");
+        await client.query('COMMIT');
         return result;
     }
     catch (error) {
-        await client.query("ROLLBACK");
+        await client.query('ROLLBACK');
         throw error;
     }
     finally {
@@ -59,35 +57,35 @@ async function transaction(callback) {
 }
 // Initialize database schema
 async function initDatabase() {
-    const { runMigrations } = require("./migrate");
+    const { runMigrations } = require('./migrate');
     try {
         // Run all migrations in order
         await runMigrations();
     }
     catch (error) {
         // Fallback to basic schema if migration runner fails
-        const message = error instanceof Error ? error.message : "Unknown error";
-        console.warn("Migration runner failed, falling back to basic schema:", message);
-        const fs = require("fs");
-        const path = require("path");
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        console.warn('Migration runner failed, falling back to basic schema:', message);
+        const fs = require('fs');
+        const path = require('path');
         // Run consolidated initial schema migration
-        const migrationPath = path.join(__dirname, "migrations", "001-initial-schema.sql");
+        const migrationPath = path.join(__dirname, 'migrations', '001-initial-schema.sql');
         if (fs.existsSync(migrationPath)) {
-            const migrationSQL = fs.readFileSync(migrationPath, "utf8");
+            const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
             // Split by semicolon and execute each statement
-            const statements = migrationSQL.split(";").filter((s) => s.trim().length > 0);
+            const statements = migrationSQL.split(';').filter((s) => s.trim().length > 0);
             for (const statement of statements) {
-                if (statement.trim() && !statement.trim().startsWith("--")) {
+                if (statement.trim() && !statement.trim().startsWith('--')) {
                     try {
                         await query(statement);
                     }
                     catch (error) {
                         // Ignore "already exists" errors (idempotent migration)
                         const errorMessage = error instanceof Error ? error.message : String(error);
-                        if (!errorMessage.includes("already exists") &&
-                            !errorMessage.includes("duplicate") &&
-                            !errorMessage.includes("already enabled")) {
-                            console.warn("Migration warning:", errorMessage);
+                        if (!errorMessage.includes('already exists') &&
+                            !errorMessage.includes('duplicate') &&
+                            !errorMessage.includes('already enabled')) {
+                            console.warn('Migration warning:', errorMessage);
                         }
                     }
                 }

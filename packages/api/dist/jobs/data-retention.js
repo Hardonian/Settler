@@ -33,7 +33,7 @@ async function cleanupOldData() {
         // Cleanup expired idempotency keys
         const deletedIdempotencyKeys = await (0, db_1.query)(`DELETE FROM idempotency_keys
        WHERE expires_at < NOW()`, []);
-        (0, logger_1.logInfo)("Data retention cleanup completed", {
+        (0, logger_1.logInfo)('Data retention cleanup completed', {
             deletedReports: deletedReports.length,
             deletedPayloads: deletedPayloads.length,
             deletedDeliveries: deletedDeliveries.length,
@@ -43,7 +43,7 @@ async function cleanupOldData() {
         });
     }
     catch (error) {
-        (0, logger_1.logError)("Data retention cleanup failed", error);
+        (0, logger_1.logError)('Data retention cleanup failed', error);
         throw error;
     }
 }
@@ -53,13 +53,13 @@ function startDataRetentionJob() {
     const intervalMs = 24 * 60 * 60 * 1000; // 24 hours
     const initialDelay = getInitialDelay();
     setTimeout(() => {
-        cleanupOldData().catch((error) => {
-            (0, logger_1.logError)("Scheduled data retention job failed", error);
+        cleanupOldData().catch(error => {
+            (0, logger_1.logError)('Scheduled data retention job failed', error);
         });
         // Schedule recurring
         setInterval(() => {
-            cleanupOldData().catch((error) => {
-                (0, logger_1.logError)("Scheduled data retention job failed", error);
+            cleanupOldData().catch(error => {
+                (0, logger_1.logError)('Scheduled data retention job failed', error);
             });
         }, intervalMs);
     }, initialDelay);

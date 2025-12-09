@@ -4,7 +4,7 @@
  * Handles webhook ingestion with signature verification, idempotency,
  * and retry logic as specified in the Product & Technical Specification.
  */
-import { EnhancedAdapter, NormalizedEvent } from "@settler/adapters";
+import { EnhancedAdapter, NormalizedEvent } from '@settler/adapters';
 export interface WebhookIngestionResult {
     success: boolean;
     events: NormalizedEvent[];

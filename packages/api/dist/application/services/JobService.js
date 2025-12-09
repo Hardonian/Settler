@@ -62,7 +62,7 @@ class JobService {
     async getJob(query) {
         const jobData = await this.jobRepository.findById(query.jobId, query.userId);
         if (!jobData) {
-            throw new Error("Job not found");
+            throw new Error('Job not found');
         }
         // Convert repository format to domain format
         const source = jobData.source;
@@ -109,7 +109,7 @@ class JobService {
     async updateJob(jobId, userId, updates) {
         const jobData = await this.jobRepository.findById(jobId, userId);
         if (!jobData) {
-            throw new Error("Job not found");
+            throw new Error('Job not found');
         }
         // Convert repository format to domain entity
         const source = jobData.source;
@@ -154,7 +154,7 @@ class JobService {
                 ? await (0, encryption_1.encrypt)(JSON.stringify(updates.targetConfig))
                 : job.targetConfigEncrypted;
             job.updateConfigs(sourceConfigEncrypted, targetConfigEncrypted);
-            changes.configs = "updated";
+            changes.configs = 'updated';
         }
         // Note: Repository doesn't have update method, so we'd need to implement it
         // For now, this is a placeholder
@@ -166,7 +166,7 @@ class JobService {
     async deleteJob(jobId, userId) {
         const deleted = await this.jobRepository.delete(jobId, userId);
         if (!deleted) {
-            throw new Error("Job not found");
+            throw new Error('Job not found');
         }
     }
 }

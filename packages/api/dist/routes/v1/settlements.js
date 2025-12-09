@@ -17,8 +17,8 @@ const router = (0, express_1.Router)();
 // Validation schemas
 const getSettlementsSchema = zod_1.z.object({
     query: zod_1.z.object({
-        page: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default("1"),
-        limit: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default("100"),
+        page: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default('1'),
+        limit: zod_1.z.string().regex(/^\d+$/).transform(Number).optional().default('100'),
         provider: zod_1.z.string().optional(),
         status: zod_1.z.string().optional(),
         startDate: zod_1.z.string().datetime().optional(),
@@ -34,13 +34,13 @@ const getSettlementSchema = zod_1.z.object({
  * GET /api/v1/settlements
  * List settlements with filtering and pagination
  */
-router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getSettlementsSchema), async (req, res) => {
+router.get('/', (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getSettlementsSchema), async (req, res) => {
     try {
         const queryParams = getSettlementsSchema.parse({ query: req.query });
         const { page, limit, provider, status, startDate, endDate } = queryParams.query;
         const tenantId = req.tenantId;
         const offset = (page - 1) * limit;
-        let whereClause = "tenant_id = $1";
+        let whereClause = 'tenant_id = $1';
         const params = [tenantId];
         let paramIndex = 2;
         if (provider) {
@@ -66,7 +66,7 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
         // Get total count
         const countResult = await (0, db_1.query)(`SELECT COUNT(*) as count FROM settlements WHERE ${whereClause}`, params);
         if (!countResult[0]) {
-            throw new Error("Failed to get settlement count");
+            throw new Error('Failed to get settlement count');
         }
         const total = parseInt(countResult[0].count, 10);
         // Get settlements
@@ -93,7 +93,7 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to fetch settlements", 500);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to fetch settlements', 500);
         return;
     }
 });
@@ -101,7 +101,7 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
  * GET /api/v1/settlements/:id
  * Get settlement by ID
  */
-router.get("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getSettlementSchema), async (req, res) => {
+router.get('/:id', (0, authorization_1.requirePermission)(Permissions_1.Permission.REPORTS_READ), (0, validation_1.validateRequest)(getSettlementSchema), async (req, res) => {
     try {
         const { id } = req.params;
         const tenantId = req.tenantId;
@@ -121,18 +121,18 @@ router.get("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permissi
           created_at as "createdAt",
           updated_at as "updatedAt"
         FROM settlements 
-        WHERE id = $1 AND tenant_id = $2`, [id || "", tenantId]);
+        WHERE id = $1 AND tenant_id = $2`, [id || '', tenantId]);
         if (settlements.length === 0) {
-            return (0, api_response_1.sendError)(res, 404, "NOT_FOUND", "Settlement not found");
+            return (0, api_response_1.sendError)(res, 404, 'NOT_FOUND', 'Settlement not found');
         }
         if (!settlements[0]) {
-            return (0, api_response_1.sendError)(res, 404, "NOT_FOUND", "Settlement not found");
+            return (0, api_response_1.sendError)(res, 404, 'NOT_FOUND', 'Settlement not found');
         }
         (0, api_response_1.sendSuccess)(res, settlements[0]);
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to fetch settlement", 500);
+        (0, error_handler_1.handleRouteError)(res, error, 'Failed to fetch settlement', 500);
         return;
     }
 });

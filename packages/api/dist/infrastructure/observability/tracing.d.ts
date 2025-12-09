@@ -2,7 +2,7 @@
  * OpenTelemetry Distributed Tracing
  * Sets up distributed tracing for the application
  */
-import { Span } from "@opentelemetry/api";
+import { Span } from '@opentelemetry/api';
 export declare function initializeTracing(): void;
 export declare function shutdownTracing(): Promise<void>;
 /**

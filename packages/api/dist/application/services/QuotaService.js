@@ -24,7 +24,7 @@ class QuotaExceededError extends Error {
         this.quotaType = quotaType;
         this.currentUsage = currentUsage;
         this.limit = limit;
-        this.name = "QuotaExceededError";
+        this.name = 'QuotaExceededError';
     }
 }
 exports.QuotaExceededError = QuotaExceededError;
@@ -39,7 +39,7 @@ class QuotaService {
     async checkQuota(tenantId, quotaType, requestedValue = 1) {
         const tenant = await this.tenantRepo.findById(tenantId);
         if (!tenant) {
-            throw new Error("Tenant not found");
+            throw new Error('Tenant not found');
         }
         // Enterprise tenants bypass quotas
         if (tenant.isEnterprise()) {
@@ -86,9 +86,9 @@ class QuotaService {
             default:
                 throw new Error(`Unknown quota type: ${quotaType}`);
         }
-        const allowed = currentUsage + requestedValue <= limit;
+        const allowed = (currentUsage + requestedValue) <= limit;
         if (!allowed) {
-            (0, logger_1.logWarn)("Quota exceeded", {
+            (0, logger_1.logWarn)('Quota exceeded', {
                 tenantId,
                 quotaType,
                 currentUsage,
@@ -165,7 +165,7 @@ class QuotaService {
     async getUsage(tenantId) {
         const tenant = await this.tenantRepo.findById(tenantId);
         if (!tenant) {
-            throw new Error("Tenant not found");
+            throw new Error('Tenant not found');
         }
         const quotas = tenant.quotas;
         const usageResult = await (0, db_1.query)(`SELECT COALESCE(current_storage_bytes, 0) as current_storage_bytes,

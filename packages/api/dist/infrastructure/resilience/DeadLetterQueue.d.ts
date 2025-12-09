@@ -2,7 +2,7 @@
  * Dead Letter Queue
  * Handles irrecoverable jobs and events
  */
-import { Pool } from "pg";
+import { Pool } from 'pg';
 export interface DeadLetterEntry {
     id: string;
     saga_id?: string;
@@ -25,7 +25,7 @@ export declare class DeadLetterQueue {
     /**
      * Add an entry to the dead letter queue
      */
-    addEntry(entry: Omit<DeadLetterEntry, "id" | "created_at">): Promise<string>;
+    addEntry(entry: Omit<DeadLetterEntry, 'id' | 'created_at'>): Promise<string>;
     /**
      * Get unresolved entries
      */

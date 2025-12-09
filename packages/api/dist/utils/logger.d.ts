@@ -2,7 +2,7 @@
  * Structured Logging with OpenTelemetry Integration
  * JSON structured logs with trace_id, span_id, tenant_id
  */
-import winston from "winston";
+import winston from 'winston';
 export declare const logger: winston.Logger;
 export declare function logInfo(message: string, meta?: Record<string, unknown>): void;
 export declare function logError(message: string, error?: unknown, meta?: Record<string, unknown>): void;

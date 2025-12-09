@@ -36,11 +36,11 @@ class QuickBooksExporter {
         // Build CSV rows
         const csvRows = [];
         // QuickBooks CSV header
-        csvRows.push("Date,Transaction Type,Num,Name,Memo,Account,Class,Amount");
+        csvRows.push('Date,Transaction Type,Num,Name,Memo,Account,Class,Amount');
         for (const match of matches) {
-            const glAccount = glAccountMapping[match.transaction_type] || "Accounts Receivable";
+            const glAccount = glAccountMapping[match.transaction_type] || 'Accounts Receivable';
             const amount = match.settlement_amount;
-            const date = match.settlement_date.toISOString().split("T")[0];
+            const date = match.settlement_date.toISOString().split('T')[0];
             const memo = `Reconciled: ${match.transaction_type} - ${match.transaction_id.substring(0, 8)}`;
             csvRows.push(`${date},${match.transaction_type},${match.transaction_id.substring(0, 8)},,${memo},${glAccount},,${amount}`);
             // Add fee line if included
@@ -48,7 +48,7 @@ class QuickBooksExporter {
                 const fees = await (0, db_1.query)(`SELECT amount_value, type FROM fees 
            WHERE transaction_id = $1 AND tenant_id = $2`, [match.transaction_id, tenantId]);
                 for (const fee of fees) {
-                    const feeGLAccount = glAccountMapping[`fee_${fee.type}`] || "Payment Processing Fees";
+                    const feeGLAccount = glAccountMapping[`fee_${fee.type}`] || 'Payment Processing Fees';
                     csvRows.push(`${date},Fee,${match.transaction_id.substring(0, 8)},,${fee.type} fee,${feeGLAccount},,${-fee.amount_value}`);
                 }
             }
@@ -68,26 +68,26 @@ class QuickBooksExporter {
           AND t.created_at <= $3
         ORDER BY t.created_at DESC`, [tenantId, dateRange.start, dateRange.end]);
             for (const item of unmatched) {
-                const glAccount = glAccountMapping[item.transaction_type] || "Accounts Receivable";
-                const date = item.created_at.toISOString().split("T")[0];
+                const glAccount = glAccountMapping[item.transaction_type] || 'Accounts Receivable';
+                const date = item.created_at.toISOString().split('T')[0];
                 const memo = `Unmatched: ${item.transaction_type} - ${item.transaction_id.substring(0, 8)}`;
                 csvRows.push(`${date},${item.transaction_type},${item.transaction_id.substring(0, 8)},,${memo},${glAccount},,${item.amount_value}`);
             }
         }
-        return csvRows.join("\n");
+        return csvRows.join('\n');
     }
     /**
      * Get GL account mapping template
      */
     getGLAccountMappingTemplate() {
         return {
-            capture: "Accounts Receivable",
-            refund: "Accounts Receivable",
-            chargeback: "Chargebacks",
-            adjustment: "Adjustments",
-            fee_processing: "Payment Processing Fees",
-            fee_fx: "FX Fees",
-            fee_chargeback: "Chargeback Fees",
+            'capture': 'Accounts Receivable',
+            'refund': 'Accounts Receivable',
+            'chargeback': 'Chargebacks',
+            'adjustment': 'Adjustments',
+            'fee_processing': 'Payment Processing Fees',
+            'fee_fx': 'FX Fees',
+            'fee_chargeback': 'Chargeback Fees',
         };
     }
 }

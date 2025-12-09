@@ -7,8 +7,8 @@
  * - System notifications
  * - Live metrics
  */
-import { Server as HTTPServer } from "http";
-import { Server as SocketIOServer } from "socket.io";
+import { Server as HTTPServer } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 export interface WebSocketServer {
     io: SocketIOServer;
     broadcast: (event: string, data: unknown) => void;

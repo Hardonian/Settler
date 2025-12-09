@@ -14,8 +14,6 @@ const api_response_1 = require("../utils/api-response");
 const error_handler_1 = require("../utils/error-handler");
 const event_tracker_1 = require("../utils/event-tracker");
 const adapter_config_validator_1 = require("../utils/adapter-config-validator");
-const usage_tracker_1 = require("../utils/usage-tracker");
-const billing_helpers_1 = require("../utils/billing-helpers");
 const router = (0, express_1.Router)();
 exports.jobsRouter = router;
 const jobService = new JobRouteService_1.JobRouteService();
@@ -45,12 +43,15 @@ function cleanupOldMutexes() {
 // Run cleanup every 30 minutes
 setInterval(cleanupOldMutexes, 30 * 60 * 1000);
 // Validation schemas with input sanitization
-const adapterConfigSchema = zod_1.z
-    .record(zod_1.z.union([zod_1.z.string().max(1000), zod_1.z.number(), zod_1.z.boolean(), zod_1.z.array(zod_1.z.string().max(1000))]))
-    .refine((config) => {
+const adapterConfigSchema = zod_1.z.record(zod_1.z.union([
+    zod_1.z.string().max(1000),
+    zod_1.z.number(),
+    zod_1.z.boolean(),
+    zod_1.z.array(zod_1.z.string().max(1000)),
+])).refine((config) => {
     // Prevent prototype pollution
-    return !("__proto__" in config || "constructor" in config || "prototype" in config);
-}, { message: "Invalid config keys" });
+    return !('__proto__' in config || 'constructor' in config || 'prototype' in config);
+}, { message: 'Invalid config keys' });
 const createJobSchema = zod_1.z.object({
     body: zod_1.z.object({
         name: zod_1.z.string().min(1).max(255),
@@ -95,41 +96,18 @@ router.post("/", (0, authorization_1.requirePermission)(Permissions_1.Permission
         (0, adapter_config_validator_1.validateAdapterConfig)(req.body.target.adapter, req.body.target.config);
         const job = await jobService.createJob(userId, req.body);
         // Track event
-        (0, event_tracker_1.trackEventAsync)(userId, "JobCreated", {
+        (0, event_tracker_1.trackEventAsync)(userId, 'JobCreated', {
             jobId: job.id,
             sourceAdapter: req.body.source.adapter,
             targetAdapter: req.body.target.adapter,
             hasSchedule: !!req.body.schedule,
         });
-        // Log usage for billing
-        try {
-            const billingAccount = await (0, billing_helpers_1.getBillingAccount)(userId, req.tenantId);
-            if (billingAccount) {
-                await (0, usage_tracker_1.logUsageEvent)({
-                    billingAccountId: billingAccount.id,
-                    eventType: "reconciliation_job",
-                    quantity: 1,
-                    userId: userId,
-                    ...(req.tenantId && { tenantId: req.tenantId }),
-                    integrationId: req.body.source.adapter,
-                    metadata: {
-                        job_id: job.id,
-                        source_adapter: req.body.source.adapter,
-                        target_adapter: req.body.target.adapter,
-                    },
-                });
-            }
-        }
-        catch (usageError) {
-            // Don't fail the request if usage logging fails
-            (0, logger_1.logError)("Failed to log usage for job creation", usageError);
-        }
         (0, api_response_1.sendCreated)(res, job, "Reconciliation job created successfully");
     }
     catch (error) {
         const message = error instanceof Error ? error.message : "Failed to create reconciliation job";
-        (0, logger_1.logError)("Failed to create job", error, { userId: req.userId });
-        (0, api_response_1.sendError)(res, 500, "INTERNAL_ERROR", message, undefined, req.traceId);
+        (0, logger_1.logError)('Failed to create job', error, { userId: req.userId });
+        (0, api_response_1.sendError)(res, 500, 'INTERNAL_ERROR', message, undefined, req.traceId);
     }
 });
 // Get all jobs with pagination
@@ -148,11 +126,11 @@ router.get("/", (0, authorization_1.requirePermission)(Permissions_1.Permission.
             (0, db_1.query)(`SELECT COUNT(*) as count FROM jobs WHERE user_id = $1`, [userId]),
         ]);
         if (!totalResult[0]) {
-            throw new Error("Failed to get job count");
+            throw new Error('Failed to get job count');
         }
         const total = parseInt(totalResult[0].count);
         res.json({
-            data: jobs.map((job) => ({
+            data: jobs.map(job => ({
                 id: job.id,
                 userId,
                 name: job.name,
@@ -177,7 +155,7 @@ router.get("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permissi
         const { id } = req.params;
         const userId = req.userId;
         if (!id || !userId) {
-            return (0, api_response_1.sendError)(res, 400, "BAD_REQUEST", "Job ID and User ID are required", undefined, req.traceId);
+            return (0, api_response_1.sendError)(res, 400, 'BAD_REQUEST', 'Job ID and User ID are required', undefined, req.traceId);
         }
         // Check ownership
         await new Promise((resolve, reject) => {
@@ -186,19 +164,16 @@ router.get("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permissi
                     reject(err);
                 else
                     resolve();
-            }, "job", id);
+            }, 'job', id);
         });
         const job = await jobService.getJob(id, userId);
         if (!job) {
-            return (0, api_response_1.sendError)(res, 404, "NOT_FOUND", "Job not found", undefined, req.traceId);
+            return (0, api_response_1.sendError)(res, 404, 'NOT_FOUND', 'Job not found', undefined, req.traceId);
         }
         (0, api_response_1.sendSuccess)(res, job);
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to fetch job", 500, {
-            userId: req.userId,
-            jobId: req.params.id,
-        });
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to fetch job", 500, { userId: req.userId, jobId: req.params.id });
     }
 });
 // Trigger job execution with race condition prevention
@@ -206,7 +181,7 @@ router.post("/:id/run", (0, authorization_1.requirePermission)(Permissions_1.Per
     const { id } = req.params;
     const userId = req.userId;
     if (!id || !userId) {
-        return (0, api_response_1.sendError)(res, 400, "BAD_REQUEST", "Job ID and User ID are required", undefined, req.traceId);
+        return (0, api_response_1.sendError)(res, 400, 'BAD_REQUEST', 'Job ID and User ID are required', undefined, req.traceId);
     }
     const mutex = getJobMutex(id);
     const release = await mutex.acquire();
@@ -218,16 +193,16 @@ router.post("/:id/run", (0, authorization_1.requirePermission)(Permissions_1.Per
                     reject(err);
                 else
                     resolve();
-            }, "job", id);
+            }, 'job', id);
         });
         // Check if job is already running (optimistic locking)
         const jobs = await (0, db_1.query)(`SELECT status, version FROM jobs WHERE id = $1 AND user_id = $2`, [id, userId]);
         if (jobs.length === 0 || !jobs[0]) {
-            return (0, api_response_1.sendError)(res, 404, "NOT_FOUND", "Job not found", undefined, req.traceId);
+            return (0, api_response_1.sendError)(res, 404, 'NOT_FOUND', 'Job not found', undefined, req.traceId);
         }
         const job = jobs[0];
-        if (job.status === "running") {
-            return (0, api_response_1.sendError)(res, 409, "CONFLICT", "Job is already running", undefined, req.traceId);
+        if (job.status === 'running') {
+            return (0, api_response_1.sendError)(res, 409, 'CONFLICT', 'Job is already running', undefined, req.traceId);
         }
         // Update job status atomically
         const updated = await (0, db_1.query)(`UPDATE jobs
@@ -235,39 +210,23 @@ router.post("/:id/run", (0, authorization_1.requirePermission)(Permissions_1.Per
          WHERE id = $1 AND user_id = $2 AND version = $3
          RETURNING id`, [id, userId, job.version]);
         if (updated.length === 0 || !updated[0]) {
-            return (0, api_response_1.sendError)(res, 409, "CONFLICT", "Job state changed, please retry", undefined, req.traceId);
+            return (0, api_response_1.sendError)(res, 409, 'CONFLICT', 'Job state changed, please retry', undefined, req.traceId);
         }
         // Create execution record
         const executions = await (0, db_1.query)(`INSERT INTO executions (job_id, status)
          VALUES ($1, 'running')
          RETURNING id`, [id]);
         if (executions.length === 0 || !executions[0]) {
-            return (0, api_response_1.sendError)(res, 500, "INTERNAL_ERROR", "Failed to create execution record", undefined, req.traceId);
+            return (0, api_response_1.sendError)(res, 500, 'INTERNAL_ERROR', 'Failed to create execution record', undefined, req.traceId);
         }
         const executionId = executions[0].id;
         // Log audit event
         await (0, db_1.query)(`INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`, ["job_executed", userId, JSON.stringify({ jobId: id, executionId })]);
-        // Log usage for billing (job execution)
-        try {
-            const billingAccount = await (0, billing_helpers_1.getBillingAccount)(userId, req.tenantId);
-            if (billingAccount) {
-                await (0, usage_tracker_1.logUsageEvent)({
-                    billingAccountId: billingAccount.id,
-                    eventType: "reconciliation_job",
-                    quantity: 1,
-                    userId: userId,
-                    ...(req.tenantId && { tenantId: req.tenantId }),
-                    metadata: {
-                        job_id: id,
-                        execution_id: executionId,
-                    },
-                });
-            }
-        }
-        catch (usageError) {
-            (0, logger_1.logError)("Failed to log usage for job execution", usageError);
-        }
+         VALUES ($1, $2, $3)`, [
+            'job_executed',
+            userId,
+            JSON.stringify({ jobId: id, executionId }),
+        ]);
         // Queue job execution (async)
         // In production, this would use a job queue like Bull
         setTimeout(async () => {
@@ -278,15 +237,12 @@ router.post("/:id/run", (0, authorization_1.requirePermission)(Permissions_1.Per
                 await (0, db_1.query)(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
             }
             catch (error) {
-                (0, logger_1.logError)("Job execution failed", error, { executionId, jobId: id });
-                await (0, db_1.query)(`UPDATE executions SET status = 'failed', error = $1 WHERE id = $2`, [
-                    error instanceof Error ? error.message : "Unknown error",
-                    executionId,
-                ]);
+                (0, logger_1.logError)('Job execution failed', error, { executionId, jobId: id });
+                await (0, db_1.query)(`UPDATE executions SET status = 'failed', error = $1 WHERE id = $2`, [error instanceof Error ? error.message : 'Unknown error', executionId]);
                 await (0, db_1.query)(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
             }
         }, 0);
-        (0, logger_1.logInfo)("Job execution started", { jobId: id, executionId, userId });
+        (0, logger_1.logInfo)('Job execution started', { jobId: id, executionId, userId });
         res.status(202).json({
             data: {
                 id: executionId,
@@ -310,7 +266,7 @@ router.delete("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permi
         const { id } = req.params;
         const userId = req.userId;
         if (!id || !userId) {
-            return (0, api_response_1.sendError)(res, 400, "BAD_REQUEST", "Job ID and User ID are required", undefined, req.traceId);
+            return (0, api_response_1.sendError)(res, 400, 'BAD_REQUEST', 'Job ID and User ID are required', undefined, req.traceId);
         }
         // Check ownership
         await new Promise((resolve, reject) => {
@@ -319,19 +275,16 @@ router.delete("/:id", (0, authorization_1.requirePermission)(Permissions_1.Permi
                     reject(err);
                 else
                     resolve();
-            }, "job", id);
+            }, 'job', id);
         });
         const deleted = await jobService.deleteJob(id, userId);
         if (!deleted) {
-            return (0, api_response_1.sendError)(res, 404, "NOT_FOUND", "Job not found", undefined, req.traceId);
+            return (0, api_response_1.sendError)(res, 404, 'NOT_FOUND', 'Job not found', undefined, req.traceId);
         }
         (0, api_response_1.sendNoContent)(res);
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, "Failed to delete job", 500, {
-            userId: req.userId,
-            jobId: req.params.id,
-        });
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to delete job", 500, { userId: req.userId, jobId: req.params.id });
     }
 });
 //# sourceMappingURL=jobs.js.map

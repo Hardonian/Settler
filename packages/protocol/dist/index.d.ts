@@ -72,12 +72,12 @@ export interface Money {
     value: number;
     currency: string;
 }
-export type TransactionStatus = "pending" | "succeeded" | "failed" | "refunded" | "disputed";
-export type SettlementStatus = "pending" | "completed" | "failed";
-export type MatchType = "1-to-1" | "1-to-many" | "many-to-1";
-export type ExceptionCategory = "amount_mismatch" | "date_mismatch" | "missing_transaction" | "missing_settlement" | "duplicate" | "currency_mismatch" | "status_mismatch";
-export type ExceptionSeverity = "low" | "medium" | "high" | "critical";
-export type ExceptionResolutionStatus = "open" | "in_progress" | "resolved" | "dismissed";
+export type TransactionStatus = 'pending' | 'succeeded' | 'failed' | 'refunded' | 'disputed';
+export type SettlementStatus = 'pending' | 'completed' | 'failed';
+export type MatchType = '1-to-1' | '1-to-many' | 'many-to-1';
+export type ExceptionCategory = 'amount_mismatch' | 'date_mismatch' | 'missing_transaction' | 'missing_settlement' | 'duplicate' | 'currency_mismatch' | 'status_mismatch';
+export type ExceptionSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type ExceptionResolutionStatus = 'open' | 'in_progress' | 'resolved' | 'dismissed';
 /**
  * Reconciliation Rule
  * Defines how transactions and settlements should be matched
@@ -91,8 +91,8 @@ export interface ReconciliationRule {
     priority?: number;
     enabled?: boolean;
 }
-export type RuleField = "transactionId" | "amount" | "date" | "referenceId" | "providerTransactionId" | "providerSettlementId" | "currency";
-export type RuleType = "exact" | "fuzzy" | "range" | "regex";
+export type RuleField = 'transactionId' | 'amount' | 'date' | 'referenceId' | 'providerTransactionId' | 'providerSettlementId' | 'currency';
+export type RuleType = 'exact' | 'fuzzy' | 'range' | 'regex';
 export interface RuleTolerance {
     amount?: number;
     days?: number;
@@ -110,8 +110,8 @@ export interface ReconciliationRuleSet {
     priority: RulePriority;
     conflictResolution?: ConflictResolution;
 }
-export type RulePriority = "exact-first" | "fuzzy-first" | "custom";
-export type ConflictResolution = "first-wins" | "last-wins" | "manual-review";
+export type RulePriority = 'exact-first' | 'fuzzy-first' | 'custom';
+export type ConflictResolution = 'first-wins' | 'last-wins' | 'manual-review';
 /**
  * Reconciliation View Configuration
  * Defines how reconciliation data should be displayed
@@ -129,7 +129,7 @@ export interface WidgetConfig {
     props?: Record<string, unknown>;
     position?: WidgetPosition;
 }
-export type WidgetType = "transaction-table" | "exception-table" | "metric-card" | "match-list" | "summary-stats" | "rule-editor" | "filter-bar";
+export type WidgetType = 'transaction-table' | 'exception-table' | 'metric-card' | 'match-list' | 'summary-stats' | 'rule-editor' | 'filter-bar';
 export interface WidgetPosition {
     row: number;
     col: number;
@@ -137,7 +137,7 @@ export interface WidgetPosition {
     height?: number;
 }
 export interface LayoutConfig {
-    type: "grid" | "flex";
+    type: 'grid' | 'flex';
     columns?: number;
     gap?: number;
 }
@@ -161,7 +161,7 @@ export interface ReconciliationConfig {
  * Compilation Mode
  * Determines how React components should be rendered
  */
-export type CompilationMode = "ui" | "config";
+export type CompilationMode = 'ui' | 'config';
 /**
  * Compilation Context
  * Context passed through React tree during compilation
@@ -170,12 +170,12 @@ export interface CompilationContext {
     mode: CompilationMode;
     config: Partial<ReconciliationConfig>;
     widgetRegistry: Map<string, WidgetConfig>;
-    securityContext?: import("./security").SecurityContext;
-    validationRules?: import("./validation").ValidationRules;
+    securityContext?: import('./security').SecurityContext;
+    validationRules?: import('./validation').ValidationRules;
 }
-export type { SecurityPolicy, SecurityContext, AuditLogEntry, AuditEvent, ContentSecurityPolicy, ValidationPolicy, SanitizationPolicy, AuditLoggingPolicy, RateLimitingPolicy, } from "./security";
-export type { ValidationResult, ValidationError, ValidationWarning, ValidationRules, TransactionValidationRules, SettlementValidationRules, ExceptionValidationRules, RuleValidationRules, MoneyValidationRules, SchemaValidator, } from "./validation";
-export type { TelemetryEvent, TelemetryEventType, TelemetryContext, PerformanceMetrics, ErrorTelemetry, TelemetryConfig, TelemetryProvider, } from "./telemetry";
-export { ReconciliationError, ValidationError as ProtocolValidationError, SecurityError, CompilationError, ConfigurationError, } from "./errors";
-export { sanitizeString, isValidISODate, isValidCurrency, isValidMoney, formatMoney, sanitizeTransactionMetadata, validateTransactionId, maskPII, generateSecureId, deepClone, } from "./utils";
+export type { SecurityPolicy, SecurityContext, AuditLogEntry, AuditEvent, ContentSecurityPolicy, ValidationPolicy, SanitizationPolicy, AuditLoggingPolicy, RateLimitingPolicy } from './security';
+export type { ValidationResult, ValidationError, ValidationWarning, ValidationRules, TransactionValidationRules, SettlementValidationRules, ExceptionValidationRules, RuleValidationRules, MoneyValidationRules, SchemaValidator } from './validation';
+export type { TelemetryEvent, TelemetryEventType, TelemetryContext, PerformanceMetrics, ErrorTelemetry, TelemetryConfig, TelemetryProvider } from './telemetry';
+export { ReconciliationError, ValidationError as ProtocolValidationError, SecurityError, CompilationError, ConfigurationError } from './errors';
+export { sanitizeString, isValidISODate, isValidCurrency, isValidMoney, formatMoney, sanitizeTransactionMetadata, validateTransactionId, maskPII, generateSecureId, deepClone } from './utils';
 //# sourceMappingURL=index.d.ts.map

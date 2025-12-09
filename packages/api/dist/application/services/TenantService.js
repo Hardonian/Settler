@@ -30,7 +30,7 @@ class TenantService {
             quotas,
             config: {
                 customDomainVerified: false,
-                dataResidencyRegion: "us",
+                dataResidencyRegion: 'us',
                 enableAdvancedMatching: false,
                 enableMLFeatures: false,
                 webhookTimeout: 30000,
@@ -44,7 +44,7 @@ class TenantService {
         const tenant = Tenant_1.Tenant.create(tenantProps);
         await this.tenantRepo.save(tenant);
         // Create tenant schema if using schema-per-tenant
-        const { config } = require("../../config");
+        const { config } = require('../../config');
         if (config.features.enableSchemaPerTenant) {
             await (0, db_1.query)(`SELECT create_tenant_schema($1)`, [data.slug]);
         }
@@ -54,7 +54,7 @@ class TenantService {
             email: data.ownerEmail,
             passwordHash: data.ownerPasswordHash,
             role: User_1.UserRole.OWNER,
-            dataResidencyRegion: "us",
+            dataResidencyRegion: 'us',
             dataRetentionDays: 365,
         };
         if (data.ownerName !== undefined) {
@@ -66,7 +66,7 @@ class TenantService {
         await (0, db_1.query)(`INSERT INTO tenant_quota_usage (tenant_id, last_reset_at)
        VALUES ($1, NOW())
        ON CONFLICT (tenant_id) DO NOTHING`, [tenant.id]);
-        (0, logger_1.logInfo)("Tenant created", { tenantId: tenant.id, slug: data.slug });
+        (0, logger_1.logInfo)('Tenant created', { tenantId: tenant.id, slug: data.slug });
         return { tenant, owner };
     }
     /**
@@ -118,13 +118,13 @@ class TenantService {
     async upgradeTier(tenantId, newTier) {
         const tenant = await this.tenantRepo.findById(tenantId);
         if (!tenant) {
-            throw new Error("Tenant not found");
+            throw new Error('Tenant not found');
         }
         const newQuotas = this.getDefaultQuotas(newTier);
         tenant.updateTier(newTier);
         tenant.updateQuotas(newQuotas);
         await this.tenantRepo.save(tenant);
-        (0, logger_1.logInfo)("Tenant tier upgraded", { tenantId, newTier });
+        (0, logger_1.logInfo)('Tenant tier upgraded', { tenantId, newTier });
         return tenant;
     }
     /**
@@ -133,13 +133,13 @@ class TenantService {
     async verifyCustomDomain(tenantId, domain) {
         const tenant = await this.tenantRepo.findById(tenantId);
         if (!tenant) {
-            throw new Error("Tenant not found");
+            throw new Error('Tenant not found');
         }
         // In production, this would verify DNS records
         // For now, we'll just mark it as verified
         tenant.setCustomDomain(domain, true);
         await this.tenantRepo.save(tenant);
-        (0, logger_1.logInfo)("Custom domain verified", { tenantId, domain });
+        (0, logger_1.logInfo)('Custom domain verified', { tenantId, domain });
     }
     /**
      * Create sub-account (child tenant)
@@ -147,10 +147,10 @@ class TenantService {
     async createSubAccount(parentTenantId, data) {
         const parentTenant = await this.tenantRepo.findById(parentTenantId);
         if (!parentTenant) {
-            throw new Error("Parent tenant not found");
+            throw new Error('Parent tenant not found');
         }
         if (!parentTenant.isEnterprise()) {
-            throw new Error("Only enterprise tenants can create sub-accounts");
+            throw new Error('Only enterprise tenants can create sub-accounts');
         }
         return this.createTenant({
             ...data,
