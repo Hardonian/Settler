@@ -13,6 +13,21 @@
  * - Setting DATABASE_URL explicitly helps force binary engine usage
  */
 
+// CRITICAL: Set environment variables BEFORE importing PrismaClient
+// Prisma 7 determines engine type at import time, so we must set these first
+if (typeof process !== 'undefined' && process.env) {
+  // Force binary engine - this must be set before PrismaClient is imported
+  if (!process.env.PRISMA_CLIENT_ENGINE_TYPE) {
+    process.env.PRISMA_CLIENT_ENGINE_TYPE = 'binary';
+  }
+  
+  // Ensure Node.js runtime is detected (not edge)
+  // Prisma 7 uses client engine in edge/serverless environments
+  if (!process.env.NEXT_RUNTIME) {
+    process.env.NEXT_RUNTIME = 'nodejs';
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
@@ -22,29 +37,23 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-// Prisma 7: Force binary engine by ensuring we're not in an edge environment
-// Prisma 7 automatically uses "client" engine in edge/serverless environments
-// We explicitly set the environment to Node.js to force binary engine
-if (typeof process !== 'undefined' && process.env) {
-  // Ensure we're not detected as edge runtime
-  if (!process.env.DATABASE_URL && !process.env.POSTGRES_PRISMA_URL && !process.env.POSTGRES_URL) {
-    // During build, if DATABASE_URL is not available, we can't use Prisma
-    // This should not happen in production, but we handle it gracefully
-    console.warn('⚠️  DATABASE_URL not found. Prisma may use client engine which requires adapter/accelerateUrl.');
-  }
-  
-  // Force binary engine by ensuring PRISMA_CLIENT_ENGINE_TYPE is set
-  // This is set during prisma generate, but we ensure it here too
-  if (!process.env.PRISMA_CLIENT_ENGINE_TYPE) {
-    process.env.PRISMA_CLIENT_ENGINE_TYPE = 'binary';
-  }
-}
+// PrismaClient configuration
+// Note: In Prisma 7, if the client was generated with "client" engine type,
+// we must provide either adapter or accelerateUrl. Since we generate with
+// PRISMA_CLIENT_ENGINE_TYPE=binary, this should not be needed, but we handle
+// it as a safety measure during build time.
+const prismaConfig: ConstructorParameters<typeof PrismaClient>[0] = {
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+};
+
+// During build time, if Prisma detects edge environment and uses client engine,
+// we need to provide adapter or accelerateUrl. Since we don't have these in build,
+// we ensure PRISMA_CLIENT_ENGINE_TYPE=binary is set (done above) to force binary engine.
+// If for some reason client engine is still used, we'd need to provide configuration here.
 
 export const prisma =
   globalForPrisma.prisma ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  });
+  new PrismaClient(prismaConfig);
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;

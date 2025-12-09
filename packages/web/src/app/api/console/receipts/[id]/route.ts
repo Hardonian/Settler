@@ -8,6 +8,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getReceiptDetail } from '@/domain/console/receipts';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 interface RouteParams {
   params: Promise<{ id: string }>;
