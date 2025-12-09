@@ -277,7 +277,7 @@ async function syncSubscription(stripeSubscription: Stripe.Subscription): Promis
     : null;
 
   // Upsert subscription with transaction for atomicity
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: typeof prisma) => {
     await tx.subscription.upsert({
       where: {
         stripeSubscriptionId: stripeSubscription.id,

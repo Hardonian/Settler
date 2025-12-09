@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Eye, Copy, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, FileText, Palette } from 'lucide-react';
 import {
   Dialog,
   DialogContent,

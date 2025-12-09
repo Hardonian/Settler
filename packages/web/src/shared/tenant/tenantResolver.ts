@@ -28,7 +28,7 @@ export interface TenantResolutionResult {
 function extractSubdomain(host: string): string | null {
   const parts = host.split('.');
   if (parts.length >= 3) {
-    return parts[0];
+    return parts[0] ?? null;
   }
   return null;
 }
@@ -161,6 +161,7 @@ export async function resolveTenant(
   const pathMatch = url.pathname.match(/^\/t\/([^/]+)/);
   if (pathMatch && userId) {
     const previewSlug = pathMatch[1];
+    if (!previewSlug) return null;
     const tenantBySlug = await findTenantBySlug(previewSlug);
     if (tenantBySlug && await canAccessTenant(userId, tenantBySlug.id)) {
       return {

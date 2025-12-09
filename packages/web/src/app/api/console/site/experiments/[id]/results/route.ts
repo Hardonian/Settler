@@ -63,7 +63,7 @@ export async function GET(
     
     // Aggregate metrics by variant
     const variantResults = await Promise.all(
-      experiment.variants.map(async (variant) => {
+      experiment.variants.map(async (variant: { key: string; label: string }) => {
         const events = await prisma.experimentMetricEvent.findMany({
           where: {
             experimentId: id,

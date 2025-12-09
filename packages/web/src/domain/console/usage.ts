@@ -76,7 +76,7 @@ export async function getUsageEvents(
     skip: filters.offset || 0,
   });
 
-  return events.map(event => {
+  return events.map((event: { id: string; eventType: string; timestamp: Date }) => {
     const [service, operation] = event.eventType.split(':');
     return {
       id: event.id,

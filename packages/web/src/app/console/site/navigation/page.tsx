@@ -28,7 +28,6 @@ export default function NavigationEditorPage() {
   const [footerItems, setFooterItems] = useState<TenantNavigationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [draggedItem, setDraggedItem] = useState<{ type: 'nav' | 'footer'; index: number } | null>(null);
 
   useEffect(() => {
     loadNavigation();
@@ -112,7 +111,7 @@ export default function NavigationEditorPage() {
     }
   }
 
-  function handleMoveItem(
+  function _handleMoveItem(
     type: 'nav' | 'footer',
     fromIndex: number,
     toIndex: number
@@ -161,8 +160,8 @@ export default function NavigationEditorPage() {
                 <Label>Type</Label>
                 <Select
                   value={item.type}
-                  onValueChange={(value: 'internal' | 'external') =>
-                    handleUpdateItem(type, index, { type: value })
+                  onValueChange={(value) =>
+                    handleUpdateItem(type, index, { type: value as 'internal' | 'external' })
                   }
                 >
                   <SelectTrigger className="mt-1">

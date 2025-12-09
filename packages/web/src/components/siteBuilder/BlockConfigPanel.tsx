@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -34,9 +33,14 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
     const updated = { ...localBlock };
     let current: any = updated;
     for (let i = 0; i < path.length - 1; i++) {
-      current = current[path[i]] = { ...current[path[i]] };
+      const key = path[i];
+      if (key === undefined) continue;
+      current = current[key] = { ...current[key] };
     }
-    current[path[path.length - 1]] = value;
+    const lastKey = path[path.length - 1];
+    if (lastKey !== undefined) {
+      current[lastKey] = value;
+    }
     setLocalBlock(updated);
     onUpdate(updated);
   }

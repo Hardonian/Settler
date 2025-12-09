@@ -47,7 +47,10 @@ export function selectVariant(
   sessionId: string
 ): string {
   // Use session ID to ensure consistent assignment
-  const hash = simpleHash(sessionId + experiment.variants[0].key);
+  if (experiment.variants.length === 0) {
+    throw new Error('Experiment must have at least one variant');
+  }
+  const hash = simpleHash(sessionId + experiment.variants[0]!.key);
   const random = hash % 100;
   
   let cumulative = 0;
@@ -120,7 +123,7 @@ export async function resolveExperimentVariant(
   
   const sessionId = await getSessionId();
   const variantKey = selectVariant(experiment, sessionId);
-  const variant = experiment.variants.find(v => v.key === variantKey);
+  const variant = experiment.variants.find((v: { key: string }) => v.key === variantKey);
   
   return {
     experimentId: experiment.id,

@@ -4,7 +4,7 @@
  * POST: Initialize default tenant and migrate existing content
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/tenant/permissions';
 import { createDefaultTenant, migrateHomepageToTenantPage } from '@/lib/tenant/setup';
 

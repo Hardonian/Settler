@@ -76,6 +76,7 @@ export function HeroBlockComponent({ block }: HeroBlockComponentProps) {
           {block.primaryCta && (
             <Button 
               size="lg" 
+              variant={block.primaryCta.variant === 'primary' ? 'default' : block.primaryCta.variant || 'default'}
               asChild
               style={theme ? { backgroundColor: theme.colors.primary } : undefined}
             >
@@ -86,7 +87,7 @@ export function HeroBlockComponent({ block }: HeroBlockComponentProps) {
           )}
           
           {block.secondaryCta && (
-            <Button size="lg" variant={block.secondaryCta.variant || 'outline'} asChild>
+            <Button size="lg" variant={block.secondaryCta.variant === 'primary' ? 'default' : block.secondaryCta.variant || 'outline'} asChild>
               <Link href={block.secondaryCta.href}>
                 {block.secondaryCta.label}
               </Link>

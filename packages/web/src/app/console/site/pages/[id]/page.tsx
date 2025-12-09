@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +14,6 @@ import { Badge } from '@/components/ui/badge';
 import { Save, Eye, ArrowLeft, Plus, GripVertical, X } from 'lucide-react';
 import { PageBlock, getBlockDefault } from '@/domain/siteBuilder/pageSchema';
 import { PageRenderer } from '@/domain/siteBuilder/pageRenderer';
-import { BlockEditor } from '@/components/siteBuilder/BlockEditor';
 import { BlockConfigPanel } from '@/components/siteBuilder/BlockConfigPanel';
 import { cn } from '@/lib/utils';
 
@@ -126,7 +125,7 @@ export default function PageEditorPage() {
 
   function handleUpdateBlock(blockId: string, updates: Partial<PageBlock>) {
     setBlocks(blocks.map(b => 
-      b.id === blockId ? { ...b, ...updates } : b
+      b.id === blockId ? { ...b, ...updates } as PageBlock : b
     ));
   }
 
@@ -137,7 +136,7 @@ export default function PageEditorPage() {
     setBlocks(newBlocks);
   }
 
-  const selectedBlock = blocks.find(b => b.id === selectedBlockId);
+  const selectedBlock = blocks.find(b => b.id === selectedBlockId) as PageBlock | undefined;
 
   if (loading) {
     return (
