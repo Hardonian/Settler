@@ -15,7 +15,16 @@ interface ProfileRow {
   industry?: string;
   company_name?: string;
   pre_test_completed?: boolean;
+  pre_test_answers?: Record<string, unknown>;
   first_name?: string;
+  [key: string]: unknown;
+}
+
+interface ProfileUpdate {
+  pre_test_completed?: boolean;
+  pre_test_answers?: Record<string, unknown>;
+  industry?: string;
+  updated_at?: string;
   [key: string]: unknown;
 }
 
@@ -160,14 +169,17 @@ export async function savePreTestAnswers(
       return { success: false, error: "Not authenticated" };
     }
 
+    // Type the update data to match database schema
+    const updateData = {
+      pre_test_completed: true,
+      pre_test_answers: answers,
+      updated_at: new Date().toISOString(),
+      ...(answers.industry && { industry: answers.industry }),
+    };
+
     const { error } = await supabase
       .from("profiles")
-      .update({
-        pre_test_completed: true,
-        pre_test_answers: answers,
-        industry: answers.industry,
-        updated_at: new Date().toISOString(),
-      } as Record<string, unknown>)
+      .update(updateData)
       .eq("id", user.id);
 
     if (error) {

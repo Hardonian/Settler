@@ -85,6 +85,12 @@ export interface Database {
           metadata: Json;
           created_at: string;
           updated_at: string;
+          pre_test_completed?: boolean;
+          pre_test_answers?: Json;
+          industry?: string;
+          company_name?: string;
+          plan_type?: string;
+          trial_end_date?: string;
         };
         Insert: {
           id?: string;
@@ -98,6 +104,12 @@ export interface Database {
           metadata?: Json;
           created_at?: string;
           updated_at?: string;
+          pre_test_completed?: boolean;
+          pre_test_answers?: Json;
+          industry?: string;
+          company_name?: string;
+          plan_type?: string;
+          trial_end_date?: string;
         };
         Update: {
           id?: string;
@@ -111,6 +123,12 @@ export interface Database {
           metadata?: Json;
           created_at?: string;
           updated_at?: string;
+          pre_test_completed?: boolean;
+          pre_test_answers?: Json;
+          industry?: string;
+          company_name?: string;
+          plan_type?: string;
+          trial_end_date?: string;
         };
       };
       posts: {
@@ -286,6 +304,18 @@ export interface Database {
           p_feedback_id: string;
         };
         Returns: number;
+      };
+      get_user_activity_metrics: {
+        Args: {
+          user_id: string;
+        };
+        Returns: {
+          total_jobs_created?: number;
+          total_reconciliations?: number;
+          last_activity_at?: string;
+          usage_percentage?: number;
+          [key: string]: unknown;
+        };
       };
       [key: string]: {
         Args: Record<string, unknown>;

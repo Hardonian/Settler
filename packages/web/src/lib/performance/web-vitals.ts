@@ -104,14 +104,21 @@ export function initWebVitals(): void {
   try {
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      const lastEntry = entries[entries.length - 1] as PerformanceEntry & { value?: number };
+      const lastEntry = entries[entries.length - 1] as PerformanceEntry & {
+        renderTime?: number;
+        loadTime?: number;
+        id?: string;
+      };
+      
+      const lcpValue = lastEntry.renderTime || lastEntry.loadTime || 0;
+      const lcpId = lastEntry.id || 'unknown';
       
       reportWebVital({
         name: 'LCP',
-        value: lastEntry.renderTime || lastEntry.loadTime,
-        id: lastEntry.id,
-        delta: lastEntry.renderTime || lastEntry.loadTime,
-        rating: getRating('LCP', lastEntry.renderTime || lastEntry.loadTime),
+        value: lcpValue,
+        id: lcpId,
+        delta: lcpValue,
+        rating: getRating('LCP', lcpValue),
       });
     }).observe({ type: 'largest-contentful-paint', buffered: true });
   } catch (error) {

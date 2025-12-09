@@ -70,7 +70,8 @@ function translate(
   params?: Record<string, string | number>
 ): string {
   const localeTranslations = translations[locale] || translations[defaultLocale];
-  const translation = getNestedValue(localeTranslations as Record<string, unknown>, key);
+  // TranslationKeys is a complex type, cast to unknown first then to Record
+  const translation = getNestedValue(localeTranslations as unknown as Record<string, unknown>, key);
   
   if (!translation) {
     // Fallback to key if translation not found
