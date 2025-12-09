@@ -56,6 +56,26 @@ class LintConfigValidator {
         });
       }
 
+      // Check for parserOptions.project if type-checking rules are used
+      const typeCheckingRules = [
+        '@typescript-eslint/no-misused-promises',
+        '@typescript-eslint/no-unsafe-call',
+        '@typescript-eslint/require-await',
+        '@typescript-eslint/unbound-method',
+      ];
+      
+      const hasTypeCheckingRule = typeCheckingRules.some(rule => 
+        config.rules?.[rule] && config.rules[rule] !== 'off'
+      );
+      
+      if (hasTypeCheckingRule && !config.parserOptions?.project) {
+        this.issues.push({
+          severity: 'error',
+          message: 'Type-checking ESLint rules require parserOptions.project but it\'s not set',
+          fix: 'Add "parserOptions": { "project": "./tsconfig.json" } to .eslintrc.json',
+        });
+      }
+
       // Check that critical error rules are set to warn
       const criticalRules = [
         '@typescript-eslint/no-unsafe-call',
