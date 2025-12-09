@@ -12,6 +12,7 @@ import { Environment } from '@/domain/featureFlags/types';
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 export async function POST(request: NextRequest) {
   try {

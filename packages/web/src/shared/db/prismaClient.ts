@@ -46,6 +46,9 @@ if (typeof process !== 'undefined' && process.env) {
     // Prisma will not actually connect during build - it only needs the URL for engine detection
     process.env.DATABASE_URL = 'postgresql://dummy:dummy@localhost:5432/dummy?schema=public';
   }
+  
+  // Store isBuildPhase for use after import
+  (globalThis as any).__PRISMA_BUILD_PHASE__ = isBuildPhase;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -62,19 +65,25 @@ const globalForPrisma = globalThis as unknown as {
 // we must provide either adapter or accelerateUrl. Since we generate with
 // PRISMA_CLIENT_ENGINE_TYPE=binary, this should not be needed, but we handle
 // it as a safety measure during build time.
+const isBuildPhase = (globalThis as any).__PRISMA_BUILD_PHASE__ ?? false;
+
+// During build time, if Prisma Client was generated with "client" engine type,
+// it requires either adapter or accelerateUrl. We provide a dummy accelerateUrl
+// during build only to satisfy the constructor requirement.
+// This is safe because Prisma won't actually connect during build when collecting page data.
 const prismaConfig: ConstructorParameters<typeof PrismaClient>[0] = {
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  // During Vercel build, provide accelerateUrl to satisfy Prisma Client constructor
+  // if it was generated with client engine type. This won't be used during build.
+  ...(isBuildPhase ? {
+    accelerateUrl: 'https://dummy.prisma-accelerate.com',
+  } : {}),
 };
-
-// During build time, if Prisma detects edge environment and uses client engine,
-// we need to provide adapter or accelerateUrl. Since we don't have these in build,
-// we ensure PRISMA_CLIENT_ENGINE_TYPE=binary is set (done above) to force binary engine.
-// If for some reason client engine is still used, we'd need to provide configuration here.
 
 // Create Prisma client instance
 // Note: Prisma 7 may detect client engine type during build even if generated with binary engine.
 // We ensure PRISMA_CLIENT_ENGINE_TYPE=binary is set above to prevent this.
-// If Prisma still uses client engine, it will require adapter or accelerateUrl in the constructor.
+// If Prisma still uses client engine, we provide accelerateUrl above as a fallback.
 const prismaInstance = globalForPrisma.prisma ?? new PrismaClient(prismaConfig);
 
 export const prisma = prismaInstance;
