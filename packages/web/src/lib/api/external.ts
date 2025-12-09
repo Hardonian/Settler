@@ -5,7 +5,7 @@
  * without lying or embellishing. Uses demo/fallback data when APIs are unavailable.
  */
 
-interface GitHubRepoStats {
+export interface GitHubRepoStats {
   stars: number;
   forks: number;
   watchers: number;
@@ -13,7 +13,7 @@ interface GitHubRepoStats {
   lastUpdated: string;
 }
 
-interface NPMStats {
+export interface NPMStats {
   downloads: number;
   version: string;
   lastUpdated: string;
