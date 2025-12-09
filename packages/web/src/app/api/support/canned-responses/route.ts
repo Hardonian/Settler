@@ -23,8 +23,17 @@ export async function GET(_request: NextRequest) {
       return NextResponse.json({ error: "Failed to fetch responses" }, { status: 500 });
     }
 
+    type CannedResponseRow = {
+      id: string;
+      title: string;
+      content: string;
+      category: string;
+      tags?: string[];
+      usage_count?: number;
+    };
+    
     return NextResponse.json({
-      responses: (data || []).map((r: any) => ({
+      responses: (data || []).map((r: CannedResponseRow) => ({
         id: r.id,
         title: r.title,
         content: r.content,
@@ -61,7 +70,7 @@ export async function POST(request: NextRequest) {
         content,
         category,
         tags: tags || [],
-      } as any)
+      })
       .select()
       .single();
 

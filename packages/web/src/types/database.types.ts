@@ -240,6 +240,199 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['notifications']['Insert']>;
       };
       // Add other tables as needed
+      affiliate_programs: {
+        Row: {
+          id: string;
+          referral_code: string;
+          status: string;
+          commission_rate?: number;
+          total_revenue?: number;
+          total_payouts?: number;
+          created_at?: string;
+          updated_at?: string;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          referral_code: string;
+          status: string;
+          commission_rate?: number;
+          total_revenue?: number;
+          total_payouts?: number;
+          created_at?: string;
+          updated_at?: string;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          referral_code?: string;
+          status?: string;
+          commission_rate?: number;
+          total_revenue?: number;
+          total_payouts?: number;
+          updated_at?: string;
+          [key: string]: unknown;
+        };
+      };
+      affiliate_conversions: {
+        Row: {
+          id: string;
+          affiliate_id: string;
+          user_id: string;
+          conversion_type: string;
+          revenue_amount: number;
+          commission_amount: number;
+          status: string;
+          paid_at?: string | null;
+          created_at?: string;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          affiliate_id: string;
+          user_id: string;
+          conversion_type: string;
+          revenue_amount: number;
+          commission_amount: number;
+          status: string;
+          paid_at?: string | null;
+          created_at?: string;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          affiliate_id?: string;
+          user_id?: string;
+          conversion_type?: string;
+          revenue_amount?: number;
+          commission_amount?: number;
+          status?: string;
+          paid_at?: string | null;
+          [key: string]: unknown;
+        };
+      };
+      user_segments: {
+        Row: {
+          id: string;
+          user_id: string;
+          segment_type: string;
+          segment_name: string;
+          segment_metadata: Json;
+          assigned_at: string;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          segment_type: string;
+          segment_name: string;
+          segment_metadata?: Json;
+          assigned_at?: string;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          segment_type?: string;
+          segment_name?: string;
+          segment_metadata?: Json;
+          assigned_at?: string;
+          [key: string]: unknown;
+        };
+      };
+      email_templates: {
+        Row: {
+          id: string;
+          sequence_id: string;
+          subject: string;
+          delay_hours?: number;
+          order_index?: number;
+          enabled?: boolean;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          sequence_id: string;
+          subject: string;
+          delay_hours?: number;
+          order_index?: number;
+          enabled?: boolean;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          sequence_id?: string;
+          subject?: string;
+          delay_hours?: number;
+          order_index?: number;
+          enabled?: boolean;
+          [key: string]: unknown;
+        };
+      };
+      user_email_preferences: {
+        Row: {
+          id: string;
+          user_id: string;
+          onboarding_emails?: boolean;
+          upgrade_prompts?: boolean;
+          churn_save_emails?: boolean;
+          marketing_emails?: boolean;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          onboarding_emails?: boolean;
+          upgrade_prompts?: boolean;
+          churn_save_emails?: boolean;
+          marketing_emails?: boolean;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          onboarding_emails?: boolean;
+          upgrade_prompts?: boolean;
+          churn_save_emails?: boolean;
+          marketing_emails?: boolean;
+          [key: string]: unknown;
+        };
+      };
+      email_sends: {
+        Row: {
+          id: string;
+          user_id: string;
+          sequence_id: string;
+          template_id: string;
+          email_address: string;
+          subject: string;
+          status: string;
+          metadata: Json;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          sequence_id: string;
+          template_id: string;
+          email_address: string;
+          subject: string;
+          status: string;
+          metadata?: Json;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          sequence_id?: string;
+          template_id?: string;
+          email_address?: string;
+          subject?: string;
+          status?: string;
+          metadata?: Json;
+          [key: string]: unknown;
+        };
+      };
       [key: string]: {
         Row: Record<string, unknown>;
         Insert: Record<string, unknown>;

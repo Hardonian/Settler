@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface IntegrationSandboxProps {
   integrationId: string;
-  onTestComplete?: (success: boolean, result: any) => void;
+  onTestComplete?: (success: boolean, result: Record<string, unknown>) => void;
 }
 
 export function IntegrationSandbox({ integrationId, onTestComplete }: IntegrationSandboxProps) {
@@ -17,7 +17,7 @@ export function IntegrationSandbox({ integrationId, onTestComplete }: Integratio
   const [testResult, setTestResult] = useState<{
     success: boolean;
     message: string;
-    data?: any;
+    data?: Record<string, unknown>;
   } | null>(null);
 
   const handleTest = async () => {

@@ -17,7 +17,6 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  * Uses cookies for session management
  */
 export async function createClient(): Promise<ReturnType<typeof createServerClient<Database>>> {
-  // eslint-disable-next-line @typescript-eslint/await-thenable
   const cookieStore = await cookies();
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';

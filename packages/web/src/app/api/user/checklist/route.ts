@@ -25,9 +25,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Failed to fetch checklist" }, { status: 500 });
     }
 
+    type ChecklistItemRow = {
+      checklist_item: string;
+      completed: boolean;
+    };
+    
     const completedItems = (data || [])
-      .filter((item: any) => item.completed)
-      .map((item: any) => item.checklist_item);
+      .filter((item: ChecklistItemRow) => item.completed)
+      .map((item: ChecklistItemRow) => item.checklist_item);
 
     return NextResponse.json({ completedItems });
   } catch (error) {
@@ -59,7 +64,7 @@ export async function POST(request: NextRequest) {
         completed: true,
         completed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      } as any)
+      })
       .select()
       .single();
 

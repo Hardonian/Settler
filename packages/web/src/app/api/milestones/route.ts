@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         milestone_type: milestoneType,
         milestone_data: metadata || {},
-      } as any)
+      })
       .select()
       .single();
 
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         first_successful_setup_at: new Date().toISOString(),
         current_stage: "activation",
         updated_at: new Date().toISOString(),
-      } as any);
+      });
     }
 
     return NextResponse.json({ achieved: true, milestone: data });
@@ -91,7 +91,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ achieved: (data?.length || 0) > 0 });
     }
 
-    const milestones = (data || []).map((m: any) => m.milestone_type);
+    type MilestoneRow = { milestone_type: string };
+    const milestones = (data || []).map((m: MilestoneRow) => m.milestone_type);
     return NextResponse.json({ milestones });
   } catch (error) {
     console.error("Error in milestones GET:", error);

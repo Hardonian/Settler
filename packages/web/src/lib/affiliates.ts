@@ -37,26 +37,27 @@ export async function trackAffiliateConversion(
   }
 
   // Calculate commission
-  const commissionAmount = (revenueAmount * ((affiliate as any).commission_rate || 0)) / 100;
+  const affiliateData = affiliate as { id: string; commission_rate?: number; total_revenue?: number };
+  const commissionAmount = (revenueAmount * (affiliateData.commission_rate || 0)) / 100;
 
   // Create conversion record
   await supabase.from("affiliate_conversions").insert({
-    affiliate_id: (affiliate as any).id,
+    affiliate_id: affiliateData.id,
     user_id: userId,
     conversion_type: conversionType,
     revenue_amount: revenueAmount,
     commission_amount: commissionAmount,
     status: "pending",
-  } as any);
+  });
 
   // Update affiliate totals
   await supabase
     .from("affiliate_programs")
     .update({
-      total_revenue: ((affiliate as any).total_revenue || 0) + revenueAmount,
+      total_revenue: (affiliateData.total_revenue || 0) + revenueAmount,
       updated_at: new Date().toISOString(),
-    } as any as never)
-    .eq("id", (affiliate as any).id);
+    })
+    .eq("id", affiliateData.id);
 }
 
 /**
@@ -76,17 +77,19 @@ export async function processAffiliatePayout(affiliateId: string, amount: number
     return;
   }
 
-  const totalCommission = conversions.reduce((sum, c: any) => sum + (c.commission_amount || 0), 0);
+  type Conversion = { id: string; commission_amount?: number };
+  const typedConversions = (conversions || []) as Conversion[];
+  const totalCommission = typedConversions.reduce((sum, c) => sum + (c.commission_amount || 0), 0);
 
   if (totalCommission < amount) {
     throw new Error("Insufficient commission balance");
   }
 
   // Mark conversions as paid
-  const conversionIds = conversions.map((c: any) => c.id);
+  const conversionIds = typedConversions.map((c) => c.id);
   await supabase
     .from("affiliate_conversions")
-    .update({ status: "paid", paid_at: new Date().toISOString() } as any as never)
+    .update({ status: "paid", paid_at: new Date().toISOString() })
     .in("id", conversionIds);
 
   // Update affiliate payouts
@@ -96,12 +99,13 @@ export async function processAffiliatePayout(affiliateId: string, amount: number
     .eq("id", affiliateId)
     .single();
 
+  const affiliateData = affiliate as { total_payouts?: number } | null;
   await supabase
     .from("affiliate_programs")
     .update({
-      total_payouts: ((affiliate as any)?.total_payouts || 0) + amount,
+      total_payouts: (affiliateData?.total_payouts || 0) + amount,
       updated_at: new Date().toISOString(),
-    } as any as never)
+    })
     .eq("id", affiliateId);
 }
 
@@ -132,14 +136,20 @@ export async function getAffiliateStats(affiliateId: string): Promise<{
     .select("*")
     .eq("affiliate_id", affiliateId);
 
-  const totalRevenue = (affiliate as any).total_revenue || 0;
+  type AffiliateStats = { total_revenue?: number; total_payouts?: number };
+  type ConversionStats = { status: string; commission_amount?: number };
+  
+  const affiliateData = affiliate as AffiliateStats;
+  const typedConversions = (conversions || []) as ConversionStats[];
+  
+  const totalRevenue = affiliateData.total_revenue || 0;
   const totalCommissions =
-    conversions?.reduce((sum, c: any) => sum + (c.commission_amount || 0), 0) || 0;
-  const totalPayouts = (affiliate as any).total_payouts || 0;
+    typedConversions.reduce((sum, c) => sum + (c.commission_amount || 0), 0);
+  const totalPayouts = affiliateData.total_payouts || 0;
   const pendingCommissions =
-    conversions
-      ?.filter((c: any) => c.status === "pending")
-      .reduce((sum, c: any) => sum + (c.commission_amount || 0), 0) || 0;
+    typedConversions
+      .filter((c) => c.status === "pending")
+      .reduce((sum, c) => sum + (c.commission_amount || 0), 0);
   const conversionCount = conversions?.length || 0;
 
   return {

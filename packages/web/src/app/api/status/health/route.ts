@@ -41,9 +41,10 @@ export async function GET() {
         supabase.from('kpi_most_engaged_post_today').select('total_engagement').single(),
       ]);
       
-      const newUsersWeek = (kpi1.data as any)?.count || 0;
-      const actionsLastHour = (kpi2.data as any)?.count || 0;
-      const topPostEngagement = (kpi3.data as any)?.total_engagement || 0;
+      type KpiRow = { count?: number; total_engagement?: number };
+      const newUsersWeek = (kpi1.data as KpiRow)?.count || 0;
+      const actionsLastHour = (kpi2.data as KpiRow)?.count || 0;
+      const topPostEngagement = (kpi3.data as KpiRow)?.total_engagement || 0;
       
       return NextResponse.json({
         status: (newUsersWeek > 50 && actionsLastHour > 100 && topPostEngagement > 100) 
@@ -84,7 +85,14 @@ export async function GET() {
       );
     }
 
-    const typedData = data as any;
+    type KpiHealthData = {
+      new_users_week?: number;
+      actions_last_hour?: number;
+      top_post_engagement?: number;
+      all_cylinders_firing?: boolean;
+    };
+    
+    const typedData = data as KpiHealthData;
     const healthStatus: KPIHealthStatus = {
       newUsersWeek: typedData.new_users_week || 0,
       actionsLastHour: typedData.actions_last_hour || 0,

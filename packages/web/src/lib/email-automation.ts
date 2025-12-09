@@ -37,18 +37,31 @@ export async function triggerEmailSequence(
     return;
   }
 
+  type SequenceRow = { id: string };
+  type UserRow = { email?: string };
+  type TemplateRow = { id: string; delay_hours?: number; subject?: string };
+  type PreferencesRow = {
+    onboarding_emails?: boolean;
+    upgrade_prompts?: boolean;
+    churn_save_emails?: boolean;
+    marketing_emails?: boolean;
+  };
+  
+  const sequenceData = sequence as SequenceRow;
+  
   // Get user email
   const { data: user } = await supabase.from("users").select("email").eq("id", userId).single();
-  if (!(user as any)?.email) {
+  const userData = user as UserRow | null;
+  if (!userData?.email) {
     console.warn(`User ${userId} has no email`);
     return;
   }
 
   // Get templates for this sequence
   const { data: templates } = await supabase
-    .from("email_templates" as any)
+    .from("email_templates")
     .select("*")
-    .eq("sequence_id", (sequence as any).id)
+    .eq("sequence_id", sequenceData.id)
     .eq("enabled", true)
     .order("order_index", { ascending: true });
 
@@ -59,36 +72,38 @@ export async function triggerEmailSequence(
 
   // Check user email preferences
   const { data: preferences } = await supabase
-    .from("user_email_preferences" as any)
+    .from("user_email_preferences")
     .select("*")
     .eq("user_id", userId)
     .single();
 
   // Check if user has opted out
-  if (preferences) {
-    if (sequenceType === "onboarding" && !(preferences as any).onboarding_emails) return;
-    if (sequenceType === "upgrade_prompt" && !(preferences as any).upgrade_prompts) return;
-    if (sequenceType === "churn_save" && !(preferences as any).churn_save_emails) return;
-    if (sequenceType === "expansion" && !(preferences as any).marketing_emails) return;
+  const prefsData = preferences as PreferencesRow | null;
+  if (prefsData) {
+    if (sequenceType === "onboarding" && !prefsData.onboarding_emails) return;
+    if (sequenceType === "upgrade_prompt" && !prefsData.upgrade_prompts) return;
+    if (sequenceType === "churn_save" && !prefsData.churn_save_emails) return;
+    if (sequenceType === "expansion" && !prefsData.marketing_emails) return;
   }
 
   // Schedule emails
+  const typedTemplates = templates as TemplateRow[];
   let cumulativeDelay = 0;
-  for (const template of templates) {
+  for (const template of typedTemplates) {
     const sendAt = new Date();
-    sendAt.setHours(sendAt.getHours() + cumulativeDelay + ((template as any).delay_hours || 0));
+    sendAt.setHours(sendAt.getHours() + cumulativeDelay + (template.delay_hours || 0));
 
     await supabase.from("email_sends").insert({
       user_id: userId,
-      sequence_id: (sequence as any).id,
-      template_id: (template as any).id,
-      email_address: (user as any).email,
-      subject: (template as any).subject,
+      sequence_id: sequenceData.id,
+      template_id: template.id,
+      email_address: userData.email,
+      subject: template.subject || '',
       status: "pending",
       metadata: metadata || {},
-    } as any);
+    });
 
-    cumulativeDelay += (template as any).delay_hours || 0;
+    cumulativeDelay += template.delay_hours || 0;
   }
 }
 

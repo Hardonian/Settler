@@ -66,9 +66,8 @@ class SentryIntegration {
       return;
     }
 
-    if (typeof window !== 'undefined' && 'Sentry' in window) {
+    if (typeof window !== 'undefined' && window.Sentry) {
       try {
-        // @ts-ignore
         window.Sentry.captureException(error, {
           contexts: {
             custom: context || {},
@@ -92,7 +91,6 @@ class SentryIntegration {
     }
 
     try {
-      // @ts-ignore
       window.Sentry.setUser({
         id: userId,
         ...traits,
@@ -111,7 +109,6 @@ class SentryIntegration {
     }
 
     try {
-      // @ts-ignore
       window.Sentry.addBreadcrumb({
         message,
         category,

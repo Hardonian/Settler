@@ -39,11 +39,13 @@ export async function detectBillingAnomalies(userId: string): Promise<Anomaly[]>
 
   if (!subscriptions || !usage) return anomalies;
 
+  type UsageRow = { amount?: number };
+  
   // Check for unusual spending spikes
-  const recentUsage = usage.slice(0, 7);
+  const recentUsage = usage.slice(0, 7) as UsageRow[];
   const avgUsage =
-    recentUsage.reduce((sum, u: any) => sum + ((u as any).amount || 0), 0) / recentUsage.length;
-  const currentUsage = (usage[0] as any)?.amount || 0;
+    recentUsage.reduce((sum, u) => sum + (u.amount || 0), 0) / recentUsage.length;
+  const currentUsage = (usage[0] as UsageRow)?.amount || 0;
 
   if (currentUsage > avgUsage * 2) {
     anomalies.push({
@@ -71,7 +73,7 @@ export async function detectBillingAnomalies(userId: string): Promise<Anomaly[]>
       type: "billing",
       severity: "critical",
       title: "Payment Issue Detected",
-      description: `Payment failure detected: ${(paymentRecovery as any).failure_type}. Action required.`,
+      description: `Payment failure detected: ${(paymentRecovery as { failure_type?: string }).failure_type || 'unknown'}. Action required.`,
       detectedAt: new Date(),
       metadata: { paymentRecovery },
     });
@@ -97,11 +99,14 @@ export async function detectUsageAnomalies(userId: string): Promise<Anomaly[]> {
 
   if (!usage || usage.length < 7) return anomalies;
 
+  type UsageRow = { amount?: number };
+  const typedUsage = usage as UsageRow[];
+  
   // Detect sudden drops (potential churn indicator)
   const recentAvg =
-    usage.slice(0, 7).reduce((sum, u: any) => sum + ((u as any).amount || 0), 0) / 7;
+    typedUsage.slice(0, 7).reduce((sum, u) => sum + (u.amount || 0), 0) / 7;
   const previousAvg =
-    usage.slice(7, 14).reduce((sum, u: any) => sum + ((u as any).amount || 0), 0) / 7;
+    typedUsage.slice(7, 14).reduce((sum, u) => sum + (u.amount || 0), 0) / 7;
 
   if (recentAvg < previousAvg * 0.5) {
     anomalies.push({
@@ -134,36 +139,45 @@ export async function detectIntegrationAnomalies(userId: string): Promise<Anomal
 
   if (!integrations) return anomalies;
 
-  for (const integration of integrations) {
+  type IntegrationRow = {
+    id: string;
+    last_sync_at?: string;
+    integration_id?: string;
+    status?: string;
+  };
+  
+  const typedIntegrations = integrations as IntegrationRow[];
+  
+  for (const integration of typedIntegrations) {
     // Check for stale syncs
-    if ((integration as any).last_sync_at) {
+    if (integration.last_sync_at) {
       const hoursSinceSync =
-        (Date.now() - new Date((integration as any).last_sync_at).getTime()) / (1000 * 60 * 60);
+        (Date.now() - new Date(integration.last_sync_at).getTime()) / (1000 * 60 * 60);
 
       if (hoursSinceSync > 24) {
         anomalies.push({
-          id: `integration-stale-${(integration as any).id}`,
+          id: `integration-stale-${integration.id}`,
           type: "integration",
           severity: "high",
-          title: `${(integration as any).integration_id} Not Syncing`,
+          title: `${integration.integration_id || 'Integration'} Not Syncing`,
           description: `Last sync was ${Math.floor(hoursSinceSync)} hours ago. The integration may be disconnected.`,
           detectedAt: new Date(),
-          metadata: { integrationId: (integration as any).integration_id, hoursSinceSync },
+          metadata: { integrationId: integration.integration_id, hoursSinceSync },
         });
       }
     }
 
     // Check for error rates
     // In production, fetch from error logs
-    if ((integration as any).status === "error") {
+    if (integration.status === "error") {
       anomalies.push({
-        id: `integration-error-${(integration as any).id}`,
+        id: `integration-error-${integration.id}`,
         type: "integration",
         severity: "critical",
-        title: `${(integration as any).integration_id} Has Errors`,
+        title: `${integration.integration_id || 'Integration'} Has Errors`,
         description: "The integration is experiencing errors. Please check the connection.",
         detectedAt: new Date(),
-        metadata: { integrationId: (integration as any).integration_id },
+        metadata: { integrationId: integration.integration_id },
       });
     }
   }
@@ -188,33 +202,43 @@ export async function detectPerformanceAnomalies(userId: string): Promise<Anomal
 
   if (!jobs) return anomalies;
 
+  type ReportRow = { duration_ms?: number; created_at?: string };
+  type JobRow = {
+    id: string;
+    name?: string;
+    reconciliation_reports?: ReportRow[];
+  };
+  
+  const typedJobs = jobs as JobRow[];
+  
   // Check for slow jobs
-  const recentJobs = jobs.filter((j: any) => {
-    const report = (j as any).reconciliation_reports?.[0];
+  const recentJobs = typedJobs.filter((j) => {
+    const report = j.reconciliation_reports?.[0];
     return (
       report &&
-      new Date((report as any).created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+      report.created_at &&
+      new Date(report.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     );
   });
 
   const avgDuration =
-    recentJobs.reduce((sum: number, j: any) => {
-      const report = (j as any).reconciliation_reports?.[0];
-      return sum + ((report as any)?.duration_ms || 0);
+    recentJobs.reduce((sum: number, j) => {
+      const report = j.reconciliation_reports?.[0];
+      return sum + (report?.duration_ms || 0);
     }, 0) / recentJobs.length;
 
   // Flag jobs taking > 2x average
   for (const job of recentJobs) {
-    const report = (job as any).reconciliation_reports?.[0];
-    if (report && (report as any).duration_ms > avgDuration * 2) {
+    const report = job.reconciliation_reports?.[0];
+    if (report && report.duration_ms && report.duration_ms > avgDuration * 2) {
       anomalies.push({
-        id: `performance-slow-${(job as any).id}`,
+        id: `performance-slow-${job.id}`,
         type: "performance",
         severity: "low",
         title: "Slow Reconciliation Detected",
-        description: `Job "${(job as any).name}" took ${((report as any).duration_ms / 1000).toFixed(1)}s, which is slower than average.`,
+        description: `Job "${job.name || 'Unnamed'}" took ${(report.duration_ms / 1000).toFixed(1)}s, which is slower than average.`,
         detectedAt: new Date(),
-        metadata: { jobId: (job as any).id, duration: (report as any).duration_ms, avgDuration },
+        metadata: { jobId: job.id, duration: report.duration_ms, avgDuration },
       });
     }
   }

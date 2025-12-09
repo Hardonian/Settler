@@ -33,8 +33,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Failed to fetch snapshots" }, { status: 500 });
     }
 
+    type SnapshotRow = {
+      id: string;
+      project_id: string;
+      project_type: string;
+      snapshot_name: string;
+      created_at: string;
+      created_by: string;
+    };
+    
     return NextResponse.json({
-      snapshots: (data || []).map((s: any) => ({
+      snapshots: (data || []).map((s: SnapshotRow) => ({
         id: s.id,
         projectId: s.project_id,
         projectType: s.project_type,
@@ -98,7 +107,7 @@ export async function POST(request: NextRequest) {
         snapshot_name: snapshotName || "Untitled Snapshot",
         snapshot_data: projectData,
         created_by: user.id,
-      } as any)
+      })
       .select()
       .single();
 
