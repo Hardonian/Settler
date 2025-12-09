@@ -4,7 +4,8 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-type ScrollOffset = Parameters<typeof useScroll>[0]['offset'];
+type UseScrollOptions = NonNullable<Parameters<typeof useScroll>[0]>;
+type ScrollOffset = UseScrollOptions['offset'];
 
 interface ParallaxBackgroundProps {
   children?: React.ReactNode;
