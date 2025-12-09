@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         completed: true,
         completed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      })
+      } as any)
       .select()
       .single();
 

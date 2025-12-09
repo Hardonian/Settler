@@ -45,7 +45,7 @@ export async function detectBillingAnomalies(userId: string): Promise<Anomaly[]>
   const recentUsage = usage.slice(0, 7) as UsageRow[];
   const avgUsage =
     recentUsage.reduce((sum, u) => sum + (u.amount || 0), 0) / recentUsage.length;
-  const currentUsage = (usage[0] as UsageRow)?.amount || 0;
+  const currentUsage = (usage[0] as UsageRow | undefined)?.amount || 0;
 
   if (currentUsage > avgUsage * 2) {
     anomalies.push({

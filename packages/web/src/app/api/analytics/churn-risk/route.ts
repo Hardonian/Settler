@@ -28,13 +28,19 @@ export async function GET() {
       return NextResponse.json({ error: "Failed to fetch churn risk users" }, { status: 500 });
     }
 
-    type LifecycleRow = { user_id: string };
+    type LifecycleRow = { 
+      user_id: string;
+      churn_risk_score?: number;
+      churn_risk_reasons?: unknown;
+      current_stage?: string;
+      segment?: string;
+    };
     // Get activity metrics for each user
     const users = await Promise.all(
       (lifecycleData || []).map(async (lifecycle: LifecycleRow) => {
         const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
           user_id: lifecycle.user_id,
-        } as { user_id: string });
+        });
 
         // Get user email
         const { data: userData } = await supabase
@@ -43,17 +49,17 @@ export async function GET() {
           .eq("id", lifecycle.user_id)
           .single();
 
-        type UserDataRow = { email?: string };
-        type MetricsRow = { days_since_last_activity?: number };
+        type UserDataRow = { email?: string } | null;
+        type MetricsRow = { days_since_last_activity?: number } | null;
         
         return {
           userId: lifecycle.user_id,
           email: (userData as UserDataRow)?.email || "unknown",
           churnRiskScore: lifecycle.churn_risk_score || 0,
-          reasons: lifecycle.churn_risk_reasons || [],
-          lifecycleStage: lifecycle.current_stage,
+          reasons: (lifecycle.churn_risk_reasons as unknown[]) || [],
+          lifecycleStage: lifecycle.current_stage || "unknown",
           daysSinceLastActivity: (metrics as MetricsRow)?.days_since_last_activity || 0,
-          segment: lifecycle.segment,
+          segment: lifecycle.segment || "unknown",
         };
       })
     );

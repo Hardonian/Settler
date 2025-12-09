@@ -433,6 +433,210 @@ export interface Database {
           [key: string]: unknown;
         };
       };
+      user_milestones: {
+        Row: {
+          id: string;
+          user_id: string;
+          milestone_type: string;
+          milestone_data: Json;
+          created_at: string;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          milestone_type: string;
+          milestone_data?: Json;
+          created_at?: string;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          milestone_type?: string;
+          milestone_data?: Json;
+          created_at?: string;
+          [key: string]: unknown;
+        };
+      };
+      project_snapshots: {
+        Row: {
+          id: string;
+          user_id: string;
+          project_id: string;
+          project_type: string;
+          snapshot_name: string;
+          snapshot_data: Json;
+          created_by: string;
+          created_at: string;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          project_id: string;
+          project_type: string;
+          snapshot_name: string;
+          snapshot_data?: Json;
+          created_by: string;
+          created_at?: string;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          project_id?: string;
+          project_type?: string;
+          snapshot_name?: string;
+          snapshot_data?: Json;
+          created_by?: string;
+          created_at?: string;
+          [key: string]: unknown;
+        };
+      };
+      canned_responses: {
+        Row: {
+          id: string;
+          title: string;
+          content: string;
+          category: string;
+          tags?: string[];
+          usage_count?: number;
+          created_at?: string;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          content: string;
+          category: string;
+          tags?: string[];
+          usage_count?: number;
+          created_at?: string;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          content?: string;
+          category?: string;
+          tags?: string[];
+          usage_count?: number;
+          created_at?: string;
+          [key: string]: unknown;
+        };
+      };
+      support_tickets: {
+        Row: {
+          id: string;
+          user_id: string;
+          subject: string;
+          description?: string;
+          category?: string;
+          severity: string;
+          status: string;
+          assigned_to?: string | null;
+          created_at: string;
+          updated_at: string;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          subject: string;
+          description?: string;
+          category?: string;
+          severity?: string;
+          status?: string;
+          assigned_to?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          subject?: string;
+          description?: string;
+          category?: string;
+          severity?: string;
+          status?: string;
+          assigned_to?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          [key: string]: unknown;
+        };
+      };
+      user_checklist: {
+        Row: {
+          id: string;
+          user_id: string;
+          checklist_item: string;
+          completed: boolean;
+          completed_at?: string | null;
+          updated_at: string;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          checklist_item: string;
+          completed?: boolean;
+          completed_at?: string | null;
+          updated_at?: string;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          checklist_item?: string;
+          completed?: boolean;
+          completed_at?: string | null;
+          updated_at?: string;
+          [key: string]: unknown;
+        };
+      };
+      user_lifecycle: {
+        Row: {
+          id: string;
+          user_id: string;
+          current_stage?: string;
+          churn_risk_score?: number;
+          churn_risk_reasons?: Json;
+          first_successful_setup_at?: string | null;
+          activated_at?: string | null;
+          expansion_opportunity_score?: number;
+          segment?: string;
+          updated_at: string;
+          [key: string]: unknown;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          current_stage?: string;
+          churn_risk_score?: number;
+          churn_risk_reasons?: Json;
+          first_successful_setup_at?: string | null;
+          activated_at?: string | null;
+          expansion_opportunity_score?: number;
+          segment?: string;
+          updated_at?: string;
+          [key: string]: unknown;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          current_stage?: string;
+          churn_risk_score?: number;
+          churn_risk_reasons?: Json;
+          first_successful_setup_at?: string | null;
+          activated_at?: string | null;
+          expansion_opportunity_score?: number;
+          segment?: string;
+          updated_at?: string;
+          [key: string]: unknown;
+        };
+      };
       [key: string]: {
         Row: Record<string, unknown>;
         Insert: Record<string, unknown>;

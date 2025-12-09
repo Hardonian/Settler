@@ -20,13 +20,6 @@ interface ProfileRow {
   [key: string]: unknown;
 }
 
-interface ProfileUpdate {
-  pre_test_completed?: boolean;
-  pre_test_answers?: Record<string, unknown>;
-  industry?: string;
-  updated_at?: string;
-  [key: string]: unknown;
-}
 
 export interface UserDashboardData {
   user: {
@@ -170,7 +163,12 @@ export async function savePreTestAnswers(
     }
 
     // Type the update data to match database schema
-    const updateData = {
+    const updateData: {
+      pre_test_completed: boolean;
+      pre_test_answers: Record<string, any>;
+      updated_at: string;
+      industry?: string;
+    } = {
       pre_test_completed: true,
       pre_test_answers: answers,
       updated_at: new Date().toISOString(),
@@ -179,7 +177,7 @@ export async function savePreTestAnswers(
 
     const { error } = await supabase
       .from("profiles")
-      .update(updateData)
+      .update(updateData as any)
       .eq("id", user.id);
 
     if (error) {

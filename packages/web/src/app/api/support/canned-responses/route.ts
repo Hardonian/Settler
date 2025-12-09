@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         content,
         category,
         tags: tags || [],
-      })
+      } as any)
       .select()
       .single();
 
