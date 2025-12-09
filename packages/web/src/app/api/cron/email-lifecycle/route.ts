@@ -47,12 +47,30 @@ export async function GET(request: NextRequest) {
     };
 
     // Process Day 7 emails
-    const day7Result = (await supabase.rpc("get_trial_users_for_email", {
+    interface TrialUserRow {
+      id: string;
+      email: string;
+      name?: string | null;
+      industry?: string | null;
+      company_name?: string | null;
+      plan_type?: string | null;
+      trial_start_date?: string | null;
+      trial_end_date?: string | null;
+      days_remaining?: number | null;
+      [key: string]: unknown;
+    }
+    
+    const day7Result = await (supabase.rpc as any)("get_trial_users_for_email", {
       p_days_remaining: 7,
-    } as any)) as { data: any[] | null; error: any };
+    }) as { data: TrialUserRow[] | null; error: unknown };
     if (day7Result.data && Array.isArray(day7Result.data)) {
       for (const user of day7Result.data) {
         try {
+          // Skip if required fields are missing
+          if (!user.trial_start_date || !user.trial_end_date || user.days_remaining === null || user.days_remaining === undefined) {
+            continue;
+          }
+
           const trialData: TrialData = {
             trialStartDate: user.trial_start_date,
             trialEndDate: user.trial_end_date,
@@ -61,19 +79,19 @@ export async function GET(request: NextRequest) {
 
           const lifecycleUser: LifecycleUser = {
             email: user.email,
-            firstName: user.name?.split(" ")[0],
-            industry: user.industry,
-            companyName: user.company_name,
-            planType: user.plan_type,
+            firstName: user.name?.split(" ")[0] ?? undefined,
+            industry: user.industry ?? undefined,
+            companyName: user.company_name ?? undefined,
+            planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
           };
 
           await sendTrialGatedFeaturesEmail(lifecycleUser, trialData);
 
           // Update email tracking
-          await supabase.rpc("update_email_sent", {
+          await (supabase.rpc as any)("update_email_sent", {
             p_user_id: user.id,
             p_email_type: "trial_day7",
-          } as any);
+          });
 
           results.processed++;
           results.emails.push(user.email);
@@ -85,12 +103,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Process Day 14 emails
-    const day14Result = (await supabase.rpc("get_trial_users_for_email", {
+    const day14Result = await (supabase.rpc as any)("get_trial_users_for_email", {
       p_days_remaining: 14,
-    } as any)) as { data: any[] | null; error: any };
+    }) as { data: TrialUserRow[] | null; error: unknown };
     if (day14Result.data && Array.isArray(day14Result.data)) {
       for (const user of day14Result.data) {
         try {
+          // Skip if required fields are missing
+          if (!user.trial_start_date || !user.trial_end_date || user.days_remaining === null || user.days_remaining === undefined) {
+            continue;
+          }
+
           const trialData: TrialData = {
             trialStartDate: user.trial_start_date,
             trialEndDate: user.trial_end_date,
@@ -99,10 +122,10 @@ export async function GET(request: NextRequest) {
 
           const lifecycleUser: LifecycleUser = {
             email: user.email,
-            firstName: user.name?.split(" ")[0],
-            industry: user.industry,
-            companyName: user.company_name,
-            planType: user.plan_type,
+            firstName: user.name?.split(" ")[0] ?? undefined,
+            industry: user.industry ?? undefined,
+            companyName: user.company_name ?? undefined,
+            planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
           };
 
           await sendTrialCaseStudyEmail(lifecycleUser, trialData, {
@@ -110,10 +133,10 @@ export async function GET(request: NextRequest) {
             caseStudyUrl: `${process.env.APP_URL || "https://app.settler.dev"}/case-studies/example`,
           });
 
-          await supabase.rpc("update_email_sent", {
+          await (supabase.rpc as any)("update_email_sent", {
             p_user_id: user.id,
             p_email_type: "trial_day14",
-          } as any);
+          });
 
           results.processed++;
           results.emails.push(user.email);
@@ -125,12 +148,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Process Day 21 emails (9 days remaining)
-    const day21Result = (await supabase.rpc("get_trial_users_for_email", {
+    const day21Result = await (supabase.rpc as any)("get_trial_users_for_email", {
       p_days_remaining: 9,
-    } as any)) as { data: any[] | null; error: any };
+    }) as { data: TrialUserRow[] | null; error: unknown };
     if (day21Result.data && Array.isArray(day21Result.data)) {
       for (const user of day21Result.data) {
         try {
+          // Skip if required fields are missing
+          if (!user.trial_start_date || !user.trial_end_date || user.days_remaining === null || user.days_remaining === undefined) {
+            continue;
+          }
+
           const trialData: TrialData = {
             trialStartDate: user.trial_start_date,
             trialEndDate: user.trial_end_date,
@@ -139,18 +167,18 @@ export async function GET(request: NextRequest) {
 
           const lifecycleUser: LifecycleUser = {
             email: user.email,
-            firstName: user.name?.split(" ")[0],
-            industry: user.industry,
-            companyName: user.company_name,
-            planType: user.plan_type,
+            firstName: user.name?.split(" ")[0] ?? undefined,
+            industry: user.industry ?? undefined,
+            companyName: user.company_name ?? undefined,
+            planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
           };
 
           await sendTrialComparisonEmail(lifecycleUser, trialData);
 
-          await supabase.rpc("update_email_sent", {
+          await (supabase.rpc as any)("update_email_sent", {
             p_user_id: user.id,
             p_email_type: "trial_day21",
-          } as any);
+          });
 
           results.processed++;
           results.emails.push(user.email);
@@ -164,13 +192,18 @@ export async function GET(request: NextRequest) {
     // Process Day 27-29 emails
     for (const day of [27, 28, 29]) {
       const daysRemaining = day === 27 ? 3 : day === 28 ? 2 : 1;
-      const result = (await supabase.rpc("get_trial_users_for_email", {
+      const result = await (supabase.rpc as any)("get_trial_users_for_email", {
         p_days_remaining: daysRemaining,
-      } as any)) as { data: any[] | null; error: any };
+      }) as { data: TrialUserRow[] | null; error: unknown };
 
       if (result.data && Array.isArray(result.data)) {
         for (const user of result.data) {
           try {
+            // Skip if required fields are missing
+            if (!user.trial_start_date || !user.trial_end_date || user.days_remaining === null || user.days_remaining === undefined) {
+              continue;
+            }
+
             const trialData: TrialData = {
               trialStartDate: user.trial_start_date,
               trialEndDate: user.trial_end_date,
@@ -179,18 +212,18 @@ export async function GET(request: NextRequest) {
 
             const lifecycleUser: LifecycleUser = {
               email: user.email,
-              firstName: user.name?.split(" ")[0],
-              industry: user.industry,
-              companyName: user.company_name,
-              planType: user.plan_type,
+              firstName: user.name?.split(" ")[0] ?? undefined,
+              industry: user.industry ?? undefined,
+              companyName: user.company_name ?? undefined,
+              planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
             };
 
             await sendTrialUrgencyEmail(lifecycleUser, trialData, day as 27 | 28 | 29);
 
-            await supabase.rpc("update_email_sent", {
+            await (supabase.rpc as any)("update_email_sent", {
               p_user_id: user.id,
               p_email_type: `trial_day${day}`,
-            } as any);
+            });
 
             results.processed++;
             results.emails.push(user.email);
@@ -203,18 +236,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Process Day 30 (trial ended)
-    const day30Result = (await supabase.rpc("get_trial_users_for_email", {
+    const day30Result = await (supabase.rpc as any)("get_trial_users_for_email", {
       p_days_remaining: 0,
-    } as any)) as { data: any[] | null; error: any };
+    }) as { data: TrialUserRow[] | null; error: unknown };
     if (day30Result.data && Array.isArray(day30Result.data)) {
       for (const user of day30Result.data) {
         try {
           const lifecycleUser: LifecycleUser = {
             email: user.email,
-            firstName: user.name?.split(" ")[0],
-            industry: user.industry,
-            companyName: user.company_name,
-            planType: user.plan_type,
+            firstName: user.name?.split(" ")[0] ?? undefined,
+            industry: user.industry ?? undefined,
+            companyName: user.company_name ?? undefined,
+            planType: (user.plan_type as "free" | "trial" | "commercial" | "enterprise") ?? undefined,
           };
 
           await sendTrialEndedEmail(lifecycleUser);
@@ -225,10 +258,10 @@ export async function GET(request: NextRequest) {
             .eq("id", user.id)
             .eq("plan_type", "trial");
 
-          await supabase.rpc("update_email_sent", {
+          await (supabase.rpc as any)("update_email_sent", {
             p_user_id: user.id,
             p_email_type: "trial_ended",
-          } as any);
+          });
 
           results.processed++;
           results.emails.push(user.email);

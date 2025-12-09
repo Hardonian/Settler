@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseRequestBody } from "@/types/api";
+
+interface OnboardingRequestBody extends Record<string, unknown> {
+  message: string;
+}
+
+interface UserLifecycleRow {
+  activated_at: string | null;
+  [key: string]: unknown;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +22,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await parseRequestBody<OnboardingRequestBody>(request);
     const { message } = body;
 
     // Get user context
@@ -23,7 +33,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     // Simple AI response logic (in production, use actual AI/LLM)
-    const lowerMessage = message.toLowerCase();
+    const lowerMessage = typeof message === "string" ? message.toLowerCase() : "";
 
     let response = "";
 
@@ -52,7 +62,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Add contextual suggestions based on user state
-    if (lifecycle && (lifecycle as any).activated_at === null) {
+    const lifecycleData = lifecycle as UserLifecycleRow | null;
+    if (lifecycleData && lifecycleData.activated_at === null) {
       response +=
         " I notice you haven't completed your first reconciliation yet. Would you like me to guide you through that?";
     }

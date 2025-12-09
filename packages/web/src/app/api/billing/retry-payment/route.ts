@@ -1,5 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseRequestBody } from "@/types/api";
+
+interface RetryPaymentRequestBody extends Record<string, unknown> {
+  userId?: string;
+  subscriptionId: string;
+}
+
+interface PaymentRecoveryRow {
+  id: string;
+  recovery_attempts?: number;
+  updated_at?: string;
+  [key: string]: unknown;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await parseRequestBody<RetryPaymentRequestBody>(request);
     const { userId, subscriptionId } = body;
     const targetUserId = userId || user.id;
 
@@ -41,13 +54,13 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (recovery) {
-      const recoveryData = recovery as any;
+      const recoveryData = recovery as PaymentRecoveryRow;
       await (supabase.from("payment_recovery") as any)
         .update({
           recovery_attempts: (recoveryData.recovery_attempts || 0) + 1,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", recoveryData.id as string);
+        .eq("id", recoveryData.id);
     }
 
     return NextResponse.json({ success: true });
