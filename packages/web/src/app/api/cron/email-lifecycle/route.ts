@@ -18,6 +18,7 @@ import {
   LifecycleUser,
   TrialData,
 } from "@settler/api/lib/email-lifecycle";
+import { safeRpcCall } from "@/types/api";
 
 // Simple logger for web package
 const logInfo = (message: string, meta?: Record<string, unknown>) => {
@@ -60,9 +61,11 @@ export async function GET(request: NextRequest) {
       [key: string]: unknown;
     }
     
-    const day7Result = await (supabase.rpc as any)("get_trial_users_for_email", {
-      p_days_remaining: 7,
-    }) as { data: TrialUserRow[] | null; error: unknown };
+    const day7Result = await safeRpcCall<{ p_days_remaining: number }, TrialUserRow[]>(
+      supabase,
+      "get_trial_users_for_email",
+      { p_days_remaining: 7 }
+    );
     if (day7Result.data && Array.isArray(day7Result.data)) {
       for (const user of day7Result.data) {
         try {
@@ -88,10 +91,11 @@ export async function GET(request: NextRequest) {
           await sendTrialGatedFeaturesEmail(lifecycleUser, trialData);
 
           // Update email tracking
-          await (supabase.rpc as any)("update_email_sent", {
-            p_user_id: user.id,
-            p_email_type: "trial_day7",
-          });
+          await safeRpcCall<{ p_user_id: string; p_email_type: string }, unknown>(
+            supabase,
+            "update_email_sent",
+            { p_user_id: user.id, p_email_type: "trial_day7" }
+          );
 
           results.processed++;
           results.emails.push(user.email);
@@ -103,9 +107,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Process Day 14 emails
-    const day14Result = await (supabase.rpc as any)("get_trial_users_for_email", {
-      p_days_remaining: 14,
-    }) as { data: TrialUserRow[] | null; error: unknown };
+    const day14Result = await safeRpcCall<{ p_days_remaining: number }, TrialUserRow[]>(
+      supabase,
+      "get_trial_users_for_email",
+      { p_days_remaining: 14 }
+    );
     if (day14Result.data && Array.isArray(day14Result.data)) {
       for (const user of day14Result.data) {
         try {
@@ -133,10 +139,11 @@ export async function GET(request: NextRequest) {
             caseStudyUrl: `${process.env.APP_URL || "https://app.settler.dev"}/case-studies/example`,
           });
 
-          await (supabase.rpc as any)("update_email_sent", {
-            p_user_id: user.id,
-            p_email_type: "trial_day14",
-          });
+          await safeRpcCall<{ p_user_id: string; p_email_type: string }, unknown>(
+            supabase,
+            "update_email_sent",
+            { p_user_id: user.id, p_email_type: "trial_day14" }
+          );
 
           results.processed++;
           results.emails.push(user.email);
@@ -148,9 +155,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Process Day 21 emails (9 days remaining)
-    const day21Result = await (supabase.rpc as any)("get_trial_users_for_email", {
-      p_days_remaining: 9,
-    }) as { data: TrialUserRow[] | null; error: unknown };
+    const day21Result = await safeRpcCall<{ p_days_remaining: number }, TrialUserRow[]>(
+      supabase,
+      "get_trial_users_for_email",
+      { p_days_remaining: 9 }
+    );
     if (day21Result.data && Array.isArray(day21Result.data)) {
       for (const user of day21Result.data) {
         try {
@@ -175,10 +184,11 @@ export async function GET(request: NextRequest) {
 
           await sendTrialComparisonEmail(lifecycleUser, trialData);
 
-          await (supabase.rpc as any)("update_email_sent", {
-            p_user_id: user.id,
-            p_email_type: "trial_day21",
-          });
+          await safeRpcCall<{ p_user_id: string; p_email_type: string }, unknown>(
+            supabase,
+            "update_email_sent",
+            { p_user_id: user.id, p_email_type: "trial_day21" }
+          );
 
           results.processed++;
           results.emails.push(user.email);
@@ -192,9 +202,11 @@ export async function GET(request: NextRequest) {
     // Process Day 27-29 emails
     for (const day of [27, 28, 29]) {
       const daysRemaining = day === 27 ? 3 : day === 28 ? 2 : 1;
-      const result = await (supabase.rpc as any)("get_trial_users_for_email", {
-        p_days_remaining: daysRemaining,
-      }) as { data: TrialUserRow[] | null; error: unknown };
+      const result = await safeRpcCall<{ p_days_remaining: number }, TrialUserRow[]>(
+        supabase,
+        "get_trial_users_for_email",
+        { p_days_remaining: daysRemaining }
+      );
 
       if (result.data && Array.isArray(result.data)) {
         for (const user of result.data) {
@@ -220,10 +232,11 @@ export async function GET(request: NextRequest) {
 
             await sendTrialUrgencyEmail(lifecycleUser, trialData, day as 27 | 28 | 29);
 
-            await (supabase.rpc as any)("update_email_sent", {
-              p_user_id: user.id,
-              p_email_type: `trial_day${day}`,
-            });
+            await safeRpcCall<{ p_user_id: string; p_email_type: string }, unknown>(
+              supabase,
+              "update_email_sent",
+              { p_user_id: user.id, p_email_type: `trial_day${day}` }
+            );
 
             results.processed++;
             results.emails.push(user.email);
@@ -236,9 +249,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Process Day 30 (trial ended)
-    const day30Result = await (supabase.rpc as any)("get_trial_users_for_email", {
-      p_days_remaining: 0,
-    }) as { data: TrialUserRow[] | null; error: unknown };
+    const day30Result = await safeRpcCall<{ p_days_remaining: number }, TrialUserRow[]>(
+      supabase,
+      "get_trial_users_for_email",
+      { p_days_remaining: 0 }
+    );
     if (day30Result.data && Array.isArray(day30Result.data)) {
       for (const user of day30Result.data) {
         try {
@@ -258,10 +273,11 @@ export async function GET(request: NextRequest) {
             .eq("id", user.id)
             .eq("plan_type", "trial");
 
-          await (supabase.rpc as any)("update_email_sent", {
-            p_user_id: user.id,
-            p_email_type: "trial_ended",
-          });
+          await safeRpcCall<{ p_user_id: string; p_email_type: string }, unknown>(
+            supabase,
+            "update_email_sent",
+            { p_user_id: user.id, p_email_type: "trial_ended" }
+          );
 
           results.processed++;
           results.emails.push(user.email);

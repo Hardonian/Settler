@@ -59,7 +59,7 @@ export default function UsageDashboardPage() {
     void fetchUsageData();
   }, [selectedPeriod]);
 
-  const fetchUsageData = async () => {
+  const fetchUsageData = () => {
     try {
       setIsLoading(true);
       // In production, fetch from API based on selectedPeriod

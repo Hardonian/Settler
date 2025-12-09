@@ -55,7 +55,7 @@ export default function JobsPage() {
     setFilteredJobs(filtered);
   }, [searchQuery, statusFilter, jobs]);
 
-  const fetchJobs = async () => {
+  const fetchJobs = () => {
     try {
       setIsLoading(true);
       // In production, fetch from API

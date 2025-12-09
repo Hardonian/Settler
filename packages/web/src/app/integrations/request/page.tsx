@@ -23,7 +23,7 @@ export default function IntegrationRequestPage() {
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // In production, this would submit to an API endpoint
     // For now, we'll just show success message

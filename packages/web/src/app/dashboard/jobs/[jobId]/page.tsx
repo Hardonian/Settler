@@ -58,7 +58,7 @@ export default function JobDetailPage() {
     }
   }, [jobId]);
 
-  const fetchJobDetail = async (id: string) => {
+  const fetchJobDetail = (id: string) => {
     try {
       setIsLoading(true);
       // In production, fetch from API: `/api/jobs/${id}`

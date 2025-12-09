@@ -30,7 +30,7 @@ export default function InvoicesPage() {
     void fetchInvoices();
   }, []);
 
-  const fetchInvoices = async () => {
+  const fetchInvoices = () => {
     try {
       setIsLoading(true);
       // In production, fetch from API

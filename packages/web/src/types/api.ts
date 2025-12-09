@@ -41,3 +41,15 @@ export function createRpcCall<TArgs extends Record<string, unknown>, TReturn>(
     return await (supabase.rpc as (name: string, args: TArgs) => Promise<{ data: TReturn | null; error: unknown }>)(rpcName, args);
   };
 }
+
+/**
+ * Type-safe RPC call helper
+ */
+export function safeRpcCall<TArgs extends Record<string, unknown>, TReturn>(
+  supabase: { rpc: unknown },
+  rpcName: string,
+  args: TArgs
+): Promise<{ data: TReturn | null; error: unknown }> {
+  const rpcFn = supabase.rpc as unknown as (name: string, args: TArgs) => Promise<{ data: TReturn | null; error: unknown }>;
+  return rpcFn(rpcName, args);
+}

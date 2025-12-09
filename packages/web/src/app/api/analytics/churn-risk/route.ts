@@ -38,9 +38,11 @@ export async function GET() {
     // Get activity metrics for each user
     const users = await Promise.all(
       (lifecycleData || []).map(async (lifecycle: LifecycleRow) => {
-        const { data: metrics } = await (supabase.rpc as any)("get_user_activity_metrics", {
+        const rpcCall = supabase.rpc as unknown as (name: string, args: { user_id: string }) => Promise<{ data: unknown; error: unknown }>;
+        const rpcResult = await rpcCall("get_user_activity_metrics", {
           user_id: lifecycle.user_id,
         });
+        const metrics = rpcResult.data;
 
         // Get user email
         const { data: userData } = await supabase
