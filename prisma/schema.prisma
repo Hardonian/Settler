@@ -16,7 +16,7 @@ datasource db {
 model BillingAccount {
   id                String    @id @default(uuid())
   userId            String    @db.Uuid
-  tenantId          String?   @db.Uuid
+  tenantId          String?   @db.Uuid // Legacy field, consider migrating to Tenant.billingAccountId
   stripeCustomerId  String?   @unique
   stripeAccountId   String?
   email             String
@@ -29,6 +29,7 @@ model BillingAccount {
   updatedAt         DateTime  @updatedAt
   deletedAt         DateTime?
 
+  tenant            Tenant?   // Optional relation to Tenant model
   subscriptions     Subscription[]
   addOnPurchases    AddOnPurchase[]
   usageEvents       UsageEvent[]
@@ -610,4 +611,195 @@ model FeatureFlagOverride {
   @@index([targetKey])
   @@index([expiresAt])
   @@map("feature_flag_overrides")
+}
+
+// ============================================================================
+// MULTI-TENANT & WHITE-LABEL SITE BUILDER MODELS
+// Multi-tenant front-end configuration, page builder, and A/B testing
+// ============================================================================
+
+model Tenant {
+  id                String    @id @default(uuid())
+  billingAccountId  String?   @db.Uuid // Optional: link to billing account
+  slug               String    @unique // e.g., "default", "partner-x"
+  primaryDomain      String?   // e.g., "settler.dev"
+  customDomain       String?   // e.g., "api.partnerx.com"
+  name               String
+  isActive            Boolean   @default(true)
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  billingAccount     BillingAccount? @relation(fields: [billingAccountId], references: [id], onDelete: SetNull)
+  branding           TenantBranding?
+  navigation         TenantNavigation?
+  pages              TenantPage[]
+  experiments        Experiment[]
+
+  @@index([slug])
+  @@index([primaryDomain])
+  @@index([customDomain])
+  @@index([billingAccountId])
+  @@index([isActive])
+  @@map("tenants")
+}
+
+model TenantBranding {
+  id                String    @id @default(uuid())
+  tenantId           String    @db.Uuid @unique
+  logoUrl            String?
+  faviconUrl         String?
+  primaryColor       String    @default("#2563eb")
+  secondaryColor     String    @default("#7c3aed")
+  accentColor        String    @default("#06b6d4")
+  backgroundColor    String    @default("#ffffff")
+  borderRadiusScale   Decimal?  @db.Decimal(3, 2) // e.g., 0.5, 1.0, 1.5
+  fontFamilyPrimary   String?   // Selected from safe set
+  fontFamilySecondary String?
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  tenant             Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("tenant_branding")
+}
+
+model TenantNavigation {
+  id                String    @id @default(uuid())
+  tenantId           String    @db.Uuid @unique
+  navItems           Json      @default("[]") // Structured list of nav items
+  footerItems        Json      @default("[]") // Structured list of footer items
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  tenant             Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("tenant_navigation")
+}
+
+model TenantPage {
+  id                String    @id @default(uuid())
+  tenantId           String    @db.Uuid
+  slug               String    // e.g., "" for homepage, "pricing", "docs/overview"
+  pageType           String    // "marketing" | "docs" | "landing" | "custom"
+  schemaVersion      String    @default("1.0")
+  blocks             Json      @default("[]") // Ordered list of content blocks/sections
+  seoTitle           String?
+  seoDescription     String?
+  seoImageUrl        String?
+  isDraft            Boolean   @default(false)
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  tenant             Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  revisions          TenantPageRevision[]
+  experiments        Experiment[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([slug])
+  @@index([pageType])
+  @@index([isDraft])
+  @@map("tenant_pages")
+}
+
+model TenantPageRevision {
+  id                String    @id @default(uuid())
+  tenantPageId       String    @db.Uuid
+  editorUserId       String?   @db.Uuid
+  snapshot           Json      // Full copy of blocks and optionally SEO fields
+  comment            String?
+  approvedByUserId   String?   @db.Uuid
+  approvedAt          DateTime?
+  createdAt          DateTime  @default(now())
+
+  tenantPage         TenantPage @relation(fields: [tenantPageId], references: [id], onDelete: Cascade)
+
+  @@index([tenantPageId])
+  @@index([editorUserId])
+  @@index([approvedByUserId])
+  @@index([createdAt(sort: Desc)])
+  @@map("tenant_page_revisions")
+}
+
+// ============================================================================
+// A/B TESTING & EXPERIMENTS MODELS
+// Experiment management and metrics tracking for site builder
+// ============================================================================
+
+model Experiment {
+  id                String    @id @default(uuid())
+  tenantId           String    @db.Uuid
+  targetPageId       String    @db.Uuid
+  name               String
+  slug               String
+  status             String    @default("draft") // "draft" | "running" | "paused" | "completed"
+  trafficSplit       Json      @default("{}") // Mapping variantKey → percentage
+  primaryMetric      String    @default("click_through") // "click_through" | "signup" | "conversion" | "custom"
+  startsAt           DateTime?
+  endsAt             DateTime?
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  tenant             Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  targetPage         TenantPage @relation(fields: [targetPageId], references: [id], onDelete: Cascade)
+  variants           ExperimentVariant[]
+  metricEvents       ExperimentMetricEvent[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([targetPageId])
+  @@index([status])
+  @@index([startsAt])
+  @@index([endsAt])
+  @@map("experiments")
+}
+
+model ExperimentVariant {
+  id                String    @id @default(uuid())
+  experimentId       String    @db.Uuid
+  key                String    // e.g., "A", "B", "control", "variant-1"
+  label              String    // e.g., "Control", "New Hero"
+  blocksOverride     Json      @default("{}") // Partial or full overrides for TenantPage.blocks
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  experiment         Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@unique([experimentId, key])
+  @@index([experimentId])
+  @@index([key])
+  @@map("experiment_variants")
+}
+
+model ExperimentMetricEvent {
+  id                String    @id @default(uuid())
+  experimentId       String    @db.Uuid
+  variantKey         String
+  tenantId           String    @db.Uuid
+  pageId             String    @db.Uuid
+  eventType          String    // "view" | "click" | "conversion" | "custom"
+  sessionId          String?
+  userId             String?   @db.Uuid
+  meta               Json      @default("{}")
+  createdAt          DateTime  @default(now())
+
+  experiment         Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@index([experimentId])
+  @@index([variantKey])
+  @@index([tenantId])
+  @@index([pageId])
+  @@index([eventType])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("experiment_metric_events")
 }
