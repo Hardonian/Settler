@@ -55,7 +55,7 @@ export async function listReceipts(
     skip: offset,
   });
 
-  return receipts.map((receipt) => ({
+  return receipts.map((receipt: (typeof receipts)[number]) => ({
     id: receipt.id,
     uploadId: receipt.uploadId,
     vendor: receipt.vendor,
