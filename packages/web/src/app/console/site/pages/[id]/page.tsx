@@ -132,8 +132,10 @@ export default function PageEditorPage() {
   function handleMoveBlock(fromIndex: number, toIndex: number) {
     const newBlocks = [...blocks];
     const [moved] = newBlocks.splice(fromIndex, 1);
-    newBlocks.splice(toIndex, 0, moved);
-    setBlocks(newBlocks);
+    if (moved) {
+      newBlocks.splice(toIndex, 0, moved);
+      setBlocks(newBlocks);
+    }
   }
 
   const selectedBlock = blocks.find(b => b.id === selectedBlockId) as PageBlock | undefined;

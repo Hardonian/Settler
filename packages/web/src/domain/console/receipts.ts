@@ -55,7 +55,7 @@ export async function listReceipts(
     skip: offset,
   });
 
-  return receipts.map((receipt: { id: string; uploadId: string; vendor: string | null; date: Date; currency: string; total: unknown; paymentMethod: string | null; confidenceScore: number | null }) => ({
+  return receipts.map((receipt) => ({
     id: receipt.id,
     uploadId: receipt.uploadId,
     vendor: receipt.vendor,
