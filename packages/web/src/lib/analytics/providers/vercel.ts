@@ -19,10 +19,9 @@ class VercelAnalyticsProvider implements AnalyticsProvider {
     
     // Vercel Analytics automatically tracks page views via the Analytics component
     // For custom page view tracking, we can use the track function
-    if (properties && typeof window !== 'undefined' && 'va' in window) {
+    if (properties && typeof window !== 'undefined' && window.va) {
       try {
-        // @ts-ignore - Vercel Analytics global
-        window.va?.('track', {
+        window.va('track', {
           name: 'page_view',
           properties: {
             route,
@@ -38,9 +37,8 @@ class VercelAnalyticsProvider implements AnalyticsProvider {
   trackEvent(name: string, payload?: Record<string, any>) {
     if (typeof window === 'undefined') return;
     
-    if (typeof window !== 'undefined' && 'va' in window) {
-      // @ts-ignore - Vercel Analytics global
-      window.va?.('track', {
+    if (typeof window !== 'undefined' && window.va) {
+      window.va('track', {
         name,
         properties: payload || {},
       });
@@ -53,9 +51,8 @@ class VercelAnalyticsProvider implements AnalyticsProvider {
     const errorMessage = typeof error === 'string' ? error : error.message;
     const errorStack = typeof error === 'string' ? undefined : error.stack;
     
-    if (typeof window !== 'undefined' && 'va' in window) {
-      // @ts-ignore - Vercel Analytics global
-      window.va?.('track', {
+    if (typeof window !== 'undefined' && window.va) {
+      window.va('track', {
         name: 'error',
         properties: {
           message: errorMessage,

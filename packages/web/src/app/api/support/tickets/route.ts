@@ -23,8 +23,18 @@ export async function GET(_request: NextRequest) {
       return NextResponse.json({ error: "Failed to fetch tickets" }, { status: 500 });
     }
 
+    type TicketRow = {
+      id: string;
+      subject: string;
+      status: string;
+      severity: string;
+      created_at: string;
+      updated_at: string;
+      assigned_to?: string | null;
+    };
+    
     return NextResponse.json({
-      tickets: (data || []).map((t: any) => ({
+      tickets: (data || []).map((t: TicketRow) => ({
         id: t.id,
         subject: t.subject,
         status: t.status,
@@ -63,7 +73,7 @@ export async function POST(request: NextRequest) {
         category,
         severity: severity || "medium",
         status: "open",
-      } as any)
+      })
       .select()
       .single();
 

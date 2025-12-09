@@ -14,13 +14,13 @@ export interface APIDocumentation {
     description: string;
   }>;
   requestBody?: {
-    schema: Record<string, any>;
-    example: any;
+    schema: Record<string, unknown>;
+    example: unknown;
   };
   responses: Array<{
     status: number;
     description: string;
-    schema?: Record<string, any>;
+    schema?: Record<string, unknown>;
   }>;
 }
 
@@ -52,7 +52,7 @@ export interface IntegrationDocumentation {
 export function generateAPIDocumentation(
   endpoint: string,
   method: string,
-  _handler: any
+  _handler: unknown
 ): APIDocumentation {
   // In production, analyze handler code to extract:
   // - Parameters
@@ -144,7 +144,7 @@ export function generateIntegrationDocumentation(integrationId: string): Integra
 /**
  * Auto-generate OpenAPI spec from API routes
  */
-export function generateOpenAPISpec(routes: APIDocumentation[]): Record<string, any> {
+export function generateOpenAPISpec(routes: APIDocumentation[]): Record<string, unknown> {
   return {
     openapi: "3.0.0",
     info: {
@@ -188,13 +188,13 @@ export function generateOpenAPISpec(routes: APIDocumentation[]): Record<string, 
                 };
                 return responses;
               },
-              {} as Record<string, any>
+              {} as Record<string, unknown>
             ),
           },
         };
         return paths;
       },
-      {} as Record<string, any>
+      {} as Record<string, unknown>
     ),
   };
 }

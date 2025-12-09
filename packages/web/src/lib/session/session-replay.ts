@@ -153,15 +153,14 @@ class SessionReplay {
     try {
       switch (this.config.provider) {
         case 'hotjar':
-          if (typeof window !== 'undefined' && 'hj' in window) {
-            // @ts-ignore
+          if (typeof window !== 'undefined' && window.hj) {
             window.hj('identify', userId, traits);
           }
           break;
         case 'fullstory':
-          if (typeof window !== 'undefined' && '_fs_namespace' in window) {
-            // @ts-ignore
-            window[window._fs_namespace]?.identify(userId, traits);
+          if (typeof window !== 'undefined' && window._fs_namespace) {
+            const fsNamespace = window[window._fs_namespace] as { identify?: (userId: string, traits?: Record<string, unknown>) => void } | undefined;
+            fsNamespace?.identify?.(userId, traits);
           }
           break;
         case 'clarity':

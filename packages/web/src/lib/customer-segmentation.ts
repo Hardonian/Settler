@@ -31,7 +31,7 @@ export async function assignSegment(
     segment_name: segmentName,
     segment_metadata: metadata || {},
     assigned_at: new Date().toISOString(),
-  } as any);
+  });
 }
 
 /**
@@ -47,7 +47,14 @@ export async function getUserSegments(userId: string): Promise<CustomerSegment[]
     return [];
   }
 
-  return (data || []).map((s: any) => ({
+  type SegmentRow = {
+    user_id: string;
+    segment_type: string;
+    segment_name: string;
+    segment_metadata: Record<string, unknown>;
+  };
+  
+  return (data || []).map((s: SegmentRow) => ({
     userId: s.user_id,
     segmentType: s.segment_type as SegmentType,
     segmentName: s.segment_name,
@@ -74,35 +81,52 @@ export async function autoSegmentUser(userId: string): Promise<void> {
 
   if (!user || !lifecycle || !metrics) return;
 
+  type UserRow = { plan_type?: string };
+  type LifecycleRow = {
+    activated_at?: string | null;
+    churn_risk_score?: number;
+    churn_risk_reasons?: unknown;
+    expansion_opportunity_score?: number;
+    current_stage?: string;
+  };
+  type MetricsRow = {
+    total_jobs_created?: number;
+    usage_percentage?: number;
+  };
+  
+  const userData = user as UserRow;
+  const lifecycleData = lifecycle as LifecycleRow;
+  const metricsData = metrics as MetricsRow | null;
+  
   // Billing segments
-  const billingSegment = (user as any).plan_type || "free_tier";
+  const billingSegment = userData.plan_type || "free_tier";
   await assignSegment(userId, "billing", billingSegment);
 
   // Behavioral segments
-  if (!(lifecycle as any).activated_at) {
+  if (!lifecycleData.activated_at) {
     await assignSegment(userId, "behavioral", "inactive", {
       reason: "never_activated",
     });
-  } else if ((lifecycle as any).churn_risk_score > 0.7) {
+  } else if ((lifecycleData.churn_risk_score || 0) > 0.7) {
     await assignSegment(userId, "behavioral", "at_risk", {
-      churn_score: (lifecycle as any).churn_risk_score,
-      reasons: (lifecycle as any).churn_risk_reasons,
+      churn_score: lifecycleData.churn_risk_score,
+      reasons: lifecycleData.churn_risk_reasons,
     });
-  } else if ((lifecycle as any).expansion_opportunity_score > 0.6) {
+  } else if ((lifecycleData.expansion_opportunity_score || 0) > 0.6) {
     await assignSegment(userId, "behavioral", "expansion_ready", {
-      opportunity_score: (lifecycle as any).expansion_opportunity_score,
+      opportunity_score: lifecycleData.expansion_opportunity_score,
     });
   } else if (
-    (lifecycle as any).current_stage === "retention" ||
-    (lifecycle as any).current_stage === "expansion"
+    lifecycleData.current_stage === "retention" ||
+    lifecycleData.current_stage === "expansion"
   ) {
     await assignSegment(userId, "behavioral", "engaged", {
-      stage: (lifecycle as any).current_stage,
+      stage: lifecycleData.current_stage,
     });
   }
 
   // Usage segments
-  const totalJobs = (metrics as any)?.total_jobs_created || 0;
+  const totalJobs = metricsData?.total_jobs_created || 0;
   if (totalJobs === 0) {
     await assignSegment(userId, "usage", "no_usage", {});
   } else if (totalJobs < 5) {
@@ -120,7 +144,7 @@ export async function autoSegmentUser(userId: string): Promise<void> {
   }
 
   // Usage percentage segments
-  const usagePercentage = (metrics as any)?.usage_percentage || 0;
+  const usagePercentage = metricsData?.usage_percentage || 0;
   if (usagePercentage > 90) {
     await assignSegment(userId, "usage", "near_limit", {
       usage_percentage: usagePercentage,

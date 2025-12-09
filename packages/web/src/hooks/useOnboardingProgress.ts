@@ -15,7 +15,11 @@ interface OnboardingProgress {
   completedAt?: Date;
 }
 
-export function useOnboardingProgress() {
+export function useOnboardingProgress(): {
+  progress: OnboardingProgress | null;
+  nextStep: string | null;
+  loading: boolean;
+} {
   const [progress, setProgress] = useState<OnboardingProgress | null>(null);
   const [nextStep, setNextStep] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

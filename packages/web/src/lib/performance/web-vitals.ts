@@ -39,7 +39,7 @@ function getRating(name: string, value: number): 'good' | 'needs-improvement' | 
 /**
  * Report Web Vital metric
  */
-export function reportWebVital(metric: WebVitalMetric) {
+export function reportWebVital(metric: WebVitalMetric): void {
   const { name, value, rating, id, delta, navigationType } = metric;
 
   // Log in development
@@ -75,7 +75,13 @@ export function reportWebVital(metric: WebVitalMetric) {
 /**
  * Initialize Web Vitals collection (Next.js)
  */
-export function reportWebVitals(metric: any) {
+export function reportWebVitals(metric: {
+  name: string;
+  value: number;
+  id: string;
+  delta: number;
+  navigationType?: string;
+}): void {
   const { name, value, id, delta, navigationType } = metric;
 
   reportWebVital({
@@ -91,21 +97,28 @@ export function reportWebVitals(metric: any) {
 /**
  * Manual Web Vitals collection (non-Next.js)
  */
-export function initWebVitals() {
+export function initWebVitals(): void {
   if (typeof window === 'undefined') return;
 
   // LCP - Largest Contentful Paint
   try {
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      const lastEntry = entries[entries.length - 1] as any;
+      const lastEntry = entries[entries.length - 1] as PerformanceEntry & {
+        renderTime?: number;
+        loadTime?: number;
+        id?: string;
+      };
+      
+      const lcpValue = lastEntry.renderTime || lastEntry.loadTime || 0;
+      const lcpId = lastEntry.id || 'unknown';
       
       reportWebVital({
         name: 'LCP',
-        value: lastEntry.renderTime || lastEntry.loadTime,
-        id: lastEntry.id,
-        delta: lastEntry.renderTime || lastEntry.loadTime,
-        rating: getRating('LCP', lastEntry.renderTime || lastEntry.loadTime),
+        value: lcpValue,
+        id: lcpId,
+        delta: lcpValue,
+        rating: getRating('LCP', lcpValue),
       });
     }).observe({ type: 'largest-contentful-paint', buffered: true });
   } catch (error) {
@@ -116,7 +129,8 @@ export function initWebVitals() {
   try {
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        const fid = (entry as any).processingStart - entry.startTime;
+        const performanceEntry = entry as PerformanceEntry & { processingStart?: number };
+        const fid = performanceEntry.processingStart ? performanceEntry.processingStart - entry.startTime : 0;
         
         reportWebVital({
           name: 'FID',

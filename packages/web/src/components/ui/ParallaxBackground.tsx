@@ -96,7 +96,7 @@ function ParallaxBlob({
   speed: number;
   size: number;
   color: 'electric-cyan' | 'electric-purple' | 'electric-neon';
-  scrollYProgress: any;
+  scrollYProgress: { get: () => number };
 }) {
   const y = useTransform(scrollYProgress, [0, 1], [0, -200 * speed]);
   const x = useTransform(scrollYProgress, [0, 1], [0, 50 * (index % 2 === 0 ? 1 : -1)]);

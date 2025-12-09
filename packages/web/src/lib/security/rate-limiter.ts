@@ -71,7 +71,7 @@ function getRateLimitKey(req: NextRequest, identifier?: string): string {
 /**
  * Rate limit middleware
  */
-export function rateLimit(config: RateLimitConfig) {
+export function rateLimit(config: RateLimitConfig): (req: NextRequest) => Promise<NextResponse | null> {
   return async (req: NextRequest): Promise<NextResponse | null> => {
     const key = getRateLimitKey(req);
     const now = Date.now();

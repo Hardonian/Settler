@@ -38,7 +38,9 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",
-    "postinstall": "test -f scripts/vercel-prisma-postinstall.js && node scripts/vercel-prisma-postinstall.js || echo 'Skipping postinstall: script not found (expected in Vercel builds)'"
+    "postinstall": "test -f scripts/vercel-prisma-postinstall.js && node scripts/vercel-prisma-postinstall.js || echo 'Skipping postinstall: script not found (expected in Vercel builds)'",
+    "verify:build": "bash scripts/verify-build-setup.sh",
+    "setup:turbo": "bash scripts/setup-vercel-turbo-cache.sh"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

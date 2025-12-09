@@ -28,12 +28,13 @@ export async function GET() {
       return NextResponse.json({ error: "Failed to fetch churn risk users" }, { status: 500 });
     }
 
+    type LifecycleRow = { user_id: string };
     // Get activity metrics for each user
     const users = await Promise.all(
-      (lifecycleData || []).map(async (lifecycle: any) => {
+      (lifecycleData || []).map(async (lifecycle: LifecycleRow) => {
         const { data: metrics } = await supabase.rpc("get_user_activity_metrics", {
           user_id: lifecycle.user_id,
-        } as any);
+        } as { user_id: string });
 
         // Get user email
         const { data: userData } = await supabase
@@ -42,13 +43,16 @@ export async function GET() {
           .eq("id", lifecycle.user_id)
           .single();
 
+        type UserDataRow = { email?: string };
+        type MetricsRow = { days_since_last_activity?: number };
+        
         return {
           userId: lifecycle.user_id,
-          email: (userData as any)?.email || "unknown",
+          email: (userData as UserDataRow)?.email || "unknown",
           churnRiskScore: lifecycle.churn_risk_score || 0,
           reasons: lifecycle.churn_risk_reasons || [],
           lifecycleStage: lifecycle.current_stage,
-          daysSinceLastActivity: (metrics as any)?.days_since_last_activity || 0,
+          daysSinceLastActivity: (metrics as MetricsRow)?.days_since_last_activity || 0,
           segment: lifecycle.segment,
         };
       })

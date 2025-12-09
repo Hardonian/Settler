@@ -29,6 +29,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "tsBuildInfoFile": ".next/tsconfig.tsbuildinfo",
     "baseUrl": ".",
     "plugins": [
       {
@@ -50,5 +51,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next", "dist", "out"]
 }

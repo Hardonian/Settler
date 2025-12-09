@@ -6,6 +6,28 @@
 
 import { createClient } from "@/lib/supabase/server";
 
+interface ProfileRow {
+  id: string;
+  email?: string;
+  name?: string;
+  plan_type?: string;
+  trial_end_date?: string;
+  industry?: string;
+  company_name?: string;
+  pre_test_completed?: boolean;
+  pre_test_answers?: Record<string, unknown>;
+  first_name?: string;
+  [key: string]: unknown;
+}
+
+interface ProfileUpdate {
+  pre_test_completed?: boolean;
+  pre_test_answers?: Record<string, unknown>;
+  industry?: string;
+  updated_at?: string;
+  [key: string]: unknown;
+}
+
 export interface UserDashboardData {
   user: {
     id: string;
@@ -63,11 +85,11 @@ export async function getUserDashboardData(): Promise<UserDashboardData | null> 
     }
 
     // Get user profile
-    const { data: profile, error: profileError } = (await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", authUser.id)
-      .single()) as { data: any; error: any };
+      .single<ProfileRow>();
 
     if (profileError || !profile) {
       return null;
@@ -82,7 +104,7 @@ export async function getUserDashboardData(): Promise<UserDashboardData | null> 
     const isFirstVisit = (activityCount || 0) === 0;
 
     // Get usage stats (in production, calculate from actual usage)
-    const planType = (profile?.plan_type as any) || "free";
+    const planType = (profile?.plan_type as "free" | "trial" | "commercial" | "enterprise") || "free";
     const usage = {
       reconciliations: {
         current: 0, // Calculate from reconciliation jobs
@@ -113,7 +135,7 @@ export async function getUserDashboardData(): Promise<UserDashboardData | null> 
       user: {
         id: profile?.id || "",
         email: profile?.email || "",
-        firstName: profile?.name?.split(" ")[0],
+        firstName: profile?.name && typeof profile.name === 'string' ? profile.name.split(" ")[0] : undefined,
         planType: planType,
         trialEndDate: profile?.trial_end_date,
         industry: profile?.industry,
@@ -147,14 +169,18 @@ export async function savePreTestAnswers(
       return { success: false, error: "Not authenticated" };
     }
 
-    const { error } = (await (supabase.from("profiles") as any)
-      .update({
-        pre_test_completed: true,
-        pre_test_answers: answers,
-        industry: answers.industry,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id)) as { error: any };
+    // Type the update data to match database schema
+    const updateData = {
+      pre_test_completed: true,
+      pre_test_answers: answers,
+      updated_at: new Date().toISOString(),
+      ...(answers.industry && { industry: answers.industry }),
+    };
+
+    const { error } = await supabase
+      .from("profiles")
+      .update(updateData)
+      .eq("id", user.id);
 
     if (error) {
       return { success: false, error: error.message };

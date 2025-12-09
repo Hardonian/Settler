@@ -21,8 +21,14 @@ export async function GET() {
       .eq("user_id", user.id)
       .eq("is_connected", true);
 
+    type IntegrationRow = {
+      integration_id: string;
+      last_sync_at?: string | null;
+      status?: string;
+    };
+    
     // Mock health data (in production, fetch from monitoring system)
-    const integrations = (userIntegrations || []).map((integration: any) => {
+    const integrations = (userIntegrations || []).map((integration: IntegrationRow) => {
       // Determine status based on last sync and error rates
       const lastSync = integration.last_sync_at ? new Date(integration.last_sync_at) : null;
       const hoursSinceSync = lastSync
@@ -46,7 +52,7 @@ export async function GET() {
       return {
         integrationId: integration.integration_id,
         name:
-          integration.integration_id.charAt(0).toUpperCase() + integration.integration_id.slice(1),
+          (integration.integration_id || '').charAt(0).toUpperCase() + (integration.integration_id || '').slice(1),
         status,
         lastSync: integration.last_sync_at || new Date().toISOString(),
         successRate,

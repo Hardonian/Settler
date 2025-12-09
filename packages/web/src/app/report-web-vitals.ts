@@ -6,6 +6,12 @@
 
 import { reportWebVitals } from '@/lib/performance/web-vitals';
 
-export function onPerfEntry(metric: any) {
+export function onPerfEntry(metric: {
+  name: string;
+  value: number;
+  id: string;
+  delta: number;
+  navigationType?: string;
+}): void {
   reportWebVitals(metric);
 }
