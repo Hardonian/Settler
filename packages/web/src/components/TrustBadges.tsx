@@ -28,7 +28,13 @@ export function TrustBadges() {
     };
   }, []);
 
-  const badges = [
+  interface TrustBadge {
+    name: string;
+    icon: string;
+    description: string;
+  }
+
+  const badges: TrustBadge[] = [
     { name: 'SOC 2 Type II', icon: '🔒', description: 'Enterprise security certified' },
     { name: 'GDPR Compliant', icon: '🛡️', description: 'EU data protection compliant' },
     { name: 'PCI-DSS Ready', icon: '💳', description: 'Payment security standards' },

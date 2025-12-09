@@ -14,8 +14,15 @@ import { AnimatedFeatureCard } from "@/components/AnimatedFeatureCard";
 import { AnimatedStatCard } from "@/components/AnimatedStatCard";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
+interface EnterpriseFormData {
+  name: string;
+  email: string;
+  company: string;
+  message: string;
+}
+
 export default function Enterprise() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<EnterpriseFormData>({
     name: '',
     email: '',
     company: '',
