@@ -1,6 +1,0 @@
-"use strict";exports.id=196,exports.ids=[196],exports.modules={50196:(e,a,t)=>{t.r(a),t.d(a,{TrustBadges:()=>l});var s=t(73227),r=t(23677);function l(){let[e,a]=(0,r.useState)(!1),t=(0,r.useRef)(null);return s.jsx("div",{ref:t,className:"flex flex-wrap items-center justify-center gap-6 py-8",role:"list","aria-label":"Trust badges and certifications",children:[{name:"SOC 2 Type II",icon:"\uD83D\uDD12"},{name:"GDPR Compliant",icon:"\uD83D\uDEE1️"},{name:"PCI-DSS Ready",icon:"\uD83D\uDCB3"},{name:"99.99% Uptime",icon:"⚡"}].map((a,t)=>(0,s.jsxs)("div",{className:`
-            flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm
-            transition-all duration-500
-            ${e?"opacity-100 translate-y-0 scale-100":"opacity-0 translate-y-4 scale-95"}
-            hover:shadow-lg hover:scale-105
-          `,style:{transitionDelay:`${100*t}ms`},role:"listitem","aria-label":a.name,children:[s.jsx("span",{className:"text-2xl","aria-hidden":"true",children:a.icon}),s.jsx("span",{className:"text-sm font-medium text-slate-700 dark:text-slate-300",children:a.name})]},t))})}}};

@@ -104,7 +104,7 @@ export function initWebVitals(): void {
   try {
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      const lastEntry = entries[entries.length - 1] as any;
+      const lastEntry = entries[entries.length - 1] as PerformanceEntry & { value?: number };
       
       reportWebVital({
         name: 'LCP',
@@ -122,8 +122,8 @@ export function initWebVitals(): void {
   try {
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        const performanceEntry = entry as PerformanceEventTiming;
-        const fid = performanceEntry.processingStart - entry.startTime;
+        const performanceEntry = entry as PerformanceEntry & { processingStart?: number };
+        const fid = performanceEntry.processingStart ? performanceEntry.processingStart - entry.startTime : 0;
         
         reportWebVital({
           name: 'FID',
