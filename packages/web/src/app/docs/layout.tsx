@@ -1,4 +1,5 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { generateDocsMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generateDocsMetadata();
@@ -6,7 +7,7 @@ export const metadata: Metadata = generateDocsMetadata();
 export default function DocsLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return <>{children}</>;
 }

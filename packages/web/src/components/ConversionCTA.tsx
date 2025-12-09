@@ -39,7 +39,7 @@ export function ConversionCTA({
             size="lg"
             variant="default"
           >
-            <Link href={primaryLink} aria-label={primaryAction}>
+            <Link href={primaryLink || '/'} aria-label={primaryAction}>
               {primaryAction}
             </Link>
           </Button>
@@ -155,7 +155,7 @@ export function ConversionCTA({
             asChild
             variant="default"
           >
-            <Link href={primaryLink} aria-label={primaryAction}>
+            <Link href={primaryLink || '/'} aria-label={primaryAction}>
               {primaryAction}
             </Link>
           </Button>
