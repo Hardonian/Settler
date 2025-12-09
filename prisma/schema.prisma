@@ -620,7 +620,7 @@ model FeatureFlagOverride {
 
 model Tenant {
   id                String    @id @default(uuid())
-  billingAccountId  String?   @db.Uuid // Optional: link to billing account
+  billingAccountId  String?   @unique @db.Uuid // Optional: link to billing account
   slug               String    @unique // e.g., "default", "partner-x"
   primaryDomain      String?   // e.g., "settler.dev"
   customDomain       String?   // e.g., "api.partnerx.com"
