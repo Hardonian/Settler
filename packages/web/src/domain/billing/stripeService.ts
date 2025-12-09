@@ -10,13 +10,43 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getPlanConfig, PlanCode } from './planConfig';
 import { generateIdempotencyKey } from '@/lib/stripe/idempotency';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY environment variable is required');
+/**
+ * Lazy Stripe client initialization
+ * Only initializes when actually needed (at runtime), not during build time
+ */
+let stripeInstance: Stripe | null = null;
+
+function getStripe(): Stripe {
+  if (!stripeInstance) {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    if (!secretKey) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is required');
+    }
+    stripeInstance = new Stripe(secretKey, {
+      apiVersion: '2025-11-17.clover',
+      typescript: true,
+    });
+  }
+  return stripeInstance;
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2025-11-17.clover',
-  typescript: true,
+/**
+ * Export stripe client getter function
+ * Use this to get the Stripe instance when needed
+ */
+export function getStripeClient(): Stripe {
+  return getStripe();
+}
+
+/**
+ * Export stripe client proxy for backward compatibility
+ * This allows existing code to use `stripe` as before
+ * The proxy lazily initializes the Stripe client when properties are accessed
+ */
+export const stripe = new Proxy({} as Stripe, {
+  get(_target, prop) {
+    return (getStripe() as any)[prop];
+  },
 });
 
 /**
@@ -70,7 +100,7 @@ export async function getOrCreateStripeCustomer(
   }
 
   // Create new Stripe customer with idempotency
-  const customer = await stripe.customers.create(
+  const customer = await getStripe().customers.create(
     {
       email: account.email,
       name: account.name || undefined,
@@ -123,7 +153,7 @@ export async function createCheckoutSession(
 
   const customerId = await getOrCreateStripeCustomer(billingAccountId);
 
-  const session = await stripe.checkout.sessions.create(
+  const session = await getStripe().checkout.sessions.create(
     {
       customer: customerId,
       mode: 'subscription',
@@ -179,7 +209,7 @@ export async function createCustomerPortalSession(
     throw new Error('No Stripe customer found for this account');
   }
 
-  const session = await stripe.billingPortal.sessions.create({
+  const session = await getStripe().billingPortal.sessions.create({
     customer: account.stripeCustomerId,
     return_url: returnUrl,
   });
