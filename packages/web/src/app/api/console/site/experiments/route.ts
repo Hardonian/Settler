@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { requireAuth, checkPermission, SiteBuilderPermission } from '@/lib/tenant/permissions';
 import { getTenantContext } from '@/lib/tenant/server';
-import { PageBlock, validateBlock } from '@/domain/siteBuilder/pageSchema';
+import { validateBlock } from '@/domain/siteBuilder/pageSchema';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,9 +17,9 @@ export const dynamic = 'force-dynamic';
  * GET /api/console/site/experiments
  * List all experiments for the current tenant
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const tenantContext = await getTenantContext();
     
     if (!tenantContext.tenantId) {
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const tenantContext = await getTenantContext();
     
     if (!tenantContext.tenantId) {

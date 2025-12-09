@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, checkPermission, SiteBuilderPermission } from '@/lib/tenant/permissions';
+import { requireAuth } from '@/lib/tenant/permissions';
 import { createDefaultTenant, migrateHomepageToTenantPage } from '@/lib/tenant/setup';
 
 export const dynamic = 'force-dynamic';
@@ -14,9 +14,9 @@ export const dynamic = 'force-dynamic';
  * POST /api/console/site/setup
  * Initialize default tenant
  */
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     
     // Only super admins can run setup
     // For now, allow any authenticated user (can be restricted later)
