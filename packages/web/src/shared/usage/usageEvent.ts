@@ -36,7 +36,7 @@ export async function recordUsageEvent(input: UsageEventInput): Promise<void> {
         addOnId: input.addOnId,
         quantity: input.quantity,
         unit: input.unit,
-        metadata: input.metadata || {},
+        metadata: input.metadata ? JSON.parse(JSON.stringify(input.metadata)) : {},
       },
     });
   } catch (error) {

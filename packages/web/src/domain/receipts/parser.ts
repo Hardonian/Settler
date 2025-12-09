@@ -25,18 +25,18 @@ export function parseReceiptFromText(text: string): ReceiptParseResult {
   };
 
   let confidenceScore = 0.5; // Base confidence
-  let foundTotal = false;
   let foundItems = false;
 
   // Extract vendor (usually first line or contains "STORE", "SHOP", etc.)
   for (const line of lines.slice(0, 3)) {
     if (line.match(/STORE|SHOP|MARKET|GROCERY|RESTAURANT/i)) {
-      receipt.vendor = line.replace(/STORE NAME:|^[^:]*:\s*/i, '').trim();
+      const vendor = line.replace(/STORE NAME:|^[^:]*:\s*/i, '').trim();
+      receipt.vendor = vendor || null;
       confidenceScore += 0.1;
       break;
     }
   }
-  if (!receipt.vendor && lines.length > 0) {
+  if (!receipt.vendor && lines.length > 0 && lines[0]) {
     receipt.vendor = lines[0];
   }
 
@@ -80,23 +80,28 @@ export function parseReceiptFromText(text: string): ReceiptParseResult {
       let item: NormalizedReceiptItem | null = null;
       
       const itemMatch = line.match(itemPattern);
-      if (itemMatch) {
+      if (itemMatch && itemMatch[1] && itemMatch[2] && itemMatch[3]) {
+        const quantity = parseFloat(itemMatch[1]);
+        const unitPrice = parseFloat(itemMatch[3].replace('$', ''));
         item = {
           name: itemMatch[2].trim(),
-          quantity: parseFloat(itemMatch[1]),
-          unitPrice: parseFloat(itemMatch[3].replace('$', '')),
+          quantity: isNaN(quantity) ? null : quantity,
+          unitPrice: isNaN(unitPrice) ? null : unitPrice,
           lineTotal: null,
           category: null,
         };
-        item.lineTotal = (item.quantity || 0) * (item.unitPrice || 0);
+        if (item.quantity !== null && item.unitPrice !== null) {
+          item.lineTotal = item.quantity * item.unitPrice;
+        }
       } else {
         const simpleMatch = line.match(simpleItemPattern);
-        if (simpleMatch) {
+        if (simpleMatch && simpleMatch[1] && simpleMatch[2]) {
+          const lineTotal = parseFloat(simpleMatch[2].replace('$', ''));
           item = {
             name: simpleMatch[1].trim(),
             quantity: null,
             unitPrice: null,
-            lineTotal: parseFloat(simpleMatch[2].replace('$', '')),
+            lineTotal: isNaN(lineTotal) ? null : lineTotal,
             category: null,
           };
         }
@@ -115,32 +120,34 @@ export function parseReceiptFromText(text: string): ReceiptParseResult {
     
     if (lowerLine.includes('subtotal')) {
       const amountMatch = line.match(/\$?(\d+\.\d{2})/);
-      if (amountMatch) {
-        receipt.subtotal = parseFloat(amountMatch[1]);
+      if (amountMatch && amountMatch[1]) {
+        const amount = parseFloat(amountMatch[1]);
+        receipt.subtotal = isNaN(amount) ? null : amount;
         confidenceScore += 0.1;
       }
     }
     
     if (lowerLine.includes('tax')) {
       const amountMatch = line.match(/\$?(\d+\.\d{2})/);
-      if (amountMatch) {
-        receipt.tax = parseFloat(amountMatch[1]);
+      if (amountMatch && amountMatch[1]) {
+        const amount = parseFloat(amountMatch[1]);
+        receipt.tax = isNaN(amount) ? null : amount;
         confidenceScore += 0.1;
       }
     }
     
     if (lowerLine.includes('total') && !lowerLine.includes('subtotal')) {
       const amountMatch = line.match(/\$?(\d+\.\d{2})/);
-      if (amountMatch) {
-        receipt.total = parseFloat(amountMatch[1]);
-        foundTotal = true;
+      if (amountMatch && amountMatch[1]) {
+        const amount = parseFloat(amountMatch[1]);
+        receipt.total = isNaN(amount) ? null : amount;
         confidenceScore += 0.15;
       }
     }
     
     if (lowerLine.includes('payment')) {
       const methodMatch = line.match(/payment[:\s]+(.+)/i);
-      if (methodMatch) {
+      if (methodMatch && methodMatch[1]) {
         receipt.paymentMethod = methodMatch[1].trim();
         confidenceScore += 0.05;
       }

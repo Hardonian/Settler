@@ -7,8 +7,12 @@
 
 import { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
-import { verifyApiKey } from '@settler/api/dist/utils/hash';
+import bcrypt from 'bcrypt';
 import { prisma } from '../db/prismaClient';
+
+async function verifyApiKey(apiKey: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(apiKey, hash);
+}
 
 export interface ApiKeyAuthContext {
   apiKeyId: string;
@@ -82,7 +86,7 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext>
   // Update last used timestamp
   await supabase
     .from('api_keys')
-    .update({ last_used_at: new Date().toISOString() })
+    .update({ last_used_at: new Date().toISOString() } as never)
     .eq('id', key.id);
 
   return {
