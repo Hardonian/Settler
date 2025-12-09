@@ -1,6 +1,6 @@
 {
   "buildCommand": "cd packages/web && npm run build:vercel",
-  "installCommand": "npm ci",
+  "installCommand": "npm ci --prefer-offline --no-audit",
   "framework": "nextjs",
   "regions": ["iad1"],
   "build": {
@@ -8,7 +8,10 @@
       "NODE_OPTIONS": "--max-old-space-size=4096",
       "PRISMA_CLIENT_ENGINE_TYPE": "library",
       "NEXT_TELEMETRY_DISABLED": "1",
-      "NODE_VERSION": "24"
+      "NODE_VERSION": "24",
+      "TURBO_TOKEN": "",
+      "TURBO_TEAM": "",
+      "SKIP_ENV_VALIDATION": "false"
     }
   },
   "functions": {

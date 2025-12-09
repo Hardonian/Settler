@@ -24,6 +24,10 @@ const nextConfig = {
     instrumentationHook: true,
     // Optimize memory usage
     optimizeCss: true,
+    // Enable SWC minification for faster builds
+    swcMinify: true,
+    // Optimize package imports
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-progress', '@radix-ui/react-radio-group'],
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if
@@ -31,11 +35,10 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
+    // Strict type checking - fail build on errors
     ignoreBuildErrors: false,
+    // Show type errors during build
+    tsconfigPath: './tsconfig.json',
   },
   transpilePackages: [
     '@settler/api',
