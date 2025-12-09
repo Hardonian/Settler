@@ -9,6 +9,7 @@ import { execSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { ESLintConfigValidator } from './validate-eslint-config';
+import { NextJSBuildValidator } from './validate-nextjs-build';
 
 interface BuildIssue {
   severity: 'error' | 'warning' | 'info';
@@ -40,6 +41,7 @@ class BuildGuardian {
     this.checkImportPaths();
     this.checkDependencies();
     this.checkESLintConfigs();
+    this.checkNextJSBuild();
 
     this.report();
     return this.issues.filter(i => i.severity === 'error').length === 0;
@@ -226,6 +228,36 @@ class BuildGuardian {
         severity: 'warning',
         category: 'eslint',
         message: `Failed to validate ESLint configs: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    }
+  }
+
+  /**
+   * Check Next.js build configuration
+   */
+  private checkNextJSBuild(): void {
+    const validatorPath = join(this.rootDir, 'scripts', 'validate-nextjs-build.ts');
+    if (!existsSync(validatorPath)) {
+      return;
+    }
+
+    try {
+      const validator = new NextJSBuildValidator(this.rootDir);
+      const isValid = validator.validate();
+      
+      if (!isValid) {
+        this.issues.push({
+          severity: 'error',
+          category: 'nextjs',
+          message: 'Next.js build configuration issues found. Run: npm run validate:nextjs',
+          fix: 'npm run validate:nextjs',
+        });
+      }
+    } catch (error) {
+      this.issues.push({
+        severity: 'warning',
+        category: 'nextjs',
+        message: `Failed to validate Next.js build config: ${error instanceof Error ? error.message : String(error)}`,
       });
     }
   }

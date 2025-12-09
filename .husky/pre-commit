@@ -31,6 +31,13 @@ npm run validate:build-safety || {
   exit 1
 }
 
+# Validate lint configuration
+echo "🔍 Validating lint configuration..."
+npm run validate:lint-config || {
+  echo "❌ Lint configuration issues found. Please fix them before committing."
+  exit 1
+}
+
 # Run typecheck before lint-staged to catch TypeScript errors early
 echo "🔍 Running TypeScript typecheck..."
 npm run typecheck || {

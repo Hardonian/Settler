@@ -30,10 +30,10 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-progress', '@radix-ui/react-radio-group'],
   },
   eslint: {
-    // Allow builds to complete with warnings, but fail on errors
-    // Errors are now downgraded to warnings in .eslintrc.json
+    // Allow builds to complete even with lint warnings
+    // Critical errors are disabled in .eslintrc.json
     ignoreDuringBuilds: false,
-    // Only fail on actual errors, not warnings
+    // Only lint src and app directories
     dirs: ['src', 'app'],
   },
   typescript: {

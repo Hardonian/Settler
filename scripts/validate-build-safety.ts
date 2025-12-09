@@ -74,6 +74,7 @@ class BuildSafetyValidator {
     this.checkESLintExtendsDependencies();
     this.validateConfigFiles();
     this.validateBuildScripts();
+    this.validateTranspilePackages();
 
     return this.report();
   }
@@ -476,6 +477,60 @@ class BuildSafetyValidator {
       } catch (error) {
         // Skip
       }
+    }
+  }
+
+  /**
+   * Validate Next.js transpilePackages configuration
+   */
+  private validateTranspilePackages(): void {
+    const packagesDir = join(this.rootDir, 'packages');
+    if (!existsSync(packagesDir)) return;
+
+    const webPackageJsonPath = join(packagesDir, 'web', 'package.json');
+    const nextConfigPath = join(packagesDir, 'web', 'next.config.js');
+    
+    if (!existsSync(webPackageJsonPath) || !existsSync(nextConfigPath)) return;
+
+    try {
+      const nextConfigContent = readFileSync(nextConfigPath, 'utf-8');
+      const transpileMatch = nextConfigContent.match(/transpilePackages:\s*\[([^\]]+)\]/);
+      
+      if (transpileMatch) {
+        const packages = transpileMatch[1]
+          .split(',')
+          .map((p: string) => p.trim().replace(/['"]/g, ''))
+          .filter(Boolean);
+
+        for (const pkg of packages) {
+          if (pkg.startsWith('@settler/')) {
+            const packageName = pkg.replace('@settler/', '');
+            const packagePath = join(packagesDir, packageName);
+            const packageJsonPath = join(packagePath, 'package.json');
+
+            if (!existsSync(packageJsonPath)) {
+              this.issues.push({
+                severity: 'error',
+                package: '@settler/web',
+                message: `transpilePackages includes ${pkg} but package ${packageName} not found`,
+                fix: `Remove ${pkg} from transpilePackages or create the package`,
+              });
+            } else {
+              // Check if package has build script
+              const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+              if (!packageJson.scripts?.build) {
+                this.issues.push({
+                  severity: 'warning',
+                  package: `@settler/${packageName}`,
+                  message: `Package ${pkg} is in transpilePackages but has no build script`,
+                });
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      // Skip if can't parse
     }
   }
 
