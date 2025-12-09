@@ -8,8 +8,8 @@ interface ConversionCTAProps {
   description?: string;
   primaryAction?: string;
   primaryLink?: string;
-  secondaryAction?: string | null;
-  secondaryLink?: string | null;
+  secondaryAction?: string;
+  secondaryLink?: string;
   variant?: 'default' | 'gradient' | 'minimal';
 }
 
@@ -43,7 +43,7 @@ export function ConversionCTA({
               {primaryAction}
             </Link>
           </Button>
-          {secondaryAction && (
+          {secondaryAction && secondaryLink && (
             <Button
               asChild
               size="lg"
