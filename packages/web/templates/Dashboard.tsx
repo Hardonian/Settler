@@ -6,8 +6,8 @@
  */
 
 import React from 'react';
-import { DiffViewer } from '../components/recon/DiffViewer';
-import { SchemaInspector } from '../components/recon/SchemaInspector';
+import { DiffViewer } from '../src/components/recon/DiffViewer';
+import { SchemaInspector } from '../src/components/recon/SchemaInspector';
 
 export const Dashboard: React.FC = () => {
   return (
