@@ -9,9 +9,13 @@ import { getReceiptDetail } from '@/domain/console/receipts';
 
 export const dynamic = 'force-dynamic';
 
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: RouteParams
 ) {
   try {
     const supabase = await createClient();
@@ -29,7 +33,8 @@ export async function GET(
       return NextResponse.json({ error: 'No billing account found' }, { status: 404 });
     }
 
-    const receipt = await getReceiptDetail(params.id, billingAccount.id);
+    const { id } = await params;
+    const receipt = await getReceiptDetail(id, billingAccount.id);
 
     if (!receipt) {
       return NextResponse.json({ error: 'Receipt not found' }, { status: 404 });

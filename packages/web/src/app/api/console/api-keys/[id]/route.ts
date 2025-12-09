@@ -8,9 +8,13 @@ import { revokeApiKey } from '@/domain/console/apiKeys';
 
 export const dynamic = 'force-dynamic';
 
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: RouteParams
 ) {
   try {
     const supabase = await createClient();
@@ -20,7 +24,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await revokeApiKey(user.id, params.id);
+    const { id } = await params;
+    await revokeApiKey(user.id, id);
 
     return NextResponse.json({ success: true });
   } catch (error) {
