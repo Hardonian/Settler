@@ -71,6 +71,7 @@ class BuildSafetyValidator {
 
     this.validatePackageScripts();
     this.validateDependencies();
+    this.checkESLintExtendsDependencies();
     this.validateConfigFiles();
     this.validateBuildScripts();
 
@@ -316,6 +317,66 @@ class BuildSafetyValidator {
       ...packageJson.peerDependencies,
     };
     return !!allDeps[packageName];
+  }
+
+  /**
+   * Check for packages extending root ESLint config that need prettier dependency
+   */
+  private checkESLintExtendsDependencies(): void {
+    const packagesDir = join(this.rootDir, 'packages');
+    if (!existsSync(packagesDir)) return;
+
+    const packages = readdirSync(packagesDir, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+
+    for (const pkg of packages) {
+      const packageJsonPath = join(packagesDir, pkg, 'package.json');
+      const eslintConfigPath = join(packagesDir, pkg, '.eslintrc.js') ||
+                               join(packagesDir, pkg, '.eslintrc.json');
+      
+      if (!existsSync(packageJsonPath) || !existsSync(eslintConfigPath.replace('.json', '.js'))) {
+        continue;
+      }
+
+      try {
+        const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+        const scripts = packageJson.scripts || {};
+        
+        // Only check packages that have lint scripts
+        if (!scripts.lint && !scripts['lint:fix']) {
+          continue;
+        }
+
+        // Check if ESLint config extends root config
+        const eslintConfigContent = readFileSync(eslintConfigPath.replace('.json', '.js'), 'utf-8');
+        const extendsRoot = eslintConfigContent.includes('../../.eslintrc.js') || 
+                           eslintConfigContent.includes('../../.eslintrc.json');
+        
+        if (extendsRoot) {
+          // Root config includes prettier, so this package needs eslint-config-prettier
+          const hasPrettierConfig = this.hasDependency(packageJson, 'eslint-config-prettier');
+          
+          if (!hasPrettierConfig) {
+            // Check root package.json
+            const rootPackageJsonPath = join(this.rootDir, 'package.json');
+            if (existsSync(rootPackageJsonPath)) {
+              const rootPackageJson = JSON.parse(readFileSync(rootPackageJsonPath, 'utf-8'));
+              if (!this.hasDependency(rootPackageJson, 'eslint-config-prettier')) {
+                this.issues.push({
+                  severity: 'error',
+                  package: `@settler/${pkg}`,
+                  message: `Package extends root ESLint config (which includes prettier) but eslint-config-prettier is not installed`,
+                  fix: `Add to devDependencies: "eslint-config-prettier": "^10.1.8"`,
+                });
+              }
+            }
+          }
+        }
+      } catch (error) {
+        // Skip if can't parse
+      }
+    }
   }
 
   /**
