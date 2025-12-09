@@ -64,7 +64,8 @@ This guide will walk you through connecting your ${params.integration} account t
 Contact support if you encounter any issues.`,
     keywords: [`${params.integration}`, "setup", "integration", "API key"],
     relatedArticles: ["general-integration-guide", "troubleshooting-integrations"],
-  }),
+    };
+  },
 
   "reconciliation-job": () => ({
     id: "create-reconciliation-job",

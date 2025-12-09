@@ -19,13 +19,11 @@ interface RouteMetrics {
 
 class RouteMetricsCollector {
   private metrics: Map<string, RouteMetrics> = new Map();
-  private currentRoute?: string;
 
   /**
    * Start tracking a route transition
    */
   startTransition(route: string) {
-    this.currentRoute = route;
     this.metrics.set(route, {
       route,
       transitionStart: performance.now(),
