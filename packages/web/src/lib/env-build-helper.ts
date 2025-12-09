@@ -110,13 +110,3 @@ export function validateBuildEnv(): { valid: boolean; errors: string[]; warnings
   };
 }
 
-/**
- * Get environment variable with build-time safety
- * Use this instead of direct process.env access in code that runs during build
- */
-export function getEnv(name: string, required = false): string {
-  return getEnvSafe(name, {
-    required,
-    buildTimeRequired: BUILD_TIME_REQUIRED.includes(name as any),
-  });
-}
