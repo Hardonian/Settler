@@ -29,10 +29,12 @@ export function TrustBadges() {
   }, []);
 
   const badges = [
-    { name: 'SOC 2 Type II', icon: '🔒' },
-    { name: 'GDPR Compliant', icon: '🛡️' },
-    { name: 'PCI-DSS Ready', icon: '💳' },
-    { name: '99.99% Uptime', icon: '⚡' },
+    { name: 'SOC 2 Type II', icon: '🔒', description: 'Enterprise security certified' },
+    { name: 'GDPR Compliant', icon: '🛡️', description: 'EU data protection compliant' },
+    { name: 'PCI-DSS Ready', icon: '💳', description: 'Payment security standards' },
+    { name: '99.99% Uptime', icon: '⚡', description: 'SLA guaranteed availability' },
+    { name: 'Bank-Level Encryption', icon: '🔐', description: 'AES-256 encryption at rest' },
+    { name: '24/7 Monitoring', icon: '📊', description: 'Real-time system monitoring' },
   ];
 
   const prefersReducedMotion =

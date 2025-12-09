@@ -11,6 +11,8 @@ import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { AnimatedPricingCard } from "@/components/AnimatedPricingCard";
 import { AnimatedFAQ } from "@/components/AnimatedFAQ";
+import { FAQSchema } from "@/components/StructuredData";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
@@ -111,7 +113,15 @@ export default function Pricing() {
 
   return (
     <AnimatedPageWrapper aria-label="Pricing page">
+      <FAQSchema faqs={faqs} />
       <Navigation />
+
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Pricing' }]} />
+        </div>
+      </section>
 
       {/* Hero Section */}
       <AnimatedHero

@@ -12,6 +12,7 @@ import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { AnimatedFeatureCard } from "@/components/AnimatedFeatureCard";
 import { AnimatedStatCard } from "@/components/AnimatedStatCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function Enterprise() {
   const [formData, setFormData] = useState({
@@ -91,6 +92,13 @@ export default function Enterprise() {
   return (
     <AnimatedPageWrapper aria-label="Enterprise solutions page">
       <Navigation />
+
+      {/* Breadcrumbs */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24">
+        <div className="max-w-7xl mx-auto">
+          <Breadcrumbs items={[{ label: 'Enterprise' }]} />
+        </div>
+      </section>
 
       {/* Hero Section */}
       <AnimatedHero
