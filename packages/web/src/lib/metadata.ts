@@ -23,8 +23,8 @@ export function generateMetadata({
 }: PageMetadata): Metadata {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev";
   const fullTitle = title.includes("Settler") ? title : `${title} | Settler`;
-  const canonicalUrl =
-    canonical || `${siteUrl}${typeof window !== "undefined" ? window.location.pathname : ""}`;
+  // canonical should always be provided by the caller for server components
+  const canonicalUrl = canonical || siteUrl;
 
   const defaultKeywords = [
     "reconciliation API",

@@ -1,4 +1,5 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { generateMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generateMetadata({
@@ -19,7 +20,7 @@ export const metadata: Metadata = generateMetadata({
 export default function EnterpriseLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return <>{children}</>;
 }

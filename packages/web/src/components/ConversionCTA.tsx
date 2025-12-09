@@ -109,7 +109,7 @@ export function ConversionCTA({
               asChild
               className="bg-white text-primary-600 hover:bg-primary-50"
             >
-              <Link href={primaryLink} aria-label={primaryAction}>
+              <Link href={primaryLink || '/'} aria-label={primaryAction}>
                 {primaryAction}
               </Link>
             </Button>
