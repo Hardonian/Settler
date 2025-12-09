@@ -9,7 +9,7 @@
 export function isBuildTime(): boolean {
   return (
     process.env.NEXT_PHASE === 'phase-production-build' ||
-    (process.env.NODE_ENV === 'production' && process.env.VERCEL) ||
+    (process.env.NODE_ENV === 'production' && !!process.env.VERCEL) ||
     process.env.CI === 'true' ||
     !!process.env.VERCEL_ENV
   );
