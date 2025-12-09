@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { DiffViewer } from '../components/recon/DiffViewer';
+import { DiffViewer } from '../src/components/recon/DiffViewer';
 
 export const ReconJobViewer: React.FC<{ jobId: string }> = ({ jobId }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'results' | 'drift' | 'audit'>('overview');

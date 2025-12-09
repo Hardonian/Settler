@@ -17,7 +17,7 @@ import { isBuildTime, RUNTIME_ONLY } from './env-build-helper';
 export function getEnv(name: string, required = true): string {
   const value = process.env[name];
   const isBuild = isBuildTime();
-  const isRuntimeOnly = RUNTIME_ONLY.includes(name as any);
+  const isRuntimeOnly = (RUNTIME_ONLY as readonly string[]).includes(name);
   
   // During build, runtime-only variables are optional (they'll be validated at runtime)
   if (required && !value) {

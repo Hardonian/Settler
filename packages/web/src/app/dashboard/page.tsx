@@ -25,7 +25,8 @@ async function DashboardMetrics() {
     try {
       externalMetrics = await getExternalMetrics();
     } catch (err) {
-      console.warn('Failed to fetch external metrics:', err);
+      const logger = (await import('@/lib/logging/logger')).logger;
+      logger.warn('Failed to fetch external metrics', { error: err });
       externalMetrics = {
         github: { stars: 0, forks: 0, watchers: 0, openIssues: 0, lastUpdated: new Date().toISOString() },
         npm: { downloads: 0, version: '0.0.0', lastUpdated: new Date().toISOString() },
@@ -44,7 +45,8 @@ async function DashboardMetrics() {
         kpiData = singleResult.data;
       }
       if (singleResult.error) {
-        console.warn('RPC function error:', result.error);
+        const logger = (await import('@/lib/logging/logger')).logger;
+        logger.warn('RPC function error', { error: result.error });
       }
     } catch (err) {
       console.warn('RPC function not available, using fallback queries:', err);

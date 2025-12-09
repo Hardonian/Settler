@@ -28,7 +28,7 @@ export function ParallaxBackground({
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: offset as any,
+    offset: offset as ScrollOffsetType,
   });
 
   const y = useTransform(

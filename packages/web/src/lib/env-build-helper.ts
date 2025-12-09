@@ -59,7 +59,7 @@ export function getEnvSafe(
 
   const value = process.env[name];
   const isBuild = isBuildTime();
-  const isRuntimeOnly = RUNTIME_ONLY.includes(name as any);
+  const isRuntimeOnly = (RUNTIME_ONLY as readonly string[]).includes(name);
 
   // During build, runtime-only variables are optional
   if (isBuild && isRuntimeOnly && !value) {

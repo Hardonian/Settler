@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { WorkflowBuilder } from '../components/workflows/WorkflowBuilder';
+import { WorkflowBuilder } from '../src/components/workflows/WorkflowBuilder';
 
 interface WorkflowStep {
   id: string;

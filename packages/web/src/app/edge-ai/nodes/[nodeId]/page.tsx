@@ -9,6 +9,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Loader2, ArrowLeft, Server, Activity, Zap, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { logger } from "@/lib/logging/logger";
 
 interface NodeDetail {
   id: string;
@@ -61,7 +62,7 @@ export default function NodeDetailPage() {
       };
       setNode(mockNode);
     } catch (error) {
-      console.error("Failed to fetch node:", error);
+      logger.error("Failed to fetch node", error instanceof Error ? error : new Error(String(error)), { nodeId });
     } finally {
       setIsLoading(false);
     }

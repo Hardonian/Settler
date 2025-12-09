@@ -20,17 +20,12 @@ import {
 } from "@settler/api/lib/email-lifecycle";
 import { safeRpcCall } from "@/types/api";
 
-// Simple logger for web package
-const logInfo = (message: string, meta?: Record<string, unknown>) => {
-  console.log(`[INFO] ${message}`, meta || "");
-};
-
-const logError = (message: string, error?: Error, meta?: Record<string, unknown>) => {
-  console.error(`[ERROR] ${message}`, { error: error?.message, ...meta });
-};
+import { logger } from "@/lib/logging/logger";
+import { getEnv } from '@/lib/env';
 
 // Verify cron secret (if using Vercel Cron)
-const CRON_SECRET = process.env.CRON_SECRET;
+
+const CRON_SECRET = getEnv('CRON_SECRET', false) || '';
 
 export async function GET(request: NextRequest) {
   try {
@@ -100,7 +95,7 @@ export async function GET(request: NextRequest) {
           results.processed++;
           results.emails.push(user.email);
         } catch (error) {
-          logError("Failed to send Day 7 email", error as Error, { user: user.email });
+          logger.error("Failed to send Day 7 email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
           results.errors++;
         }
       }
@@ -136,7 +131,7 @@ export async function GET(request: NextRequest) {
 
           await sendTrialCaseStudyEmail(lifecycleUser, trialData, {
             companyName: "Example Company",
-            caseStudyUrl: `${process.env.APP_URL || "https://app.settler.dev"}/case-studies/example`,
+            caseStudyUrl: `${getEnv('APP_URL', false) || "https://app.settler.dev"}/case-studies/example`,
           });
 
           await safeRpcCall<{ p_user_id: string; p_email_type: string }, unknown>(
@@ -148,7 +143,7 @@ export async function GET(request: NextRequest) {
           results.processed++;
           results.emails.push(user.email);
         } catch (error) {
-          logError("Failed to send Day 14 email", error as Error, { user: user.email });
+          logger.error("Failed to send Day 14 email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
           results.errors++;
         }
       }
@@ -193,7 +188,7 @@ export async function GET(request: NextRequest) {
           results.processed++;
           results.emails.push(user.email);
         } catch (error) {
-          logError("Failed to send Day 21 email", error as Error, { user: user.email });
+          logger.error("Failed to send Day 21 email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
           results.errors++;
         }
       }
@@ -241,7 +236,7 @@ export async function GET(request: NextRequest) {
             results.processed++;
             results.emails.push(user.email);
           } catch (error) {
-            logError(`Failed to send Day ${day} email`, error as Error, { user: user.email });
+            logger.error(`Failed to send Day ${day} email`, error instanceof Error ? error : new Error(String(error)), { user: user.email });
             results.errors++;
           }
         }
@@ -282,13 +277,13 @@ export async function GET(request: NextRequest) {
           results.processed++;
           results.emails.push(user.email);
         } catch (error) {
-          logError("Failed to send trial ended email", error as Error, { user: user.email });
+          logger.error("Failed to send trial ended email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
           results.errors++;
         }
       }
     }
 
-    logInfo("Email lifecycle cron job completed", {
+    logger.info("Email lifecycle cron job completed", {
       processed: results.processed,
       errors: results.errors,
       emailCount: results.emails.length,
@@ -301,7 +296,7 @@ export async function GET(request: NextRequest) {
       emails: results.emails,
     });
   } catch (error) {
-    logError("Email lifecycle cron job failed", error as Error);
+    logger.error("Email lifecycle cron job failed", error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Internal server error", message: (error as Error).message },
       { status: 500 }
