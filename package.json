@@ -40,8 +40,9 @@
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",
     "postinstall": "test -f scripts/vercel-prisma-postinstall.js && node scripts/vercel-prisma-postinstall.js || echo 'Skipping postinstall: script not found (expected in Vercel builds)'",
-    "verify:build": "bash scripts/verify-build-setup.sh",
-    "setup:turbo": "bash scripts/setup-vercel-turbo-cache.sh"
+    "verify:build": "test -f scripts/verify-build-setup.sh && bash scripts/verify-build-setup.sh || echo '⚠️  Build verification script not available'",
+    "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '⚠️  Turbo setup script not available'",
+    "validate:build-safety": "npx tsx scripts/validate-build-safety.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

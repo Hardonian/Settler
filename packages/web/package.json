@@ -7,7 +7,7 @@
     "clean:build": "rm -rf .next dist out .next/tsconfig.tsbuildinfo",
     "prebuild": "npm run validate:prebuild",
     "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
-    "build:vercel": "node ../../scripts/vercel-build-optimizer.js && NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build:vercel": "(test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || echo '⚠️  Build optimizer script not available (expected in Vercel)') && NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",

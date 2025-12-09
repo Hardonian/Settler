@@ -77,6 +77,8 @@ jobs:
       - run: npm ci
       - name: Validate ESLint config dependencies
         run: npm run validate:eslint-config
+      - name: Validate build safety
+        run: npm run validate:build-safety
       - run: npm run lint
       - run: npm run lint:fix -- --dry-run || true
       - run: npm run format:check

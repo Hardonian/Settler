@@ -24,6 +24,13 @@ npm run validate:eslint-config || {
   exit 1
 }
 
+# Validate build safety
+echo "🔍 Validating build safety..."
+npm run validate:build-safety || {
+  echo "❌ Build safety issues found. Please fix them before committing."
+  exit 1
+}
+
 # Run typecheck before lint-staged to catch TypeScript errors early
 echo "🔍 Running TypeScript typecheck..."
 npm run typecheck || {
