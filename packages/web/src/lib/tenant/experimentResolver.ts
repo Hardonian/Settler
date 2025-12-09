@@ -122,7 +122,8 @@ export async function resolveExperimentVariant(
   }
   
   const sessionId = await getSessionId();
-  const variantKey = selectVariant(experiment, sessionId);
+  const trafficSplit = (experiment.trafficSplit as unknown) as Record<string, number>;
+  const variantKey = selectVariant({ ...experiment, trafficSplit }, sessionId);
   const variant = experiment.variants.find((v: { key: string }) => v.key === variantKey);
   
   return {

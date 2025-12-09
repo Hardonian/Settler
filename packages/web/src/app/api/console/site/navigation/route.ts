@@ -45,8 +45,8 @@ export async function GET() {
     
     return NextResponse.json({
       navigation: {
-        navItems: navigation.navItems as TenantNavigationItem[],
-        footerItems: navigation.footerItems as TenantNavigationItem[],
+        navItems: (navigation.navItems as unknown) as TenantNavigationItem[],
+        footerItems: (navigation.footerItems as unknown) as TenantNavigationItem[],
       },
     });
   } catch (error) {
@@ -152,8 +152,8 @@ export async function PUT(request: NextRequest) {
     
     return NextResponse.json({
       navigation: {
-        navItems: navigation.navItems as TenantNavigationItem[],
-        footerItems: navigation.footerItems as TenantNavigationItem[],
+        navItems: (navigation.navItems as unknown) as TenantNavigationItem[],
+        footerItems: (navigation.footerItems as unknown) as TenantNavigationItem[],
       },
     });
   } catch (error) {

@@ -128,7 +128,6 @@ export async function getUserRole(
   // For now, check if user has a special flag in billing account metadata
   const billingAccount = await prisma.billingAccount.findFirst({
     where: { userId },
-    select: { metadata: true },
   });
   
   const metadata = billingAccount?.metadata as Record<string, unknown> | undefined;

@@ -79,7 +79,10 @@ export async function getTenantContext(): Promise<TenantContext> {
 
   // Convert branding to theme
   const theme = tenant.branding
-    ? brandingToTheme(tenant.branding)
+    ? brandingToTheme({
+        ...tenant.branding,
+        borderRadiusScale: tenant.branding.borderRadiusScale ? Number(tenant.branding.borderRadiusScale) : null,
+      })
     : null;
 
   return {
