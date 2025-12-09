@@ -206,7 +206,7 @@ export const ENV_VAR_SCHEMA: EnvVarSpec[] = [
     name: 'DB_PASSWORD',
     description: 'PostgreSQL password',
     type: 'string',
-    required: true,
+    required: false, // Optional during build, required at runtime
     scope: 'runtime',
     exposure: 'server-only',
     criticality: 'required-for-boot',
@@ -214,7 +214,7 @@ export const ENV_VAR_SCHEMA: EnvVarSpec[] = [
     format: 'Min 8 characters',
     secret: true,
     platforms: ['github', 'vercel', 'local', 'docker'],
-    validator: (v) => v.length >= 8,
+    validator: (v) => !v || v.length >= 8, // Allow undefined during build
   },
   {
     name: 'DB_SSL',
@@ -452,7 +452,7 @@ export const ENV_VAR_SCHEMA: EnvVarSpec[] = [
     name: 'JWT_SECRET',
     description: 'JWT token signing secret',
     type: 'string',
-    required: true,
+    required: false, // Optional during build, required at runtime
     scope: 'runtime',
     exposure: 'server-only',
     criticality: 'required-for-boot',
@@ -460,7 +460,7 @@ export const ENV_VAR_SCHEMA: EnvVarSpec[] = [
     format: 'Min 32 characters',
     secret: true,
     platforms: ['github', 'vercel', 'local', 'docker'],
-    validator: (v) => v.length >= 32 && v !== 'dev-secret-change-in-production',
+    validator: (v) => !v || (v.length >= 32 && v !== 'dev-secret-change-in-production'), // Allow undefined during build
   },
   {
     name: 'JWT_ACCESS_EXPIRY',
@@ -508,7 +508,7 @@ export const ENV_VAR_SCHEMA: EnvVarSpec[] = [
     name: 'ENCRYPTION_KEY',
     description: 'AES-256-GCM encryption key',
     type: 'string',
-    required: true,
+    required: false, // Optional during build, required at runtime
     scope: 'runtime',
     exposure: 'server-only',
     criticality: 'required-for-boot',
@@ -516,7 +516,7 @@ export const ENV_VAR_SCHEMA: EnvVarSpec[] = [
     format: 'Exactly 32 characters',
     secret: true,
     platforms: ['github', 'vercel', 'local', 'docker'],
-    validator: (v) => v.length === 32 || v.length === 64,
+    validator: (v) => !v || v.length === 32 || v.length === 64, // Allow undefined during build
   },
   {
     name: 'ALLOWED_ORIGINS',

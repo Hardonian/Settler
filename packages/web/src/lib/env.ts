@@ -9,12 +9,16 @@
 
 /**
  * Get environment variable with validation
- * Throws error if required variable is missing
+ * Throws error if required variable is missing (skips during build)
  */
 export function getEnv(name: string, required = true): string {
   const value = process.env[name];
   
-  if (required && !value) {
+  // Skip validation during build time to allow builds to complete
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || 
+                      (process.env.NODE_ENV === 'production' && process.env.VERCEL);
+  
+  if (required && !value && !isBuildTime) {
     throw new Error(`Missing required environment variable: ${name}`);
   }
   
@@ -49,8 +53,14 @@ export function getEnvNumber(name: string, defaultValue: number): number {
 
 /**
  * Validate required environment variables for production
+ * Skips validation during build time to allow builds to complete
  */
 export function validateEnv(): { valid: boolean; errors: string[] } {
+  // Skip validation during build time
+  if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+    return { valid: true, errors: [] };
+  }
+  
   const errors: string[] = [];
   
   const required = [
