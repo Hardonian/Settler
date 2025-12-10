@@ -2,6 +2,19 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'License',
+  description: 'Settler License - MIT License information for the Settler reconciliation API.',
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+// Revalidate every hour for legal pages (they change infrequently)
+export const revalidate = 3600;
 
 export default function LicensePage() {
   return (

@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check entitlement
-    const entitlement = await checkRequestEntitlement(auth, 'convert');
+    // Check entitlement - convert service uses reconcile entitlement
+    const entitlement = await checkRequestEntitlement(auth, 'reconcile');
     if (!entitlement.allowed && entitlement.error) {
       return createEntitlementErrorResponse(entitlement.error);
     }

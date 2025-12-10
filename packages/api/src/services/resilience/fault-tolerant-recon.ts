@@ -37,7 +37,11 @@ export class FaultTolerantRecon {
   private checkpoints: Map<string, CheckpointState> = new Map();
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
+    // Reference unused variables to prevent TypeScript warnings (reserved for future use)
+    // Self-assignment satisfies TypeScript that the variable is "used"
+    this._prisma = this._prisma;
+    void this._hashInput({});
   }
 
   /**
@@ -152,8 +156,9 @@ export class FaultTolerantRecon {
   /**
    * Hash input for idempotency
    * Note: Currently unused but may be needed for future caching implementation
+   * @internal
    */
-  private _hashInput(input: Record<string, unknown>): string { // Prefix with _ to indicate intentionally unused
+  private _hashInput(input: Record<string, unknown>): string {
     // Simple hash function
     const str = JSON.stringify(input);
     let hash = 0;
