@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function GET(_request: NextRequest): NextResponse {
+// Cache status for 30 seconds to reduce load while keeping it fresh
+export const revalidate = 30;
+export const dynamic = 'force-dynamic';
+
+export async function GET(_request: NextRequest): Promise<NextResponse> {
   try {
     // In production, fetch from monitoring system (e.g., UptimeRobot, Pingdom)
     // For now, return mock data
@@ -32,9 +36,20 @@ export function GET(_request: NextRequest): NextResponse {
     // In production, this would check actual system statuses
     const overallStatus = "operational";
 
-    return NextResponse.json({ systems, overallStatus });
+    const response = NextResponse.json({ systems, overallStatus });
+    
+    // Add caching headers for better performance
+    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
+    
+    return response;
   } catch (error) {
     console.error("Error in status GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const errorResponse = NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+    // Don't cache errors
+    errorResponse.headers.set('Cache-Control', 'no-store');
+    return errorResponse;
   }
 }

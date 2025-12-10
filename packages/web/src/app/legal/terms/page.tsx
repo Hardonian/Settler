@@ -2,6 +2,19 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description: 'Settler Terms of Service - Read our terms and conditions for using our reconciliation API service.',
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+// Revalidate every hour for legal pages (they change infrequently)
+export const revalidate = 3600;
 
 export default function TermsPage() {
   return (

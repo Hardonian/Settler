@@ -107,15 +107,36 @@ export const viewport: Viewport = {
 };
 
 // Force dynamic rendering since getTenantContext uses headers()
+// This ensures tenant context is resolved at request time
 export const dynamic = 'force-dynamic';
+// Revalidate every 60 seconds to balance freshness with performance
+export const revalidate = 60;
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Get tenant context for theme
-  const tenantContext = await getTenantContext();
+  // Get tenant context for theme - gracefully handles build-time and errors
+  let tenantContext;
+  try {
+    tenantContext = await getTenantContext();
+  } catch (error) {
+    // Fallback to default context if tenant resolution fails
+    // This ensures the app still renders even if tenant service is unavailable
+    tenantContext = {
+      tenantId: '',
+      tenantSlug: 'default',
+      theme: null,
+      branding: null,
+      navigation: null,
+    };
+    
+    // Only log errors in development to avoid build noise
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Failed to get tenant context, using defaults:', error);
+    }
+  }
   
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
@@ -145,8 +166,8 @@ export default async function RootLayout({
         <ErrorBoundary componentName="RootLayout">
           <TenantThemeProvider
             theme={tenantContext.theme}
-            tenantId={tenantContext.tenantId}
-            tenantSlug={tenantContext.tenantSlug}
+            tenantId={tenantContext.tenantId || null}
+            tenantSlug={tenantContext.tenantSlug || null}
           >
             <QueryProvider>
               {/* Skip to main content link for accessibility */}
