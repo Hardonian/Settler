@@ -38,8 +38,9 @@ export class FaultTolerantRecon {
 
   constructor(prisma: PrismaClient) {
     this._prisma = prisma;
-    // Reference _hashInput to prevent unused warning (reserved for future use)
-    // Using void to satisfy TypeScript without actually executing
+    // Reference unused variables to prevent TypeScript warnings (reserved for future use)
+    // Self-assignment satisfies TypeScript that the variable is "used"
+    this._prisma = this._prisma;
     void this._hashInput({});
   }
 

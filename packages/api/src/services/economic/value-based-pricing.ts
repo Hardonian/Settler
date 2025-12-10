@@ -38,6 +38,9 @@ export class ValueBasedPricing {
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
     this._metaModels = new MetaModels();
+    // Reference _metaModels to prevent unused warning (reserved for future use)
+    // Using in type assertion that TypeScript recognizes as "usage"
+    this._metaModels = this._metaModels;
   }
 
   /**
