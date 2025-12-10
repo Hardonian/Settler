@@ -46,7 +46,7 @@ export class ContractManager {
         tenantId,
         contractName,
         version,
-        schemaDefinition: schema as unknown as Record<string, unknown>,
+        schemaDefinition: schema as Prisma.InputJsonValue,
         isActive: true,
       },
     });

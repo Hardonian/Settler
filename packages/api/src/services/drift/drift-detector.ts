@@ -7,7 +7,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logInfo, logError } from '../../utils/logger';
 import { MultiAgentFallback } from '../ai-mesh/multi-agent-fallback';
 import { AIRouter } from '../ai-mesh/ai-router';
@@ -51,7 +51,7 @@ export class DriftDetector {
       const contract = await this.prisma.contractVersion.findUnique({
         where: { id: contractVersionId },
       });
-      contractSchema = contract?.schemaDefinition;
+      contractSchema = contract?.schemaDefinition as Record<string, unknown> | null | undefined;
     }
 
     // Analyze source data
@@ -103,7 +103,7 @@ export class DriftDetector {
           },
           data: {
             autoRepaired: true,
-            repairAction: repair.result,
+            repairAction: repair.result as Prisma.InputJsonValue,
           },
         });
 
@@ -216,13 +216,13 @@ export class DriftDetector {
         driftType: 'schema_drift',
         severity: drift.severity,
         fieldPath: drift.fieldPath,
-        expectedValue: drift.expectedValue,
-        actualValue: drift.actualValue,
+        expectedValue: drift.expectedValue as Prisma.InputJsonValue,
+        actualValue: drift.actualValue as Prisma.InputJsonValue,
         driftMetrics: {
           confidence: drift.confidence,
           expectedType: drift.expectedType,
           actualType: drift.actualType,
-        },
+        } as Prisma.InputJsonValue,
       },
     });
   }
