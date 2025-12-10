@@ -18,19 +18,29 @@ export default async function ConsoleRootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Check authentication
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  try {
+    // Check authentication
+    const supabase = await createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect('/signup');
+    // If Supabase is not configured or auth fails, redirect to signup
+    if (error || !user) {
+      redirect('/signup?error=auth_required');
+    }
+
+    return (
+      <>
+        <Navigation />
+        <ConsoleLayout>{children}</ConsoleLayout>
+        <Footer />
+      </>
+    );
+  } catch (error) {
+    // Log error for debugging (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Console auth error:', error);
+    }
+    // Redirect to signup with error parameter
+    redirect('/signup?error=auth_required');
   }
-
-  return (
-    <>
-      <Navigation />
-      <ConsoleLayout>{children}</ConsoleLayout>
-      <Footer />
-    </>
-  );
 }

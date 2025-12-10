@@ -45,6 +45,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function TenantPageRoute({ params }: PageProps) {
   const { slug } = await params;
+  
+  // Exclude known static routes - these should be handled by their specific route handlers
+  // This prevents the [slug] route from catching routes like /docs, /pricing, etc.
+  const STATIC_ROUTES = [
+    'docs', 'pricing', 'playground', 'signup', 'enterprise', 
+    'community', 'support', 'cookbooks', 'receipts', 'feature-flags', 
+    'console', 'dashboard', 'legal', 'mobile', 'status', 'founder',
+    'how-it-works', 'comparison', 'edge-ai', 'react-settler-demo',
+    'realtime-dashboard'
+  ];
+  
+  if (STATIC_ROUTES.includes(slug)) {
+    notFound();
+  }
+  
   const tenantContext = await getTenantContext();
   
   if (!tenantContext.tenantId) {
