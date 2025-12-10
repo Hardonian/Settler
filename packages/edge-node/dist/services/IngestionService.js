@@ -15,7 +15,7 @@ class IngestionService {
         this._db = _db;
         this.piiRedaction = piiRedaction;
     }
-    async process(data, schemaHints) {
+    process(data, schemaHints) {
         logger_1.logger.info("Processing ingestion", { recordCount: data.length });
         // Infer schema
         const schema = this.inferSchema(data, schemaHints);

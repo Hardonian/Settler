@@ -9,7 +9,9 @@ const chalk_1 = __importDefault(require("chalk"));
 const sdk_1 = __importDefault(require("@settler/sdk"));
 const adaptersCommand = new commander_1.Command("adapters");
 exports.adaptersCommand = adaptersCommand;
-adaptersCommand.description("List available adapters").alias("adapter");
+adaptersCommand
+    .description("List available adapters")
+    .alias("adapter");
 adaptersCommand
     .command("list")
     .description("List all available adapters")

@@ -20,7 +20,7 @@ export declare class IngestionService {
     private _db;
     private piiRedaction;
     constructor(_db: Database.Database, piiRedaction: PIIRedactionService);
-    process(data: unknown[], schemaHints?: Record<string, string>): Promise<IngestionResult>;
+    process(data: unknown[], schemaHints?: Record<string, string>): IngestionResult;
     private inferSchema;
     private inferType;
     private detectPII;

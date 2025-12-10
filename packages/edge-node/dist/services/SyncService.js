@@ -109,7 +109,7 @@ class SyncService {
             throw error;
         }
     }
-    async queueSync(entityType, payload) {
+    queueSync(entityType, payload) {
         const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const stmt = this.db.prepare(`
       INSERT INTO sync_queue (id, entity_type, entity_id, action, payload, created_at)

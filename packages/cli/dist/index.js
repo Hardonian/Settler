@@ -8,7 +8,10 @@ const webhooks_1 = require("./commands/webhooks");
 const adapters_1 = require("./commands/adapters");
 const debug_1 = require("./commands/debug");
 const program = new commander_1.Command();
-program.name("settler").description("CLI tool for Settler API").version("1.0.0");
+program
+    .name("settler")
+    .description("CLI tool for Settler API")
+    .version("1.0.0");
 program
     .option("-k, --api-key <key>", "API key")
     .option("-u, --base-url <url>", "Base URL", "https://api.settler.io")

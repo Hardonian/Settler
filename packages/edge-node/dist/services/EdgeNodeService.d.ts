@@ -41,17 +41,17 @@ export declare class EdgeNodeService {
     constructor(config: EdgeNodeConfig);
     private initializeDatabase;
     enroll(request: EnrollmentRequest): Promise<EnrollmentResult>;
-    start(): Promise<void>;
+    start(): void;
     stop(): Promise<void>;
     private startHeartbeat;
     private sendHeartbeat;
     private startSync;
-    processIngestion(data: unknown[], schemaHints?: Record<string, string>): Promise<string>;
-    processMatching(sourceData: unknown[], targetData: unknown[]): Promise<string[]>;
-    detectAnomalies(data: unknown[]): Promise<string[]>;
-    getStatus(): Promise<NodeStatus>;
+    processIngestion(data: unknown[], schemaHints?: Record<string, string>): string;
+    processMatching(sourceData: unknown[], targetData: unknown[]): string[];
+    detectAnomalies(data: unknown[]): string[];
+    getStatus(): NodeStatus;
     private getStorageSize;
     private getDeviceInfo;
-    saveNodeKey(nodeKey: string): Promise<void>;
+    saveNodeKey(nodeKey: string): void;
 }
 //# sourceMappingURL=EdgeNodeService.d.ts.map

@@ -14,7 +14,7 @@ export declare class AnomalyDetectionService {
     private db;
     private _modelManager;
     constructor(db: Database.Database, _modelManager: ModelManager);
-    detect(data: unknown[]): Promise<Anomaly[]>;
+    detect(data: unknown[]): Anomaly[];
     private checkDuplicate;
     private checkAmountAnomaly;
     private checkMissingFields;

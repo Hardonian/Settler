@@ -1,1 +1,1 @@
-{"version":3,"file":"jobs.d.ts","sourceRoot":"","sources":["../../src/commands/jobs.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,WAAW,CAAC;AAIpC,QAAA,MAAM,WAAW,SAAsB,CAAC;AAqTxC,OAAO,EAAE,WAAW,EAAE,CAAC"}
+{"version":3,"file":"jobs.d.ts","sourceRoot":"","sources":["../../src/commands/jobs.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,WAAW,CAAC;AAIpC,QAAA,MAAM,WAAW,SAAsB,CAAC;AA+RxC,OAAO,EAAE,WAAW,EAAE,CAAC"}
