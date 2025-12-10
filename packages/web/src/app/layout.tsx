@@ -106,6 +106,9 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+// Force dynamic rendering since getTenantContext uses headers()
+export const dynamic = 'force-dynamic';
+
 export default async function RootLayout({
   children,
 }: {
