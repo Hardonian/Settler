@@ -46,7 +46,7 @@ export class ContractManager {
         tenantId,
         contractName,
         version,
-        schemaDefinition: schema as Prisma.InputJsonValue,
+        schemaDefinition: schema as unknown as Prisma.InputJsonValue,
         isActive: true,
       },
     });
@@ -88,8 +88,8 @@ export class ContractManager {
       throw new Error('Contract versions not found');
     }
 
-    const oldSchema = oldContract.schemaDefinition as ContractSchema;
-    const newSchema = newContract.schemaDefinition as ContractSchema;
+    const oldSchema = oldContract.schemaDefinition as unknown as ContractSchema;
+    const newSchema = newContract.schemaDefinition as unknown as ContractSchema;
 
     const breakingChanges: BreakingChange[] = [];
 

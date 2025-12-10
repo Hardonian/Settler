@@ -95,15 +95,11 @@ export class WebhookService {
         data: {
           webhookId: delivery.webhookId,
           url: delivery.url,
-          payload: delivery.event as Prisma.InputJsonValue,
+          payload: delivery.event as unknown as Prisma.InputJsonValue,
           status: response.ok ? 'delivered' : 'failed',
           statusCode: response.status,
           responseBody,
           attempts: delivery.attempts || 1,
-        },
-      });
-          attempts: delivery.attempts || 1,
-          deliveredAt: response.ok ? new Date() : null,
         },
       });
 
@@ -128,7 +124,7 @@ export class WebhookService {
         data: {
           webhookId: delivery.webhookId,
           url: delivery.url,
-          payload: delivery.event as Prisma.InputJsonValue,
+          payload: delivery.event as unknown as Prisma.InputJsonValue,
           status: 'failed',
           statusCode: null,
           responseBody: error instanceof Error ? error.message : String(error),
@@ -304,10 +300,6 @@ export class WebhookService {
       data: {
         status: 'deleted',
         deletedAt: new Date(),
-      },
-    });
-      data: {
-        status: 'inactive',
       },
     });
   }

@@ -7,7 +7,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
 
 export interface TemplateImprovement {
@@ -123,8 +123,11 @@ export class TemplateImprover {
       });
 
       const durations = results
-        .filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt)
-        .map((r: { completedAt: Date; startedAt: Date }) => r.completedAt.getTime() - r.startedAt.getTime());
+        .filter((r) => r.completedAt && r.startedAt)
+        .map((r) => {
+          if (!r.completedAt || !r.startedAt) return 0;
+          return r.completedAt.getTime() - r.startedAt.getTime();
+        });
       
       const avgDuration = durations.length > 0
         ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
@@ -241,16 +244,16 @@ export class TemplateImprover {
             tenantId: template.tenantId,
             name: `${template.name} (v${improvement.proposedVersion})`,
             description: template.description,
-            sourceSchema: template.sourceSchema,
-            targetSchema: template.targetSchema,
-            fieldMappings: template.fieldMappings,
-            transformationRules: template.transformationRules,
-            validationRules: template.validationRules,
+            sourceSchema: template.sourceSchema as Prisma.InputJsonValue,
+            targetSchema: template.targetSchema as Prisma.InputJsonValue,
+            fieldMappings: template.fieldMappings as Prisma.InputJsonValue,
+            transformationRules: template.transformationRules as Prisma.InputJsonValue,
+            validationRules: template.validationRules as Prisma.InputJsonValue,
             isPublic: template.isPublic,
             isSystem: template.isSystem,
             usageCount: 0,
             version: versionNumber,
-            metadata: template.metadata,
+            metadata: template.metadata as Prisma.InputJsonValue,
           },
         });
       }

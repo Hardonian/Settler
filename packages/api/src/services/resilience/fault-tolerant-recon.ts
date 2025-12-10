@@ -32,7 +32,8 @@ export interface RollbackPlan {
 }
 
 export class FaultTolerantRecon {
-  private prisma: PrismaClient;
+  // Note: prisma not currently used but may be needed for future persistence
+  private _prisma: PrismaClient; // Prefix with _ to indicate intentionally unused
   private checkpoints: Map<string, CheckpointState> = new Map();
 
   constructor(prisma: PrismaClient) {
@@ -70,10 +71,6 @@ export class FaultTolerantRecon {
     // Note: Cannot store transform results in ReconResult as it doesn't have the required fields
     // This would need a separate transform cache table
     // For now, we'll just return the result without storing
-        completedAt: new Date(),
-      },
-    });
-
     return result;
   }
 
@@ -154,8 +151,9 @@ export class FaultTolerantRecon {
 
   /**
    * Hash input for idempotency
+   * Note: Currently unused but may be needed for future caching implementation
    */
-  private hashInput(input: Record<string, unknown>): string {
+  private _hashInput(input: Record<string, unknown>): string { // Prefix with _ to indicate intentionally unused
     // Simple hash function
     const str = JSON.stringify(input);
     let hash = 0;

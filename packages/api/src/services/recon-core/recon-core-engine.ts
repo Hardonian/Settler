@@ -504,9 +504,9 @@ export class ReconCoreEngine {
           action: params.action,
           entityType: params.entityType,
           entityId: params.entityId,
-          beforeState: params.beforeState as Prisma.InputJsonValue | null,
-          afterState: params.afterState as Prisma.InputJsonValue | null,
-          changes: params.changes as Prisma.InputJsonValue | null,
+          beforeState: params.beforeState ? (params.beforeState as unknown as Prisma.InputJsonValue) : null,
+          afterState: params.afterState ? (params.afterState as unknown as Prisma.InputJsonValue) : null,
+          changes: params.changes ? (params.changes as unknown as Prisma.InputJsonValue) : null,
           metadata: (params.metadata || {}) as Prisma.InputJsonValue,
         },
       });

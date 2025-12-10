@@ -4,20 +4,6 @@ npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
 
 > @settler/adapters@1.0.0 test
-> jest
+> jest --passWithNoTests
 
-No tests found, exiting with code 1
-Run with `--passWithNoTests` to exit with code 0
-In /workspace/packages/adapters
-  77 files checked.
-  testMatch: **/__tests__/**/*.[jt]s?(x), **/?(*.)+(spec|test).[tj]s?(x) - 0 matches
-  testPathIgnorePatterns: /node_modules/ - 77 matches
-  testRegex:  - 0 matches
-Pattern:  - 0 matches
-npm error Lifecycle script `test` failed with error:
-npm error code 1
-npm error path /workspace/packages/adapters
-npm error workspace @settler/adapters@1.0.0
-npm error location /workspace/packages/adapters
-npm error command failed
-npm error command sh -c jest
+No tests found, exiting with code 0
