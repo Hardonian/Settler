@@ -1,7 +1,8 @@
 -- Migration: webhook_models_update
--- Created: 2025-12-10
+-- Created: 2025-01-20 00:00:09 UTC (updated 2025-12-10)
 -- Description: Update webhook tables to match Prisma schema (webhooks and webhook_deliveries)
--- Part of: Pre-deployment readiness - webhook service implementation
+-- Part of: Pre-deployment readiness - Webhook service implementation
+-- Note: Webhook tables already exist in initial_schema.sql, this migration adds missing columns and RLS policies
 
 BEGIN;
 
