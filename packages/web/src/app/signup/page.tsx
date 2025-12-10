@@ -12,9 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, AlertCircle } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 function SignUpForm() {
   async function handleSubmit(formData: FormData) {
@@ -93,7 +94,23 @@ function SignUpForm() {
   );
 }
 
-export default function SignUpPage() {
+interface SignUpPageProps {
+  searchParams: Promise<{ error?: string }>;
+}
+
+export default async function SignUpPage({ searchParams }: SignUpPageProps) {
+  const params = await searchParams;
+  const error = params.error;
+
+  const errorMessages: Record<string, { title: string; description: string }> = {
+    auth_required: {
+      title: 'Authentication Required',
+      description: 'Please sign up or sign in to access the console.',
+    },
+  };
+
+  const errorInfo = error ? errorMessages[error] : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
       <Navigation />
@@ -108,6 +125,18 @@ export default function SignUpPage() {
               Create your account and start automating reconciliation in minutes. No credit card required.
             </p>
           </div>
+
+          {errorInfo && (
+            <Alert className="mb-6 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
+              <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+              <AlertTitle className="text-yellow-900 dark:text-yellow-300">
+                {errorInfo.title}
+              </AlertTitle>
+              <AlertDescription className="text-yellow-800 dark:text-yellow-400">
+                {errorInfo.description}
+              </AlertDescription>
+            </Alert>
+          )}
 
           <SignUpForm />
 
