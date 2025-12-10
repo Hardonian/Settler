@@ -33,10 +33,19 @@ function extractSubdomain(host: string): string | null {
   return null;
 }
 
+type TenantSelect = {
+  id: string;
+  slug: string;
+  name: string;
+  primaryDomain: string | null;
+  customDomain: string | null;
+  isActive: boolean;
+};
+
 /**
  * Find tenant by domain (primary or custom)
  */
-async function findTenantByDomain(host: string): Promise<typeof tenant | null> {
+async function findTenantByDomain(host: string): Promise<TenantSelect | null> {
   try {
     const tenant = await prisma.tenant.findFirst({
       where: {
@@ -65,7 +74,7 @@ async function findTenantByDomain(host: string): Promise<typeof tenant | null> {
 /**
  * Find tenant by slug
  */
-async function findTenantBySlug(slug: string): Promise<typeof tenant | null> {
+async function findTenantBySlug(slug: string): Promise<TenantSelect | null> {
   try {
     const tenant = await prisma.tenant.findUnique({
       where: { slug },
@@ -88,7 +97,7 @@ async function findTenantBySlug(slug: string): Promise<typeof tenant | null> {
 /**
  * Get default tenant (slug: "default")
  */
-async function getDefaultTenant(): Promise<typeof tenant | null> {
+async function getDefaultTenant(): Promise<TenantSelect | null> {
   try {
     const tenant = await prisma.tenant.findUnique({
       where: { slug: 'default' },
