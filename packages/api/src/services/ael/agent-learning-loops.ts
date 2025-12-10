@@ -81,7 +81,7 @@ export class AgentLearningLoops {
       
       const results = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map(j => j.id) },
+          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
           status: 'failed',
         },
         take: 10,
@@ -208,7 +208,7 @@ export class AgentLearningLoops {
         select: { id: true, validationRules: true },
       });
       
-      const usage = allJobs.filter(job => {
+      const usage = allJobs.filter((job: { id: string; validationRules: unknown }) => {
         const rules = job.validationRules as unknown;
         if (Array.isArray(rules)) {
           return rules.some((r: unknown) => 

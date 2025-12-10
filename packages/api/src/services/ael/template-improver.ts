@@ -123,8 +123,8 @@ export class TemplateImprover {
       });
 
       const durations = results
-        .filter((r) => r.completedAt && r.startedAt)
-        .map((r) => {
+        .filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt)
+        .map((r: { completedAt: Date | null; startedAt: Date | null }) => {
           if (!r.completedAt || !r.startedAt) return 0;
           return r.completedAt.getTime() - r.startedAt.getTime();
         });
@@ -172,7 +172,7 @@ export class TemplateImprover {
         select: { id: true, validationRules: true },
       });
       
-      const jobs = allJobs.filter(job => {
+      const jobs = allJobs.filter((job: { id: string; validationRules: unknown }) => {
         const rules = job.validationRules as unknown;
         if (Array.isArray(rules)) {
           return rules.some((r: unknown) => 

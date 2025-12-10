@@ -33,11 +33,11 @@ export interface PricingRecommendation {
 
 export class ValueBasedPricing {
   private prisma: PrismaClient;
-  private metaModels: MetaModels;
+  private _metaModels: MetaModels; // Prefix with _ to indicate may be used in future
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
-    this.metaModels = new MetaModels();
+    this._metaModels = new MetaModels();
   }
 
   /**
