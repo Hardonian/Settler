@@ -12,7 +12,7 @@ export declare class SyncService {
     sync(): Promise<void>;
     private syncCandidates;
     private syncAnomalies;
-    queueSync(entityType: string, payload: Record<string, unknown>): Promise<void>;
+    queueSync(entityType: string, payload: Record<string, unknown>): void;
     private processSyncQueue;
     flush(): Promise<void>;
 }

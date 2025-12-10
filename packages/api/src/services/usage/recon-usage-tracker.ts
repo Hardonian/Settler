@@ -7,7 +7,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logError } from '../../utils/logger';
 
 export interface UsageEvent {
@@ -213,7 +213,7 @@ export class ReconUsageTracker {
           eventType: event.eventType,
           quantity: event.quantity,
           unit: event.unit,
-          metadata: event.metadata || {},
+          metadata: (event.metadata || {}) as Prisma.InputJsonValue,
           timestamp: new Date(),
         },
       });

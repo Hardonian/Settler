@@ -17,7 +17,7 @@ class MatchingService {
         this._db = _db;
         this._modelManager = _modelManager;
     }
-    async findCandidates(sourceData, targetData) {
+    findCandidates(sourceData, targetData) {
         logger_1.logger.info("Finding candidates", {
             sourceCount: sourceData.length,
             targetCount: targetData.length,

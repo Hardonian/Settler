@@ -202,10 +202,13 @@ export class PredictiveOps {
         take: 50,
       });
 
-      const avgDuration = results
+      const durations = results
         .filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt)
-        .map((r: { completedAt: Date; startedAt: Date }) => r.completedAt.getTime() - r.startedAt.getTime())
-        .reduce((a: number, b: number, _i: number, arr: number[]) => a + b / arr.length, 0);
+        .map((r: { completedAt: Date; startedAt: Date }) => r.completedAt.getTime() - r.startedAt.getTime());
+      
+      const avgDuration = durations.length > 0
+        ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
+        : 0;
 
       if (avgDuration > 30000) { // > 30 seconds
         predictions.push({
@@ -245,7 +248,9 @@ export class PredictiveOps {
     // Calculate daily costs
     const dailyCosts = new Map<string, number>();
     for (const event of usageEvents) {
+      if (!event.timestamp) continue;
       const date = event.timestamp.toISOString().split('T')[0];
+      if (!date) continue;
       const cost = Number(event.quantity) * 0.002 / 1000; // $0.002 per 1K tokens
       dailyCosts.set(date, (dailyCosts.get(date) || 0) + cost);
     }

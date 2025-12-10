@@ -9,7 +9,7 @@
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { logInfo } from '../../utils/logger';
-import { AIRouter, AIModel } from '../ai-mesh/ai-router';
+// Removed unused imports: AIRouter, AIModel
 
 export interface UsageOptimization {
   recommendation: string;
@@ -20,11 +20,9 @@ export interface UsageOptimization {
 
 export class UsageOptimizer {
   private prisma: PrismaClient;
-  private router: AIRouter;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
-    this.router = new AIRouter();
   }
 
   /**
@@ -50,18 +48,24 @@ export class UsageOptimizer {
 
     // Analyze AI token usage
     const aiUsage = usageEvents.filter((e: { eventType: string }) => e.eventType === 'ai_tokens');
-    const totalTokens = aiUsage.reduce((sum: number, e: { quantity: unknown }) => sum + Number(e.quantity), 0);
-    const avgCost = aiUsage.length > 0 ? aiUsage.reduce((sum: number, e: { metadata?: Record<string, unknown>; quantity?: unknown }) => {
-      const model = e.metadata?.['model'] as string | undefined;
+    const totalTokens = aiUsage.reduce((sum: number, e: { quantity: unknown }) => {
+      const qty = typeof e.quantity === 'number' ? e.quantity : Number(e.quantity) || 0;
+      return sum + qty;
+    }, 0);
+    
+    let totalCost = 0;
+    for (const e of aiUsage) {
+      const model = (e.metadata as Record<string, unknown> | null | undefined)?.['model'] as string | undefined;
       if (model && e.quantity !== undefined) {
         // Validate model is a valid AIModel before using
         const validModels: readonly string[] = ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet', 'claude-3-haiku', 'local-llm'];
         if (validModels.includes(model)) {
-          return sum + this.router.estimateCost(model as AIModel, Number(e.quantity));
+          const qty = typeof e.quantity === 'number' ? e.quantity : Number(e.quantity) || 0;
+          totalCost += qty * 0.002 / 1000; // $0.002 per 1K tokens
         }
       }
-      return sum;
-    }, 0) / aiUsage.length : 0;
+    }
+    const avgCost = aiUsage.length > 0 ? totalCost / aiUsage.length : 0;
 
     // Recommend cheaper model if accuracy allows
     if (avgCost > 0.01 && totalTokens > 100000) {

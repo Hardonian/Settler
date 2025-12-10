@@ -23,7 +23,7 @@ program
     .description("Start the edge node service")
     .option("-c, --config <path>", "Path to config file")
     .option("-k, --node-key <key>", "Node authentication key")
-    .action(async (options) => {
+    .action((options) => {
     try {
         logger_1.logger.info("Starting Settler Edge Node...");
         const nodeKey = options.nodeKey || process.env.SETTLER_NODE_KEY;
@@ -36,18 +36,20 @@ program
             cloudApiUrl: config_1.config.cloudApiUrl,
             dataDir: config_1.config.dataDir,
         });
-        await service.start();
+        service.start();
         logger_1.logger.info(chalk_1.default.green("Edge node started successfully"));
         // Graceful shutdown
-        process.on("SIGINT", async () => {
+        process.on("SIGINT", () => {
             logger_1.logger.info("Shutting down edge node...");
-            await service.stop();
-            process.exit(0);
+            void service.stop().then(() => {
+                process.exit(0);
+            });
         });
-        process.on("SIGTERM", async () => {
+        process.on("SIGTERM", () => {
             logger_1.logger.info("Shutting down edge node...");
-            await service.stop();
-            process.exit(0);
+            void service.stop().then(() => {
+                process.exit(0);
+            });
         });
     }
     catch (error) {
@@ -79,7 +81,7 @@ program
         logger_1.logger.info(chalk_1.default.yellow(`Node Key: ${result.nodeKey}`));
         logger_1.logger.info(chalk_1.default.yellow("Save this node key securely - it will not be shown again"));
         // Save node key to config
-        await service.saveNodeKey(result.nodeKey);
+        service.saveNodeKey(result.nodeKey);
     }
     catch (error) {
         logger_1.logger.error("Enrollment failed", error);
@@ -89,14 +91,14 @@ program
 program
     .command("status")
     .description("Show edge node status")
-    .action(async () => {
+    .action(() => {
     try {
         const service = new EdgeNodeService_1.EdgeNodeService({
             nodeKey: process.env.SETTLER_NODE_KEY || "",
             cloudApiUrl: config_1.config.cloudApiUrl,
             dataDir: config_1.config.dataDir,
         });
-        const status = await service.getStatus();
+        const status = service.getStatus();
         console.log(chalk_1.default.bold("Edge Node Status:"));
         console.log(`  Node ID: ${status.nodeId || "Not enrolled"}`);
         console.log(`  Status: ${status.status || "Unknown"}`);

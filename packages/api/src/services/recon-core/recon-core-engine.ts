@@ -12,7 +12,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logError } from '../../utils/logger';
 import { WebhookService } from '../webhooks/webhook-service';
 import { ReconUsageTracker } from '../usage/recon-usage-tracker';
@@ -62,12 +62,12 @@ export class ReconCoreEngine {
           targetConfigEncrypted: input.targetConfigEncrypted,
           mappingTemplateId: input.mappingTemplateId,
           transformRecipeId: input.transformRecipeId,
-          validationRules: input.validationRules || [],
+          validationRules: (input.validationRules || []) as unknown as Prisma.InputJsonValue,
           reconStrategy: input.reconStrategy || 'deterministic',
           scheduleCron: input.scheduleCron,
           scheduleTimezone: input.scheduleTimezone || 'UTC',
           status: 'active',
-          metadata: input.metadata || {},
+          metadata: (input.metadata || {}) as Prisma.InputJsonValue,
         },
       });
 
@@ -140,7 +140,7 @@ export class ReconCoreEngine {
       const _validationResults = await this.validateData(
         transformedSource,
         transformedTarget,
-        (reconJob.validationRules as ValidationRule[]) || [],
+        (reconJob.validationRules as unknown as ValidationRule[]) || [],
         tenantId
       );
       // Reserved for future validation feedback
@@ -187,7 +187,7 @@ export class ReconCoreEngine {
           confidenceMin: results.confidenceMin,
           confidenceMax: results.confidenceMax,
           durationMs: BigInt(durationMs),
-          summary: results.summary,
+          summary: results.summary as Prisma.InputJsonValue,
         },
       });
 
@@ -504,10 +504,10 @@ export class ReconCoreEngine {
           action: params.action,
           entityType: params.entityType,
           entityId: params.entityId,
-          beforeState: params.beforeState,
-          afterState: params.afterState,
-          changes: params.changes,
-          metadata: params.metadata || {},
+          beforeState: params.beforeState ? (params.beforeState as unknown as Prisma.InputJsonValue) : null,
+          afterState: params.afterState ? (params.afterState as unknown as Prisma.InputJsonValue) : null,
+          changes: params.changes ? (params.changes as unknown as Prisma.InputJsonValue) : null,
+          metadata: (params.metadata || {}) as Prisma.InputJsonValue,
         },
       });
     } catch (error) {

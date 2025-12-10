@@ -9,7 +9,9 @@ const chalk_1 = __importDefault(require("chalk"));
 const sdk_1 = __importDefault(require("@settler/sdk"));
 const reportsCommand = new commander_1.Command("reports");
 exports.reportsCommand = reportsCommand;
-reportsCommand.description("View reconciliation reports").alias("report");
+reportsCommand
+    .description("View reconciliation reports")
+    .alias("report");
 reportsCommand
     .command("get <jobId>")
     .description("Get reconciliation report for a job")

@@ -15,7 +15,7 @@ class AnomalyDetectionService {
         this.db = db;
         this._modelManager = _modelManager;
     }
-    async detect(data) {
+    detect(data) {
         logger_1.logger.info("Detecting anomalies", { recordCount: data.length });
         const anomalies = [];
         for (const record of data) {
@@ -23,7 +23,7 @@ class AnomalyDetectionService {
                 continue;
             const transaction = record;
             // Check for duplicate transactions
-            const duplicate = await this.checkDuplicate(transaction);
+            const duplicate = this.checkDuplicate(transaction);
             if (duplicate) {
                 anomalies.push({
                     type: "duplicate",
@@ -65,7 +65,7 @@ class AnomalyDetectionService {
         }
         return anomalies;
     }
-    async checkDuplicate(transaction) {
+    checkDuplicate(transaction) {
         const id = String(transaction.id || transaction.transaction_id || "");
         if (!id)
             return false;

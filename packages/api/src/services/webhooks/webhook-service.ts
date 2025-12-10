@@ -90,16 +90,16 @@ export class WebhookService {
       clearTimeout(timeoutId);
 
       // Log delivery
+      const responseBody = await response.text().catch(() => null);
       await this.prisma.webhookDelivery.create({
         data: {
           webhookId: delivery.webhookId,
           url: delivery.url,
-          payload: delivery.event as Prisma.InputJsonValue,
+          payload: delivery.event as unknown as Prisma.InputJsonValue,
           status: response.ok ? 'delivered' : 'failed',
           statusCode: response.status,
-          responseBody: await response.text().catch(() => null),
+          responseBody,
           attempts: delivery.attempts || 1,
-          deliveredAt: response.ok ? new Date() : null,
         },
       });
 
@@ -124,18 +124,19 @@ export class WebhookService {
         data: {
           webhookId: delivery.webhookId,
           url: delivery.url,
-          payload: delivery.event as Prisma.InputJsonValue,
+          payload: delivery.event as unknown as Prisma.InputJsonValue,
           status: 'failed',
           statusCode: null,
-          responseBody: error instanceof Error ? error.message : 'Unknown error',
+          responseBody: error instanceof Error ? error.message : String(error),
           attempts: delivery.attempts || 1,
+          errorMessage: error instanceof Error ? error.message : String(error),
         },
       });
-
-      logError('Webhook delivery error', {
-        error,
+      
+      logError('Webhook delivery failed', {
         webhookId: delivery.webhookId,
         url: delivery.url,
+        error,
       });
 
       return false;
@@ -155,10 +156,19 @@ export class WebhookService {
       where: {
         tenantId,
         status: 'active',
-        events: {
-          has: eventType,
-        },
+        deletedAt: null,
+        // Check if events array contains the event type
+        // Note: Prisma doesn't support array contains directly for JSON, so we filter in code
       },
+    });
+
+    // Filter webhooks that subscribe to this event type
+    const subscribedWebhooks = webhooks.filter(webhook => {
+      const events = webhook.events as unknown;
+      if (Array.isArray(events)) {
+        return events.includes(eventType);
+      }
+      return false;
     });
 
     const event: WebhookEvent = {
@@ -170,7 +180,7 @@ export class WebhookService {
     };
 
     // Queue delivery for each webhook
-    for (const webhook of webhooks) {
+    for (const webhook of subscribedWebhooks) {
       const delivery: WebhookDelivery = {
         webhookId: webhook.id,
         url: webhook.url,
@@ -253,7 +263,7 @@ export class WebhookService {
         userId,
         tenantId,
         url,
-        events,
+        events: events as Prisma.InputJsonValue,
         secret: webhookSecret,
         status: 'active',
       },
@@ -270,6 +280,7 @@ export class WebhookService {
       where: {
         tenantId,
         status: 'active',
+        deletedAt: null,
       },
       orderBy: {
         createdAt: 'desc',
@@ -287,7 +298,8 @@ export class WebhookService {
         tenantId,
       },
       data: {
-        status: 'inactive',
+        status: 'deleted',
+        deletedAt: new Date(),
       },
     });
   }

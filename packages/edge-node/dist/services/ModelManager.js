@@ -51,7 +51,7 @@ class ModelManager {
             fs.mkdirSync(this.modelDir, { recursive: true });
         }
     }
-    async loadModels() {
+    loadModels() {
         logger_1.logger.info("Loading models", { modelDir: this.modelDir });
         // In production, this would:
         // 1. Download models from Settler Cloud
@@ -60,11 +60,11 @@ class ModelManager {
         // For now, just log that models would be loaded
         logger_1.logger.info("Models loaded (placeholder)");
     }
-    async getModel(modelName) {
+    getModel(modelName) {
         return this.models.get(modelName) || null;
     }
-    async runInference(modelName, _input) {
-        const model = await this.getModel(modelName);
+    runInference(modelName, _input) {
+        const model = this.getModel(modelName);
         if (!model) {
             throw new Error(`Model not found: ${modelName}`);
         }

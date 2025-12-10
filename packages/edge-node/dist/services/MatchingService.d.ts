@@ -15,7 +15,7 @@ export declare class MatchingService {
     private _db;
     private _modelManager;
     constructor(_db: Database.Database, _modelManager: ModelManager);
-    findCandidates(sourceData: unknown[], targetData: unknown[]): Promise<Candidate[]>;
+    findCandidates(sourceData: unknown[], targetData: unknown[]): Candidate[];
     private extractId;
     private calculateMatchScore;
     private compareAmount;
