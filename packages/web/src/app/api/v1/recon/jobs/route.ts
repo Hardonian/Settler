@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { prisma } from '@/shared/db/prismaClient';
+import { Prisma } from '@prisma/client';
 import { recordServiceUsage } from '@/shared/usage/usageEvent';
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 import crypto from 'crypto';
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
         targetConfigEncrypted: JSON.stringify(targetConfig || {}),
         mappingTemplateId,
         transformRecipeId,
-        validationRules: (validationRules || []) as unknown as Record<string, unknown>,
+        validationRules: (validationRules || []) as Prisma.InputJsonValue,
         status: 'active',
       },
     });
