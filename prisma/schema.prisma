@@ -804,3 +804,54 @@ model ExperimentMetricEvent {
   @@index([createdAt])
   @@map("experiment_metric_events")
 }
+
+// ============================================================================
+// WEBHOOK MODELS
+// Webhook configuration and delivery tracking
+// ============================================================================
+
+model Webhook {
+  id                String    @id @default(uuid())
+  userId            String    @db.Uuid
+  tenantId          String    @db.Uuid
+  url               String    @db.Text
+  events            Json      @default("[]") // Array of event type strings
+  secret            String    @db.Text // HMAC signing secret
+  status            String    @default("active") // active, inactive, deleted
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  deliveries        WebhookDelivery[]
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("webhooks")
+}
+
+model WebhookDelivery {
+  id                String    @id @default(uuid())
+  webhookId         String    @db.Uuid
+  url               String    @db.Text
+  payload           Json      // The webhook event payload
+  status            String    @default("pending") // pending, delivered, failed
+  statusCode        Int?
+  responseBody      String?   @db.Text
+  attempts          Int       @default(1)
+  nextRetryAt       DateTime?
+  errorMessage      String?   @db.Text
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  webhook           Webhook   @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId])
+  @@index([status])
+  @@index([nextRetryAt])
+  @@index([createdAt])
+  @@map("webhook_deliveries")
+}

@@ -90,15 +90,18 @@ export class WebhookService {
       clearTimeout(timeoutId);
 
       // Log delivery
-      // TODO: WebhookDelivery model doesn't exist in Prisma schema - needs to be added
-      // For now, we'll just log the delivery without persisting
-      logInfo('Webhook delivered', {
-        webhookId: delivery.webhookId,
-        url: delivery.url,
-        status: response.ok ? 'delivered' : 'failed',
-        statusCode: response.status,
-      });
       const responseBody = await response.text().catch(() => null);
+      await this.prisma.webhookDelivery.create({
+        data: {
+          webhookId: delivery.webhookId,
+          url: delivery.url,
+          payload: delivery.event as Prisma.InputJsonValue,
+          status: response.ok ? 'delivered' : 'failed',
+          statusCode: response.status,
+          responseBody,
+          attempts: delivery.attempts || 1,
+        },
+      });
           attempts: delivery.attempts || 1,
           deliveredAt: response.ok ? new Date() : null,
         },
@@ -121,22 +124,23 @@ export class WebhookService {
       return true;
     } catch (error) {
       // Log failed delivery
-      // TODO: WebhookDelivery model doesn't exist in Prisma schema
+      await this.prisma.webhookDelivery.create({
+        data: {
+          webhookId: delivery.webhookId,
+          url: delivery.url,
+          payload: delivery.event as Prisma.InputJsonValue,
+          status: 'failed',
+          statusCode: null,
+          responseBody: error instanceof Error ? error.message : String(error),
+          attempts: delivery.attempts || 1,
+          errorMessage: error instanceof Error ? error.message : String(error),
+        },
+      });
+      
       logError('Webhook delivery failed', {
         webhookId: delivery.webhookId,
         url: delivery.url,
         error,
-      });
-          statusCode: null,
-          responseBody: error instanceof Error ? error.message : 'Unknown error',
-          attempts: delivery.attempts || 1,
-        },
-      });
-
-      logError('Webhook delivery error', {
-        error,
-        webhookId: delivery.webhookId,
-        url: delivery.url,
       });
 
       return false;
@@ -152,10 +156,24 @@ export class WebhookService {
     eventData: Record<string, unknown>
   ): Promise<void> {
     // Get all active webhooks for this tenant that subscribe to this event type
-    // TODO: Webhook model doesn't exist in Prisma schema - needs to be added
-    // For now, return empty array (webhooks won't be delivered until schema is updated)
-    const webhooks: Array<{ id: string; url: string; secret: string; events: string[] }> = [];
-    logInfo('Webhook trigger (no webhooks configured - schema needs webhook models)', { tenantId, eventType });
+    const webhooks = await this.prisma.webhook.findMany({
+      where: {
+        tenantId,
+        status: 'active',
+        deletedAt: null,
+        // Check if events array contains the event type
+        // Note: Prisma doesn't support array contains directly for JSON, so we filter in code
+      },
+    });
+
+    // Filter webhooks that subscribe to this event type
+    const subscribedWebhooks = webhooks.filter(webhook => {
+      const events = webhook.events as unknown;
+      if (Array.isArray(events)) {
+        return events.includes(eventType);
+      }
+      return false;
+    });
 
     const event: WebhookEvent = {
       id: crypto.randomUUID(),
@@ -166,7 +184,7 @@ export class WebhookService {
     };
 
     // Queue delivery for each webhook
-    for (const webhook of webhooks) {
+    for (const webhook of subscribedWebhooks) {
       const delivery: WebhookDelivery = {
         webhookId: webhook.id,
         url: webhook.url,
@@ -205,11 +223,15 @@ export class WebhookService {
     const nextRetryAt = new Date(Date.now() + delayMs);
 
     // Update webhook delivery record
-    // TODO: WebhookDelivery model doesn't exist in Prisma schema
-    logInfo('Webhook retry scheduled', {
-      webhookId: delivery.webhookId,
-      attempt,
-      nextRetryAt,
+    await this.prisma.webhookDelivery.updateMany({
+      where: {
+        webhookId: delivery.webhookId,
+        status: 'failed',
+      },
+      data: {
+        attempts: attempt,
+        nextRetryAt,
+      },
     });
 
     // Schedule retry (in production, use a job queue)
@@ -240,20 +262,17 @@ export class WebhookService {
   ) {
     const webhookSecret = secret || crypto.randomBytes(32).toString('hex');
 
-    // TODO: Webhook model doesn't exist in Prisma schema - needs to be added
-    // For now, return a stub object
-    const webhook = {
-      id: crypto.randomUUID(),
-      userId,
-      tenantId,
-      url,
-      events,
-      secret: webhookSecret,
-      status: 'active' as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    logInfo('Webhook created (not persisted - schema needs webhook model)', { webhookId: webhook.id });
+    const webhook = await this.prisma.webhook.create({
+      data: {
+        userId,
+        tenantId,
+        url,
+        events: events as Prisma.InputJsonValue,
+        secret: webhookSecret,
+        status: 'active',
+      },
+    });
+
     return webhook;
   }
 
@@ -261,16 +280,32 @@ export class WebhookService {
    * List webhooks for tenant
    */
   async listWebhooks(tenantId: string) {
-    // TODO: Webhook model doesn't exist in Prisma schema
-    return [] as Array<{ id: string; url: string; events: string[]; createdAt: Date }>;
+    return this.prisma.webhook.findMany({
+      where: {
+        tenantId,
+        status: 'active',
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
   /**
    * Delete webhook
    */
   async deleteWebhook(webhookId: string, tenantId: string) {
-    // TODO: Webhook model doesn't exist in Prisma schema
-    logInfo('Webhook delete (not persisted - schema needs webhook model)', { webhookId, tenantId });
+    await this.prisma.webhook.updateMany({
+      where: {
+        id: webhookId,
+        tenantId,
+      },
+      data: {
+        status: 'deleted',
+        deletedAt: new Date(),
+      },
+    });
       data: {
         status: 'inactive',
       },

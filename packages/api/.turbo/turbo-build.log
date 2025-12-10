@@ -14,90 +14,123 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
-src/services/ael/template-improver.ts(127,14): error TS2345: Argument of type '(r: { completedAt: Date; startedAt: Date; }) => number' is not assignable to parameter of type '(value: { id: string; tenantId: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; status: string; reconJobId: string; executionId: string | null; startedAt: Date; ... 18 more ...; summary: JsonValue; }, index: number, array: { ...; }[]) => number'.
-  Types of parameters 'r' and 'value' are incompatible.
-    Type '{ id: string; tenantId: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; status: string; reconJobId: string; executionId: string | null; startedAt: Date; ... 18 more ...; summary: JsonValue; }' is not assignable to type '{ completedAt: Date; startedAt: Date; }'.
-      Types of property 'completedAt' are incompatible.
-        Type 'Date | null' is not assignable to type 'Date'.
-          Type 'null' is not assignable to type 'Date'.
-src/services/ael/template-improver.ts(244,13): error TS2322: Type 'JsonValue' is not assignable to type 'JsonNull | InputJsonValue'.
-  Type 'null' is not assignable to type 'JsonNull | InputJsonValue'.
-src/services/ael/template-improver.ts(245,13): error TS2322: Type 'JsonValue' is not assignable to type 'JsonNull | InputJsonValue'.
-  Type 'null' is not assignable to type 'JsonNull | InputJsonValue'.
-src/services/ael/template-improver.ts(246,13): error TS2322: Type 'JsonValue' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-  Type 'null' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-src/services/ael/template-improver.ts(247,13): error TS2322: Type 'JsonValue' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-  Type 'null' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-src/services/ael/template-improver.ts(248,13): error TS2322: Type 'JsonValue' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-  Type 'null' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-src/services/ael/template-improver.ts(253,13): error TS2322: Type 'JsonValue' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-  Type 'null' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-src/services/contracts/contract-manager.ts(49,27): error TS2352: Conversion of type 'ContractSchema' to type 'InputJsonValue' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type 'ContractSchema' is not comparable to type 'InputJsonObject'.
-    Index signature for type 'string' is missing in type 'ContractSchema'.
-src/services/contracts/contract-manager.ts(91,23): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray | null' to type 'ContractSchema' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Property 'type' is missing in type 'JsonValue[]' but required in type 'ContractSchema'.
-src/services/contracts/contract-manager.ts(92,23): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray | null' to type 'ContractSchema' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Property 'type' is missing in type 'JsonValue[]' but required in type 'ContractSchema'.
-src/services/contracts/contract-manager.ts(153,26): error TS2352: Conversion of type 'BreakingChange[]' to type 'InputJsonValue' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type 'BreakingChange[]' is not comparable to type 'InputJsonObject'.
-    Index signature for type 'string' is missing in type 'BreakingChange[]'.
-src/services/drift/drift-detector.ts(54,7): error TS2322: Type 'Record<string, unknown> | null | undefined' is not assignable to type 'Record<string, unknown> | null'.
-  Type 'undefined' is not assignable to type 'Record<string, unknown> | null'.
-src/services/economic/value-based-pricing.ts(36,11): error TS6133: 'metaModels' is declared but its value is never read.
-src/services/intelligence/usage-optimizer.ts(12,20): error TS6133: 'AIModel' is declared but its value is never read.
-src/services/intelligence/usage-optimizer.ts(23,11): error TS6133: 'router' is declared but its value is never read.
-src/services/predictive/predictive-ops.ts(207,14): error TS2345: Argument of type '(r: { completedAt: Date; startedAt: Date; }) => number' is not assignable to parameter of type '(value: { id: string; tenantId: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; status: string; reconJobId: string; executionId: string | null; startedAt: Date; ... 18 more ...; summary: JsonValue; }, index: number, array: { ...; }[]) => number'.
-  Types of parameters 'r' and 'value' are incompatible.
-    Type '{ id: string; tenantId: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; status: string; reconJobId: string; executionId: string | null; startedAt: Date; ... 18 more ...; summary: JsonValue; }' is not assignable to type '{ completedAt: Date; startedAt: Date; }'.
-      Types of property 'completedAt' are incompatible.
-        Type 'Date | null' is not assignable to type 'Date'.
-          Type 'null' is not assignable to type 'Date'.
-src/services/predictive/predictive-ops.ts(253,22): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/services/predictive/predictive-ops.ts(253,44): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/services/recon-core/recon-core-engine.ts(65,28): error TS2352: Conversion of type 'ValidationRule[]' to type 'InputJsonValue' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type 'ValidationRule[]' is not comparable to type 'InputJsonObject'.
-    Index signature for type 'string' is missing in type 'ValidationRule[]'.
-src/services/recon-core/recon-core-engine.ts(143,10): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray | null' to type 'ValidationRule[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type 'JsonArray' is not comparable to type 'ValidationRule[]'.
-    Type 'JsonValue' is not comparable to type 'ValidationRule'.
-      Type 'JsonValue[]' is missing the following properties from type 'ValidationRule': field, operator, value
-src/services/recon-core/recon-core-engine.ts(190,11): error TS2322: Type 'ReconSummary' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-  Type 'ReconSummary' is not assignable to type 'InputJsonObject'.
-    Index signature for type 'string' is missing in type 'ReconSummary'.
-src/services/recon-core/recon-core-engine.ts(507,11): error TS2322: Type 'Record<string, unknown> | undefined' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-    Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
-src/services/recon-core/recon-core-engine.ts(508,11): error TS2322: Type 'Record<string, unknown> | undefined' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-    Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
-src/services/recon-core/recon-core-engine.ts(509,11): error TS2322: Type 'Record<string, unknown> | undefined' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-    Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
-src/services/recon-core/recon-core-engine.ts(510,11): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
-  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
-src/services/resilience/fault-tolerant-recon.ts(63,9): error TS2353: Object literal may only specify known properties, and 'transformRecipeId' does not exist in type 'ReconResultWhereInput'.
-src/services/resilience/fault-tolerant-recon.ts(70,29): error TS2339: Property 'output' does not exist on type '{ status: string; id: string; createdAt: Date; updatedAt: Date; metadata: JsonValue; tenantId: string; executionId: string | null; summary: JsonValue; currency: string | null; ... 18 more ...; errorStack: string | null; }'.
-src/services/resilience/fault-tolerant-recon.ts(80,9): error TS2353: Object literal may only specify known properties, and 'transformRecipeId' does not exist in type '(Without<ReconResultCreateInput, ReconResultUncheckedCreateInput> & ReconResultUncheckedCreateInput) | (Without<...> & ReconResultCreateInput)'.
-src/services/usage/recon-usage-tracker.ts(216,11): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
-src/services/webhooks/webhook-service.ts(93,25): error TS2339: Property 'webhookDelivery' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/services/webhooks/webhook-service.ts(97,20): error TS2352: Conversion of type 'WebhookEvent' to type 'InputJsonValue' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type 'WebhookEvent' is not comparable to type 'InputJsonObject'.
-    Index signature for type 'string' is missing in type 'WebhookEvent'.
-src/services/webhooks/webhook-service.ts(123,25): error TS2339: Property 'webhookDelivery' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/services/webhooks/webhook-service.ts(127,20): error TS2352: Conversion of type 'WebhookEvent' to type 'InputJsonValue' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type 'WebhookEvent' is not comparable to type 'InputJsonObject'.
-    Index signature for type 'string' is missing in type 'WebhookEvent'.
-src/services/webhooks/webhook-service.ts(154,40): error TS2339: Property 'webhook' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/services/webhooks/webhook-service.ts(212,23): error TS2339: Property 'webhookDelivery' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/services/webhooks/webhook-service.ts(251,39): error TS2339: Property 'webhook' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/services/webhooks/webhook-service.ts(269,24): error TS2339: Property 'webhook' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/services/webhooks/webhook-service.ts(284,23): error TS2339: Property 'webhook' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/services/workflows/workflow-engine.ts(78,9): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 20 more.
+src/services/resilience/fault-tolerant-recon.ts(74,7): error TS1109: Expression expected.
+src/services/resilience/fault-tolerant-recon.ts(74,8): error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+src/services/resilience/fault-tolerant-recon.ts(75,6): error TS1128: Declaration or statement expected.
+src/services/resilience/fault-tolerant-recon.ts(78,3): error TS1128: Declaration or statement expected.
+src/services/resilience/fault-tolerant-recon.ts(83,3): error TS1434: Unexpected keyword or identifier.
+src/services/resilience/fault-tolerant-recon.ts(83,27): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(83,36): error TS1005: ';' expected.
+src/services/resilience/fault-tolerant-recon.ts(84,11): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(84,51): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(85,9): error TS1003: Identifier expected.
+src/services/resilience/fault-tolerant-recon.ts(89,5): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(89,11): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(89,15): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(103,6): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(105,12): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(105,16): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(111,3): error TS1434: Unexpected keyword or identifier.
+src/services/resilience/fault-tolerant-recon.ts(111,25): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(111,41): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(111,49): error TS1005: ';' expected.
+src/services/resilience/fault-tolerant-recon.ts(112,19): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(113,45): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(116,11): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(116,51): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(117,9): error TS1003: Identifier expected.
+src/services/resilience/fault-tolerant-recon.ts(123,5): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(123,11): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(123,23): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(124,11): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(124,38): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(130,5): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(130,12): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(130,31): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(136,3): error TS1434: Unexpected keyword or identifier.
+src/services/resilience/fault-tolerant-recon.ts(136,24): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(136,42): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(136,87): error TS1005: ';' expected.
+src/services/resilience/fault-tolerant-recon.ts(137,11): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(137,51): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(138,11): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(138,47): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(140,9): error TS1003: Identifier expected.
+src/services/resilience/fault-tolerant-recon.ts(145,5): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(145,13): error TS1003: Identifier expected.
+src/services/resilience/fault-tolerant-recon.ts(145,28): error TS1138: Parameter declaration expected.
+src/services/resilience/fault-tolerant-recon.ts(147,5): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(147,12): error TS1005: ':' expected.
+src/services/resilience/fault-tolerant-recon.ts(152,6): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(158,3): error TS1128: Declaration or statement expected.
+src/services/resilience/fault-tolerant-recon.ts(158,26): error TS1005: ',' expected.
+src/services/resilience/fault-tolerant-recon.ts(158,52): error TS1005: ';' expected.
+src/services/resilience/fault-tolerant-recon.ts(158,54): error TS1434: Unexpected keyword or identifier.
+src/services/resilience/fault-tolerant-recon.ts(169,1): error TS1128: Declaration or statement expected.
+src/services/webhooks/webhook-service.ts(106,22): error TS1005: ';' expected.
+src/services/webhooks/webhook-service.ts(107,9): error TS1109: Expression expected.
+src/services/webhooks/webhook-service.ts(107,10): error TS1472: 'catch' or 'finally' expected.
+src/services/webhooks/webhook-service.ts(108,8): error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+src/services/webhooks/webhook-service.ts(110,11): error TS1003: Identifier expected.
+src/services/webhooks/webhook-service.ts(110,20): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(119,15): error TS1003: Identifier expected.
+src/services/webhooks/webhook-service.ts(119,47): error TS1138: Parameter declaration expected.
+src/services/webhooks/webhook-service.ts(120,28): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(121,28): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(121,34): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(124,7): error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+src/services/webhooks/webhook-service.ts(125,5): error TS1128: Declaration or statement expected.
+src/services/webhooks/webhook-service.ts(125,7): error TS1005: 'try' expected.
+src/services/webhooks/webhook-service.ts(148,3): error TS1128: Declaration or statement expected.
+src/services/webhooks/webhook-service.ts(153,3): error TS1434: Unexpected keyword or identifier.
+src/services/webhooks/webhook-service.ts(154,13): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(155,14): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(156,14): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(157,4): error TS1005: ';' expected.
+src/services/webhooks/webhook-service.ts(157,18): error TS1109: Expression expected.
+src/services/webhooks/webhook-service.ts(159,11): error TS1005: ':' expected.
+src/services/webhooks/webhook-service.ts(167,7): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(170,11): error TS1005: ':' expected.
+src/services/webhooks/webhook-service.ts(176,7): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(178,11): error TS1005: ':' expected.
+src/services/webhooks/webhook-service.ts(178,16): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(184,6): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(187,10): error TS1359: Identifier expected. 'const' is a reserved word that cannot be used here.
+src/services/webhooks/webhook-service.ts(187,16): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(187,24): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(187,27): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(209,3): error TS1128: Declaration or statement expected.
+src/services/webhooks/webhook-service.ts(209,11): error TS1434: Unexpected keyword or identifier.
+src/services/webhooks/webhook-service.ts(209,39): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(209,57): error TS1005: ';' expected.
+src/services/webhooks/webhook-service.ts(209,71): error TS1109: Expression expected.
+src/services/webhooks/webhook-service.ts(210,11): error TS1005: ':' expected.
+src/services/webhooks/webhook-service.ts(210,26): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(211,11): error TS1005: ':' expected.
+src/services/webhooks/webhook-service.ts(211,49): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(213,17): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(213,30): error TS1005: ';' expected.
+src/services/webhooks/webhook-service.ts(251,3): error TS1128: Declaration or statement expected.
+src/services/webhooks/webhook-service.ts(256,3): error TS1434: Unexpected keyword or identifier.
+src/services/webhooks/webhook-service.ts(257,13): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(258,11): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(259,8): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(260,11): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(260,20): error TS1011: An element access expression should take an argument.
+src/services/webhooks/webhook-service.ts(261,12): error TS1109: Expression expected.
+src/services/webhooks/webhook-service.ts(262,5): error TS1005: ';' expected.
+src/services/webhooks/webhook-service.ts(282,3): error TS1434: Unexpected keyword or identifier.
+src/services/webhooks/webhook-service.ts(282,30): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(282,40): error TS1005: ';' expected.
+src/services/webhooks/webhook-service.ts(298,3): error TS1434: Unexpected keyword or identifier.
+src/services/webhooks/webhook-service.ts(298,32): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(298,50): error TS1005: ',' expected.
+src/services/webhooks/webhook-service.ts(298,60): error TS1005: ';' expected.
+src/services/webhooks/webhook-service.ts(311,7): error TS1109: Expression expected.
+src/services/webhooks/webhook-service.ts(311,8): error TS1128: Declaration or statement expected.
+src/services/webhooks/webhook-service.ts(312,6): error TS1128: Declaration or statement expected.
+src/services/webhooks/webhook-service.ts(313,3): error TS1128: Declaration or statement expected.
+src/services/webhooks/webhook-service.ts(314,1): error TS1128: Declaration or statement expected.
 npm error Lifecycle script `typecheck` failed with error:
 npm error code 2
 npm error path /workspace/packages/api
