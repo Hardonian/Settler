@@ -130,7 +130,16 @@ export async function getUnresolvedAlerts(severity?: AlertSeverity): Promise<Ale
       resolved_at: Date | null;
     }>(queryStr, params as (string | number | boolean | Date | null)[]);
 
-    return results.map((r) => {
+    return results.map((r: {
+      id: string;
+      type: string;
+      severity: string;
+      message: string;
+      details: string | null;
+      resolved: boolean;
+      created_at: Date;
+      resolved_at: Date | null;
+    }) => {
       const alert: Alert = {
         id: r.id,
         type: r.type,
