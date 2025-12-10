@@ -121,10 +121,12 @@ export class TemplateImprover {
         take: 50,
       });
 
-      const avgDuration = results
-        .filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt)
-        .map((r: { completedAt: Date; startedAt: Date }) => r.completedAt.getTime() - r.startedAt.getTime())
-        .reduce((a: number, b: number, _: number, arr: typeof results) => a + b / arr.length, 0);
+      const filteredResults = results.filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt) as Array<{ completedAt: Date; startedAt: Date }>;
+      const avgDuration = filteredResults.length > 0
+        ? filteredResults
+            .map((r: { completedAt: Date; startedAt: Date }) => r.completedAt.getTime() - r.startedAt.getTime())
+            .reduce((a: number, b: number) => a + b, 0) / filteredResults.length
+        : 0;
 
       if (avgDuration > 10000) { // > 10 seconds
         improvements.push({

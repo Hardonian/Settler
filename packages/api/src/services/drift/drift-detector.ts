@@ -51,7 +51,7 @@ export class DriftDetector {
       const contract = await this.prisma.contractVersion.findUnique({
         where: { id: contractVersionId },
       });
-      contractSchema = contract?.schemaDefinition;
+      contractSchema = contract?.schemaDefinition ?? null;
     }
 
     // Analyze source data

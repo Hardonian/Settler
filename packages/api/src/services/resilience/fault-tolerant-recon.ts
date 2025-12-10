@@ -32,11 +32,11 @@ export interface RollbackPlan {
 }
 
 export class FaultTolerantRecon {
-  private prisma: PrismaClient;
+  private _prisma: PrismaClient;
   private checkpoints: Map<string, CheckpointState> = new Map();
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this._prisma = prisma;
   }
 
   /**
@@ -58,7 +58,7 @@ export class FaultTolerantRecon {
     input: Record<string, unknown>
   ): Promise<Record<string, unknown>> {
     // Check if transform already executed with same input
-    const existingResult = await this.prisma.reconResult.findFirst({
+    const existingResult = await this._prisma.reconResult.findFirst({
       where: {
         transformRecipeId: transformId,
         inputHash: this.hashInput(input),
@@ -75,7 +75,7 @@ export class FaultTolerantRecon {
     const result = input; // Placeholder
 
     // Store result
-    await this.prisma.reconResult.create({
+    await this._prisma.reconResult.create({
       data: {
         transformRecipeId: transformId,
         inputHash: this.hashInput(input),
