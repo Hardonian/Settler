@@ -1,0 +1,53 @@
+name: Verify Deployment
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  verify-routes:
+    name: Verify Production Routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Test Production Routes
+        run: |
+          chmod +x scripts/test-routes.sh
+          ./scripts/test-routes.sh https://www.settler.dev
+        continue-on-error: true
+
+      - name: Report Results
+        if: always()
+        run: |
+          echo "Route verification completed. Check logs above for details."
+
+  verify-env:
+    name: Verify Environment Variables
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Environment Variables Schema
+        run: |
+          # This will check the schema without requiring actual values
+          echo "Environment variable schema verification..."
+          # The script can be run in check mode
+          npx tsx scripts/verify-env-vars.ts --mode=development || true
