@@ -167,6 +167,30 @@ export interface StatsBlock extends BaseBlock {
   columns?: number;
 }
 
+// Footer block
+export interface FooterBlock extends BaseBlock {
+  type: 'footer';
+  columns: Array<{
+    title: string;
+    links: Array<{
+      label: string;
+      href: string;
+    }>;
+  }>;
+  socialLinks?: Array<{
+    platform: 'twitter' | 'github' | 'linkedin' | 'facebook' | 'instagram' | 'youtube';
+    href: string;
+  }>;
+  copyright?: string;
+}
+
+// Custom HTML block (sanitized)
+export interface CustomHTMLBlock extends BaseBlock {
+  type: 'customHTML';
+  html: string;
+  sanitized?: boolean;
+}
+
 // Union type for all blocks
 export type PageBlock =
   | HeroBlock
@@ -178,7 +202,9 @@ export type PageBlock =
   | PricingTableBlock
   | TwoColumnTextBlock
   | CodeExampleBlock
-  | StatsBlock;
+  | StatsBlock
+  | FooterBlock
+  | CustomHTMLBlock;
 
 // ============================================================================
 // Safe defaults for each block type
@@ -265,6 +291,21 @@ export const blockDefaults: Record<string, Partial<PageBlock>> = {
     visible: true,
     columns: 4,
     stats: [],
+    metadata: {},
+  },
+  footer: {
+    type: 'footer',
+    id: '',
+    visible: true,
+    columns: [],
+    metadata: {},
+  },
+  customHTML: {
+    type: 'customHTML',
+    id: '',
+    visible: true,
+    html: '',
+    sanitized: true,
     metadata: {},
   },
 };
