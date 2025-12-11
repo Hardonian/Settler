@@ -1,8 +1,7 @@
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Scale, Shield, FileText, Lock, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { Metadata } from 'next';

@@ -58,6 +58,7 @@ class WebhookService {
             });
             clearTimeout(timeoutId);
             // Log delivery
+            const responseBody = await response.text().catch(() => null);
             await this.prisma.webhookDelivery.create({
                 data: {
                     webhookId: delivery.webhookId,
@@ -65,9 +66,8 @@ class WebhookService {
                     payload: delivery.event,
                     status: response.ok ? 'delivered' : 'failed',
                     statusCode: response.status,
-                    responseBody: await response.text().catch(() => null),
+                    responseBody,
                     attempts: delivery.attempts || 1,
-                    deliveredAt: response.ok ? new Date() : null,
                 },
             });
             if (!response.ok) {
@@ -93,14 +93,15 @@ class WebhookService {
                     payload: delivery.event,
                     status: 'failed',
                     statusCode: null,
-                    responseBody: error instanceof Error ? error.message : 'Unknown error',
+                    responseBody: error instanceof Error ? error.message : String(error),
                     attempts: delivery.attempts || 1,
+                    errorMessage: error instanceof Error ? error.message : String(error),
                 },
             });
-            (0, logger_1.logError)('Webhook delivery error', {
-                error,
+            (0, logger_1.logError)('Webhook delivery failed', {
                 webhookId: delivery.webhookId,
                 url: delivery.url,
+                error,
             });
             return false;
         }
@@ -114,10 +115,18 @@ class WebhookService {
             where: {
                 tenantId,
                 status: 'active',
-                events: {
-                    has: eventType,
-                },
+                deletedAt: null,
+                // Check if events array contains the event type
+                // Note: Prisma doesn't support array contains directly for JSON, so we filter in code
             },
+        });
+        // Filter webhooks that subscribe to this event type
+        const subscribedWebhooks = webhooks.filter((webhook) => {
+            const events = webhook.events;
+            if (Array.isArray(events)) {
+                return events.includes(eventType);
+            }
+            return false;
         });
         const event = {
             id: crypto_1.default.randomUUID(),
@@ -127,7 +136,7 @@ class WebhookService {
             timestamp: new Date(),
         };
         // Queue delivery for each webhook
-        for (const webhook of webhooks) {
+        for (const webhook of subscribedWebhooks) {
             const delivery = {
                 webhookId: webhook.id,
                 url: webhook.url,
@@ -194,7 +203,7 @@ class WebhookService {
                 userId,
                 tenantId,
                 url,
-                events,
+                events: events,
                 secret: webhookSecret,
                 status: 'active',
             },
@@ -209,6 +218,7 @@ class WebhookService {
             where: {
                 tenantId,
                 status: 'active',
+                deletedAt: null,
             },
             orderBy: {
                 createdAt: 'desc',
@@ -225,7 +235,8 @@ class WebhookService {
                 tenantId,
             },
             data: {
-                status: 'inactive',
+                status: 'deleted',
+                deletedAt: new Date(),
             },
         });
     }

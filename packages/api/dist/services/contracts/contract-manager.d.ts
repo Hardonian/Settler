@@ -4,7 +4,7 @@
  * Manages data contract versioning and breaking change detection
  * Part of Phase V: AIOS
  */
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 export interface ContractSchema {
     type: 'object' | 'array';
     properties?: Record<string, unknown>;
@@ -24,7 +24,21 @@ export declare class ContractManager {
     /**
      * Create new contract version
      */
-    createContractVersion(tenantId: string, contractName: string, version: string, schema: ContractSchema): Promise<any>;
+    createContractVersion(tenantId: string, contractName: string, version: string, schema: ContractSchema): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        metadata: Prisma.JsonValue;
+        tenantId: string;
+        version: string;
+        isActive: boolean;
+        contractName: string;
+        schemaDefinition: Prisma.JsonValue;
+        isDeprecated: boolean;
+        deprecatedAt: Date | null;
+        breakingChanges: Prisma.JsonValue;
+        migrationGuide: string | null;
+    }>;
     /**
      * Compare contract versions and detect breaking changes
      */

@@ -25,7 +25,7 @@ class WorkflowEngine {
                 workflowName: workflowId,
                 status: 'running',
                 triggeredBy: 'api',
-                triggerEvent: input || {},
+                triggerEvent: (input || {}),
                 executionGraph: {},
                 stepResults: {},
             },

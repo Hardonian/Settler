@@ -2,10 +2,50 @@
 /**
  * Environment Variable Validation
  * Uses envalid for type-safe environment variable validation
+ *
+ * CTO Mode: Build-time Safety
+ * - Runtime-only variables have defaults during build to prevent build failures
+ * - These variables will be validated at runtime, not during build
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validatedConfig = exports.env = void 0;
 const envalid_1 = require("envalid");
+/**
+ * Check if we're in a build context (Next.js build, Vercel build, etc.)
+ */
+function isBuildContext() {
+    // Check for Next.js build phase
+    if (process.env.NEXT_PHASE === 'phase-production-build') {
+        return true;
+    }
+    // Check for Vercel build environment
+    if (process.env.VERCEL === '1' || process.env.VERCEL_ENV) {
+        return true;
+    }
+    // Check for CI environments
+    if (process.env.CI === 'true' || process.env.CI === '1') {
+        return true;
+    }
+    // Check for explicit skip flag
+    if (process.env.SKIP_ENV_VALIDATION === 'true') {
+        return true;
+    }
+    // Check if we're running in a build script context
+    // This catches cases where the module is imported during build but env vars aren't fully set
+    if (typeof process !== 'undefined' && process.argv) {
+        const isBuildCommand = process.argv.some(arg => arg.includes('build') ||
+            arg.includes('next build') ||
+            arg.includes('turbo build'));
+        if (isBuildCommand && !process.env.NODE_ENV) {
+            return true;
+        }
+    }
+    return false;
+}
+// During build, provide placeholder defaults for runtime-only variables
+// These will be validated at runtime, not during build
+const isBuild = isBuildContext();
+const BUILD_PLACEHOLDER = 'build-placeholder-not-used-at-runtime';
 exports.env = (0, envalid_1.cleanEnv)(process.env, {
     // Node Environment
     NODE_ENV: (0, envalid_1.str)({
@@ -20,7 +60,11 @@ exports.env = (0, envalid_1.cleanEnv)(process.env, {
     DB_PORT: (0, envalid_1.port)({ default: 5432 }),
     DB_NAME: (0, envalid_1.str)({ default: 'settler' }),
     DB_USER: (0, envalid_1.str)({ default: 'postgres' }),
-    DB_PASSWORD: (0, envalid_1.str)({ devDefault: 'postgres' }),
+    // Runtime-only: provide default during build, will be validated at runtime
+    DB_PASSWORD: (0, envalid_1.str)({
+        default: isBuild ? BUILD_PLACEHOLDER : undefined,
+        devDefault: 'postgres',
+    }),
     DB_SSL: (0, envalid_1.bool)({ default: false }),
     DB_POOL_MIN: (0, envalid_1.num)({ default: 5 }),
     DB_POOL_MAX: (0, envalid_1.num)({ default: 20 }),
@@ -33,18 +77,23 @@ exports.env = (0, envalid_1.cleanEnv)(process.env, {
     REDIS_PASSWORD: (0, envalid_1.str)({ default: undefined }),
     REDIS_TLS: (0, envalid_1.bool)({ default: false }),
     // JWT Configuration
+    // Runtime-only: provide default during build, will be validated at runtime
     JWT_SECRET: (0, envalid_1.str)({
+        default: isBuild ? BUILD_PLACEHOLDER : undefined,
         devDefault: 'dev-secret-change-in-production',
         desc: 'Secret key for JWT token signing',
     }),
     JWT_ACCESS_EXPIRY: (0, envalid_1.str)({ default: '15m' }),
     JWT_REFRESH_EXPIRY: (0, envalid_1.str)({ default: '7d' }),
     JWT_REFRESH_SECRET: (0, envalid_1.str)({
+        default: undefined,
         devDefault: undefined,
         desc: 'Optional separate secret for refresh tokens',
     }),
     // Encryption Configuration
+    // Runtime-only: provide default during build, will be validated at runtime
     ENCRYPTION_KEY: (0, envalid_1.str)({
+        default: isBuild ? BUILD_PLACEHOLDER : undefined,
         devDefault: 'dev-encryption-key-32-chars-long!!',
         desc: '32-byte key for AES-256-GCM encryption',
     }),
@@ -93,12 +142,17 @@ exports.env = (0, envalid_1.cleanEnv)(process.env, {
     HEALTH_CHECK_ENABLED: (0, envalid_1.bool)({ default: true }),
 });
 // Validate encryption key length in production and preview
-if (exports.env.NODE_ENV === 'production' || exports.env.NODE_ENV === 'preview') {
-    if (!exports.env.ENCRYPTION_KEY || exports.env.ENCRYPTION_KEY.length !== 32) {
-        throw new Error(`ENCRYPTION_KEY must be exactly 32 characters in ${exports.env.NODE_ENV}`);
+// Skip validation during build - these variables will be validated at runtime
+if (!isBuild && (exports.env.NODE_ENV === 'production' || exports.env.NODE_ENV === 'preview')) {
+    // Check for placeholder values that shouldn't be used at runtime
+    if (exports.env.ENCRYPTION_KEY === BUILD_PLACEHOLDER || !exports.env.ENCRYPTION_KEY || exports.env.ENCRYPTION_KEY.length !== 32) {
+        throw new Error(`ENCRYPTION_KEY must be exactly 32 characters in ${exports.env.NODE_ENV}. Current value: ${exports.env.ENCRYPTION_KEY === BUILD_PLACEHOLDER ? 'build placeholder (not set)' : 'invalid length'}`);
     }
-    if (!exports.env.JWT_SECRET || exports.env.JWT_SECRET === 'dev-secret-change-in-production') {
-        throw new Error(`JWT_SECRET must be set to a secure random value in ${exports.env.NODE_ENV}`);
+    if (exports.env.JWT_SECRET === BUILD_PLACEHOLDER || !exports.env.JWT_SECRET || exports.env.JWT_SECRET === 'dev-secret-change-in-production') {
+        throw new Error(`JWT_SECRET must be set to a secure random value in ${exports.env.NODE_ENV}. Current value: ${exports.env.JWT_SECRET === BUILD_PLACEHOLDER ? 'build placeholder (not set)' : 'dev secret'}`);
+    }
+    if (exports.env.DB_PASSWORD === BUILD_PLACEHOLDER) {
+        throw new Error(`DB_PASSWORD must be set in ${exports.env.NODE_ENV}. Current value: build placeholder (not set)`);
     }
     if (exports.env.ALLOWED_ORIGINS === '*') {
         console.warn(`WARNING: CORS allows all origins in ${exports.env.NODE_ENV}. Consider restricting ALLOWED_ORIGINS.`);

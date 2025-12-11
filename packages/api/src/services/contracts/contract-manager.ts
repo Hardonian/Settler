@@ -150,7 +150,7 @@ export class ContractManager {
     await this.prisma.contractVersion.update({
       where: { id: newContract.id },
       data: {
-        breakingChanges: breakingChanges as Prisma.InputJsonValue,
+        breakingChanges: breakingChanges as unknown as Prisma.InputJsonValue,
       },
     });
 

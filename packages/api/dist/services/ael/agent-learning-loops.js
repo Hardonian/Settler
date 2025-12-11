@@ -48,9 +48,16 @@ class AgentLearningLoops {
         });
         // Find transforms with high error rates
         for (const transform of transforms) {
-            const results = await this.prisma.reconResult.findMany({
+            // Get jobs using this transform
+            const jobs = await this.prisma.reconJob.findMany({
                 where: {
                     transformRecipeId: transform.id,
+                },
+                select: { id: true },
+            });
+            const results = await this.prisma.reconResult.findMany({
+                where: {
+                    reconJobId: { in: jobs.map((j) => j.id) },
                     status: 'failed',
                 },
                 take: 10,
@@ -81,11 +88,17 @@ class AgentLearningLoops {
             take: 100,
             orderBy: { createdAt: 'desc' },
         });
-        // Group by mapping template
+        // Group by mapping template (through reconJob)
         const mappingGroups = new Map();
         for (const drift of drifts) {
-            if (drift.mappingTemplateId) {
-                mappingGroups.set(drift.mappingTemplateId, (mappingGroups.get(drift.mappingTemplateId) || 0) + 1);
+            if (drift.reconJobId) {
+                const job = await this.prisma.reconJob.findUnique({
+                    where: { id: drift.reconJobId },
+                    select: { mappingTemplateId: true },
+                });
+                if (job?.mappingTemplateId) {
+                    mappingGroups.set(job.mappingTemplateId, (mappingGroups.get(job.mappingTemplateId) || 0) + 1);
+                }
             }
         }
         // If a mapping has > 10 drifts, propose improvement
@@ -119,8 +132,8 @@ class AgentLearningLoops {
         // Find contracts with many versions (indicating instability)
         const versionCounts = new Map();
         for (const contract of contracts) {
-            const contractId = contract.contractId;
-            versionCounts.set(contractId, (versionCounts.get(contractId) || 0) + 1);
+            const contractKey = `${contract.tenantId}:${contract.contractName}`;
+            versionCounts.set(contractKey, (versionCounts.get(contractKey) || 0) + 1);
         }
         for (const [contractId, count] of versionCounts.entries()) {
             if (count > 5) {
@@ -150,12 +163,18 @@ class AgentLearningLoops {
             take: 100,
         });
         // Find rules that are never used
+        // Note: validationRules is a Json array field, so we check if rule.id is in the array
         for (const rule of rules) {
-            const usage = await this.prisma.reconJob.findMany({
-                where: {
-                    validationRuleId: rule.id,
-                },
-                take: 1,
+            const allJobs = await this.prisma.reconJob.findMany({
+                select: { id: true, validationRules: true },
+            });
+            const usage = allJobs.filter((job) => {
+                const rules = job.validationRules;
+                if (Array.isArray(rules)) {
+                    return rules.some((r) => (typeof r === 'object' && r !== null && 'id' in r && r.id === rule.id) ||
+                        r === rule.id);
+                }
+                return false;
             });
             if (usage.length === 0) {
                 insights.push({

@@ -24,7 +24,7 @@ export interface RollbackPlan {
     }>;
 }
 export declare class FaultTolerantRecon {
-    private prisma;
+    private _prisma;
     private checkpoints;
     constructor(prisma: PrismaClient);
     /**
@@ -52,7 +52,9 @@ export declare class FaultTolerantRecon {
     replayJob(jobId: string, strategy: 'full' | 'incremental' | 'from_checkpoint'): Promise<ReplayableJob>;
     /**
      * Hash input for idempotency
+     * Note: Currently unused but may be needed for future caching implementation
+     * @internal
      */
-    private hashInput;
+    private _hashInput;
 }
 //# sourceMappingURL=fault-tolerant-recon.d.ts.map

@@ -1,8 +1,6 @@
 import { Command } from "commander";
 import { SettlerClient } from "@settler/sdk";
 import chalk from "chalk";
-import fs from "fs";
-import path from "path";
 
 export const receiptsCommand = new Command("receipts")
   .description("Manage receipts");

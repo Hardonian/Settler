@@ -8,13 +8,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsageOptimizer = void 0;
 const logger_1 = require("../../utils/logger");
-const ai_router_1 = require("../ai-mesh/ai-router");
 class UsageOptimizer {
     prisma;
-    router;
     constructor(prisma) {
         this.prisma = prisma;
-        this.router = new ai_router_1.AIRouter();
     }
     /**
      * Analyze usage and generate optimizations
@@ -33,18 +30,23 @@ class UsageOptimizer {
         });
         // Analyze AI token usage
         const aiUsage = usageEvents.filter((e) => e.eventType === 'ai_tokens');
-        const totalTokens = aiUsage.reduce((sum, e) => sum + Number(e.quantity), 0);
-        const avgCost = aiUsage.length > 0 ? aiUsage.reduce((sum, e) => {
+        const totalTokens = aiUsage.reduce((sum, e) => {
+            const qty = typeof e.quantity === 'number' ? e.quantity : Number(e.quantity) || 0;
+            return sum + qty;
+        }, 0);
+        let totalCost = 0;
+        for (const e of aiUsage) {
             const model = e.metadata?.['model'];
             if (model && e.quantity !== undefined) {
                 // Validate model is a valid AIModel before using
                 const validModels = ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet', 'claude-3-haiku', 'local-llm'];
                 if (validModels.includes(model)) {
-                    return sum + this.router.estimateCost(model, Number(e.quantity));
+                    const qty = typeof e.quantity === 'number' ? e.quantity : Number(e.quantity) || 0;
+                    totalCost += qty * 0.002 / 1000; // $0.002 per 1K tokens
                 }
             }
-            return sum;
-        }, 0) / aiUsage.length : 0;
+        }
+        const avgCost = aiUsage.length > 0 ? totalCost / aiUsage.length : 0;
         // Recommend cheaper model if accuracy allows
         if (avgCost > 0.01 && totalTokens > 100000) {
             optimizations.push({

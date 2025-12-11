@@ -80,7 +80,6 @@ export default async function Image() {
             style={{
               fontSize: 80,
               fontWeight: 800,
-              color: 'white',
               marginBottom: 20,
               letterSpacing: '-0.025em',
               fontFamily: 'sans-serif',
