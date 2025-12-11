@@ -130,6 +130,32 @@ export default function SecurityPage() {
         </div>
       </section>
 
+      <section className="px-4 sm:px-6 lg:px-8 py-12 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+            Responsible Disclosure
+          </h2>
+          <p className="text-slate-600 dark:text-slate-300 mb-6">
+            We take the security of our systems seriously and value the community's help in identifying vulnerabilities. 
+            If you believe you've found a security issue, please report it to us responsibly.
+          </p>
+          <div className="flex justify-center gap-4">
+            <a 
+              href="mailto:security@settler.dev"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+            >
+              Email security@settler.dev
+            </a>
+            <a 
+              href="/.well-known/security.txt"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-blue-600 dark:text-blue-400 font-medium hover:underline"
+            >
+              View security.txt
+            </a>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </AnimatedPageWrapper>
   );

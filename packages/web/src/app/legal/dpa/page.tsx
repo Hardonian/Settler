@@ -66,18 +66,29 @@ export default function DPAPage() {
 
           <h3>5. Sub-processors</h3>
           <p>
-            Customer grants Settler a general authorization to engage sub-processors. Settler shall inform the Customer 
-            of any intended changes concerning the addition or replacement of other sub-processors.
+            Customer grants Settler a general authorization to engage sub-processors. A current list of sub-processors is available 
+            at <a href="/legal/subprocessors" className="text-blue-600 dark:text-blue-400 hover:underline">settler.dev/legal/subprocessors</a>.
+            Settler shall inform the Customer of any intended changes concerning the addition or replacement of other sub-processors.
           </p>
 
-          <h3>6. Data Subject Rights</h3>
+          <h3>6. International Data Transfers</h3>
+          <p>
+            For transfers of Personal Data from the European Economic Area, the United Kingdom, or Switzerland to countries that do not 
+            ensure an adequate level of data protection within the meaning of applicable Data Protection Laws, Settler relies on:
+          </p>
+          <ul>
+            <li>Standard Contractual Clauses (SCCs) approved by the European Commission.</li>
+            <li>The EU-U.S. Data Privacy Framework (where applicable).</li>
+          </ul>
+
+          <h3>7. Data Subject Rights</h3>
           <p>
             Settler shall, taking into account the nature of the processing, assist the Customer by appropriate technical 
             and organizational measures, insofar as this is possible, for the fulfilment of the Customer's obligation 
             to respond to requests for exercising the data subject's rights.
           </p>
 
-          <h3>7. Deletion or Return of Personal Data</h3>
+          <h3>8. Deletion or Return of Personal Data</h3>
           <p>
             At the choice of the Customer, Settler shall delete or return all the Personal Data to the Customer after 
             the end of the provision of services relating to processing, and delete existing copies unless applicable 
