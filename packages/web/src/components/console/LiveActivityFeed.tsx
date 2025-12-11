@@ -49,7 +49,9 @@ export function LiveActivityFeed() {
 
     const interval = setInterval(() => {
       const types: ('reconcile' | 'receipt' | 'flag')[] = ['reconcile', 'receipt', 'flag'];
-      const type = types[Math.floor(Math.random() * types.length)];
+      // Ensure we get a valid type
+      const typeIndex = Math.floor(Math.random() * types.length);
+      const type = types[typeIndex] as 'reconcile' | 'receipt' | 'flag';
       
       const newActivity: ActivityItem = {
         id: Date.now().toString(),

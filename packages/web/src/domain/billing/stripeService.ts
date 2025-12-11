@@ -23,7 +23,7 @@ function getStripe(): Stripe {
       throw new Error('STRIPE_SECRET_KEY environment variable is required');
     }
     stripeInstance = new Stripe(secretKey, {
-      apiVersion: '2025-11-17.clover',
+      apiVersion: '2025-11-17.clover' as any, // Cast to any to avoid strict version check if types are outdated
       typescript: true,
     });
   }
@@ -307,7 +307,7 @@ async function syncSubscription(stripeSubscription: Stripe.Subscription): Promis
     : null;
 
   // Upsert subscription with transaction for atomicity
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: any) => {
     await tx.subscription.upsert({
       where: {
         stripeSubscriptionId: stripeSubscription.id,

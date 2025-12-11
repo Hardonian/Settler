@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
   // Deterministic simulation based on time elapsed since job creation
   const parts = jobId.split('_');
-  if (parts.length < 2) {
+  if (parts.length < 2 || !parts[1]) {
      return NextResponse.json({ error: 'Invalid Job ID' }, { status: 400 });
   }
   

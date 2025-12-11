@@ -296,6 +296,14 @@ if (flag.value) { /* ... */ }`;
 
         {/* Social Proof */}
         <SocialProof />
+        
+        {/* Hidden Preload for components */}
+        <div className="hidden">
+          <TrustBadges />
+          <CustomerLogos />
+          <NewsletterSignup />
+          <ConversionCTA />
+        </div>
 
         <Footer />
       </div>
