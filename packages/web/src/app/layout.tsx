@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { QueryProvider } from "@/lib/providers/query-provider";
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { TenantThemeProvider } from "@/components/tenant/TenantThemeProvider";
 import { getTenantContext } from "@/lib/tenant/server";
 
@@ -178,6 +179,7 @@ export default async function RootLayout({
                 Skip to main content
               </a>
               <SmoothScroll>{children}</SmoothScroll>
+              <PwaInstallPrompt />
               <Analytics />
               <SpeedInsights />
             </QueryProvider>

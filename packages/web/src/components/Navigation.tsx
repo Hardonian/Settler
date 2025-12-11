@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
@@ -21,6 +22,7 @@ const navigationItems = [
 ];
 
 export function Navigation() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -64,22 +66,27 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6" aria-label="Desktop navigation">
-            {navigationItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
-                  'transition-colors duration-200 ease-out',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                  'focus-visible:ring-offset-background',
-                  'rounded px-2 py-1',
-                  'motion-reduce:transition-none'
-                )}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navigationItems.map((item) => {
+              const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    'text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
+                    isActive && 'text-primary-600 dark:text-primary-400 font-medium',
+                    'transition-colors duration-200 ease-out',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                    'focus-visible:ring-offset-background',
+                    'rounded px-2 py-1',
+                    'motion-reduce:transition-none'
+                  )}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
             <DarkModeToggle />
             <Button
               asChild
@@ -132,23 +139,28 @@ export function Navigation() {
             aria-label="Mobile navigation menu"
           >
             <nav className="flex flex-col space-y-4" aria-label="Mobile navigation">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
-                    'transition-colors duration-200 ease-out',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                    'focus-visible:ring-offset-background',
-                    'rounded px-2 py-1',
-                    'motion-reduce:transition-none'
-                  )}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navigationItems.map((item) => {
+                const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
+                      isActive && 'text-primary-600 dark:text-primary-400 font-medium',
+                      'transition-colors duration-200 ease-out',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                      'focus-visible:ring-offset-background',
+                      'rounded px-2 py-1',
+                      'motion-reduce:transition-none'
+                    )}
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
               <Button
                 asChild
                 variant="default"
