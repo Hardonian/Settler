@@ -203,8 +203,8 @@ export class PredictiveOps {
       });
 
       const durations = results
-        .filter((r) => r.completedAt !== null && r.startedAt !== null)
-        .map((r) => (r.completedAt!.getTime() - r.startedAt!.getTime()));
+        .filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt !== null && r.startedAt !== null)
+        .map((r: { completedAt: Date; startedAt: Date }) => (r.completedAt.getTime() - r.startedAt.getTime()));
       
       const avgDuration = durations.length > 0
         ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
