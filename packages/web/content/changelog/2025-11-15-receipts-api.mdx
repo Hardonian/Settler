@@ -1,0 +1,24 @@
+---
+title: "Introducing the Receipts API"
+date: "2025-11-15"
+description: "Turn any image or PDF into structured JSON with 99.8% accuracy."
+author: "Engineering Team"
+---
+
+We are thrilled to announce the general availability of the **Receipts API**. 
+
+Parsing financial documents has traditionally been a painful mix of regex, third-party OCR tools, and manual review. Our new endpoint `/v1/receipts/parse` changes that.
+
+## Features
+- **Smart Extraction**: Automatically identifies Merchant, Total, Tax, and Date.
+- **Line Item Detail**: Extracts individual line items with quantity and unit price.
+- **Currency Awareness**: Detects currency symbols and formats.
+- **Confidence Scores**: Returns a confidence score for every field, so you can flag low-confidence parses for human review.
+
+```typescript
+const receipt = await client.receipts.parse("https://.../dinner.jpg");
+console.log(receipt.total); // 45.50
+console.log(receipt.merchant.name); // "Joe's Pizza"
+```
+
+Check out the [documentation](/docs/receipts) to get started.

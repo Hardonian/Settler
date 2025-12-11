@@ -1,0 +1,26 @@
+---
+title: "Reconciliation Rules Engine Update"
+date: "2025-09-10"
+description: "New fuzzy matching capabilities and improved conflict resolution."
+author: "Product Team"
+---
+
+Reconciliation isn't always exact. Sometimes "Starbucks" is logged as "STARBUCKS #123" on your bank statement. 
+
+Today we are updating our Rules Engine to support **Fuzzy Matching**.
+
+## New Rule Types
+- `contains`: Match if string A contains string B.
+- `fuzzy_string`: Uses Levenshtein distance to find close matches.
+- `date_range`: Match transactions within a configurable window (e.g. +/- 2 days).
+
+These rules can be mixed and matched with strict equality checks to create powerful reconciliation logic.
+
+```json
+{
+  "rules": [
+    { "field": "amount", "type": "exact", "tolerance": 0.01 },
+    { "field": "vendor", "type": "fuzzy_string", "threshold": 0.8 }
+  ]
+}
+```
