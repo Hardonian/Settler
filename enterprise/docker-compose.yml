@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  settler-api:
+    image: settler/api:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://settler:settler@postgres:5432/settler
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=production
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+
+  settler-worker:
+    image: settler/worker:latest
+    environment:
+      - DATABASE_URL=postgresql://settler:settler@postgres:5432/settler
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=settler
+      - POSTGRES_PASSWORD=settler
+      - POSTGRES_DB=settler
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
+  redis_data:

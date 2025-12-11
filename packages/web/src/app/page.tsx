@@ -11,7 +11,7 @@ import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
-import { Zap, Lock, Rocket, Target, Plug, BarChart3 } from "lucide-react";
+import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 
@@ -30,96 +30,68 @@ export default function Home() {
   // Track page view
   useEffect(() => {
     analytics.trackPageView('/', {
-      title: 'Settler - Reconciliation as a Service API',
+      title: 'Settler - The API Infrastructure for Financial Evidence',
     });
   }, []);
 
   const features = [
     {
-      icon: Zap,
-      title: "5-Minute Integration",
-      description: "Get started in minutes with our simple API. No complex setup required.",
-      gradient: "from-electric-cyan to-electric-blue",
+      icon: RefreshCw,
+      title: "Reconcile Anything",
+      description: "Match transactions across Stripe, Shopify, DBs, and more with 100% accuracy. Our event-sourced engine handles millions of events per second.",
+      gradient: "from-blue-500 to-indigo-500",
     },
     {
-      icon: Lock,
-      title: "Enterprise Security",
-      description: "SOC 2 Type II, GDPR, and PCI-DSS compliant. Your data is always secure.",
-      gradient: "from-electric-purple to-electric-indigo",
+      icon: FileText,
+      title: "Receipts → JSON",
+      description: "Turn PDFs and images into structured financial data with AI-powered OCR. Extract vendors, dates, totals, and line items instantly.",
+      gradient: "from-green-500 to-emerald-500",
     },
     {
-      icon: Rocket,
-      title: "Real-Time Processing",
-      description: "Reconcile transactions in real-time with webhook support and instant updates.",
-      gradient: "from-electric-neon to-electric-cyan",
+      icon: Calculator,
+      title: "Deterministic Convert",
+      description: "Precise unit and currency conversion without floating point errors. Handle FX rates and unit conversions with confidence.",
+      gradient: "from-indigo-500 to-purple-500",
     },
     {
-      icon: Target,
-      title: "99.7% Accuracy",
-      description: "Advanced matching algorithms ensure high accuracy with confidence scoring.",
-      gradient: "from-electric-blue to-electric-purple",
+      icon: Flag,
+      title: "Developer-First Flags",
+      description: "Edge-evaluated feature flags with typed payloads and instant rollouts. Manage entitlements and phased releases programmatically.",
+      gradient: "from-amber-500 to-orange-500",
     },
-    {
-      icon: Plug,
-      title: "50+ Integrations",
-      description: "Pre-built adapters for Stripe, Shopify, QuickBooks, PayPal, and more.",
-      gradient: "from-electric-indigo to-electric-neon",
-    },
-    {
-      icon: BarChart3,
-      title: "Complete Visibility",
-      description: "Full audit trails, detailed reports, and real-time dashboards.",
-      gradient: "from-electric-cyan to-electric-purple",
-    }
   ];
 
   const heroStats = [
-    { value: '99.7%', label: 'Accuracy', description: 'Reconciliation precision' },
-    { value: '<50ms', label: 'API Latency', description: 'Average response time' },
-    { value: '50+', label: 'Integrations', description: 'Platform adapters' },
-    { value: '5min', label: 'Setup Time', description: 'Time to first reconciliation' },
+    { value: '100%', label: 'Accuracy', description: 'Deterministic math' },
+    { value: '<30ms', label: 'Edge Latency', description: 'Global evaluation' },
+    { value: 'ISO', label: 'Compliant', description: '27001 & SOC 2 Ready' },
+    { value: '1st', label: 'Developer DX', description: 'Typed SDKs' },
   ];
 
-  const secondaryStats = [
-    { value: '10M+', label: 'Transactions Reconciled', description: 'Total processed' },
-    { value: '24/7', label: 'Uptime', description: 'Service availability' },
-    { value: '99.9%', label: 'Reliability', description: 'SLA guarantee' },
-    { value: '<1s', label: 'Processing Speed', description: 'Per transaction' },
-  ];
+  const codeExample = `import { SettlerClient } from "@settler/sdk";
 
-  const codeExample = `npm install @settler/sdk
+const client = new SettlerClient({ apiKey: "sk_live_..." });
 
-import Settler from "@settler/sdk";
-
-const client = new Settler({
-  apiKey: "sk_your_api_key",
-});
-
+// 1. Reconcile Payments
 const job = await client.jobs.create({
-  name: "Shopify-Stripe Reconciliation",
-  source: { adapter: "shopify", config: {} },
-  target: { adapter: "stripe", config: {} },
-  rules: {
-    matching: [
-      { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 },
-    ],
-  },
+  source: { adapter: "stripe" },
+  target: { adapter: "database" },
+  rules: { matching: [{ field: "amount", tolerance: 0.01 }] }
 });
 
-const report = await client.jobs.run(job.id);
-// ✅ 98.7% accuracy, 145 matched, 3 unmatched`;
+// 2. Parse Receipt
+const receipt = await client.receipts.parse("https://receipts.com/123.jpg");
+console.log(receipt.total, receipt.merchant.name);
+
+// 3. Convert Currency
+const fx = await client.convert.currency(100, "USD", "EUR");
+
+// 4. Check Feature Flag
+const flag = await client.flags.evaluate("new-dashboard", { userId: "123" });
+if (flag.value) { /* ... */ }`;
 
   return (
     <>
-      {/* Skip to main content for accessibility */}
-      <a 
-        href="#main-content" 
-        className="skip-to-main"
-        aria-label="Skip to main content"
-      >
-        Skip to main content
-      </a>
       <div 
         id="main-content"
         className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black"
@@ -128,17 +100,15 @@ const report = await client.jobs.run(job.id);
       >
         <Navigation />
 
-        {/* Hero Section with Parallax Background */}
+        {/* Hero Section */}
         <section 
           className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[90vh] flex items-center"
           aria-labelledby="hero-heading"
         >
-          {/* Parallax Background with Blobs */}
           <ParallaxBackground>
             <ParallaxBlobs count={5} />
           </ParallaxBackground>
           
-          {/* Grid background */}
           <div 
             className="absolute inset-0 bg-grid-slate-200 dark:bg-grid-slate-800 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.3))] -z-10"
             aria-hidden="true"
@@ -147,241 +117,193 @@ const report = await client.jobs.run(job.id);
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center">
               <Badge 
-                className="mb-6 glass-strong text-blue-600 dark:text-electric-cyan border-blue-300 dark:border-electric-cyan/30 hover:border-blue-400 dark:hover:border-electric-cyan/50 transition-all duration-200"
-                aria-label="Product category"
+                className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30"
               >
-                Reconciliation-as-a-Service API
+                The Financial Infrastructure for Developers
               </Badge>
               
               <TextRevealHeading
                 as="h1"
                 id="hero-heading"
-                text="Automate Payment Reconciliation in Minutes"
-                className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent"
+                text="The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags."
+                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent"
                 delay={0.1}
                 staggerDelay={0.02}
                 splitBy="words"
               />
               
               <TextReveal
-                text="Connect Shopify, Stripe, PayPal, and 50+ platforms. Automatically match transactions, orders, and payments with 99.7% accuracy. No manual work required."
-                className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-3xl mx-auto"
+                text="Settler gives engineering teams reconciliation, receipts parsing, deterministic conversions, and production-grade feature flags—all through clean, typed APIs."
+                className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
                 delay={0.4}
                 staggerDelay={0.01}
                 splitBy="words"
               />
               
-              <div 
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
-                role="group"
-                aria-label="Call to action buttons"
-              >
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
                 <Button 
                   size="lg" 
                   asChild 
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-electric-cyan dark:to-electric-blue dark:hover:from-electric-cyan/90 dark:hover:to-electric-blue/90 text-white px-8 py-6 text-lg shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-electric-cyan/50 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-blue-500 dark:focus:ring-electric-cyan focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
-                  onClick={() => trackCTA('Start Free Trial', { location: 'hero' })}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-blue-500/20 transition-all transform hover:scale-105"
+                  onClick={() => trackCTA('Get API Key', { location: 'hero' })}
                 >
-                  <Link href="/signup" aria-label="Start free trial of Settler">
-                    Start Free Trial
+                  <Link href="/signup">
+                    Get API Key
                   </Link>
                 </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
                   asChild 
-                  className="px-8 py-6 text-lg border-2 border-slate-300 dark:border-white/20 glass hover:border-indigo-500 dark:hover:border-electric-purple/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-electric-purple focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+                  className="px-8 py-6 text-lg border-2"
                 >
-                  <Link href="/docs" aria-label="View Settler documentation">
-                    View Documentation
+                  <Link href="/docs">
+                    View Docs
                   </Link>
                 </Button>
               </div>
               
               {/* Hero Stats */}
-              <div 
-                className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto"
-                role="list"
-                aria-label="Key performance metrics"
-              >
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-16">
                 {heroStats.map((stat, index) => (
-                  <div key={index} role="listitem">
-                    <SpotlightCard className="p-4 h-full">
-                      <AnimatedStatCard
-                        value={stat.value}
-                        label={stat.label}
-                        description={stat.description}
-                        index={index}
-                        delay={1.2 + index * 0.1}
-                      />
-                    </SpotlightCard>
-                  </div>
+                  <SpotlightCard key={index} className="p-4 h-full">
+                    <AnimatedStatCard
+                      value={stat.value}
+                      label={stat.label}
+                      description={stat.description}
+                      index={index}
+                      delay={1.2 + index * 0.1}
+                    />
+                  </SpotlightCard>
                 ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* Secondary Stats Section */}
-        <section 
-          className="py-16 glass-subtle"
-          aria-labelledby="secondary-stats-heading"
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <TextRevealHeading
-              as="h2"
-              id="secondary-stats-heading" 
-              text="Trusted by Industry Leaders"
-              className="text-2xl md:text-3xl font-bold text-center mb-12 text-slate-900 dark:text-white"
-              delay={0}
-              staggerDelay={0.02}
-            />
-            <BentoGrid columns={4} gap="md">
-              {secondaryStats.map((stat, index) => (
-                <BentoGridItem key={index} colSpan={1}>
-                  <SpotlightCard className="h-full">
-                    <AnimatedStatCard
-                      value={stat.value}
-                      label={stat.label}
-                      description={stat.description}
-                      index={index}
-                    />
-                  </SpotlightCard>
-                </BentoGridItem>
-              ))}
+        {/* Features Grid */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 glass-subtle">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+                Core Primitives
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Everything you need to build reliable financial software, exposed as simple, composable APIs.
+              </p>
+            </div>
+            
+            <BentoGrid columns={2} gap="lg">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <BentoGridItem key={index} colSpan={1}>
+                    <SpotlightCard className="h-full flex flex-col p-8">
+                      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3.5 mb-6 flex items-center justify-center`}>
+                        <Icon className="w-full h-full text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3 text-slate-900 dark:text-white">{feature.title}</h3>
+                      <p className="text-slate-600 dark:text-slate-300 text-lg mb-6 flex-grow">{feature.description}</p>
+                      <div className="flex items-center text-blue-600 dark:text-blue-400 font-semibold group cursor-pointer">
+                        Learn more <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      </div>
+                    </SpotlightCard>
+                  </BentoGridItem>
+                );
+              })}
             </BentoGrid>
           </div>
         </section>
 
-        {/* Trust Badges */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 glass-subtle">
-          <div className="max-w-7xl mx-auto">
-            <TrustBadges />
+        {/* Code Example */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
+           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+             <div>
+               <h2 className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white">
+                 Developer Experience First
+               </h2>
+               <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
+                 We've obsessed over every detail of our SDKs. Fully typed, extensive documentation, and zero-config defaults mean you can ship features faster.
+               </p>
+               <div className="space-y-4">
+                 {[
+                   "TypeScript, Python, Go, and Ruby SDKs",
+                   "OpenAPI 3.1 Specification",
+                   "Interactive Developer Console",
+                   "Local Development Sandbox"
+                 ].map((item, i) => (
+                   <div key={i} className="flex items-center gap-3">
+                     <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">✓</div>
+                     <span className="text-slate-700 dark:text-slate-300 font-medium">{item}</span>
+                   </div>
+                 ))}
+               </div>
+               <div className="mt-8">
+                 <Link href="/docs/sdk" className="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                   Explore the SDKs &rarr;
+                 </Link>
+               </div>
+             </div>
+             <div>
+               <SpotlightCard className="p-0 overflow-hidden shadow-2xl">
+                <AnimatedCodeBlock
+                  code={codeExample}
+                  title="Universal API Client"
+                  description="One client, all primitives"
+                  language="typescript"
+                />
+               </SpotlightCard>
+             </div>
+           </div>
+        </section>
+
+        {/* Architecture Preview */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white">
+               Built on a Solid Foundation
+             </h2>
+             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-12">
+               See how we handle double-entry accounting, event sourcing, and edge execution to guarantee correctness.
+             </p>
+             <div className="relative group cursor-pointer" onClick={() => window.location.href='/architecture'}>
+               <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 flex items-end justify-center pb-8">
+                 <Button variant="secondary" className="shadow-lg">View Full Architecture</Button>
+               </div>
+               <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden opacity-50 blur-[1px] group-hover:opacity-75 group-hover:blur-0 transition-all duration-500">
+                  {/* Placeholder for architecture preview image/diagram */}
+                  <div className="bg-slate-100 dark:bg-slate-800 h-[300px] w-full flex items-center justify-center">
+                    <LayoutTemplate className="w-16 h-16 text-slate-300" />
+                  </div>
+               </div>
+             </div>
           </div>
         </section>
 
-        {/* Customer Logos */}
-        <CustomerLogos />
-
-        {/* Code Example Section */}
-        <section 
-          className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
-          aria-labelledby="code-example-heading"
-        >
-          <ParallaxBackground speed={0.3}>
-            <ParallaxBlobs count={3} />
-          </ParallaxBackground>
-          <div className="max-w-7xl mx-auto relative z-10">
-            <div className="text-center mb-12">
-              <TextRevealHeading
-                as="h2"
-                id="code-example-heading"
-                text="Get Started in Minutes"
-                className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
-                delay={0}
-                staggerDelay={0.02}
-              />
-              <TextReveal
-                text="Simple, developer-friendly API that works with any platform"
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto"
-                delay={0.2}
-                staggerDelay={0.01}
-              />
-            </div>
-            <SpotlightCard className="p-0 overflow-hidden">
-              <AnimatedCodeBlock
-                code={codeExample}
-                title="Quick Start Example"
-                description="Reconcile Shopify orders with Stripe payments in just a few lines of code"
-                language="typescript"
-              />
-            </SpotlightCard>
+        {/* Why Settler */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-600 text-white">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Why Settler Exists</h2>
+            <p className="text-xl text-blue-100 mb-8">
+              We got tired of building the same fragile financial infrastructure at every company. 
+              We built Settler to solve it once and for all.
+            </p>
+            <Button size="lg" variant="secondary" asChild className="text-blue-600">
+              <Link href="/why-settler">Read our Manifesto</Link>
+            </Button>
           </div>
         </section>
 
-        {/* Features Section with BentoGrid */}
-        <section 
-          className="py-20 px-4 sm:px-6 lg:px-8 glass-subtle"
-          aria-labelledby="features-heading"
-        >
-          <div className="max-w-7xl mx-auto w-full">
-            <div className="text-center mb-16">
-              <TextRevealHeading
-                as="h2"
-                id="features-heading"
-                text="Everything You Need"
-                className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
-                delay={0}
-                staggerDelay={0.02}
-              />
-              <TextReveal
-                text="Built for developers, designed for scale"
-                className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto"
-                delay={0.2}
-                staggerDelay={0.01}
-              />
-            </div>
-            <div className="w-full">
-              <BentoGrid columns={3} gap="lg" className="w-full">
-                {features.map((feature, index) => {
-                  const Icon = feature.icon;
-                  return (
-                    <BentoGridItem 
-                      key={index} 
-                      colSpan={index === 0 || index === 3 ? 2 : 1}
-                      rowSpan={index === 0 ? 2 : 1}
-                      className="w-full"
-                    >
-                      <SpotlightCard 
-                        className="h-full flex flex-col p-6 w-full"
-                        spotlightColor={index % 2 === 0 ? 'rgba(6, 182, 212, 0.3)' : 'rgba(168, 85, 247, 0.3)'}
-                      >
-                        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${feature.gradient} p-3 mb-4 flex items-center justify-center`}>
-                          <Icon className="w-6 h-6 text-white" />
-                        </div>
-                      <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">{feature.title}</h3>
-                      <p className="text-slate-700 dark:text-slate-300 flex-grow">{feature.description}</p>
-                      </SpotlightCard>
-                    </BentoGridItem>
-                  );
-                })}
-              </BentoGrid>
-            </div>
-          </div>
-        </section>
-
-        {/* Social Proof / Testimonials */}
+        {/* Social Proof */}
         <SocialProof />
-
-        {/* Newsletter Signup */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-          <ParallaxBackground speed={0.2}>
-            <ParallaxBlobs count={2} />
-          </ParallaxBackground>
-          <div className="max-w-4xl mx-auto relative z-10">
-            <NewsletterSignup />
-          </div>
-        </section>
-
-        {/* Final CTA Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-          <ParallaxBackground speed={0.25}>
-            <ParallaxBlobs count={4} />
-          </ParallaxBackground>
-          <div className="max-w-4xl mx-auto relative z-10">
-            <SpotlightCard className="p-12 text-center">
-            <ConversionCTA
-              title="Ready to Automate Your Reconciliation?"
-              description="Join thousands of companies using Settler to automate their financial operations. Start free, no credit card required."
-              primaryAction="Start Free Trial"
-              primaryLink="/signup"
-              secondaryAction="View Pricing"
-              secondaryLink="/pricing"
-              variant="gradient"
-            />
-            </SpotlightCard>
-          </div>
-        </section>
+        
+        {/* Hidden Preload for components */}
+        <div className="hidden">
+          <TrustBadges />
+          <CustomerLogos />
+          <NewsletterSignup />
+          <ConversionCTA />
+        </div>
 
         <Footer />
       </div>

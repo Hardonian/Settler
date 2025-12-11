@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  title: Settler API
+  description: The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.
+  version: 1.0.0
+servers:
+  - url: https://api.settler.dev
+    description: Production server
+paths:
+  /v1/jobs:
+    post:
+      summary: Create a reconciliation job
+      operationId: createJob
+      tags:
+        - Jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+      responses:
+        '200':
+          description: Job created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+  /v1/receipts/parse:
+    post:
+      summary: Parse a receipt
+      operationId: parseReceipt
+      tags:
+        - Receipts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Receipt parsed
+  /v1/feature-flags/evaluate:
+    post:
+      summary: Evaluate a feature flag
+      operationId: evaluateFlag
+      tags:
+        - Flags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                flagKey:
+                  type: string
+                context:
+                  type: object
+      responses:
+        '200':
+          description: Flag evaluated
+  /v1/convert/currency:
+    post:
+      summary: Convert currency
+      operationId: convertCurrency
+      tags:
+        - Convert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                from:
+                  type: string
+                to:
+                  type: string
+      responses:
+        '200':
+          description: Conversion result
+components:
+  schemas:
+    CreateJobRequest:
+      type: object
+      required:
+        - name
+        - source
+        - target
+        - rules
+      properties:
+        name:
+          type: string
+        source:
+          $ref: '#/components/schemas/AdapterConfig'
+        target:
+          $ref: '#/components/schemas/AdapterConfig'
+        rules:
+          $ref: '#/components/schemas/MatchingRules'
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+    AdapterConfig:
+      type: object
+      properties:
+        adapter:
+          type: string
+        config:
+          type: object
+    MatchingRules:
+      type: object
+      properties:
+        matching:
+          type: array
+          items:
+            type: object

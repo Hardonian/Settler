@@ -1,0 +1,22 @@
+---
+title: "Settler Node.js SDK v1.0"
+date: "2025-10-01"
+description: "A complete rewrite of our Node.js client with full TypeScript support."
+author: "DevRel Team"
+---
+
+We've rebuilt our Node.js SDK from the ground up to provide a world-class developer experience.
+
+## What's New
+- **Full Typing**: Every request and response is fully typed. No more guessing what the API returns.
+- **Automatic Retries**: Network blips happen. The SDK now automatically retries failed idempotent requests with exponential backoff.
+- **Idempotency**: We now automatically generate idempotency keys for all mutation requests if you don't provide one.
+
+## Installation
+
+```bash
+npm install @settler/sdk
+```
+
+## Migration
+If you are upgrading from v0.x, please read our [Migration Guide](/docs/migration).
