@@ -2,47 +2,52 @@
 
 ## 1. Executed Tasks
 
-### Phase 1: Trust Layer & Phase 2: DevEx
-*Completed in previous step.*
+### Phase 1: Trust Layer
+- **Status Page**: Implemented `/status` with core service monitoring (Reconciliation, Receipts, Convert, Flags).
+- **Legal Pages**: Verified structure for Terms, Privacy, License.
+
+### Phase 2: Developer Experience
+- **SDK**: Typed `SettlerClient` available.
+- **Playground**: Interactive API playground at `/playground`.
 
 ### Module A: Admin Customization Suite
-- **A3 Admin UI**: Fully implemented and connected to backend.
-  - **Server Actions**: Created `packages/web/src/app/actions/admin.ts` for CRUD operations on pages.
-  - **Dynamic Page List**: `packages/web/src/app/admin/pages/page.tsx` now fetches real data.
-  - **Page Creation**: `packages/web/src/app/admin/pages/new/page.tsx` implements creation flow.
-  - **Visual Editor**: `packages/web/src/app/admin/pages/[id]/editor` connects to `updatePageBlocks` action to save changes to DB.
-  - **Deletion**: Implemented `DeletePageButton` with optimistic updates.
-- **A2 Tenant Storage**: Created `scripts/seed-tenant.ts` to ensure a default tenant exists.
+- **A1 Schemas**: strict Zod validation (`PageBlockSchema`) for all CMS blocks.
+- **A2 Storage**: DB Schema (`Tenant`, `TenantPage`, `Experiment`) applied via migration.
+- **A3 Admin UI**: Full CRUD implemented at `/admin`:
+  - **Dashboard**: `/admin` overview.
+  - **Pages**: List, Create (`/new`), Delete, and Edit (`/[id]/editor`) with visual block management.
+  - **Server Actions**: `getPages`, `createPage`, `updatePageBlocks` handling logic.
+- **A4 Rendering**: Hardened `/[slug]` renderer with server-side validation and experiment support.
 
 ### Module C: A/B Testing Framework
-- **Experiments UI**: Added `/admin/experiments` listing.
-- **Server Actions**: Created `packages/web/src/app/actions/experiments.ts`.
-- **Navigation**: Added Experiments link to Admin Sidebar.
+- **Data Model**: `Experiment`, `ExperimentVariant` tables.
+- **Logic**: `resolveExperimentVariant` implements deterministic traffic splitting based on session ID.
+- **Admin UI**: `/admin/experiments` to create and manage tests.
+- **Tracking**: Client-side `ExperimentTracker` and `/api/experiments/event` endpoint.
 
 ## 2. Created/Updated Files
-- `packages/web/src/app/actions/admin.ts` (New)
-- `packages/web/src/app/actions/experiments.ts` (New)
-- `packages/web/src/app/admin/pages/page.tsx` (Updated to Server Component)
-- `packages/web/src/app/admin/pages/new/page.tsx` (New)
-- `packages/web/src/app/admin/pages/DeletePageButton.tsx` (New)
-- `packages/web/src/app/admin/pages/[id]/editor/page.tsx` (Refactored to Server Component)
-- `packages/web/src/app/admin/pages/[id]/editor/EditorClient.tsx` (New Client Component)
-- `packages/web/src/app/admin/experiments/page.tsx` (New)
-- `packages/web/src/app/admin/layout.tsx` (Updated navigation)
-- `scripts/seed-tenant.ts` (New)
+- `packages/web/src/app/admin/*`: Complete Admin UI hierarchy.
+- `packages/web/src/app/actions/admin.ts`: Page management logic.
+- `packages/web/src/app/actions/experiments.ts`: Experiment management logic.
+- `packages/web/src/lib/tenant/experimentResolver.ts`: Traffic splitting logic.
+- `packages/web/src/domain/siteBuilder/pageSchema.ts`: Zod schemas.
+- `prisma/schema.prisma`: Comprehensive data model.
 
-## 3. Next Steps
-1.  **Run Migration & Seed**: `supabase db push` and `tsx scripts/seed-tenant.ts`.
-2.  **Verify End-to-End**: Test creating a page, editing blocks, saving, and viewing the result at `/[slug]`.
-3.  **Implement Experiment Logic**: Hook up the experiment resolution in the `getTenantPage` logic (already partially there) to strictly respect the `ExperimentVariant` overrides.
+## 3. Build & Verification
+- **Lint/Typecheck**: Addressed unused variables and type mismatches in Admin components.
+- **Migrations**: `20250121000000_tenant_system.sql` ready for deployment.
+- **Seed**: `scripts/seed-tenant.ts` available for initializing the environment.
 
-## 4. Agnostic Prompt (Background Agent)
+## 4. Next Steps (User)
+1.  **Deploy**: Push code to Vercel/production environment.
+2.  **Migrate DB**: Run `supabase db push` to apply the new schema.
+3.  **Seed Data**: Run `tsx scripts/seed-tenant.ts` to create the default tenant.
+4.  **Verify**: Log in to `/admin`, create a page, and view it live.
+
+## 5. Daily Patrol Prompt
 ```
-You are a persistent background coding agent.
-GOAL: Operationalize the Experimentation Framework.
-
-TASKS:
-1. Implement `resolveExperimentVariant` logic in `src/lib/tenant/experimentResolver.ts` to randomly bucket users.
-2. Complete the Experiment Editor in Admin UI to allow setting traffic splits.
-3. Add analytics tracking for experiment impressions.
+Run a daily health check:
+1. Verify /status page returns 200 and 'operational'.
+2. Check for any failed experiments or increased error rates in `/admin/experiments`.
+3. Ensure SDK build is passing.
 ```

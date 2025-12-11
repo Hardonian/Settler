@@ -4,7 +4,6 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getTenantContext } from '@/lib/tenant/server';
 import { revalidatePath } from 'next/cache';
 import { PageBlock } from '@/domain/siteBuilder/pageSchema';
-import { redirect } from 'next/navigation';
 
 export type ActionState = {
   success?: boolean;
@@ -45,9 +44,6 @@ export async function getPages(): Promise<ActionState> {
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true,
-        title: true, // Note: Schema might not have title directly on TenantPage, usually it's derived or in metadata. 
-                     // Looking at schema: TenantPage has slug, pageType, blocks. 
-                     // We'll use slug or extract title from metadata/blocks.
         slug: true,
         isDraft: true,
         updatedAt: true,

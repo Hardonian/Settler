@@ -4,13 +4,12 @@ import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PageBlock, blockDefaults, PageBlockSchema } from '@/domain/siteBuilder/pageSchema';
+import { PageBlock, blockDefaults } from '@/domain/siteBuilder/pageSchema';
 import { PageRenderer } from '@/domain/siteBuilder/pageRenderer';
 import { updatePageBlocks } from '@/app/actions/admin';
 import { Plus, Save, ArrowLeft, Trash2, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 
 interface EditorClientProps {
     initialPage: any;
@@ -35,7 +34,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
     setSelectedBlockId(newBlock.id);
   };
 
-  const updateBlock = (id: string, updates: Partial<PageBlock>) => {
+  const updateBlock = (id: string, updates: any) => {
     setBlocks(blocks.map(b => b.id === id ? { ...b, ...updates } as PageBlock : b));
   };
 
@@ -53,7 +52,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
     const newBlocks = [...blocks];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]];
-    setBlocks(newBlocks);
+    setBlocks(newBlocks as PageBlock[]);
   };
 
   const handleSave = () => {
@@ -106,7 +105,7 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
                 
                 {/* Overlay for selection */}
                 <div className="absolute inset-0 pointer-events-none">
-                    {blocks.map((block, index) => (
+                    {blocks.map((block) => (
                         <div 
                             key={block.id}
                             className={`

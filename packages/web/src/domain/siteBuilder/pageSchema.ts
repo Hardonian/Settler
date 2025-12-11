@@ -8,7 +8,7 @@ export const BaseBlockSchema = z.object({
   id: z.string(),
   type: z.string(),
   visible: z.boolean().optional().default(true),
-  metadata: z.record(z.unknown()).optional().default({}),
+  metadata: z.record(z.string(), z.unknown()).optional().default({}),
 });
 
 // ============================================================================

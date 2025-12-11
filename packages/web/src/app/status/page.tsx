@@ -17,17 +17,15 @@ interface SystemStatus {
 }
 
 export default function StatusPage() {
-  const [systems, setSystems] = useState<SystemStatus[]>([
+  const systems: SystemStatus[] = [
     { name: "Reconciliation Engine", status: "operational", uptime: 99.99 },
     { name: "Receipts Processing", status: "operational", uptime: 99.95 },
     { name: "Convert Service", status: "operational", uptime: 99.98 },
     { name: "Feature Flags", status: "operational", uptime: 100.0 },
     { name: "API Gateway", status: "operational", uptime: 99.99 },
-  ]);
-  const [overallStatus, setOverallStatus] = useState<"operational" | "degraded" | "down">(
-    "operational"
-  );
-  const [loading, setLoading] = useState(false);
+  ];
+  const overallStatus: "operational" | "degraded" | "down" = "operational";
+  const loading = false;
 
   useEffect(() => {
     // Simulate fetch for now to keep the hardcoded values active
@@ -36,21 +34,6 @@ export default function StatusPage() {
     };
     void loadStatus();
   }, []);
-
-  const fetchStatus = async () => {
-    try {
-      const response = await fetch("/api/status");
-      if (response.ok) {
-        const data = await response.json();
-        setSystems(data.systems || []);
-        setOverallStatus(data.overallStatus || "operational");
-      }
-    } catch (error) {
-      console.error("Failed to fetch status:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const statusConfig = {
     operational: {

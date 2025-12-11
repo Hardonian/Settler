@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { FlaskConical, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { getExperiments } from '@/app/actions/experiments';
 
 export default async function ExperimentsList() {

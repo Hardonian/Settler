@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { Edit, MoreHorizontal, FilePlus, Trash2 } from 'lucide-react';
-import { getPages, deletePage } from '@/app/actions/admin';
+import { Edit, FilePlus } from 'lucide-react';
+import { getPages } from '@/app/actions/admin';
 import { DeletePageButton } from './DeletePageButton'; // We'll create this small client component
 
 export const dynamic = 'force-dynamic';
