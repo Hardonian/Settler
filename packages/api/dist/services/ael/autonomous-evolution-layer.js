@@ -230,9 +230,14 @@ class AutonomousEvolutionLayer {
     async autoPatchConfigurations() {
         const proposals = [];
         // Find jobs with missing configurations
+        // Note: ReconJob doesn't have a 'config' field - configs are in sourceConfigEncrypted/targetConfigEncrypted
+        // This check is not applicable, so we'll skip it or check for empty configs differently
         const jobs = await this.prisma.reconJob.findMany({
             where: {
-                config: null,
+                OR: [
+                    { sourceConfigEncrypted: '' },
+                    { targetConfigEncrypted: '' },
+                ],
             },
             take: 100,
         });

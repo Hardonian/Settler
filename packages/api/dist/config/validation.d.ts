@@ -1,6 +1,10 @@
 /**
  * Environment Variable Validation
  * Uses envalid for type-safe environment variable validation
+ *
+ * CTO Mode: Build-time Safety
+ * - Runtime-only variables have defaults during build to prevent build failures
+ * - These variables will be validated at runtime, not during build
  */
 export declare const env: Readonly<{
     NODE_ENV: "development" | "test" | "production" | "staging" | "preview";

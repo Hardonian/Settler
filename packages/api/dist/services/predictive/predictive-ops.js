@@ -162,10 +162,12 @@ class PredictiveOps {
                 },
                 take: 50,
             });
-            const avgDuration = results
-                .filter((r) => r.completedAt && r.startedAt)
-                .map((r) => r.completedAt.getTime() - r.startedAt.getTime())
-                .reduce((a, b, _i, arr) => a + b / arr.length, 0);
+            const durations = results
+                .filter((r) => r.completedAt !== null && r.startedAt !== null)
+                .map((r) => (r.completedAt.getTime() - r.startedAt.getTime()));
+            const avgDuration = durations.length > 0
+                ? durations.reduce((a, b) => a + b, 0) / durations.length
+                : 0;
             if (avgDuration > 30000) { // > 30 seconds
                 predictions.push({
                     type: 'transformation',
@@ -200,7 +202,11 @@ class PredictiveOps {
         // Calculate daily costs
         const dailyCosts = new Map();
         for (const event of usageEvents) {
+            if (!event.timestamp)
+                continue;
             const date = event.timestamp.toISOString().split('T')[0];
+            if (!date)
+                continue;
             const cost = Number(event.quantity) * 0.002 / 1000; // $0.002 per 1K tokens
             dailyCosts.set(date, (dailyCosts.get(date) || 0) + cost);
         }

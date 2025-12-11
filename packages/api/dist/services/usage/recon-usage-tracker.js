@@ -145,7 +145,7 @@ class ReconUsageTracker {
                     eventType: event.eventType,
                     quantity: event.quantity,
                     unit: event.unit,
-                    metadata: event.metadata || {},
+                    metadata: (event.metadata || {}),
                     timestamp: new Date(),
                 },
             });

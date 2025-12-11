@@ -14,28 +14,7 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
-src/services/contracts/contract-manager.ts(153,26): error TS2352: Conversion of type 'BreakingChange[]' to type 'InputJsonValue' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type 'BreakingChange[]' is not comparable to type 'InputJsonObject'.
-    Index signature for type 'string' is missing in type 'BreakingChange[]'.
-src/services/drift/drift-detector.ts(54,7): error TS2322: Type 'Record<string, unknown> | null | undefined' is not assignable to type 'Record<string, unknown> | null'.
-  Type 'undefined' is not assignable to type 'Record<string, unknown> | null'.
-src/services/economic/value-based-pricing.ts(36,11): error TS6133: 'metaModels' is declared but its value is never read.
-src/services/predictive/predictive-ops.ts(207,14): error TS2345: Argument of type '(r: { completedAt: Date; startedAt: Date; }) => number' is not assignable to parameter of type '(value: { id: string; tenantId: string; metadata: JsonValue; reconJobId: string; createdAt: Date; updatedAt: Date; status: string; executionId: string | null; startedAt: Date; ... 18 more ...; summary: JsonValue; }, index: number, array: { ...; }[]) => number'.
-  Types of parameters 'r' and 'value' are incompatible.
-    Type '{ id: string; tenantId: string; metadata: JsonValue; reconJobId: string; createdAt: Date; updatedAt: Date; status: string; executionId: string | null; startedAt: Date; ... 18 more ...; summary: JsonValue; }' is not assignable to type '{ completedAt: Date; startedAt: Date; }'.
-      Types of property 'completedAt' are incompatible.
-        Type 'Date | null' is not assignable to type 'Date'.
-          Type 'null' is not assignable to type 'Date'.
-src/services/recon-core/recon-core-engine.ts(190,20): error TS2352: Conversion of type 'ReconSummary' to type 'InputJsonValue' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type 'ReconSummary' is not comparable to type 'InputJsonObject'.
-    Index signature for type 'string' is missing in type 'ReconSummary'.
-src/services/recon-core/recon-core-engine.ts(507,11): error TS2322: Type 'InputJsonValue | null' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'null' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-src/services/recon-core/recon-core-engine.ts(508,11): error TS2322: Type 'InputJsonValue | null' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'null' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-src/services/recon-core/recon-core-engine.ts(509,11): error TS2322: Type 'InputJsonValue | null' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'null' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-src/services/resilience/fault-tolerant-recon.ts(36,11): error TS2564: Property '_prisma' has no initializer and is not definitely assigned in the constructor.
-src/services/resilience/fault-tolerant-recon.ts(36,11): error TS6133: '_prisma' is declared but its value is never read.
-src/services/resilience/fault-tolerant-recon.ts(40,10): error TS2551: Property 'prisma' does not exist on type 'FaultTolerantRecon'. Did you mean '_prisma'?
-src/services/resilience/fault-tolerant-recon.ts(156,11): error TS6133: '_hashInput' is declared but its value is never read.
+
+> @settler/api@1.0.0 build
+> tsc
+

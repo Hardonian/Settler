@@ -53,11 +53,12 @@ class TemplateImprover {
                 take: 10,
             });
             if (failures.length > 5) {
+                const currentVersion = template.version ? String(template.version) : '1.0.0';
                 improvements.push({
                     templateId: template.id,
                     templateType: 'mapping',
-                    currentVersion: template.version || '1.0.0',
-                    proposedVersion: this.incrementVersion(template.version || '1.0.0'),
+                    currentVersion,
+                    proposedVersion: this.incrementVersion(currentVersion),
                     improvements: [
                         'Add error handling for missing fields',
                         'Improve field matching logic',
@@ -92,16 +93,23 @@ class TemplateImprover {
                 },
                 take: 50,
             });
-            const avgDuration = results
+            const durations = results
                 .filter((r) => r.completedAt && r.startedAt)
-                .map((r) => r.completedAt.getTime() - r.startedAt.getTime())
-                .reduce((a, b, _, arr) => a + b / arr.length, 0);
+                .map((r) => {
+                if (!r.completedAt || !r.startedAt)
+                    return 0;
+                return r.completedAt.getTime() - r.startedAt.getTime();
+            });
+            const avgDuration = durations.length > 0
+                ? durations.reduce((a, b) => a + b, 0) / durations.length
+                : 0;
             if (avgDuration > 10000) { // > 10 seconds
+                const currentVersion = recipe.version ? String(recipe.version) : '1.0.0';
                 improvements.push({
                     templateId: recipe.id,
                     templateType: 'transform',
-                    currentVersion: recipe.version || '1.0.0',
-                    proposedVersion: this.incrementVersion(recipe.version || '1.0.0'),
+                    currentVersion,
+                    proposedVersion: this.incrementVersion(currentVersion),
                     improvements: [
                         'Optimize transformation logic',
                         'Add caching for repeated operations',
@@ -125,9 +133,17 @@ class TemplateImprover {
         });
         for (const rule of rules) {
             // Check if rule catches issues effectively
-            const jobs = await this.prisma.reconJob.findMany({
-                where: { validationRuleId: rule.id },
-                take: 100,
+            // Note: validationRules is a Json array field, so we check if rule.id is in the array
+            const allJobs = await this.prisma.reconJob.findMany({
+                select: { id: true, validationRules: true },
+            });
+            const jobs = allJobs.filter((job) => {
+                const rules = job.validationRules;
+                if (Array.isArray(rules)) {
+                    return rules.some((r) => (typeof r === 'object' && r !== null && 'id' in r && r.id === rule.id) ||
+                        r === rule.id);
+                }
+                return false;
             });
             // If rule never fails, it might be too lenient
             const results = await this.prisma.reconResult.findMany({
@@ -138,11 +154,12 @@ class TemplateImprover {
                 take: 1,
             });
             if (results.length === 0 && jobs.length > 10) {
+                // ValidationRule doesn't have a version field, use '1.0.0' as default
                 improvements.push({
                     templateId: rule.id,
                     templateType: 'validation',
-                    currentVersion: rule.version || '1.0.0',
-                    proposedVersion: this.incrementVersion(rule.version || '1.0.0'),
+                    currentVersion: '1.0.0',
+                    proposedVersion: this.incrementVersion('1.0.0'),
                     improvements: [
                         'Tighten validation criteria',
                         'Add additional checks',
@@ -175,14 +192,24 @@ class TemplateImprover {
                 where: { id: improvement.templateId },
             });
             if (template) {
+                // Parse version string to number (e.g., "1.0.1" -> 1)
+                const versionParts = improvement.proposedVersion.split('.');
+                const versionNumber = parseInt(versionParts[0] ?? '1', 10) || 1;
                 await this.prisma.mappingTemplate.create({
                     data: {
-                        ...template,
-                        id: undefined, // New record
-                        version: improvement.proposedVersion,
+                        tenantId: template.tenantId,
                         name: `${template.name} (v${improvement.proposedVersion})`,
-                        createdAt: new Date(),
-                        updatedAt: new Date(),
+                        description: template.description,
+                        sourceSchema: template.sourceSchema,
+                        targetSchema: template.targetSchema,
+                        fieldMappings: template.fieldMappings,
+                        transformationRules: template.transformationRules,
+                        validationRules: template.validationRules,
+                        isPublic: template.isPublic,
+                        isSystem: template.isSystem,
+                        usageCount: 0,
+                        version: versionNumber,
+                        metadata: template.metadata,
                     },
                 });
             }

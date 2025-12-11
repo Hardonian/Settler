@@ -4,7 +4,7 @@
  * Enhanced webhook delivery system for Phase II
  * Supports HMAC signing, retry logic, and event filtering
  */
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 export interface WebhookEvent {
     id: string;
     type: string;
@@ -47,11 +47,35 @@ export declare class WebhookService {
     /**
      * Create webhook subscription
      */
-    createWebhook(tenantId: string, userId: string, url: string, events: string[], secret?: string): Promise<any>;
+    createWebhook(tenantId: string, userId: string, url: string, events: string[], secret?: string): Promise<{
+        secret: string;
+        status: string;
+        id: string;
+        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        metadata: Prisma.JsonValue;
+        deletedAt: Date | null;
+        tenantId: string;
+        events: Prisma.JsonValue;
+        url: string;
+    }>;
     /**
      * List webhooks for tenant
      */
-    listWebhooks(tenantId: string): Promise<any>;
+    listWebhooks(tenantId: string): Promise<{
+        secret: string;
+        status: string;
+        id: string;
+        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        metadata: Prisma.JsonValue;
+        deletedAt: Date | null;
+        tenantId: string;
+        events: Prisma.JsonValue;
+        url: string;
+    }[]>;
     /**
      * Delete webhook
      */

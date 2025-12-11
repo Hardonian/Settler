@@ -187,7 +187,7 @@ export class ReconCoreEngine {
           confidenceMin: results.confidenceMin,
           confidenceMax: results.confidenceMax,
           durationMs: BigInt(durationMs),
-          summary: results.summary as Prisma.InputJsonValue,
+          summary: results.summary as unknown as Prisma.InputJsonValue,
         },
       });
 
@@ -504,9 +504,9 @@ export class ReconCoreEngine {
           action: params.action,
           entityType: params.entityType,
           entityId: params.entityId,
-          beforeState: params.beforeState ? (params.beforeState as unknown as Prisma.InputJsonValue) : null,
-          afterState: params.afterState ? (params.afterState as unknown as Prisma.InputJsonValue) : null,
-          changes: params.changes ? (params.changes as unknown as Prisma.InputJsonValue) : null,
+          beforeState: params.beforeState ? (params.beforeState as unknown as Prisma.InputJsonValue) : undefined,
+          afterState: params.afterState ? (params.afterState as unknown as Prisma.InputJsonValue) : undefined,
+          changes: params.changes ? (params.changes as unknown as Prisma.InputJsonValue) : undefined,
           metadata: (params.metadata || {}) as Prisma.InputJsonValue,
         },
       });

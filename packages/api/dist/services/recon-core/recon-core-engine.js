@@ -43,12 +43,12 @@ class ReconCoreEngine {
                     targetConfigEncrypted: input.targetConfigEncrypted,
                     mappingTemplateId: input.mappingTemplateId,
                     transformRecipeId: input.transformRecipeId,
-                    validationRules: input.validationRules || [],
+                    validationRules: (input.validationRules || []),
                     reconStrategy: input.reconStrategy || 'deterministic',
                     scheduleCron: input.scheduleCron,
                     scheduleTimezone: input.scheduleTimezone || 'UTC',
                     status: 'active',
-                    metadata: input.metadata || {},
+                    metadata: (input.metadata || {}),
                 },
             });
             // Log audit event
@@ -374,10 +374,10 @@ class ReconCoreEngine {
                     action: params.action,
                     entityType: params.entityType,
                     entityId: params.entityId,
-                    beforeState: params.beforeState,
-                    afterState: params.afterState,
-                    changes: params.changes,
-                    metadata: params.metadata || {},
+                    beforeState: params.beforeState ? params.beforeState : undefined,
+                    afterState: params.afterState ? params.afterState : undefined,
+                    changes: params.changes ? params.changes : undefined,
+                    metadata: (params.metadata || {}),
                 },
             });
         }

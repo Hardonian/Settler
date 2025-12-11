@@ -13,7 +13,6 @@ export interface UsageOptimization {
 }
 export declare class UsageOptimizer {
     private prisma;
-    private router;
     constructor(prisma: PrismaClient);
     /**
      * Analyze usage and generate optimizations

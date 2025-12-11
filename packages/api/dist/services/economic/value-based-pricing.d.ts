@@ -25,7 +25,7 @@ export interface PricingRecommendation {
 }
 export declare class ValueBasedPricing {
     private prisma;
-    private metaModels;
+    private _metaModels;
     constructor(prisma: PrismaClient);
     /**
      * Analyze pricing for tenant
