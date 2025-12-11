@@ -3,6 +3,9 @@ import { JobsClient } from "./clients/jobs";
 import { ReportsClient } from "./clients/reports";
 import { WebhooksClient } from "./clients/webhooks";
 import { AdaptersClient } from "./clients/adapters";
+import { ReceiptsClient } from "./clients/receipts";
+import { FlagsClient } from "./clients/flags";
+import { ConvertClient } from "./clients/convert";
 
 // Export types
 export * from "./types";
@@ -45,7 +48,7 @@ export {
 export { withRetry, type RetryConfig } from "./utils/retry";
 
 // Export clients
-export { SettlerClient, JobsClient, ReportsClient, WebhooksClient, AdaptersClient };
+export { SettlerClient, JobsClient, ReportsClient, WebhooksClient, AdaptersClient, ReceiptsClient, FlagsClient, ConvertClient };
 
 // Default export
 export default SettlerClient;

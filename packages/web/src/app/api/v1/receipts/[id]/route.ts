@@ -52,7 +52,7 @@ export async function GET(
       total: receipt.total,
       paymentMethod: receipt.paymentMethod,
       confidenceScore: receipt.confidenceScore,
-      items: receipt.items.map((item) => ({
+      items: receipt.items.map((item: any) => ({
         id: item.id,
         name: item.name,
         quantity: item.quantity ? Number(item.quantity) : 0,

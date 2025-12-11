@@ -1,0 +1,76 @@
+import Link from 'next/link';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { ArrowRight, FileText, RefreshCw, Flag, Calculator } from 'lucide-react';
+
+const playgrounds = [
+  {
+    title: 'Reconciliation',
+    description: 'Test transaction matching rules and conflict resolution.',
+    href: '/console/playground/reconcile',
+    icon: RefreshCw,
+    color: 'text-blue-500',
+    bg: 'bg-blue-100 dark:bg-blue-900/20'
+  },
+  {
+    title: 'Receipts Parsing',
+    description: 'Upload receipts and extract structured data using AI.',
+    href: '/console/playground/receipts',
+    icon: FileText,
+    color: 'text-green-500',
+    bg: 'bg-green-100 dark:bg-green-900/20'
+  },
+  {
+    title: 'Feature Flags',
+    description: 'Evaluate flags and experiment with user contexts.',
+    href: '/console/playground/flags',
+    icon: Flag,
+    color: 'text-amber-500',
+    bg: 'bg-amber-100 dark:bg-amber-900/20'
+  },
+  {
+    title: 'Conversion',
+    description: 'Convert units, currencies, and format financial numbers.',
+    href: '/console/playground/convert',
+    icon: Calculator,
+    color: 'text-indigo-500',
+    bg: 'bg-indigo-100 dark:bg-indigo-900/20'
+  }
+];
+
+export default function PlaygroundOverview() {
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">Developer Playground</h2>
+        <p className="text-muted-foreground">
+          Interactive tools to explore and test the Settler API capabilities.
+        </p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+        {playgrounds.map((item) => (
+          <Link key={item.href} href={item.href}>
+            <Card className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer border-slate-200 dark:border-slate-800">
+              <CardHeader className="flex flex-row items-center gap-4">
+                <div className={`p-3 rounded-lg ${item.bg}`}>
+                  <item.icon className={`w-6 h-6 ${item.color}`} />
+                </div>
+                <div className="space-y-1">
+                  <CardTitle>{item.title}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="mb-4 text-base">
+                  {item.description}
+                </CardDescription>
+                <div className="flex items-center text-sm font-medium text-primary">
+                  Try it out <ArrowRight className="ml-1 w-4 h-4" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}

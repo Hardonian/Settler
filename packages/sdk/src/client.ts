@@ -2,6 +2,9 @@ import { JobsClient } from "./clients/jobs";
 import { ReportsClient } from "./clients/reports";
 import { WebhooksClient } from "./clients/webhooks";
 import { AdaptersClient } from "./clients/adapters";
+import { ReceiptsClient } from "./clients/receipts";
+import { FlagsClient } from "./clients/flags";
+import { ConvertClient } from "./clients/convert";
 import {
   parseError,
   NetworkError,
@@ -71,6 +74,9 @@ export class SettlerClient {
   public readonly reports: ReportsClient;
   public readonly webhooks: WebhooksClient;
   public readonly adapters: AdaptersClient;
+  public readonly receipts: ReceiptsClient;
+  public readonly flags: FlagsClient;
+  public readonly convert: ConvertClient;
 
   private readonly apiKey: string;
   private readonly baseUrl: string;
@@ -119,6 +125,9 @@ export class SettlerClient {
     this.reports = new ReportsClient(this);
     this.webhooks = new WebhooksClient(this);
     this.adapters = new AdaptersClient(this);
+    this.receipts = new ReceiptsClient(this);
+    this.flags = new FlagsClient(this);
+    this.convert = new ConvertClient(this);
   }
 
   /**
