@@ -1,9 +1,8 @@
-import { ReactNode } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, FileText, Settings, Flag, Palette } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, Flag, Palette, FlaskConical } from 'lucide-react';
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
       {/* Sidebar */}
@@ -24,6 +23,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <Link href="/admin/pages">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <FileText size={18} /> Pages
+            </Button>
+          </Link>
+          <Link href="/admin/experiments">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <FlaskConical size={18} /> Experiments
             </Button>
           </Link>
           <Link href="/admin/branding">
