@@ -51,8 +51,15 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
 
     const newBlocks = [...blocks];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]];
-    setBlocks(newBlocks as PageBlock[]);
+
+    const currentBlock = newBlocks[index];
+    const targetBlock = newBlocks[targetIndex];
+
+    if (currentBlock && targetBlock) {
+      newBlocks[index] = targetBlock;
+      newBlocks[targetIndex] = currentBlock;
+      setBlocks(newBlocks as PageBlock[]);
+    }
   };
 
   const handleSave = () => {
