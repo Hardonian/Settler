@@ -36,7 +36,13 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body>
+      <body style={{
+        margin: 0,
+        padding: 0,
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        backgroundColor: '#0f172a', // Slate 900
+        color: 'white',
+      }}>
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -46,26 +52,54 @@ export default function GlobalError({
           padding: '2rem',
           textAlign: 'center',
         }}>
-          <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>
-            Something went wrong
+          {/* Logo or Brand */}
+          <div style={{ marginBottom: '2rem', fontWeight: 'bold', fontSize: '1.5rem', letterSpacing: '-0.025em' }}>
+            Settler.dev
+          </div>
+
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontWeight: 700 }}>
+            System Error
           </h1>
-          <p style={{ marginBottom: '2rem', color: '#666' }}>
-            We're sorry, but something unexpected happened. Please try refreshing the page.
+          
+          <p style={{ marginBottom: '3rem', color: '#94a3b8', maxWidth: '500px', lineHeight: 1.6 }}>
+            The application encountered a critical error and needs to restart. 
+            We've logged this issue and our engineering team has been notified.
           </p>
-          <button
-            onClick={reset}
-            style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.5rem',
-              cursor: 'pointer',
-              fontSize: '1rem',
-            }}
-          >
-            Try again
-          </button>
+          
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button
+              onClick={reset}
+              style={{
+                padding: '0.75rem 2rem',
+                backgroundColor: '#2563eb', // Blue 600
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.5rem',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                fontWeight: 600,
+                transition: 'background-color 0.2s',
+              }}
+            >
+              Try Again
+            </button>
+            
+            <a 
+              href="/"
+              style={{
+                padding: '0.75rem 2rem',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '0.5rem',
+                fontSize: '1rem',
+                fontWeight: 600,
+                border: '1px solid rgba(255,255,255,0.2)',
+              }}
+            >
+              Go Home
+            </a>
+          </div>
         </div>
       </body>
     </html>

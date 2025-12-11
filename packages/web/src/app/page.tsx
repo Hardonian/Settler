@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { HeroAnimationWrapper } from "@/components/HeroAnimationWrapper";
 import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
@@ -115,69 +116,71 @@ if (flag.value) { /* ... */ }`;
           />
           
           <div className="max-w-7xl mx-auto relative z-10">
-            <div className="text-center">
-              <Badge 
-                className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30"
-              >
-                The Financial Infrastructure for Developers
-              </Badge>
-              
-              <TextRevealHeading
-                as="h1"
-                id="hero-heading"
-                text="The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags."
-                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent"
-                delay={0.1}
-                staggerDelay={0.02}
-                splitBy="words"
-              />
-              
-              <TextReveal
-                text="Settler gives engineering teams reconciliation, receipts parsing, deterministic conversions, and production-grade feature flags—all through clean, typed APIs."
-                className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
-                delay={0.4}
-                staggerDelay={0.01}
-                splitBy="words"
-              />
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-                <Button 
-                  size="lg" 
-                  asChild 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-blue-500/20 transition-all transform hover:scale-105"
-                  onClick={() => trackCTA('Get API Key', { location: 'hero' })}
+            <HeroAnimationWrapper>
+              <div className="text-center">
+                <Badge 
+                  className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30"
                 >
-                  <Link href="/signup">
-                    Get API Key
-                  </Link>
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  asChild 
-                  className="px-8 py-6 text-lg border-2"
-                >
-                  <Link href="/docs">
-                    View Docs
-                  </Link>
-                </Button>
+                  The Financial Infrastructure for Developers
+                </Badge>
+                
+                <TextRevealHeading
+                  as="h1"
+                  id="hero-heading"
+                  text="The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags."
+                  className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent"
+                  delay={0}
+                  staggerDelay={0.02}
+                  splitBy="words"
+                />
+                
+                <TextReveal
+                  text="Settler gives engineering teams reconciliation, receipts parsing, deterministic conversions, and production-grade feature flags—all through clean, typed APIs."
+                  className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
+                  delay={0.2}
+                  staggerDelay={0.01}
+                  splitBy="words"
+                />
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                  <Button 
+                    size="lg" 
+                    asChild 
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-blue-500/20 transition-all transform hover:scale-105"
+                    onClick={() => trackCTA('Get API Key', { location: 'hero' })}
+                  >
+                    <Link href="/signup">
+                      Get API Key
+                    </Link>
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    asChild 
+                    className="px-8 py-6 text-lg border-2"
+                  >
+                    <Link href="/docs">
+                      View Docs
+                    </Link>
+                  </Button>
+                </div>
+                
+                {/* Hero Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-16">
+                  {heroStats.map((stat, index) => (
+                    <SpotlightCard key={index} className="p-4 h-full">
+                      <AnimatedStatCard
+                        value={stat.value}
+                        label={stat.label}
+                        description={stat.description}
+                        index={index}
+                        delay={0.4 + index * 0.1}
+                      />
+                    </SpotlightCard>
+                  ))}
+                </div>
               </div>
-              
-              {/* Hero Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-16">
-                {heroStats.map((stat, index) => (
-                  <SpotlightCard key={index} className="p-4 h-full">
-                    <AnimatedStatCard
-                      value={stat.value}
-                      label={stat.label}
-                      description={stat.description}
-                      index={index}
-                      delay={1.2 + index * 0.1}
-                    />
-                  </SpotlightCard>
-                ))}
-              </div>
-            </div>
+            </HeroAnimationWrapper>
           </div>
         </section>
 
