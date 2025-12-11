@@ -15,6 +15,7 @@ import { getUsageSummary } from '@/domain/console/usage';
 import { listApiKeys } from '@/domain/console/apiKeys';
 import { listReceipts } from '@/domain/console/receipts';
 import { listFeatureFlags } from '@/domain/console/featureFlags';
+import { LiveActivityFeed } from '@/components/console/LiveActivityFeed';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,13 +75,23 @@ async function ConsoleOverviewContent() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          Developer Console
-        </h1>
-        <p className="text-slate-600 dark:text-slate-400">
-          Manage your API keys, monitor usage, and explore your data.
-        </p>
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+            Developer Console
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400">
+            Manage your API keys, monitor usage, and explore your data.
+          </p>
+        </div>
+        <div className="flex gap-2">
+           <Button variant="outline" asChild>
+             <Link href="/docs">Documentation</Link>
+           </Button>
+           <Button asChild>
+             <Link href="/console/playground">Playground</Link>
+           </Button>
+        </div>
       </div>
 
       {/* Quick Stats */}
@@ -141,44 +152,51 @@ async function ConsoleOverviewContent() {
         </Card>
       </div>
 
-      {/* Service Breakdown */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Usage by Service</CardTitle>
-          <CardDescription>API calls in the last 7 days</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-blue-500" />
-                <span className="font-medium">Reconcile API</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Service Breakdown */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Usage by Service</CardTitle>
+            <CardDescription>API calls in the last 7 days</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-blue-500" />
+                  <span className="font-medium">Reconcile API</span>
+                </div>
+                <span className="text-slate-600 dark:text-slate-400 font-mono">
+                  {reconcileCalls.toLocaleString()} calls
+                </span>
               </div>
-              <span className="text-slate-600 dark:text-slate-400">
-                {reconcileCalls.toLocaleString()} calls
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-cyan-500" />
-                <span className="font-medium">Receipts API</span>
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                  <span className="font-medium">Receipts API</span>
+                </div>
+                <span className="text-slate-600 dark:text-slate-400 font-mono">
+                  {receiptsCalls.toLocaleString()} calls
+                </span>
               </div>
-              <span className="text-slate-600 dark:text-slate-400">
-                {receiptsCalls.toLocaleString()} calls
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-purple-500" />
-                <span className="font-medium">Feature Flags API</span>
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-purple-500" />
+                  <span className="font-medium">Feature Flags API</span>
+                </div>
+                <span className="text-slate-600 dark:text-slate-400 font-mono">
+                  {flagsCalls.toLocaleString()} calls
+                </span>
               </div>
-              <span className="text-slate-600 dark:text-slate-400">
-                {flagsCalls.toLocaleString()} calls
-              </span>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        {/* Live Feed */}
+        <div className="lg:col-span-1 h-full">
+          <LiveActivityFeed />
+        </div>
+      </div>
 
       {/* Quick Actions */}
       <Card>
@@ -188,27 +206,27 @@ async function ConsoleOverviewContent() {
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
+            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
               <Link href="/console/api-keys">
-                <Key className="w-5 h-5 mb-2" />
+                <Key className="w-5 h-5 mb-2 text-blue-600" />
                 <span className="font-semibold">Create API Key</span>
                 <span className="text-xs text-slate-500 mt-1">
                   Generate a new API key for your application
                 </span>
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
+            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
               <Link href="/console/feature-flags">
-                <ToggleLeft className="w-5 h-5 mb-2" />
+                <ToggleLeft className="w-5 h-5 mb-2 text-purple-600" />
                 <span className="font-semibold">Manage Flags</span>
                 <span className="text-xs text-slate-500 mt-1">
                   Create and configure feature flags
                 </span>
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
+            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
               <Link href="/console/docs">
-                <Receipt className="w-5 h-5 mb-2" />
+                <Receipt className="w-5 h-5 mb-2 text-green-600" />
                 <span className="font-semibold">View API Docs</span>
                 <span className="text-xs text-slate-500 mt-1">
                   Explore endpoints and examples
