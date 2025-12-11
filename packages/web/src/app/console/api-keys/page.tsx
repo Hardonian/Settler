@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Key, Plus, Trash2, Copy, Check } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -183,16 +184,16 @@ export default function ApiKeysPage() {
       {/* Keys List */}
       {keys.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center">
-            <Key className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-            <h3 className="text-lg font-semibold mb-2">No API keys yet</h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
-              Create your first API key to start using Settler APIs.
-            </p>
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create API Key
-            </Button>
+          <CardContent className="p-0">
+            <EmptyState
+              icon={Key}
+              title="No API keys yet"
+              description="Create your first API key to start using Settler APIs."
+              action={{
+                label: "Create API Key",
+                onClick: () => setCreateDialogOpen(true)
+              }}
+            />
           </CardContent>
         </Card>
       ) : (
