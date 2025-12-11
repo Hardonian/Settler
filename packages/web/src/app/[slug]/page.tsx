@@ -13,6 +13,7 @@ import { TenantNavigation } from '@/components/tenant/TenantNavigation';
 import { Footer } from '@/components/Footer';
 import { ExperimentTrackerClient } from '@/components/tenant/ExperimentTracker';
 import { Metadata } from 'next';
+import { PageBlockSchema } from '@/domain/siteBuilder/pageSchema';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -74,9 +75,12 @@ export default async function TenantPageRoute({ params }: PageProps) {
     notFound();
   }
   
-  // Track experiment view if experiment is active
-  if (page.experiment) {
-    // This will be handled client-side via useEffect
+  // Validate blocks against schema for server-side logging/metrics
+  const parsedBlocks = PageBlockSchema.array().safeParse(page.blocks);
+  
+  if (!parsedBlocks.success) {
+    console.warn(`[TenantRenderer] Invalid blocks for page ${slug}:`, parsedBlocks.error);
+    // We continue rendering, letting PageRenderer handle/skip invalid individual blocks
   }
   
   return (
@@ -105,4 +109,3 @@ export default async function TenantPageRoute({ params }: PageProps) {
     </TenantThemeProvider>
   );
 }
-

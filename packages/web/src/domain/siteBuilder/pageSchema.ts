@@ -1,213 +1,210 @@
-/**
- * Page Block Schema
- * 
- * Defines the schema for block-based pages.
- * Each block type has a TypeScript type and a React component.
- * 
- * Note: Using manual validation instead of zod for now.
- * Can be migrated to zod or @settler/protocol validation later.
- */
+import { z } from 'zod';
 
 // ============================================================================
-// Block Type Definitions
+// Base Block Schema
 // ============================================================================
 
-/**
- * Type definitions for page blocks
- */
-
-// Base block interface
-export interface BaseBlock {
-  id: string;
-  type: string;
-  visible?: boolean;
-  metadata?: Record<string, unknown>;
-}
-
-// Hero block
-export interface HeroBlock extends BaseBlock {
-  type: 'hero';
-  title: string;
-  subtitle?: string;
-  description?: string;
-  primaryCta?: {
-    label: string;
-    href: string;
-    variant?: 'primary' | 'secondary' | 'outline';
-  };
-  secondaryCta?: {
-    label: string;
-    href: string;
-    variant?: 'primary' | 'secondary' | 'outline';
-  };
-  backgroundImage?: string;
-  backgroundGradient?: string;
-  alignment?: 'left' | 'center' | 'right';
-}
-
-// Feature grid block
-export interface FeatureGridBlock extends BaseBlock {
-  type: 'featureGrid';
-  title?: string;
-  description?: string;
-  columns?: number;
-  features: Array<{
-    title: string;
-    description: string;
-    icon?: string;
-    image?: string;
-  }>;
-}
-
-// Logo cloud block
-export interface LogoCloudBlock extends BaseBlock {
-  type: 'logoCloud';
-  title?: string;
-  logos: Array<{
-    name: string;
-    imageUrl: string;
-    href?: string;
-  }>;
-  columns?: number;
-}
-
-// Testimonial block
-export interface TestimonialBlock extends BaseBlock {
-  type: 'testimonial';
-  testimonials: Array<{
-    quote: string;
-    author: string;
-    role?: string;
-    company?: string;
-    avatar?: string;
-  }>;
-  layout?: 'grid' | 'carousel' | 'single';
-}
-
-// FAQ block
-export interface FAQBlock extends BaseBlock {
-  type: 'faq';
-  title?: string;
-  items: Array<{
-    question: string;
-    answer: string;
-  }>;
-  layout?: 'accordion' | 'grid';
-}
-
-// CTA banner block
-export interface CTABannerBlock extends BaseBlock {
-  type: 'ctaBanner';
-  title: string;
-  description?: string;
-  primaryCta: {
-    label: string;
-    href: string;
-  };
-  secondaryCta?: {
-    label: string;
-    href: string;
-  };
-  variant?: 'default' | 'gradient' | 'outlined';
-}
-
-// Pricing table block
-export interface PricingTableBlock extends BaseBlock {
-  type: 'pricingTable';
-  title?: string;
-  description?: string;
-  plans: Array<{
-    name: string;
-    price: string;
-    period?: string;
-    description?: string;
-    features: string[];
-    cta: {
-      label: string;
-      href: string;
-    };
-    popular?: boolean;
-    badge?: string;
-  }>;
-  showBillingToggle?: boolean;
-}
-
-// Two column text block
-export interface TwoColumnTextBlock extends BaseBlock {
-  type: 'twoColumnText';
-  leftColumn: {
-    title?: string;
-    content: string;
-  };
-  rightColumn: {
-    title?: string;
-    content: string;
-  };
-  reverse?: boolean;
-}
-
-// Code example block
-export interface CodeExampleBlock extends BaseBlock {
-  type: 'codeExample';
-  title?: string;
-  description?: string;
-  code: string;
-  language?: string;
-  showLineNumbers?: boolean;
-}
-
-// Stats block
-export interface StatsBlock extends BaseBlock {
-  type: 'stats';
-  stats: Array<{
-    value: string;
-    label: string;
-    description?: string;
-  }>;
-  columns?: number;
-}
-
-// Footer block
-export interface FooterBlock extends BaseBlock {
-  type: 'footer';
-  columns: Array<{
-    title: string;
-    links: Array<{
-      label: string;
-      href: string;
-    }>;
-  }>;
-  socialLinks?: Array<{
-    platform: 'twitter' | 'github' | 'linkedin' | 'facebook' | 'instagram' | 'youtube';
-    href: string;
-  }>;
-  copyright?: string;
-}
-
-// Custom HTML block (sanitized)
-export interface CustomHTMLBlock extends BaseBlock {
-  type: 'customHTML';
-  html: string;
-  sanitized?: boolean;
-}
-
-// Union type for all blocks
-export type PageBlock =
-  | HeroBlock
-  | FeatureGridBlock
-  | LogoCloudBlock
-  | TestimonialBlock
-  | FAQBlock
-  | CTABannerBlock
-  | PricingTableBlock
-  | TwoColumnTextBlock
-  | CodeExampleBlock
-  | StatsBlock
-  | FooterBlock
-  | CustomHTMLBlock;
+export const BaseBlockSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  visible: z.boolean().optional().default(true),
+  metadata: z.record(z.unknown()).optional().default({}),
+});
 
 // ============================================================================
-// Safe defaults for each block type
+// Block Schemas
+// ============================================================================
+
+export const HeroBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('hero'),
+  title: z.string(),
+  subtitle: z.string().optional(),
+  description: z.string().optional(),
+  primaryCta: z.object({
+    label: z.string(),
+    href: z.string(),
+    variant: z.enum(['primary', 'secondary', 'outline']).optional(),
+  }).optional(),
+  secondaryCta: z.object({
+    label: z.string(),
+    href: z.string(),
+    variant: z.enum(['primary', 'secondary', 'outline']).optional(),
+  }).optional(),
+  backgroundImage: z.string().optional(),
+  backgroundGradient: z.string().optional(),
+  alignment: z.enum(['left', 'center', 'right']).optional(),
+});
+
+export const FeatureGridBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('featureGrid'),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  columns: z.number().optional().default(3),
+  features: z.array(z.object({
+    title: z.string(),
+    description: z.string(),
+    icon: z.string().optional(),
+    image: z.string().optional(),
+  })),
+});
+
+export const LogoCloudBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('logoCloud'),
+  title: z.string().optional(),
+  logos: z.array(z.object({
+    name: z.string(),
+    imageUrl: z.string(),
+    href: z.string().optional(),
+  })),
+  columns: z.number().optional().default(5),
+});
+
+export const TestimonialBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('testimonial'),
+  testimonials: z.array(z.object({
+    quote: z.string(),
+    author: z.string(),
+    role: z.string().optional(),
+    company: z.string().optional(),
+    avatar: z.string().optional(),
+  })),
+  layout: z.enum(['grid', 'carousel', 'single']).optional().default('grid'),
+});
+
+export const FAQBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('faq'),
+  title: z.string().optional(),
+  items: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+  })),
+  layout: z.enum(['accordion', 'grid']).optional().default('accordion'),
+});
+
+export const CTABannerBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('ctaBanner'),
+  title: z.string(),
+  description: z.string().optional(),
+  primaryCta: z.object({
+    label: z.string(),
+    href: z.string(),
+  }),
+  secondaryCta: z.object({
+    label: z.string(),
+    href: z.string(),
+  }).optional(),
+  variant: z.enum(['default', 'gradient', 'outlined']).optional().default('default'),
+});
+
+export const PricingTableBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('pricingTable'),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  plans: z.array(z.object({
+    name: z.string(),
+    price: z.string(),
+    period: z.string().optional(),
+    description: z.string().optional(),
+    features: z.array(z.string()),
+    cta: z.object({
+      label: z.string(),
+      href: z.string(),
+    }),
+    popular: z.boolean().optional(),
+    badge: z.string().optional(),
+  })),
+  showBillingToggle: z.boolean().optional().default(true),
+});
+
+export const TwoColumnTextBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('twoColumnText'),
+  leftColumn: z.object({
+    title: z.string().optional(),
+    content: z.string(),
+  }),
+  rightColumn: z.object({
+    title: z.string().optional(),
+    content: z.string(),
+  }),
+  reverse: z.boolean().optional().default(false),
+});
+
+export const CodeExampleBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('codeExample'),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  code: z.string(),
+  language: z.string().optional().default('typescript'),
+  showLineNumbers: z.boolean().optional().default(true),
+});
+
+export const StatsBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('stats'),
+  stats: z.array(z.object({
+    value: z.string(),
+    label: z.string(),
+    description: z.string().optional(),
+  })),
+  columns: z.number().optional().default(4),
+});
+
+export const FooterBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('footer'),
+  columns: z.array(z.object({
+    title: z.string(),
+    links: z.array(z.object({
+      label: z.string(),
+      href: z.string(),
+    })),
+  })),
+  socialLinks: z.array(z.object({
+    platform: z.enum(['twitter', 'github', 'linkedin', 'facebook', 'instagram', 'youtube']),
+    href: z.string(),
+  })).optional(),
+  copyright: z.string().optional(),
+});
+
+export const CustomHTMLBlockSchema = BaseBlockSchema.extend({
+  type: z.literal('customHTML'),
+  html: z.string(),
+  sanitized: z.boolean().optional().default(true),
+});
+
+// ============================================================================
+// Union Type & Types
+// ============================================================================
+
+export const PageBlockSchema = z.discriminatedUnion('type', [
+  HeroBlockSchema,
+  FeatureGridBlockSchema,
+  LogoCloudBlockSchema,
+  TestimonialBlockSchema,
+  FAQBlockSchema,
+  CTABannerBlockSchema,
+  PricingTableBlockSchema,
+  TwoColumnTextBlockSchema,
+  CodeExampleBlockSchema,
+  StatsBlockSchema,
+  FooterBlockSchema,
+  CustomHTMLBlockSchema,
+]);
+
+export type PageBlock = z.infer<typeof PageBlockSchema>;
+export type HeroBlock = z.infer<typeof HeroBlockSchema>;
+export type FeatureGridBlock = z.infer<typeof FeatureGridBlockSchema>;
+export type LogoCloudBlock = z.infer<typeof LogoCloudBlockSchema>;
+export type TestimonialBlock = z.infer<typeof TestimonialBlockSchema>;
+export type FAQBlock = z.infer<typeof FAQBlockSchema>;
+export type CTABannerBlock = z.infer<typeof CTABannerBlockSchema>;
+export type PricingTableBlock = z.infer<typeof PricingTableBlockSchema>;
+export type TwoColumnTextBlock = z.infer<typeof TwoColumnTextBlockSchema>;
+export type CodeExampleBlock = z.infer<typeof CodeExampleBlockSchema>;
+export type StatsBlock = z.infer<typeof StatsBlockSchema>;
+export type FooterBlock = z.infer<typeof FooterBlockSchema>;
+export type CustomHTMLBlock = z.infer<typeof CustomHTMLBlockSchema>;
+
+// ============================================================================
+// Defaults
 // ============================================================================
 
 export const blockDefaults: Record<string, Partial<PageBlock>> = {
@@ -314,30 +311,15 @@ export const blockDefaults: Record<string, Partial<PageBlock>> = {
  * Validate and sanitize a block
  */
 export function validateBlock(block: unknown): PageBlock | null {
-  if (!block || typeof block !== 'object') {
-    return null;
+  const result = PageBlockSchema.safeParse(block);
+  if (result.success) {
+    return result.data;
   }
-
-  const obj = block as Record<string, unknown>;
-  
-  // Must have type and id
-  if (!obj.type || typeof obj.type !== 'string') {
-    return null;
+  // In development, log the validation error
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('Block validation failed:', result.error);
   }
-  
-  if (!obj.id || typeof obj.id !== 'string') {
-    return null;
-  }
-
-  // Basic type checking - full validation can be added later
-  // For now, trust the structure and apply defaults
-  const validated = {
-    ...obj,
-    visible: obj.visible !== false, // default to true
-    metadata: obj.metadata || {},
-  } as PageBlock;
-
-  return validated;
+  return null;
 }
 
 /**
