@@ -3,16 +3,18 @@
  * Provides offline support, caching, and security features
  */
 
-const CACHE_NAME = 'settler-v1';
+const CACHE_NAME = 'settler-v2';
 const API_CACHE_NAME = 'settler-api-v1';
 const STATIC_CACHE_NAME = 'settler-static-v1';
+const OFFLINE_URL = '/offline';
 
 // Assets to cache on install
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
-  '/icon-192x192.png',
-  '/icon-512x512.png',
+  '/icon-192x192.svg',
+  '/icon-512x512.svg',
+  '/offline',
 ];
 
 // API endpoints that should be cached (read-only)
@@ -33,7 +35,9 @@ const isCacheableRequest = (request) => {
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+      // We use addAll but catch errors so one failure doesn't break the whole PWA install
+      // especially important if some assets (like /offline) are being generated dynamically
+      return cache.addAll(STATIC_ASSETS).catch(console.warn);
     })
   );
   self.skipWaiting();
@@ -68,6 +72,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Navigation requests (HTML)
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .catch(() => {
+          return caches.match(OFFLINE_URL).then(response => {
+             // Fallback to offline page if network fails and page not in cache
+             return response || new Response('Offline', { status: 503, statusText: 'Offline' });
+          });
+        })
+    );
+    return;
+  }
+
   // API requests: Network first, cache fallback
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
@@ -83,20 +101,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          // Fallback to cache if network fails
-          return caches.match(request).then((cachedResponse) => {
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            // Return offline response
-            return new Response(
-              JSON.stringify({ error: 'Offline', message: 'No cached data available' }),
-              {
-                status: 503,
-                headers: { 'Content-Type': 'application/json' },
-              }
-            );
-          });
+          return caches.match(request);
         })
     );
     return;
@@ -131,32 +136,5 @@ self.addEventListener('sync', (event) => {
 });
 
 async function syncReconciliations() {
-  // Implementation for syncing reconciliation data when back online
-  // This would read from IndexedDB and sync with API
   console.log('Syncing reconciliations...');
 }
-
-// Push notifications (for future use)
-self.addEventListener('push', (event) => {
-  const data = event.data?.json() || {};
-  const title = data.title || 'Settler Notification';
-  const options = {
-    body: data.body || '',
-    icon: '/icon-192x192.png',
-    badge: '/icon-192x192.png',
-    tag: data.tag || 'settler-notification',
-    data: data.data || {},
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
-});
-
-// Notification click handler
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url || '/')
-  );
-});

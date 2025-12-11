@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { QueryProvider } from "@/lib/providers/query-provider";
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { TenantThemeProvider } from "@/components/tenant/TenantThemeProvider";
 import { getTenantContext } from "@/lib/tenant/server";
 
@@ -19,18 +20,18 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev'),
   title: {
-    default: "Settler - Reconciliation as a Service API",
+    default: "Settler - Financial Infrastructure for Developers",
     template: "%s | Settler",
   },
-  description: "Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. Connect Shopify, Stripe, PayPal, and 50+ platforms. 99.7% accuracy, <50ms latency, SOC 2 Type II certified. Start free trial, no credit card required.",
+  description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags. Reconcile anything, parse receipts to JSON, and manage entitlements with one typed SDK.",
   keywords: [
     "reconciliation API",
     "financial reconciliation",
-    "data reconciliation",
-    "SaaS reconciliation",
-    "e-commerce reconciliation",
-    "Stripe reconciliation",
-    "Shopify reconciliation",
+    "receipt parsing",
+    "feature flags",
+    "deterministic math",
+    "financial infrastructure",
+    "fintech API",
     "API integration",
     "financial automation",
   ],
@@ -61,21 +62,21 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://settler.dev",
     siteName: "Settler",
-    title: "Settler - Reconciliation as a Service API",
-    description: "Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. Connect Shopify, Stripe, PayPal, and 50+ platforms. 99.7% accuracy, <50ms latency, SOC 2 Type II certified.",
+    title: "Settler - Financial Infrastructure for Developers",
+    description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Settler - Reconciliation as a Service",
+        alt: "Settler - Financial Infrastructure for Developers",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Settler - Reconciliation as a Service API",
-    description: "Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems.",
+    title: "Settler - Financial Infrastructure for Developers",
+    description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
     images: ["/og-image.png"],
     creator: "@settler_io",
   },
@@ -178,6 +179,7 @@ export default async function RootLayout({
                 Skip to main content
               </a>
               <SmoothScroll>{children}</SmoothScroll>
+              <PwaInstallPrompt />
               <Analytics />
               <SpeedInsights />
             </QueryProvider>

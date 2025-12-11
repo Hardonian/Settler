@@ -1,7 +1,7 @@
 {
-  "name": "Settler - Reconciliation as a Service",
+  "name": "Settler - Financial Infrastructure",
   "short_name": "Settler",
-  "description": "Automate financial and event data reconciliation across fragmented SaaS and e-commerce ecosystems",
+  "description": "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -21,28 +21,27 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["finance", "business", "productivity"],
+  "categories": ["finance", "business", "productivity", "developer tools"],
   "screenshots": [],
   "shortcuts": [
     {
-      "name": "Create Job",
-      "short_name": "New Job",
-      "description": "Create a new reconciliation job",
-      "url": "/playground?action=create",
-      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+      "name": "Console",
+      "short_name": "Console",
+      "description": "Manage API keys and view usage",
+      "url": "/console",
+      "icons": [{ "src": "/icon-192x192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     },
     {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "View reconciliation dashboard",
-      "url": "/realtime-dashboard",
-      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+      "name": "Documentation",
+      "short_name": "Docs",
+      "description": "Read the documentation",
+      "url": "/docs",
+      "icons": [{ "src": "/icon-192x192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     }
   ],
   "share_target": {
-    "action": "/api/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
+    "action": "/playground",
+    "method": "GET",
     "params": {
       "title": "title",
       "text": "text",

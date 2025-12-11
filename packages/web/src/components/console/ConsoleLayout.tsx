@@ -8,6 +8,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -18,7 +19,10 @@ import {
   ToggleLeft,
   BookOpen,
   Palette,
+  Menu,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'; // Assuming Sheet is standard
 
 const consoleNavItems = [
     { href: '/console', label: 'Overview', icon: LayoutDashboard },
@@ -37,38 +41,59 @@ interface ConsoleLayoutProps {
 
 export function ConsoleLayout({ children }: ConsoleLayoutProps) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  const NavContent = () => (
+    <nav className="p-4 space-y-1">
+      {consoleNavItems.map((item) => {
+        const Icon = item.icon;
+        const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+        
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={() => setOpen(false)}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              isActive
+                ? 'bg-electric-cyan/10 text-electric-cyan dark:bg-electric-cyan/20 dark:text-electric-cyan'
+                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+            )}
+          >
+            <Icon className="w-5 h-5" />
+            {item.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      {/* Mobile Trigger */}
+      <div className="md:hidden fixed top-20 left-4 z-40">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" className="shadow-md bg-background/50 backdrop-blur-sm">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle Console Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0 pt-10">
+            <NavContent />
+          </SheetContent>
+        </Sheet>
+      </div>
+
       <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 min-h-screen bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 fixed left-0 top-0 pt-16">
-          <nav className="p-4 space-y-1">
-            {consoleNavItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
-              
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-electric-cyan/10 text-electric-cyan dark:bg-electric-cyan/20 dark:text-electric-cyan'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                  )}
-                >
-                  <Icon className="w-5 h-5" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+        {/* Desktop Sidebar */}
+        <aside className="hidden md:block w-64 min-h-screen bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 fixed left-0 top-0 pt-16">
+          <NavContent />
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 ml-64 pt-16">
+        <main className="flex-1 md:ml-64 pt-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {children}
           </div>
