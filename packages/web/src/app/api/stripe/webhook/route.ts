@@ -114,11 +114,14 @@ function extractBillingAccountId(event: Stripe.Event): string | null {
   
   if (event.type === 'invoice.paid' || event.type === 'invoice.payment_failed') {
     const invoice = event.data.object as Stripe.Invoice;
-    if (typeof invoice.subscription === 'string') {
+    // Invoice.subscription can be string | Stripe.Subscription | null
+    // Access via type assertion since TypeScript types may not expose it directly
+    const subscription = (invoice as any).subscription as string | Stripe.Subscription | null;
+    if (!subscription || typeof subscription === 'string') {
       // We'd need to fetch the subscription to get metadata, but for now return null
       return null;
     }
-    return invoice.subscription?.metadata?.billingAccountId || null;
+    return subscription.metadata?.billingAccountId || null;
   }
   
   return null;
@@ -234,15 +237,21 @@ export async function POST(request: NextRequest) {
     // Handle invoice events
     if (event.type === 'invoice.paid') {
       const invoice = event.data.object as Stripe.Invoice;
+      // Access subscription via type assertion since TypeScript types may not expose it directly
+      const subscriptionId = (invoice as any).subscription as string | Stripe.Subscription | null;
+      const subscriptionIdString = typeof subscriptionId === 'string' 
+        ? subscriptionId 
+        : subscriptionId?.id || null;
+      
       console.info('[Stripe Webhook] Invoice payment succeeded', {
         invoiceId: invoice.id,
-        subscriptionId: invoice.subscription,
+        subscriptionId: subscriptionIdString,
       });
       
       // Update subscription status if needed
-      if (typeof invoice.subscription === 'string') {
+      if (subscriptionIdString) {
         await prisma.subscription.updateMany({
-          where: { stripeSubscriptionId: invoice.subscription },
+          where: { stripeSubscriptionId: subscriptionIdString },
           data: { status: 'active' },
         });
       }
@@ -250,15 +259,21 @@ export async function POST(request: NextRequest) {
 
     if (event.type === 'invoice.payment_failed') {
       const invoice = event.data.object as Stripe.Invoice;
+      // Access subscription via type assertion since TypeScript types may not expose it directly
+      const subscriptionId = (invoice as any).subscription as string | Stripe.Subscription | null;
+      const subscriptionIdString = typeof subscriptionId === 'string' 
+        ? subscriptionId 
+        : subscriptionId?.id || null;
+      
       console.warn('[Stripe Webhook] Invoice payment failed', {
         invoiceId: invoice.id,
-        subscriptionId: invoice.subscription,
+        subscriptionId: subscriptionIdString,
       });
       
       // Update subscription status if needed
-      if (typeof invoice.subscription === 'string') {
+      if (subscriptionIdString) {
         await prisma.subscription.updateMany({
-          where: { stripeSubscriptionId: invoice.subscription },
+          where: { stripeSubscriptionId: subscriptionIdString },
           data: { status: 'past_due' },
         });
       }
