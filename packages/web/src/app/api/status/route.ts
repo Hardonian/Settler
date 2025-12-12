@@ -45,9 +45,8 @@ export async function GET(_request: NextRequest): Promise<NextResponse> {
     ];
 
     // Determine overall status
-    const hasDown = systems.some(s => s.status === 'down');
     const hasDegraded = systems.some(s => s.status === 'degraded');
-    const overallStatus = hasDown ? "down" : hasDegraded ? "degraded" : "operational";
+    const overallStatus = hasDegraded ? "degraded" : "operational";
 
     const response = NextResponse.json({ systems, overallStatus });
     
