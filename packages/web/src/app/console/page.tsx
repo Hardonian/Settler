@@ -20,8 +20,50 @@ import { LiveActivityFeed } from '@/components/console/LiveActivityFeed';
 export const dynamic = 'force-dynamic';
 
 async function ConsoleOverviewContent() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Environment safety check
+  const requiredEnvVars = [
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  ];
+  const missingEnvVars = requiredEnvVars.filter(
+    (key) => !process.env[key]
+  );
+  
+  if (missingEnvVars.length > 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-slate-600 dark:text-slate-400 mb-4">
+          Configuration issue: Missing environment variables. Please contact support.
+        </p>
+        <Button asChild>
+          <Link href="/">Go Home</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  let user;
+  try {
+    const supabase = await createClient();
+    const authResult = await supabase.auth.getUser();
+    user = authResult.data?.user;
+    
+    if (authResult.error) {
+      console.error('[Console] Auth error:', authResult.error);
+    }
+  } catch (error) {
+    console.error('[Console] Failed to get user:', error);
+    return (
+      <div className="text-center py-12">
+        <p className="text-slate-600 dark:text-slate-400 mb-4">
+          Unable to verify authentication. Please try signing in again.
+        </p>
+        <Button asChild>
+          <Link href="/signup">Sign In</Link>
+        </Button>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -36,17 +78,40 @@ async function ConsoleOverviewContent() {
     );
   }
 
-  // Get billing account
-  const billingAccount = await prisma.billingAccount.findFirst({
-    where: { userId: user.id },
-  });
+  // Get billing account with error handling
+  let billingAccount;
+  try {
+    billingAccount = await prisma.billingAccount.findFirst({
+      where: { userId: user.id },
+    });
+  } catch (error) {
+    console.error('[Console] Failed to fetch billing account:', error);
+    return (
+      <div className="text-center py-12">
+        <p className="text-slate-600 dark:text-slate-400 mb-4">
+          Unable to load billing information. Please try again or contact support.
+        </p>
+        <Button onClick={() => window.location.reload()}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   if (!billingAccount) {
     return (
       <div className="text-center py-12">
         <p className="text-slate-600 dark:text-slate-400 mb-4">
-          No billing account found. Please contact support.
+          No billing account found. Please set up your account.
         </p>
+        <div className="flex gap-2 justify-center">
+          <Button asChild>
+            <Link href="/pricing">View Pricing</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/">Go Home</Link>
+          </Button>
+        </div>
       </div>
     );
   }

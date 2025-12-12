@@ -39,16 +39,16 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@settler/api": ["../api/dist"],
-      "@settler/api/*": ["../api/dist/*"],
-      "@settler/react-settler": ["../react-settler/dist/src"],
-      "@settler/react-settler/*": ["../react-settler/dist/src/*"],
-      "@settler/protocol": ["../protocol/dist"],
-      "@settler/protocol/*": ["../protocol/dist/*"],
-      "@settler/sdk": ["../sdk/dist"],
-      "@settler/sdk/*": ["../sdk/dist/*"],
-      "@settler/types": ["../types/dist"],
-      "@settler/types/*": ["../types/dist/*"]
+      "@settler/api": ["../api/dist", "../api/src"],
+      "@settler/api/*": ["../api/dist/*", "../api/src/*"],
+      "@settler/react-settler": ["../react-settler/dist/src", "../react-settler/src"],
+      "@settler/react-settler/*": ["../react-settler/dist/src/*", "../react-settler/src/*"],
+      "@settler/protocol": ["../protocol/dist", "../protocol/src"],
+      "@settler/protocol/*": ["../protocol/dist/*", "../protocol/src/*"],
+      "@settler/sdk": ["../sdk/dist", "../sdk/src"],
+      "@settler/sdk/*": ["../sdk/dist/*", "../sdk/src/*"],
+      "@settler/types": ["../types/dist", "../types/src"],
+      "@settler/types/*": ["../types/dist/*", "../types/src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
