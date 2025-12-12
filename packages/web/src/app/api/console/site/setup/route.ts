@@ -9,6 +9,7 @@ import { requireAuth } from '@/lib/tenant/permissions';
 import { createDefaultTenant, migrateHomepageToTenantPage } from '@/lib/tenant/setup';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma
 
 /**
  * POST /api/console/site/setup

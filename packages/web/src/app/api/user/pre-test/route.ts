@@ -4,6 +4,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 import { savePreTestAnswers } from "@/lib/data/user-dashboard";
 
 export async function POST(request: NextRequest) {

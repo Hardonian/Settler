@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase admin client
 import { createAdminClient } from "@/lib/supabase/server";
 import { sendLowActivityEmail, LifecycleUser } from "@settler/api/lib/email-lifecycle";
 

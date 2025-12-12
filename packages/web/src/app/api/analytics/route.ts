@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * CTO Mode: Force dynamic rendering for API routes
  */
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for analytics processing
 
 interface AnalyticsEvent {
   event: string;

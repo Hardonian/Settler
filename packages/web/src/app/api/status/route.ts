@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Cache status for 30 seconds to reduce load while keeping it fresh
 export const revalidate = 30;
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma and Supabase
 
 export async function GET(_request: NextRequest): Promise<NextResponse> {
   try {
