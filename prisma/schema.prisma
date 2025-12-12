@@ -880,3 +880,24 @@ model WebhookDelivery {
   @@index([createdAt])
   @@map("webhook_deliveries")
 }
+
+// ============================================================================
+// IDEMPOTENCY MODELS
+// Request idempotency for safe retries
+// ============================================================================
+
+model IdempotencyKey {
+  id                String    @id @default(uuid())
+  key               String    @unique // The idempotency key
+  status            String    @default("pending") // pending, completed, failed
+  response          Json?     // Cached response for completed requests
+  createdAt         DateTime  @default(now())
+  completedAt       DateTime?
+  expiresAt         DateTime  // Auto-cleanup after 24 hours
+
+  @@index([key])
+  @@index([status])
+  @@index([createdAt])
+  @@index([expiresAt])
+  @@map("idempotency_keys")
+}

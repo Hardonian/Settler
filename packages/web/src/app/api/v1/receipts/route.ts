@@ -13,6 +13,7 @@ import { parseReceiptFromText } from '@/domain/receipts/parser';
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 import { z } from 'zod';
 import { createErrorResponse, handleApiError, createSuccessResponse } from '@/lib/api-response';
+import { withRetry } from '@/lib/db/retry';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -61,8 +62,8 @@ export async function POST(request: NextRequest) {
 
     const { fileUrl, fileData, mimeType } = validation.data;
 
-    // Create receipt upload record
-    const upload = await prisma.receiptUpload.create({
+    // Create receipt upload record (with retry)
+    const upload = await withRetry(() => prisma.receiptUpload.create({
       data: {
         apiKeyId: auth.apiKeyId,
         billingAccountId: auth.billingAccountId,
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
         sizeBytes: fileData ? Buffer.from(fileData, 'base64').length : 0,
         status: 'processing',
       },
-    });
+    }));
 
     try {
       // Get OCR provider and extract text
@@ -104,8 +105,8 @@ export async function POST(request: NextRequest) {
       // Parse receipt from OCR text
       const parseResult = parseReceiptFromText(ocrResult.text);
 
-      // Create receipt record
-      const receipt = await prisma.receipt.create({
+      // Create receipt record (with retry)
+      const receipt = await withRetry(() => prisma.receipt.create({
         data: {
           uploadId: upload.id,
           vendor: parseResult.receipt.vendor,
@@ -119,11 +120,11 @@ export async function POST(request: NextRequest) {
           rawText: parseResult.rawText,
           metadata: {},
         },
-      });
+      }));
 
-      // Create receipt items
+      // Create receipt items (with retry)
       if (parseResult.receipt.items.length > 0) {
-        await prisma.receiptItem.createMany({
+        await withRetry(() => prisma.receiptItem.createMany({
           data: parseResult.receipt.items.map(item => ({
             receiptId: receipt.id,
             name: item.name,
@@ -133,14 +134,14 @@ export async function POST(request: NextRequest) {
             category: item.category,
             metadata: {},
           })),
-        });
+        }));
       }
 
-      // Update upload status
-      await prisma.receiptUpload.update({
+      // Update upload status (with retry)
+      await withRetry(() => prisma.receiptUpload.update({
         where: { id: upload.id },
         data: { status: 'completed' },
-      });
+      }));
 
       // Record usage
       await recordServiceUsage({
@@ -154,11 +155,11 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Return normalized receipt
-      const receiptWithItems = await prisma.receipt.findUnique({
+      // Return normalized receipt (with retry)
+      const receiptWithItems = await withRetry(() => prisma.receipt.findUnique({
         where: { id: receipt.id },
         include: { items: true },
-      });
+      }));
 
       return createSuccessResponse({
         id: receipt.id,
@@ -183,14 +184,16 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (error: unknown) {
-      // Update upload status to failed
+      // Update upload status to failed (with retry)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      await prisma.receiptUpload.update({
+      await withRetry(() => prisma.receiptUpload.update({
         where: { id: upload.id },
         data: {
           status: 'failed',
           errorMessage: errorMessage,
         },
+      })).catch(() => {
+        // Ignore errors updating failed status
       });
 
       if (errorMessage.includes("OCR_FAILED")) {
