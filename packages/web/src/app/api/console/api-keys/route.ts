@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server';
 import { listApiKeys, createApiKey } from '@/domain/console/apiKeys';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase admin client
 
 export async function GET() {
   try {

@@ -18,6 +18,7 @@ import { listFeatureFlags } from '@/domain/console/featureFlags';
 import { LiveActivityFeed } from '@/components/console/LiveActivityFeed';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 async function ConsoleOverviewContent() {
   // Environment safety check
@@ -134,23 +135,57 @@ async function ConsoleOverviewContent() {
     }
   }
 
-  // Fetch overview data
-  const [apiKeys, receipts, flags, usageSummary] = await Promise.all([
-    listApiKeys(user.id).catch(() => []),
-    listReceipts(billingAccount.id, 5).catch(() => []),
-    listFeatureFlags(billingAccount.id).catch(() => []),
-    getUsageSummary(
-      billingAccount.id,
-      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-      new Date()
-    ).catch(() => ({
-      totalCalls: 0,
-      byService: {},
-      byOperation: {},
-      errorRate: 0,
-      period: { start: new Date(), end: new Date() },
-    })),
-  ]);
+  // Fetch overview data with comprehensive error handling
+  let apiKeys: Awaited<ReturnType<typeof listApiKeys>> = [];
+  let receipts: Awaited<ReturnType<typeof listReceipts>> = [];
+  let flags: Awaited<ReturnType<typeof listFeatureFlags>> = [];
+  let usageSummary: Awaited<ReturnType<typeof getUsageSummary>> = {
+    totalCalls: 0,
+    byService: {},
+    byOperation: {},
+    errorRate: 0,
+    period: { start: new Date(), end: new Date() },
+  };
+
+  try {
+    const [apiKeysResult, receiptsResult, flagsResult, usageSummaryResult] = await Promise.allSettled([
+      listApiKeys(user.id),
+      listReceipts(billingAccount.id, 5),
+      listFeatureFlags(billingAccount.id),
+      getUsageSummary(
+        billingAccount.id,
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
+        new Date()
+      ),
+    ]);
+
+    if (apiKeysResult.status === 'fulfilled') {
+      apiKeys = apiKeysResult.value;
+    } else {
+      console.error('[Console] Failed to fetch API keys:', apiKeysResult.reason);
+    }
+
+    if (receiptsResult.status === 'fulfilled') {
+      receipts = receiptsResult.value;
+    } else {
+      console.error('[Console] Failed to fetch receipts:', receiptsResult.reason);
+    }
+
+    if (flagsResult.status === 'fulfilled') {
+      flags = flagsResult.value;
+    } else {
+      console.error('[Console] Failed to fetch feature flags:', flagsResult.reason);
+    }
+
+    if (usageSummaryResult.status === 'fulfilled') {
+      usageSummary = usageSummaryResult.value;
+    } else {
+      console.error('[Console] Failed to fetch usage summary:', usageSummaryResult.reason);
+    }
+  } catch (error) {
+    console.error('[Console] Error fetching overview data:', error);
+    // Continue with empty/default values - page will still render
+  }
 
   const reconcileCalls = (usageSummary.byService as Record<string, number>)['settler-reconcile'] || 0;
   const receiptsCalls = (usageSummary.byService as Record<string, number>)['settler-receipts'] || 0;

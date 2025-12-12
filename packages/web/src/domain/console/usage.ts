@@ -44,50 +44,55 @@ export async function getUsageEvents(
   billingAccountId: string,
   filters: UsageQueryFilters = {}
 ): Promise<UsageEventItem[]> {
-  const where: Record<string, unknown> = {
-    billingAccountId,
-  };
-
-  if (filters.startDate || filters.endDate) {
-    const timestampFilter: { gte?: Date; lte?: Date } = {};
-    if (filters.startDate) {
-      timestampFilter.gte = filters.startDate;
-    }
-    if (filters.endDate) {
-      timestampFilter.lte = filters.endDate;
-    }
-    where.timestamp = timestampFilter;
-  }
-
-  if (filters.service) {
-    if (filters.operation) {
-      where.eventType = `${filters.service}:${filters.operation}`;
-    } else {
-      where.eventType = {
-        startsWith: `${filters.service}:`,
-      };
-    }
-  }
-
-  const events = await prisma.usageEvent.findMany({
-    where,
-    orderBy: { timestamp: 'desc' },
-    take: filters.limit || 100,
-    skip: filters.offset || 0,
-  });
-
-  return events.map((event: (typeof events)[number]) => {
-    const [service, operation] = event.eventType.split(':');
-    return {
-      id: event.id,
-      timestamp: event.timestamp,
-      service: service || event.eventType,
-      operation: operation || 'unknown',
-      quantity: Number(event.quantity),
-      unit: event.unit || undefined,
-      metadata: event.metadata as Record<string, unknown> | undefined,
+  try {
+    const where: Record<string, unknown> = {
+      billingAccountId,
     };
-  });
+
+    if (filters.startDate || filters.endDate) {
+      const timestampFilter: { gte?: Date; lte?: Date } = {};
+      if (filters.startDate) {
+        timestampFilter.gte = filters.startDate;
+      }
+      if (filters.endDate) {
+        timestampFilter.lte = filters.endDate;
+      }
+      where.timestamp = timestampFilter;
+    }
+
+    if (filters.service) {
+      if (filters.operation) {
+        where.eventType = `${filters.service}:${filters.operation}`;
+      } else {
+        where.eventType = {
+          startsWith: `${filters.service}:`,
+        };
+      }
+    }
+
+    const events = await prisma.usageEvent.findMany({
+      where,
+      orderBy: { timestamp: 'desc' },
+      take: filters.limit || 100,
+      skip: filters.offset || 0,
+    });
+
+    return events.map((event: (typeof events)[number]) => {
+      const [service, operation] = event.eventType.split(':');
+      return {
+        id: event.id,
+        timestamp: event.timestamp,
+        service: service || event.eventType,
+        operation: operation || 'unknown',
+        quantity: Number(event.quantity),
+        unit: event.unit || undefined,
+        metadata: event.metadata as Record<string, unknown> | undefined,
+      };
+    });
+  } catch (error) {
+    console.error('[getUsageEvents] Error:', error);
+    throw new Error(`Failed to fetch usage events: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 /**
@@ -98,43 +103,48 @@ export async function getUsageSummary(
   startDate: Date,
   endDate: Date
 ): Promise<UsageSummary> {
-  const events = await prisma.usageEvent.findMany({
-    where: {
-      billingAccountId,
-      timestamp: {
-        gte: startDate,
-        lte: endDate,
+  try {
+    const events = await prisma.usageEvent.findMany({
+      where: {
+        billingAccountId,
+        timestamp: {
+          gte: startDate,
+          lte: endDate,
+        },
       },
-    },
-  });
+    });
 
-  const byService: Record<string, number> = {};
-  const byOperation: Record<string, number> = {};
-  let totalCalls = 0;
-  let errorCount = 0;
+    const byService: Record<string, number> = {};
+    const byOperation: Record<string, number> = {};
+    let totalCalls = 0;
+    let errorCount = 0;
 
-  for (const event of events) {
-    totalCalls += Number(event.quantity);
-    
-    const [service, operation] = event.eventType.split(':');
-    const serviceName = service || event.eventType;
-    const operationName = operation || 'unknown';
+    for (const event of events) {
+      totalCalls += Number(event.quantity);
+      
+      const [service, operation] = event.eventType.split(':');
+      const serviceName = service || event.eventType;
+      const operationName = operation || 'unknown';
 
-    byService[serviceName] = (byService[serviceName] || 0) + Number(event.quantity);
-    byOperation[operationName] = (byOperation[operationName] || 0) + Number(event.quantity);
+      byService[serviceName] = (byService[serviceName] || 0) + Number(event.quantity);
+      byOperation[operationName] = (byOperation[operationName] || 0) + Number(event.quantity);
 
-    // Check for errors in metadata
-    const metadata = event.metadata as Record<string, unknown> | null;
-    if (metadata?.status === 'error' || metadata?.error) {
-      errorCount += Number(event.quantity);
+      // Check for errors in metadata
+      const metadata = event.metadata as Record<string, unknown> | null;
+      if (metadata?.status === 'error' || metadata?.error) {
+        errorCount += Number(event.quantity);
+      }
     }
-  }
 
-  return {
-    totalCalls,
-    byService,
-    byOperation,
-    errorRate: totalCalls > 0 ? errorCount / totalCalls : 0,
-    period: { start: startDate, end: endDate },
-  };
+    return {
+      totalCalls,
+      byService,
+      byOperation,
+      errorRate: totalCalls > 0 ? errorCount / totalCalls : 0,
+      period: { start: startDate, end: endDate },
+    };
+  } catch (error) {
+    console.error('[getUsageSummary] Error:', error);
+    throw new Error(`Failed to fetch usage summary: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }

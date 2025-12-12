@@ -6,14 +6,15 @@
  */
 
 import { ConsoleLayout } from '@/components/console/ConsoleLayout';
+import { ConsolePublicOverview } from '@/components/console/ConsolePublicOverview';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 export default async function ConsoleRootLayout({
   children,
@@ -54,9 +55,19 @@ export default async function ConsoleRootLayout({
     const authResult = await supabase.auth.getUser();
     const { data: { user }, error } = authResult;
 
-    // If Supabase is not configured or auth fails, redirect to signup
+    // If user is not authenticated, show public overview instead of redirecting
     if (error || !user) {
-      redirect('/signup?error=auth_required');
+      return (
+        <>
+          <Navigation />
+          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <ConsolePublicOverview />
+            </div>
+          </div>
+          <Footer />
+        </>
+      );
     }
 
     return (
@@ -70,27 +81,17 @@ export default async function ConsoleRootLayout({
     // Log error for debugging
     console.error('[Console Layout] Auth error:', error);
     
-    // In production, show a clean error page instead of crashing
-    if (process.env.NODE_ENV === 'production') {
-      return (
-        <>
-          <Navigation />
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
-              <p className="text-slate-600 dark:text-slate-400 mb-4">
-                Unable to verify authentication. Please try signing in again.
-              </p>
-              <Button asChild>
-                <Link href="/signup">Sign In</Link>
-              </Button>
-            </div>
+    // Show public overview on error instead of crashing
+    return (
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <ConsolePublicOverview />
           </div>
-          <Footer />
-        </>
-      );
-    }
-    
-    // In development, redirect to signup with error parameter
-    redirect('/signup?error=auth_required');
+        </div>
+        <Footer />
+      </>
+    );
   }
 }

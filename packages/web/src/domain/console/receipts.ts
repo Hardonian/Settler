@@ -41,31 +41,36 @@ export async function listReceipts(
   limit = 50,
   offset = 0
 ): Promise<ReceiptListItem[]> {
-  const receipts = await prisma.receipt.findMany({
-    where: {
-      upload: {
-        billingAccountId,
+  try {
+    const receipts = await prisma.receipt.findMany({
+      where: {
+        upload: {
+          billingAccountId,
+        },
       },
-    },
-    include: {
-      items: true,
-    },
-    orderBy: { createdAt: 'desc' },
-    take: limit,
-    skip: offset,
-  });
+      include: {
+        items: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+    });
 
-  return receipts.map((receipt: (typeof receipts)[number]) => ({
-    id: receipt.id,
-    uploadId: receipt.uploadId,
-    vendor: receipt.vendor,
-    date: receipt.date,
-    currency: receipt.currency,
-    total: receipt.total ? Number(receipt.total) : null,
-    confidenceScore: receipt.confidenceScore ? Number(receipt.confidenceScore) : null,
-    itemCount: receipt.items.length,
-    createdAt: receipt.createdAt,
-  }));
+    return receipts.map((receipt: (typeof receipts)[number]) => ({
+      id: receipt.id,
+      uploadId: receipt.uploadId,
+      vendor: receipt.vendor,
+      date: receipt.date,
+      currency: receipt.currency,
+      total: receipt.total ? Number(receipt.total) : null,
+      confidenceScore: receipt.confidenceScore ? Number(receipt.confidenceScore) : null,
+      itemCount: receipt.items.length,
+      createdAt: receipt.createdAt,
+    }));
+  } catch (error) {
+    console.error('[listReceipts] Error:', error);
+    throw new Error(`Failed to list receipts: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 /**
