@@ -66,7 +66,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!isValidOriginUrl(successUrl) || !isValidOriginUrl(cancelUrl)) {
+    // Use provided URLs or construct defaults
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev';
+    const finalSuccessUrl = successUrl || `${siteUrl}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
+    const finalCancelUrl = cancelUrl || `${siteUrl}/pricing?canceled=1`;
+
+    if (!isValidOriginUrl(finalSuccessUrl) || !isValidOriginUrl(finalCancelUrl)) {
       return NextResponse.json(
         { error: 'Invalid URL format or origin for successUrl or cancelUrl' },
         { status: 400 }
@@ -85,8 +90,8 @@ export async function POST(request: NextRequest) {
     const session = await createCheckoutSession(
       billingAccount.id,
       planCode,
-      successUrl,
-      cancelUrl
+      finalSuccessUrl,
+      finalCancelUrl
     );
 
     if (!session.url) {

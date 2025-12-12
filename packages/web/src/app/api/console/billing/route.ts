@@ -35,7 +35,16 @@ export async function GET(_request: NextRequest) {
     });
 
     if (!billingAccount) {
-      return NextResponse.json({ error: 'No billing account found' }, { status: 404 });
+      // Return empty state instead of 404 to prevent UI errors
+      return NextResponse.json({
+        billingAccount: null,
+        subscription: null,
+        usage: {
+          reconcile: { current: 0, limit: 0 },
+          receipts: { current: 0, limit: 0 },
+          featureFlags: { current: 0, limit: 0 },
+        },
+      });
     }
 
     // Get active subscription with optimized query

@@ -2,7 +2,11 @@
  * Stripe Webhook Handler
  * 
  * Handles Stripe webhook events for subscription lifecycle.
- * Includes proper security, error handling, and logging.
+ * MANDATORY REQUIREMENTS:
+ * - Node.js runtime (NOT Edge)
+ * - RAW request body for signature verification
+ * - Database-backed idempotency using stripe_events table
+ * - Bypasses all auth middleware
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -12,38 +16,116 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
-
-// Rate limiting: track webhook processing to prevent abuse
-const webhookProcessing = new Map<string, number>();
-const WEBHOOK_RATE_LIMIT_MS = 1000; // 1 second between same event
+export const runtime = 'nodejs'; // CRITICAL: Must be Node.js runtime for Prisma
 
 /**
- * Check if webhook event was recently processed (idempotency)
+ * Check if event was already processed (database-backed idempotency)
  */
-function isRecentlyProcessed(eventId: string): boolean {
-  const lastProcessed = webhookProcessing.get(eventId);
-  if (!lastProcessed) {
+async function isEventProcessed(eventId: string): Promise<boolean> {
+  try {
+    const existing = await prisma.stripeEvent.findUnique({
+      where: { eventId },
+      select: { id: true, status: true },
+    });
+    return existing !== null && existing.status === 'processed';
+  } catch (error) {
+    console.error('[Stripe Webhook] Error checking event idempotency:', error);
+    // On error, assume not processed to allow retry
     return false;
   }
-  return Date.now() - lastProcessed < WEBHOOK_RATE_LIMIT_MS;
 }
 
 /**
- * Mark webhook event as processed
+ * Record event receipt in database
  */
-function markAsProcessed(eventId: string): void {
-  webhookProcessing.set(eventId, Date.now());
-  // Cleanup old entries (keep last 1000)
-  if (webhookProcessing.size > 1000) {
-    const entries = Array.from(webhookProcessing.entries());
-    entries.sort((a, b) => b[1] - a[1]);
-    webhookProcessing.clear();
-    entries.slice(0, 1000).forEach(([id, time]) => webhookProcessing.set(id, time));
+async function recordEventReceived(
+  eventId: string,
+  eventType: string,
+  rawPayload: unknown
+): Promise<void> {
+  try {
+    await prisma.stripeEvent.create({
+      data: {
+        eventId,
+        type: eventType,
+        status: 'received',
+        rawPayload: rawPayload as never,
+      },
+    });
+  } catch (error: any) {
+    // If unique violation, event was already received (idempotent)
+    if (error?.code === 'P2002') {
+      console.warn('[Stripe Webhook] Event already received:', eventId);
+      return;
+    }
+    throw error;
   }
+}
+
+/**
+ * Mark event as processed
+ */
+async function markEventProcessed(eventId: string): Promise<void> {
+  await prisma.stripeEvent.update({
+    where: { eventId },
+    data: {
+      status: 'processed',
+      processedAt: new Date(),
+    },
+  });
+}
+
+/**
+ * Mark event as failed
+ */
+async function markEventFailed(eventId: string, error: string): Promise<void> {
+  await prisma.stripeEvent.update({
+    where: { eventId },
+    data: {
+      status: 'failed',
+      error,
+      processedAt: new Date(),
+    },
+  });
+}
+
+/**
+ * Extract billing account ID from event metadata
+ */
+function extractBillingAccountId(event: Stripe.Event): string | null {
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session;
+    return session.metadata?.billingAccountId || null;
+  }
+  
+  if (
+    event.type === 'customer.subscription.created' ||
+    event.type === 'customer.subscription.updated' ||
+    event.type === 'customer.subscription.deleted'
+  ) {
+    const subscription = event.data.object as Stripe.Subscription;
+    return subscription.metadata?.billingAccountId || null;
+  }
+  
+  if (event.type === 'customer.updated') {
+    const customer = event.data.object as Stripe.Customer;
+    return customer.metadata?.billingAccountId || null;
+  }
+  
+  if (event.type === 'invoice.paid' || event.type === 'invoice.payment_failed') {
+    const invoice = event.data.object as Stripe.Invoice;
+    if (typeof invoice.subscription === 'string') {
+      // We'd need to fetch the subscription to get metadata, but for now return null
+      return null;
+    }
+    return invoice.subscription?.metadata?.billingAccountId || null;
+  }
+  
+  return null;
 }
 
 export async function POST(request: NextRequest) {
+  // Read RAW body - CRITICAL for signature verification
   const body = await request.text();
   const headersList = await headers();
   const signature = headersList.get('stripe-signature');
@@ -57,7 +139,6 @@ export async function POST(request: NextRequest) {
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    // eslint-disable-next-line no-console
     console.error('[Stripe Webhook] STRIPE_WEBHOOK_SECRET not configured');
     return NextResponse.json(
       { error: 'Webhook secret not configured' },
@@ -68,10 +149,10 @@ export async function POST(request: NextRequest) {
   let event: Stripe.Event;
 
   try {
+    // Verify signature using RAW body
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     const error = err as Error;
-    // eslint-disable-next-line no-console
     console.error('[Stripe Webhook] Signature verification failed:', error.message);
     return NextResponse.json(
       { error: `Webhook Error: ${error.message}` },
@@ -79,14 +160,54 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Idempotency check: prevent duplicate processing
-  if (isRecentlyProcessed(event.id)) {
-    // eslint-disable-next-line no-console
-    console.warn('[Stripe Webhook] Event already processed recently', { eventId: event.id, type: event.type });
+  // Database-backed idempotency check
+  const alreadyProcessed = await isEventProcessed(event.id);
+  if (alreadyProcessed) {
+    console.info('[Stripe Webhook] Event already processed:', {
+      eventId: event.id,
+      type: event.type,
+    });
     return NextResponse.json({ received: true, duplicate: true });
   }
 
+  // Record event receipt (with idempotency protection)
   try {
+    await recordEventReceived(event.id, event.type, JSON.parse(body));
+  } catch (error) {
+    console.error('[Stripe Webhook] Failed to record event:', error);
+    // Continue processing - event might have been recorded in parallel
+  }
+
+  // Extract billing account ID for audit trail
+  const billingAccountId = extractBillingAccountId(event);
+
+  try {
+    // Handle checkout.session.completed - create subscription from checkout
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      
+      if (session.mode === 'subscription' && session.subscription) {
+        // Fetch the subscription to sync it
+        const subscriptionId = typeof session.subscription === 'string'
+          ? session.subscription
+          : session.subscription.id;
+        
+        try {
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+          await syncSubscriptionFromWebhook({
+            ...event,
+            type: 'customer.subscription.created',
+            data: {
+              object: subscription,
+            },
+          } as Stripe.Event);
+        } catch (error) {
+          console.error('[Stripe Webhook] Failed to sync subscription from checkout:', error);
+          throw error;
+        }
+      }
+    }
+
     // Handle subscription events
     if (
       event.type === 'customer.subscription.created' ||
@@ -110,30 +231,73 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Handle invoice events (optional - for payment tracking)
-    if (event.type === 'invoice.payment_succeeded') {
-      // Could update subscription status or send notifications
-      // eslint-disable-next-line no-console
-      console.info('[Stripe Webhook] Invoice payment succeeded', { invoiceId: (event.data.object as Stripe.Invoice).id });
+    // Handle invoice events
+    if (event.type === 'invoice.paid') {
+      const invoice = event.data.object as Stripe.Invoice;
+      console.info('[Stripe Webhook] Invoice payment succeeded', {
+        invoiceId: invoice.id,
+        subscriptionId: invoice.subscription,
+      });
+      
+      // Update subscription status if needed
+      if (typeof invoice.subscription === 'string') {
+        await prisma.subscription.updateMany({
+          where: { stripeSubscriptionId: invoice.subscription },
+          data: { status: 'active' },
+        });
+      }
     }
 
     if (event.type === 'invoice.payment_failed') {
-      // Could mark subscription as past_due
-      // eslint-disable-next-line no-console
-      console.warn('[Stripe Webhook] Invoice payment failed', { invoiceId: (event.data.object as Stripe.Invoice).id });
+      const invoice = event.data.object as Stripe.Invoice;
+      console.warn('[Stripe Webhook] Invoice payment failed', {
+        invoiceId: invoice.id,
+        subscriptionId: invoice.subscription,
+      });
+      
+      // Update subscription status if needed
+      if (typeof invoice.subscription === 'string') {
+        await prisma.subscription.updateMany({
+          where: { stripeSubscriptionId: invoice.subscription },
+          data: { status: 'past_due' },
+        });
+      }
     }
 
     // Mark as processed
-    markAsProcessed(event.id);
+    await markEventProcessed(event.id);
+
+    // Update billing account ID if we extracted it
+    if (billingAccountId) {
+      try {
+        await prisma.stripeEvent.update({
+          where: { eventId: event.id },
+          data: { billingAccountId },
+        });
+      } catch (error) {
+        // Non-critical - just log
+        console.warn('[Stripe Webhook] Failed to update billing account ID:', error);
+      }
+    }
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    // eslint-disable-next-line no-console
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[Stripe Webhook] Error processing webhook:', {
       eventId: event.id,
       eventType: event.type,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
     });
+    
+    // Mark as failed in database
+    try {
+      await markEventFailed(event.id, errorMessage);
+    } catch (dbError) {
+      console.error('[Stripe Webhook] Failed to mark event as failed:', dbError);
+    }
+    
+    // Return 500 so Stripe retries
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }

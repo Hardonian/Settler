@@ -70,6 +70,31 @@ model Subscription {
   @@map("subscriptions")
 }
 
+model StripeEvent {
+  id            String    @id @default(uuid())
+  eventId       String    @unique // Stripe event.id
+  type          String    // Event type (e.g., checkout.session.completed)
+  status        String    @default("received") // received, processed, failed
+  receivedAt    DateTime  @default(now())
+  processedAt   DateTime?
+  error         String?   @db.Text
+  userId        String?   @db.Uuid
+  tenantId      String?   @db.Uuid
+  billingAccountId String? @db.Uuid
+  rawPayload    Json?     // Full event payload for debugging
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([eventId])
+  @@index([type])
+  @@index([status])
+  @@index([receivedAt])
+  @@index([userId])
+  @@index([tenantId])
+  @@index([billingAccountId])
+  @@map("stripe_events")
+}
+
 model AddOn {
   id                String    @id @default(uuid())
   integrationId     String    @unique // tiktok, wix, ga4, paypal-payouts, whatsapp-telegram
