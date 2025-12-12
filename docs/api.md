@@ -4,16 +4,15 @@ Complete API reference for the Settler Reconciliation API.
 
 ## Base URL
 
-```
-Production: https://api.settler.io
-Development: http://localhost:3000
-```
+- **Production:** `https://api.settler.io`
+- **Staging:** `https://api-staging.settler.io`
+- **Local:** `http://localhost:3000`
 
 ## Authentication
 
-All API requests require authentication via API key or JWT token.
+Settler API supports two authentication methods:
 
-### API Key
+### API Key Authentication
 
 Include your API key in the `X-API-Key` header:
 
@@ -21,22 +20,87 @@ Include your API key in the `X-API-Key` header:
 curl -H "X-API-Key: sk_your_api_key" https://api.settler.io/api/v1/jobs
 ```
 
-### JWT Token
+### JWT Token Authentication
 
-Include a Bearer token in the `Authorization` header:
+Include your JWT token in the `Authorization` header:
 
 ```bash
 curl -H "Authorization: Bearer your_jwt_token" https://api.settler.io/api/v1/jobs
 ```
 
+**Getting a JWT Token:**
+
+```bash
+# Login
+curl -X POST https://api.settler.io/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password"}'
+
+# Response includes accessToken and refreshToken
+```
+
+## API Versioning
+
+The API uses URL versioning:
+
+- `/api/v1/` - Current stable version
+- `/api/v2/` - Future version (currently mirrors v1)
+
 ## Rate Limiting
 
-- **Limit**: 100 requests per 15 minutes per IP
-- **Header**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+Rate limits are tier-based:
 
-## Jobs API
+| Tier | RPM | Concurrent Jobs | Monthly Recons |
+|------|-----|----------------|----------------|
+| Free | 100 | 1 | 100 |
+| Starter | 1,000 | 5 | 10,000 |
+| Pro | 10,000 | 20 | 100,000 |
+| Business | 50,000 | 100 | 1,000,000 |
+| Enterprise | 1,000,000 | 1,000 | Unlimited |
 
-### Create Reconciliation Job
+Rate limit headers:
+- `X-RateLimit-Limit` - Request limit per minute
+- `X-RateLimit-Remaining` - Remaining requests
+- `X-RateLimit-Reset` - Reset time (Unix timestamp)
+
+## Endpoints
+
+### Jobs
+
+#### List Jobs
+
+```http
+GET /api/v1/jobs?page=1&limit=20
+```
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": "job_1234567890",
+      "userId": "user_123",
+      "name": "Shopify-Stripe Reconciliation",
+      "status": "active",
+      "createdAt": "2026-01-15T10:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 100
+  }
+}
+```
+
+#### Get Job
+
+```http
+GET /api/v1/jobs/:id
+```
+
+#### Create Job
 
 ```http
 POST /api/v1/jobs
@@ -101,38 +165,7 @@ X-API-Key: sk_your_api_key
 }
 ```
 
-### List Jobs
-
-```http
-GET /api/v1/jobs
-X-API-Key: sk_your_api_key
-```
-
-**Response:**
-
-```json
-{
-  "data": [
-    {
-      "id": "job_1234567890",
-      "userId": "user_123",
-      "name": "Shopify-Stripe Reconciliation",
-      "status": "active",
-      "createdAt": "2026-01-15T10:00:00Z"
-    }
-  ],
-  "count": 1
-}
-```
-
-### Get Job
-
-```http
-GET /api/v1/jobs/:id
-X-API-Key: sk_your_api_key
-```
-
-### Run Job
+#### Run Job
 
 ```http
 POST /api/v1/jobs/:id/run
@@ -153,16 +186,16 @@ X-API-Key: sk_your_api_key
 }
 ```
 
-### Delete Job
+#### Delete Job
 
 ```http
 DELETE /api/v1/jobs/:id
 X-API-Key: sk_your_api_key
 ```
 
-## Reports API
+### Reports
 
-### Get Reconciliation Report
+#### Get Reconciliation Report
 
 ```http
 GET /api/v1/reports/:jobId?startDate=2026-01-01&endDate=2026-01-31&format=json
@@ -218,16 +251,16 @@ X-API-Key: sk_your_api_key
 }
 ```
 
-### List Reports
+#### List Reports
 
 ```http
 GET /api/v1/reports
 X-API-Key: sk_your_api_key
 ```
 
-## Webhooks API
+### Webhooks
 
-### Create Webhook
+#### Create Webhook
 
 ```http
 POST /api/v1/webhooks
@@ -262,29 +295,44 @@ X-API-Key: sk_your_api_key
 }
 ```
 
-### List Webhooks
+#### List Webhooks
 
 ```http
 GET /api/v1/webhooks
 X-API-Key: sk_your_api_key
 ```
 
-### Receive External Webhook
+#### Webhook Events
 
-```http
-POST /api/v1/webhooks/receive/:adapter
-Content-Type: application/json
+- `reconciliation.matched` - Transaction matched successfully
+- `reconciliation.mismatch` - Transaction mismatch detected
+- `reconciliation.error` - Reconciliation error occurred
+- `reconciliation.completed` - Reconciliation job completed
+- `reconciliation.failed` - Reconciliation job failed
 
-{
-  "id": "evt_123",
-  "type": "order.created",
-  "data": { ... }
+#### Webhook Signature Verification
+
+Webhooks are signed with HMAC-SHA256. Verify the signature:
+
+```javascript
+const crypto = require('crypto');
+
+function verifyWebhook(payload, signature, secret) {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+  
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  );
 }
 ```
 
-## Adapters API
+### Adapters
 
-### List Adapters
+#### List Adapters
 
 ```http
 GET /api/v1/adapters
@@ -323,88 +371,111 @@ X-API-Key: sk_your_api_key
 }
 ```
 
-### Get Adapter
+#### Get Adapter
 
 ```http
 GET /api/v1/adapters/:id
 X-API-Key: sk_your_api_key
 ```
 
-## Error Responses
+### Health Checks
 
-All errors follow this format:
+#### Basic Health Check
+
+```http
+GET /health
+```
+
+#### Detailed Health Check
+
+```http
+GET /health/detailed
+```
+
+**Response:**
 
 ```json
 {
-  "error": "Error Type",
+  "status": "healthy",
+  "checks": {
+    "database": {
+      "status": "healthy",
+      "latency": 5
+    },
+    "redis": {
+      "status": "healthy",
+      "latency": 2
+    },
+    "sentry": {
+      "status": "healthy"
+    }
+  },
+  "timestamp": "2026-01-15T10:00:00Z"
+}
+```
+
+## Error Responses
+
+All errors follow a standardized format:
+
+```json
+{
+  "error": "ERROR_CODE",
   "message": "Human-readable error message",
   "details": [
     {
       "field": "field_name",
       "message": "Validation error message"
     }
-  ]
+  ],
+  "traceId": "trace-id-for-debugging"
 }
 ```
 
-### Status Codes
+### Error Codes
 
-- `200` - Success
-- `201` - Created
-- `202` - Accepted (async operation started)
-- `204` - No Content (successful deletion)
-- `400` - Bad Request (validation error)
-- `401` - Unauthorized (missing/invalid auth)
-- `403` - Forbidden (insufficient permissions)
-- `404` - Not Found
-- `429` - Too Many Requests (rate limit exceeded)
-- `500` - Internal Server Error
+- `VALIDATION_ERROR` (400) - Invalid input
+- `UNAUTHORIZED` (401) - Authentication required
+- `FORBIDDEN` (403) - Insufficient permissions
+- `NOT_FOUND` (404) - Resource not found
+- `CONFLICT` (409) - Resource conflict
+- `RATE_LIMIT_EXCEEDED` (429) - Too many requests
+- `INTERNAL_ERROR` (500) - Server error
 
-## Webhook Events
+## Pagination
 
-When reconciliation events occur, webhooks are sent to your configured endpoints:
+List endpoints support cursor-based pagination:
 
-### reconciliation.matched
-
-```json
-{
-  "event": "reconciliation.matched",
-  "data": {
-    "jobId": "job_123",
-    "matchId": "match_456",
-    "sourceId": "order_123",
-    "targetId": "payment_456",
-    "amount": 99.99,
-    "currency": "USD",
-    "matchedAt": "2026-01-15T10:00:00Z"
-  }
-}
+```http
+GET /api/v1/jobs?cursor=eyJjcmVhdGVkX2F0IjoiMjAyNC0wMS0wMSIsImlkIjoiMTIzIn0=&limit=20
 ```
 
-### reconciliation.mismatch
+**Response includes:**
 
-```json
-{
-  "event": "reconciliation.mismatch",
-  "data": {
-    "jobId": "job_123",
-    "sourceId": "order_789",
-    "expectedAmount": 99.99,
-    "actualAmount": 89.99,
-    "reason": "Amount mismatch"
-  }
-}
-```
+- `nextCursor` - Cursor for next page
+- `prevCursor` - Cursor for previous page
+- `hasMore` - Boolean indicating more results
 
-### reconciliation.error
+## OpenAPI Specification
 
-```json
-{
-  "event": "reconciliation.error",
-  "data": {
-    "jobId": "job_123",
-    "error": "Webhook timeout",
-    "occurredAt": "2026-01-15T10:00:00Z"
-  }
-}
-```
+Complete OpenAPI 3.0 specification available at:
+
+- JSON: `/api/v1/openapi.json`
+- Swagger UI: `/api/v1/docs`
+
+## SDKs
+
+Official SDKs available:
+
+- **TypeScript/JavaScript:** `npm install @settler/sdk`
+- **Python:** `pip install settler-sdk`
+- **Go:** `go get github.com/settler/settler-go`
+- **Ruby:** `gem install settler`
+
+See [API Quick Start Guide](./api-quick-start.md) for usage examples.
+
+## Support
+
+- **Documentation:** [docs.settler.io](https://docs.settler.io)
+- **Issues:** [GitHub Issues](https://github.com/shardie-github/Settler-API/issues)
+- **Email:** support@settler.io
