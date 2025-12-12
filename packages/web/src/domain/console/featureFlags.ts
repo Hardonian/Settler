@@ -37,34 +37,39 @@ export async function listFeatureFlags(
   billingAccountId: string,
   projectId?: string
 ): Promise<FeatureFlagListItem[]> {
-  const flags = await prisma.featureFlag.findMany({
-    where: {
-      billingAccountId,
-      projectId: projectId || undefined,
-      deletedAt: null,
-    },
-    include: {
-      environments: true,
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  try {
+    const flags = await prisma.featureFlag.findMany({
+      where: {
+        billingAccountId,
+        projectId: projectId || undefined,
+        deletedAt: null,
+      },
+      include: {
+        environments: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
-  return flags.map((flag: (typeof flags)[number]) => ({
-    id: flag.id,
-    key: flag.key,
-    name: flag.name,
-    description: flag.description,
-    type: flag.type,
-    isGlobal: flag.isGlobal,
-    defaultValue: flag.defaultValue,
-    environments: flag.environments.map((env: (typeof flag.environments)[number]) => ({
-      environment: env.environment,
-      enabled: env.enabled,
-      variant: env.variant as unknown,
-    })),
-    createdAt: flag.createdAt,
-    updatedAt: flag.updatedAt,
-  }));
+    return flags.map((flag: (typeof flags)[number]) => ({
+      id: flag.id,
+      key: flag.key,
+      name: flag.name,
+      description: flag.description,
+      type: flag.type,
+      isGlobal: flag.isGlobal,
+      defaultValue: flag.defaultValue,
+      environments: flag.environments.map((env: (typeof flag.environments)[number]) => ({
+        environment: env.environment,
+        enabled: env.enabled,
+        variant: env.variant as unknown,
+      })),
+      createdAt: flag.createdAt,
+      updatedAt: flag.updatedAt,
+    }));
+  } catch (error) {
+    console.error('[listFeatureFlags] Error:', error);
+    throw new Error(`Failed to list feature flags: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 /**

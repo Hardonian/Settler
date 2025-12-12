@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime
+
 export function GET(request: NextRequest, { params }: { params: { integrationId: string } }) {
   try {
     const { integrationId: _integrationId } = params;

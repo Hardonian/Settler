@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { addCorsHeaders, handleCors } from "@/lib/api/cors";
 
 // Cache status for 30 seconds to reduce load while keeping it fresh
 export const revalidate = 30;
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma and Supabase
+export const maxDuration = 10; // 10 seconds max for health checks
 
-export async function GET(_request: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  // Handle CORS preflight
+  const corsResponse = handleCors(request);
+  if (corsResponse) return corsResponse;
+
   try {
     // Check actual system health
     const healthChecks = await Promise.allSettled([
@@ -53,7 +60,8 @@ export async function GET(_request: NextRequest): Promise<NextResponse> {
     // Add caching headers for better performance
     response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
     
-    return response;
+    // Add CORS headers
+    return addCorsHeaders(response, request);
   } catch (error) {
     console.error("Error in status GET:", error);
     const errorResponse = NextResponse.json(
@@ -62,7 +70,7 @@ export async function GET(_request: NextRequest): Promise<NextResponse> {
     );
     // Don't cache errors
     errorResponse.headers.set('Cache-Control', 'no-store');
-    return errorResponse;
+    return addCorsHeaders(errorResponse, request);
   }
 }
 

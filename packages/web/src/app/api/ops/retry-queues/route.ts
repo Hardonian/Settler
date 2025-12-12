@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
 export async function GET(): Promise<NextResponse> {
   try {
