@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, AlertTriangle, XCircle, Clock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,23 +16,49 @@ interface SystemStatus {
   lastIncident?: string;
 }
 
+interface StatusResponse {
+  systems: SystemStatus[];
+  overallStatus: "operational" | "degraded" | "down";
+}
+
 export default function StatusPage() {
-  const systems: SystemStatus[] = [
+  const [systems, setSystems] = useState<SystemStatus[]>([
     { name: "Reconciliation Engine", status: "operational", uptime: 99.99 },
     { name: "Receipts Processing", status: "operational", uptime: 99.95 },
     { name: "Convert Service", status: "operational", uptime: 99.98 },
     { name: "Feature Flags", status: "operational", uptime: 100.0 },
     { name: "API Gateway", status: "operational", uptime: 99.99 },
-  ];
-  const overallStatus: "operational" | "degraded" | "down" = "operational";
-  const loading = false;
+  ]);
+  const [overallStatus, setOverallStatus] = useState<"operational" | "degraded" | "down">("operational");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate fetch for now to keep the hardcoded values active
     const loadStatus = async () => {
-        await new Promise(r => setTimeout(r, 800));
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch('/api/status');
+        if (!response.ok) {
+          throw new Error('Failed to fetch status');
+        }
+        const data: StatusResponse = await response.json();
+        setSystems(data.systems || systems);
+        setOverallStatus(data.overallStatus || "operational");
+      } catch (err) {
+        console.error('Failed to load status:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load status');
+        // Keep default values on error
+      } finally {
+        setLoading(false);
+      }
     };
     void loadStatus();
+    // Refresh every 30 seconds
+    const interval = setInterval(() => {
+      void loadStatus();
+    }, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const statusConfig = {
@@ -103,6 +129,18 @@ export default function StatusPage() {
 
         {/* System Statuses */}
         <div className="space-y-4">
+          {error && (
+            <Card className="border-amber-200 bg-amber-50 dark:bg-amber-900/20">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
+                  <AlertTriangle className="h-5 w-5" />
+                  <p className="text-sm">
+                    Unable to fetch real-time status. Showing cached data. {error}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
           {loading ? (
             <div className="text-center py-8">
               <LoadingSpinner size="lg" text="Loading system status..." />
