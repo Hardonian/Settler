@@ -1,0 +1,20 @@
+# robots.txt for settler.dev
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /console/
+
+# Allow important pages
+Allow: /docs
+Allow: /pricing
+Allow: /signup
+Allow: /playground
+
+# Sitemap location
+Sitemap: https://settler.dev/sitemap.xml

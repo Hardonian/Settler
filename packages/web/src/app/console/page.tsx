@@ -86,23 +86,11 @@ async function ConsoleOverviewContent() {
     });
   } catch (error) {
     console.error('[Console] Failed to fetch billing account:', error);
+    // Return safe fallback UI instead of crashing
     return (
       <div className="text-center py-12">
         <p className="text-slate-600 dark:text-slate-400 mb-4">
           Unable to load billing information. Please try again or contact support.
-        </p>
-        <Button onClick={() => window.location.reload()}>
-          Retry
-        </Button>
-      </div>
-    );
-  }
-
-  if (!billingAccount) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-slate-600 dark:text-slate-400 mb-4">
-          No billing account found. Please set up your account.
         </p>
         <div className="flex gap-2 justify-center">
           <Button asChild>
@@ -114,6 +102,36 @@ async function ConsoleOverviewContent() {
         </div>
       </div>
     );
+  }
+
+  if (!billingAccount) {
+    // Create billing account automatically if missing (graceful degradation)
+    try {
+      billingAccount = await prisma.billingAccount.create({
+        data: {
+          userId: user.id,
+          email: user.email || '',
+          status: 'active',
+        },
+      });
+    } catch (createError) {
+      console.error('[Console] Failed to create billing account:', createError);
+      return (
+        <div className="text-center py-12">
+          <p className="text-slate-600 dark:text-slate-400 mb-4">
+            No billing account found. Please set up your account.
+          </p>
+          <div className="flex gap-2 justify-center">
+            <Button asChild>
+              <Link href="/pricing">View Pricing</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/">Go Home</Link>
+            </Button>
+          </div>
+        </div>
+      );
+    }
   }
 
   // Fetch overview data

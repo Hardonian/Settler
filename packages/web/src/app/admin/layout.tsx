@@ -40,6 +40,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Flag size={18} /> Feature Flags
             </Button>
           </Link>
+          <Link href="/admin/webhooks">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <FlaskConical size={18} /> Webhooks
+            </Button>
+          </Link>
           <Link href="/admin/settings">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <Settings size={18} /> Settings
