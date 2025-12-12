@@ -1,27 +1,34 @@
-# Settler.dev Documentation
+# Settler Documentation
 
-Welcome to the Settler.dev documentation.
+Welcome to the Settler documentation. This directory contains comprehensive guides for developers, operators, and users of the Settler platform.
 
 ## Getting Started
 
-- [Architecture](./ARCHITECTURE.md) - System architecture overview
-- [API Reference](./API_REFERENCE.md) - Complete API documentation
-- [Billing](./BILLING.md) - Pricing and usage information
-- [Webhooks](./WEBHOOKS.md) - Webhook setup and events
-- [Workflows](./WORKFLOWS.md) - Workflow orchestration guide
+- **[Getting Started Guide](./getting-started.md)** - Start here for a quick introduction to Settler
+- **[API Reference](./api.md)** - Complete API documentation
+- **[Architecture](./architecture.md)** - System architecture and design patterns
 
-## Advanced Topics
+## Core Documentation
 
-- [Enterprise](./ENTERPRISE.md) - Enterprise features and SSO
-- [Vertical Modules](./VERTICAL_MODULES.md) - Industry-specific modules
-- [Security](./SECURITY.md) - Security practices and compliance
-- [Migrations](./MIGRATIONS.md) - Database migration guide
+- **[API Reference](./api.md)** - Complete API documentation with examples
+- **[Architecture](./architecture.md)** - System architecture, patterns, and design decisions
+- **[Billing](./billing.md)** - Pricing, usage tracking, and billing information
+- **[Operations](./operations.md)** - Production operations, monitoring, and scaling
 
-## For Developers
+## Developer Resources
 
-- [Contributing](./CONTRIBUTING.md) - Contribution guidelines
-- [Architecture](./ARCHITECTURE.md) - Technical architecture details
+- **[API Quick Start](./api-quick-start.md)** - Quick start guide for API integration
+- **[Webhook Setup](./webhook-setup.md)** - Webhook configuration and verification
+- **[Integration Recipes](./INTEGRATION_RECIPES.md)** - Common integration patterns and examples
 
----
+## Additional Resources
 
-**Need help?** Contact support@settler.io
+- **[Contributing](../CONTRIBUTING.md)** - Contribution guidelines
+- **[Security](../SECURITY.md)** - Security practices and vulnerability reporting
+- **[Changelog](../CHANGELOG.md)** - Release notes and version history
+
+## Need Help?
+
+- **Documentation**: [docs.settler.io](https://docs.settler.io)
+- **Issues**: [GitHub Issues](https://github.com/shardie-github/Settler-API/issues)
+- **Email**: support@settler.io
