@@ -2,7 +2,7 @@
   "buildCommand": "cd packages/web && npm run build:vercel",
   "installCommand": "npm ci --prefer-offline --no-audit",
   "framework": "nextjs",
-  "regions": ["iad1"],
+  "regions": ["iad1", "sfo1", "lhr1", "syd1"],
   "build": {
     "env": {
       "NODE_OPTIONS": "--max-old-space-size=4096",

@@ -10,6 +10,7 @@ import { QueryProvider } from "@/lib/providers/query-provider";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { TenantThemeProvider } from "@/components/tenant/TenantThemeProvider";
 import { getTenantContext } from "@/lib/tenant/server";
+import { requireEnvironment } from "@/lib/env/validation";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -112,6 +113,16 @@ export const viewport: Viewport = {
 export const dynamic = 'force-dynamic';
 // Revalidate every 60 seconds to balance freshness with performance
 export const revalidate = 60;
+
+// Validate environment on server startup (non-blocking in development)
+if (typeof window === 'undefined' && process.env.NODE_ENV === 'production') {
+  try {
+    requireEnvironment();
+  } catch (error) {
+    console.error('Environment validation failed:', error);
+    // Don't throw in production to allow graceful degradation
+  }
+}
 
 export default async function RootLayout({
   children,
