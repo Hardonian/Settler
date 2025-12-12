@@ -10,6 +10,7 @@ import { ConsolePublicOverview } from '@/components/console/ConsolePublicOvervie
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

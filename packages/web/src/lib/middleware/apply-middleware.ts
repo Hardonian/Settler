@@ -9,7 +9,6 @@ import { withRateLimit, getRateLimitTypeForRoute } from './rate-limit-wrapper';
 import { addCorsHeaders, handleCors } from '@/lib/api/cors';
 import { withCircuitBreaker } from '@/lib/resilience/circuit-breaker';
 import { withIdempotency } from '@/lib/api/idempotency';
-import { withRetry } from '@/lib/db/retry';
 
 export interface MiddlewareOptions {
   rateLimit?: boolean | 'auth' | 'api' | 'billing' | 'webhook' | 'public';
@@ -36,7 +35,7 @@ export function applyMiddleware<T>(
       if (corsResponse) return corsResponse as NextResponse<T>;
 
       const response = await originalHandler(request);
-      return addCorsHeaders(response, request);
+      return addCorsHeaders(response, request) as NextResponse<T>;
     };
   }
 
@@ -44,9 +43,9 @@ export function applyMiddleware<T>(
   if (options.rateLimit !== false) {
     const rateLimitType = typeof options.rateLimit === 'string' 
       ? options.rateLimit 
-      : getRateLimitTypeForRoute(typeof window === 'undefined' ? '' : window.location.pathname);
+      : 'api'; // Default to 'api' for server-side routes
     
-    wrappedHandler = withRateLimit(wrappedHandler, rateLimitType);
+    wrappedHandler = withRateLimit(wrappedHandler, rateLimitType) as typeof wrappedHandler;
   }
 
   // Apply circuit breaker
@@ -56,7 +55,7 @@ export function applyMiddleware<T>(
     wrappedHandler = async (request: NextRequest) => {
       return withCircuitBreaker(serviceName, async () => {
         return originalHandler(request);
-      });
+      }) as Promise<NextResponse<T>>;
     };
   }
 
@@ -64,12 +63,13 @@ export function applyMiddleware<T>(
   if (options.idempotency) {
     const originalHandler = wrappedHandler;
     wrappedHandler = async (request: NextRequest) => {
-      return withIdempotency(
+      const idempotentHandler = withIdempotency(
         async (req: Request) => {
-          return originalHandler(req as NextRequest);
+          return originalHandler(req as unknown as NextRequest);
         },
         { required: false }
-      )(request as unknown as Request) as Promise<NextResponse<T>>;
+      );
+      return idempotentHandler(request as unknown as Request) as Promise<NextResponse<T>>;
     };
   }
 
@@ -81,16 +81,16 @@ export function applyMiddleware<T>(
  */
 export const middlewarePresets = {
   // Public API endpoint
-  public: (handler: (req: NextRequest) => Promise<NextResponse>) =>
-    applyMiddleware(handler, {
+  public: <T = unknown>(handler: (req: NextRequest) => Promise<NextResponse<T>>) =>
+    applyMiddleware<T>(handler, {
       rateLimit: 'public',
       cors: true,
       circuitBreaker: 'supabase',
     }),
 
   // Authenticated API endpoint
-  authenticated: (handler: (req: NextRequest) => Promise<NextResponse>) =>
-    applyMiddleware(handler, {
+  authenticated: <T = unknown>(handler: (req: NextRequest) => Promise<NextResponse<T>>) =>
+    applyMiddleware<T>(handler, {
       rateLimit: 'api',
       cors: true,
       circuitBreaker: 'database',
@@ -99,8 +99,8 @@ export const middlewarePresets = {
     }),
 
   // Billing endpoint
-  billing: (handler: (req: NextRequest) => Promise<NextResponse>) =>
-    applyMiddleware(handler, {
+  billing: <T = unknown>(handler: (req: NextRequest) => Promise<NextResponse<T>>) =>
+    applyMiddleware<T>(handler, {
       rateLimit: 'billing',
       cors: true,
       circuitBreaker: 'stripe',
@@ -108,8 +108,8 @@ export const middlewarePresets = {
     }),
 
   // Webhook endpoint
-  webhook: (handler: (req: NextRequest) => Promise<NextResponse>) =>
-    applyMiddleware(handler, {
+  webhook: <T = unknown>(handler: (req: NextRequest) => Promise<NextResponse<T>>) =>
+    applyMiddleware<T>(handler, {
       rateLimit: 'webhook',
       cors: false, // Webhooks don't need CORS
       circuitBreaker: false, // Webhooks handle their own retries
@@ -117,8 +117,8 @@ export const middlewarePresets = {
     }),
 
   // Auth endpoint
-  auth: (handler: (req: NextRequest) => Promise<NextResponse>) =>
-    applyMiddleware(handler, {
+  auth: <T = unknown>(handler: (req: NextRequest) => Promise<NextResponse<T>>) =>
+    applyMiddleware<T>(handler, {
       rateLimit: 'auth',
       cors: true,
       circuitBreaker: 'supabase',

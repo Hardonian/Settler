@@ -86,17 +86,19 @@ export async function recordIdempotency(
   response?: unknown
 ): Promise<void> {
   try {
+    const responseJson = response ? (typeof response === 'string' ? JSON.parse(response) : response) : null;
+    
     await prisma.idempotencyKey.upsert({
       where: { key },
       create: {
         key,
         status,
-        response: response ? JSON.stringify(response) : null,
+        response: responseJson as any,
         completedAt: status !== 'pending' ? new Date() : null,
       },
       update: {
         status,
-        response: response ? JSON.stringify(response) : null,
+        response: responseJson as any,
         completedAt: status !== 'pending' ? new Date() : null,
       },
     });
@@ -109,7 +111,7 @@ export async function recordIdempotency(
 /**
  * Wrap handler with idempotency protection
  */
-export function withIdempotency<T>(
+export function withIdempotency(
   handler: (request: Request) => Promise<Response>,
   options: { required?: boolean } = {}
 ) {

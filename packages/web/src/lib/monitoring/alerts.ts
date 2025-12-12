@@ -28,7 +28,7 @@ class AlertManager {
 
   async sendAlert(options: AlertOptions): Promise<void> {
     if (!this.enabled) {
-      logger.warn('Alert (disabled)', options.title, options.context);
+      logger.warn(`Alert (disabled): ${options.title}`);
       return;
     }
 
