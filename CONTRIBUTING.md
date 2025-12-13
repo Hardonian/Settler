@@ -1,5 +1,19 @@
 # Contributing to Settler
 
+Thank you for contributing to Settler! This guide will help you get started.
+
+## Developer Console
+
+When contributing to Console features:
+- ✅ Use unified auth (`lib/api/unified-auth.ts`)
+- ✅ Support both session and API key auth
+- ✅ Never return 500 - use graceful degradation
+- ✅ Log activities using `logActivity()`
+- ✅ Update shared types in `shared/types/console.ts`
+- ✅ Test with SDK, CLI, and Console UI
+
+See [Console Complete Guide](docs/CONSOLE_COMPLETE.md) for details.
+
 Thank you for your interest in contributing to Settler! This document provides guidelines and instructions for contributing.
 
 ## Development Setup

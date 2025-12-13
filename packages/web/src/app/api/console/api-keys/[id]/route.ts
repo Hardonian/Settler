@@ -1,39 +1,47 @@
 /**
  * Console API Keys API Route - Delete/Revoke
+ * 
+ * Supports both session auth (Console UI) and API key auth (SDK/CLI)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { requireAuth } from '@/lib/api/unified-auth';
 import { revokeApiKey } from '@/domain/console/apiKeys';
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase admin client
+export const runtime = 'nodejs';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: RouteParams
 ) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+    // Authenticate using unified auth (session or API key)
+    await requireAuth(request);
+    
     const { id } = await params;
-    await revokeApiKey(user.id, id);
+    await revokeApiKey(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error revoking API key:', error);
+    // If auth error, return 401
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    // If permission error, return 403
+    if (error instanceof Error && error.message.includes('Permission denied')) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
+    console.error('[Console API Keys] Error revoking:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to revoke API key';
+    // Return 200 with error instead of 500
     return NextResponse.json(
-      { error: 'Failed to revoke API key' },
-      { status: 500 }
+      { error: errorMessage, success: false },
+      { status: 200 }
     );
   }
 }

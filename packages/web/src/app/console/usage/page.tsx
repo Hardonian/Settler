@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select } from '@/components/ui/select';
 import { Activity, TrendingUp, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -51,11 +50,36 @@ export default function UsagePage() {
       const res = await fetch(`/api/console/usage?days=${days}`);
       if (res.ok) {
         const data = await res.json();
-        setSummary(data.summary);
+        setSummary(data.summary || {
+          totalCalls: 0,
+          byService: {},
+          byOperation: {},
+          errorRate: 0,
+          period: { start: new Date(), end: new Date() },
+        });
         setEvents(data.events || []);
+      } else {
+        // Handle error gracefully
+        setSummary({
+          totalCalls: 0,
+          byService: {},
+          byOperation: {},
+          errorRate: 0,
+          period: { start: new Date(), end: new Date() },
+        });
+        setEvents([]);
       }
     } catch (error) {
       console.error('Failed to fetch usage data:', error);
+      // Set empty state on error
+      setSummary({
+        totalCalls: 0,
+        byService: {},
+        byOperation: {},
+        errorRate: 0,
+        period: { start: new Date(), end: new Date() },
+      });
+      setEvents([]);
     } finally {
       setLoading(false);
     }
@@ -80,15 +104,15 @@ export default function UsagePage() {
             Monitor your API usage across all Settler services.
           </p>
         </div>
-        <Select
+        <select
           value={timeRange}
           onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | '90d')}
-          className="w-32"
+          className="w-32 px-3 py-2 border rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
         >
           <option value="7d">Last 7 days</option>
           <option value="30d">Last 30 days</option>
           <option value="90d">Last 90 days</option>
-        </Select>
+        </select>
       </div>
 
       {/* Summary Cards */}

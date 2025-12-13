@@ -2,9 +2,11 @@
  * Console Usage Domain
  * 
  * Queries usage events for the Developer Console.
+ * Uses Prisma with billing account scoping for tenant isolation.
  */
 
 import { prisma } from '@/shared/db/prismaClient';
+import { createClient } from '@/lib/supabase/server';
 
 export interface UsageEventItem {
   id: string;
@@ -38,13 +40,52 @@ export interface UsageQueryFilters {
 }
 
 /**
+ * Verify billing account belongs to authenticated user
+ */
+async function verifyBillingAccountAccess(billingAccountId: string): Promise<boolean> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return false;
+    }
+    
+    // Check if billing account exists and belongs to user
+    if (!prisma || typeof prisma.billingAccount === 'undefined') {
+      return false;
+    }
+    
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: {
+        id: billingAccountId,
+        userId: user.id,
+      },
+    });
+    
+    return !!billingAccount;
+  } catch (error) {
+    console.error('[verifyBillingAccountAccess] Error:', error);
+    return false;
+  }
+}
+
+/**
  * Get usage events for a billing account
+ * Verifies the billing account belongs to the authenticated user
  */
 export async function getUsageEvents(
   billingAccountId: string,
   filters: UsageQueryFilters = {}
 ): Promise<UsageEventItem[]> {
   try {
+    // Verify billing account access
+    const hasAccess = await verifyBillingAccountAccess(billingAccountId);
+    if (!hasAccess) {
+      console.warn('[getUsageEvents] Access denied for billing account:', billingAccountId);
+      return [];
+    }
+    
     const where: Record<string, unknown> = {
       billingAccountId,
     };
@@ -91,12 +132,14 @@ export async function getUsageEvents(
     });
   } catch (error) {
     console.error('[getUsageEvents] Error:', error);
-    throw new Error(`Failed to fetch usage events: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    // Return empty array instead of throwing to prevent 500 errors
+    return [];
   }
 }
 
 /**
  * Get usage summary for a billing account
+ * Verifies the billing account belongs to the authenticated user
  */
 export async function getUsageSummary(
   billingAccountId: string,
@@ -104,6 +147,19 @@ export async function getUsageSummary(
   endDate: Date
 ): Promise<UsageSummary> {
   try {
+    // Verify billing account access
+    const hasAccess = await verifyBillingAccountAccess(billingAccountId);
+    if (!hasAccess) {
+      console.warn('[getUsageSummary] Access denied for billing account:', billingAccountId);
+      return {
+        totalCalls: 0,
+        byService: {},
+        byOperation: {},
+        errorRate: 0,
+        period: { start: startDate, end: endDate },
+      };
+    }
+    
     // Check if Prisma is available
     if (!prisma || typeof prisma.usageEvent === 'undefined') {
       console.warn('[getUsageSummary] Prisma client not available, returning empty summary');
@@ -157,6 +213,13 @@ export async function getUsageSummary(
     };
   } catch (error) {
     console.error('[getUsageSummary] Error:', error);
-    throw new Error(`Failed to fetch usage summary: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    // Return empty summary instead of throwing to prevent 500 errors
+    return {
+      totalCalls: 0,
+      byService: {},
+      byOperation: {},
+      errorRate: 0,
+      period: { start: startDate, end: endDate },
+    };
   }
 }

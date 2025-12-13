@@ -298,6 +298,10 @@ new SettlerClient(config: SettlerConfig)
 - `client.reports` - Reports client
 - `client.webhooks` - Webhooks client
 - `client.adapters` - Adapters client
+- `client.receipts` - Receipts client
+- `client.flags` - Feature flags client
+- `client.convert` - Convert client
+- `client.console` - **Console client** (API keys, usage, activities)
 - `client.use(middleware)` - Add middleware to the chain
 - `client.request<T>(method, path, options)` - Make a raw API request
 
@@ -367,6 +371,55 @@ await client.adapters.get(id: string): Promise<ApiResponse<Adapter>>
 // Paginated iterator
 client.adapters.listPaginated(options?: PaginationOptions): AsyncIterableIterator<Adapter>
 ```
+
+### ConsoleClient
+
+Manage Console resources (API keys, usage, activities):
+
+```typescript
+// API Keys
+await client.console.listApiKeys(): Promise<PaginatedResponse<ApiKey>>
+await client.console.createApiKey(request: CreateApiKeyRequest): Promise<CreateApiKeyResponse>
+await client.console.revokeApiKey(keyId: string): Promise<void>
+
+// Usage
+await client.console.getUsage(days: number): Promise<UsageResponse>
+
+// Receipts
+await client.console.listReceipts(limit?: number): Promise<PaginatedResponse<ReceiptListItem>>
+await client.console.getReceipt(receiptId: string): Promise<ReceiptListItem>
+
+// Feature Flags
+await client.console.listFeatureFlags(): Promise<PaginatedResponse<FeatureFlag>>
+
+// Activities
+await client.console.getActivities(limit?: number): Promise<Activity[]>
+
+// Health Check
+await client.console.health(): Promise<HealthStatus>
+```
+
+**Example:**
+```typescript
+const client = new SettlerClient({ apiKey: 'rk_your_key' });
+
+// List API keys
+const keys = await client.console.listApiKeys();
+console.log(`You have ${keys.data.length} API keys`);
+
+// Get usage stats
+const usage = await client.console.getUsage(7); // Last 7 days
+console.log(`Total calls: ${usage.summary.totalCalls}`);
+
+// Create new API key
+const newKey = await client.console.createApiKey({ 
+  name: 'Production Key',
+  scopes: ['read', 'write']
+});
+console.log(`New key: ${newKey.key}`); // Save this - shown only once!
+```
+
+See [Console Integration Guide](../../docs/SDK_CLI_CONSOLE_INTEGRATION.md) for full details.
 
 ## TypeScript Support
 

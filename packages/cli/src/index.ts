@@ -7,6 +7,7 @@ import { webhooksCommand } from "./commands/webhooks";
 import { adaptersCommand } from "./commands/adapters";
 import { debugCommand } from "./commands/debug";
 import { receiptsCommand } from "./commands/receipts";
+import { consoleCommand } from "./commands/console";
 
 const program = new Command();
 
@@ -27,6 +28,7 @@ program.addCommand(webhooksCommand);
 program.addCommand(adaptersCommand);
 program.addCommand(debugCommand);
 program.addCommand(receiptsCommand);
+program.addCommand(consoleCommand);
 
 // Parse arguments
 program.parse();

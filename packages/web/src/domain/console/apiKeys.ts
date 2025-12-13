@@ -2,9 +2,11 @@
  * Console API Keys Domain
  * 
  * Manages API key operations for the Developer Console.
+ * Uses authenticated Supabase client with RLS for tenant isolation.
  */
 
-import { createAdminClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
+import { logActivity } from '@/lib/console/activity-logger';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
@@ -46,11 +48,35 @@ export interface CreateApiKeyResult {
 }
 
 /**
- * List API keys for the current user
+ * Get authenticated user and verify session
  */
-export async function listApiKeys(userId: string): Promise<ApiKeyListItem[]> {
+async function getAuthenticatedUser() {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  
+  if (error || !user) {
+    throw new Error('Unauthorized: Please sign in to access API keys');
+  }
+  
+  return { supabase, user };
+}
+
+/**
+ * List API keys for the current authenticated user
+ * Uses RLS to ensure tenant isolation
+ */
+export async function listApiKeys(userId?: string): Promise<ApiKeyListItem[]> {
   try {
-    const supabase = await createAdminClient();
+    const { supabase, user } = await getAuthenticatedUser();
+    
+    // Use authenticated user's ID (RLS will enforce tenant isolation)
+    const queryUserId = userId || user.id;
+    
+    // Verify user is querying their own keys
+    if (userId && userId !== user.id) {
+      console.warn('[listApiKeys] User attempted to query another user\'s keys');
+      return [];
+    }
     
     // Check if Supabase client is properly initialized
     if (!supabase || typeof supabase.from !== 'function') {
@@ -61,13 +87,18 @@ export async function listApiKeys(userId: string): Promise<ApiKeyListItem[]> {
     const { data: keys, error } = await supabase
       .from('api_keys')
       .select('id, name, key_prefix, created_at, last_used_at, revoked_at, expires_at, scopes')
-      .eq('user_id', userId)
+      .eq('user_id', queryUserId)
       .order('created_at', { ascending: false });
 
     if (error) {
       // If table doesn't exist (code 42P01), return empty array instead of throwing
       if (error.code === '42P01' || error.message.includes('does not exist')) {
         console.warn('[listApiKeys] api_keys table does not exist, returning empty list');
+        return [];
+      }
+      // If RLS denies access (code 42501), return empty array
+      if (error.code === '42501' || error.message.includes('permission denied')) {
+        console.warn('[listApiKeys] Permission denied by RLS, returning empty list');
         return [];
       }
       console.error('[listApiKeys] Supabase error:', error);
@@ -86,7 +117,7 @@ export async function listApiKeys(userId: string): Promise<ApiKeyListItem[]> {
     scopes: string[] | null;
   };
 
-    return ((keys || []) as ApiKeyRow[]).map(key => ({
+    const mappedKeys = ((keys || []) as ApiKeyRow[]).map(key => ({
       id: key.id,
       name: key.name || undefined,
       keyPrefix: key.key_prefix,
@@ -96,7 +127,21 @@ export async function listApiKeys(userId: string): Promise<ApiKeyListItem[]> {
       expiresAt: key.expires_at ? new Date(key.expires_at) : undefined,
       scopes: key.scopes || [],
     }));
+
+    // Log activity
+    await logActivity({
+      activityType: 'api_key',
+      action: 'viewed',
+      title: 'Listed API keys',
+      metadata: { count: mappedKeys.length },
+    }).catch(() => {}); // Don't fail if logging fails
+
+    return mappedKeys;
   } catch (error) {
+    // If it's an auth error, re-throw it so caller can handle redirect
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      throw error;
+    }
     console.error('[listApiKeys] Unexpected error:', error);
     // Return empty array instead of throwing to prevent 500 errors
     return [];
@@ -104,31 +149,59 @@ export async function listApiKeys(userId: string): Promise<ApiKeyListItem[]> {
 }
 
 /**
- * Create a new API key
+ * Create a new API key for the authenticated user
+ * Uses RLS to ensure tenant isolation
  */
 export async function createApiKey(
-  userId: string,
-  input: CreateApiKeyInput
+  userId?: string,
+  input?: CreateApiKeyInput
 ): Promise<CreateApiKeyResult> {
+  const { supabase, user } = await getAuthenticatedUser();
+  
+  // Use authenticated user's ID (RLS will enforce tenant isolation)
+  const queryUserId = userId || user.id;
+  
+  // Verify user is creating their own key
+  if (userId && userId !== user.id) {
+    throw new Error('Unauthorized: Cannot create API key for another user');
+  }
+  
   const { key, prefix } = generateApiKey();
   const keyHash = await hashApiKey(key);
-
-  const supabase = await createAdminClient();
+  
+  // Get user's tenant_id from billing account
+  // RLS will enforce tenant isolation, but we need tenant_id for the insert
+  let tenantId: string | null = null;
+  try {
+    const { prisma } = await import('@/shared/db/prismaClient');
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: { userId: queryUserId },
+      select: { tenantId: true },
+    });
+    tenantId = billingAccount?.tenantId || null;
+  } catch (error) {
+    console.warn('[createApiKey] Could not fetch tenant_id, RLS will handle isolation');
+  }
   
   const { data: newKey, error: insertError } = await supabase
     .from('api_keys')
     .insert({
-      user_id: userId,
+      user_id: queryUserId,
+      tenant_id: tenantId,
       key_prefix: prefix,
       key_hash: keyHash,
-      name: input.name || null,
-      scopes: input.scopes || ['*'],
-      expires_at: input.expiresAt?.toISOString() || null,
+      name: input?.name || null,
+      scopes: input?.scopes || ['*'],
+      expires_at: input?.expiresAt?.toISOString() || null,
     } as never)
     .select('id, name, created_at')
     .single();
 
   if (insertError || !newKey) {
+    // If RLS denies access, provide user-friendly error
+    if (insertError?.code === '42501' || insertError?.message.includes('permission denied')) {
+      throw new Error('Permission denied: Unable to create API key. Please check your account permissions.');
+    }
     throw new Error(`Failed to create API key: ${insertError?.message || 'Unknown error'}`);
   }
 
@@ -137,6 +210,17 @@ export async function createApiKey(
     name: string | null;
     created_at: string;
   };
+
+  // Log activity
+  await logActivity({
+    activityType: 'api_key',
+    action: 'created',
+    title: `Created API key${input?.name ? `: ${input.name}` : ''}`,
+    status: 'success',
+    resourceId: keyData.id,
+    resourceType: 'api_key',
+    metadata: { name: input?.name, hasScopes: !!input?.scopes },
+  }).catch(() => {}); // Don't fail if logging fails
 
   return {
     id: keyData.id,
@@ -147,18 +231,41 @@ export async function createApiKey(
 }
 
 /**
- * Revoke an API key
+ * Revoke an API key for the authenticated user
+ * Uses RLS to ensure tenant isolation
  */
-export async function revokeApiKey(userId: string, keyId: string): Promise<void> {
-  const supabase = await createAdminClient();
+export async function revokeApiKey(keyId: string, userId?: string): Promise<void> {
+  const { supabase, user } = await getAuthenticatedUser();
+  
+  // Use authenticated user's ID (RLS will enforce tenant isolation)
+  const queryUserId = userId || user.id;
+  
+  // Verify user is revoking their own key
+  if (userId && userId !== user.id) {
+    throw new Error('Unauthorized: Cannot revoke API key for another user');
+  }
   
   const { error } = await supabase
     .from('api_keys')
     .update({ revoked_at: new Date().toISOString() } as never)
     .eq('id', keyId)
-    .eq('user_id', userId); // Ensure user owns the key
+    .eq('user_id', queryUserId); // Ensure user owns the key
 
   if (error) {
+    // If RLS denies access, provide user-friendly error
+    if (error.code === '42501' || error.message.includes('permission denied')) {
+      throw new Error('Permission denied: Unable to revoke API key. Please check your account permissions.');
+    }
     throw new Error(`Failed to revoke API key: ${error.message}`);
   }
+
+  // Log activity
+  await logActivity({
+    activityType: 'api_key',
+    action: 'revoked',
+    title: 'Revoked API key',
+    status: 'success',
+    resourceId: keyId,
+    resourceType: 'api_key',
+  }).catch(() => {}); // Don't fail if logging fails
 }

@@ -1,40 +1,41 @@
 /**
  * Console Feature Flags API Route
+ * 
+ * Supports both session auth (Console UI) and API key auth (SDK/CLI)
  */
 
-import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/api/unified-auth';
 import { prisma } from '@/shared/db/prismaClient';
 import { listFeatureFlags } from '@/domain/console/featureFlags';
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
+export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Authenticate using unified auth (session or API key)
+    const authContext = await requireAuth(request);
 
     const billingAccount = await prisma.billingAccount.findFirst({
-      where: { userId: user.id },
+      where: { userId: authContext.userId },
     });
 
     if (!billingAccount) {
-      return NextResponse.json({ error: 'No billing account found' }, { status: 404 });
+      // Return empty array instead of 404
+      return NextResponse.json({ flags: [] });
     }
 
     const flags = await listFeatureFlags(billingAccount.id);
 
     return NextResponse.json({ flags });
   } catch (error) {
-    console.error('Error fetching feature flags:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch feature flags' },
-      { status: 500 }
-    );
+    // If auth error, return 401
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    console.error('[Console Feature Flags] Error:', error);
+    // Return 200 with empty array instead of 500
+    return NextResponse.json({ flags: [] });
   }
 }

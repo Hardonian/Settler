@@ -6,6 +6,7 @@ import { AdaptersClient } from "./clients/adapters";
 import { ReceiptsClient } from "./clients/receipts";
 import { FlagsClient } from "./clients/flags";
 import { ConvertClient } from "./clients/convert";
+import { ConsoleClient } from "./clients/console";
 
 // Export types
 export * from "./types";
@@ -48,7 +49,20 @@ export {
 export { withRetry, type RetryConfig } from "./utils/retry";
 
 // Export clients
-export { SettlerClient, JobsClient, ReportsClient, WebhooksClient, AdaptersClient, ReceiptsClient, FlagsClient, ConvertClient };
+export { SettlerClient, JobsClient, ReportsClient, WebhooksClient, AdaptersClient, ReceiptsClient, FlagsClient, ConvertClient, ConsoleClient };
+
+// Export Console types
+export type {
+  ApiKey,
+  CreateApiKeyRequest,
+  CreateApiKeyResponse,
+  UsageSummary,
+  UsageEvent,
+  UsageResponse,
+  Activity,
+  ReceiptListItem,
+  FeatureFlag,
+} from "./clients/console";
 
 // Default export
 export default SettlerClient;

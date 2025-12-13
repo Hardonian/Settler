@@ -24,9 +24,24 @@ export interface ApiKeyAuthContext {
 
 /**
  * Extract API key from request headers
+ * Supports both X-API-Key header and Authorization: Bearer <key>
  */
 export function extractApiKey(request: NextRequest): string | null {
-  return request.headers.get('x-api-key') || null;
+  const apiKeyHeader = request.headers.get('x-api-key');
+  if (apiKeyHeader) {
+    return apiKeyHeader;
+  }
+  
+  const authHeader = request.headers.get('authorization');
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.replace('Bearer ', '');
+    // Only return if it looks like an API key (starts with rk_)
+    if (token.startsWith('rk_')) {
+      return token;
+    }
+  }
+  
+  return null;
 }
 
 /**
@@ -80,7 +95,10 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext>
   // Get billing account for user (if exists)
   const billingAccount = await prisma.billingAccount.findFirst({
     where: { userId: key.user_id },
-    select: { id: true, tenantId: true },
+    select: { 
+      id: true, 
+      tenantId: true,
+    },
   });
 
   // Update last used timestamp
@@ -100,13 +118,14 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext>
 
 /**
  * Middleware helper to authenticate API key from request
+ * Supports both X-API-Key header and Authorization: Bearer <key>
  */
 export async function authenticateApiKey(
   request: NextRequest
 ): Promise<ApiKeyAuthContext> {
   const apiKey = extractApiKey(request);
   if (!apiKey) {
-    throw new Error('API key required in X-API-Key header');
+    throw new Error('API key required in X-API-Key header or Authorization: Bearer <key>');
   }
   return validateApiKey(apiKey);
 }
