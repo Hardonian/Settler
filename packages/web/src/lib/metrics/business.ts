@@ -1,12 +1,18 @@
 /**
- * Business Metrics Tracking
+ * Business Metrics Tracking (Client-Safe)
  * 
  * Tracks key business events for analytics and reporting.
  * All events are sent to analytics service and can be queried for dashboards.
+ * 
+ * NOTE: This file is client-safe and can be imported in client components.
+ * It does NOT import Prisma or any server-only dependencies.
+ * 
+ * For server-only metrics queries, see business-server.ts
  */
 
+'use client';
+
 import { analytics } from '@/lib/analytics';
-import { prisma } from '@/shared/db/prismaClient';
 
 export interface BusinessMetrics {
   // Conversion metrics
@@ -30,105 +36,25 @@ export interface BusinessMetrics {
 }
 
 /**
- * Track business event
+ * Track business event (CLIENT-SAFE)
+ * 
+ * Can be called from client components or server components.
  */
 export function trackBusinessEvent(
   event: string,
   properties: Record<string, unknown> = {}
 ): void {
-  analytics.trackEvent(event, {
-    ...properties,
-    timestamp: new Date().toISOString(),
-  });
+  // Only track on client side to avoid SSR issues
+  if (typeof window !== 'undefined') {
+    analytics.trackEvent(event, {
+      ...properties,
+      timestamp: new Date().toISOString(),
+    });
+  }
 }
 
 /**
- * Get business metrics snapshot
- */
-export async function getBusinessMetrics(
-  startDate: Date,
-  endDate: Date
-): Promise<BusinessMetrics> {
-  // Get subscription metrics
-  const subscriptions = await prisma.subscription.findMany({
-    where: {
-      status: {
-        in: ['active', 'trialing'],
-      },
-      createdAt: {
-        gte: startDate,
-        lte: endDate,
-      },
-    },
-    select: {
-      planId: true,
-      planName: true,
-      status: true,
-    },
-  });
-
-  // Calculate MRR (simplified - would need actual price data)
-  const subscriptionsByPlan: Record<string, number> = {};
-  subscriptions.forEach((sub) => {
-    subscriptionsByPlan[sub.planName] = (subscriptionsByPlan[sub.planName] || 0) + 1;
-  });
-
-  // Get usage metrics
-  const usageEvents = await prisma.usageEvent.findMany({
-    where: {
-      timestamp: {
-        gte: startDate,
-        lte: endDate,
-      },
-    },
-    select: {
-      eventType: true,
-      quantity: true,
-    },
-  });
-
-  const apiCallsByService: Record<string, number> = {};
-  let totalApiCalls = 0;
-
-  usageEvents.forEach((event) => {
-    const service = event.eventType?.split(':')[0] || 'unknown';
-    const quantity = typeof event.quantity === 'number' ? event.quantity : Number(event.quantity || 0);
-    apiCallsByService[service] = (apiCallsByService[service] || 0) + quantity;
-    totalApiCalls += quantity;
-  });
-
-  // Get churn metrics
-  const cancellations = await prisma.subscription.count({
-    where: {
-      status: 'canceled',
-      cancelledAt: {
-        gte: startDate,
-        lte: endDate,
-      },
-    },
-  });
-
-  // TODO: Track upgrades/downgrades in a separate table or via webhook events
-  const upgrades = 0;
-  const downgrades = 0;
-
-  return {
-    checkoutStarted: 0, // Would be tracked via analytics
-    checkoutCompleted: 0,
-    checkoutCanceled: 0,
-    activeSubscriptions: subscriptions.length,
-    subscriptionsByPlan,
-    mrr: 0, // Would calculate from actual subscription prices
-    totalApiCalls,
-    apiCallsByService,
-    cancellations,
-    upgrades,
-    downgrades,
-  };
-}
-
-/**
- * Track conversion funnel event
+ * Track conversion funnel event (CLIENT-SAFE)
  */
 export function trackConversionFunnel(
   stage: 'viewed_pricing' | 'clicked_checkout' | 'started_checkout' | 'completed_checkout',
@@ -138,7 +64,7 @@ export function trackConversionFunnel(
 }
 
 /**
- * Track revenue event
+ * Track revenue event (CLIENT-SAFE)
  */
 export function trackRevenue(
   amount: number,
@@ -153,3 +79,6 @@ export function trackRevenue(
     billingCycle,
   });
 }
+
+// Note: getBusinessMetrics moved to business-server.ts (server-only)
+// Import it from '@/lib/metrics/business-server' in API routes
