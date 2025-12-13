@@ -72,8 +72,8 @@ export function PurchaseScrutiny() {
     },
     {
       icon: <Users className="w-6 h-6" />,
-      label: "Trusted by 500+ Companies",
-      description: "Processing 10M+ transactions monthly with 99.7% accuracy",
+      label: "Trusted by Early Adopters",
+      description: "Processing transactions with high accuracy",
       badge: "Trusted",
     },
   ];

@@ -22,8 +22,8 @@ export function TrustSignalBanner() {
     {
       icon: <Users className="w-5 h-5" />,
       label: "Active Users",
-      value: "500+",
-      description: "Companies trust Settler",
+      value: "Growing",
+      description: "Early adopters trust Settler",
     },
     {
       icon: <TrendingUp className="w-5 h-5" />,

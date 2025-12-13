@@ -53,7 +53,7 @@ export function CommunityHub() {
     },
     {
       title: "Discord",
-      description: "Join 500+ developers in our community",
+      description: "Join our developer community",
       href: "https://discord.gg/settler",
       icon: <MessageCircle className="w-6 h-6" />,
       external: true,
@@ -76,7 +76,7 @@ export function CommunityHub() {
   ];
 
   const stats = [
-    { icon: <Users className="w-5 h-5" />, value: "500+", label: "Community Members" },
+    { icon: <Users className="w-5 h-5" />, value: "Growing", label: "Community Members" },
     { icon: <Code className="w-5 h-5" />, value: "50+", label: "Open Source Adapters" },
     { icon: <Award className="w-5 h-5" />, value: "100+", label: "Contributors" },
     { icon: <Zap className="w-5 h-5" />, value: "10M+", label: "Transactions Processed" },

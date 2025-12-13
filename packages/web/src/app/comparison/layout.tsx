@@ -5,7 +5,7 @@ import { generateMetadata } from "@/lib/metadata";
 export const metadata: Metadata = generateMetadata({
   title: "Comparison - Settler vs. Building In-House vs. Alternatives",
   description:
-    "Compare Settler with building your own reconciliation system or using alternative solutions. See why 500+ companies choose Settler for faster time to value, lower costs, and 99.7% accuracy.",
+    "Compare Settler with building your own reconciliation system or using alternative solutions. See why companies choose Settler for faster time to value, lower costs, and high accuracy.",
   keywords: [
     "reconciliation comparison",
     "build vs buy",

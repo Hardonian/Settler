@@ -416,7 +416,7 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);
         <div className="max-w-4xl mx-auto relative z-10">
           <ConversionCTA
             title="Ready to Automate Your Reconciliation?"
-            description="Join 500+ companies saving 10+ hours per week. Start your 30-day free trial—full access, no credit card required."
+            description="Start automating reconciliation in minutes. Free trial—full access, no credit card required."
             primaryAction="Start Free Trial — No Credit Card"
             primaryLink="/signup"
             secondaryAction="View Pricing"
