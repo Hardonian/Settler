@@ -127,14 +127,43 @@ Usage is tracked for reconciliation operations, receipt parsing, and feature fla
 
 ## Documentation
 
-- **[Architecture](docs/architecture.md)**: System architecture and design patterns
+- **[Architecture](docs/ARCHITECTURE.md)**: Complete system architecture and design patterns
+- **[Critical Paths](docs/CRITICAL_PATHS.md)**: User journey documentation and failure modes
+- **[Security](docs/SECURITY.md)**: Security practices, compliance, and vulnerability reporting
 - **[API Reference](docs/api.md)**: Complete API documentation
 - **[Getting Started](docs/getting-started.md)**: Developer onboarding guide
 - **[Billing](docs/billing.md)**: Pricing and usage information
-- **[Security](SECURITY.md)**: Security practices and vulnerability reporting
 - **[Contributing](CONTRIBUTING.md)**: Contribution guidelines
 
 Full documentation is also available at [settler.dev/docs](https://settler.dev/docs).
+
+## Production Readiness
+
+This codebase has undergone a comprehensive hardening pass (see [Reflection Report](docs/REFLECTION_REPORT.md)):
+
+- ✅ **Error Handling**: Graceful degradation, safe helpers, error boundaries
+- ✅ **Security**: Rate limiting, security headers, webhook verification, RLS policies
+- ✅ **Billing**: Reconciliation service, webhook hardening, admin tools
+- ✅ **Database**: Integrity checks, RLS verification, sanity scripts
+- ✅ **Testing**: Smoke tests, CI/CD, build verification
+- ✅ **Documentation**: Architecture docs, critical paths, security guide
+
+## Quick Verification
+
+After deployment, verify everything works:
+
+```bash
+# Run database sanity checks
+npm run db:sanity-check
+
+# Run smoke tests (requires running server)
+npm run test:smoke
+
+# Check build
+npm run build
+npm run typecheck
+npm run lint
+```
 
 ## Security
 

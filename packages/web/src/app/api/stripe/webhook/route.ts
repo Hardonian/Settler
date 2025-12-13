@@ -128,8 +128,25 @@ function extractBillingAccountId(event: Stripe.Event): string | null {
 }
 
 export async function POST(request: NextRequest) {
+  // Check request size (max 500KB for webhooks)
+  const contentLength = request.headers.get('content-length');
+  if (contentLength && parseInt(contentLength, 10) > 500 * 1024) {
+    return NextResponse.json(
+      { error: 'Request body too large' },
+      { status: 413 }
+    );
+  }
+
   // Read RAW body - CRITICAL for signature verification
   const body = await request.text();
+  
+  // Double-check size after reading
+  if (body.length > 500 * 1024) {
+    return NextResponse.json(
+      { error: 'Request body too large' },
+      { status: 413 }
+    );
+  }
   const headersList = await headers();
   const signature = headersList.get('stripe-signature');
 

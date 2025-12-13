@@ -234,8 +234,9 @@ export async function syncSubscriptionFromWebhook(
 
 /**
  * Sync subscription data from Stripe to database
+ * Exported for use in reconciliation service
  */
-async function syncSubscription(stripeSubscription: Stripe.Subscription): Promise<void> {
+export async function syncSubscription(stripeSubscription: Stripe.Subscription): Promise<void> {
   const billingAccountId = stripeSubscription.metadata?.billingAccountId;
   if (!billingAccountId || typeof billingAccountId !== 'string' || !isValidUUID(billingAccountId)) {
     // Log error but don't throw - webhook processing should be resilient
