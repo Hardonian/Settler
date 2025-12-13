@@ -151,7 +151,11 @@ async function ConsoleOverviewContent() {
 
   try {
     const [apiKeysResult, receiptsResult, flagsResult, usageSummaryResult] = await Promise.allSettled([
-      listApiKeys(user.id).catch((err) => {
+      listApiKeys().catch((err) => {
+        // If auth error, re-throw to trigger redirect
+        if (err instanceof Error && err.message.includes('Unauthorized')) {
+          throw err;
+        }
         console.error('[Console] listApiKeys error:', err);
         return [];
       }),

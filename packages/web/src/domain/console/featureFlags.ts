@@ -2,9 +2,11 @@
  * Console Feature Flags Domain
  * 
  * Manages feature flags for the Developer Console.
+ * Uses Prisma with billing account scoping for tenant isolation.
  */
 
 import { prisma } from '@/shared/db/prismaClient';
+import { createClient } from '@/lib/supabase/server';
 import { evaluateFlag } from '@/domain/featureFlags/evaluator';
 import { Environment } from '@/domain/featureFlags/types';
 
@@ -31,13 +33,52 @@ export interface UpdateFlagEnvironmentInput {
 }
 
 /**
+ * Verify billing account belongs to authenticated user
+ */
+async function verifyBillingAccountAccess(billingAccountId: string): Promise<boolean> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return false;
+    }
+    
+    // Check if billing account exists and belongs to user
+    if (!prisma || typeof prisma.billingAccount === 'undefined') {
+      return false;
+    }
+    
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: {
+        id: billingAccountId,
+        userId: user.id,
+      },
+    });
+    
+    return !!billingAccount;
+  } catch (error) {
+    console.error('[verifyBillingAccountAccess] Error:', error);
+    return false;
+  }
+}
+
+/**
  * List feature flags for a billing account
+ * Verifies the billing account belongs to the authenticated user
  */
 export async function listFeatureFlags(
   billingAccountId: string,
   projectId?: string
 ): Promise<FeatureFlagListItem[]> {
   try {
+    // Verify billing account access
+    const hasAccess = await verifyBillingAccountAccess(billingAccountId);
+    if (!hasAccess) {
+      console.warn('[listFeatureFlags] Access denied for billing account:', billingAccountId);
+      return [];
+    }
+    
     // Check if Prisma is available
     if (!prisma || typeof prisma.featureFlag === 'undefined') {
       console.warn('[listFeatureFlags] Prisma client not available, returning empty list');
@@ -74,7 +115,8 @@ export async function listFeatureFlags(
     }));
   } catch (error) {
     console.error('[listFeatureFlags] Error:', error);
-    throw new Error(`Failed to list feature flags: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    // Return empty array instead of throwing to prevent 500 errors
+    return [];
   }
 }
 

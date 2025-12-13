@@ -18,21 +18,23 @@ export async function DELETE(
   { params }: RouteParams
 ) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
-    await revokeApiKey(user.id, id);
+    await revokeApiKey(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    // If auth error, return 401
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    // If permission error, return 403
+    if (error instanceof Error && error.message.includes('Permission denied')) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error revoking API key:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to revoke API key';
     return NextResponse.json(
-      { error: 'Failed to revoke API key' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

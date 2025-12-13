@@ -57,6 +57,7 @@ export default async function ConsoleRootLayout({
     const { data: { user }, error } = authResult;
 
     // If user is not authenticated, show public overview instead of redirecting
+    // This prevents 500 errors when navigating from main page
     if (error || !user) {
       return (
         <>
@@ -79,10 +80,15 @@ export default async function ConsoleRootLayout({
       </>
     );
   } catch (error) {
-    // Log error for debugging
-    console.error('[Console Layout] Auth error:', error);
+    // Log error for debugging (server-side only, no secrets)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Console Layout] Auth error:', {
+      message: errorMessage,
+      // Don't log full error object to avoid leaking secrets
+    });
     
     // Show public overview on error instead of crashing
+    // This ensures the route never returns 500, even on unexpected errors
     return (
       <>
         <Navigation />

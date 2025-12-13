@@ -92,8 +92,16 @@ async function main() {
   await testApiRoute('Health Check', '/api/status/health');
   await testApiRoute('Status API', '/api/status');
 
-  // Test protected routes (should return 401/403 or redirect)
-  await testRoute('Console (protected)', '/console', 401); // May redirect or 401
+  // Test Console health check endpoint
+  await testApiRoute('Console Health Check', '/api/health/console', 200); // Should always return 200
+
+  // Test protected routes (should return 200 with auth prompt, NOT 500)
+  // Console should gracefully handle unauthenticated access
+  const consoleResult = await testRoute('Console (unauthenticated)', '/console', 200); // Should return 200, not 500
+  if (!consoleResult) {
+    console.error('⚠️  Console route returned error - this should never 500!');
+  }
+  
   await testRoute('Dashboard (protected)', '/dashboard', 401); // May redirect or 401
 
   // Test 404 page
