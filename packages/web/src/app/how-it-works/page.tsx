@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -24,6 +25,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const SafeImage = dynamic(() => import("@/components/marketing/SafeImage").then(mod => ({ default: mod.SafeImage })), { ssr: true });
 
 const steps = [
   {
@@ -268,21 +271,33 @@ export default function HowItWorksPage() {
 
                   <div className={cn(index % 2 === 1 && "lg:col-start-1 lg:row-start-1")}>
                     <div className="relative">
-                      <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-6 md:p-8 flex items-center justify-center">
-                        <div className="text-center">
-                          <div
-                            className={cn(
-                              "w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-3 sm:mb-4 rounded-xl bg-gradient-to-br flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:rotate-3",
-                              step.gradient
-                            )}
-                          >
-                            <Icon className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 transition-transform duration-300" />
-                          </div>
-                          <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium break-words">
-                            Step {step.number} Visualization
-                          </p>
+                      {index === 0 ? (
+                        <div className="aspect-video rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                          <SafeImage
+                            src="/brand/workflow.jpg"
+                            alt={`Step ${step.number}: ${step.title} - Workflow visualization`}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                          />
                         </div>
-                      </div>
+                      ) : (
+                        <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-6 md:p-8 flex items-center justify-center">
+                          <div className="text-center">
+                            <div
+                              className={cn(
+                                "w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-3 sm:mb-4 rounded-xl bg-gradient-to-br flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:rotate-3",
+                                step.gradient
+                              )}
+                            >
+                              <Icon className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 transition-transform duration-300" />
+                            </div>
+                            <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium break-words">
+                              Step {step.number} Visualization
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

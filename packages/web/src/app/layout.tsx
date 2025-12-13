@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/brand/hero.jpg",
         width: 1200,
         height: 630,
         alt: "Settler - Financial Infrastructure for Developers",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Settler - Financial Infrastructure for Developers",
     description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
-    images: ["/og-image.png"],
+    images: ["/brand/hero.jpg"],
     creator: "@settler_io",
   },
   robots: {

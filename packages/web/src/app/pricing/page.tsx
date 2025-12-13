@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -13,9 +14,16 @@ import { AnimatedPricingCard } from "@/components/AnimatedPricingCard";
 import { AnimatedFAQ } from "@/components/AnimatedFAQ";
 import { FAQSchema } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ZoomIn } from "lucide-react";
+import { SpotlightCard } from "@/components/ui/SpotlightCard";
+
+const Lightbox = dynamic(() => import("@/components/marketing/Lightbox").then(mod => ({ default: mod.Lightbox })), { ssr: false });
+const SafeImage = dynamic(() => import("@/components/marketing/SafeImage").then(mod => ({ default: mod.SafeImage })), { ssr: true });
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string; title?: string } | null>(null);
 
   const plans = [
     {
@@ -115,6 +123,11 @@ export default function Pricing() {
       answer:
         'Yes! All paid plans include a 14-day free trial. No credit card required to start.',
     },
+    {
+      question: 'Where does data live?',
+      answer:
+        'Your data is stored securely in our distributed data store with encryption at rest. Click the architecture thumbnail above to see our full architecture diagram.',
+    },
   ];
 
   return (
@@ -135,6 +148,122 @@ export default function Pricing() {
         title="Choose Your Plan"
         description="Start free, scale as you grow. All plans include our core reconciliation engine."
       />
+
+      {/* Visual Proof Strip */}
+      <section className="px-4 sm:px-6 lg:px-8 py-12 -mt-8 mb-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+              Visual Proof
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              See how Settler works in practice
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            <SpotlightCard
+              className="p-0 overflow-hidden cursor-pointer hover:shadow-xl transition-all group"
+              onClick={() => {
+                setLightboxImage({
+                  src: '/brand/architecture.png',
+                  alt: 'Settler architecture diagram',
+                  title: 'Architecture Overview',
+                });
+                setLightboxOpen(true);
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setLightboxImage({
+                    src: '/brand/architecture.png',
+                    alt: 'Settler architecture diagram',
+                    title: 'Architecture Overview',
+                  });
+                  setLightboxOpen(true);
+                }
+              }}
+            >
+              <div className="relative aspect-video">
+                <SafeImage
+                  src="/brand/architecture.png"
+                  alt="Architecture diagram thumbnail"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-3">
+                  <div className="flex items-center gap-2 text-white text-sm">
+                    <ZoomIn className="w-4 h-4" />
+                    <span>View Architecture</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-4">
+                <h4 className="font-semibold text-slate-900 dark:text-white">Architecture</h4>
+                <p className="text-sm text-slate-600 dark:text-slate-400">See how data flows</p>
+              </div>
+            </SpotlightCard>
+            <SpotlightCard
+              className="p-0 overflow-hidden cursor-pointer hover:shadow-xl transition-all group"
+              onClick={() => {
+                setLightboxImage({
+                  src: '/brand/workflow.jpg',
+                  alt: 'Settler workflow diagram',
+                  title: 'Workflow Process',
+                });
+                setLightboxOpen(true);
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setLightboxImage({
+                    src: '/brand/workflow.jpg',
+                    alt: 'Settler workflow diagram',
+                    title: 'Workflow Process',
+                  });
+                  setLightboxOpen(true);
+                }
+              }}
+            >
+              <div className="relative aspect-video">
+                <SafeImage
+                  src="/brand/workflow.jpg"
+                  alt="Workflow diagram thumbnail"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-3">
+                  <div className="flex items-center gap-2 text-white text-sm">
+                    <ZoomIn className="w-4 h-4" />
+                    <span>View Workflow</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-4">
+                <h4 className="font-semibold text-slate-900 dark:text-white">Workflow</h4>
+                <p className="text-sm text-slate-600 dark:text-slate-400">4-step process</p>
+              </div>
+            </SpotlightCard>
+          </div>
+        </div>
+        {lightboxImage && (
+          <Lightbox
+            isOpen={lightboxOpen}
+            onClose={() => {
+              setLightboxOpen(false);
+              setLightboxImage(null);
+            }}
+            src={lightboxImage.src}
+            alt={lightboxImage.alt}
+            title={lightboxImage.title}
+          />
+        )}
+      </section>
 
       {/* What is a Reconciliation? */}
       <section className="px-4 sm:px-6 lg:px-8 -mt-8 mb-8" aria-label="Pricing explanation">

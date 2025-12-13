@@ -47,14 +47,30 @@ export function Navigation() {
             )}
             aria-label="Settler homepage"
           >
-            <div
-              className={cn(
-                'w-8 h-8 rounded-lg flex items-center justify-center',
-                'bg-gradient-to-br from-primary-600 to-electric-indigo'
-              )}
-              aria-hidden="true"
-            >
-              <span className="text-white font-bold text-lg">S</span>
+            <div className="relative w-8 h-8 flex items-center justify-center">
+              <img
+                src="/brand/logo.png"
+                alt="Settler logo"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  // Fallback to gradient logo if image fails
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.parentElement?.querySelector('.logo-fallback');
+                  if (fallback) {
+                    (fallback as HTMLElement).style.display = 'flex';
+                  }
+                }}
+              />
+              <div
+                className={cn(
+                  'logo-fallback w-8 h-8 rounded-lg items-center justify-center hidden',
+                  'bg-gradient-to-br from-primary-600 to-electric-indigo'
+                )}
+                aria-hidden="true"
+              >
+                <span className="text-white font-bold text-lg">S</span>
+              </div>
             </div>
             <span className={cn(
               'text-xl font-bold',

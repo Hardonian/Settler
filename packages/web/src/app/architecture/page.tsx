@@ -1,64 +1,20 @@
+'use client';
+
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { SpotlightCard } from '@/components/ui/SpotlightCard';
+import { ZoomIn } from 'lucide-react';
 
-function ArchitectureDiagram() {
-  return (
-    <div className="w-full overflow-hidden bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8">
-      <svg viewBox="0 0 800 400" className="w-full h-auto" style={{ maxHeight: '500px' }}>
-        <defs>
-          <marker id="head" orient="auto" markerWidth="6" markerHeight="6" refX="6" refY="3">
-            <path d="M0,0 L6,3 L0,6" fill="currentColor" className="text-slate-400" />
-          </marker>
-        </defs>
-        
-        {/* API Gateway */}
-        <g transform="translate(300, 50)">
-          <rect width="200" height="60" rx="8" className="fill-blue-100 dark:fill-blue-900/40 stroke-blue-500 stroke-2" />
-          <text x="100" y="35" textAnchor="middle" className="fill-slate-900 dark:fill-white font-bold text-sm">API Gateway (Edge)</text>
-        </g>
-
-        {/* Services Layer */}
-        <g transform="translate(100, 200)">
-          <rect width="140" height="80" rx="8" className="fill-white dark:fill-slate-800 stroke-slate-300 dark:stroke-slate-600 stroke-2" />
-          <text x="70" y="35" textAnchor="middle" className="fill-slate-900 dark:fill-white font-semibold text-sm">Reconciliation</text>
-          <text x="70" y="55" textAnchor="middle" className="fill-slate-500 text-xs">Matching Engine</text>
-        </g>
-
-        <g transform="translate(330, 200)">
-          <rect width="140" height="80" rx="8" className="fill-white dark:fill-slate-800 stroke-slate-300 dark:stroke-slate-600 stroke-2" />
-          <text x="70" y="35" textAnchor="middle" className="fill-slate-900 dark:fill-white font-semibold text-sm">Receipts</text>
-          <text x="70" y="55" textAnchor="middle" className="fill-slate-500 text-xs">OCR & Parsing</text>
-        </g>
-
-        <g transform="translate(560, 200)">
-          <rect width="140" height="80" rx="8" className="fill-white dark:fill-slate-800 stroke-slate-300 dark:stroke-slate-600 stroke-2" />
-          <text x="70" y="35" textAnchor="middle" className="fill-slate-900 dark:fill-white font-semibold text-sm">Feature Flags</text>
-          <text x="70" y="55" textAnchor="middle" className="fill-slate-500 text-xs">Edge Evaluation</text>
-        </g>
-
-        {/* Data Layer */}
-        <g transform="translate(200, 350)">
-          <rect width="400" height="40" rx="8" className="fill-indigo-50 dark:fill-indigo-900/20 stroke-indigo-400 stroke-2" />
-          <text x="200" y="25" textAnchor="middle" className="fill-slate-900 dark:fill-white font-bold text-sm">Distributed Data Store & Event Log</text>
-        </g>
-
-        {/* Connections */}
-        <path d="M400,110 L400,180" className="stroke-slate-400 stroke-2" markerEnd="url(#head)" />
-        <path d="M400,180 L170,180 L170,200" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-        <path d="M400,180 L400,200" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-        <path d="M400,180 L630,180 L630,200" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-
-        <path d="M170,280 L170,330 L300,330 L300,350" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-        <path d="M400,280 L400,350" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-        <path d="M630,280 L630,330 L500,330 L500,350" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-      </svg>
-    </div>
-  );
-}
+const Lightbox = dynamic(() => import("@/components/marketing/Lightbox").then(mod => ({ default: mod.Lightbox })), { ssr: false });
+const SafeImage = dynamic(() => import("@/components/marketing/SafeImage").then(mod => ({ default: mod.SafeImage })), { ssr: true });
 
 export default function ArchitecturePage() {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
   return (
     <AnimatedPageWrapper aria-label="Architecture page">
       <Navigation />
@@ -80,7 +36,44 @@ export default function ArchitecturePage() {
         </div>
 
         <div className="max-w-6xl mx-auto mb-20">
-          <ArchitectureDiagram />
+          <SpotlightCard
+            className="p-0 overflow-hidden cursor-pointer hover:shadow-xl transition-all group"
+            onClick={() => setLightboxOpen(true)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setLightboxOpen(true);
+              }
+            }}
+            aria-label="View architecture diagram in full screen"
+          >
+            <div className="relative aspect-video">
+              <SafeImage
+                src="/brand/architecture.png"
+                alt="Settler architecture diagram showing API gateway, services layer (Reconciliation, Receipts, Feature Flags), and distributed data store"
+                fill
+                className="object-contain bg-slate-50 dark:bg-slate-900"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6">
+                <div className="flex items-center gap-2 text-white bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg mb-4">
+                  <ZoomIn className="w-5 h-5" />
+                  <span className="font-semibold">Click to view full size</span>
+                </div>
+              </div>
+            </div>
+          </SpotlightCard>
+          <Lightbox
+            isOpen={lightboxOpen}
+            onClose={() => setLightboxOpen(false)}
+            src="/brand/architecture.png"
+            alt="Settler architecture diagram showing API gateway, services layer (Reconciliation, Receipts, Feature Flags), and distributed data store"
+            title="Settler Architecture"
+            description="Event-sourced reconciliation engine with edge-optimized API gateway and distributed data store"
+          />
         </div>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">

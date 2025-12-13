@@ -12,8 +12,27 @@ export function Footer() {
               className="flex items-center space-x-2 mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
               aria-label="Settler homepage"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-electric-indigo rounded-lg flex items-center justify-center" aria-hidden="true">
-                <span className="text-white font-bold text-lg">S</span>
+              <div className="relative w-8 h-8 flex items-center justify-center">
+                <img
+                  src="/brand/logo.png"
+                  alt="Settler logo"
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    // Fallback to gradient logo if image fails
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = target.parentElement?.querySelector('.logo-fallback');
+                    if (fallback) {
+                      (fallback as HTMLElement).style.display = 'flex';
+                    }
+                  }}
+                />
+                <div
+                  className="logo-fallback w-8 h-8 bg-gradient-to-br from-primary-600 to-electric-indigo rounded-lg items-center justify-center hidden"
+                  aria-hidden="true"
+                >
+                  <span className="text-white font-bold text-lg">S</span>
+                </div>
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-electric-indigo bg-clip-text text-transparent">
                 Settler
