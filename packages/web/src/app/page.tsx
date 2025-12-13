@@ -16,6 +16,20 @@ import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, Chec
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 
+// Import for type resolution (Next.js will tree-shake these unused imports)
+import {
+  InvestorMetrics as _InvestorMetrics,
+  LiveMetricsCounter as _LiveMetricsCounter,
+  ValueProposition as _ValueProposition,
+  SocialProofCounter as _SocialProofCounter,
+  UrgencyBanner as _UrgencyBanner,
+  InvestorPitch as _InvestorPitch,
+  TestimonialCarousel as _TestimonialCarousel,
+  InfographicSection as _InfographicSection,
+} from "@/components/marketing";
+// Mark as intentionally unused for type resolution only
+void (_InvestorMetrics, _LiveMetricsCounter, _ValueProposition, _SocialProofCounter, _UrgencyBanner, _InvestorPitch, _TestimonialCarousel, _InfographicSection);
+
 // Dynamic imports for heavy components
 const TrustBadges = dynamic(() => import("@/components/TrustBadges").then(mod => ({ default: mod.TrustBadges })), { ssr: true });
 const CustomerLogos = dynamic(() => import("@/components/CustomerLogos").then(mod => ({ default: mod.CustomerLogos })), { ssr: true });
