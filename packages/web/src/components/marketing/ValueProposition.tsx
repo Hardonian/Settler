@@ -7,7 +7,7 @@
 
 'use client';
 
-import { CheckCircle2, ArrowRight, Zap, Shield, TrendingUp, Clock } from 'lucide-react';
+import { ArrowRight, Zap, Shield, TrendingUp, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';

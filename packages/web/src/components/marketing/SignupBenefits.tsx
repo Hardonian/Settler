@@ -7,7 +7,7 @@
 
 'use client';
 
-import { CheckCircle2, Zap, Shield, Gift, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Zap, Shield, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const benefits = [

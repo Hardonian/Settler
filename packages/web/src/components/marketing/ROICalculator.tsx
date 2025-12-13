@@ -11,7 +11,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calculator, TrendingUp, DollarSign, Clock, Users } from 'lucide-react';
+import { Calculator, TrendingUp, DollarSign, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ROICalculatorProps {
