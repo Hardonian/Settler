@@ -139,14 +139,16 @@ Full documentation is also available at [settler.dev/docs](https://settler.dev/d
 
 ## Production Readiness
 
-This codebase has undergone a comprehensive hardening pass (see [Reflection Report](docs/REFLECTION_REPORT.md)):
+This codebase has undergone a comprehensive hardening pass (see [Reflection Report](docs/REFLECTION_REPORT.md) and [Completion Report](docs/COMPLETION_REPORT.md)):
 
-- ✅ **Error Handling**: Graceful degradation, safe helpers, error boundaries
-- ✅ **Security**: Rate limiting, security headers, webhook verification, RLS policies
-- ✅ **Billing**: Reconciliation service, webhook hardening, admin tools
+- ✅ **Error Handling**: Graceful degradation, safe helpers, error boundaries, retry components
+- ✅ **Security**: Redis-backed rate limiting, security headers, webhook verification, RLS policies, request size limits
+- ✅ **Billing**: Reconciliation service, webhook hardening, admin tools, Stripe rate limit handling
 - ✅ **Database**: Integrity checks, RLS verification, sanity scripts
+- ✅ **Monitoring**: Metrics tracking, audit logging, performance utilities
 - ✅ **Testing**: Smoke tests, CI/CD, build verification
 - ✅ **Documentation**: Architecture docs, critical paths, security guide
+- ✅ **Future-Proofing**: Cache abstraction, API versioning, performance utilities
 
 ## Quick Verification
 
@@ -163,6 +165,21 @@ npm run test:smoke
 npm run build
 npm run typecheck
 npm run lint
+```
+
+## Optional Enhancements
+
+For enhanced features, install optional dependencies:
+
+```bash
+# Redis-backed rate limiting (falls back to in-memory if not installed)
+npm install @upstash/redis
+```
+
+Then configure environment variables:
+```bash
+UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-token
 ```
 
 ## Security

@@ -99,19 +99,23 @@ export async function getOrCreateStripeCustomer(
     throw new Error('Invalid email address for billing account');
   }
 
-  // Create new Stripe customer with idempotency
-  const customer = await getStripe().customers.create(
-    {
-      email: account.email,
-      name: account.name || undefined,
-      metadata: {
-        billingAccountId,
+  // Create new Stripe customer with idempotency and rate limit handling
+  const { safeStripeCall } = await import('@/lib/stripe/rate-limit-handler');
+  const result = await safeStripeCall(async (stripe) => {
+    return await stripe.customers.create(
+      {
+        email: account.email,
+        name: account.name || undefined,
+        metadata: {
+          billingAccountId,
+        },
       },
-    },
-    {
-      idempotencyKey: generateIdempotencyKey('create_customer', billingAccountId),
-    }
-  );
+      {
+        idempotencyKey: generateIdempotencyKey('create_customer', billingAccountId),
+      }
+    );
+  });
+  const customer = result.data;
 
   // Update billing account with customer ID atomically
   await prisma.billingAccount.update({
@@ -153,35 +157,39 @@ export async function createCheckoutSession(
 
   const customerId = await getOrCreateStripeCustomer(billingAccountId);
 
-  const session = await getStripe().checkout.sessions.create(
-    {
-      customer: customerId,
-      mode: 'subscription',
-      line_items: [
-        {
-          price: planConfig.stripePriceId,
-          quantity: 1,
-        },
-      ],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      metadata: {
-        billingAccountId,
-        planCode,
-      },
-      subscription_data: {
+  // Use safe Stripe call with rate limit handling
+  const { safeStripeCall } = await import('@/lib/stripe/rate-limit-handler');
+  const result = await safeStripeCall(async (stripe) => {
+    return await stripe.checkout.sessions.create(
+      {
+        customer: customerId,
+        mode: 'subscription',
+        line_items: [
+          {
+            price: planConfig.stripePriceId,
+            quantity: 1,
+          },
+        ],
+        success_url: successUrl,
+        cancel_url: cancelUrl,
         metadata: {
           billingAccountId,
           planCode,
         },
+        subscription_data: {
+          metadata: {
+            billingAccountId,
+            planCode,
+          },
+        },
       },
-    },
-    {
-      idempotencyKey: generateIdempotencyKey('checkout_session', billingAccountId, planCode),
-    }
-  );
+      {
+        idempotencyKey: generateIdempotencyKey('checkout_session', billingAccountId, planCode),
+      }
+    );
+  });
 
-  return session;
+  return result.data;
 }
 
 /**
@@ -209,12 +217,16 @@ export async function createCustomerPortalSession(
     throw new Error('No Stripe customer found for this account');
   }
 
-  const session = await getStripe().billingPortal.sessions.create({
-    customer: account.stripeCustomerId,
-    return_url: returnUrl,
+  // Use safe Stripe call with rate limit handling
+  const { safeStripeCall } = await import('@/lib/stripe/rate-limit-handler');
+  const result = await safeStripeCall(async (stripe) => {
+    return await stripe.billingPortal.sessions.create({
+      customer: account.stripeCustomerId,
+      return_url: returnUrl,
+    });
   });
 
-  return session;
+  return result.data;
 }
 
 /**

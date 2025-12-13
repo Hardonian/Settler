@@ -10,6 +10,11 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { createCheckoutSession } from '@/domain/billing/stripeService';
 import { PlanCode, getPlanConfig } from '@/domain/billing/planConfig';
+import { requestSizeLimits } from '@/middleware/request-size-limit';
+import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
+import { safeStripeCall } from '@/lib/stripe/rate-limit-handler';
+import { auditBilling } from '@/lib/audit/logger';
+import { trackApiMetric } from '@/lib/monitoring/metrics';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -38,7 +43,21 @@ function isValidOriginUrl(url: unknown): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+
   try {
+    // Check request size
+    const sizeCheck = requestSizeLimits.api(request);
+    if (sizeCheck) {
+      return sizeCheck;
+    }
+
+    // Apply rate limiting
+    const rateLimitCheck = await redisRateLimiters.billing(request);
+    if (rateLimitCheck) {
+      return rateLimitCheck;
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -87,6 +106,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Create checkout session (already uses safe Stripe calls internally)
     const session = await createCheckoutSession(
       billingAccount.id,
       planCode,
@@ -101,6 +121,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Audit log
+    await auditBilling('checkout_session_created', billingAccount.id, user.id, {
+      planCode,
+    });
+
+    // Track metrics
+    await trackApiMetric('/api/stripe/checkout', 'POST', 200, Date.now() - startTime);
+
     return NextResponse.json({ url: session.url });
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -108,6 +136,10 @@ export async function POST(request: NextRequest) {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
+
+    // Track error metrics
+    await trackApiMetric('/api/stripe/checkout', 'POST', 500, Date.now() - startTime);
+
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
       { status: 500 }

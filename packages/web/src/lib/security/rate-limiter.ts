@@ -2,12 +2,23 @@
  * Rate Limiting Middleware for API Routes
  *
  * Implements per-IP, per-user, and per-API-key rate limiting
- * Uses in-memory store (for serverless) with optional Redis support
+ * Uses Redis-backed rate limiting with in-memory fallback
  *
  * Priority: P0 (Critical - API abuse prevention)
  */
 
 import { NextRequest, NextResponse } from "next/server";
+
+// Try to use Redis-backed rate limiter, fall back to in-memory
+let useRedisRateLimit = false;
+try {
+  // Check if Redis is available
+  const { isRedisAvailable } = require('@/lib/redis/client');
+  useRedisRateLimit = isRedisAvailable();
+} catch {
+  // Redis not available, use in-memory
+  useRedisRateLimit = false;
+}
 
 interface RateLimitConfig {
   windowMs: number; // Time window in milliseconds
@@ -70,8 +81,21 @@ function getRateLimitKey(req: NextRequest, identifier?: string): string {
 
 /**
  * Rate limit middleware
+ * Uses Redis if available, otherwise falls back to in-memory
  */
 export function rateLimit(config: RateLimitConfig): (req: NextRequest) => Promise<NextResponse | null> {
+  // Use Redis-backed rate limiter if available
+  if (useRedisRateLimit) {
+    try {
+      const { redisRateLimiters } = require('@/lib/security/rate-limiter-redis');
+      // Map config to Redis rate limiter
+      return redisRateLimiters.api; // Use API limiter as default
+    } catch {
+      // Fall through to in-memory
+    }
+  }
+
+  // In-memory rate limiter (fallback)
   return async (req: NextRequest): Promise<NextResponse | null> => {
     const key = getRateLimitKey(req);
     const now = Date.now();

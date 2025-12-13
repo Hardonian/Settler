@@ -11,11 +11,13 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getAccountUsage } from '@/domain/billing/usageService';
 import { getAccountPlanCode } from '@/domain/billing/entitlements';
 import { getPlanConfig } from '@/domain/billing/planConfig';
+import { withApiWrapper } from '@/middleware/api-wrapper';
+import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
-export async function GET(_request: NextRequest) {
+async function getBillingHandler(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -152,3 +154,8 @@ export async function GET(_request: NextRequest) {
     );
   }
 }
+
+export const GET = withApiWrapper(getBillingHandler, {
+  rateLimiter: redisRateLimiters.billing,
+  requireAuth: true,
+});
