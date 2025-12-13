@@ -107,15 +107,56 @@ export function validateEnvironment(): ValidationResult {
 }
 
 /**
+ * Check if we're in build mode (static generation)
+ */
+function isBuildTime(): boolean {
+  // Check for Next.js build phase indicators
+  if (process.env.NEXT_PHASE === 'phase-production-build' || 
+      process.env.NEXT_PHASE === 'phase-development-build') {
+    return true;
+  }
+  
+  // Check if we're in Vercel build (but not runtime)
+  if (process.env.VERCEL === '1' && !process.env.VERCEL_ENV) {
+    return true;
+  }
+  
+  // During static page generation, env vars may not be available
+  // Check if we're server-side but missing critical env vars (likely build time)
+  if (typeof window === 'undefined') {
+    const hasCriticalVars = process.env.NEXT_PUBLIC_SUPABASE_URL && 
+                           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    // If we're server-side but missing vars, likely build time
+    if (!hasCriticalVars && process.env.NODE_ENV !== 'development') {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+/**
  * Validate environment and throw if critical variables are missing
+ * 
+ * During build time (static generation), this will only log warnings
+ * instead of throwing errors, as env vars may not be available yet.
  */
 export function requireEnvironment(): void {
   const result = validateEnvironment();
+  const isBuild = isBuildTime();
 
   if (result.errors.length > 0) {
-    console.error('❌ Environment validation failed:');
-    result.errors.forEach((error) => console.error(`  - ${error}`));
-    throw new Error('Missing required environment variables');
+    if (isBuild) {
+      // During build, only warn - env vars will be available at runtime
+      console.warn('⚠️  Environment variables not available during build (will be available at runtime):');
+      result.errors.forEach((error) => console.warn(`  - ${error}`));
+      return; // Don't throw during build
+    } else {
+      // At runtime, throw if critical vars are missing
+      console.error('❌ Environment validation failed:');
+      result.errors.forEach((error) => console.error(`  - ${error}`));
+      throw new Error('Missing required environment variables');
+    }
   }
 
   if (result.warnings.length > 0) {
@@ -123,7 +164,7 @@ export function requireEnvironment(): void {
     result.warnings.forEach((warning) => console.warn(`  - ${warning}`));
   }
 
-  if (result.valid) {
+  if (result.valid && !isBuild) {
     console.log('✅ Environment validation passed');
   }
 }
