@@ -129,7 +129,7 @@ export function RequestResponseViewer({
                     </div>
                   </div>
                 )}
-                {request.body && (
+                {request.body != null && (
                   <div>
                     <p className="text-sm font-medium mb-2">Body:</p>
                     <div className="relative">
@@ -198,7 +198,7 @@ export function RequestResponseViewer({
                     </div>
                   </div>
                 )}
-                {response.body && (
+                {response.body != null && (
                   <div>
                     <p className="text-sm font-medium mb-2">Body:</p>
                     <div className="relative">

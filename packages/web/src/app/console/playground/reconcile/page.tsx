@@ -74,6 +74,12 @@ export default function ReconcilePlayground() {
     
     const startTime = Date.now();
     let parsedConfig: Record<string, unknown>;
+    
+    // Declare cleanup variables outside try block for access in catch
+    let progressInterval: NodeJS.Timeout | undefined;
+    let logInterval: NodeJS.Timeout | undefined;
+    let completionTimeout: NodeJS.Timeout | undefined;
+    
     try {
       if (!config || config.trim().length === 0) {
         setError({
@@ -154,10 +160,10 @@ export default function ReconcilePlayground() {
       setJobId(newJobId);
 
       // Simulate progress updates
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setProgress((prev) => {
           if (prev >= 100) {
-            clearInterval(progressInterval);
+            if (progressInterval) clearInterval(progressInterval);
             return 100;
           }
           return prev + Math.random() * 15;
@@ -177,7 +183,7 @@ export default function ReconcilePlayground() {
       ];
 
       let logIndex = 0;
-      const logInterval = setInterval(() => {
+      logInterval = setInterval(() => {
         if (logIndex < logMessages.length) {
           setLogs((prev) => {
             const nextLog = logMessages[logIndex];
@@ -188,9 +194,9 @@ export default function ReconcilePlayground() {
       }, 1000);
 
       // Simulate completion after 5 seconds
-      const completionTimeout = setTimeout(() => {
-        clearInterval(progressInterval);
-        clearInterval(logInterval);
+      completionTimeout = setTimeout(() => {
+        if (progressInterval) clearInterval(progressInterval);
+        if (logInterval) clearInterval(logInterval);
         setProgress(100);
         setLogs((prev) => [...prev, 'Reconciliation completed successfully!']);
         
@@ -216,14 +222,12 @@ export default function ReconcilePlayground() {
         setJobId(null);
         setRequestCount(prev => prev + 1);
       }, 5000);
-
-      // Cleanup on error
-      return () => {
-        clearTimeout(completionTimeout);
-        clearInterval(progressInterval);
-        clearInterval(logInterval);
-      };
     } catch (err) {
+      // Cleanup intervals and timeout if they were created
+      if (progressInterval) clearInterval(progressInterval);
+      if (logInterval) clearInterval(logInterval);
+      if (completionTimeout) clearTimeout(completionTimeout);
+      
       const duration = Date.now() - startTime;
       const errorMessage = err instanceof Error 
         ? (err.name === 'AbortError' ? 'Reconciliation timed out after 60 seconds' : err.message)
