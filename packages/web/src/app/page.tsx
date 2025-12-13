@@ -41,20 +41,33 @@ export default function Home() {
     });
   }, []);
 
-  // Preload critical images
+  // Preload critical images for faster LCP
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const preloadImages = [
-      getBrandImage('hero'),
-      getBrandImage('logo'),
+      { src: getBrandImage('hero'), as: 'image' as const },
+      { src: getBrandImage('logo'), as: 'image' as const },
     ];
     
-    preloadImages.forEach((src) => {
+    const links: HTMLLinkElement[] = [];
+    preloadImages.forEach(({ src, as }) => {
       const link = document.createElement('link');
       link.rel = 'preload';
-      link.as = 'image';
+      link.as = as;
       link.href = src;
       document.head.appendChild(link);
+      links.push(link);
     });
+
+    // Cleanup on unmount
+    return () => {
+      links.forEach(link => {
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+      });
+    };
   }, []);
 
   const features = [
@@ -408,7 +421,7 @@ if (flag.value) { /* ... */ }`;
                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
                  />
                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
-                   <div className="flex items-center gap-2 text-white bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg">
+                   <div className="flex items-center gap-2 text-white bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg mb-4">
                      <ZoomIn className="w-5 h-5" />
                      <span className="font-semibold">Click to view full size</span>
                    </div>
@@ -451,6 +464,7 @@ if (flag.value) { /* ... */ }`;
                 beforeLabel="Manual Process"
                 afterLabel="With Settler"
               />
+            </div>
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div className="text-center">
                 <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">What Changes</h3>
