@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -13,6 +14,10 @@ import { AnimatedPricingCard } from "@/components/AnimatedPricingCard";
 import { AnimatedFAQ } from "@/components/AnimatedFAQ";
 import { FAQSchema } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+
+const ROICalculator = dynamic(() => import("@/components/marketing/ROICalculator").then(mod => ({ default: mod.ROICalculator })), { ssr: true });
+const ComparisonTable = dynamic(() => import("@/components/marketing/ComparisonTable").then(mod => ({ default: mod.ComparisonTable })), { ssr: true });
+const UrgencyBanner = dynamic(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
@@ -120,6 +125,7 @@ export default function Pricing() {
   return (
     <AnimatedPageWrapper aria-label="Pricing page">
       <FAQSchema faqs={faqs} />
+      <UrgencyBanner variant="minimal" />
       <Navigation />
 
       {/* Breadcrumbs */}
@@ -239,8 +245,18 @@ export default function Pricing() {
         </div>
       </section>
 
+      {/* ROI Calculator */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <ROICalculator />
+        </div>
+      </section>
+
       {/* Feature Comparison Table */}
       <FeatureComparison />
+
+      {/* Comparison Table */}
+      <ComparisonTable />
 
       {/* FAQ Section */}
       <AnimatedFAQ faqs={faqs} />

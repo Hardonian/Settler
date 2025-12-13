@@ -12,7 +12,7 @@ import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
-import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate } from "lucide-react";
+import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, CheckCircle2 } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 
@@ -26,6 +26,13 @@ const AnimatedCodeBlock = dynamic(() => import("@/components/AnimatedCodeBlock")
 const AnimatedStatCard = dynamic(() => import("@/components/AnimatedStatCard").then(mod => ({ default: mod.AnimatedStatCard })), { ssr: true });
 const TrustSignalBanner = dynamic(() => import("@/components/TrustSignalBanner").then(mod => ({ default: mod.TrustSignalBanner })), { ssr: true });
 const EnhancedConversionCTA = dynamic(() => import("@/components/EnhancedConversionCTA").then(mod => ({ default: mod.EnhancedConversionCTA })), { ssr: true });
+const InvestorMetrics = dynamic(() => import("@/components/marketing/InvestorMetrics").then(mod => ({ default: mod.InvestorMetrics })), { ssr: true });
+const LiveMetricsCounter = dynamic(() => import("@/components/marketing/LiveMetricsCounter").then(mod => ({ default: mod.LiveMetricsCounter })), { ssr: false });
+const ValueProposition = dynamic(() => import("@/components/marketing/ValueProposition").then(mod => ({ default: mod.ValueProposition })), { ssr: true });
+const SocialProofCounter = dynamic(() => import("@/components/marketing/SocialProofCounter").then(mod => ({ default: mod.SocialProofCounter })), { ssr: true });
+const UrgencyBanner = dynamic(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
+const InvestorPitch = dynamic(() => import("@/components/marketing/InvestorPitch").then(mod => ({ default: mod.InvestorPitch })), { ssr: true });
+const TestimonialCarousel = dynamic(() => import("@/components/marketing/TestimonialCarousel").then(mod => ({ default: mod.TestimonialCarousel })), { ssr: true });
 
 export default function Home() {
   const trackCTA = useTrackCTA();
@@ -101,6 +108,7 @@ if (flag.value) { /* ... */ }`;
         role="main"
         aria-label="Settler homepage"
       >
+        <UrgencyBanner variant="minimal" />
         <Navigation />
 
         {/* Hero Section */}
@@ -148,23 +156,40 @@ if (flag.value) { /* ... */ }`;
                   <Button 
                     size="lg" 
                     asChild 
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-blue-500/20 transition-all transform hover:scale-105"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-7 text-xl font-bold shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:scale-110 animate-pulse hover:animate-none"
                     onClick={() => trackCTA('Get API Key', { location: 'hero' })}
                   >
-                    <Link href="/signup">
-                      Get API Key
+                    <Link href="/signup" className="flex items-center gap-2">
+                      <span>Start Free Trial — No Credit Card</span>
+                      <ArrowRight className="w-5 h-5" />
                     </Link>
                   </Button>
                   <Button 
                     size="lg" 
                     variant="outline" 
                     asChild 
-                    className="px-8 py-6 text-lg border-2"
+                    className="px-8 py-7 text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900"
                   >
                     <Link href="/docs">
                       View Docs
                     </Link>
                   </Button>
+                </div>
+                
+                {/* Trust Signals */}
+                <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 dark:text-slate-400 mb-8">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                    <span>No credit card required</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                    <span>14-day free trial</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                    <span>Cancel anytime</span>
+                  </div>
                 </div>
                 
                 {/* Hero Stats */}
@@ -285,18 +310,36 @@ if (flag.value) { /* ... */ }`;
           </div>
         </section>
 
+        {/* Investor Metrics */}
+        <InvestorMetrics />
+
+        {/* Live Metrics Counter */}
+        <LiveMetricsCounter />
+
+        {/* Value Proposition */}
+        <ValueProposition />
+
         {/* Trust Signal Banner */}
         <TrustSignalBanner />
 
+        {/* Social Proof Counter */}
+        <SocialProofCounter />
+
         {/* Why Settler */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-600 text-white">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Why Settler Exists</h2>
-            <p className="text-xl text-blue-100 mb-8">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,transparent)]" />
+          <div className="max-w-4xl mx-auto text-center relative z-10">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">Why Settler Exists</h2>
+            <p className="text-xl text-blue-100 mb-8 leading-relaxed">
               We got tired of building the same fragile financial infrastructure at every company. 
               We built Settler to solve it once and for all.
             </p>
-            <Button size="lg" variant="secondary" asChild className="text-blue-600">
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              asChild 
+              className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-6 text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
+            >
               <Link href="/why-settler">Read our Manifesto</Link>
             </Button>
           </div>
@@ -305,19 +348,25 @@ if (flag.value) { /* ... */ }`;
         {/* Social Proof */}
         <SocialProof />
 
+        {/* Testimonial Carousel */}
+        <TestimonialCarousel />
+
+        {/* Investor Pitch Section */}
+        <InvestorPitch />
+
         {/* Enhanced Conversion CTA */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
           <div className="max-w-4xl mx-auto">
             <EnhancedConversionCTA
-              title="Ready to Automate Your Reconciliation?"
-              description="Start automating reconciliation in minutes. Free trial—full access, no credit card required."
+              title="Ready to Transform Your Financial Operations?"
+              description="Join thousands of companies already using Settler. Start your free trial today—no credit card required, full access to all features."
               primaryAction="Start Free Trial — No Credit Card"
               primaryLink="/signup"
               secondaryAction="View Pricing"
               secondaryLink="/pricing"
               showUrgency={true}
               showTrustBadges={true}
-              variant="section"
+              variant="hero"
             />
           </div>
         </section>

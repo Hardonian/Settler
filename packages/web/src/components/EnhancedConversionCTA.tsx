@@ -39,8 +39,9 @@ export function EnhancedConversionCTA({
 
   const trustPoints = [
     "No credit card required",
-    "30-day money-back guarantee",
+    "14-day free trial",
     "Cancel anytime, no fees",
+    "30-day money-back guarantee",
   ];
 
   if (variant === "hero") {
