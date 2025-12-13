@@ -56,7 +56,6 @@ const metrics: Metric[] = [
 
 export function InvestorMetrics() {
   const [isVisible, setIsVisible] = useState(false);
-  const [counters, setCounters] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const observer = new IntersectionObserver(

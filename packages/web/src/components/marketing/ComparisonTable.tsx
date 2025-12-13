@@ -7,7 +7,7 @@
 
 'use client';
 
-import { CheckCircle2, XCircle, Zap } from 'lucide-react';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
