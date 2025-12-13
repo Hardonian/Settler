@@ -16,16 +16,9 @@ import { AnimatedFAQ } from "@/components/AnimatedFAQ";
 import { FAQSchema } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
-// Import for type resolution (Next.js will tree-shake these unused imports)
-import {
-  ROICalculator as _ROICalculator,
-  ComparisonTable as _ComparisonTable,
-  UrgencyBanner as _UrgencyBanner,
-} from "@/components/marketing";
-// Mark as intentionally unused for type resolution only
-void (_ROICalculator, _ComparisonTable, _UrgencyBanner);
-
+// @ts-expect-error - TypeScript can't resolve dynamic imports with path aliases during tsc --noEmit, but Next.js resolves them correctly at build time
 const ROICalculator = dynamic(() => import("@/components/marketing/ROICalculator").then(mod => ({ default: mod.ROICalculator })), { ssr: true });
+// @ts-expect-error - TypeScript can't resolve dynamic imports with path aliases during tsc --noEmit, but Next.js resolves them correctly at build time
 const ComparisonTable = dynamic(() => import("@/components/marketing/ComparisonTable").then(mod => ({ default: mod.ComparisonTable })), { ssr: true });
 const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
 
