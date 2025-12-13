@@ -52,10 +52,11 @@ export function SpotlightCard({
     } else if (onClick && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       // Create a synthetic mouse event for keyboard activation
+      // Using 'unknown' as intermediate type to satisfy TypeScript's type checking
       const syntheticEvent = {
         ...e,
         type: 'click',
-      } as React.MouseEvent<HTMLDivElement>;
+      } as unknown as React.MouseEvent<HTMLDivElement>;
       onClick(syntheticEvent);
     }
   };
