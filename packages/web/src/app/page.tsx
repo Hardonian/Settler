@@ -33,6 +33,9 @@ const SocialProofCounter = dynamic(() => import("@/components/marketing/SocialPr
 const UrgencyBanner = dynamic(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
 const InvestorPitch = dynamic(() => import("@/components/marketing/InvestorPitch").then(mod => ({ default: mod.InvestorPitch })), { ssr: true });
 const TestimonialCarousel = dynamic(() => import("@/components/marketing/TestimonialCarousel").then(mod => ({ default: mod.TestimonialCarousel })), { ssr: true });
+const IntegrationLogos = dynamic(() => import("@/components/IntegrationLogos").then(mod => ({ default: mod.IntegrationLogos })), { ssr: true });
+const EnhancedTrustBadges = dynamic(() => import("@/components/EnhancedTrustBadges").then(mod => ({ default: mod.EnhancedTrustBadges })), { ssr: true });
+const InfographicSection = dynamic(() => import("@/components/marketing/InfographicSection").then(mod => ({ default: mod.InfographicSection })), { ssr: true });
 
 export default function Home() {
   const trackCTA = useTrackCTA();
@@ -287,6 +290,9 @@ if (flag.value) { /* ... */ }`;
            </div>
         </section>
 
+        {/* Infographics Section */}
+        <InfographicSection />
+
         {/* Architecture Preview */}
         <section className="py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
@@ -319,8 +325,23 @@ if (flag.value) { /* ... */ }`;
         {/* Value Proposition */}
         <ValueProposition />
 
+        {/* Integration Logos */}
+        <IntegrationLogos />
+
         {/* Trust Signal Banner */}
         <TrustSignalBanner />
+
+        {/* Enhanced Trust Badges */}
+        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+                Trusted & Secure
+              </h2>
+            </div>
+            <EnhancedTrustBadges />
+          </div>
+        </section>
 
         {/* Social Proof Counter */}
         <SocialProofCounter />
@@ -377,6 +398,7 @@ if (flag.value) { /* ... */ }`;
           <CustomerLogos />
           <NewsletterSignup />
           <ConversionCTA />
+          <IntegrationLogos />
         </div>
 
         <Footer />

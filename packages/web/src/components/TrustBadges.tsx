@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { SafeImage } from '@/components/SafeImage';
 
 export function TrustBadges() {
   const [isVisible, setIsVisible] = useState(false);
@@ -35,12 +36,12 @@ export function TrustBadges() {
   }
 
   const badges: TrustBadge[] = [
-    { name: 'SOC 2 Planned Q3 2026', icon: '🔒', description: 'Enterprise security certification planned' },
-    { name: 'GDPR Compliant', icon: '🛡️', description: 'EU data protection compliant' },
-    { name: 'PCI-DSS Ready', icon: '💳', description: 'Payment security standards' },
-    { name: '99.99% Uptime', icon: '⚡', description: 'SLA guaranteed availability' },
-    { name: 'Bank-Level Encryption', icon: '🔐', description: 'AES-256 encryption at rest' },
-    { name: '24/7 Monitoring', icon: '📊', description: 'Real-time system monitoring' },
+    { name: 'SOC 2 Planned Q3 2026', icon: '/assets/icons/soc2-badge.svg', description: 'Enterprise security certification planned' },
+    { name: 'GDPR Compliant', icon: '/assets/icons/gdpr-badge.svg', description: 'EU data protection compliant' },
+    { name: 'PCI-DSS Ready', icon: '/assets/icons/payment-secure-badge.svg', description: 'Payment security standards' },
+    { name: '99.99% Uptime', icon: '/assets/icons/uptime-badge.svg', description: 'SLA guaranteed availability' },
+    { name: 'Bank-Level Encryption', icon: '/assets/icons/encryption-badge.svg', description: 'AES-256 encryption at rest' },
+    { name: '30-Day Guarantee', icon: '/assets/icons/money-back-badge.svg', description: 'Money-back guarantee' },
   ];
 
   const prefersReducedMotion =
@@ -72,12 +73,29 @@ export function TrustBadges() {
           role="listitem"
           aria-label={badge.name}
         >
-          <span className="text-2xl" aria-hidden="true">
-            {badge.icon}
-          </span>
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            {badge.name}
-          </span>
+          <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+            <SafeImage
+              src={badge.icon}
+              alt={`${badge.name} badge`}
+              width={32}
+              height={32}
+              className="object-contain"
+              fallbackTitle={badge.name}
+              fallbackCaption={badge.description}
+              unoptimized
+              sizes="32px"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              {badge.name}
+            </span>
+            {badge.description && (
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                {badge.description}
+              </span>
+            )}
+          </div>
         </div>
       ))}
     </div>
