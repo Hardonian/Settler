@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export async function requireConsoleAuth(request: NextRequest): Promise<NextResponse | null> {
+export async function requireConsoleAuth(_request: NextRequest): Promise<NextResponse | null> {
   try {
     const supabase = await createClient();
     const { data: { user }, error } = await supabase.auth.getUser();

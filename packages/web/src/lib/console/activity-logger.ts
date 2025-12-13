@@ -90,7 +90,7 @@ export async function logActivity(params: {
       p_metadata: params.metadata || {},
       p_resource_id: params.resourceId || null,
       p_resource_type: params.resourceType || null,
-    });
+    } as never);
 
     if (error) {
       console.error('[ActivityLogger] Failed to log activity:', error);
@@ -125,7 +125,7 @@ export async function getRecentActivities(limit = 10) {
     const { data, error } = await supabase.rpc('get_recent_console_activities', {
       p_billing_account_id: billingAccount.id,
       p_limit: limit,
-    });
+    } as never);
 
     if (error) {
       console.error('[ActivityLogger] Failed to fetch activities:', error);

@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
-import { listApiKeys, createApiKey } from '@/domain/console/apiKeys';
+import { listApiKeys, createApiKey, CreateApiKeyInput } from '@/domain/console/apiKeys';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
