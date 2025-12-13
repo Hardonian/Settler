@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { trackConversionFunnel } from '@/lib/metrics/business';
 
 export default function BillingSuccessPage() {
   const searchParams = useSearchParams();
@@ -61,14 +62,19 @@ export default function BillingSuccessPage() {
         while (attempts < maxAttempts) {
           await new Promise((resolve) => setTimeout(resolve, 2000 * (attempts + 1)));
           
-          // Check billing status
-          const response = await fetch('/api/console/billing');
-          if (response.ok) {
-            const data = await response.json();
-            if (data.subscription && (data.subscription.status === 'active' || data.subscription.status === 'trialing')) {
-              setStatus('success');
-              return;
-            }
+        // Check billing status
+        const response = await fetch('/api/console/billing');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.subscription && (data.subscription.status === 'active' || data.subscription.status === 'trialing')) {
+            setStatus('success');
+            // Track checkout completion
+            trackConversionFunnel('completed_checkout', {
+              planCode: data.subscription.planCode || 'unknown',
+              sessionId: sessionId || 'unknown',
+            });
+            return;
+          }
           }
           
           attempts++;

@@ -14,6 +14,8 @@ import { stripe, syncSubscriptionFromWebhook } from '@/domain/billing/stripeServ
 import { prisma } from '@/shared/db/prismaClient';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
+import { trackPaymentFailure, trackCheckoutCompleted, trackSubscriptionCancellation } from '@/lib/monitoring/alerts';
+import { trackRevenue, trackBusinessEvent } from '@/lib/metrics/business';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // CRITICAL: Must be Node.js runtime for Prisma
@@ -189,6 +191,20 @@ export async function POST(request: NextRequest) {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       
+      // Track checkout completion
+      const billingAccountId = session.metadata?.billingAccountId;
+      const planCode = session.metadata?.planCode;
+      const billingCycle = session.metadata?.billingCycle as 'monthly' | 'annual' | undefined;
+      
+      if (billingAccountId && planCode) {
+        trackCheckoutCompleted(
+          billingAccountId,
+          planCode,
+          billingCycle || 'monthly',
+          session.id
+        );
+      }
+      
       if (session.mode === 'subscription' && session.subscription) {
         // Fetch the subscription to sync it
         const subscriptionId = typeof session.subscription === 'string'
@@ -218,6 +234,25 @@ export async function POST(request: NextRequest) {
       event.type === 'customer.subscription.deleted'
     ) {
       await syncSubscriptionFromWebhook(event);
+
+      // Track subscription lifecycle events
+      const subscription = event.data.object as Stripe.Subscription;
+      const billingAccountId = subscription.metadata?.billingAccountId;
+      
+      if (billingAccountId) {
+        if (event.type === 'customer.subscription.deleted') {
+          trackSubscriptionCancellation(
+            billingAccountId,
+            subscription.metadata?.planCode || 'unknown'
+          );
+        } else if (event.type === 'customer.subscription.created') {
+          trackBusinessEvent('subscription_created', {
+            billingAccountId,
+            planCode: subscription.metadata?.planCode,
+            subscriptionId: subscription.id,
+          });
+        }
+      }
     }
 
     // Handle customer events (optional - for metadata updates)
@@ -232,6 +267,37 @@ export async function POST(request: NextRequest) {
           },
         });
       }
+    }
+
+    // Handle payment method events
+    if (event.type === 'payment_method.attached') {
+      const paymentMethod = event.data.object as Stripe.PaymentMethod;
+      console.info('[Stripe Webhook] Payment method attached', {
+        paymentMethodId: paymentMethod.id,
+        customerId: paymentMethod.customer,
+      });
+    }
+
+    // Handle subscription schedule events (for prorations, upgrades, etc.)
+    if (event.type === 'customer.subscription_schedule.created' || 
+        event.type === 'customer.subscription_schedule.updated' ||
+        event.type === 'customer.subscription_schedule.released') {
+      const schedule = event.data.object as Stripe.SubscriptionSchedule;
+      console.info('[Stripe Webhook] Subscription schedule event', {
+        scheduleId: schedule.id,
+        customerId: schedule.customer,
+        status: schedule.status,
+      });
+    }
+
+    // Handle invoice events for upcoming invoices
+    if (event.type === 'invoice.upcoming') {
+      const invoice = event.data.object as Stripe.Invoice;
+      console.info('[Stripe Webhook] Upcoming invoice', {
+        invoiceId: invoice.id,
+        amountDue: invoice.amount_due,
+        customerId: invoice.customer,
+      });
     }
 
     // Handle invoice events
@@ -254,6 +320,25 @@ export async function POST(request: NextRequest) {
           where: { stripeSubscriptionId: subscriptionIdString },
           data: { status: 'active' },
         });
+
+        // Track revenue
+        if (invoice.amount_paid && invoice.currency) {
+          const subscription = await prisma.subscription.findFirst({
+            where: { stripeSubscriptionId: subscriptionIdString },
+            select: { billingAccountId: true, planName: true },
+          });
+
+          if (subscription) {
+            const planCode = subscription.planName.toLowerCase().includes('pro') ? 'pro' : 
+                           subscription.planName.toLowerCase().includes('scale') ? 'scale' : 'free';
+            trackRevenue(
+              invoice.amount_paid / 100, // Convert from cents
+              invoice.currency,
+              planCode,
+              'monthly' // TODO: Determine from subscription
+            );
+          }
+        }
       }
     }
 
@@ -276,6 +361,20 @@ export async function POST(request: NextRequest) {
           where: { stripeSubscriptionId: subscriptionIdString },
           data: { status: 'past_due' },
         });
+
+        // Track payment failure
+        const subscription = await prisma.subscription.findFirst({
+          where: { stripeSubscriptionId: subscriptionIdString },
+          select: { billingAccountId: true },
+        });
+
+        if (subscription) {
+          trackPaymentFailure(
+            subscription.billingAccountId,
+            subscriptionIdString,
+            new Error(`Payment failed for invoice ${invoice.id}`)
+          );
+        }
       }
     }
 

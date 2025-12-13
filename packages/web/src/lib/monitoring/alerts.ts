@@ -1,131 +1,224 @@
 /**
- * Monitoring and Alerting System
+ * Error Monitoring & Alerts
  * 
- * Centralized alerting for production monitoring.
- * Integrates with Sentry, email, and other alerting channels.
+ * Centralized error tracking and alerting system.
+ * Integrates with Sentry and provides business metrics.
  */
 
-import { logger } from '@/lib/logging/logger';
+import * as Sentry from '@sentry/nextjs';
+import { analytics } from '@/lib/analytics';
 
-export type AlertSeverity = 'critical' | 'error' | 'warning' | 'info';
-
-interface AlertOptions {
-  severity: AlertSeverity;
-  title: string;
-  message: string;
-  context?: Record<string, unknown>;
-  tags?: Record<string, string>;
-  notify?: boolean;
-}
-
-class AlertManager {
-  private enabled: boolean;
-
-  constructor() {
-    this.enabled = process.env.NODE_ENV === 'production' && 
-                   process.env.NEXT_PUBLIC_ENABLE_ALERTS !== 'false';
-  }
-
-  async sendAlert(options: AlertOptions): Promise<void> {
-    if (!this.enabled) {
-      logger.warn(`Alert (disabled): ${options.title}`);
-      return;
-    }
-
-    // Log alert
-    logger.error(`[ALERT:${options.severity.toUpperCase()}] ${options.title}`, 
-      new Error(options.message), 
-      options.context
-    );
-
-    // Send to Sentry if configured
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
-      try {
-        const { captureException, setTag, setContext } = await import('@sentry/nextjs');
-        
-        setTag('alert_severity', options.severity);
-        if (options.tags) {
-          Object.entries(options.tags).forEach(([key, value]) => {
-            setTag(key, value);
-          });
-        }
-        
-        if (options.context) {
-          setContext('alert_context', options.context);
-        }
-
-        captureException(new Error(options.message), {
-          level: options.severity === 'critical' ? 'fatal' : options.severity,
-          tags: {
-            alert: true,
-            alert_title: options.title,
-            ...options.tags,
-          },
-        });
-      } catch (error) {
-        console.error('Failed to send alert to Sentry:', error);
-      }
-    }
-
-    // Send email for critical alerts
-    if (options.severity === 'critical' && options.notify !== false) {
-      await this.sendEmailAlert(options);
-    }
-  }
-
-  private async sendEmailAlert(options: AlertOptions): Promise<void> {
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.RESEND_FROM_EMAIL;
-    if (!adminEmail || !process.env.RESEND_API_KEY) {
-      return;
-    }
-
-    try {
-      const { Resend } = await import('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
-
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'alerts@settler.dev',
-        to: adminEmail,
-        subject: `[${options.severity.toUpperCase()}] ${options.title}`,
-        html: `
-          <h2>Alert: ${options.title}</h2>
-          <p><strong>Severity:</strong> ${options.severity}</p>
-          <p><strong>Message:</strong> ${options.message}</p>
-          ${options.context ? `
-            <h3>Context:</h3>
-            <pre>${JSON.stringify(options.context, null, 2)}</pre>
-          ` : ''}
-          <p><small>Timestamp: ${new Date().toISOString()}</small></p>
-        `,
-      });
-    } catch (error) {
-      console.error('Failed to send email alert:', error);
-    }
-  }
-}
-
-export const alertManager = new AlertManager();
-
-/**
- * Send an alert
- */
-export async function sendAlert(options: AlertOptions): Promise<void> {
-  return alertManager.sendAlert(options);
+export interface AlertContext {
+  userId?: string;
+  billingAccountId?: string;
+  planCode?: string;
+  service?: string;
+  operation?: string;
+  metadata?: Record<string, unknown>;
 }
 
 /**
- * Pre-configured alert helpers
+ * Track critical error with alert
  */
-export const alerts = {
-  critical: (title: string, message: string, context?: Record<string, unknown>) =>
-    sendAlert({ severity: 'critical', title, message, context }),
-  
-  error: (title: string, message: string, context?: Record<string, unknown>) =>
-    sendAlert({ severity: 'error', title, message, context }),
-  
-  warning: (title: string, message: string, context?: Record<string, unknown>) =>
-    sendAlert({ severity: 'warning', title, message, context }),
-  
-  info: (title: string, message: string, context?: Record<string, unknown>) =>
-    sendAlert({ severity: 'info', title, message, context }),
-};
+export function trackCriticalError(
+  error: Error,
+  context: AlertContext = {}
+): void {
+  // Log to Sentry with context
+  Sentry.captureException(error, {
+    level: 'error',
+    tags: {
+      type: 'critical_error',
+      service: context.service,
+      planCode: context.planCode,
+    },
+    extra: {
+      ...context.metadata,
+      billingAccountId: context.billingAccountId,
+      operation: context.operation,
+    },
+  });
+
+  // Track in analytics
+  analytics.trackError(error, {
+    type: 'critical_error',
+    ...context,
+  });
+
+  // TODO: Send to PagerDuty/Slack if critical
+  // This would be configured based on error type and severity
+}
+
+/**
+ * Track billing-related error
+ */
+export function trackBillingError(
+  error: Error,
+  context: AlertContext = {}
+): void {
+  Sentry.captureException(error, {
+    level: 'error',
+    tags: {
+      type: 'billing_error',
+      planCode: context.planCode,
+    },
+    extra: {
+      billingAccountId: context.billingAccountId,
+      ...context.metadata,
+    },
+  });
+
+  analytics.trackError(error, {
+    type: 'billing_error',
+    ...context,
+  });
+}
+
+/**
+ * Track usage limit exceeded event
+ */
+export function trackUsageLimitExceeded(
+  billingAccountId: string,
+  service: string,
+  currentUsage: number,
+  limit: number,
+  planCode: string
+): void {
+  Sentry.captureMessage('Usage limit exceeded', {
+    level: 'warning',
+    tags: {
+      type: 'usage_limit_exceeded',
+      service,
+      planCode,
+    },
+    extra: {
+      billingAccountId,
+      currentUsage,
+      limit,
+    },
+  });
+
+  analytics.track('usage_limit_exceeded', {
+    billingAccountId,
+    service,
+    currentUsage,
+    limit,
+    planCode,
+  });
+}
+
+/**
+ * Track payment failure
+ */
+export function trackPaymentFailure(
+  billingAccountId: string,
+  subscriptionId: string,
+  error: Error
+): void {
+  Sentry.captureException(error, {
+    level: 'error',
+    tags: {
+      type: 'payment_failure',
+    },
+    extra: {
+      billingAccountId,
+      subscriptionId,
+    },
+  });
+
+  analytics.track('payment_failure', {
+    billingAccountId,
+    subscriptionId,
+    error: error.message,
+  });
+}
+
+/**
+ * Track checkout started
+ */
+export function trackCheckoutStarted(
+  billingAccountId: string,
+  planCode: string,
+  billingCycle: 'monthly' | 'annual'
+): void {
+  analytics.track('checkout_started', {
+    billingAccountId,
+    planCode,
+    billingCycle,
+  });
+}
+
+/**
+ * Track checkout completed
+ */
+export function trackCheckoutCompleted(
+  billingAccountId: string,
+  planCode: string,
+  billingCycle: 'monthly' | 'annual',
+  sessionId: string
+): void {
+  analytics.track('checkout_completed', {
+    billingAccountId,
+    planCode,
+    billingCycle,
+    sessionId,
+  });
+}
+
+/**
+ * Track checkout canceled
+ */
+export function trackCheckoutCanceled(
+  billingAccountId: string,
+  planCode: string,
+  billingCycle: 'monthly' | 'annual'
+): void {
+  analytics.track('checkout_canceled', {
+    billingAccountId,
+    planCode,
+    billingCycle,
+  });
+}
+
+/**
+ * Track subscription upgrade
+ */
+export function trackSubscriptionUpgrade(
+  billingAccountId: string,
+  fromPlan: string,
+  toPlan: string
+): void {
+  analytics.track('subscription_upgraded', {
+    billingAccountId,
+    fromPlan,
+    toPlan,
+  });
+}
+
+/**
+ * Track subscription downgrade
+ */
+export function trackSubscriptionDowngrade(
+  billingAccountId: string,
+  fromPlan: string,
+  toPlan: string
+): void {
+  analytics.track('subscription_downgraded', {
+    billingAccountId,
+    fromPlan,
+    toPlan,
+  });
+}
+
+/**
+ * Track subscription cancellation
+ */
+export function trackSubscriptionCancellation(
+  billingAccountId: string,
+  planCode: string
+): void {
+  analytics.track('subscription_canceled', {
+    billingAccountId,
+    planCode,
+  });
+}

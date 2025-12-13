@@ -8,6 +8,8 @@
 import { NextResponse } from 'next/server';
 import { ApiKeyAuthContext } from '@/shared/auth/apiKey';
 import { checkEntitlement, ServiceCode } from '@/domain/billing/entitlements';
+import { checkUsageLimit } from './usageLimit';
+import { trackUsageLimitExceeded } from '@/lib/monitoring/alerts';
 
 export interface EntitlementError {
   error: string;
@@ -68,6 +70,7 @@ export async function checkRequestEntitlement(
   }
 
   try {
+    // First check entitlement (plan support)
     const entitlement = await checkEntitlement(auth.billingAccountId, service);
 
     if (!entitlement.allowed) {
@@ -82,6 +85,35 @@ export async function checkRequestEntitlement(
             currentUsage: entitlement.currentUsage,
             limit: entitlement.limit,
             upgradeUrl: '/console/billing',
+          },
+        },
+      };
+    }
+
+    // Then check usage limit (enforcement at API level)
+    const usageLimit = await checkUsageLimit(auth.billingAccountId, service);
+    
+    if (!usageLimit.allowed && usageLimit.error) {
+      // Track usage limit exceeded event
+      trackUsageLimitExceeded(
+        auth.billingAccountId,
+        service,
+        usageLimit.error.details.currentUsage,
+        usageLimit.error.details.limit,
+        usageLimit.error.details.planCode
+      );
+
+      return {
+        allowed: false,
+        error: {
+          error: 'Usage Limit Exceeded',
+          code: usageLimit.error.code,
+          message: usageLimit.error.message,
+          details: {
+            currentPlan: usageLimit.error.details.planCode,
+            currentUsage: usageLimit.error.details.currentUsage,
+            limit: usageLimit.error.details.limit,
+            upgradeUrl: usageLimit.error.details.upgradeUrl,
           },
         },
       };

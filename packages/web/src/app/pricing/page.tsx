@@ -17,6 +17,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { createClient } from "@/lib/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { trackConversionFunnel } from "@/lib/metrics/business";
 
 export default function Pricing() {
   const router = useRouter();
@@ -37,10 +38,16 @@ export default function Pricing() {
       }
     };
     void checkAuth();
+    
+    // Track pricing page view
+    trackConversionFunnel('viewed_pricing');
   }, []);
 
   // Handle checkout for paid plans
   const handleCheckout = async (planCode: 'pro' | 'scale') => {
+    // Track checkout click
+    trackConversionFunnel('clicked_checkout', { planCode, billingCycle });
+    
     if (!isAuthenticated) {
       // Redirect to signup with return URL
       router.push(`/signup?redirect=/pricing&plan=${planCode}`);

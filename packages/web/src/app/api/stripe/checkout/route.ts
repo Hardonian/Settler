@@ -10,6 +10,8 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { createCheckoutSession } from '@/domain/billing/stripeService';
 import { PlanCode, getPlanConfig } from '@/domain/billing/planConfig';
+import { trackCheckoutStarted } from '@/lib/monitoring/alerts';
+import { trackConversionFunnel } from '@/lib/metrics/business';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -143,6 +145,14 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Track checkout started
+    trackCheckoutStarted(billingAccount.id, planCode, validBillingCycle);
+    trackConversionFunnel('started_checkout', {
+      billingAccountId: billingAccount.id,
+      planCode,
+      billingCycle: validBillingCycle,
+    });
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
