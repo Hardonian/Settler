@@ -21,7 +21,18 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 async function ConsoleOverviewContent() {
+  const startTime = Date.now();
+  
   try {
+    // Structured logging for console requests (server-side only, no secrets)
+    const logContext = {
+      route: '/console',
+      timestamp: new Date().toISOString(),
+      userAgent: typeof process !== 'undefined' ? 'server' : 'client',
+    };
+    
+    console.log('[Console] Request started', logContext);
+    
     // Environment safety check
     const requiredEnvVars = [
       'NEXT_PUBLIC_SUPABASE_URL',
@@ -32,6 +43,10 @@ async function ConsoleOverviewContent() {
     );
     
     if (missingEnvVars.length > 0) {
+      console.warn('[Console] Missing environment variables', {
+        ...logContext,
+        missingVars: missingEnvVars,
+      });
       return (
         <div className="text-center py-12">
           <p className="text-slate-600 dark:text-slate-400 mb-4">
@@ -51,10 +66,24 @@ async function ConsoleOverviewContent() {
       user = authResult.data?.user;
       
       if (authResult.error) {
-        console.error('[Console] Auth error:', authResult.error);
+        console.error('[Console] Auth error', {
+          ...logContext,
+          error: authResult.error.message,
+          code: authResult.error.status,
+        });
+      } else if (user) {
+        console.log('[Console] User authenticated', {
+          ...logContext,
+          userId: user.id,
+          email: user.email ? '***' : undefined, // Don't log full email
+        });
       }
     } catch (error) {
-      console.error('[Console] Failed to get user:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('[Console] Failed to get user', {
+        ...logContext,
+        error: errorMessage,
+      });
       return (
         <div className="text-center py-12">
           <p className="text-slate-600 dark:text-slate-400 mb-4">
@@ -152,9 +181,11 @@ async function ConsoleOverviewContent() {
   try {
     const [apiKeysResult, receiptsResult, flagsResult, usageSummaryResult] = await Promise.allSettled([
       listApiKeys().catch((err) => {
-        // If auth error, re-throw to trigger redirect
+        // Don't re-throw - Promise.allSettled handles all errors gracefully
+        // Auth errors are already handled by the layout, so we can safely return empty array
         if (err instanceof Error && err.message.includes('Unauthorized')) {
-          throw err;
+          console.warn('[Console] listApiKeys: User not authenticated, returning empty array');
+          return [];
         }
         console.error('[Console] listApiKeys error:', err);
         return [];
@@ -214,6 +245,20 @@ async function ConsoleOverviewContent() {
   const reconcileCalls = (usageSummary.byService as Record<string, number>)['settler-reconcile'] || 0;
   const receiptsCalls = (usageSummary.byService as Record<string, number>)['settler-receipts'] || 0;
   const flagsCalls = (usageSummary.byService as Record<string, number>)['settler-feature-flags'] || 0;
+
+  // Log successful page load
+  const duration = Date.now() - startTime;
+  console.log('[Console] Page loaded successfully', {
+    route: '/console',
+    timestamp: new Date().toISOString(),
+    duration,
+    dataLoaded: {
+      apiKeys: apiKeys.length,
+      receipts: receipts.length,
+      flags: flags.length,
+      usageSummary: usageSummary.totalCalls,
+    },
+  });
 
   return (
     <div className="space-y-8">
@@ -382,10 +427,21 @@ async function ConsoleOverviewContent() {
   );
   } catch (error) {
     // Top-level error boundary - catch any unhandled errors
-    console.error('[Console] Unhandled error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    const duration = Date.now() - startTime;
+    
+    // Structured error logging (server-side only, no secrets)
+    console.error('[Console] Unhandled error', {
+      route: '/console',
+      timestamp: new Date().toISOString(),
+      error: errorMessage,
+      duration,
+      // Only log stack in development
+      ...(process.env.NODE_ENV === 'development' && errorStack ? { stack: errorStack } : {}),
+    });
     
     // Provide more detailed error information in development
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const isDevelopment = process.env.NODE_ENV === 'development';
     
     return (

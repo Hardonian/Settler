@@ -22,11 +22,18 @@ export default async function ConsoleRootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const startTime = Date.now();
+  const logContext = {
+    route: '/console/layout',
+    timestamp: new Date().toISOString(),
+  };
+  
   // Environment safety check
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
   
   if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('[Console Layout] Missing Supabase configuration', logContext);
     // In production, show a clean error page instead of crashing
     if (process.env.NODE_ENV === 'production') {
       return (
@@ -55,6 +62,21 @@ export default async function ConsoleRootLayout({
     const supabase = await createClient();
     const authResult = await supabase.auth.getUser();
     const { data: { user }, error } = authResult;
+    
+    if (error) {
+      console.warn('[Console Layout] Auth check failed', {
+        ...logContext,
+        error: error.message,
+        code: error.status,
+      });
+    } else if (user) {
+      console.log('[Console Layout] User authenticated', {
+        ...logContext,
+        userId: user.id,
+      });
+    } else {
+      console.log('[Console Layout] No authenticated user', logContext);
+    }
 
     // If user is not authenticated, show public overview instead of redirecting
     // This prevents 500 errors when navigating from main page
@@ -82,9 +104,15 @@ export default async function ConsoleRootLayout({
   } catch (error) {
     // Log error for debugging (server-side only, no secrets)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[Console Layout] Auth error:', {
-      message: errorMessage,
-      // Don't log full error object to avoid leaking secrets
+    const duration = Date.now() - startTime;
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
+    console.error('[Console Layout] Error', {
+      ...logContext,
+      error: errorMessage,
+      duration,
+      // Only log stack in development
+      ...(process.env.NODE_ENV === 'development' && errorStack ? { stack: errorStack } : {}),
     });
     
     // Show public overview on error instead of crashing
