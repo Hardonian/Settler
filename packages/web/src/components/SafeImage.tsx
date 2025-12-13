@@ -34,8 +34,10 @@ export function SafeImage({
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Calculate aspect ratio for fallback
-  const aspectRatio = width && height ? height / width : 16 / 9;
+  // Calculate aspect ratio for fallback - ensure width/height are numbers
+  const widthNum = typeof width === 'number' ? width : (typeof width === 'string' ? parseFloat(width) : 0);
+  const heightNum = typeof height === 'number' ? height : (typeof height === 'string' ? parseFloat(height) : 0);
+  const aspectRatio = widthNum > 0 && heightNum > 0 ? heightNum / widthNum : 16 / 9;
   const aspectRatioPercent = aspectRatio * 100;
 
   const handleError = () => {
@@ -64,9 +66,9 @@ export function SafeImage({
           containerClassName
         )}
         style={{
-          width: width || '100%',
-          aspectRatio: width && height ? `${width} / ${height}` : undefined,
-          paddingBottom: !width || !height ? `${aspectRatioPercent}%` : undefined,
+          width: widthNum || '100%',
+          aspectRatio: widthNum && heightNum ? `${widthNum} / ${heightNum}` : undefined,
+          paddingBottom: !widthNum || !heightNum ? `${aspectRatioPercent}%` : undefined,
         }}
         role="img"
         aria-label={alt || fallbackTitle || "Image"}
@@ -101,15 +103,15 @@ export function SafeImage({
         containerClassName
       )}
       style={{
-        width: width || '100%',
-        aspectRatio: width && height ? `${width} / ${height}` : undefined,
+        width: widthNum || '100%',
+        aspectRatio: widthNum && heightNum ? `${widthNum} / ${heightNum}` : undefined,
       }}
     >
       <Image
         src={src}
         alt={alt || fallbackTitle || ""}
-        width={width}
-        height={height}
+        width={widthNum > 0 ? widthNum : width}
+        height={heightNum > 0 ? heightNum : height}
         className={cn(
           "transition-opacity duration-300",
           isLoading ? "opacity-0" : "opacity-100",
