@@ -131,17 +131,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Initialize Sentry (non-blocking)
+  // Initialize Sentry (non-blocking, graceful failure)
   if (typeof window === 'undefined') {
-    initSentry().catch((error) => {
-      console.error('[Sentry] Failed to initialize:', error);
-    });
-  }
-  
-  // Initialize Sentry (non-blocking)
-  if (typeof window === 'undefined') {
-    initSentry().catch((error) => {
-      console.error('[Sentry] Failed to initialize:', error);
+    initSentry().catch(() => {
+      // Sentry initialization failed (package not available or not configured)
+      // This is expected during builds without Sentry configured
     });
   }
   

@@ -8,6 +8,7 @@
     "prebuild": "cd ../.. && npm run prisma:generate && cd packages/web && npm run validate:prebuild",
     "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
     "build:vercel": "(test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || echo '⚠️  Build optimizer script not available (expected in Vercel)') && NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "postinstall": "export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",

@@ -37,8 +37,15 @@ class SentryClient {
     }
 
     try {
-      // Dynamic import to avoid SSR issues
-      const Sentry = await import('@sentry/nextjs');
+      // Dynamic import to avoid SSR issues and build-time failures
+      const Sentry = await import('@sentry/nextjs').catch(() => {
+        console.warn('[Sentry] Package not available, skipping initialization');
+        return null;
+      });
+      
+      if (!Sentry) {
+        return;
+      }
       
       Sentry.init({
         dsn: this.config.dsn,
@@ -93,7 +100,15 @@ class SentryClient {
     }
 
     try {
-      const Sentry = await import('@sentry/nextjs');
+      // Dynamic import with error handling for build-time failures
+      const Sentry = await import('@sentry/nextjs').catch(() => {
+        console.warn('[Sentry] Package not available, skipping server initialization');
+        return null;
+      });
+      
+      if (!Sentry) {
+        return;
+      }
       
       Sentry.init({
         dsn: this.config.dsn,
@@ -124,14 +139,17 @@ class SentryClient {
     }
 
     try {
-      // Dynamic import if not already loaded
+      // Dynamic import if not already loaded, with error handling
       import('@sentry/nextjs').then((Sentry) => {
         Sentry.captureException(error, {
           extra: context,
         });
+      }).catch(() => {
+        // Sentry not available, log to console instead
+        console.error('[Error]', error, context);
       });
     } catch (err) {
-      console.error('[Sentry] Failed to capture exception:', err);
+      console.error('[Error]', error, context);
     }
   }
 
@@ -156,9 +174,12 @@ class SentryClient {
           level: severityMap[level] || 'info',
           extra: context,
         });
+      }).catch(() => {
+        // Sentry not available, log to console instead
+        console[level]('[Message]', message, context);
       });
     } catch (err) {
-      console.error('[Sentry] Failed to capture message:', err);
+      console[level]('[Message]', message, context);
     }
   }
 
@@ -171,9 +192,11 @@ class SentryClient {
     try {
       import('@sentry/nextjs').then((Sentry) => {
         Sentry.setUser(user);
+      }).catch(() => {
+        // Sentry not available, silently fail
       });
     } catch (err) {
-      console.error('[Sentry] Failed to set user:', err);
+      // Silently fail if Sentry not available
     }
   }
 
@@ -191,9 +214,11 @@ class SentryClient {
           level: breadcrumb.level as Sentry.SeverityLevel || 'info',
           data: breadcrumb.data,
         });
+      }).catch(() => {
+        // Sentry not available, silently fail
       });
     } catch (err) {
-      console.error('[Sentry] Failed to add breadcrumb:', err);
+      // Silently fail if Sentry not available
     }
   }
 

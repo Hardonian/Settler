@@ -41,27 +41,29 @@ class AlertManager {
     // Send to Sentry if configured
     if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
       try {
-        const { captureException, setTag, setContext } = await import('@sentry/nextjs');
+        const Sentry = await import('@sentry/nextjs').catch(() => null);
         
-        setTag('alert_severity', options.severity);
-        if (options.tags) {
-          Object.entries(options.tags).forEach(([key, value]) => {
-            setTag(key, value);
+        if (Sentry) {
+          Sentry.setTag('alert_severity', options.severity);
+          if (options.tags) {
+            Object.entries(options.tags).forEach(([key, value]) => {
+              Sentry.setTag(key, value);
+            });
+          }
+          
+          if (options.context) {
+            Sentry.setContext('alert_context', options.context);
+          }
+
+          Sentry.captureException(new Error(options.message), {
+            level: options.severity === 'critical' ? 'fatal' : options.severity,
+            tags: {
+              alert: true,
+              alert_title: options.title,
+              ...options.tags,
+            },
           });
         }
-        
-        if (options.context) {
-          setContext('alert_context', options.context);
-        }
-
-        captureException(new Error(options.message), {
-          level: options.severity === 'critical' ? 'fatal' : options.severity,
-          tags: {
-            alert: true,
-            alert_title: options.title,
-            ...options.tags,
-          },
-        });
       } catch (error) {
         console.error('Failed to send alert to Sentry:', error);
       }
