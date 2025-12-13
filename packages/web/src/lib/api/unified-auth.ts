@@ -6,7 +6,7 @@
 
 import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { authenticateApiKey, ApiKeyAuthContext } from '@/shared/auth/apiKey';
+import { authenticateApiKey } from '@/shared/auth/apiKey';
 
 export interface UnifiedAuthContext {
   type: 'session' | 'api_key';
