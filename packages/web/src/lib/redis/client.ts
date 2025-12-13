@@ -30,20 +30,21 @@ function initRedis(): Redis | null {
     return null;
   }
 
-  try {
-    // Dynamic import to handle optional dependency
-    const { Redis: RedisClient } = await import('@upstash/redis');
-    redisClient = new RedisClient({
-      url: restUrl,
-      token: restToken,
+  // Use dynamic import with promise handling
+  return import('@upstash/redis')
+    .then(({ Redis: RedisClient }) => {
+      redisClient = new RedisClient({
+        url: restUrl,
+        token: restToken,
+      });
+      redisAvailable = true;
+      return redisClient;
+    })
+    .catch((error) => {
+      console.warn('[Redis] Failed to initialize Redis client (package may not be installed), using in-memory fallback:', error);
+      redisAvailable = false;
+      return null;
     });
-    redisAvailable = true;
-    return redisClient;
-  } catch (error) {
-    console.warn('[Redis] Failed to initialize Redis client (package may not be installed), using in-memory fallback:', error);
-    redisAvailable = false;
-    return null;
-  }
 }
 
 /**

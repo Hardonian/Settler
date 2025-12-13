@@ -11,6 +11,18 @@ import { getStripeClient } from './stripeService';
 import { syncSubscription as syncSubscriptionFromStripe } from './stripeService';
 import { getPlanConfig, PlanCode } from './planConfig';
 
+// Helper to safely access Stripe subscription period end
+function getStripePeriodEnd(subscription: Stripe.Subscription | Stripe.Response<Stripe.Subscription>): number {
+  if ('current_period_end' in subscription) {
+    return subscription.current_period_end;
+  }
+  // If it's a Response object, access the data property
+  if ('data' in subscription && subscription.data && 'current_period_end' in subscription.data) {
+    return subscription.data.current_period_end;
+  }
+  return 0;
+}
+
 export interface ReconciliationResult {
   success: boolean;
   billingAccountId: string;
@@ -90,8 +102,8 @@ export async function reconcileBillingAccount(
 
         // Compare period dates
         const dbPeriodEnd = Math.floor(dbSub.currentPeriodEnd.getTime() / 1000);
-        const stripePeriodEnd = stripeSub.current_period_end;
-        if (Math.abs(dbPeriodEnd - stripePeriodEnd) > 60) {
+        const stripePeriodEnd = getStripePeriodEnd(stripeSub);
+        if (stripePeriodEnd > 0 && Math.abs(dbPeriodEnd - stripePeriodEnd) > 60) {
           // More than 1 minute difference
           await syncSubscriptionFromStripe(stripeSub);
           changes.push(`Updated subscription ${stripeSub.id} period dates`);
@@ -222,11 +234,12 @@ export async function findOutOfSyncSubscriptions(): Promise<{
 
       // Check period mismatch
       const dbPeriodEnd = Math.floor(dbSub.currentPeriodEnd.getTime() / 1000);
-      if (Math.abs(dbPeriodEnd - stripeSub.current_period_end) > 60) {
+      const stripePeriodEnd = getStripePeriodEnd(stripeSub);
+      if (stripePeriodEnd > 0 && Math.abs(dbPeriodEnd - stripePeriodEnd) > 60) {
         issues.push({
           billingAccountId: dbSub.billingAccountId,
           subscriptionId: dbSub.id,
-          issue: `Period end mismatch: DB=${dbPeriodEnd}, Stripe=${stripeSub.current_period_end}`,
+          issue: `Period end mismatch: DB=${dbPeriodEnd}, Stripe=${stripePeriodEnd}`,
         });
       }
     } catch (error) {

@@ -12,7 +12,6 @@ import { createCheckoutSession } from '@/domain/billing/stripeService';
 import { PlanCode, getPlanConfig } from '@/domain/billing/planConfig';
 import { requestSizeLimits } from '@/middleware/request-size-limit';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
-import { safeStripeCall } from '@/lib/stripe/rate-limit-handler';
 import { auditBilling } from '@/lib/audit/logger';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
 

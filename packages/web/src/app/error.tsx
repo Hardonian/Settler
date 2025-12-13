@@ -8,7 +8,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AlertCircle, Home, RefreshCw } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { logger } from '@/lib/logging/logger';
 import { analytics } from '@/lib/analytics';

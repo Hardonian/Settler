@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getRedisClient, isRedisAvailable, safeRedisOperation } from '@/lib/redis/client';
+import { safeRedisOperation } from '@/lib/redis/client';
 
 // Optional Redis type - gracefully handles if package not installed
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

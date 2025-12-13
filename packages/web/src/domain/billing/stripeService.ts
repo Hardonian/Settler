@@ -221,7 +221,7 @@ export async function createCustomerPortalSession(
   const { safeStripeCall } = await import('@/lib/stripe/rate-limit-handler');
   const result = await safeStripeCall(async (stripe) => {
     return await stripe.billingPortal.sessions.create({
-      customer: account.stripeCustomerId,
+      customer: account.stripeCustomerId || '',
       return_url: returnUrl,
     });
   });

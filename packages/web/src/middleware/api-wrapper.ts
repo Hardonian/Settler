@@ -9,11 +9,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requestSizeLimits } from './request-size-limit';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
 import { createErrorResponse } from '@/lib/server-error-handler';
 import { addVersionHeaders, getVersionFromPath } from '@/lib/api/versioning';
+import { checkRequestSize } from '@/lib/security/headers';
 
 export interface ApiWrapperConfig {
   rateLimiter?: (req: NextRequest) => Promise<NextResponse | null>;

@@ -66,8 +66,7 @@ if (typeof setInterval !== 'undefined') {
  * Cache wrapper that can be upgraded to Redis
  */
 export async function cacheGet<T>(
-  key: string,
-  ttlSeconds = 300
+  key: string
 ): Promise<T | null> {
   // Try Redis first if available
   try {
@@ -76,8 +75,10 @@ export async function cacheGet<T>(
     if (client) {
       return await safeRedisOperation(
         async (redis) => {
-          const value = await redis.get<T>(key);
-          return value;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+          const value = await redis.get(key);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return value as T | null;
         },
         () => memoryCache.get<T>(key)
       );

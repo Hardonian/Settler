@@ -14,7 +14,7 @@ export interface RetryButtonProps {
   onRetry: () => Promise<void> | void;
   label?: string;
   variant?: 'default' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'default' | 'lg';
   className?: string;
 }
 
@@ -22,7 +22,7 @@ export function RetryButton({
   onRetry,
   label = 'Try again',
   variant = 'outline',
-  size = 'md',
+  size = 'default',
   className = '',
 }: RetryButtonProps) {
   const [isRetrying, setIsRetrying] = useState(false);

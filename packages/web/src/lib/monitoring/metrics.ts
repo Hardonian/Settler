@@ -73,9 +73,20 @@ export async function trackError(event: ErrorEvent): Promise<void> {
     if (process.env.SENTRY_DSN) {
       try {
         const Sentry = await import('@sentry/nextjs');
+        // Convert context to primitive types for Sentry
+        const tags: Record<string, string | number | boolean> = {};
+        if (event.context) {
+          for (const [key, value] of Object.entries(event.context)) {
+            if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+              tags[key] = value;
+            } else {
+              tags[key] = String(value);
+            }
+          }
+        }
         Sentry.captureException(event.error, {
           level: event.severity === 'critical' ? 'error' : 'warning',
-          tags: event.context,
+          tags,
         });
       } catch {
         // Sentry not available, skip
@@ -94,9 +105,9 @@ export async function trackError(event: ErrorEvent): Promise<void> {
             changes: {
               message: event.error.message,
               stack: event.error.stack,
-              context: event.context,
+              context: event.context || {},
               severity: event.severity,
-            },
+            } as Record<string, unknown>,
           },
         });
       } catch {

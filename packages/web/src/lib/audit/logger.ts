@@ -33,10 +33,10 @@ export async function createAuditLog(entry: AuditLogEntry): Promise<void> {
         action: entry.action,
         entityType: entry.entityType,
         entityId: entry.entityId || null,
-        changes: entry.changes || {},
+        changes: (entry.changes || {}) as Record<string, unknown>,
         ipAddress: entry.ipAddress || null,
         userAgent: entry.userAgent || null,
-        metadata: entry.metadata || {},
+        metadata: (entry.metadata || {}) as Record<string, unknown>,
       },
     });
   } catch (error) {
