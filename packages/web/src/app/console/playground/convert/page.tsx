@@ -1,13 +1,15 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RequestResponseViewer, type RequestResponseViewerProps } from '@/components/console/RequestResponseViewer';
+import { UsageLimit } from '@/components/console/FeatureGate';
 import { Badge } from '@/components/ui/badge';
 import { Calculator, ArrowRight, Play, Loader2, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 
 const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR', 'BRL'];
 const units = ['meter', 'kilometer', 'mile', 'foot', 'inch', 'yard', 'pound', 'kilogram', 'ounce', 'gram'];
@@ -33,8 +35,31 @@ export default function ConvertPlayground() {
   const [request, setRequest] = useState<RequestResponseViewerProps['request']>();
   const [response, setResponse] = useState<RequestResponseViewerProps['response']>();
   const [error, setError] = useState<RequestResponseViewerProps['error']>();
+  const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro' | 'enterprise' | 'unauthenticated'>('unauthenticated');
+  const [requestCount, setRequestCount] = useState(0);
+
+  useEffect(() => {
+    // Fetch subscription info
+    fetch('/api/console/subscription')
+      .then(res => res.json())
+      .then(data => setSubscriptionTier(data.tier))
+      .catch(() => {});
+  }, []);
+
+  const requestLimit = subscriptionTier === 'unauthenticated' ? 10 : 
+                       subscriptionTier === 'free' ? 50 : 
+                       subscriptionTier === 'pro' ? 500 : -1;
 
   const convert = async () => {
+    // Check rate limits
+    if (requestLimit !== -1 && requestCount >= requestLimit) {
+      setError({
+        message: `Daily request limit reached (${requestLimit}). Upgrade for more requests.`,
+        code: 'RATE_LIMIT_EXCEEDED'
+      });
+      return;
+    }
+
     setIsRunning(true);
     setResult(null);
     setError(null);
@@ -90,17 +115,29 @@ export default function ConvertPlayground() {
       });
     } finally {
       setIsRunning(false);
+      setRequestCount(prev => prev + 1);
     }
   }
 
   return (
     <div className="space-y-6">
-        <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Calculator className="w-6 h-6" />
-                Conversion Playground
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400">Test currency and unit conversions with real-time calculations.</p>
+        <div className="flex items-start justify-between">
+            <div>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Calculator className="w-6 h-6" />
+                    Conversion Playground
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400">Test currency and unit conversions with real-time calculations.</p>
+            </div>
+            {subscriptionTier !== 'enterprise' && (
+              <UsageLimit
+                current={requestCount}
+                limit={requestLimit}
+                label="Requests today"
+                tier={subscriptionTier}
+                className="min-w-[200px]"
+              />
+            )}
         </div>
         
         <Card>
@@ -153,17 +190,30 @@ export default function ConvertPlayground() {
                                     {currencies.map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
-                            <Button 
+                            <div className="space-y-2">
+                              <Button 
                                 onClick={convert} 
-                                disabled={isRunning || !value}
+                                disabled={isRunning || !value || (requestLimit !== -1 && requestCount >= requestLimit)}
                                 size="lg"
-                            >
+                              >
                                 {isRunning ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Converting...
+                                  </>
                                 ) : (
-                                    <Play className="w-4 h-4" />
+                                  <>
+                                    <Play className="w-4 h-4 mr-2" />
+                                    Convert
+                                  </>
                                 )}
-                            </Button>
+                              </Button>
+                              {requestLimit !== -1 && requestCount >= requestLimit && (
+                                <p className="text-xs text-center text-amber-600 dark:text-amber-400">
+                                  Daily limit reached. <Link href="/console/billing" className="underline">Upgrade for more</Link>
+                                </p>
+                              )}
+                            </div>
                         </div>
                     </TabsContent>
 
@@ -205,17 +255,30 @@ export default function ConvertPlayground() {
                                     {units.map(u => <option key={u} value={u}>{u}</option>)}
                                 </select>
                             </div>
-                            <Button 
+                            <div className="space-y-2">
+                              <Button 
                                 onClick={convert} 
-                                disabled={isRunning || !value}
+                                disabled={isRunning || !value || (requestLimit !== -1 && requestCount >= requestLimit)}
                                 size="lg"
-                            >
+                              >
                                 {isRunning ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Converting...
+                                  </>
                                 ) : (
-                                    <Play className="w-4 h-4" />
+                                  <>
+                                    <Play className="w-4 h-4 mr-2" />
+                                    Convert
+                                  </>
                                 )}
-                            </Button>
+                              </Button>
+                              {requestLimit !== -1 && requestCount >= requestLimit && (
+                                <p className="text-xs text-center text-amber-600 dark:text-amber-400">
+                                  Daily limit reached. <Link href="/console/billing" className="underline">Upgrade for more</Link>
+                                </p>
+                              )}
+                            </div>
                         </div>
                     </TabsContent>
                 </Tabs>

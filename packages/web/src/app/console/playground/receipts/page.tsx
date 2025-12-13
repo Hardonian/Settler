@@ -1,10 +1,12 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CopyButton } from '@/components/ui/CopyButton';
+import { FeatureGate, UsageLimit } from '@/components/console/FeatureGate';
 import { Code, Terminal } from 'lucide-react';
+import Link from 'next/link';
 
 const sdkExamples = {
   node: `// Using Node.js SDK
@@ -59,8 +61,27 @@ export default function ReceiptsPlayground() {
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState<ReceiptResult | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<'node' | 'python' | 'curl'>('node');
+  const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro' | 'enterprise' | 'unauthenticated'>('unauthenticated');
+  const [requestCount, setRequestCount] = useState(0);
+
+  useEffect(() => {
+    // Fetch subscription info
+    fetch('/api/console/subscription')
+      .then(res => res.json())
+      .then(data => setSubscriptionTier(data.tier))
+      .catch(() => {});
+  }, []);
+
+  const requestLimit = subscriptionTier === 'unauthenticated' ? 10 : 
+                       subscriptionTier === 'free' ? 50 : 
+                       subscriptionTier === 'pro' ? 500 : -1;
 
   const scanReceipt = async () => {
+    // Check rate limits
+    if (requestLimit !== -1 && requestCount >= requestLimit) {
+      return;
+    }
+
     setScanning(true);
     try {
       // In a real implementation, this would call the actual API
@@ -107,14 +128,26 @@ export default function ReceiptsPlayground() {
       });
     } finally {
       setScanning(false);
+      setRequestCount(prev => prev + 1);
     }
   }
 
   return (
     <div className="space-y-6">
-        <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Receipts Playground</h2>
-            <p className="text-slate-600 dark:text-slate-400">Test the OCR and extraction engine with real receipts.</p>
+        <div className="flex items-start justify-between">
+            <div>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Receipts Playground</h2>
+                <p className="text-slate-600 dark:text-slate-400">Test the OCR and extraction engine with real receipts.</p>
+            </div>
+            {subscriptionTier !== 'enterprise' && (
+              <UsageLimit
+                current={requestCount}
+                limit={requestLimit}
+                label="Requests today"
+                tier={subscriptionTier}
+                className="min-w-[200px]"
+              />
+            )}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
@@ -128,9 +161,20 @@ export default function ReceiptsPlayground() {
                             <p className="mb-2">Drag and drop receipt image here</p>
                             <p className="text-sm">or click to browse</p>
                         </div>
-                        <Button onClick={scanReceipt} disabled={scanning} className="w-full">
+                        <div className="space-y-2">
+                          <Button 
+                            onClick={scanReceipt} 
+                            disabled={scanning || (requestLimit !== -1 && requestCount >= requestLimit)} 
+                            className="w-full"
+                          >
                             {scanning ? 'Analyzing Receipt...' : 'Analyze Sample Receipt'}
-                        </Button>
+                          </Button>
+                          {requestLimit !== -1 && requestCount >= requestLimit && (
+                            <p className="text-xs text-center text-amber-600 dark:text-amber-400">
+                              Daily limit reached. <Link href="/console/billing" className="underline">Upgrade for more</Link>
+                            </p>
+                          )}
+                        </div>
                         
                         {/* SDK Code Examples */}
                         <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">

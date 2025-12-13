@@ -16,8 +16,10 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { CodeEditor } from './CodeEditor';
 import { RequestResponseViewer, type RequestResponseViewerProps } from './RequestResponseViewer';
-import { Terminal, Play, History, Trash2, Loader2 } from 'lucide-react';
+import { FeatureGate, UsageLimit, type SubscriptionTier } from './FeatureGate';
+import { Terminal, Play, History, Trash2, Loader2, Sparkles, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 interface RequestHistory {
   id: string;
@@ -60,7 +62,11 @@ const defaultRequests = {
   },
 };
 
-export function CLIPlayground() {
+interface CLIPlaygroundProps {
+  subscriptionTier?: 'free' | 'pro' | 'enterprise' | 'unauthenticated';
+}
+
+export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlaygroundProps) {
   const [method, setMethod] = useState('POST');
   const [url, setUrl] = useState('/api/v1/receipts');
   const [body, setBody] = useState(defaultRequests.receipts.body);
@@ -71,9 +77,22 @@ export function CLIPlayground() {
   const [error, setError] = useState<RequestResponseViewerProps['error']>();
   const [history, setHistory] = useState<RequestHistory[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('receipts');
+  const [requestCount, setRequestCount] = useState(0);
+  
+  // Feature flags based on tier
+  const canSaveHistory = subscriptionTier !== 'unauthenticated';
+  const canUseCustomTemplates = subscriptionTier === 'pro' || subscriptionTier === 'enterprise';
+  const canUseAdvancedFeatures = subscriptionTier === 'pro' || subscriptionTier === 'enterprise';
+  const requestLimit = subscriptionTier === 'unauthenticated' ? 10 : 
+                       subscriptionTier === 'free' ? 50 : 
+                       subscriptionTier === 'pro' ? 500 : -1; // -1 = unlimited
 
-  // Load history from localStorage
+  // Load history from localStorage (only if allowed)
   useEffect(() => {
+    if (!canSaveHistory) {
+      return;
+    }
+    
     const saved = localStorage.getItem('settler-cli-history');
     if (saved) {
       try {
@@ -86,7 +105,7 @@ export function CLIPlayground() {
         // Ignore parse errors
       }
     }
-  }, []);
+  }, [canSaveHistory]);
 
   // Save history to localStorage
   const saveHistory = useCallback((newHistory: RequestHistory[]) => {
@@ -106,6 +125,16 @@ export function CLIPlayground() {
   }, []);
 
   const handleRun = async () => {
+    // Check rate limits
+    if (requestLimit !== -1 && requestCount >= requestLimit) {
+      setError({
+        message: `Daily request limit reached (${requestLimit} requests). Upgrade to Pro for unlimited requests.`,
+        code: 'RATE_LIMIT_EXCEEDED'
+      });
+      setIsRunning(false);
+      return;
+    }
+
     setIsRunning(true);
     setError(undefined);
     setResponse(undefined);
@@ -145,8 +174,8 @@ export function CLIPlayground() {
         duration,
       });
 
-      // Save to history
-      if (requestName || url) {
+      // Save to history (only if allowed)
+      if (canSaveHistory && (requestName || url)) {
         const newHistory: RequestHistory = {
           id: Date.now().toString(),
           name: requestName || `${method} ${url}`,
@@ -157,6 +186,9 @@ export function CLIPlayground() {
         };
         saveHistory([newHistory, ...history.slice(0, 9)]);
       }
+      
+      // Increment request count
+      setRequestCount(prev => prev + 1);
     } catch (err) {
       const duration = Date.now() - startTime;
       setError({
@@ -185,14 +217,25 @@ export function CLIPlayground() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Terminal className="w-6 h-6" />
-          CLI Playground
-        </h2>
-        <p className="text-slate-600 dark:text-slate-400">
-          Build and test API requests with an interactive code editor and response viewer.
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Terminal className="w-6 h-6" />
+            CLI Playground
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400">
+            Build and test API requests with an interactive code editor and response viewer.
+          </p>
+        </div>
+        {subscriptionTier !== 'enterprise' && (
+          <UsageLimit
+            current={requestCount}
+            limit={requestLimit}
+            label="Requests today"
+            tier={subscriptionTier}
+            className="min-w-[200px]"
+          />
+        )}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -268,24 +311,31 @@ export function CLIPlayground() {
                 </div>
               )}
 
-              <Button
-                onClick={handleRun}
-                disabled={isRunning || !url}
-                className="w-full"
-                size="lg"
-              >
-                {isRunning ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Running...
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-4 h-4 mr-2" />
-                    Run Request
-                  </>
+              <div className="space-y-2">
+                <Button 
+                  onClick={handleRun} 
+                  disabled={isRunning || !url || (requestLimit !== -1 && requestCount >= requestLimit)}
+                  className="w-full"
+                  size="lg"
+                >
+                  {isRunning ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Running...
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Run Request
+                    </>
+                  )}
+                </Button>
+                {requestLimit !== -1 && requestCount >= requestLimit && (
+                  <p className="text-xs text-center text-amber-600 dark:text-amber-400">
+                    Daily limit reached. <Link href="/console/billing" className="underline">Upgrade for more</Link>
+                  </p>
                 )}
-              </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -301,64 +351,72 @@ export function CLIPlayground() {
 
         {/* History Sidebar */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <History className="w-5 h-5" />
-                Request History
-              </CardTitle>
-              <CardDescription>
-                Recently executed requests
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {history.length === 0 ? (
-                <div className="text-center py-8 text-slate-500 text-sm">
-                  No requests yet
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {history.map((item) => (
-                    <div
-                      key={item.id}
-                      className="p-3 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer group"
-                      onClick={() => loadHistoryItem(item)}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge variant="outline" className="text-xs">
-                              {item.method}
-                            </Badge>
-                            <span className="text-sm font-medium truncate">
-                              {item.name}
+          <FeatureGate
+            feature="request-history"
+            requiredTier="free"
+            currentTier={subscriptionTier}
+            upgradeMessage="Sign in to save your request history"
+            featureDescription="Save and reload your API requests for faster testing and debugging."
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <History className="w-5 h-5" />
+                  Request History
+                </CardTitle>
+                <CardDescription>
+                  Recently executed requests
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {history.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500 text-sm">
+                    No requests yet
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {history.map((item) => (
+                      <div
+                        key={item.id}
+                        className="p-3 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer group"
+                        onClick={() => loadHistoryItem(item)}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="outline" className="text-xs">
+                                {item.method}
+                              </Badge>
+                              <span className="text-sm font-medium truncate">
+                                {item.name}
+                              </span>
+                            </div>
+                            <code className="text-xs text-slate-500 dark:text-slate-400 truncate block">
+                              {item.url}
+                            </code>
+                            <span className="text-xs text-slate-400 mt-1 block">
+                              {item.timestamp.toLocaleTimeString()}
                             </span>
                           </div>
-                          <code className="text-xs text-slate-500 dark:text-slate-400 truncate block">
-                            {item.url}
-                          </code>
-                          <span className="text-xs text-slate-400 mt-1 block">
-                            {item.timestamp.toLocaleTimeString()}
-                          </span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteHistoryItem(item.id);
+                            }}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteHistoryItem(item.id);
-                          }}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </FeatureGate>
 
           {/* Quick Actions */}
           <Card>
@@ -401,6 +459,47 @@ export function CLIPlayground() {
               </Button>
             </CardContent>
           </Card>
+
+          {/* Upgrade Prompt for Free/Unauthenticated */}
+          {subscriptionTier !== 'pro' && subscriptionTier !== 'enterprise' && (
+            <Card className="border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-900/10 dark:to-pink-900/10">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Sparkles className="w-5 h-5 text-purple-600" />
+                  Unlock Advanced Features
+                </CardTitle>
+                <CardDescription>
+                  Upgrade to Pro for unlimited requests and advanced features
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    Unlimited playground requests
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    Custom request templates
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    Advanced debugging tools
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    Webhook testing
+                  </li>
+                </ul>
+                <Button asChild className="w-full" size="lg">
+                  <Link href="/console/billing">
+                    Upgrade to Pro
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

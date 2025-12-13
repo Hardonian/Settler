@@ -1,7 +1,7 @@
 /**
  * Playground Layout
  * 
- * Provides consistent layout for all playground pages.
+ * Provides consistent layout and subscription context for all playground pages.
  */
 
 export const dynamic = 'force-dynamic';

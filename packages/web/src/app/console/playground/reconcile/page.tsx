@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CodeEditor } from '@/components/console/CodeEditor';
 import { RequestResponseViewer, type RequestResponseViewerProps } from '@/components/console/RequestResponseViewer';
+import { UsageLimit } from '@/components/console/FeatureGate';
 import { RefreshCw, Play, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 const defaultConfig = JSON.stringify({
   name: "Monthly Reconciliation",
@@ -39,8 +41,31 @@ export default function ReconcilePlayground() {
   const [request, setRequest] = useState<RequestResponseViewerProps['request']>();
   const [response, setResponse] = useState<RequestResponseViewerProps['response']>();
   const [error, setError] = useState<RequestResponseViewerProps['error']>();
+  const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro' | 'enterprise' | 'unauthenticated'>('unauthenticated');
+  const [requestCount, setRequestCount] = useState(0);
+
+  useEffect(() => {
+    // Fetch subscription info
+    fetch('/api/console/subscription')
+      .then(res => res.json())
+      .then(data => setSubscriptionTier(data.tier))
+      .catch(() => {});
+  }, []);
+
+  const requestLimit = subscriptionTier === 'unauthenticated' ? 10 : 
+                       subscriptionTier === 'free' ? 50 : 
+                       subscriptionTier === 'pro' ? 500 : -1;
 
   const startRecon = async () => {
+    // Check rate limits
+    if (requestLimit !== -1 && requestCount >= requestLimit) {
+      setError({
+        message: `Daily request limit reached (${requestLimit}). Upgrade for more requests.`,
+        code: 'RATE_LIMIT_EXCEEDED'
+      });
+      return;
+    }
+
     setRunning(true);
     setResult(null);
     setProgress(0);
@@ -161,6 +186,7 @@ export default function ReconcilePlayground() {
         });
         setRunning(false);
         setJobId(null);
+        setRequestCount(prev => prev + 1);
       }, 5000);
     } catch (err) {
       setError({
@@ -173,12 +199,23 @@ export default function ReconcilePlayground() {
 
   return (
     <div className="space-y-6">
-        <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <RefreshCw className="w-6 h-6" />
-                Reconciliation Playground
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400">Test reconciliation jobs with real-time progress tracking and detailed results.</p>
+        <div className="flex items-start justify-between">
+            <div>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <RefreshCw className="w-6 h-6" />
+                    Reconciliation Playground
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400">Test reconciliation jobs with real-time progress tracking and detailed results.</p>
+            </div>
+            {subscriptionTier !== 'enterprise' && (
+              <UsageLimit
+                current={requestCount}
+                limit={requestLimit}
+                label="Requests today"
+                tier={subscriptionTier}
+                className="min-w-[200px]"
+              />
+            )}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
@@ -195,24 +232,31 @@ export default function ReconcilePlayground() {
                             height="350px"
                             placeholder="Enter reconciliation configuration..."
                         />
-                        <Button 
+                        <div className="space-y-2">
+                          <Button 
                             onClick={startRecon} 
-                            disabled={running} 
+                            disabled={running || (requestLimit !== -1 && requestCount >= requestLimit)} 
                             className="w-full"
                             size="lg"
-                        >
+                          >
                             {running ? (
-                                <>
-                                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                                    Processing...
-                                </>
+                              <>
+                                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                                Processing...
+                              </>
                             ) : (
-                                <>
-                                    <Play className="w-4 h-4 mr-2" />
-                                    Run Reconciliation Job
-                                </>
+                              <>
+                                <Play className="w-4 h-4 mr-2" />
+                                Run Reconciliation Job
+                              </>
                             )}
-                        </Button>
+                          </Button>
+                          {requestLimit !== -1 && requestCount >= requestLimit && (
+                            <p className="text-xs text-center text-amber-600 dark:text-amber-400">
+                              Daily limit reached. <Link href="/console/billing" className="underline">Upgrade for more</Link>
+                            </p>
+                          )}
+                        </div>
                     </div>
                 </CardContent>
             </Card>

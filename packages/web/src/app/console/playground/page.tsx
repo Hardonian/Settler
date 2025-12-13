@@ -3,6 +3,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, FileText, RefreshCw, Flag, Calculator, Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getSubscriptionInfo } from '@/lib/console/subscription';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 const playgrounds = [
   {
@@ -48,14 +52,24 @@ const playgrounds = [
   }
 ];
 
-export default function PlaygroundOverview() {
+export default async function PlaygroundOverview() {
+  const subscription = await getSubscriptionInfo();
+  
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Developer Playground</h2>
-        <p className="text-muted-foreground">
-          Interactive tools to explore and test the Settler API capabilities.
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Developer Playground</h2>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
+            Interactive tools to explore and test the Settler API capabilities.
+          </p>
+        </div>
+        {subscription.tier !== 'enterprise' && (
+          <Badge variant="outline" className="text-sm">
+            {subscription.tier === 'unauthenticated' ? 'Sign In' : 
+             subscription.tier === 'free' ? 'Free Plan' : 'Pro Plan'}
+          </Badge>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
