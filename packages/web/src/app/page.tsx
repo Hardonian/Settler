@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
@@ -16,6 +16,40 @@ import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, Chec
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 
+// Dynamic imports for marketing components - using index file for better webpack resolution
+// This provides code splitting and lazy loading benefits while avoiding webpack alias issues
+const InvestorMetrics = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InvestorMetrics })), { 
+  ssr: true,
+  loading: () => <div className="py-20" /> // Placeholder while loading
+});
+const LiveMetricsCounter = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.LiveMetricsCounter })), { 
+  ssr: false,
+  loading: () => <div className="py-12" />
+});
+const ValueProposition = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.ValueProposition })), { 
+  ssr: true,
+  loading: () => <div className="py-20" />
+});
+const SocialProofCounter = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.SocialProofCounter })), { 
+  ssr: true,
+  loading: () => <div className="py-12" />
+});
+const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing").then(mod => ({ default: mod.UrgencyBanner })), { 
+  ssr: true,
+  loading: () => null // No placeholder for banner
+});
+const InvestorPitch = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InvestorPitch })), { 
+  ssr: true,
+  loading: () => <div className="py-20" />
+});
+const TestimonialCarousel = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.TestimonialCarousel })), { 
+  ssr: true,
+  loading: () => <div className="py-20" />
+});
+const InfographicSection = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InfographicSection })), { 
+  ssr: true,
+  loading: () => <div className="py-20" />
+});
 // Dynamic imports for heavy components
 const TrustBadges = dynamic(() => import("@/components/TrustBadges").then(mod => ({ default: mod.TrustBadges })), { ssr: true });
 const CustomerLogos = dynamic(() => import("@/components/CustomerLogos").then(mod => ({ default: mod.CustomerLogos })), { ssr: true });
@@ -26,17 +60,8 @@ const AnimatedCodeBlock = dynamic(() => import("@/components/AnimatedCodeBlock")
 const AnimatedStatCard = dynamic(() => import("@/components/AnimatedStatCard").then(mod => ({ default: mod.AnimatedStatCard })), { ssr: true });
 const TrustSignalBanner = dynamic(() => import("@/components/TrustSignalBanner").then(mod => ({ default: mod.TrustSignalBanner })), { ssr: true });
 const EnhancedConversionCTA = dynamic(() => import("@/components/EnhancedConversionCTA").then(mod => ({ default: mod.EnhancedConversionCTA })), { ssr: true });
-// Dynamic imports for marketing components - using individual files for better TypeScript/webpack resolution
-const InvestorMetrics = dynamic(() => import("@/components/marketing/InvestorMetrics").then(mod => ({ default: mod.InvestorMetrics })), { ssr: true });
-const LiveMetricsCounter = dynamic(() => import("@/components/marketing/LiveMetricsCounter").then(mod => ({ default: mod.LiveMetricsCounter })), { ssr: false });
-const ValueProposition = dynamic(() => import("@/components/marketing/ValueProposition").then(mod => ({ default: mod.ValueProposition })), { ssr: true });
-const SocialProofCounter = dynamic(() => import("@/components/marketing/SocialProofCounter").then(mod => ({ default: mod.SocialProofCounter })), { ssr: true });
-const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
-const InvestorPitch = dynamic(() => import("@/components/marketing/InvestorPitch").then(mod => ({ default: mod.InvestorPitch })), { ssr: true });
-const TestimonialCarousel = dynamic(() => import("@/components/marketing/TestimonialCarousel").then(mod => ({ default: mod.TestimonialCarousel })), { ssr: true });
 const IntegrationLogos = dynamic(() => import("@/components/IntegrationLogos").then(mod => ({ default: mod.IntegrationLogos })), { ssr: true });
 const EnhancedTrustBadges = dynamic(() => import("@/components/EnhancedTrustBadges").then(mod => ({ default: mod.EnhancedTrustBadges })), { ssr: true });
-const InfographicSection = dynamic(() => import("@/components/marketing/InfographicSection").then(mod => ({ default: mod.InfographicSection })), { ssr: true });
 
 export default function Home() {
   const trackCTA = useTrackCTA();
