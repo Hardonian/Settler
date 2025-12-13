@@ -34,6 +34,7 @@ const LiveMetricsCounter = dynamic(() => import("@/components/marketing/LiveMetr
 const ValueProposition = dynamic(() => import("@/components/marketing/ValueProposition").then(mod => ({ default: mod.ValueProposition })), { ssr: true });
 // @ts-expect-error - TypeScript can't resolve dynamic imports with path aliases during tsc --noEmit, but Next.js resolves them correctly at build time
 const SocialProofCounter = dynamic(() => import("@/components/marketing/SocialProofCounter").then(mod => ({ default: mod.SocialProofCounter })), { ssr: true });
+// @ts-expect-error - TypeScript can't resolve dynamic imports with path aliases during tsc --noEmit, but Next.js resolves them correctly at build time
 const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
 // @ts-expect-error - TypeScript can't resolve dynamic imports with path aliases during tsc --noEmit, but Next.js resolves them correctly at build time
 const InvestorPitch = dynamic(() => import("@/components/marketing/InvestorPitch").then(mod => ({ default: mod.InvestorPitch })), { ssr: true });
