@@ -23,6 +23,8 @@ cd packages/web
 npm install @sentry/nextjs
 ```
 
+**⚠️ Important:** The package is already installed. If you encounter build timeouts, set `SENTRY_SKIP_AUTO_INSTALL=1` in Vercel environment variables (see Step 4).
+
 ### Step 4: Configure Vercel
 1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables
 2. Add:
@@ -30,6 +32,7 @@ npm install @sentry/nextjs
    - `SENTRY_DSN` = [Your DSN]
    - `SENTRY_ENVIRONMENT` = `production`
    - `SENTRY_TRACES_SAMPLE_RATE` = `0.1`
+   - `SENTRY_SKIP_AUTO_INSTALL` = `1` (⚠️ **Required** - prevents build timeout)
 3. Redeploy
 
 ### Step 5: Test
