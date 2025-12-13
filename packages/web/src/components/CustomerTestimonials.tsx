@@ -79,7 +79,7 @@ export function CustomerTestimonials() {
             id="testimonials-heading"
             className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white"
           >
-            Trusted by 500+ Companies
+            Trusted by Early Adopters
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             See what customers say about Settler
@@ -134,7 +134,7 @@ export function CustomerTestimonials() {
         </div>
         <div className="text-center mt-12">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Join 500+ companies using Settler to automate reconciliation
+            Join companies using Settler to automate reconciliation
           </p>
         </div>
       </div>

@@ -135,8 +135,7 @@ export function SocialProofCounter() {
             Trusted by Companies Processing Millions of Transactions
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Join 500+ companies saving 10+ hours per week with automated reconciliation. 99.7%
-            accuracy. Enterprise-grade security.
+            Automate reconciliation and save hours per week. High accuracy. Enterprise-grade security.
           </p>
         </div>
 

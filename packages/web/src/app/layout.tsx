@@ -11,6 +11,8 @@ import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { TenantThemeProvider } from "@/components/tenant/TenantThemeProvider";
 import { getTenantContext } from "@/lib/tenant/server";
 import { requireEnvironment } from "@/lib/env/validation";
+import { ToastContainer } from "@/components/ux/ToastContainer";
+import { initSentry } from "@/lib/monitoring/sentry";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -129,6 +131,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Initialize Sentry (non-blocking, graceful failure)
+  if (typeof window === 'undefined') {
+    initSentry().catch(() => {
+      // Sentry initialization failed (package not available or not configured)
+      // This is expected during builds without Sentry configured
+    });
+  }
+  
   // Get tenant context for theme - gracefully handles build-time and errors
   let tenantContext;
   try {
@@ -191,6 +201,7 @@ export default async function RootLayout({
               </a>
               <SmoothScroll>{children}</SmoothScroll>
               <PwaInstallPrompt />
+              <ToastContainer />
               <Analytics />
               <SpeedInsights />
             </QueryProvider>

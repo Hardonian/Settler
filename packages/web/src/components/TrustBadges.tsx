@@ -35,7 +35,7 @@ export function TrustBadges() {
   }
 
   const badges: TrustBadge[] = [
-    { name: 'SOC 2 Type II', icon: '🔒', description: 'Enterprise security certified' },
+    { name: 'SOC 2 Planned Q3 2026', icon: '🔒', description: 'Enterprise security certification planned' },
     { name: 'GDPR Compliant', icon: '🛡️', description: 'EU data protection compliant' },
     { name: 'PCI-DSS Ready', icon: '💳', description: 'Payment security standards' },
     { name: '99.99% Uptime', icon: '⚡', description: 'SLA guaranteed availability' },

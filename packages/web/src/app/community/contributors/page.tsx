@@ -337,7 +337,7 @@ export default function ContributorsPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: Users, value: "500+", label: "Contributors" },
+              { icon: Users, value: "Growing", label: "Contributors" },
               { icon: Code, value: "50+", label: "Adapters" },
               { icon: Github, value: "100+", label: "PRs Merged" },
               { icon: Award, value: "10M+", label: "Transactions" },

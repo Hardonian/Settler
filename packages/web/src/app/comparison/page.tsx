@@ -125,7 +125,7 @@ export default function ComparisonPage() {
       <AnimatedHero
         badge="Settler vs. Alternatives"
         title="Why Choose Settler Over Building In-House or Using Alternatives?"
-        description="Compare Settler with building your own reconciliation system or using alternative solutions. See why 500+ companies choose Settler for faster time to value, lower costs, and better accuracy."
+        description="Compare Settler with building your own reconciliation system or using alternative solutions. See why companies choose Settler for faster time to value, lower costs, and better accuracy."
       />
 
       {/* Quick Comparison Table */}
@@ -324,7 +324,7 @@ export default function ComparisonPage() {
             id="why-settler-heading"
             className="text-3xl md:text-4xl font-bold text-center mb-12 text-slate-900 dark:text-white"
           >
-            Why 500+ Companies Choose Settler
+            Why Companies Choose Settler
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[

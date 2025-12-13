@@ -41,8 +41,11 @@ export function ObservabilityExample() {
       setError(null);
 
       // Use defensive fetch
-      const result = await fetchJSON('/api/example', {
+      const result = await fetchJSON<Record<string, unknown>>('/api/example', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ data: 'example' }),
       });
 
@@ -63,10 +66,9 @@ export function ObservabilityExample() {
   // Example with fallback data
   const handleFetchWithFallback = async () => {
     try {
-      const result = await fetchWithFallback(
+      const result = await fetchWithFallback<Record<string, unknown>>(
         '/api/data',
-        { default: 'data' },
-        { retries: 2 }
+        { default: 'data' }
       );
       setData(result);
       logger.info('Data fetched with fallback', { hasFallback: true });

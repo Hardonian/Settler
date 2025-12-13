@@ -119,13 +119,11 @@ For production self-hosting, see the [Self-Hosting Guide](enterprise/SELF_HOSTIN
 
 Settler uses usage-based billing with metered usage tracking:
 
-- **Free Tier**: 100 recon comparisons/month, 1 concurrent job, 100 API requests/minute
-- **Starter**: $99/month - 10,000 recon comparisons/month, 5 concurrent jobs
-- **Pro**: $499/month - 100,000 recon comparisons/month, 20 concurrent jobs
-- **Business**: $1,999/month - 1,000,000 recon comparisons/month, 100 concurrent jobs
+- **Free Tier**: 1,000 reconciliations/month, 100 receipt parses/month, 100k feature flag evaluations/month
+- **Commercial**: $99/month - 100,000 reconciliations/month, 10,000 receipt parses/month, 1M feature flag evaluations/month
 - **Enterprise**: Custom pricing with unlimited usage and SLA guarantees
 
-Usage is tracked for reconciliation operations, receipt parsing, API requests, and storage. See [docs/billing.md](docs/billing.md) for detailed pricing information.
+Usage is tracked for reconciliation operations, receipt parsing, and feature flag evaluations. See [docs/billing.md](docs/billing.md) for detailed pricing information.
 
 ## Documentation
 

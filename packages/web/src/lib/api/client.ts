@@ -1,182 +1,211 @@
 /**
- * Defensive API Client
+ * API Client with Resilience
  * 
- * Wraps fetch with retries, timeouts, error handling, and telemetry.
+ * Provides a resilient API client with retries, timeouts, circuit breakers,
+ * and user-friendly error handling
  */
 
-import { logger } from '../logging/logger';
-import { diagnostics } from '../diagnostics';
-import { analytics } from '../analytics';
+import { withResilience, ResilienceConfig } from '@/lib/resilience';
+import { getErrorMessage, isRetryableError } from '@/lib/ux/error-messages';
+import { toast } from '@/lib/ux/toast';
 
-export interface FetchOptions extends RequestInit {
+export interface ApiClientConfig {
+  baseUrl: string;
   timeout?: number;
-  retries?: number;
-  retryDelay?: number;
-  retryOn?: number[]; // HTTP status codes to retry on
-  onRetry?: (attempt: number, error: Error) => void;
+  retry?: {
+    maxAttempts?: number;
+    initialDelay?: number;
+  };
+  circuitBreaker?: {
+    serviceName: string;
+  };
+  onError?: (error: unknown) => void;
+  showToastOnError?: boolean;
 }
 
-const DEFAULT_TIMEOUT = 10000; // 10 seconds
-const DEFAULT_RETRIES = 3;
-const DEFAULT_RETRY_DELAY = 1000; // 1 second
-const DEFAULT_RETRY_ON = [408, 429, 500, 502, 503, 504];
+export class ApiClient {
+  private config: Required<Omit<ApiClientConfig, 'circuitBreaker' | 'onError'>> & {
+    circuitBreaker?: ApiClientConfig['circuitBreaker'];
+    onError?: ApiClientConfig['onError'];
+  };
 
-/**
- * Fetch with timeout
- */
-function fetchWithTimeout(url: string, options: FetchOptions = {}): Promise<Response> {
-  const timeout = options.timeout || DEFAULT_TIMEOUT;
-  
-  return new Promise((resolve, reject) => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-      reject(new Error(`Request timeout after ${timeout}ms`));
-    }, timeout);
+  constructor(config: ApiClientConfig) {
+    this.config = {
+      timeout: 30000,
+      retry: {
+        maxAttempts: 3,
+        initialDelay: 1000,
+      },
+      showToastOnError: true,
+      ...config,
+      baseUrl: config.baseUrl.replace(/\/$/, ''), // Remove trailing slash
+    };
+  }
 
-    fetch(url, {
+  /**
+   * Make GET request
+   */
+  async get<T>(path: string, options?: RequestInit): Promise<T> {
+    return this.request<T>(path, { ...options, method: 'GET' });
+  }
+
+  /**
+   * Make POST request
+   */
+  async post<T>(path: string, body?: unknown, options?: RequestInit): Promise<T> {
+    return this.request<T>(path, {
       ...options,
-      signal: controller.signal,
-    })
-      .then((response) => {
-        clearTimeout(timeoutId);
-        resolve(response);
-      })
-      .catch((error) => {
-        clearTimeout(timeoutId);
-        reject(error);
-      });
-  });
-}
+      method: 'POST',
+      body: body ? JSON.stringify(body) : undefined,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+    });
+  }
 
-/**
- * Exponential backoff delay
- */
-function getRetryDelay(attempt: number, baseDelay: number): number {
-  return baseDelay * Math.pow(2, attempt);
-}
+  /**
+   * Make PUT request
+   */
+  async put<T>(path: string, body?: unknown, options?: RequestInit): Promise<T> {
+    return this.request<T>(path, {
+      ...options,
+      method: 'PUT',
+      body: body ? JSON.stringify(body) : undefined,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+    });
+  }
 
-/**
- * Defensive fetch with retries and error handling
- */
-export async function defensiveFetch(
-  url: string,
-  options: FetchOptions = {}
-): Promise<Response> {
-  const startTime = Date.now();
-  const retries = options.retries ?? DEFAULT_RETRIES;
-  const retryDelay = options.retryDelay ?? DEFAULT_RETRY_DELAY;
-  const retryOn = options.retryOn ?? DEFAULT_RETRY_ON;
-  
-  let lastError: Error | null = null;
+  /**
+   * Make DELETE request
+   */
+  async delete<T>(path: string, options?: RequestInit): Promise<T> {
+    return this.request<T>(path, { ...options, method: 'DELETE' });
+  }
 
-  for (let attempt = 0; attempt <= retries; attempt++) {
+  /**
+   * Make request with resilience
+   */
+  private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
+    const url = `${this.config.baseUrl}${path}`;
+    
+    const resilienceConfig: ResilienceConfig<T> = {
+      timeout: this.config.timeout,
+      retry: {
+        maxAttempts: this.config.retry.maxAttempts,
+        initialDelay: this.config.retry.initialDelay,
+      },
+      circuitBreaker: this.config.circuitBreaker ? {
+        serviceName: this.config.circuitBreaker.serviceName,
+      } : undefined,
+    };
+
     try {
-      const response = await fetchWithTimeout(url, options);
-      const duration = Date.now() - startTime;
+      const response = await withResilience(
+        async () => {
+          const response = await fetch(url, {
+            ...options,
+            headers: {
+              ...options.headers,
+            },
+          });
 
-      // Track slow responses
-      if (duration > 1000) {
-        diagnostics.trackSlowResponse(url, duration);
-      }
+          if (!response.ok) {
+            const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
+            (error as Error & { status: number }).status = response.status;
+            throw error;
+          }
 
-      // Track successful request
-      if (process.env.NODE_ENV === 'development') {
-        logger.debug(`API request: ${url}`, {
-          status: response.status,
-          duration,
-          attempt,
-        });
-      }
-
-      // If response is not ok and we should retry
-      if (!response.ok && retryOn.includes(response.status) && attempt < retries) {
-        const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
-        options.onRetry?.(attempt + 1, error);
-        
-        await new Promise((resolve) =>
-          setTimeout(resolve, getRetryDelay(attempt, retryDelay))
-        );
-        continue;
-      }
+          return response.json() as Promise<T>;
+        },
+        resilienceConfig
+      );
 
       return response;
     } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error));
-      const duration = Date.now() - startTime;
-
-      // Track fetch failure
-      diagnostics.trackFetchFailure(url, lastError, {
-        attempt,
-        duration,
-      });
-
-      // If we have retries left and error is retryable
-      if (attempt < retries && !(error instanceof DOMException && error.name === 'AbortError')) {
-        options.onRetry?.(attempt + 1, lastError);
-        
-        await new Promise((resolve) =>
-          setTimeout(resolve, getRetryDelay(attempt, retryDelay))
-        );
-        continue;
+      // Handle error
+      if (this.config.onError) {
+        this.config.onError(error);
       }
 
-      // Final attempt failed
-      logger.error(`API request failed after ${attempt + 1} attempts: ${url}`, lastError, {
-        duration,
-        attempt,
-      });
+      if (this.config.showToastOnError) {
+        const message = getErrorMessage(error);
+        if (isRetryableError(error)) {
+          toast.error(message, 10000); // Show retryable errors longer
+        } else {
+          toast.error(message);
+        }
+      }
 
-      throw lastError;
+      throw error;
     }
   }
-
-  throw lastError || new Error('Request failed');
 }
 
 /**
- * Fetch JSON with error handling
+ * Create API client instance
  */
-export async function fetchJSON<T = any>(
-  url: string,
-  options: FetchOptions = {}
-): Promise<T> {
-  const response = await defensiveFetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => 'Unknown error');
-    throw new Error(`HTTP ${response.status}: ${errorText}`);
-  }
-
-  try {
-    return await response.json();
-  } catch (error) {
-    logger.error(`Failed to parse JSON response from ${url}`, error instanceof Error ? error : new Error(String(error)));
-    throw new Error('Invalid JSON response');
-  }
+export function createApiClient(config: ApiClientConfig): ApiClient {
+  return new ApiClient(config);
 }
 
 /**
- * Fetch with fallback data
+ * Default API client (can be configured per route)
+ */
+export const apiClient = createApiClient({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || '/api',
+  timeout: 30000,
+  retry: {
+    maxAttempts: 3,
+    initialDelay: 1000,
+  },
+  showToastOnError: true,
+});
+
+/**
+ * Fetch JSON with resilience (convenience function)
+ */
+export async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
+  return apiClient.get<T>(url, options);
+}
+
+/**
+ * Fetch with fallback (convenience function)
  */
 export async function fetchWithFallback<T>(
   url: string,
-  fallback: T,
-  options: FetchOptions = {}
+  fallback: T | (() => T | Promise<T>),
+  options?: RequestInit
 ): Promise<T> {
   try {
-    return await fetchJSON<T>(url, options);
+    return await apiClient.get<T>(url, options);
   } catch (error) {
-    logger.warn(`Using fallback data for ${url}`, {
-      error: error instanceof Error ? error.message : String(error),
-    });
-    analytics.trackEvent('api_fallback_used', { url });
+    if (typeof fallback === 'function') {
+      return await (fallback as () => T | Promise<T>)();
+    }
     return fallback;
   }
 }
+
+/**
+ * Defensive fetch (convenience function with error handling)
+ */
+export async function defensiveFetch<T>(
+  url: string,
+  options?: RequestInit
+): Promise<T | null> {
+  try {
+    return await apiClient.get<T>(url, options);
+  } catch (error) {
+    console.error('[defensiveFetch] Failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Fetch options type (for compatibility)
+ */
+export type FetchOptions = RequestInit;

@@ -55,7 +55,7 @@ export default function IntegrationsPage() {
           integration_id: "stripe",
           name: "Stripe",
           description:
-            "Automatically match Stripe payments with Shopify orders, PayPal transactions, or bank deposits. Reconcile charges, refunds, and disputes with 99.7% accuracy. Set up in 5 minutes.",
+            "Automatically match Stripe payments with Shopify orders, PayPal transactions, or bank deposits. Reconcile charges, refunds, and disputes using deterministic matching algorithms. Set up in 5 minutes.",
           is_standard: true,
           is_purchased: true,
           is_connected: true,
@@ -79,7 +79,7 @@ export default function IntegrationsPage() {
           integration_id: "paypal",
           name: "PayPal",
           description:
-            "Reconcile PayPal transactions with e-commerce platforms, bank deposits, and accounting systems. Match payments, refunds, and fees automatically with 99.7% accuracy.",
+            "Reconcile PayPal transactions with e-commerce platforms, bank deposits, and accounting systems. Match payments, refunds, and fees automatically using deterministic matching algorithms.",
           is_standard: true,
           is_purchased: true,
           is_connected: false,

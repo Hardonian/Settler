@@ -23,6 +23,6 @@ export async function register(): Promise<void> {
   initWebVitals();
 
   // Initialize Sentry if enabled
-  const { sentry } = await import('@/lib/monitoring/sentry');
-  await sentry.init();
+  const { initSentry } = await import('@/lib/monitoring/sentry');
+  await initSentry();
 }
