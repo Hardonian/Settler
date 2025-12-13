@@ -66,6 +66,13 @@ const nextConfig = {
         ...originalResolve.alias,
         '@': require('path').resolve(__dirname, 'src'),
       },
+      extensions: [
+        ...(originalResolve.extensions || []),
+        '.ts',
+        '.tsx',
+        '.js',
+        '.jsx',
+      ],
     };
     return config;
   },
