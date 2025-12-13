@@ -83,8 +83,13 @@ export default function ReceiptsPlayground() {
     }
 
     setScanning(true);
+    const startTime = Date.now();
+    
     try {
-      // In a real implementation, this would call the actual API
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
       const res = await fetch('/api/v1/receipts', {
         method: 'POST',
         headers: {
@@ -94,13 +99,18 @@ export default function ReceiptsPlayground() {
           fileUrl: 'https://example.com/receipt.jpg',
           mimeType: 'image/jpeg',
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
       
       if (res.ok) {
-        const data = await res.json();
+        const data = await res.json() as ReceiptResult;
         setResult(data);
       } else {
-        // Fallback to demo data
+        const errorData = await res.json().catch(() => ({}));
+        // Show error but also provide demo data for UX
+        console.warn('Receipt parsing failed:', errorData);
         setResult({
           merchant: "Starbucks Coffee",
           date: "2023-11-24",
@@ -114,7 +124,13 @@ export default function ReceiptsPlayground() {
         });
       }
     } catch (error) {
-      // Fallback to demo data
+      // Handle timeout and network errors
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.error('Receipt parsing timed out');
+      } else {
+        console.error('Receipt parsing error:', error);
+      }
+      // Fallback to demo data for better UX
       setResult({
         merchant: "Starbucks Coffee",
         date: "2023-11-24",

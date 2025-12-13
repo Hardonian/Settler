@@ -65,23 +65,28 @@ export function FeatureGate({
   const upgradeLink = isUnauthenticated ? '/signup' : '/console/billing';
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn('relative', className)} role="region" aria-label={`Feature gate for ${feature}`}>
       {/* Blurred content preview */}
-      <div className="blur-sm pointer-events-none opacity-50">
+      <div className="blur-sm pointer-events-none opacity-50" aria-hidden="true">
         {children}
       </div>
 
       {/* Overlay with upgrade prompt */}
-      <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg">
+      <div 
+        className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg animate-in fade-in duration-300"
+        role="dialog"
+        aria-labelledby={`feature-gate-title-${feature}`}
+        aria-describedby={`feature-gate-desc-${feature}`}
+      >
         <Card className="max-w-md border-2 border-purple-200 dark:border-purple-800">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
               <Lock className="w-8 h-8 text-white" />
             </div>
-            <CardTitle className="text-xl">
+            <CardTitle id={`feature-gate-title-${feature}`} className="text-xl">
               {isUnauthenticated ? 'Sign In Required' : 'Upgrade to Unlock'}
             </CardTitle>
-            <CardDescription className="mt-2">
+            <CardDescription id={`feature-gate-desc-${feature}`} className="mt-2">
               {upgradeMessage || `This feature requires ${TIER_NAMES[requiredTier]}`}
             </CardDescription>
           </CardHeader>

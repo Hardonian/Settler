@@ -93,24 +93,59 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
       return;
     }
     
-    const saved = localStorage.getItem('settler-cli-history');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('settler-cli-history');
+      if (saved) {
         const parsed = JSON.parse(saved) as Array<Omit<RequestHistory, 'timestamp'> & { timestamp: string }>;
-        setHistory(parsed.map((h) => ({
-          ...h,
-          timestamp: new Date(h.timestamp),
-        })));
+        // Validate and filter invalid entries
+        const validHistory = parsed
+          .filter((h) => h.id && h.method && h.url && h.timestamp)
+          .map((h) => ({
+            ...h,
+            timestamp: new Date(h.timestamp),
+          }))
+          .filter((h) => !isNaN(h.timestamp.getTime())); // Filter invalid dates
+        
+        if (validHistory.length > 0) {
+          setHistory(validHistory);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load history from localStorage:', error);
+      // Clear corrupted data
+      try {
+        localStorage.removeItem('settler-cli-history');
       } catch {
-        // Ignore parse errors
+        // Ignore cleanup errors
       }
     }
   }, [canSaveHistory]);
 
   // Save history to localStorage
   const saveHistory = useCallback((newHistory: RequestHistory[]) => {
-    localStorage.setItem('settler-cli-history', JSON.stringify(newHistory));
-    setHistory(newHistory);
+    try {
+      // Limit history size to prevent localStorage bloat
+      const limitedHistory = newHistory.slice(0, 50);
+      localStorage.setItem('settler-cli-history', JSON.stringify(limitedHistory));
+      setHistory(limitedHistory);
+    } catch (error) {
+      // Handle quota exceeded or other storage errors
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        console.warn('localStorage quota exceeded, clearing old history');
+        try {
+          // Keep only most recent 10 items
+          const recentHistory = newHistory.slice(0, 10);
+          localStorage.setItem('settler-cli-history', JSON.stringify(recentHistory));
+          setHistory(recentHistory);
+        } catch {
+          // If still fails, clear history
+          localStorage.removeItem('settler-cli-history');
+          setHistory([]);
+        }
+      } else {
+        console.warn('Failed to save history:', error);
+      }
+    }
   }, []);
 
   const handleTemplateChange = useCallback((template: string) => {
@@ -124,7 +159,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     }
   }, []);
 
-  const handleRun = async () => {
+  const handleRun = async (retryCount = 0) => {
     // Check rate limits
     if (requestLimit !== -1 && requestCount >= requestLimit) {
       setError({
@@ -135,33 +170,95 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
       return;
     }
 
+    // Validate required fields
+    if (!url || url.trim().length === 0) {
+      setError({
+        message: 'URL is required',
+        code: 'VALIDATION_ERROR'
+      });
+      return;
+    }
+
+    if (!method) {
+      setError({
+        message: 'HTTP method is required',
+        code: 'VALIDATION_ERROR'
+      });
+      return;
+    }
+
     setIsRunning(true);
     setError(undefined);
     setResponse(undefined);
 
     const startTime = Date.now();
+    
+    // Validate and parse request body
+    let parsedBody: unknown;
+    try {
+      parsedBody = body && body.trim() ? JSON.parse(body) : undefined;
+    } catch (parseError) {
+      setError({
+        message: 'Invalid JSON in request body. Please check your syntax.',
+        code: 'INVALID_JSON'
+      });
+      setIsRunning(false);
+      return;
+    }
+
+    // Get actual API key from user's keys (if available)
+    let apiKey = 'rk_your_api_key';
+    try {
+      const keyRes = await fetch('/api/console/api-keys');
+      if (keyRes.ok) {
+        const keyData = await keyRes.json() as { keys?: Array<{ keyPrefix: string; revokedAt?: string | null }> };
+        const activeKey = keyData.keys?.find((k) => !k.revokedAt);
+        if (activeKey) {
+          // In production, would use full key from secure storage
+          apiKey = `rk_${activeKey.keyPrefix}...`;
+        }
+      }
+    } catch {
+      // Use default if can't fetch keys
+    }
+
+    // Validate URL format
+    if (!url || (!url.startsWith('/') && !url.startsWith('http'))) {
+      setError({
+        message: 'Invalid URL format. URLs must start with / or http://',
+        code: 'INVALID_URL'
+      });
+      setIsRunning(false);
+      return;
+    }
+
     const requestData: RequestResponseViewerProps['request'] = {
       method,
       url,
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': 'rk_your_api_key',
+        'X-API-Key': apiKey,
       },
-      body: body ? JSON.parse(body) : undefined,
+      body: parsedBody,
     };
 
     setRequest(requestData);
 
     try {
-      // In production, this would call the actual API
-      // For now, simulate API call
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
       const res = await fetch(url.startsWith('/') ? url : `/api${url}`, {
         method,
         headers: {
           'Content-Type': 'application/json',
         },
         body: method !== 'GET' && body ? body : undefined,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const duration = Date.now() - startTime;
       const responseData = await res.json().catch(() => ({}));
@@ -313,10 +410,11 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
 
               <div className="space-y-2">
                 <Button 
-                  onClick={handleRun} 
+                  onClick={() => handleRun(0)} 
                   disabled={isRunning || !url || (requestLimit !== -1 && requestCount >= requestLimit)}
                   className="w-full"
                   size="lg"
+                  aria-label="Execute API request"
                 >
                   {isRunning ? (
                     <>

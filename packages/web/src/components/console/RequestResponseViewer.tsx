@@ -134,15 +134,25 @@ export function RequestResponseViewer({
                   <div>
                     <p className="text-sm font-medium mb-2">Body:</p>
                     <div className="relative">
-                      <pre className="p-3 bg-slate-900 text-slate-100 rounded text-xs overflow-x-auto max-h-96">
+                      <pre 
+                        className="p-3 bg-slate-900 text-slate-100 rounded text-xs overflow-x-auto max-h-96 overflow-y-auto"
+                        role="log"
+                        aria-label="Request body"
+                      >
                         <code>{formatJSON(request.body)}</code>
                       </pre>
                       <CopyButton
                         text={formatJSON(request.body)}
                         className="absolute top-1 right-1"
                         size="sm"
+                        aria-label="Copy request body"
                       />
                     </div>
+                    {formatJSON(request.body).length > 10000 && (
+                      <p className="text-xs text-slate-500 mt-2">
+                        Large request ({formatJSON(request.body).length.toLocaleString()} characters)
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -193,15 +203,25 @@ export function RequestResponseViewer({
                   <div>
                     <p className="text-sm font-medium mb-2">Body:</p>
                     <div className="relative">
-                      <pre className="p-3 bg-slate-900 text-slate-100 rounded text-xs overflow-x-auto max-h-96">
+                      <pre 
+                        className="p-3 bg-slate-900 text-slate-100 rounded text-xs overflow-x-auto max-h-96 overflow-y-auto"
+                        role="log"
+                        aria-label="Response body"
+                      >
                         <code>{formatJSON(response.body)}</code>
                       </pre>
                       <CopyButton
                         text={formatJSON(response.body)}
                         className="absolute top-1 right-1"
                         size="sm"
+                        aria-label="Copy response body"
                       />
                     </div>
+                    {formatJSON(response.body).length > 10000 && (
+                      <p className="text-xs text-slate-500 mt-2">
+                        Large response ({formatJSON(response.body).length.toLocaleString()} characters)
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

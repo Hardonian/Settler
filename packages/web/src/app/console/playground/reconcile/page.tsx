@@ -74,12 +74,23 @@ export default function ReconcilePlayground() {
     setResponse(null);
     
     const startTime = Date.now();
-    let parsedConfig;
+    let parsedConfig: Record<string, unknown>;
     try {
+      if (!config || config.trim().length === 0) {
+        setError({
+          message: 'Configuration is required',
+          code: 'VALIDATION_ERROR'
+        });
+        setRunning(false);
+        return;
+      }
       parsedConfig = JSON.parse(config);
+      if (typeof parsedConfig !== 'object' || Array.isArray(parsedConfig)) {
+        throw new Error('Configuration must be a JSON object');
+      }
     } catch (err) {
       setError({
-        message: 'Invalid JSON configuration',
+        message: err instanceof Error ? err.message : 'Invalid JSON configuration. Please check your syntax.',
         code: 'INVALID_JSON'
       });
       setRunning(false);
@@ -98,33 +109,50 @@ export default function ReconcilePlayground() {
     setRequest(requestData);
 
     try {
-      // Simulate API call with progress updates
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout for reconciliation
+
       const res = await fetch('/api/v1/recon/jobs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: config,
+        signal: controller.signal,
       });
 
       const duration = Date.now() - startTime;
 
+      clearTimeout(timeoutId);
+
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         setError({
-          message: errorData.message || 'Failed to create reconciliation job',
+          message: (errorData as { message?: string }).message || `Failed to create reconciliation job (${res.status})`,
           code: String(res.status)
         });
         setResponse({
           status: res.status,
           statusText: res.statusText,
-          duration
+          duration: Date.now() - startTime
         });
         setRunning(false);
         return;
       }
 
-      const data = await res.json();
+      let data: { id?: string; jobId?: string };
+      try {
+        data = await res.json() as { id?: string; jobId?: string };
+      } catch (parseError) {
+        setError({
+          message: 'Failed to parse response',
+          code: 'PARSE_ERROR'
+        });
+        setRunning(false);
+        return;
+      }
+
       const newJobId = data.id || data.jobId || `job_${Date.now()}`;
       setJobId(newJobId);
 
@@ -160,13 +188,13 @@ export default function ReconcilePlayground() {
       }, 1000);
 
       // Simulate completion after 5 seconds
-      setTimeout(() => {
+      const completionTimeout = setTimeout(() => {
         clearInterval(progressInterval);
         clearInterval(logInterval);
         setProgress(100);
         setLogs((prev) => [...prev, 'Reconciliation completed successfully!']);
         
-        const finalResult = {
+        const finalResult: ReconciliationResult = {
           matched: Math.floor(Math.random() * 500) + 100,
           unmatched: Math.floor(Math.random() * 50),
           conflicts: Math.floor(Math.random() * 20),
@@ -188,10 +216,26 @@ export default function ReconcilePlayground() {
         setJobId(null);
         setRequestCount(prev => prev + 1);
       }, 5000);
+
+      // Cleanup on error
+      return () => {
+        clearTimeout(completionTimeout);
+        clearInterval(progressInterval);
+        clearInterval(logInterval);
+      };
     } catch (err) {
+      const duration = Date.now() - startTime;
+      const errorMessage = err instanceof Error 
+        ? (err.name === 'AbortError' ? 'Reconciliation timed out after 60 seconds' : err.message)
+        : 'Network error occurred';
+      
       setError({
-        message: err instanceof Error ? err.message : 'Network error',
-        code: 'NETWORK_ERROR'
+        message: errorMessage,
+        code: err instanceof Error && err.name === 'AbortError' ? 'TIMEOUT' : 'NETWORK_ERROR'
+      });
+      setResponse({
+        status: 0,
+        duration
       });
       setRunning(false);
     }

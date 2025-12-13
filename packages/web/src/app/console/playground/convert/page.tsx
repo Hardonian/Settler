@@ -54,8 +54,18 @@ export default function ConvertPlayground() {
     // Check rate limits
     if (requestLimit !== -1 && requestCount >= requestLimit) {
       setError({
-        message: `Daily request limit reached (${requestLimit}). Upgrade for more requests.`,
+        message: `Daily request limit reached (${requestLimit} requests). Upgrade to Pro for unlimited requests.`,
         code: 'RATE_LIMIT_EXCEEDED'
+      });
+      return;
+    }
+
+    // Validate input value
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue < 0) {
+      setError({
+        message: 'Please enter a valid positive number',
+        code: 'VALIDATION_ERROR'
       });
       return;
     }
@@ -80,8 +90,22 @@ export default function ConvertPlayground() {
     setRequest(requestData);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout for conversions
+
+      // Simulate API call with timeout
+      await Promise.race([
+        new Promise(resolve => setTimeout(resolve, 500)),
+        new Promise((_, reject) => {
+          timeoutId;
+          if (controller.signal.aborted) {
+            reject(new Error('Timeout'));
+          }
+        })
+      ]);
+
+      clearTimeout(timeoutId);
       
       const rate = conversionType === 'currency' 
         ? (from === 'USD' && to === 'EUR' ? 0.9250 : 
@@ -90,10 +114,10 @@ export default function ConvertPlayground() {
         : (fromUnit === 'meter' && toUnit === 'kilometer' ? 0.001 :
            fromUnit === 'kilometer' && toUnit === 'meter' ? 1000 : 1.0);
 
-      const convertedValue = parseFloat(value) * rate;
+      const convertedValue = numValue * rate;
       
-      const resultData = {
-        original: parseFloat(value),
+      const resultData: ConversionResult = {
+        original: numValue,
         converted: convertedValue,
         from: conversionType === 'currency' ? from : fromUnit,
         to: conversionType === 'currency' ? to : toUnit,
@@ -109,9 +133,12 @@ export default function ConvertPlayground() {
         duration: Date.now() - startTime
       });
     } catch (err) {
+      const errorMessage = err instanceof Error 
+        ? (err.name === 'AbortError' ? 'Conversion timed out' : err.message)
+        : 'Conversion failed';
       setError({
-        message: err instanceof Error ? err.message : 'Conversion failed',
-        code: 'CONVERSION_ERROR'
+        message: errorMessage,
+        code: err instanceof Error && err.name === 'AbortError' ? 'TIMEOUT' : 'CONVERSION_ERROR'
       });
     } finally {
       setIsRunning(false);

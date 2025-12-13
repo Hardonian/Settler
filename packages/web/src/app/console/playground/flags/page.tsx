@@ -54,8 +54,17 @@ export default function FlagsPlayground() {
     // Check rate limits
     if (requestLimit !== -1 && requestCount >= requestLimit) {
       setError({
-        message: `Daily request limit reached (${requestLimit}). Upgrade for more requests.`,
+        message: `Daily request limit reached (${requestLimit} requests). Upgrade to Pro for unlimited requests.`,
         code: 'RATE_LIMIT_EXCEEDED'
+      });
+      return;
+    }
+
+    // Validate flag key
+    if (!flagKey || flagKey.trim().length === 0) {
+      setError({
+        message: 'Flag key is required',
+        code: 'VALIDATION_ERROR'
       });
       return;
     }
@@ -65,12 +74,19 @@ export default function FlagsPlayground() {
     setError(null);
     setResponse(null);
 
-    let parsedContext;
+    let parsedContext: Record<string, unknown>;
     try {
-      parsedContext = JSON.parse(context);
+      if (!context || context.trim().length === 0) {
+        parsedContext = {};
+      } else {
+        parsedContext = JSON.parse(context);
+        if (typeof parsedContext !== 'object' || Array.isArray(parsedContext)) {
+          throw new Error('Context must be a JSON object');
+        }
+      }
     } catch (err) {
       setError({
-        message: 'Invalid JSON context',
+        message: err instanceof Error ? err.message : 'Invalid JSON context. Please provide a valid JSON object.',
         code: 'INVALID_JSON'
       });
       setIsRunning(false);
@@ -94,6 +110,10 @@ export default function FlagsPlayground() {
     setRequest(requestData);
 
     try {
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
       const res = await fetch('/api/v1/feature-flags/evaluate', {
         method: 'POST',
         headers: {
@@ -104,14 +124,32 @@ export default function FlagsPlayground() {
           environment,
           context: parsedContext
         }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
       const duration = Date.now() - startTime;
-      const data = await res.json();
+      
+      let data: FlagEvaluationResult;
+      try {
+        data = await res.json() as FlagEvaluationResult;
+      } catch (parseError) {
+        setError({
+          message: 'Failed to parse response',
+          code: 'PARSE_ERROR'
+        });
+        setResponse({
+          status: res.status,
+          statusText: res.statusText,
+          duration
+        });
+        setIsRunning(false);
+        return;
+      }
 
       if (!res.ok) {
         setError({
-          message: data.message || 'Failed to evaluate flag',
+          message: (data as { message?: string }).message || `Failed to evaluate flag (${res.status})`,
           code: String(res.status)
         });
         setResponse({
@@ -131,21 +169,33 @@ export default function FlagsPlayground() {
         duration
       });
     } catch (err) {
-      // Fallback to demo result
-      const demoResult = {
-        flag: flagKey,
-        enabled: Math.random() > 0.5,
-        variant: "v2_blue",
-        reason: "matched_target_group",
-        value: true
-      };
-      setResult(demoResult);
-      setResponse({
-        status: 200,
-        statusText: 'OK',
-        body: demoResult,
-        duration: Date.now() - startTime
-      });
+      const duration = Date.now() - startTime;
+      if (err instanceof Error && err.name === 'AbortError') {
+        setError({
+          message: 'Request timed out after 30 seconds',
+          code: 'TIMEOUT'
+        });
+        setResponse({
+          status: 0,
+          duration
+        });
+      } else {
+        // Fallback to demo result for better UX
+        const demoResult: FlagEvaluationResult = {
+          flag: flagKey,
+          enabled: Math.random() > 0.5,
+          variant: "v2_blue",
+          reason: "matched_target_group",
+          value: true
+        };
+        setResult(demoResult);
+        setResponse({
+          status: 200,
+          statusText: 'OK',
+          body: demoResult,
+          duration
+        });
+      }
     } finally {
       setIsRunning(false);
       setRequestCount(prev => prev + 1);

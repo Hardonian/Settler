@@ -165,8 +165,11 @@ export function CodeEditor({
       {/* Editor */}
       <div className="relative" style={{ height }}>
         {showLineNumbers && (
-          <div className="absolute left-0 top-0 bottom-0 w-12 bg-slate-950 border-r border-slate-700 text-right text-xs text-slate-500 py-3 font-mono">
-            {Array.from({ length: lineCount }, (_, i) => (
+          <div 
+            className="absolute left-0 top-0 bottom-0 w-12 bg-slate-950 border-r border-slate-700 text-right text-xs text-slate-500 py-3 font-mono select-none"
+            aria-hidden="true"
+          >
+            {Array.from({ length: Math.max(lineCount, 1) }, (_, i) => (
               <div key={i} className="px-2">
                 {i + 1}
               </div>
@@ -176,11 +179,37 @@ export function CodeEditor({
         <textarea
           ref={textareaRef}
           value={value}
-          onChange={(e) => onChange?.(e.target.value)}
+          onChange={(e) => {
+            onChange?.(e.target.value);
+            // Auto-validate JSON if language is JSON
+            if (language === 'json' && e.target.value.trim()) {
+              try {
+                JSON.parse(e.target.value);
+                // Valid JSON - could add visual indicator
+              } catch {
+                // Invalid JSON - could add visual indicator
+              }
+            }
+          }}
+          onKeyDown={(e) => {
+            // Handle Tab key for indentation
+            if (e.key === 'Tab' && !readOnly) {
+              e.preventDefault();
+              const textarea = e.currentTarget;
+              const start = textarea.selectionStart;
+              const end = textarea.selectionEnd;
+              const newValue = value.substring(0, start) + '  ' + value.substring(end);
+              onChange?.(newValue);
+              // Restore cursor position
+              setTimeout(() => {
+                textarea.selectionStart = textarea.selectionEnd = start + 2;
+              }, 0);
+            }
+          }}
           readOnly={readOnly}
           placeholder={placeholder}
           className={cn(
-            'w-full h-full bg-transparent text-slate-100 font-mono text-sm p-4 resize-none focus:outline-none',
+            'w-full h-full bg-transparent text-slate-100 font-mono text-sm p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900',
             showLineNumbers && 'pl-16',
             readOnly && 'cursor-default'
           )}
@@ -189,6 +218,8 @@ export function CodeEditor({
             lineHeight: '1.5',
           }}
           spellCheck={false}
+          aria-label={`Code editor for ${language}`}
+          aria-readonly={readOnly}
         />
       </div>
     </div>
