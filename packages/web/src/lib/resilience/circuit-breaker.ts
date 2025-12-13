@@ -57,7 +57,14 @@ export class CircuitBreaker {
     this.updateState();
 
     if (this.metrics.state === CircuitState.OPEN) {
-      throw new CircuitBreakerOpenError('Circuit breaker is open');
+      const error = new CircuitBreakerOpenError('Circuit breaker is open');
+      // Don't increment failure count for open circuit (already failed)
+      throw error;
+    }
+
+    // Increment half-open calls if in half-open state
+    if (this.metrics.state === CircuitState.HALF_OPEN) {
+      this.metrics.halfOpenCalls++;
     }
 
     try {

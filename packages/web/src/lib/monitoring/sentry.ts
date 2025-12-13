@@ -48,11 +48,13 @@ class SentryClient {
         
         // Performance monitoring
         integrations: [
-          new Sentry.BrowserTracing(),
-          new Sentry.Replay({
+          // BrowserTracing and Replay may not be available in all Sentry versions
+          // Use optional chaining or check if they exist
+          ...(typeof Sentry.BrowserTracing !== 'undefined' ? [new Sentry.BrowserTracing()] : []),
+          ...(typeof Sentry.Replay !== 'undefined' ? [new Sentry.Replay({
             maskAllText: true,
             blockAllMedia: true,
-          }),
+          })] : []),
         ],
         
         // Error filtering
@@ -144,8 +146,14 @@ class SentryClient {
 
     try {
       import('@sentry/nextjs').then((Sentry) => {
+        // Sentry.SeverityLevel may vary by version, use string literal
+        const severityMap: Record<string, 'debug' | 'info' | 'warning' | 'error' | 'fatal'> = {
+          info: 'info',
+          warning: 'warning',
+          error: 'error',
+        };
         Sentry.captureMessage(message, {
-          level: level as Sentry.SeverityLevel,
+          level: severityMap[level] || 'info',
           extra: context,
         });
       });
