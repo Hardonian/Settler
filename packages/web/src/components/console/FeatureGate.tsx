@@ -150,7 +150,7 @@ interface UsageLimitProps {
   className?: string;
 }
 
-export function UsageLimit({ current, limit, label, tier, className }: UsageLimitProps): JSX.Element {
+export function UsageLimit({ current, limit, label, tier: _tier, className }: UsageLimitProps): JSX.Element {
   const isUnlimited = limit === -1;
   const percentage = isUnlimited ? 0 : Math.min((current / limit) * 100, 100);
   const isNearLimit = !isUnlimited && percentage >= 80;
