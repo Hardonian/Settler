@@ -22,10 +22,10 @@ node_modules/
 # Documentation
 *.md
 !README.md
-docs/
-business/
-marketing/
-strategic/
+/docs/
+/business/
+/marketing/
+/strategic/
 
 # Test files
 tests/
