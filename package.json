@@ -46,6 +46,8 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",
+    "migrations:auto": "tsx scripts/auto-run-migrations.ts",
+    "migrations:check": "tsx scripts/auto-run-migrations.ts --check-only",
     "postinstall": "test -f scripts/vercel-prisma-postinstall.js && node scripts/vercel-prisma-postinstall.js || echo 'Skipping postinstall: script not found (expected in Vercel builds)'",
     "verify:build": "test -f scripts/verify-build-setup.sh && bash scripts/verify-build-setup.sh || echo '⚠️  Build verification script not available'",
     "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '⚠️  Turbo setup script not available'"

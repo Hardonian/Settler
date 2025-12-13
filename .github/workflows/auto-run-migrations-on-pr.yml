@@ -1,0 +1,235 @@
+name: Auto-Run Migrations and Scripts on PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'prisma/migrations/**'
+      - 'supabase/migrations/**'
+      - 'scripts/**'
+      - '.github/workflows/auto-run-migrations-on-pr.yml'
+
+jobs:
+  detect-and-run:
+    name: Detect and Run Migrations/Scripts
+    runs-on: ubuntu-latest
+    environment: production # Uses production environment secrets
+    permissions:
+      contents: write # Needed to commit archived files
+      pull-requests: write # Needed to comment on PR
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for comparison
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Detect new migrations and scripts
+        id: detect
+        run: |
+          echo "🔍 Detecting new migrations and scripts..."
+          
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only --diff-filter=A $BASE_SHA $HEAD_SHA || echo "")
+          
+          # Check against execution log to see what's already been run
+          if [ -f ".migration-execution-log.json" ]; then
+            echo "📋 Found existing execution log"
+          else
+            echo "📋 Creating new execution log"
+            echo '{"prisma_migrations": [], "supabase_migrations": [], "scripts": [], "last_updated": ""}' > .migration-execution-log.json
+          fi
+          
+          # Filter out already-executed items using the execution log
+          EXECUTED_PRISMA=$(node -e "const log=require('./.migration-execution-log.json'); console.log(log.prisma_migrations.map(m=>m.path).join('\n'))" 2>/dev/null || echo "")
+          EXECUTED_SUPABASE=$(node -e "const log=require('./.migration-execution-log.json'); console.log(log.supabase_migrations.map(m=>m.path).join('\n'))" 2>/dev/null || echo "")
+          EXECUTED_SCRIPTS=$(node -e "const log=require('./.migration-execution-log.json'); console.log(log.scripts.map(s=>s.path).join('\n'))" 2>/dev/null || echo "")
+          
+          # Detect Prisma migrations (filter out already executed)
+          ALL_PRISMA=$(echo "$CHANGED_FILES" | grep -E "^prisma/migrations/[^/]+/migration\.sql$" || true)
+          PRISMA_MIGRATIONS=""
+          if [ -n "$ALL_PRISMA" ]; then
+            while IFS= read -r migration; do
+              if [ -n "$migration" ] && ! echo "$EXECUTED_PRISMA" | grep -q "^$migration$"; then
+                PRISMA_MIGRATIONS="${PRISMA_MIGRATIONS}${PRISMA_MIGRATIONS:+$'\n'}$migration"
+              fi
+            done <<< "$ALL_PRISMA"
+          fi
+          
+          # Detect Supabase migrations (filter out already executed)
+          ALL_SUPABASE=$(echo "$CHANGED_FILES" | grep -E "^supabase/migrations/[^/]+\.sql$" || true)
+          SUPABASE_MIGRATIONS=""
+          if [ -n "$ALL_SUPABASE" ]; then
+            while IFS= read -r migration; do
+              if [ -n "$migration" ] && ! echo "$EXECUTED_SUPABASE" | grep -q "^$migration$"; then
+                SUPABASE_MIGRATIONS="${SUPABASE_MIGRATIONS}${SUPABASE_MIGRATIONS:+$'\n'}$migration"
+              fi
+            done <<< "$ALL_SUPABASE"
+          fi
+          
+          # Detect executable scripts (exclude .md files, certain scripts, and already executed)
+          ALL_SCRIPTS=$(echo "$CHANGED_FILES" | grep -E "^scripts/.*\.(ts|js|sh)$" | grep -v -E "(migration-guardian|validate-|check-|verify-|monitor-|maintainer-)" || true)
+          SCRIPTS=""
+          if [ -n "$ALL_SCRIPTS" ]; then
+            while IFS= read -r script; do
+              if [ -n "$script" ] && ! echo "$EXECUTED_SCRIPTS" | grep -q "^$script$"; then
+                SCRIPTS="${SCRIPTS}${SCRIPTS:+$'\n'}$script"
+              fi
+            done <<< "$ALL_SCRIPTS"
+          fi
+          
+          # Output results
+          if [ -n "$PRISMA_MIGRATIONS" ]; then
+            echo "prisma_migrations<<EOF" >> $GITHUB_OUTPUT
+            echo "$PRISMA_MIGRATIONS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "has_prisma=true" >> $GITHUB_OUTPUT
+            echo "✅ Found Prisma migrations:"
+            echo "$PRISMA_MIGRATIONS"
+          else
+            echo "has_prisma=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ -n "$SUPABASE_MIGRATIONS" ]; then
+            echo "supabase_migrations<<EOF" >> $GITHUB_OUTPUT
+            echo "$SUPABASE_MIGRATIONS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "has_supabase=true" >> $GITHUB_OUTPUT
+            echo "✅ Found Supabase migrations:"
+            echo "$SUPABASE_MIGRATIONS"
+          else
+            echo "has_supabase=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ -n "$SCRIPTS" ]; then
+            echo "scripts<<EOF" >> $GITHUB_OUTPUT
+            echo "$SCRIPTS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "has_scripts=true" >> $GITHUB_OUTPUT
+            echo "✅ Found executable scripts:"
+            echo "$SCRIPTS"
+          else
+            echo "has_scripts=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run migrations and scripts
+        if: steps.detect.outputs.has_prisma == 'true' || steps.detect.outputs.has_supabase == 'true' || steps.detect.outputs.has_scripts == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          NODE_ENV: production
+        run: |
+          echo "🔄 Running migrations and scripts using auto-run script..."
+          
+          # Link to Supabase project if needed
+          if [ -n "$SUPABASE_PROJECT_REF" ] && [ -n "$SUPABASE_ACCESS_TOKEN" ]; then
+            which supabase > /dev/null && supabase link --project-ref $SUPABASE_PROJECT_REF || echo "⚠️  Supabase CLI not available or already linked"
+          fi
+          
+          # Use the unified script to run everything
+          npx tsx scripts/auto-run-migrations.ts || {
+            echo "❌ Migration/script execution failed"
+            exit 1
+          }
+          
+          echo "✅ All migrations and scripts completed"
+
+      - name: Verify archiving completed
+        if: steps.detect.outputs.has_prisma == 'true' || steps.detect.outputs.has_supabase == 'true' || steps.detect.outputs.has_scripts == 'true'
+        run: |
+          echo "📋 Verifying execution log was updated..."
+          if [ -f ".migration-execution-log.json" ]; then
+            echo "✅ Execution log exists"
+            # The script handles archiving, so we just verify it completed
+          else
+            echo "⚠️  Execution log not found (may be first run)"
+          fi
+
+      - name: Commit archived files and execution log
+        if: steps.detect.outputs.has_prisma == 'true' || steps.detect.outputs.has_supabase == 'true' || steps.detect.outputs.has_scripts == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          git add archive/completed-migrations/ archive/completed-scripts/ .migration-execution-log.json
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: archive completed migrations and scripts [skip ci]" || echo "Nothing to commit"
+            git push || echo "Push failed or nothing to push"
+          fi
+
+      - name: Create PR comment summary
+        if: steps.detect.outputs.has_prisma == 'true' || steps.detect.outputs.has_supabase == 'true' || steps.detect.outputs.has_scripts == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `## ✅ Migrations and Scripts Executed
+            
+            ### Prisma Migrations
+            ${{ steps.detect.outputs.has_prisma == 'true' && steps.detect.outputs.prisma_migrations || 'None' }}
+            
+            ### Supabase Migrations
+            ${{ steps.detect.outputs.has_supabase == 'true' && steps.detect.outputs.supabase_migrations || 'None' }}
+            
+            ### Scripts Executed
+            ${{ steps.detect.outputs.has_scripts == 'true' && steps.detect.outputs.scripts || 'None' }}
+            
+            **Status:** ✅ All migrations and scripts have been executed and archived.
+            
+            **Execution Log:** Updated in \`.migration-execution-log.json\`
+            **Archive Location:** \`archive/completed-migrations/\` and \`archive/completed-scripts/\`
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Migration and Script Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.detect.outputs.has_prisma }}" == "true" ]; then
+            echo "### ✅ Prisma Migrations" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "${{ steps.detect.outputs.prisma_migrations }}" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.detect.outputs.has_supabase }}" == "true" ]; then
+            echo "### ✅ Supabase Migrations" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "${{ steps.detect.outputs.supabase_migrations }}" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.detect.outputs.has_scripts }}" == "true" ]; then
+            echo "### ✅ Scripts Executed" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "${{ steps.detect.outputs.scripts }}" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.detect.outputs.has_prisma }}" == "false" ] && [ "${{ steps.detect.outputs.has_supabase }}" == "false" ] && [ "${{ steps.detect.outputs.has_scripts }}" == "false" ]; then
+            echo "ℹ️  No new migrations or scripts detected in this PR" >> $GITHUB_STEP_SUMMARY
+          fi

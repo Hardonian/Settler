@@ -14,3 +14,23 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
+src/services/predictive/predictive-ops.ts(207,14): error TS2345: Argument of type '(r: { completedAt: Date; startedAt: Date; }) => number' is not assignable to parameter of type '(value: { status: string; id: string; createdAt: Date; updatedAt: Date; metadata: JsonValue; tenantId: string; executionId: string | null; summary: JsonValue; ... 19 more ...; errorStack: string | null; }, index: number, array: { ...; }[]) => number'.
+  Types of parameters 'r' and 'value' are incompatible.
+    Type '{ status: string; id: string; createdAt: Date; updatedAt: Date; metadata: JsonValue; tenantId: string; executionId: string | null; summary: JsonValue; currency: string | null; ... 18 more ...; errorStack: string | null; }' is not assignable to type '{ completedAt: Date; startedAt: Date; }'.
+      Types of property 'completedAt' are incompatible.
+        Type 'Date | null' is not assignable to type 'Date'.
+          Type 'null' is not assignable to type 'Date'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /workspace/packages/api
+npm error workspace @settler/api@1.0.0
+npm error location /workspace/packages/api
+npm error command failed
+npm error command sh -c tsc --noEmit
+npm error Lifecycle script `build` failed with error:
+npm error code 2
+npm error path /workspace/packages/api
+npm error workspace @settler/api@1.0.0
+npm error location /workspace/packages/api
+npm error command failed
+npm error command sh -c npm run typecheck
