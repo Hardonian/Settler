@@ -246,6 +246,13 @@ async function ConsoleOverviewContent() {
   const receiptsCalls = (usageSummary.byService as Record<string, number>)['settler-receipts'] || 0;
   const flagsCalls = (usageSummary.byService as Record<string, number>)['settler-feature-flags'] || 0;
 
+  // Format numbers with proper formatting
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
+
   // Log successful page load
   const duration = Date.now() - startTime;
   console.log('[Console] Page loaded successfully', {
@@ -283,10 +290,10 @@ async function ConsoleOverviewContent() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
             <CardDescription>Total API Calls</CardDescription>
-            <CardTitle className="text-3xl">{usageSummary.totalCalls.toLocaleString()}</CardTitle>
+            <CardTitle className="text-3xl">{formatNumber(usageSummary.totalCalls)}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
@@ -296,13 +303,13 @@ async function ConsoleOverviewContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
             <CardDescription>API Keys</CardDescription>
             <CardTitle className="text-3xl">{apiKeys.length}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="w-full">
               <Link href="/console/api-keys">
                 Manage Keys <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
@@ -310,13 +317,13 @@ async function ConsoleOverviewContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
             <CardDescription>Receipts Parsed</CardDescription>
-            <CardTitle className="text-3xl">{receipts.length}</CardTitle>
+            <CardTitle className="text-3xl">{formatNumber(receipts.length)}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="w-full">
               <Link href="/console/receipts">
                 View Receipts <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
@@ -324,13 +331,13 @@ async function ConsoleOverviewContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
             <CardDescription>Feature Flags</CardDescription>
             <CardTitle className="text-3xl">{flags.length}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="w-full">
               <Link href="/console/feature-flags">
                 Manage Flags <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
@@ -353,26 +360,26 @@ async function ConsoleOverviewContent() {
                   <div className="w-3 h-3 rounded-full bg-blue-500" />
                   <span className="font-medium">Reconcile API</span>
                 </div>
-                <span className="text-slate-600 dark:text-slate-400 font-mono">
-                  {reconcileCalls.toLocaleString()} calls
+                <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
+                  {formatNumber(reconcileCalls)} calls
                 </span>
               </div>
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                   <span className="font-medium">Receipts API</span>
                 </div>
-                <span className="text-slate-600 dark:text-slate-400 font-mono">
-                  {receiptsCalls.toLocaleString()} calls
+                <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
+                  {formatNumber(receiptsCalls)} calls
                 </span>
               </div>
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-purple-500" />
                   <span className="font-medium">Feature Flags API</span>
                 </div>
-                <span className="text-slate-600 dark:text-slate-400 font-mono">
-                  {flagsCalls.toLocaleString()} calls
+                <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
+                  {formatNumber(flagsCalls)} calls
                 </span>
               </div>
             </div>
