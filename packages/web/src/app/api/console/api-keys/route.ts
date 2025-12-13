@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       name: body.name,
       scopes: body.scopes,
       expiresAt: body.expiresAt ? new Date(body.expiresAt) : undefined,
-    });
+    } as CreateApiKeyInput);
 
     return NextResponse.json(result);
   } catch (error) {

@@ -169,16 +169,16 @@ export async function createApiKey(
   const { key, prefix } = generateApiKey();
   const keyHash = await hashApiKey(key);
   
-  // Get user's tenant_id from auth metadata or users table
+  // Get user's tenant_id from billing account
   // RLS will enforce tenant isolation, but we need tenant_id for the insert
   let tenantId: string | null = null;
   try {
-    const { data: userData } = await supabase
-      .from('users')
-      .select('tenant_id')
-      .eq('id', queryUserId)
-      .single();
-    tenantId = userData?.tenant_id || null;
+    const { prisma } = await import('@/shared/db/prismaClient');
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: { userId: queryUserId },
+      select: { tenantId: true },
+    });
+    tenantId = billingAccount?.tenantId || null;
   } catch (error) {
     console.warn('[createApiKey] Could not fetch tenant_id, RLS will handle isolation');
   }

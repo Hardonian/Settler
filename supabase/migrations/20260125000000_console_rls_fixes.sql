@@ -25,6 +25,26 @@ END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
 -- ============================================================================
+-- HELPER FUNCTION: Get current tenant ID (if not already exists)
+-- ============================================================================
+
+CREATE OR REPLACE FUNCTION current_tenant_id() RETURNS UUID AS $$
+DECLARE
+  v_tenant_id UUID;
+BEGIN
+  -- Try to get tenant_id from app setting (set by middleware)
+  BEGIN
+    v_tenant_id := current_setting('app.current_tenant_id', true)::UUID;
+  EXCEPTION
+    WHEN OTHERS THEN
+      NULL;
+  END;
+  
+  RETURN v_tenant_id;
+END;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+-- ============================================================================
 -- FIX API_KEYS RLS POLICIES
 -- ============================================================================
 
