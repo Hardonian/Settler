@@ -87,6 +87,7 @@ export async function recordIdempotency(
 ): Promise<void> {
   try {
     const responseJson = response ? (typeof response === 'string' ? JSON.parse(response) : response) : null;
+    const expiresAt = new Date(Date.now() + IDEMPOTENCY_TTL);
     
     await prisma.idempotencyKey.upsert({
       where: { key },
@@ -95,6 +96,7 @@ export async function recordIdempotency(
         status,
         response: responseJson as any,
         completedAt: status !== 'pending' ? new Date() : null,
+        expiresAt,
       },
       update: {
         status,

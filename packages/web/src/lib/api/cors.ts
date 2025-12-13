@@ -41,7 +41,7 @@ export function getCorsHeaders(
   options: CorsOptions = {}
 ): Record<string, string> {
   const allowedOrigins = options.origin || ALLOWED_ORIGINS;
-  const originHeader = (origin && allowedOrigins.includes(origin) ? origin : allowedOrigins[0]) || allowedOrigins[0];
+  const originHeader = (origin && allowedOrigins.includes(origin) ? origin : allowedOrigins[0]) || allowedOrigins[0] || '*';
 
   return {
     'Access-Control-Allow-Origin': originHeader,

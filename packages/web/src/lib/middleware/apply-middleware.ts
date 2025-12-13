@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { withRateLimit, getRateLimitTypeForRoute } from './rate-limit-wrapper';
+import { withRateLimit } from './rate-limit-wrapper';
 import { addCorsHeaders, handleCors } from '@/lib/api/cors';
 import { withCircuitBreaker } from '@/lib/resilience/circuit-breaker';
 import { withIdempotency } from '@/lib/api/idempotency';
