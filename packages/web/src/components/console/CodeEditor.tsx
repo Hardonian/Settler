@@ -25,37 +25,8 @@ interface CodeEditorProps {
   className?: string;
 }
 
-// Syntax highlighting function - reserved for future use if needed
-// Currently using plain textarea for better performance
+// Note: Syntax highlighting is currently disabled for better performance
 // In production, consider using a library like Prism.js or highlight.js for advanced highlighting
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _syntaxHighlight = (_code: string, _language: string): string => {
-  // Simple syntax highlighting using regex
-  if (_language === 'json') {
-    return _code
-      .replace(/"([^"]+)":/g, '<span class="text-blue-400">"$1":</span>')
-      .replace(/: "([^"]+)"/g, ': <span class="text-green-400">"$1"</span>')
-      .replace(/: (\d+)/g, ': <span class="text-yellow-400">$1</span>')
-      .replace(/: (true|false|null)/g, ': <span class="text-purple-400">$1</span>');
-  }
-  
-  if (_language === 'javascript' || _language === 'typescript') {
-    return _code
-      .replace(/(const|let|var|function|async|await|return|if|else|for|while|import|from|export)/g, '<span class="text-purple-400">$1</span>')
-      .replace(/("([^"]+)"|'([^']+)')/g, '<span class="text-green-400">$1</span>')
-      .replace(/(\/\/.*$)/gm, '<span class="text-slate-500">$1</span>')
-      .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="text-slate-500">$1</span>');
-  }
-  
-  if (_language === 'bash') {
-    return _code
-      .replace(/(curl|wget|echo|export|set)/g, '<span class="text-blue-400">$1</span>')
-      .replace(/(-[a-zA-Z]+|--[a-z-]+)/g, '<span class="text-yellow-400">$1</span>')
-      .replace(/("([^"]+)"|'([^']+)')/g, '<span class="text-green-400">$1</span>');
-  }
-  
-  return _code;
-};
 
 export function CodeEditor({
   value,
