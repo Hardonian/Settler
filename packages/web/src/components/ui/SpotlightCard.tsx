@@ -1,9 +1,9 @@
 'use client';
 
-import { useRef, useState, MouseEvent } from 'react';
+import { useRef, useState, MouseEvent, KeyboardEvent } from 'react';
 import { cn } from '@/lib/utils';
 
-interface SpotlightCardProps {
+interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
@@ -19,6 +19,9 @@ export function SpotlightCard({
   spotlightColor = 'rgba(6, 182, 212, 0.3)',
   spotlightSize = 300,
   borderColor = 'rgba(168, 85, 247, 0.5)',
+  onClick,
+  onKeyDown,
+  ...rest
 }: SpotlightCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -43,6 +46,20 @@ export function SpotlightCard({
     });
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (onKeyDown) {
+      onKeyDown(e);
+    } else if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      // Create a synthetic mouse event for keyboard activation
+      const syntheticEvent = {
+        ...e,
+        type: 'click',
+      } as React.MouseEvent<HTMLDivElement>;
+      onClick(syntheticEvent);
+    }
+  };
+
   return (
     <div
       ref={cardRef}
@@ -55,10 +72,13 @@ export function SpotlightCard({
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
       style={{
-        cursor: 'pointer',
+        cursor: onClick ? 'pointer' : 'default',
         ...style,
       }}
+      {...rest}
     >
       {/* Spotlight effect */}
       <div
