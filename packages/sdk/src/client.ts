@@ -5,6 +5,7 @@ import { AdaptersClient } from "./clients/adapters";
 import { ReceiptsClient } from "./clients/receipts";
 import { FlagsClient } from "./clients/flags";
 import { ConvertClient } from "./clients/convert";
+import { ConsoleClient } from "./clients/console";
 import {
   parseError,
   NetworkError,
@@ -77,6 +78,7 @@ export class SettlerClient {
   public readonly receipts: ReceiptsClient;
   public readonly flags: FlagsClient;
   public readonly convert: ConvertClient;
+  public readonly console: ConsoleClient;
 
   private readonly apiKey: string;
   private readonly baseUrl: string;
@@ -128,6 +130,7 @@ export class SettlerClient {
     this.receipts = new ReceiptsClient(this);
     this.flags = new FlagsClient(this);
     this.convert = new ConvertClient(this);
+    this.console = new ConsoleClient(this);
   }
 
   /**
@@ -217,18 +220,28 @@ export class SettlerClient {
     }
 
     // Get authentication header
+    // Support both Bearer token (for session auth) and X-API-Key (for API key auth)
     let authHeader: string;
+    let useBearer = false;
+    
     if (this.tokenManager) {
       const token = await this.tokenManager.getToken();
-      authHeader = `Bearer ${token}`;
-    } else {
+      authHeader = token;
+      useBearer = true;
+    } else if (this.apiKey.startsWith('rk_')) {
+      // API key format
       authHeader = this.apiKey;
+      useBearer = false;
+    } else {
+      // Assume Bearer token
+      authHeader = this.apiKey;
+      useBearer = true;
     }
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      ...(this.tokenManager
-        ? { Authorization: authHeader }
+      ...(useBearer
+        ? { Authorization: `Bearer ${authHeader}` }
         : { "X-API-Key": authHeader }),
       ...context.headers,
     };

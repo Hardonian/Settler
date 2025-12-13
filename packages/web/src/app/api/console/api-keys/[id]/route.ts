@@ -1,23 +1,28 @@
 /**
  * Console API Keys API Route - Delete/Revoke
+ * 
+ * Supports both session auth (Console UI) and API key auth (SDK/CLI)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { requireAuth } from '@/lib/api/unified-auth';
 import { revokeApiKey } from '@/domain/console/apiKeys';
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase admin client
+export const runtime = 'nodejs';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: RouteParams
 ) {
   try {
+    // Authenticate using unified auth (session or API key)
+    await requireAuth(request);
+    
     const { id } = await params;
     await revokeApiKey(id);
 
