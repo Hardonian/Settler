@@ -21,67 +21,73 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 async function ConsoleOverviewContent() {
-  // Environment safety check
-  const requiredEnvVars = [
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-  ];
-  const missingEnvVars = requiredEnvVars.filter(
-    (key) => !process.env[key]
-  );
-  
-  if (missingEnvVars.length > 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-slate-600 dark:text-slate-400 mb-4">
-          Configuration issue: Missing environment variables. Please contact support.
-        </p>
-        <Button asChild>
-          <Link href="/">Go Home</Link>
-        </Button>
-      </div>
-    );
-  }
-
-  let user;
   try {
-    const supabase = await createClient();
-    const authResult = await supabase.auth.getUser();
-    user = authResult.data?.user;
+    // Environment safety check
+    const requiredEnvVars = [
+      'NEXT_PUBLIC_SUPABASE_URL',
+      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    ];
+    const missingEnvVars = requiredEnvVars.filter(
+      (key) => !process.env[key]
+    );
     
-    if (authResult.error) {
-      console.error('[Console] Auth error:', authResult.error);
+    if (missingEnvVars.length > 0) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-slate-600 dark:text-slate-400 mb-4">
+            Configuration issue: Missing environment variables. Please contact support.
+          </p>
+          <Button asChild>
+            <Link href="/">Go Home</Link>
+          </Button>
+        </div>
+      );
     }
-  } catch (error) {
-    console.error('[Console] Failed to get user:', error);
-    return (
-      <div className="text-center py-12">
-        <p className="text-slate-600 dark:text-slate-400 mb-4">
-          Unable to verify authentication. Please try signing in again.
-        </p>
-        <Button asChild>
-          <Link href="/signup">Sign In</Link>
-        </Button>
-      </div>
-    );
-  }
 
-  if (!user) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-slate-600 dark:text-slate-400 mb-4">
-          Please sign in to access the Developer Console.
-        </p>
-        <Button asChild>
-          <Link href="/signup">Sign In</Link>
-        </Button>
-      </div>
-    );
-  }
+    let user;
+    try {
+      const supabase = await createClient();
+      const authResult = await supabase.auth.getUser();
+      user = authResult.data?.user;
+      
+      if (authResult.error) {
+        console.error('[Console] Auth error:', authResult.error);
+      }
+    } catch (error) {
+      console.error('[Console] Failed to get user:', error);
+      return (
+        <div className="text-center py-12">
+          <p className="text-slate-600 dark:text-slate-400 mb-4">
+            Unable to verify authentication. Please try signing in again.
+          </p>
+          <Button asChild>
+            <Link href="/signup">Sign In</Link>
+          </Button>
+        </div>
+      );
+    }
+
+    if (!user) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-slate-600 dark:text-slate-400 mb-4">
+            Please sign in to access the Developer Console.
+          </p>
+          <Button asChild>
+            <Link href="/signup">Sign In</Link>
+          </Button>
+        </div>
+      );
+    }
 
   // Get billing account with error handling
   let billingAccount;
   try {
+    // Check if Prisma is available and database is accessible
+    if (!prisma || typeof prisma.billingAccount === 'undefined') {
+      throw new Error('Prisma client not properly initialized');
+    }
+    
     billingAccount = await prisma.billingAccount.findFirst({
       where: { userId: user.id },
     });
@@ -108,6 +114,11 @@ async function ConsoleOverviewContent() {
   if (!billingAccount) {
     // Create billing account automatically if missing (graceful degradation)
     try {
+      // Check if Prisma is available before attempting to create
+      if (!prisma || typeof prisma.billingAccount === 'undefined') {
+        throw new Error('Prisma client not properly initialized');
+      }
+      
       billingAccount = await prisma.billingAccount.create({
         data: {
           userId: user.id,
@@ -117,23 +128,14 @@ async function ConsoleOverviewContent() {
       });
     } catch (createError) {
       console.error('[Console] Failed to create billing account:', createError);
-      return (
-        <div className="text-center py-12">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
-            No billing account found. Please set up your account.
-          </p>
-          <div className="flex gap-2 justify-center">
-            <Button asChild>
-              <Link href="/pricing">View Pricing</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/">Go Home</Link>
-            </Button>
-          </div>
-        </div>
-      );
+      // Don't crash - continue with null billingAccount and handle gracefully below
+      // The domain functions will handle missing billingAccount gracefully
     }
   }
+  
+  // If we still don't have a billing account, use a fallback ID for queries
+  // This allows the page to render even if billing account creation failed
+  const billingAccountId = billingAccount?.id || user.id;
 
   // Fetch overview data with comprehensive error handling
   let apiKeys: Awaited<ReturnType<typeof listApiKeys>> = [];
@@ -149,14 +151,32 @@ async function ConsoleOverviewContent() {
 
   try {
     const [apiKeysResult, receiptsResult, flagsResult, usageSummaryResult] = await Promise.allSettled([
-      listApiKeys(user.id),
-      listReceipts(billingAccount.id, 5),
-      listFeatureFlags(billingAccount.id),
+      listApiKeys(user.id).catch((err) => {
+        console.error('[Console] listApiKeys error:', err);
+        return [];
+      }),
+      listReceipts(billingAccountId, 5).catch((err) => {
+        console.error('[Console] listReceipts error:', err);
+        return [];
+      }),
+      listFeatureFlags(billingAccountId).catch((err) => {
+        console.error('[Console] listFeatureFlags error:', err);
+        return [];
+      }),
       getUsageSummary(
-        billingAccount.id,
+        billingAccountId,
         new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
         new Date()
-      ),
+      ).catch((err) => {
+        console.error('[Console] getUsageSummary error:', err);
+        return {
+          totalCalls: 0,
+          byService: {},
+          byOperation: {},
+          errorRate: 0,
+          period: { start: new Date(), end: new Date() },
+        };
+      }),
     ]);
 
     if (apiKeysResult.status === 'fulfilled') {
@@ -356,6 +376,25 @@ async function ConsoleOverviewContent() {
       </Card>
     </div>
   );
+  } catch (error) {
+    // Top-level error boundary - catch any unhandled errors
+    console.error('[Console] Unhandled error:', error);
+    return (
+      <div className="text-center py-12">
+        <p className="text-slate-600 dark:text-slate-400 mb-4">
+          An unexpected error occurred. Please try again or contact support.
+        </p>
+        <div className="flex gap-2 justify-center">
+          <Button asChild>
+            <Link href="/">Go Home</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/signup">Sign In</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default function ConsoleOverviewPage() {
