@@ -17,6 +17,9 @@ import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 
 // Dynamic imports for heavy components
+// Note: Marketing components use relative paths instead of @/ alias to avoid TypeScript
+// module resolution issues with barrel exports (index.ts) in subdirectories when using
+// moduleResolution: "bundler". Direct file imports ensure reliable resolution.
 const TrustBadges = dynamic(() => import("@/components/TrustBadges").then(mod => ({ default: mod.TrustBadges })), { ssr: true });
 const CustomerLogos = dynamic(() => import("@/components/CustomerLogos").then(mod => ({ default: mod.CustomerLogos })), { ssr: true });
 const SocialProof = dynamic(() => import("@/components/SocialProof").then(mod => ({ default: mod.SocialProof })), { ssr: false });

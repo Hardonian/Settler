@@ -16,6 +16,8 @@ import { AnimatedFAQ } from "@/components/AnimatedFAQ";
 import { FAQSchema } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
+// Marketing components use relative paths to avoid TypeScript module resolution issues
+// with barrel exports in subdirectories (see page.tsx for details)
 const ROICalculator = dynamic(() => import("../components/marketing/ROICalculator").then(mod => ({ default: mod.ROICalculator })), { ssr: true });
 const ComparisonTable = dynamic(() => import("../components/marketing/ComparisonTable").then(mod => ({ default: mod.ComparisonTable })), { ssr: true });
 const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("../components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
