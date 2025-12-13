@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RequestResponseViewer, type RequestResponseViewerProps } from '@/components/console/RequestResponseViewer';
 import { UsageLimit } from '@/components/console/FeatureGate';
-import { Badge } from '@/components/ui/badge';
 import { Calculator, ArrowRight, Play, Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -72,8 +71,8 @@ export default function ConvertPlayground() {
 
     setIsRunning(true);
     setResult(null);
-    setError(null);
-    setResponse(null);
+    setError(undefined);
+    setResponse(undefined);
 
     const startTime = Date.now();
     const requestData = {

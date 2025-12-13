@@ -8,7 +8,7 @@ import { CodeEditor } from '@/components/console/CodeEditor';
 import { RequestResponseViewer, type RequestResponseViewerProps } from '@/components/console/RequestResponseViewer';
 import { UsageLimit } from '@/components/console/FeatureGate';
 import { Badge } from '@/components/ui/badge';
-import { Flag, Play, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { Flag, Play, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const defaultContext = JSON.stringify({
@@ -71,8 +71,8 @@ export default function FlagsPlayground() {
 
     setIsRunning(true);
     setResult(null);
-    setError(null);
-    setResponse(null);
+    setError(undefined);
+    setResponse(undefined);
 
     let parsedContext: Record<string, unknown>;
     try {

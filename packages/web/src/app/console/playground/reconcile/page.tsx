@@ -7,7 +7,6 @@ import { CodeEditor } from '@/components/console/CodeEditor';
 import { RequestResponseViewer, type RequestResponseViewerProps } from '@/components/console/RequestResponseViewer';
 import { UsageLimit } from '@/components/console/FeatureGate';
 import { RefreshCw, Play, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 const defaultConfig = JSON.stringify({
@@ -36,7 +35,7 @@ export default function ReconcilePlayground() {
   const [result, setResult] = useState<ReconciliationResult | null>(null);
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
-  const [jobId, setJobId] = useState<string | null>(null);
+  const [, setJobId] = useState<string | null>(null);
   const [config, setConfig] = useState(defaultConfig);
   const [request, setRequest] = useState<RequestResponseViewerProps['request']>();
   const [response, setResponse] = useState<RequestResponseViewerProps['response']>();
@@ -56,7 +55,7 @@ export default function ReconcilePlayground() {
                        subscriptionTier === 'free' ? 50 : 
                        subscriptionTier === 'pro' ? 500 : -1;
 
-  const startRecon = async () => {
+  const startRecon = async (): Promise<void> => {
     // Check rate limits
     if (requestLimit !== -1 && requestCount >= requestLimit) {
       setError({
@@ -70,8 +69,8 @@ export default function ReconcilePlayground() {
     setResult(null);
     setProgress(0);
     setLogs([]);
-    setError(null);
-    setResponse(null);
+    setError(undefined);
+    setResponse(undefined);
     
     const startTime = Date.now();
     let parsedConfig: Record<string, unknown>;
@@ -121,8 +120,6 @@ export default function ReconcilePlayground() {
         body: config,
         signal: controller.signal,
       });
-
-      const duration = Date.now() - startTime;
 
       clearTimeout(timeoutId);
 
@@ -182,7 +179,10 @@ export default function ReconcilePlayground() {
       let logIndex = 0;
       const logInterval = setInterval(() => {
         if (logIndex < logMessages.length) {
-          setLogs((prev) => [...prev, logMessages[logIndex]]);
+          setLogs((prev) => {
+            const nextLog = logMessages[logIndex];
+            return nextLog ? [...prev, nextLog] : prev;
+          });
           logIndex++;
         }
       }, 1000);

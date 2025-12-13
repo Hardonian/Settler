@@ -9,7 +9,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CopyButton } from '@/components/ui/CopyButton';
 import { CheckCircle2, XCircle, Clock, Code, FileText } from 'lucide-react';
@@ -139,7 +138,7 @@ export function RequestResponseViewer({
                         role="log"
                         aria-label="Request body"
                       >
-                        <code>{formatJSON(request.body)}</code>
+                        <code>{String(formatJSON(request.body))}</code>
                       </pre>
                       <CopyButton
                         text={formatJSON(request.body)}
@@ -208,7 +207,7 @@ export function RequestResponseViewer({
                         role="log"
                         aria-label="Response body"
                       >
-                        <code>{formatJSON(response.body)}</code>
+                        <code>{String(formatJSON(response.body))}</code>
                       </pre>
                       <CopyButton
                         text={formatJSON(response.body)}

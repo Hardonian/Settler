@@ -8,7 +8,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,9 +15,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { CodeEditor } from './CodeEditor';
 import { RequestResponseViewer, type RequestResponseViewerProps } from './RequestResponseViewer';
-import { FeatureGate, UsageLimit, type SubscriptionTier } from './FeatureGate';
+import { FeatureGate, UsageLimit } from './FeatureGate';
 import { Terminal, Play, History, Trash2, Loader2, Sparkles, ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 interface RequestHistory {
@@ -81,8 +79,6 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
   
   // Feature flags based on tier
   const canSaveHistory = subscriptionTier !== 'unauthenticated';
-  const canUseCustomTemplates = subscriptionTier === 'pro' || subscriptionTier === 'enterprise';
-  const canUseAdvancedFeatures = subscriptionTier === 'pro' || subscriptionTier === 'enterprise';
   const requestLimit = subscriptionTier === 'unauthenticated' ? 10 : 
                        subscriptionTier === 'free' ? 50 : 
                        subscriptionTier === 'pro' ? 500 : -1; // -1 = unlimited
@@ -159,7 +155,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     }
   }, []);
 
-  const handleRun = async (retryCount = 0) => {
+  const handleRun = async (_retryCount = 0) => {
     // Check rate limits
     if (requestLimit !== -1 && requestCount >= requestLimit) {
       setError({

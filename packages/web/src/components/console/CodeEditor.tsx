@@ -10,7 +10,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Copy, Check, Download, Play, Loader2 } from 'lucide-react';
-import { CopyButton } from '@/components/ui/CopyButton';
 import { cn } from '@/lib/utils';
 
 interface CodeEditorProps {
@@ -29,7 +28,8 @@ interface CodeEditorProps {
 // Syntax highlighting function - reserved for future use if needed
 // Currently using plain textarea for better performance
 // In production, consider using a library like Prism.js or highlight.js for advanced highlighting
-const _syntaxHighlight = (code: string, language: string): string => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _syntaxHighlight = (_code: string, _language: string): string => {
   // Simple syntax highlighting using regex
   if (language === 'json') {
     return code

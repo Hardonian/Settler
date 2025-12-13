@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CopyButton } from '@/components/ui/CopyButton';
-import { FeatureGate, UsageLimit } from '@/components/console/FeatureGate';
+import { UsageLimit } from '@/components/console/FeatureGate';
 import { Code, Terminal } from 'lucide-react';
 import Link from 'next/link';
 
@@ -83,7 +83,6 @@ export default function ReceiptsPlayground() {
     }
 
     setScanning(true);
-    const startTime = Date.now();
     
     try {
       // Create abort controller for timeout

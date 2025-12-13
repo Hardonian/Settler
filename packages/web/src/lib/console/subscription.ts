@@ -112,13 +112,14 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
       };
     }
 
-    // Determine tier from plan code
-    const planCode = subscription.planCode || 'free';
+    // Determine tier from planId
+    const planId = subscription.planId?.toLowerCase() || 'base';
+    
     let tier: SubscriptionTier = 'free';
     
-    if (planCode.includes('enterprise') || planCode.includes('custom')) {
+    if (planId.includes('enterprise') || planId.includes('custom')) {
       tier = 'enterprise';
-    } else if (planCode.includes('pro') || planCode.includes('paid')) {
+    } else if (planId.includes('pro') || planId.includes('paid')) {
       tier = 'pro';
     } else {
       tier = 'free';
@@ -126,7 +127,7 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
 
     return {
       tier,
-      planCode: subscription.planCode || undefined,
+      planCode: planId !== 'base' ? planId : undefined,
       status: subscription.status || undefined,
       features: TIER_FEATURES[tier],
     };
@@ -145,7 +146,8 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
  */
 export async function hasFeatureAccess(feature: keyof SubscriptionInfo['features']): Promise<boolean> {
   const info = await getSubscriptionInfo();
-  return info.features[feature];
+  const featureValue = info.features[feature];
+  return typeof featureValue === 'boolean' ? featureValue : false;
 }
 
 /**
