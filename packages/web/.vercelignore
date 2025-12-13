@@ -1,0 +1,33 @@
+# Vercel ignore file
+# Files that don't need to be deployed
+
+# Image source files (keep WebP versions)
+public/brand/*.jpg
+public/brand/*.png
+!public/brand/*.webp
+
+# Development files
+*.log
+.DS_Store
+.env.local
+.env*.local
+
+# Build artifacts (handled by Vercel)
+.next
+out
+dist
+
+# Test files
+**/__tests__/**
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Documentation
+README-IMAGES.md
+docs/
+
+# Scripts (not needed in production)
+scripts/convert-images-to-webp.mjs
+scripts/optimize-images.sh

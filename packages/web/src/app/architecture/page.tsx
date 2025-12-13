@@ -8,6 +8,7 @@ import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
 import { ZoomIn } from 'lucide-react';
+import { brandImages, getBrandImage, getBrandImageAlt, getBrandImageDimensions } from '@/lib/images';
 
 const Lightbox = dynamic(() => import("@/components/marketing/Lightbox").then(mod => ({ default: mod.Lightbox })), { ssr: false });
 const SafeImage = dynamic(() => import("@/components/marketing/SafeImage").then(mod => ({ default: mod.SafeImage })), { ssr: true });
@@ -51,8 +52,9 @@ export default function ArchitecturePage() {
           >
             <div className="relative aspect-video">
               <SafeImage
-                src="/brand/architecture.png"
-                alt="Settler architecture diagram showing API gateway, services layer (Reconciliation, Receipts, Feature Flags), and distributed data store"
+                src={getBrandImage('architecture')}
+                fallbackSrc={brandImages.architecture.fallback}
+                alt={getBrandImageAlt('architecture')}
                 fill
                 className="object-contain bg-slate-50 dark:bg-slate-900"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
@@ -69,8 +71,9 @@ export default function ArchitecturePage() {
           <Lightbox
             isOpen={lightboxOpen}
             onClose={() => setLightboxOpen(false)}
-            src="/brand/architecture.png"
-            alt="Settler architecture diagram showing API gateway, services layer (Reconciliation, Receipts, Feature Flags), and distributed data store"
+            src={getBrandImage('architecture')}
+            fallbackSrc={brandImages.architecture.fallback}
+            alt={getBrandImageAlt('architecture')}
             title="Settler Architecture"
             description="Event-sourced reconciliation engine with edge-optimized API gateway and distributed data store"
           />

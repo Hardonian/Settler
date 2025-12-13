@@ -16,6 +16,7 @@ import { FAQSchema } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ZoomIn } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import { brandImages, getBrandImage, getBrandImageAlt } from "@/lib/images";
 
 const Lightbox = dynamic(() => import("@/components/marketing/Lightbox").then(mod => ({ default: mod.Lightbox })), { ssr: false });
 const SafeImage = dynamic(() => import("@/components/marketing/SafeImage").then(mod => ({ default: mod.SafeImage })), { ssr: true });
@@ -165,8 +166,8 @@ export default function Pricing() {
               className="p-0 overflow-hidden cursor-pointer hover:shadow-xl transition-all group"
               onClick={() => {
                 setLightboxImage({
-                  src: '/brand/architecture.png',
-                  alt: 'Settler architecture diagram',
+                  src: getBrandImage('architecture'),
+                  alt: getBrandImageAlt('architecture'),
                   title: 'Architecture Overview',
                 });
                 setLightboxOpen(true);
@@ -177,8 +178,8 @@ export default function Pricing() {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   setLightboxImage({
-                    src: '/brand/architecture.png',
-                    alt: 'Settler architecture diagram',
+                    src: getBrandImage('architecture'),
+                    alt: getBrandImageAlt('architecture'),
                     title: 'Architecture Overview',
                   });
                   setLightboxOpen(true);
@@ -187,7 +188,8 @@ export default function Pricing() {
             >
               <div className="relative aspect-video">
                 <SafeImage
-                  src="/brand/architecture.png"
+                  src={getBrandImage('architecture')}
+                  fallbackSrc={brandImages.architecture.fallback}
                   alt="Architecture diagram thumbnail"
                   fill
                   className="object-cover"
@@ -209,8 +211,8 @@ export default function Pricing() {
               className="p-0 overflow-hidden cursor-pointer hover:shadow-xl transition-all group"
               onClick={() => {
                 setLightboxImage({
-                  src: '/brand/workflow.jpg',
-                  alt: 'Settler workflow diagram',
+                  src: getBrandImage('workflow'),
+                  alt: getBrandImageAlt('workflow'),
                   title: 'Workflow Process',
                 });
                 setLightboxOpen(true);
@@ -221,8 +223,8 @@ export default function Pricing() {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   setLightboxImage({
-                    src: '/brand/workflow.jpg',
-                    alt: 'Settler workflow diagram',
+                    src: getBrandImage('workflow'),
+                    alt: getBrandImageAlt('workflow'),
                     title: 'Workflow Process',
                   });
                   setLightboxOpen(true);
@@ -231,7 +233,8 @@ export default function Pricing() {
             >
               <div className="relative aspect-video">
                 <SafeImage
-                  src="/brand/workflow.jpg"
+                  src={getBrandImage('workflow')}
+                  fallbackSrc={brandImages.workflow.fallback}
                   alt="Workflow diagram thumbnail"
                   fill
                   className="object-cover"
@@ -261,6 +264,13 @@ export default function Pricing() {
             src={lightboxImage.src}
             alt={lightboxImage.alt}
             title={lightboxImage.title}
+            fallbackSrc={
+              lightboxImage.src.includes('architecture')
+                ? brandImages.architecture.fallback
+                : lightboxImage.src.includes('workflow')
+                ? brandImages.workflow.fallback
+                : undefined
+            }
           />
         )}
       </section>

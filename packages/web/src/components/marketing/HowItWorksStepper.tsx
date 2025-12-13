@@ -17,6 +17,7 @@ interface HowItWorksStepperProps {
   steps: Step[];
   workflowImageSrc: string;
   workflowImageAlt: string;
+  workflowImageFallback?: string;
   className?: string;
 }
 
@@ -28,6 +29,7 @@ export function HowItWorksStepper({
   steps,
   workflowImageSrc,
   workflowImageAlt,
+  workflowImageFallback,
   className,
 }: HowItWorksStepperProps) {
   const [activeStep, setActiveStep] = useState(0);
@@ -112,6 +114,7 @@ export function HowItWorksStepper({
           <SafeImage
             src={workflowImageSrc}
             alt={workflowImageAlt}
+            fallbackSrc={workflowImageFallback}
             fill
             className="object-contain"
             sizes="(max-width: 1024px) 100vw, 50vw"

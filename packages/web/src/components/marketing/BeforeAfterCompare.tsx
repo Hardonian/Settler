@@ -8,6 +8,7 @@ import { SafeImage } from './SafeImage';
 interface BeforeAfterCompareProps {
   imageSrc: string;
   imageAlt: string;
+  fallbackSrc?: string;
   beforeLabel?: string;
   afterLabel?: string;
   className?: string;
@@ -21,6 +22,7 @@ interface BeforeAfterCompareProps {
 export function BeforeAfterCompare({
   imageSrc,
   imageAlt,
+  fallbackSrc,
   beforeLabel = 'Before',
   afterLabel = 'After',
   className,
@@ -88,6 +90,7 @@ export function BeforeAfterCompare({
       <div className="absolute inset-0">
         <SafeImage
           src={imageSrc}
+          fallbackSrc={fallbackSrc}
           alt={`${imageAlt} - ${afterLabel}`}
           fill
           className="object-cover"
@@ -102,6 +105,7 @@ export function BeforeAfterCompare({
       >
         <SafeImage
           src={imageSrc}
+          fallbackSrc={fallbackSrc}
           alt={`${imageAlt} - ${beforeLabel}`}
           fill
           className="object-cover brightness-90 contrast-110"

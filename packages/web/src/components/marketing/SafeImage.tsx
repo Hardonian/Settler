@@ -1,30 +1,25 @@
 'use client';
 
-import Image from 'next/image';
+import Image, { type ImageProps } from 'next/image';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
-interface SafeImageProps {
+interface SafeImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   src: string;
   alt: string;
-  width?: number;
-  height?: number;
-  fill?: boolean;
-  priority?: boolean;
-  className?: string;
-  sizes?: string;
-  placeholder?: 'blur' | 'empty';
-  blurDataURL?: string;
+  fallbackSrc?: string;
   onError?: () => void;
 }
 
 /**
  * SafeImage component that gracefully handles image loading errors
- * Falls back to a styled placeholder if image fails to load
+ * Falls back to a styled placeholder or fallback image if image fails to load
+ * Optimized for Next.js Image component with WebP support
  */
 export function SafeImage({
   src,
   alt,
+  fallbackSrc,
   width,
   height,
   fill = false,
@@ -34,14 +29,23 @@ export function SafeImage({
   placeholder = 'empty',
   blurDataURL,
   onError,
+  ...rest
 }: SafeImageProps) {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentSrc, setCurrentSrc] = useState(src);
 
   const handleError = () => {
-    setHasError(true);
-    setIsLoading(false);
-    onError?.();
+    if (fallbackSrc && currentSrc !== fallbackSrc) {
+      // Try fallback image
+      setCurrentSrc(fallbackSrc);
+      setIsLoading(true);
+    } else {
+      // No fallback or fallback also failed
+      setHasError(true);
+      setIsLoading(false);
+      onError?.();
+    }
   };
 
   const handleLoad = () => {
@@ -70,7 +74,7 @@ export function SafeImage({
 
   const imageProps = fill
     ? {
-        fill: true,
+        fill: true as const,
         sizes: sizes || '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
       }
     : {
@@ -89,7 +93,7 @@ export function SafeImage({
       style={!fill && width && height ? { width, height } : undefined}
     >
       <Image
-        src={src}
+        src={currentSrc}
         alt={alt}
         {...imageProps}
         priority={priority}
@@ -99,10 +103,10 @@ export function SafeImage({
         onLoad={handleLoad}
         className={cn(
           'transition-opacity duration-300',
-          isLoading ? 'opacity-0' : 'opacity-100',
-          className
+          isLoading ? 'opacity-0' : 'opacity-100'
         )}
         sizes={sizes}
+        {...rest}
       />
     </div>
   );

@@ -15,6 +15,7 @@ import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
 import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, ZoomIn } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
+import { brandImages, getBrandImage, getBrandImageAlt, getBrandImageDimensions } from "@/lib/images";
 
 // Dynamic imports for heavy components
 const TrustBadges = dynamic(() => import("@/components/TrustBadges").then(mod => ({ default: mod.TrustBadges })), { ssr: true });
@@ -37,6 +38,22 @@ export default function Home() {
   useEffect(() => {
     analytics.trackPageView('/', {
       title: 'Settler - The API Infrastructure for Financial Evidence',
+    });
+  }, []);
+
+  // Preload critical images
+  useEffect(() => {
+    const preloadImages = [
+      getBrandImage('hero'),
+      getBrandImage('logo'),
+    ];
+    
+    preloadImages.forEach((src) => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = src;
+      document.head.appendChild(link);
     });
   }, []);
 
@@ -192,8 +209,9 @@ if (flag.value) { /* ... */ }`;
                 <div className="relative">
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 shadow-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 p-2">
                     <SafeImage
-                      src="/brand/hero.jpg"
-                      alt="Settler API infrastructure visualization showing reconciliation, receipts parsing, and feature flags"
+                      src={getBrandImage('hero')}
+                      fallbackSrc={brandImages.hero.fallback}
+                      alt={getBrandImageAlt('hero')}
                       fill
                       className="object-cover rounded-xl"
                       sizes="(max-width: 1024px) 100vw, 50vw"
@@ -345,8 +363,9 @@ if (flag.value) { /* ... */ }`;
                   ],
                 },
               ]}
-              workflowImageSrc="/brand/workflow.jpg"
-              workflowImageAlt="Settler workflow diagram showing the 4-step reconciliation process"
+              workflowImageSrc={getBrandImage('workflow')}
+              workflowImageAlt={getBrandImageAlt('workflow')}
+              workflowImageFallback={brandImages.workflow.fallback}
             />
             <div className="text-center mt-12">
               <Button size="lg" asChild variant="outline">
@@ -380,10 +399,11 @@ if (flag.value) { /* ... */ }`;
                  aria-label="View architecture diagram in full screen"
                >
                  <SafeImage
-                   src="/brand/architecture.png"
-                   alt="Settler architecture diagram showing API gateway, services layer, and distributed data store"
-                   width={1200}
-                   height={600}
+                   src={getBrandImage('architecture')}
+                   fallbackSrc={brandImages.architecture.fallback}
+                   alt={getBrandImageAlt('architecture')}
+                   width={getBrandImageDimensions('architecture').width}
+                   height={getBrandImageDimensions('architecture').height}
                    className="object-contain"
                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
                  />
@@ -403,8 +423,9 @@ if (flag.value) { /* ... */ }`;
              <Lightbox
                isOpen={lightboxOpen}
                onClose={() => setLightboxOpen(false)}
-               src="/brand/architecture.png"
-               alt="Settler architecture diagram showing API gateway, services layer, and distributed data store"
+               src={getBrandImage('architecture')}
+               fallbackSrc={brandImages.architecture.fallback}
+               alt={getBrandImageAlt('architecture')}
                title="Settler Architecture"
                description="Event-sourced reconciliation engine with edge-optimized API gateway and distributed data store"
              />
@@ -424,12 +445,12 @@ if (flag.value) { /* ... */ }`;
             </div>
             <div className="max-w-5xl mx-auto mb-12">
               <BeforeAfterCompare
-                imageSrc="/brand/before-after.png"
-                imageAlt="Comparison of manual reconciliation vs automated Settler reconciliation"
+                imageSrc={getBrandImage('beforeAfter')}
+                imageAlt={getBrandImageAlt('beforeAfter')}
+                fallbackSrc={brandImages.beforeAfter.fallback}
                 beforeLabel="Manual Process"
                 afterLabel="With Settler"
               />
-            </div>
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div className="text-center">
                 <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">What Changes</h3>

@@ -13,13 +13,14 @@ interface LightboxProps {
   alt: string;
   title?: string;
   description?: string;
+  fallbackSrc?: string;
 }
 
 /**
  * Lightbox component for viewing images in full-screen modal
  * Supports keyboard navigation (ESC to close) and focus trapping
  */
-export function Lightbox({ isOpen, onClose, src, alt, title, description }: LightboxProps) {
+export function Lightbox({ isOpen, onClose, src, alt, title, description, fallbackSrc }: LightboxProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -118,6 +119,7 @@ export function Lightbox({ isOpen, onClose, src, alt, title, description }: Ligh
           <SafeImage
             src={src}
             alt={alt}
+            fallbackSrc={fallbackSrc}
             fill
             className="object-contain"
             sizes="100vw"

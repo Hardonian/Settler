@@ -25,6 +25,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { brandImages, getBrandImage, getBrandImageAlt } from "@/lib/images";
 
 const SafeImage = dynamic(() => import("@/components/marketing/SafeImage").then(mod => ({ default: mod.SafeImage })), { ssr: true });
 
@@ -274,7 +275,8 @@ export default function HowItWorksPage() {
                       {index === 0 ? (
                         <div className="aspect-video rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
                           <SafeImage
-                            src="/brand/workflow.jpg"
+                            src={getBrandImage('workflow')}
+                            fallbackSrc={brandImages.workflow.fallback}
                             alt={`Step ${step.number}: ${step.title} - Workflow visualization`}
                             fill
                             className="object-cover"
