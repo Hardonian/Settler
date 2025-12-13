@@ -45,8 +45,9 @@ export class NetSuiteAdapter implements Adapter {
    * Fetch transactions from NetSuite
    */
   async fetch(options: FetchOptions): Promise<NormalizedData[]> {
-    const startDate = options.dateRange.start.toISOString().split('T')[0];
-    const endDate = options.dateRange.end.toISOString().split('T')[0];
+    // Ensure dates are strings (toISOString().split('T')[0] always returns a string)
+    const startDate: string = options.dateRange.start.toISOString().split('T')[0]!;
+    const endDate: string = options.dateRange.end.toISOString().split('T')[0]!;
 
     // NetSuite RESTlet or SuiteScript 2.0 REST API
     // This is a simplified implementation - in production, use NetSuite's REST API
@@ -56,10 +57,9 @@ export class NetSuiteAdapter implements Adapter {
         // NetSuite uses OAuth 1.0 with Token-Based Authentication (TBA)
         // In production, implement proper OAuth 1.0 signing
         const url = `${this.baseUrl}/services/rest/record/v1/transaction`;
-        // startDate and endDate are guaranteed to be strings from the split above
         const params: Record<string, string> = {
-          startDate: startDate,
-          endDate: endDate,
+          startDate,
+          endDate,
         };
 
         // Simplified - in production, use proper OAuth 1.0 library
