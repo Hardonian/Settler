@@ -17,7 +17,7 @@ export function generateMetadata({
   title,
   description,
   keywords = [],
-  ogImage = "/og-image.png",
+  ogImage = "/opengraph-image",
   canonical,
   noindex = false,
 }: PageMetadata): Metadata {
