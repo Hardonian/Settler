@@ -40,30 +40,32 @@ export async function withResilience<T>(
   fn: () => Promise<T>,
   config: ResilienceConfig<T>
 ): Promise<T> {
-  let operation = fn;
+  // Build the operation chain from innermost to outermost
+  let operation: () => Promise<T> = fn;
   
-  // Apply timeout first (innermost)
+  // Apply timeout first (innermost) - wraps the original function
   if (config.timeout) {
-    operation = () => withTimeout(operation, config.timeout!);
+    const timeoutMs = config.timeout;
+    const originalFn = operation;
+    operation = () => withTimeout(originalFn, timeoutMs);
   }
   
-  // Apply retry
+  // Apply retry - wraps timeout if present, otherwise wraps original
   if (config.retry) {
-    const retryFn = operation;
-    operation = () => withRetry(retryFn, config.retry);
+    const retryConfig = config.retry;
+    const originalFn = operation;
+    operation = () => withRetry(originalFn, retryConfig);
   }
   
-  // Apply circuit breaker
+  // Apply circuit breaker - wraps retry/timeout/original
   if (config.circuitBreaker) {
-    const breakerFn = operation;
-    operation = () => withCircuitBreaker(
-      config.circuitBreaker!.serviceName,
-      breakerFn,
-      config.circuitBreaker.config
-    );
+    const serviceName = config.circuitBreaker.serviceName;
+    const breakerConfig = config.circuitBreaker.config;
+    const originalFn = operation;
+    operation = () => withCircuitBreaker(serviceName, originalFn, breakerConfig);
   }
   
-  // Apply fallback last (outermost)
+  // Apply fallback last (outermost) - wraps everything
   if (config.fallback) {
     return withFallback(operation, config.fallback);
   }
