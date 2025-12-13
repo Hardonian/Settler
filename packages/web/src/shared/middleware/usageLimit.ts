@@ -5,9 +5,8 @@
  * This is a critical production guardrail to prevent overage charges.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { ApiKeyAuthContext } from '@/shared/auth/apiKey';
-import { checkEntitlement, ServiceCode } from '@/domain/billing/entitlements';
+import { NextResponse } from 'next/server';
+import { ServiceCode } from '@/domain/billing/entitlements';
 import { getAccountUsage } from '@/domain/billing/usageService';
 import { getPlanConfig } from '@/domain/billing/planConfig';
 import { getAccountPlanCode } from '@/domain/billing/entitlements';

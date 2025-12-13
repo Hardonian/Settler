@@ -6,7 +6,8 @@
  */
 
 import { logger } from '@/lib/logging/logger';
-import { alerts } from '@/lib/monitoring/alerts';
+import { trackCriticalError } from '@/lib/monitoring/alerts';
+import * as Sentry from '@sentry/nextjs';
 
 interface BackupConfig {
   retentionDays?: number;
@@ -43,22 +44,22 @@ export async function createDatabaseBackup(config: BackupConfig = {}): Promise<{
     // In production, implement actual backup logic
     const backupId = `backup_${Date.now()}`;
 
-    await alerts.info(
-      'Database Backup Created',
-      `Backup ${backupId} created successfully`,
-      { backupId, config: finalConfig }
-    );
+    logger.info('Database Backup Created', { backupId, config: finalConfig });
+    Sentry.captureMessage('Database Backup Created', {
+      level: 'info',
+      extra: { backupId, config: finalConfig },
+    });
 
     return { success: true, backupId };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Backup failed', error instanceof Error ? error : new Error(errorMessage));
 
-    await alerts.error(
-      'Database Backup Failed',
-      `Failed to create backup: ${errorMessage}`,
-      { error: errorMessage }
-    );
+    trackCriticalError(error instanceof Error ? error : new Error(errorMessage), {
+      service: 'backup',
+      operation: 'create_backup',
+      metadata: { error: errorMessage },
+    });
 
     return { success: false, error: errorMessage };
   }
@@ -135,21 +136,21 @@ export async function restoreFromBackup(
     // 4. Verify integrity
     // 5. Restart services
 
-    await alerts.critical(
-      'Database Restore Initiated',
-      `Restoring from backup ${backupId}`,
-      { backupId }
-    );
+    logger.info('Database Restore Initiated', { backupId });
+    Sentry.captureMessage('Database Restore Initiated', {
+      level: 'warning',
+      extra: { backupId },
+    });
 
     return { success: true };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
-    await alerts.critical(
-      'Database Restore Failed',
-      `Failed to restore from backup ${backupId}: ${errorMessage}`,
-      { backupId, error: errorMessage }
-    );
+    trackCriticalError(error instanceof Error ? error : new Error(errorMessage), {
+      service: 'backup',
+      operation: 'restore_backup',
+      metadata: { backupId, error: errorMessage },
+    });
 
     return { success: false, error: errorMessage };
   }

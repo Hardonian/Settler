@@ -98,7 +98,7 @@ export function trackUsageLimitExceeded(
     },
   });
 
-  analytics.track('usage_limit_exceeded', {
+  analytics.trackEvent('usage_limit_exceeded', {
     billingAccountId,
     service,
     currentUsage,
@@ -126,7 +126,7 @@ export function trackPaymentFailure(
     },
   });
 
-  analytics.track('payment_failure', {
+  analytics.trackEvent('payment_failure', {
     billingAccountId,
     subscriptionId,
     error: error.message,
@@ -141,7 +141,7 @@ export function trackCheckoutStarted(
   planCode: string,
   billingCycle: 'monthly' | 'annual'
 ): void {
-  analytics.track('checkout_started', {
+  analytics.trackEvent('checkout_started', {
     billingAccountId,
     planCode,
     billingCycle,
@@ -157,7 +157,7 @@ export function trackCheckoutCompleted(
   billingCycle: 'monthly' | 'annual',
   sessionId: string
 ): void {
-  analytics.track('checkout_completed', {
+  analytics.trackEvent('checkout_completed', {
     billingAccountId,
     planCode,
     billingCycle,
@@ -173,7 +173,7 @@ export function trackCheckoutCanceled(
   planCode: string,
   billingCycle: 'monthly' | 'annual'
 ): void {
-  analytics.track('checkout_canceled', {
+  analytics.trackEvent('checkout_canceled', {
     billingAccountId,
     planCode,
     billingCycle,
@@ -188,7 +188,7 @@ export function trackSubscriptionUpgrade(
   fromPlan: string,
   toPlan: string
 ): void {
-  analytics.track('subscription_upgraded', {
+  analytics.trackEvent('subscription_upgraded', {
     billingAccountId,
     fromPlan,
     toPlan,
@@ -203,7 +203,7 @@ export function trackSubscriptionDowngrade(
   fromPlan: string,
   toPlan: string
 ): void {
-  analytics.track('subscription_downgraded', {
+  analytics.trackEvent('subscription_downgraded', {
     billingAccountId,
     fromPlan,
     toPlan,
@@ -217,7 +217,7 @@ export function trackSubscriptionCancellation(
   billingAccountId: string,
   planCode: string
 ): void {
-  analytics.track('subscription_canceled', {
+  analytics.trackEvent('subscription_canceled', {
     billingAccountId,
     planCode,
   });

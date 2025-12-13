@@ -36,7 +36,7 @@ export function trackBusinessEvent(
   event: string,
   properties: Record<string, unknown> = {}
 ): void {
-  analytics.track(event, {
+  analytics.trackEvent(event, {
     ...properties,
     timestamp: new Date().toISOString(),
   });
@@ -91,9 +91,10 @@ export async function getBusinessMetrics(
   let totalApiCalls = 0;
 
   usageEvents.forEach((event) => {
-    const service = event.eventType.split(':')[0];
-    apiCallsByService[service] = (apiCallsByService[service] || 0) + (event.quantity || 0);
-    totalApiCalls += event.quantity || 0;
+    const service = event.eventType?.split(':')[0] || 'unknown';
+    const quantity = typeof event.quantity === 'number' ? event.quantity : Number(event.quantity || 0);
+    apiCallsByService[service] = (apiCallsByService[service] || 0) + quantity;
+    totalApiCalls += quantity;
   });
 
   // Get churn metrics
