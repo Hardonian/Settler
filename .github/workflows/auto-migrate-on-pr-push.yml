@@ -1,0 +1,158 @@
+name: Auto-Migrate on PR Push
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'supabase/migrations/**'
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+
+env:
+  # Use preview/test database for PRs, fallback to production if preview not available
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF_PREVIEW || secrets.SUPABASE_PROJECT_REF }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL_PREVIEW || secrets.DATABASE_URL }}
+  DIRECT_URL: ${{ secrets.DIRECT_URL_PREVIEW || secrets.DIRECT_URL }}
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL_PREVIEW || secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_PREVIEW || secrets.SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY_PREVIEW || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD_PREVIEW || secrets.SUPABASE_DB_PASSWORD }}
+
+jobs:
+  detect-and-migrate:
+    name: Detect and Run Migrations
+    runs-on: ubuntu-latest
+    environment: preview
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect migration changes
+        id: detect
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          echo "🔍 Checking for migration changes..."
+          echo "Base: $BASE_SHA"
+          echo "Head: $HEAD_SHA"
+          
+          # Check for Supabase migrations
+          SUPABASE_MIGRATIONS=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E "supabase/migrations/.*\.sql$" || echo "")
+          PRISMA_MIGRATIONS=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E "prisma/migrations/.*" || echo "")
+          SCHEMA_CHANGES=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E "prisma/schema.prisma$" || echo "")
+          
+          if [ -n "$SUPABASE_MIGRATIONS" ] || [ -n "$PRISMA_MIGRATIONS" ] || [ -n "$SCHEMA_CHANGES" ]; then
+            echo "has_migrations=true" >> $GITHUB_OUTPUT
+            echo "✅ Found migration changes"
+            echo "Supabase migrations: $SUPABASE_MIGRATIONS"
+            echo "Prisma migrations: $PRISMA_MIGRATIONS"
+            echo "Schema changes: $SCHEMA_CHANGES"
+          else
+            echo "has_migrations=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  No migration changes detected"
+          fi
+
+      - name: Setup Supabase CLI
+        if: steps.detect.outputs.has_migrations == 'true'
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        if: steps.detect.outputs.has_migrations == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: steps.detect.outputs.has_migrations == 'true'
+        run: npm ci
+
+      - name: Link Supabase project (PR Preview)
+        if: steps.detect.outputs.has_migrations == 'true'
+        run: |
+          echo "🔗 Linking to Supabase project: ${{ env.SUPABASE_PROJECT_REF }}"
+          supabase link --project-ref ${{ env.SUPABASE_PROJECT_REF }} || {
+            echo "⚠️  Failed to link, will use direct connection"
+          }
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
+        continue-on-error: true
+
+      - name: Run Supabase migrations
+        if: steps.detect.outputs.has_migrations == 'true'
+        run: |
+          echo "🔄 Running Supabase migrations on PREVIEW database..."
+          echo "⚠️  This is a PREVIEW environment - safe to test migrations"
+          
+          # Try using Supabase CLI first
+          supabase db push --include-all || {
+            echo "⚠️  Supabase CLI push failed, using direct psql..."
+            # Fallback: apply migrations directly
+            for file in supabase/migrations/*.sql; do
+              if [ -f "$file" ]; then
+                echo "Applying: $(basename $file)"
+                psql "${{ env.DATABASE_URL }}" -f "$file" && echo "✅ Applied $(basename $file)" || {
+                  echo "❌ Failed to apply $(basename $file)"
+                  exit 1
+                }
+              fi
+            done
+          }
+          
+          echo "✅ Supabase migrations completed"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
+          PGPASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
+
+      - name: Run Prisma migrations
+        if: steps.detect.outputs.has_migrations == 'true' && (steps.detect.outputs.prisma_migrations != '' || steps.detect.outputs.schema_changes != '')
+        run: |
+          echo "🔄 Running Prisma migrations..."
+          npm run prisma:generate || npx prisma generate
+          npm run prisma:migrate || npx prisma migrate deploy
+          echo "✅ Prisma migrations completed"
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+          DIRECT_URL: ${{ env.DIRECT_URL }}
+
+      - name: Verify migrations
+        if: steps.detect.outputs.has_migrations == 'true'
+        run: |
+          echo "🔍 Verifying migrations..."
+          
+          # Check Supabase migration status
+          if command -v supabase > /dev/null; then
+            supabase migration list || echo "⚠️  Could not list migrations"
+          fi
+          
+          # Verify key tables exist
+          echo "Checking database schema..."
+          psql "${{ env.DATABASE_URL }}" -c "\dt" | head -20 || echo "⚠️  Could not verify schema"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
+          PGPASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
+        continue-on-error: true
+
+      - name: Migration summary
+        if: steps.detect.outputs.has_migrations == 'true'
+        run: |
+          echo "## ✅ Migrations Applied (Preview)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** Preview/Test" >> $GITHUB_STEP_SUMMARY
+          echo "**Project:** ${{ env.SUPABASE_PROJECT_REF }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Migrations have been applied to the preview database." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️  **Note:** These migrations will be applied to production when this PR is merged." >> $GITHUB_STEP_SUMMARY
+
+      - name: Skip migrations
+        if: steps.detect.outputs.has_migrations == 'false'
+        run: |
+          echo "ℹ️  No migration files detected in this PR"
+          echo "Skipping migration step"

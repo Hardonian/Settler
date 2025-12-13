@@ -132,15 +132,21 @@ Fixed critical 500 errors in the Console module by:
 
 ### 1. Apply Database Migration
 
+**Automatic (Recommended)**: Migrations run automatically when you push/merge!
+
+- **On PR Push**: Migration runs on preview database automatically
+- **On Merge to Main**: Migration runs on production database automatically
+
+**Manual (if needed)**:
 ```bash
-# Run the new RLS migration
-supabase migration up 20260125000000_console_rls_fixes
+# Using Supabase CLI
+supabase db push
+
+# Or using psql directly
+psql $DATABASE_URL -f supabase/migrations/20260125000000_console_rls_fixes.sql
 ```
 
-Or if using Supabase CLI:
-```bash
-supabase db push
-```
+See `docs/AUTOMATIC_MIGRATIONS.md` for full details on automatic migration setup.
 
 ### 2. Verify Environment Variables
 

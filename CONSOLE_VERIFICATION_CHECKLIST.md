@@ -8,19 +8,27 @@
 - [ ] Health check endpoint created: `/api/health/console`
 - [ ] Smoke test updated to check Console route
 - [ ] No linter errors
+- [ ] GitHub secrets configured (see `docs/AUTOMATIC_MIGRATIONS.md`)
 
 ## Deployment Steps
 
 ### 1. Apply Database Migration
 
+**✅ Automatic**: Migrations run automatically when you push/merge!
+
+1. **Push to PR**: Migration runs on preview database automatically
+2. **Merge PR**: Migration runs on production database automatically
+
+**Manual (if needed)**:
 ```bash
-# Option A: Using Supabase CLI
-cd /workspace
+# Using Supabase CLI
 supabase db push
 
-# Option B: Manual SQL execution
+# Or using psql directly
 psql $DATABASE_URL -f supabase/migrations/20260125000000_console_rls_fixes.sql
 ```
+
+See `docs/AUTOMATIC_MIGRATIONS.md` for full details.
 
 ### 2. Verify Environment Variables
 
