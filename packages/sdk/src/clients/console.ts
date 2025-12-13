@@ -5,7 +5,6 @@
  */
 
 import { SettlerClient } from "../client";
-import { ListResponse } from "../types";
 import { PaginatedResponse } from "../utils/pagination";
 
 export interface ApiKey {
@@ -148,8 +147,9 @@ export class ConsoleClient {
 
   /**
    * List receipts
+   * @param limit - Maximum number of receipts to return (currently not used by API)
    */
-  async listReceipts(limit: number = 50): Promise<PaginatedResponse<ReceiptListItem>> {
+  async listReceipts(_limit: number = 50): Promise<PaginatedResponse<ReceiptListItem>> {
     const data = await this.client.request<{ receipts: ReceiptListItem[] }>(
       "GET",
       "/api/console/receipts"
@@ -187,8 +187,9 @@ export class ConsoleClient {
 
   /**
    * Get recent activities
+   * @param limit - Maximum number of activities to return (currently not used by API)
    */
-  async getActivities(limit: number = 10): Promise<Activity[]> {
+  async getActivities(_limit: number = 10): Promise<Activity[]> {
     const data = await this.client.request<{ activities: Activity[] }>(
       "GET",
       "/api/console/activities"
