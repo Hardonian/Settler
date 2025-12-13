@@ -1,153 +1,123 @@
-# Console Setup Guide - Fixing Internal Server Error
+# Developer Console Setup Guide
 
-## Problem
-The `/console` route is returning a 500 Internal Server Error. This is likely due to missing Supabase tables or database configuration.
+Quick setup guide for the Settler Developer Console.
 
-## Quick Diagnostic
+## What is the Developer Console?
 
-Visit `/console/setup-check` to see what's missing. This diagnostic page will show you:
-- ✅ What's configured correctly
-- ⚠️ What has warnings
-- ❌ What's failing
+The Developer Console (`/console`) is a web-based interface for managing your Settler resources:
+- ✅ API Key Management
+- ✅ Usage Analytics  
+- ✅ Receipt Browser
+- ✅ Feature Flags
+- ✅ Live Activity Feed
+- ✅ Billing Dashboard
 
-## Required Supabase Setup
+## Quick Setup
 
-### 1. Environment Variables (Vercel)
-
-Ensure these are set in your Vercel project settings:
-
-**Required:**
-- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon/public key
-- `DATABASE_URL` - Your PostgreSQL connection string (for Prisma)
-
-**Recommended:**
-- `SUPABASE_SERVICE_ROLE_KEY` - For admin operations (API keys management)
-
-### 2. Supabase Tables
-
-The console requires these Supabase tables:
-
-#### `api_keys` Table
-
-```sql
-CREATE TABLE IF NOT EXISTS api_keys (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  key_prefix TEXT NOT NULL,
-  key_hash TEXT NOT NULL,
-  name TEXT,
-  scopes TEXT[] DEFAULT ARRAY['*'],
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  last_used_at TIMESTAMPTZ,
-  revoked_at TIMESTAMPTZ,
-  expires_at TIMESTAMPTZ
-);
-
-CREATE INDEX idx_api_keys_user_id ON api_keys(user_id);
-CREATE INDEX idx_api_keys_key_prefix ON api_keys(key_prefix);
-CREATE INDEX idx_api_keys_revoked ON api_keys(revoked_at) WHERE revoked_at IS NULL;
-```
-
-**RLS Policies:**
-```sql
--- Enable RLS
-ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
-
--- Users can only see their own keys
-CREATE POLICY "Users can view own api_keys"
-  ON api_keys FOR SELECT
-  USING (auth.uid() = user_id);
-
--- Users can create their own keys
-CREATE POLICY "Users can create own api_keys"
-  ON api_keys FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
--- Users can update their own keys
-CREATE POLICY "Users can update own api_keys"
-  ON api_keys FOR UPDATE
-  USING (auth.uid() = user_id);
-```
-
-### 3. Prisma Database Tables
-
-The console also uses Prisma to access these tables (via `DATABASE_URL`):
-
-- `billingAccount` - User billing accounts
-- `usageEvent` - API usage tracking
-- `receipt` - Parsed receipts
-- `featureFlag` - Feature flags
-
-These should be created via Prisma migrations. Run:
+### 1. Start Application
 
 ```bash
-npm run prisma:migrate
-# or
-npx prisma migrate deploy
+npm run dev
 ```
 
-## Common Issues & Solutions
+### 2. Access Console
 
-### Issue 1: "api_keys table does not exist"
+1. Navigate to `http://localhost:3000`
+2. Sign up at `/signup`
+3. Access Console at `/console`
 
-**Solution:** Run the SQL above in your Supabase SQL editor to create the table.
+### 3. Create API Key
 
-### Issue 2: "Prisma client not properly initialized"
+1. Go to `/console/api-keys`
+2. Click "Create API Key"
+3. Enter name and scopes
+4. **Save the key** - shown only once!
 
-**Solution:** 
-1. Ensure `DATABASE_URL` is set in Vercel
-2. Run `npm run prisma:generate` locally or ensure it runs in build
-3. Check that Prisma migrations have been applied
+### 4. Use API Key
 
-### Issue 3: "Missing environment variables"
+**SDK:**
+```typescript
+import Settler from '@settler/sdk';
+const client = new Settler({ apiKey: 'rk_...' });
+```
 
-**Solution:**
-1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables
-2. Add all required variables listed above
-3. Redeploy
+**CLI:**
+```bash
+export SETTLER_API_KEY=rk_...
+settler console api-keys list
+```
 
-### Issue 4: "RLS policies blocking access"
+## Environment Variables
 
-**Solution:**
-- The `api_keys` table needs RLS policies (see SQL above)
-- Or temporarily disable RLS for testing: `ALTER TABLE api_keys DISABLE ROW LEVEL SECURITY;`
+Required:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `DATABASE_URL`
 
-### Issue 5: "Database connection failed"
+See [Setup Guide](SETUP_GUIDE.md) for details.
 
-**Solution:**
-1. Verify `DATABASE_URL` is correct
-2. Check if database is accessible from Vercel (not blocked by firewall)
-3. Ensure database exists and is running
+## Database Migrations
 
-## Testing
+Migrations run automatically on PR push/merge.
 
-1. Visit `/console/setup-check` to see diagnostics
-2. Fix any failing checks
-3. Visit `/console` again
+Manual (local):
+```bash
+supabase db push
+```
 
-## Fallback Behavior
+## Features
 
-The console page now has comprehensive error handling:
-- ✅ Never crashes with 500 errors
-- ✅ Shows user-friendly error messages
-- ✅ Renders with empty data if tables are missing
-- ✅ Provides diagnostic links
+### API Keys
+- Create, list, revoke API keys
+- Set scopes and expiration
+- View usage per key
 
-Even if tables are missing, the page will render (with empty data) instead of crashing.
+### Usage Analytics
+- Monitor API calls
+- View by service/operation
+- Track error rates
+- Time range selection
 
-## Next Steps
+### Receipt Browser
+- Browse parsed receipts
+- View details and items
+- Check confidence scores
 
-1. **Run diagnostics**: Visit `/console/setup-check`
-2. **Create missing tables**: Use the SQL provided above
-3. **Set environment variables**: Add to Vercel project settings
-4. **Run migrations**: Ensure Prisma migrations are applied
-5. **Test again**: Visit `/console`
+### Feature Flags
+- Manage flags
+- Toggle per environment
+- Test evaluations
+
+### Activity Feed
+- Real-time updates
+- Activity history
+- Status indicators
+
+## Troubleshooting
+
+**Console returns 500?**
+- Check `/api/health/console`
+- Verify environment variables
+- Check migrations applied
+
+**Can't access Console?**
+- Verify signed in
+- Check Supabase auth
+- Verify billing account
+
+**API keys not working?**
+- Check key format: `rk_...`
+- Verify not revoked
+- Check scopes
+
+## Documentation
+
+- [Console Complete Guide](docs/CONSOLE_COMPLETE.md)
+- [SDK/CLI Integration](docs/SDK_CLI_CONSOLE_INTEGRATION.md)
+- [Setup Guide](SETUP_GUIDE.md)
 
 ## Support
 
-If issues persist after following this guide:
-1. Check Vercel build logs for specific errors
-2. Check Supabase logs for database errors
-3. Review the diagnostic page output
-4. Check browser console for client-side errors
+- 📖 [Documentation](https://docs.settler.io)
+- 💬 [Discord](https://discord.gg/settler)
+- 🐛 [Issues](https://github.com/settler/settler/issues)
