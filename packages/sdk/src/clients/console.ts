@@ -5,7 +5,8 @@
  */
 
 import { SettlerClient } from "../client";
-import { PaginatedResponse } from "../types";
+import { ListResponse } from "../types";
+import { PaginatedResponse } from "../utils/pagination";
 
 export interface ApiKey {
   id: string;
@@ -112,11 +113,7 @@ export class ConsoleClient {
     );
     return {
       data: data.keys || [],
-      pagination: {
-        page: 1,
-        pageSize: data.keys?.length || 0,
-        total: data.keys?.length || 0,
-      },
+      count: data.keys?.length || 0,
     };
   }
 
@@ -159,11 +156,7 @@ export class ConsoleClient {
     );
     return {
       data: data.receipts || [],
-      pagination: {
-        page: 1,
-        pageSize: data.receipts?.length || 0,
-        total: data.receipts?.length || 0,
-      },
+      count: data.receipts?.length || 0,
     };
   }
 
@@ -188,11 +181,7 @@ export class ConsoleClient {
     );
     return {
       data: data.flags || [],
-      pagination: {
-        page: 1,
-        pageSize: data.flags?.length || 0,
-        total: data.flags?.length || 0,
-      },
+      count: data.flags?.length || 0,
     };
   }
 

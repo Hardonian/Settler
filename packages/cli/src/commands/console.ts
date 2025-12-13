@@ -168,7 +168,7 @@ usageCommand
       
       if (summary.byService && Object.keys(summary.byService).length > 0) {
         console.log(chalk.bold('\nBy Service:'));
-        Object.entries(summary.byService).forEach(([service, count]: [string, any]) => {
+        Object.entries(summary.byService).forEach(([service, count]: [string, number]) => {
           console.log(`  ${service}: ${chalk.cyan(count.toLocaleString())} calls`);
         });
       }

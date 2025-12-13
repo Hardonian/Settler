@@ -30,6 +30,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ flags });
   } catch (error) {
+    // If auth error, return 401
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Console Feature Flags] Error:', error);
     // Return 200 with empty array instead of 500
     return NextResponse.json({ flags: [] });

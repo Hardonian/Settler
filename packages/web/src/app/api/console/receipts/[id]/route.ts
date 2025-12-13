@@ -41,6 +41,10 @@ export async function GET(
 
     return NextResponse.json({ receipt });
   } catch (error) {
+    // If auth error, return 401
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Console Receipts] Error fetching detail:', error);
     // Return 404 instead of 500
     return NextResponse.json(

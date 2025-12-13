@@ -8,6 +8,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 
+/**
+ * Activity types supported by Console
+ */
 export type ActivityType = 
   | 'reconcile' 
   | 'receipt' 
@@ -18,6 +21,9 @@ export type ActivityType =
   | 'site'
   | 'experiment';
 
+/**
+ * Activity actions
+ */
 export type ActivityAction = 
   | 'created' 
   | 'updated' 
@@ -27,11 +33,18 @@ export type ActivityAction =
   | 'toggled'
   | 'revoked';
 
+/**
+ * Activity status
+ */
 export type ActivityStatus = 'success' | 'processing' | 'failed';
 
+/**
+ * Activity metadata (flexible key-value store)
+ */
 export interface ActivityMetadata {
   [key: string]: unknown;
 }
+
 
 /**
  * Log a console activity

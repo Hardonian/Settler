@@ -5,10 +5,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw, FileText, Flag, CheckCircle2, Clock, Key, CreditCard, BarChart3 } from 'lucide-react';
 
+type ActivityType = 'reconcile' | 'receipt' | 'flag' | 'api_key' | 'usage' | 'billing' | 'site' | 'experiment';
+type ActivityStatus = 'success' | 'processing' | 'failed';
+
 interface ActivityItem {
   id: string;
-  type: 'reconcile' | 'receipt' | 'flag' | 'api_key' | 'usage' | 'billing' | 'site' | 'experiment';
-  status: 'success' | 'processing' | 'failed';
+  type: ActivityType;
+  status: ActivityStatus;
   title: string;
   timestamp: Date;
   meta: string;
@@ -23,7 +26,16 @@ export function LiveActivityFeed() {
       const res = await fetch('/api/console/activities');
       if (res.ok) {
         const data = await res.json();
-        const mappedActivities: ActivityItem[] = (data.activities || []).map((activity: any) => ({
+        interface ActivityResponse {
+          id: string;
+          activity_type: ActivityType;
+          status: ActivityStatus;
+          title: string;
+          created_at: string;
+          metadata?: Record<string, unknown>;
+        }
+        
+        const mappedActivities: ActivityItem[] = (data.activities || []).map((activity: ActivityResponse) => ({
           id: activity.id,
           type: activity.activity_type,
           status: activity.status,

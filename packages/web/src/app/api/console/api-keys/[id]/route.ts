@@ -36,11 +36,12 @@ export async function DELETE(
     if (error instanceof Error && error.message.includes('Permission denied')) {
       return NextResponse.json({ error: error.message }, { status: 403 });
     }
-    console.error('Error revoking API key:', error);
+    console.error('[Console API Keys] Error revoking:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to revoke API key';
+    // Return 200 with error instead of 500
     return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
+      { error: errorMessage, success: false },
+      { status: 200 }
     );
   }
 }

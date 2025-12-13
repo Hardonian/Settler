@@ -25,11 +25,21 @@ export async function authenticateRequest(
   request: NextRequest
 ): Promise<UnifiedAuthContext | null> {
   // Try API key first (for SDK/CLI)
-  const apiKey = request.headers.get('x-api-key') || request.headers.get('authorization')?.replace('Bearer ', '');
+  const apiKeyHeader = request.headers.get('x-api-key');
+  const authHeader = request.headers.get('authorization');
+  const apiKey = apiKeyHeader || (authHeader?.startsWith('Bearer ') ? authHeader.replace('Bearer ', '') : null);
   
   if (apiKey && apiKey.startsWith('rk_')) {
     try {
-      const context = await authenticateApiKey(request);
+      // Create a modified request with X-API-Key header for authenticateApiKey
+      const modifiedRequest = new NextRequest(request.url, {
+        headers: new Headers(request.headers),
+      });
+      if (!modifiedRequest.headers.get('x-api-key')) {
+        modifiedRequest.headers.set('x-api-key', apiKey);
+      }
+      
+      const context = await authenticateApiKey(modifiedRequest);
       return {
         type: 'api_key',
         userId: context.userId,
@@ -40,6 +50,7 @@ export async function authenticateRequest(
       };
     } catch (error) {
       // API key invalid, try session auth
+      // Don't log here to avoid noise
     }
   }
 
