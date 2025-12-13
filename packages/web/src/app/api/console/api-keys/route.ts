@@ -21,7 +21,7 @@ export async function GET() {
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    console.error('Error listing API keys:', error);
+    console.error('[Console API Keys] Error:', error);
     // Return 200 with empty array instead of 500 to prevent crashes
     return NextResponse.json({ keys: [] });
   }

@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, FileText, Flag, CheckCircle2, Clock } from 'lucide-react';
+import { RefreshCw, FileText, Flag, CheckCircle2, Clock, Key, CreditCard, BarChart3 } from 'lucide-react';
 
 interface ActivityItem {
   id: string;
-  type: 'reconcile' | 'receipt' | 'flag';
+  type: 'reconcile' | 'receipt' | 'flag' | 'api_key' | 'usage' | 'billing' | 'site' | 'experiment';
   status: 'success' | 'processing' | 'failed';
   title: string;
   timestamp: Date;
@@ -16,56 +16,36 @@ interface ActivityItem {
 
 export function LiveActivityFeed() {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Simulate live incoming events
-  useEffect(() => {
-    // Initial data
-    setActivities([
-      {
-        id: '1',
-        type: 'reconcile',
-        status: 'success',
-        title: 'Stripe Payout #9921',
-        timestamp: new Date(Date.now() - 1000 * 60 * 2),
-        meta: 'Matched 142 txns'
-      },
-      {
-        id: '2',
-        type: 'receipt',
-        status: 'success',
-        title: 'Uber Receipt',
-        timestamp: new Date(Date.now() - 1000 * 60 * 15),
-        meta: '$24.50 USD'
-      },
-      {
-        id: '3',
-        type: 'flag',
-        status: 'success',
-        title: 'Flag Eval: new-dashboard',
-        timestamp: new Date(Date.now() - 1000 * 60 * 45),
-        meta: 'Variant: enabled'
+  const fetchActivities = async () => {
+    try {
+      const res = await fetch('/api/console/activities');
+      if (res.ok) {
+        const data = await res.json();
+        const mappedActivities: ActivityItem[] = (data.activities || []).map((activity: any) => ({
+          id: activity.id,
+          type: activity.activity_type,
+          status: activity.status,
+          title: activity.title,
+          timestamp: new Date(activity.created_at),
+          meta: activity.metadata?.meta || activity.metadata?.description || '',
+        }));
+        setActivities(mappedActivities);
       }
-    ]);
+    } catch (error) {
+      console.error('Failed to fetch activities:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const interval = setInterval(() => {
-      const types: ('reconcile' | 'receipt' | 'flag')[] = ['reconcile', 'receipt', 'flag'];
-      // Ensure we get a valid type
-      const typeIndex = Math.floor(Math.random() * types.length);
-      const type = types[typeIndex] as 'reconcile' | 'receipt' | 'flag';
-      
-      const newActivity: ActivityItem = {
-        id: Date.now().toString(),
-        type,
-        status: Math.random() > 0.1 ? 'success' : 'processing',
-        title: type === 'reconcile' ? `Daily Sync ${Math.floor(Math.random() * 1000)}` : 
-               type === 'receipt' ? `Receipt Upload ${Math.floor(Math.random() * 1000)}` :
-               `Flag Check: beta-feature`,
-        timestamp: new Date(),
-        meta: type === 'reconcile' ? 'Processing...' : 'Analyzed'
-      };
+  useEffect(() => {
+    // Initial fetch
+    fetchActivities();
 
-      setActivities(prev => [newActivity, ...prev].slice(0, 5));
-    }, 5000); // New event every 5s
+    // Poll for new activities every 10 seconds
+    const interval = setInterval(fetchActivities, 10000);
 
     return () => clearInterval(interval);
   }, []);
@@ -81,17 +61,34 @@ export function LiveActivityFeed() {
         </Badge>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {activities.map((item) => (
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : activities.length === 0 ? (
+          <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <p className="text-sm">No recent activity</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {activities.map((item) => (
             <div key={item.id} className="flex items-start gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 last:border-0 last:pb-0 animate-in slide-in-from-left-2 fade-in duration-300">
               <div className={`mt-1 p-1.5 rounded-full ${
                 item.type === 'reconcile' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30' :
                 item.type === 'receipt' ? 'bg-green-100 text-green-600 dark:bg-green-900/30' :
-                'bg-purple-100 text-purple-600 dark:bg-purple-900/30'
+                item.type === 'flag' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30' :
+                item.type === 'api_key' ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/30' :
+                item.type === 'usage' ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30' :
+                item.type === 'billing' ? 'bg-pink-100 text-pink-600 dark:bg-pink-900/30' :
+                'bg-slate-100 text-slate-600 dark:bg-slate-900/30'
               }`}>
                 {item.type === 'reconcile' && <RefreshCw className="w-3 h-3" />}
                 {item.type === 'receipt' && <FileText className="w-3 h-3" />}
                 {item.type === 'flag' && <Flag className="w-3 h-3" />}
+                {item.type === 'api_key' && <Key className="w-3 h-3" />}
+                {item.type === 'usage' && <BarChart3 className="w-3 h-3" />}
+                {item.type === 'billing' && <CreditCard className="w-3 h-3" />}
+                {(item.type === 'site' || item.type === 'experiment') && <FileText className="w-3 h-3" />}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
@@ -114,8 +111,9 @@ export function LiveActivityFeed() {
                 )}
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

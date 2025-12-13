@@ -31,10 +31,8 @@ export async function GET() {
 
     return NextResponse.json({ receipts });
   } catch (error) {
-    console.error('Error fetching receipts:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch receipts' },
-      { status: 500 }
-    );
+    console.error('[Console Receipts] Error:', error);
+    // Return 200 with empty array instead of 500
+    return NextResponse.json({ receipts: [] });
   }
 }

@@ -6,6 +6,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
+import { logActivity } from '@/lib/console/activity-logger';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
@@ -116,7 +117,7 @@ export async function listApiKeys(userId?: string): Promise<ApiKeyListItem[]> {
     scopes: string[] | null;
   };
 
-    return ((keys || []) as ApiKeyRow[]).map(key => ({
+    const mappedKeys = ((keys || []) as ApiKeyRow[]).map(key => ({
       id: key.id,
       name: key.name || undefined,
       keyPrefix: key.key_prefix,
@@ -126,6 +127,16 @@ export async function listApiKeys(userId?: string): Promise<ApiKeyListItem[]> {
       expiresAt: key.expires_at ? new Date(key.expires_at) : undefined,
       scopes: key.scopes || [],
     }));
+
+    // Log activity
+    await logActivity({
+      activityType: 'api_key',
+      action: 'viewed',
+      title: 'Listed API keys',
+      metadata: { count: mappedKeys.length },
+    }).catch(() => {}); // Don't fail if logging fails
+
+    return mappedKeys;
   } catch (error) {
     // If it's an auth error, re-throw it so caller can handle redirect
     if (error instanceof Error && error.message.includes('Unauthorized')) {
@@ -200,6 +211,17 @@ export async function createApiKey(
     created_at: string;
   };
 
+  // Log activity
+  await logActivity({
+    activityType: 'api_key',
+    action: 'created',
+    title: `Created API key${input?.name ? `: ${input.name}` : ''}`,
+    status: 'success',
+    resourceId: keyData.id,
+    resourceType: 'api_key',
+    metadata: { name: input?.name, hasScopes: !!input?.scopes },
+  }).catch(() => {}); // Don't fail if logging fails
+
   return {
     id: keyData.id,
     key, // Return the full key only once
@@ -236,4 +258,14 @@ export async function revokeApiKey(keyId: string, userId?: string): Promise<void
     }
     throw new Error(`Failed to revoke API key: ${error.message}`);
   }
+
+  // Log activity
+  await logActivity({
+    activityType: 'api_key',
+    action: 'revoked',
+    title: 'Revoked API key',
+    status: 'success',
+    resourceId: keyId,
+    resourceType: 'api_key',
+  }).catch(() => {}); // Don't fail if logging fails
 }

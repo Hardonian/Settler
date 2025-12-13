@@ -43,10 +43,17 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ summary, events });
   } catch (error) {
-    console.error('Error fetching usage data:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch usage data' },
-      { status: 500 }
-    );
+    console.error('[Console Usage] Error:', error);
+    // Return 200 with empty data instead of 500
+    return NextResponse.json({
+      summary: {
+        totalCalls: 0,
+        byService: {},
+        byOperation: {},
+        errorRate: 0,
+        period: { start: new Date(), end: new Date() },
+      },
+      events: [],
+    });
   }
 }

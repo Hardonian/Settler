@@ -31,10 +31,8 @@ export async function GET() {
 
     return NextResponse.json({ flags });
   } catch (error) {
-    console.error('Error fetching feature flags:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch feature flags' },
-      { status: 500 }
-    );
+    console.error('[Console Feature Flags] Error:', error);
+    // Return 200 with empty array instead of 500
+    return NextResponse.json({ flags: [] });
   }
 }

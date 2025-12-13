@@ -43,10 +43,11 @@ export async function GET(
 
     return NextResponse.json({ receipt });
   } catch (error) {
-    console.error('Error fetching receipt detail:', error);
+    console.error('[Console Receipts] Error fetching detail:', error);
+    // Return 404 instead of 500
     return NextResponse.json(
-      { error: 'Failed to fetch receipt detail' },
-      { status: 500 }
+      { error: 'Receipt not found' },
+      { status: 404 }
     );
   }
 }
