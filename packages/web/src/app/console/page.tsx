@@ -379,18 +379,41 @@ async function ConsoleOverviewContent() {
   } catch (error) {
     // Top-level error boundary - catch any unhandled errors
     console.error('[Console] Unhandled error:', error);
+    
+    // Provide more detailed error information in development
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
     return (
-      <div className="text-center py-12">
-        <p className="text-slate-600 dark:text-slate-400 mb-4">
-          An unexpected error occurred. Please try again or contact support.
-        </p>
-        <div className="flex gap-2 justify-center">
-          <Button asChild>
-            <Link href="/">Go Home</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/signup">Sign In</Link>
-          </Button>
+      <div className="text-center py-12 px-4">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+            Unable to Load Console
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-6">
+            We encountered an error while loading the Developer Console. This might be due to:
+          </p>
+          <ul className="text-left text-sm text-slate-600 dark:text-slate-400 mb-6 space-y-2 max-w-md mx-auto">
+            <li>• Database connection issues</li>
+            <li>• Missing database tables or migrations</li>
+            <li>• Configuration issues with Supabase</li>
+            <li>• Missing environment variables</li>
+          </ul>
+          {isDevelopment && errorMessage && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6 text-left">
+              <p className="text-xs font-mono text-red-800 dark:text-red-200 break-all">
+                Error: {errorMessage}
+              </p>
+            </div>
+          )}
+          <div className="flex gap-2 justify-center">
+            <Button asChild>
+              <Link href="/console/setup-check">Run Diagnostics</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/">Go Home</Link>
+            </Button>
+          </div>
         </div>
       </div>
     );

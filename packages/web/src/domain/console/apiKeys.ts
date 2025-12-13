@@ -49,17 +49,31 @@ export interface CreateApiKeyResult {
  * List API keys for the current user
  */
 export async function listApiKeys(userId: string): Promise<ApiKeyListItem[]> {
-  const supabase = await createAdminClient();
-  
-  const { data: keys, error } = await supabase
-    .from('api_keys')
-    .select('id, name, key_prefix, created_at, last_used_at, revoked_at, expires_at, scopes')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
+  try {
+    const supabase = await createAdminClient();
+    
+    // Check if Supabase client is properly initialized
+    if (!supabase || typeof supabase.from !== 'function') {
+      console.warn('[listApiKeys] Supabase client not available, returning empty list');
+      return [];
+    }
+    
+    const { data: keys, error } = await supabase
+      .from('api_keys')
+      .select('id, name, key_prefix, created_at, last_used_at, revoked_at, expires_at, scopes')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
 
-  if (error) {
-    throw new Error(`Failed to list API keys: ${error.message}`);
-  }
+    if (error) {
+      // If table doesn't exist (code 42P01), return empty array instead of throwing
+      if (error.code === '42P01' || error.message.includes('does not exist')) {
+        console.warn('[listApiKeys] api_keys table does not exist, returning empty list');
+        return [];
+      }
+      console.error('[listApiKeys] Supabase error:', error);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
+    }
 
   type ApiKeyRow = {
     id: string;
@@ -72,16 +86,21 @@ export async function listApiKeys(userId: string): Promise<ApiKeyListItem[]> {
     scopes: string[] | null;
   };
 
-  return ((keys || []) as ApiKeyRow[]).map(key => ({
-    id: key.id,
-    name: key.name || undefined,
-    keyPrefix: key.key_prefix,
-    createdAt: new Date(key.created_at),
-    lastUsedAt: key.last_used_at ? new Date(key.last_used_at) : undefined,
-    revokedAt: key.revoked_at ? new Date(key.revoked_at) : undefined,
-    expiresAt: key.expires_at ? new Date(key.expires_at) : undefined,
-    scopes: key.scopes || [],
-  }));
+    return ((keys || []) as ApiKeyRow[]).map(key => ({
+      id: key.id,
+      name: key.name || undefined,
+      keyPrefix: key.key_prefix,
+      createdAt: new Date(key.created_at),
+      lastUsedAt: key.last_used_at ? new Date(key.last_used_at) : undefined,
+      revokedAt: key.revoked_at ? new Date(key.revoked_at) : undefined,
+      expiresAt: key.expires_at ? new Date(key.expires_at) : undefined,
+      scopes: key.scopes || [],
+    }));
+  } catch (error) {
+    console.error('[listApiKeys] Unexpected error:', error);
+    // Return empty array instead of throwing to prevent 500 errors
+    return [];
+  }
 }
 
 /**
