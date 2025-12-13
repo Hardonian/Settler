@@ -24,6 +24,8 @@ const NewsletterSignup = dynamic(() => import("@/components/NewsletterSignup").t
 const ConversionCTA = dynamic(() => import("@/components/ConversionCTA").then(mod => ({ default: mod.ConversionCTA })), { ssr: true });
 const AnimatedCodeBlock = dynamic(() => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })), { ssr: false });
 const AnimatedStatCard = dynamic(() => import("@/components/AnimatedStatCard").then(mod => ({ default: mod.AnimatedStatCard })), { ssr: true });
+const TrustSignalBanner = dynamic(() => import("@/components/TrustSignalBanner").then(mod => ({ default: mod.TrustSignalBanner })), { ssr: true });
+const EnhancedConversionCTA = dynamic(() => import("@/components/EnhancedConversionCTA").then(mod => ({ default: mod.EnhancedConversionCTA })), { ssr: true });
 
 export default function Home() {
   const trackCTA = useTrackCTA();
@@ -283,6 +285,9 @@ if (flag.value) { /* ... */ }`;
           </div>
         </section>
 
+        {/* Trust Signal Banner */}
+        <TrustSignalBanner />
+
         {/* Why Settler */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-600 text-white">
           <div className="max-w-4xl mx-auto text-center">
@@ -299,6 +304,23 @@ if (flag.value) { /* ... */ }`;
 
         {/* Social Proof */}
         <SocialProof />
+
+        {/* Enhanced Conversion CTA */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <EnhancedConversionCTA
+              title="Ready to Automate Your Reconciliation?"
+              description="Join 500+ companies saving 10+ hours per week. Start your 30-day free trial—full access, no credit card required."
+              primaryAction="Start Free Trial — No Credit Card"
+              primaryLink="/signup"
+              secondaryAction="View Pricing"
+              secondaryLink="/pricing"
+              showUrgency={true}
+              showTrustBadges={true}
+              variant="section"
+            />
+          </div>
+        </section>
         
         {/* Hidden Preload for components */}
         <div className="hidden">

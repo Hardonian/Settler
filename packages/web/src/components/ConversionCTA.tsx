@@ -68,6 +68,7 @@ export function ConversionCTA({
           'transition-all duration-500 hover:shadow-3xl'
         )}
         elevation="lg"
+        hover={false}
         role="region"
         aria-labelledby="cta-title"
       >
@@ -134,7 +135,7 @@ export function ConversionCTA({
   return (
     <Card
       elevation="lg"
-      hover
+      hover={true}
       role="region"
       aria-labelledby="cta-title"
     >

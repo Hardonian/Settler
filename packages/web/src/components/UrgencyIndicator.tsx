@@ -11,14 +11,16 @@ interface UrgencyIndicatorProps {
 
 export function UrgencyIndicator({ className, variant = "subtle" }: UrgencyIndicatorProps) {
   const [mounted, setMounted] = useState(false);
+  const [recentSignups, setRecentSignups] = useState(5);
+  const [minutesAgo, setMinutesAgo] = useState(3);
 
   useEffect(() => {
     setMounted(true);
+    // Simulate recent signups (for demo - in production, fetch from API)
+    // Use stable values to avoid hydration mismatches
+    setRecentSignups(Math.floor(Math.random() * 5) + 3); // 3-7 signups
+    setMinutesAgo(Math.floor(Math.random() * 5) + 1); // 1-5 minutes
   }, []);
-
-  // Simulate recent signups (for demo - in production, fetch from API)
-  const recentSignups = Math.floor(Math.random() * 5) + 3; // 3-7 signups
-  const minutesAgo = Math.floor(Math.random() * 5) + 1; // 1-5 minutes
 
   if (!mounted) return null;
 

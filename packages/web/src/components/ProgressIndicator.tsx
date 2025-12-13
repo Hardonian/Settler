@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Step {
@@ -18,7 +18,14 @@ export function ProgressIndicator({ steps, currentStep, className }: ProgressInd
   const activeIndex = currentStep ?? steps.findIndex((s) => !s.completed);
 
   return (
-    <div className={cn("flex items-center gap-2", className)} role="progressbar" aria-valuenow={activeIndex + 1} aria-valuemin={1} aria-valuemax={steps.length}>
+    <div 
+      className={cn("flex items-center gap-2", className)} 
+      role="progressbar" 
+      aria-valuenow={activeIndex + 1} 
+      aria-valuemin={1} 
+      aria-valuemax={steps.length}
+      aria-label={`Progress: Step ${activeIndex + 1} of ${steps.length}`}
+    >
       {steps.map((step, index) => (
         <div key={index} className="flex items-center gap-2">
           <div
