@@ -13,7 +13,6 @@ import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
 import { createErrorResponse } from '@/lib/server-error-handler';
 import { addVersionHeaders, getVersionFromPath } from '@/lib/api/versioning';
-import { checkRequestSize } from '@/lib/security/headers';
 
 export interface ApiWrapperConfig {
   rateLimiter?: (req: NextRequest) => Promise<NextResponse | null>;
@@ -36,7 +35,7 @@ export function withApiWrapper<T extends (...args: any[]) => Promise<NextRespons
     try {
       // Check request size
       const maxSize = config.maxSizeBytes || 10 * 1024 * 1024; // 10MB default
-      const sizeCheck = checkRequestSize(request, maxSize);
+      const sizeCheck = checkRequestSizeLocal(request, maxSize);
       if (sizeCheck) {
         await trackApiMetric(path, request.method, 413, Date.now() - startTime);
         return sizeCheck;

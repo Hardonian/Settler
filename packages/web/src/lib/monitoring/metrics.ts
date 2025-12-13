@@ -102,12 +102,12 @@ export async function trackError(event: ErrorEvent): Promise<void> {
             auditType: 'error',
             action: 'error_occurred',
             entityType: 'system',
-            changes: {
+            changes: JSON.parse(JSON.stringify({
               message: event.error.message,
               stack: event.error.stack,
               context: event.context || {},
               severity: event.severity,
-            } as Record<string, unknown>,
+            })),
           },
         });
       } catch {
