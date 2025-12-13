@@ -7,7 +7,8 @@
  * For client-safe tracking functions, see business.ts
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import 'server-only';
+import { prisma } from '@/shared/db/prismaClient.server';
 import type { BusinessMetrics } from './business';
 
 /**
