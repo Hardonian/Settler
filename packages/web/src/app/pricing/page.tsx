@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -13,13 +14,74 @@ import { AnimatedPricingCard } from "@/components/AnimatedPricingCard";
 import { AnimatedFAQ } from "@/components/AnimatedFAQ";
 import { FAQSchema } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { createClient } from "@/lib/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export default function Pricing() {
+  const router = useRouter();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState<string | null>(null);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        setIsAuthenticated(!!user);
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
+    };
+    void checkAuth();
+  }, []);
+
+  // Handle checkout for paid plans
+  const handleCheckout = async (planCode: 'pro' | 'scale') => {
+    if (!isAuthenticated) {
+      // Redirect to signup with return URL
+      router.push(`/signup?redirect=/pricing&plan=${planCode}`);
+      return;
+    }
+
+    try {
+      setIsCreatingCheckout(planCode);
+      setCheckoutError(null);
+      
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planCode,
+          successUrl: `${window.location.origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}/pricing?canceled=1`,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : 'Failed to start checkout');
+      setIsCreatingCheckout(null);
+    }
+  };
 
   const plans = [
     {
       name: 'Free',
+      planCode: 'free' as const,
       tagline: 'Perfect for getting started',
       price: '$0',
       period: 'forever',
@@ -38,11 +100,13 @@ export default function Pricing() {
       ],
       cta: 'Get Started',
       ctaLink: '/playground',
+      ctaAction: null, // No checkout for free plan
       popular: false,
       badge: 'OSS',
     },
     {
       name: 'Commercial',
+      planCode: 'pro' as const,
       tagline: 'For growing businesses',
       price: billingCycle === 'monthly' ? '$99' : '$990',
       period: billingCycle === 'monthly' ? '/month' : '/year',
@@ -63,11 +127,13 @@ export default function Pricing() {
       ],
       cta: 'Start Free Trial',
       ctaLink: '/signup',
+      ctaAction: () => handleCheckout('pro'),
       popular: true,
       badge: 'Most Popular',
     },
     {
       name: 'Enterprise',
+      planCode: 'scale' as const,
       tagline: 'For large organizations',
       price: 'Custom',
       period: '',
@@ -89,6 +155,7 @@ export default function Pricing() {
       ],
       cta: 'Contact Sales',
       ctaLink: '/enterprise',
+      ctaAction: null, // Enterprise goes to contact form
       popular: false,
       badge: 'Enterprise',
     },
@@ -201,6 +268,18 @@ export default function Pricing() {
         </div>
       </section>
 
+      {/* Checkout Error Alert */}
+      {checkoutError && (
+        <section className="px-4 sm:px-6 lg:px-8 -mt-8 mb-8">
+          <div className="max-w-7xl mx-auto">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{checkoutError}</AlertDescription>
+            </Alert>
+          </div>
+        </section>
+      )}
+
       {/* Pricing Cards */}
       <section
         className="py-20 px-4 sm:px-6 lg:px-8"
@@ -220,7 +299,12 @@ export default function Pricing() {
           >
             {plans.map((plan, index) => (
               <div key={index} role="listitem">
-                <AnimatedPricingCard plan={plan} index={index} />
+                <AnimatedPricingCard 
+                  plan={plan} 
+                  index={index}
+                  onCheckout={plan.ctaAction || undefined}
+                  isCreatingCheckout={isCreatingCheckout === plan.planCode}
+                />
               </div>
             ))}
           </div>

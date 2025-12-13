@@ -39,21 +39,26 @@ function isValidOriginUrl(url: unknown): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    // Validate Stripe is configured
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('[Stripe Checkout] STRIPE_SECRET_KEY not configured');
+      return NextResponse.json(
+        { error: 'Billing is not available at this time. Please contact support.' },
+        { status: 503 }
+      );
+    }
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized. Please sign in to continue.' }, { status: 401 });
     }
 
     const billingAccount = await prisma.billingAccount.findFirst({
       where: { userId: user.id },
       select: { id: true },
     });
-
-    if (!billingAccount) {
-      return NextResponse.json({ error: 'No billing account found' }, { status: 404 });
-    }
 
     const body = await request.json();
     const { planCode, successUrl, cancelUrl } = body;
@@ -76,6 +81,39 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid URL format or origin for successUrl or cancelUrl' },
         { status: 400 }
       );
+    }
+
+    if (!billingAccount) {
+      // Try to create billing account if it doesn't exist
+      try {
+        const newAccount = await prisma.billingAccount.create({
+          data: {
+            userId: user.id,
+            email: user.email || '',
+            status: 'active',
+          },
+        });
+        // Use the new account
+        const session = await createCheckoutSession(
+          newAccount.id,
+          planCode,
+          finalSuccessUrl,
+          finalCancelUrl
+        );
+        if (!session.url) {
+          return NextResponse.json(
+            { error: 'Failed to create checkout session URL' },
+            { status: 500 }
+          );
+        }
+        return NextResponse.json({ url: session.url });
+      } catch (createError) {
+        console.error('[Stripe Checkout] Failed to create billing account:', createError);
+        return NextResponse.json(
+          { error: 'Failed to initialize billing account. Please contact support.' },
+          { status: 500 }
+        );
+      }
     }
 
     // Prevent downgrading to free (must use customer portal)

@@ -16,31 +16,67 @@ export default function BillingSuccessPage() {
 
   useEffect(() => {
     if (!sessionId) {
-      setStatus('error');
-      setError('Missing session ID');
+      // If no session ID, still try to verify subscription status
+      // User might have navigated here directly or session ID was lost
+      const verifySession = async () => {
+        try {
+          const response = await fetch('/api/console/billing');
+          if (response.ok) {
+            const data = await response.json();
+            if (data.subscription && data.subscription.status === 'active') {
+              setStatus('success');
+            } else {
+              // No active subscription - might still be processing
+              setStatus('loading');
+              // Retry after delay
+              setTimeout(() => {
+                void verifySession();
+              }, 3000);
+            }
+          } else {
+            if (response.status === 401) {
+              setStatus('error');
+              setError('Please sign in to verify your subscription');
+            } else {
+              setStatus('error');
+              setError('Failed to verify subscription. Please check your billing page.');
+            }
+          }
+        } catch (err) {
+          setStatus('error');
+          setError(err instanceof Error ? err.message : 'Failed to verify subscription');
+        }
+      };
+      void verifySession();
       return;
     }
 
     // Verify session and wait a moment for webhook to process
     const verifySession = async () => {
       try {
-        // Give webhook time to process
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Give webhook time to process (exponential backoff)
+        let attempts = 0;
+        const maxAttempts = 5;
         
-        // Check billing status
-        const response = await fetch('/api/console/billing');
-        if (response.ok) {
-          const data = await response.json();
-          if (data.subscription) {
-            setStatus('success');
-          } else {
-            setStatus('error');
-            setError('Subscription not found. Please wait a moment and refresh.');
+        while (attempts < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 2000 * (attempts + 1)));
+          
+          // Check billing status
+          const response = await fetch('/api/console/billing');
+          if (response.ok) {
+            const data = await response.json();
+            if (data.subscription && (data.subscription.status === 'active' || data.subscription.status === 'trialing')) {
+              setStatus('success');
+              return;
+            }
           }
-        } else {
-          setStatus('error');
-          setError('Failed to verify subscription');
+          
+          attempts++;
         }
+        
+        // After max attempts, show error but allow manual check
+        setStatus('error');
+        setError('Subscription verification is taking longer than expected. Please check your billing page in a moment.');
       } catch (err) {
         setStatus('error');
         setError(err instanceof Error ? err.message : 'Failed to verify subscription');

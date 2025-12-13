@@ -147,8 +147,14 @@ export async function createCheckoutSession(
   }
 
   const planConfig = getPlanConfig(planCode);
-  if (!planConfig || !planConfig.stripePriceId) {
-    throw new Error(`Plan ${planCode} does not have a Stripe price ID configured`);
+  if (!planConfig) {
+    throw new Error(`Invalid plan code: ${planCode}`);
+  }
+  if (!planConfig.stripePriceId) {
+    throw new Error(
+      `Plan ${planCode} does not have a Stripe price ID configured. ` +
+      `Please set STRIPE_PRICE_ID_${planCode.toUpperCase()} environment variable.`
+    );
   }
 
   const customerId = await getOrCreateStripeCustomer(billingAccountId);

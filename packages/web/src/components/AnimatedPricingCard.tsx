@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 
 interface PricingFeature {
   text: string;
@@ -12,6 +13,7 @@ interface PricingFeature {
 
 interface PricingPlan {
   name: string;
+  planCode?: 'free' | 'pro' | 'scale';
   tagline: string;
   price: string;
   period: string;
@@ -20,6 +22,7 @@ interface PricingPlan {
   features: PricingFeature[];
   cta: string;
   ctaLink: string;
+  ctaAction?: (() => void | Promise<void>) | null;
   popular: boolean;
   badge: string;
 }
@@ -27,13 +30,15 @@ interface PricingPlan {
 interface AnimatedPricingCardProps {
   plan: PricingPlan;
   index: number;
+  onCheckout?: () => void | Promise<void>;
+  isCreatingCheckout?: boolean;
 }
 
 /**
  * Animated pricing card with intersection observer
  * Accessible and performant
  */
-export function AnimatedPricingCard({ plan, index }: AnimatedPricingCardProps) {
+export function AnimatedPricingCard({ plan, index, onCheckout, isCreatingCheckout = false }: AnimatedPricingCardProps) {
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -153,21 +158,47 @@ export function AnimatedPricingCard({ plan, index }: AnimatedPricingCardProps) {
             </li>
           ))}
         </ul>
-        <Button
-          asChild
-          className={`
-            w-full transition-all transform hover:scale-105
-            focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-            ${plan.popular
-              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
-              : 'bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700'
-            }
-          `}
-          size="lg"
-          aria-label={`${plan.cta} for ${plan.name} plan`}
-        >
-          <Link href={plan.ctaLink}>{plan.cta}</Link>
-        </Button>
+        {onCheckout ? (
+          <Button
+            onClick={onCheckout}
+            disabled={isCreatingCheckout}
+            className={`
+              w-full transition-all transform hover:scale-105
+              focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+              ${plan.popular
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
+                : 'bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700'
+              }
+            `}
+            size="lg"
+            aria-label={`${plan.cta} for ${plan.name} plan`}
+          >
+            {isCreatingCheckout ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              plan.cta
+            )}
+          </Button>
+        ) : (
+          <Button
+            asChild
+            className={`
+              w-full transition-all transform hover:scale-105
+              focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+              ${plan.popular
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
+                : 'bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700'
+              }
+            `}
+            size="lg"
+            aria-label={`${plan.cta} for ${plan.name} plan`}
+          >
+            <Link href={plan.ctaLink}>{plan.cta}</Link>
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
