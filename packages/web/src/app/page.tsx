@@ -41,7 +41,7 @@ export default function Home() {
     {
       icon: RefreshCw,
       title: "Reconcile Anything",
-      description: "Match transactions across Stripe, Shopify, DBs, and more with 100% accuracy. Our event-sourced engine handles millions of events per second.",
+      description: "Match transactions across Stripe, Shopify, DBs, and more using deterministic matching algorithms. Our event-sourced engine processes high-volume transactions efficiently.",
       gradient: "from-blue-500 to-indigo-500",
     },
     {
@@ -65,7 +65,7 @@ export default function Home() {
   ];
 
   const heroStats = [
-    { value: '100%', label: 'Accuracy', description: 'Deterministic math' },
+    { value: 'Deterministic', label: 'Matching', description: 'Precise algorithms' },
     { value: '<30ms', label: 'Edge Latency', description: 'Global evaluation' },
     { value: 'ISO', label: 'Compliant', description: '27001 & SOC 2 Ready' },
     { value: '1st', label: 'Developer DX', description: 'Typed SDKs' },

@@ -48,11 +48,11 @@ export default function SecurityPage() {
                 <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                   <Shield className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">SOC 2 Type II Ready</h3>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">SOC 2 Type II (Planned Q3 2026)</h3>
               </div>
               <p className="text-slate-600 dark:text-slate-300">
                 Our infrastructure and processes are designed in alignment with SOC 2 Trust Service Criteria. 
-                We maintain continuous monitoring of our security controls.
+                SOC 2 Type II certification is planned for Q3 2026. We maintain continuous monitoring of our security controls.
               </p>
             </div>
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
@@ -60,11 +60,11 @@ export default function SecurityPage() {
                 <div className="w-12 h-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
                   <FileKey className="w-6 h-6 text-indigo-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">ISO 27001 Aligned</h3>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">ISO 27001 Aligned (Planned)</h3>
               </div>
               <p className="text-slate-600 dark:text-slate-300">
                 We follow ISO 27001 standards for information security management, ensuring systemic 
-                risk management and robust security controls.
+                risk management and robust security controls. ISO 27001 certification is planned for future implementation.
               </p>
             </div>
           </div>
