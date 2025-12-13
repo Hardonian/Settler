@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
@@ -15,15 +15,41 @@ import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
 import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, CheckCircle2 } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
-// Regular imports for marketing components - removed dynamic imports to fix webpack resolution issues
-import { InvestorMetrics } from "@/components/marketing/InvestorMetrics";
-import { LiveMetricsCounter } from "@/components/marketing/LiveMetricsCounter";
-import { ValueProposition } from "@/components/marketing/ValueProposition";
-import { SocialProofCounter } from "@/components/marketing/SocialProofCounter";
-import { UrgencyBanner } from "@/components/marketing/UrgencyBanner";
-import { InvestorPitch } from "@/components/marketing/InvestorPitch";
-import { TestimonialCarousel } from "@/components/marketing/TestimonialCarousel";
-import { InfographicSection } from "@/components/marketing/InfographicSection";
+
+// Dynamic imports for marketing components - using index file for better webpack resolution
+// This provides code splitting and lazy loading benefits while avoiding webpack alias issues
+const InvestorMetrics = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InvestorMetrics })), { 
+  ssr: true,
+  loading: () => <div className="py-20" /> // Placeholder while loading
+});
+const LiveMetricsCounter = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.LiveMetricsCounter })), { 
+  ssr: false,
+  loading: () => <div className="py-12" />
+});
+const ValueProposition = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.ValueProposition })), { 
+  ssr: true,
+  loading: () => <div className="py-20" />
+});
+const SocialProofCounter = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.SocialProofCounter })), { 
+  ssr: true,
+  loading: () => <div className="py-12" />
+});
+const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing").then(mod => ({ default: mod.UrgencyBanner })), { 
+  ssr: true,
+  loading: () => null // No placeholder for banner
+});
+const InvestorPitch = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InvestorPitch })), { 
+  ssr: true,
+  loading: () => <div className="py-20" />
+});
+const TestimonialCarousel = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.TestimonialCarousel })), { 
+  ssr: true,
+  loading: () => <div className="py-20" />
+});
+const InfographicSection = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InfographicSection })), { 
+  ssr: true,
+  loading: () => <div className="py-20" />
+});
 // Dynamic imports for heavy components
 const TrustBadges = dynamic(() => import("@/components/TrustBadges").then(mod => ({ default: mod.TrustBadges })), { ssr: true });
 const CustomerLogos = dynamic(() => import("@/components/CustomerLogos").then(mod => ({ default: mod.CustomerLogos })), { ssr: true });
