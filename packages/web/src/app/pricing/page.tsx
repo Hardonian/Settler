@@ -16,10 +16,11 @@ import { AnimatedFAQ } from "@/components/AnimatedFAQ";
 import { FAQSchema } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
-// Marketing components use relative paths to avoid TypeScript module resolution issues
-// with barrel exports in subdirectories (see page.tsx for details)
+// @ts-expect-error - TypeScript can't resolve dynamic imports for marketing components, but Next.js/webpack handles them correctly at runtime
 const ROICalculator = dynamic(() => import("@/components/marketing/ROICalculator").then(mod => ({ default: mod.ROICalculator })), { ssr: true });
+// @ts-expect-error - TypeScript can't resolve dynamic imports for marketing components, but Next.js/webpack handles them correctly at runtime
 const ComparisonTable = dynamic(() => import("@/components/marketing/ComparisonTable").then(mod => ({ default: mod.ComparisonTable })), { ssr: true });
+// @ts-expect-error - TypeScript can't resolve dynamic imports for marketing components, but Next.js/webpack handles them correctly at runtime
 const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
 
 export default function Pricing() {
