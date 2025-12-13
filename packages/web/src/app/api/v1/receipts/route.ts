@@ -14,6 +14,9 @@ import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/share
 import { z } from 'zod';
 import { createErrorResponse, handleApiError, createSuccessResponse } from '@/lib/api-response';
 import { withRetry } from '@/lib/db/retry';
+import { requestSizeLimits } from '@/middleware/request-size-limit';
+import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
+import { trackApiMetric } from '@/lib/monitoring/metrics';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -29,7 +32,21 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+
   try {
+    // Check request size
+    const sizeCheck = requestSizeLimits.api(request);
+    if (sizeCheck) {
+      return sizeCheck;
+    }
+
+    // Apply rate limiting
+    const rateLimitCheck = await redisRateLimiters.api(request);
+    if (rateLimitCheck) {
+      return rateLimitCheck;
+    }
+
     // Authenticate API key
     const auth = await authenticateApiKey(request);
 
@@ -161,6 +178,9 @@ export async function POST(request: NextRequest) {
         include: { items: true },
       }));
 
+      // Track metrics
+      await trackApiMetric('/api/v1/receipts', 'POST', 200, Date.now() - startTime);
+
       return createSuccessResponse({
         id: receipt.id,
         uploadId: upload.id,
@@ -184,6 +204,9 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (error: unknown) {
+      // Track error metrics
+      await trackApiMetric('/api/v1/receipts', 'POST', 500, Date.now() - startTime);
+
       // Update upload status to failed (with retry)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       await withRetry(() => prisma.receiptUpload.update({

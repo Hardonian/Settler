@@ -14,6 +14,8 @@ import { stripe, syncSubscriptionFromWebhook } from '@/domain/billing/stripeServ
 import { prisma } from '@/shared/db/prismaClient';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
+import { trackWebhookMetric } from '@/lib/monitoring/metrics';
+import { requestSizeLimits } from '@/middleware/request-size-limit';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // CRITICAL: Must be Node.js runtime for Prisma
@@ -128,8 +130,24 @@ function extractBillingAccountId(event: Stripe.Event): string | null {
 }
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+
+  // Check request size (max 500KB for webhooks)
+  const sizeCheck = requestSizeLimits.webhook(request);
+  if (sizeCheck) {
+    return sizeCheck;
+  }
+
   // Read RAW body - CRITICAL for signature verification
   const body = await request.text();
+  
+  // Double-check size after reading
+  if (body.length > 500 * 1024) {
+    return NextResponse.json(
+      { error: 'Request body too large' },
+      { status: 413 }
+    );
+  }
   const headersList = await headers();
   const signature = headersList.get('stripe-signature');
 
@@ -196,12 +214,16 @@ export async function POST(request: NextRequest) {
           : session.subscription.id;
         
         try {
-          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+          // Use safe Stripe call with rate limit handling
+          const { safeStripeCall } = await import('@/lib/stripe/rate-limit-handler');
+          const result = await safeStripeCall(async (stripe) => {
+            return await stripe.subscriptions.retrieve(subscriptionId);
+          });
           await syncSubscriptionFromWebhook({
             ...event,
             type: 'customer.subscription.created',
             data: {
-              object: subscription,
+              object: result.data,
             },
           } as Stripe.Event);
         } catch (error) {
@@ -295,6 +317,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Track metrics
+    const durationMs = Date.now() - startTime;
+    await trackWebhookMetric(event.type, true, durationMs);
+
     return NextResponse.json({ received: true });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -311,6 +337,10 @@ export async function POST(request: NextRequest) {
     } catch (dbError) {
       console.error('[Stripe Webhook] Failed to mark event as failed:', dbError);
     }
+
+    // Track error metrics
+    const durationMs = Date.now() - startTime;
+    await trackWebhookMetric(event.type, false, durationMs);
     
     // Return 500 so Stripe retries
     return NextResponse.json(

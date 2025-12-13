@@ -156,17 +156,24 @@ export function AnimatedPricingCard({ plan, index }: AnimatedPricingCardProps) {
         <Button
           asChild
           className={`
-            w-full transition-all transform hover:scale-105
+            w-full transition-all transform hover:scale-105 shadow-lg hover:shadow-xl
             focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
             ${plan.popular
-              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-lg py-6'
               : 'bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700'
             }
           `}
           size="lg"
           aria-label={`${plan.cta} for ${plan.name} plan`}
         >
-          <Link href={plan.ctaLink}>{plan.cta}</Link>
+          <Link href={plan.ctaLink} className="flex items-center justify-center gap-2">
+            {plan.cta}
+            {plan.popular && (
+              <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-full text-xs font-semibold">
+                Popular
+              </span>
+            )}
+          </Link>
         </Button>
       </CardContent>
     </Card>

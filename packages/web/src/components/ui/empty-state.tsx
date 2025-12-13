@@ -1,125 +1,109 @@
 /**
- * EmptyState Component
+ * Empty State Component
  * 
- * Reusable empty state display component with consistent styling and accessibility.
+ * Displays an empty state with optional retry action.
+ * Used for error states, empty lists, and loading failures.
  */
 
 'use client';
 
-import { Inbox, LucideIcon } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 import { Button } from './button';
-import { cn } from '@/lib/utils';
+import { AlertCircle, RefreshCw } from 'lucide-react';
 
 export interface EmptyStateProps {
-  /**
-   * Icon to display
-   */
   icon?: LucideIcon;
-  /**
-   * Title for the empty state
-   */
-  title?: string;
-  /**
-   * Description text
-   */
-  description?: string;
-  /**
-   * Action button
-   */
+  title: string;
+  description: string;
   action?: {
     label: string;
     onClick: () => void;
+    variant?: 'default' | 'outline' | 'ghost';
   };
-  /**
-   * Size variant
-   * @default 'default'
-   */
-  size?: 'sm' | 'default' | 'lg';
-  /**
-   * Additional className
-   */
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+  };
   className?: string;
 }
 
 export function EmptyState({
-  icon: Icon = Inbox,
-  title = 'No data available',
+  icon: Icon = AlertCircle,
+  title,
   description,
   action,
-  size = 'default',
-  className,
+  secondaryAction,
+  className = '',
 }: EmptyStateProps) {
-  // Ensure title is a proper heading level
-  const HeadingTag = size === 'lg' ? 'h2' : size === 'sm' ? 'h4' : 'h3';
-  const sizeClasses = {
-    sm: {
-      container: 'py-8',
-      icon: 'w-10 h-10',
-      title: 'text-base',
-      description: 'text-sm',
-    },
-    default: {
-      container: 'py-12',
-      icon: 'w-12 h-12',
-      title: 'text-lg',
-      description: 'text-base',
-    },
-    lg: {
-      container: 'py-16',
-      icon: 'w-16 h-16',
-      title: 'text-xl',
-      description: 'text-lg',
-    },
-  };
-
-  const currentSize = sizeClasses[size];
-
   return (
-    <div
-      className={cn(
-        'flex flex-col items-center justify-center px-4',
-        currentSize.container,
-        className
-      )}
-      role="status"
-      aria-live="polite"
-    >
-      <Icon
-        className={cn(
-          'text-muted-foreground mb-4',
-          currentSize.icon,
-          'motion-safe:animate-fade-in'
-        )}
-        aria-hidden="true"
-      />
-      <HeadingTag
-        className={cn(
-          'font-semibold text-foreground mb-2 text-center',
-          currentSize.title
-        )}
-      >
+    <div className={`flex flex-col items-center justify-center p-12 text-center ${className}`}>
+      <div className="mb-4 rounded-full bg-slate-100 dark:bg-slate-800 p-4">
+        <Icon className="h-8 w-8 text-slate-600 dark:text-slate-400" />
+      </div>
+      
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
         {title}
-      </HeadingTag>
-      {description && (
-        <p
-          className={cn(
-            'text-muted-foreground text-center mb-6 max-w-md mx-auto',
-            currentSize.description
+      </h3>
+      
+      <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 max-w-md">
+        {description}
+      </p>
+
+      {(action || secondaryAction) && (
+        <div className="flex flex-col sm:flex-row gap-3">
+          {action && (
+            <Button
+              onClick={action.onClick}
+              variant={action.variant || 'default'}
+              className="min-w-[120px]"
+            >
+              {action.label}
+            </Button>
           )}
-        >
-          {description}
-        </p>
-      )}
-      {action && (
-        <Button
-          onClick={action.onClick}
-          variant="default"
-          size={size === 'sm' ? 'sm' : 'default'}
-          aria-label={action.label}
-        >
-          {action.label}
-        </Button>
+          {secondaryAction && (
+            <Button
+              onClick={secondaryAction.onClick}
+              variant="outline"
+              className="min-w-[120px]"
+            >
+              {secondaryAction.label}
+            </Button>
+          )}
+        </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Retry Button Component
+ * Standardized retry button with loading state
+ */
+export interface RetryButtonProps {
+  onRetry: () => void;
+  isLoading?: boolean;
+  label?: string;
+}
+
+export function RetryButton({ onRetry, isLoading = false, label = 'Try again' }: RetryButtonProps) {
+  return (
+    <Button
+      onClick={onRetry}
+      disabled={isLoading}
+      variant="outline"
+      className="min-w-[120px]"
+    >
+      {isLoading ? (
+        <>
+          <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+          Retrying...
+        </>
+      ) : (
+        <>
+          <RefreshCw className="mr-2 h-4 w-4" />
+          {label}
+        </>
+      )}
+    </Button>
   );
 }

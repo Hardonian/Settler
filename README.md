@@ -127,14 +127,60 @@ Usage is tracked for reconciliation operations, receipt parsing, and feature fla
 
 ## Documentation
 
-- **[Architecture](docs/architecture.md)**: System architecture and design patterns
+- **[Architecture](docs/ARCHITECTURE.md)**: Complete system architecture and design patterns
+- **[Critical Paths](docs/CRITICAL_PATHS.md)**: User journey documentation and failure modes
+- **[Security](docs/SECURITY.md)**: Security practices, compliance, and vulnerability reporting
 - **[API Reference](docs/api.md)**: Complete API documentation
 - **[Getting Started](docs/getting-started.md)**: Developer onboarding guide
 - **[Billing](docs/billing.md)**: Pricing and usage information
-- **[Security](SECURITY.md)**: Security practices and vulnerability reporting
 - **[Contributing](CONTRIBUTING.md)**: Contribution guidelines
 
 Full documentation is also available at [settler.dev/docs](https://settler.dev/docs).
+
+## Production Readiness
+
+This codebase has undergone a comprehensive hardening pass (see [Reflection Report](docs/REFLECTION_REPORT.md) and [Completion Report](docs/COMPLETION_REPORT.md)):
+
+- ✅ **Error Handling**: Graceful degradation, safe helpers, error boundaries, retry components
+- ✅ **Security**: Redis-backed rate limiting, security headers, webhook verification, RLS policies, request size limits
+- ✅ **Billing**: Reconciliation service, webhook hardening, admin tools, Stripe rate limit handling
+- ✅ **Database**: Integrity checks, RLS verification, sanity scripts
+- ✅ **Monitoring**: Metrics tracking, audit logging, performance utilities
+- ✅ **Testing**: Smoke tests, CI/CD, build verification
+- ✅ **Documentation**: Architecture docs, critical paths, security guide
+- ✅ **Future-Proofing**: Cache abstraction, API versioning, performance utilities
+
+## Quick Verification
+
+After deployment, verify everything works:
+
+```bash
+# Run database sanity checks
+npm run db:sanity-check
+
+# Run smoke tests (requires running server)
+npm run test:smoke
+
+# Check build
+npm run build
+npm run typecheck
+npm run lint
+```
+
+## Optional Enhancements
+
+For enhanced features, install optional dependencies:
+
+```bash
+# Redis-backed rate limiting (falls back to in-memory if not installed)
+npm install @upstash/redis
+```
+
+Then configure environment variables:
+```bash
+UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-token
+```
 
 ## Security
 
