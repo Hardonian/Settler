@@ -30,7 +30,7 @@ const InvestorMetrics = dynamic(() => import("@/components/marketing/InvestorMet
 const LiveMetricsCounter = dynamic(() => import("@/components/marketing/LiveMetricsCounter").then(mod => ({ default: mod.LiveMetricsCounter })), { ssr: false });
 const ValueProposition = dynamic(() => import("@/components/marketing/ValueProposition").then(mod => ({ default: mod.ValueProposition })), { ssr: true });
 const SocialProofCounter = dynamic(() => import("@/components/marketing/SocialProofCounter").then(mod => ({ default: mod.SocialProofCounter })), { ssr: true });
-const UrgencyBanner = dynamic(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
+const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
 const InvestorPitch = dynamic(() => import("@/components/marketing/InvestorPitch").then(mod => ({ default: mod.InvestorPitch })), { ssr: true });
 const TestimonialCarousel = dynamic(() => import("@/components/marketing/TestimonialCarousel").then(mod => ({ default: mod.TestimonialCarousel })), { ssr: true });
 const IntegrationLogos = dynamic(() => import("@/components/IntegrationLogos").then(mod => ({ default: mod.IntegrationLogos })), { ssr: true });

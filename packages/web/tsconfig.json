@@ -51,6 +51,6 @@
       "@settler/types/*": ["../types/dist/*", "../types/src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/marketing/types.d.ts"],
   "exclude": ["node_modules", ".next", "dist", "out"]
 }

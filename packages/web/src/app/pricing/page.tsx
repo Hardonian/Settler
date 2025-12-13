@@ -18,7 +18,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 const ROICalculator = dynamic(() => import("@/components/marketing/ROICalculator").then(mod => ({ default: mod.ROICalculator })), { ssr: true });
 const ComparisonTable = dynamic(() => import("@/components/marketing/ComparisonTable").then(mod => ({ default: mod.ComparisonTable })), { ssr: true });
-const UrgencyBanner = dynamic(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
+const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing/UrgencyBanner").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
