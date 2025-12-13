@@ -16,7 +16,6 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { trackPaymentFailure, trackCheckoutCompleted, trackSubscriptionCancellation } from '@/lib/monitoring/alerts';
 import { trackRevenue, trackBusinessEvent } from '@/lib/metrics/business';
-import { getBusinessMetrics } from '@/lib/metrics/business-server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // CRITICAL: Must be Node.js runtime for Prisma
