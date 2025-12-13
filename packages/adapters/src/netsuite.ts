@@ -42,20 +42,6 @@ export class NetSuiteAdapter implements Adapter {
   }
 
   /**
-   * Generate OAuth 1.0 signature for NetSuite TBA
-   */
-  private generateSignature(method: string, url: string, params: Record<string, string>): string {
-    // Simplified OAuth 1.0 signature generation
-    // In production, use a proper OAuth 1.0 library
-    const sortedParams = Object.keys(params)
-      .sort()
-      .map((key) => `${key}=${encodeURIComponent(params[key])}`)
-      .join("&");
-
-    return `${method}&${encodeURIComponent(url)}&${encodeURIComponent(sortedParams)}`;
-  }
-
-  /**
    * Fetch transactions from NetSuite
    */
   async fetch(options: FetchOptions): Promise<NormalizedData[]> {
@@ -70,9 +56,10 @@ export class NetSuiteAdapter implements Adapter {
         // NetSuite uses OAuth 1.0 with Token-Based Authentication (TBA)
         // In production, implement proper OAuth 1.0 signing
         const url = `${this.baseUrl}/services/rest/record/v1/transaction`;
-        const params = {
-          startDate,
-          endDate,
+        // startDate and endDate are guaranteed to be strings from the split above
+        const params: Record<string, string> = {
+          startDate: startDate,
+          endDate: endDate,
         };
 
         // Simplified - in production, use proper OAuth 1.0 library

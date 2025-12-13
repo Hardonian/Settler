@@ -60,6 +60,8 @@ export class EnhancedQuickBooksAdapter implements Adapter {
       "quickbooks-auth",
       async () => {
         const auth = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString("base64");
+        // refreshToken is guaranteed to exist due to check above
+        const refreshToken = this.config.refreshToken!;
         return fetch("https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer", {
           method: "POST",
           headers: {
@@ -68,7 +70,7 @@ export class EnhancedQuickBooksAdapter implements Adapter {
           },
           body: new URLSearchParams({
             grant_type: "refresh_token",
-            refresh_token: this.config.refreshToken,
+            refresh_token: refreshToken,
           }),
         });
       }
@@ -88,7 +90,7 @@ export class EnhancedQuickBooksAdapter implements Adapter {
   /**
    * Check if token is expired (simplified - in production, decode JWT)
    */
-  private isTokenExpired(token: string): boolean {
+  private isTokenExpired(_token: string): boolean {
     // QuickBooks tokens expire after 1 hour
     // In production, decode JWT and check exp claim
     return false; // Simplified for now
