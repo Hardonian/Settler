@@ -42,6 +42,12 @@ export async function listReceipts(
   offset = 0
 ): Promise<ReceiptListItem[]> {
   try {
+    // Check if Prisma is available
+    if (!prisma || typeof prisma.receipt === 'undefined') {
+      console.warn('[listReceipts] Prisma client not available, returning empty list');
+      return [];
+    }
+    
     const receipts = await prisma.receipt.findMany({
       where: {
         upload: {

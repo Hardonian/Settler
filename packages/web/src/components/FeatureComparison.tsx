@@ -43,38 +43,40 @@ export function FeatureComparison() {
         </div>
         <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 overflow-x-auto">
           <CardContent className="p-0">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800">
-                  <th className="text-left p-4 font-semibold text-slate-900 dark:text-white">Feature</th>
-                  <th className="text-center p-4 font-semibold text-slate-900 dark:text-white">
-                    <div>Free</div>
-                    <Badge className="mt-2 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">OSS</Badge>
-                  </th>
-                  <th className="text-center p-4 font-semibold text-slate-900 dark:text-white">
-                    <div>Commercial</div>
-                    <Badge className="mt-2 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">$99/mo</Badge>
-                  </th>
-                  <th className="text-center p-4 font-semibold text-slate-900 dark:text-white">
-                    <div>Enterprise</div>
-                    <Badge className="mt-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">Custom</Badge>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {features.map((feature, index) => (
-                  <tr
-                    key={index}
-                    className="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                  >
-                    <td className="p-4 font-medium text-slate-900 dark:text-white">{feature.name}</td>
-                    <td className="p-4 text-center">{renderValue(feature.free)}</td>
-                    <td className="p-4 text-center">{renderValue(feature.commercial)}</td>
-                    <td className="p-4 text-center">{renderValue(feature.enterprise)}</td>
+            <div className="overflow-x-auto" role="region" aria-label="Feature comparison table">
+              <table className="w-full" role="table" aria-label="Pricing plan feature comparison">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-800">
+                    <th scope="col" className="text-left p-4 font-semibold text-slate-900 dark:text-white">Feature</th>
+                    <th scope="col" className="text-center p-4 font-semibold text-slate-900 dark:text-white">
+                      <div>Free</div>
+                      <Badge className="mt-2 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">OSS</Badge>
+                    </th>
+                    <th scope="col" className="text-center p-4 font-semibold text-slate-900 dark:text-white">
+                      <div>Commercial</div>
+                      <Badge className="mt-2 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">$99/mo</Badge>
+                    </th>
+                    <th scope="col" className="text-center p-4 font-semibold text-slate-900 dark:text-white">
+                      <div>Enterprise</div>
+                      <Badge className="mt-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">Custom</Badge>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {features.map((feature, index) => (
+                    <tr
+                      key={index}
+                      className="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                    >
+                      <th scope="row" className="p-4 font-medium text-slate-900 dark:text-white">{feature.name}</th>
+                      <td className="p-4 text-center">{renderValue(feature.free)}</td>
+                      <td className="p-4 text-center">{renderValue(feature.commercial)}</td>
+                      <td className="p-4 text-center">{renderValue(feature.enterprise)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       </div>

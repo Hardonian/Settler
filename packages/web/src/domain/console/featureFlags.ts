@@ -38,6 +38,12 @@ export async function listFeatureFlags(
   projectId?: string
 ): Promise<FeatureFlagListItem[]> {
   try {
+    // Check if Prisma is available
+    if (!prisma || typeof prisma.featureFlag === 'undefined') {
+      console.warn('[listFeatureFlags] Prisma client not available, returning empty list');
+      return [];
+    }
+    
     const flags = await prisma.featureFlag.findMany({
       where: {
         billingAccountId,

@@ -104,6 +104,18 @@ export async function getUsageSummary(
   endDate: Date
 ): Promise<UsageSummary> {
   try {
+    // Check if Prisma is available
+    if (!prisma || typeof prisma.usageEvent === 'undefined') {
+      console.warn('[getUsageSummary] Prisma client not available, returning empty summary');
+      return {
+        totalCalls: 0,
+        byService: {},
+        byOperation: {},
+        errorRate: 0,
+        period: { start: startDate, end: endDate },
+      };
+    }
+    
     const events = await prisma.usageEvent.findMany({
       where: {
         billingAccountId,

@@ -12,7 +12,7 @@ export function SEOHead({
   title = 'Settler - Reconciliation as a Service API',
   description = 'Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. All Platforms. Real-Time.',
   canonical,
-  ogImage = '/og-image.png',
+  ogImage = '/opengraph-image',
   noindex = false,
 }: SEOHeadProps) {
   const fullTitle = title.includes('Settler') ? title : `${title} | Settler`;

@@ -2,7 +2,7 @@
 
 import { CreditCard, Building2, ArrowRightLeft, CheckCircle2, Lock, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import { SafeImage } from "@/components/SafeImage";
 
 interface PaymentMethod {
   name: string;
@@ -113,13 +113,15 @@ export function PaymentTypes() {
                 <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
                   <div className="flex items-center gap-2 mb-2">
                     {method.logo && (
-                      <Image
+                      <SafeImage
                         src={method.logo}
-                        alt={method.processor}
+                        alt={`${method.processor} payment processor logo`}
                         width={60}
                         height={30}
                         className="opacity-80"
+                        fallbackTitle={method.processor}
                         unoptimized
+                        sizes="60px"
                       />
                     )}
                     <span className="text-xs text-slate-500 dark:text-slate-400">
@@ -155,13 +157,15 @@ export function PaymentTypes() {
             {/* Stripe */}
             <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-blue-200 dark:border-slate-700">
               <div className="w-16 h-16 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
-                <Image
+                <SafeImage
                   src="/assets/icons/stripe-badge.svg"
-                  alt="Stripe"
+                  alt="Stripe payment processor badge"
                   width={70}
                   height={35}
                   className="opacity-90"
+                  fallbackTitle="Stripe"
                   unoptimized
+                  sizes="70px"
                 />
               </div>
               <div>
@@ -177,13 +181,15 @@ export function PaymentTypes() {
             {/* PayPal */}
             <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-blue-200 dark:border-slate-700">
               <div className="w-16 h-16 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
-                <Image
+                <SafeImage
                   src="/assets/icons/paypal-payment-badge.svg"
-                  alt="PayPal"
+                  alt="PayPal payment processor badge"
                   width={70}
                   height={35}
                   className="opacity-90"
+                  fallbackTitle="PayPal"
                   unoptimized
+                  sizes="70px"
                 />
               </div>
               <div>

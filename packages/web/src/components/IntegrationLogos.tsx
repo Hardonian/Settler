@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { SafeImage } from "@/components/SafeImage";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -173,13 +173,17 @@ export function IntegrationLogos() {
                     aria-label={`${integration.name} integration`}
                   >
                     <div className="relative w-full h-12 mb-2 flex items-center justify-center">
-                      <Image
+                      <SafeImage
                         src={integration.logo}
-                        alt={integration.name}
+                        alt={`${integration.name} integration logo`}
                         width={100}
                         height={40}
                         className="object-contain max-h-10 opacity-80 group-hover:opacity-100 transition-opacity"
+                        fallbackTitle={integration.name}
+                        fallbackCaption={`${integration.category} integration`}
+                        containerClassName="w-full h-12"
                         unoptimized
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                       />
                     </div>
                     <p className="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">
