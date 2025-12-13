@@ -66,7 +66,7 @@ export function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] | undefi
 /**
  * Type-safe nested property access
  */
-export function getNestedProperty<T>(
+export function getNestedProperty(
   obj: unknown,
   path: string[]
 ): unknown {

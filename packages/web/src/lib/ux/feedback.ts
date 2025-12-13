@@ -4,8 +4,8 @@
  * Provides comprehensive feedback mechanisms for better UX
  */
 
-import { getErrorMessage, isRetryableError, toUserFriendlyError } from './error-messages';
-import { toast, ToastType } from './toast';
+import { getErrorMessage, isRetryableError } from './error-messages';
+import { toast } from './toast';
 import { globalLoadingState } from './loading-states';
 
 /**

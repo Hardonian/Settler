@@ -58,8 +58,12 @@ export async function raceToSuccess<T>(
   const errors: Array<{ error: unknown; index: number }> = [];
   
   for (let i = 0; i < functions.length; i++) {
+    const fn = functions[i];
+    if (!fn) {
+      continue;
+    }
     try {
-      return await functions[i]();
+      return await fn();
     } catch (error) {
       errors.push({ error, index: i });
       if (onError) {

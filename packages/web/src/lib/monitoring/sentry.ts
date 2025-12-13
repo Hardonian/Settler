@@ -157,14 +157,17 @@ class SentryClient {
    * Capture message
    */
   captureMessage(message: string, level: 'info' | 'warning' | 'error' = 'info', context?: Record<string, unknown>): void {
+    // Map 'warning' to 'warn' for console
+    const consoleLevel = level === 'warning' ? 'warn' : level;
+    
     if (!this.initialized) {
-      console[level]('[Message]', message, context);
+      (console[consoleLevel as 'info' | 'warn' | 'error'] as typeof console.log)('[Message]', message, context);
       return;
     }
 
     try {
       import('@sentry/nextjs').then((Sentry) => {
-        // Sentry.SeverityLevel may vary by version, use string literal
+        // Sentry severity level mapping
         const severityMap: Record<string, 'debug' | 'info' | 'warning' | 'error' | 'fatal'> = {
           info: 'info',
           warning: 'warning',
@@ -176,10 +179,10 @@ class SentryClient {
         });
       }).catch(() => {
         // Sentry not available, log to console instead
-        console[level]('[Message]', message, context);
+        (console[consoleLevel as 'info' | 'warn' | 'error'] as typeof console.log)('[Message]', message, context);
       });
     } catch (err) {
-      console[level]('[Message]', message, context);
+      (console[consoleLevel as 'info' | 'warn' | 'error'] as typeof console.log)('[Message]', message, context);
     }
   }
 
@@ -208,10 +211,16 @@ class SentryClient {
 
     try {
       import('@sentry/nextjs').then((Sentry) => {
+        // Use string literal type instead of Sentry.SeverityLevel namespace
+        const levelMap: Record<string, 'debug' | 'info' | 'warning' | 'error' | 'fatal'> = {
+          info: 'info',
+          warning: 'warning',
+          error: 'error',
+        };
         Sentry.addBreadcrumb({
           message: breadcrumb.message,
           category: breadcrumb.category || 'default',
-          level: breadcrumb.level as Sentry.SeverityLevel || 'info',
+          level: (breadcrumb.level ? levelMap[breadcrumb.level] : 'info') as 'debug' | 'info' | 'warning' | 'error' | 'fatal',
           data: breadcrumb.data,
         });
       }).catch(() => {
@@ -225,7 +234,7 @@ class SentryClient {
   /**
    * Start transaction (performance monitoring)
    */
-  startTransaction(name: string, op: string): { finish: () => void } | null {
+  startTransaction(_name: string, _op: string): { finish: () => void } | null {
     if (!this.initialized) {
       return {
         finish: () => {

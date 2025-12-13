@@ -24,7 +24,10 @@ export interface ApiClientConfig {
 }
 
 export class ApiClient {
-  private config: Required<ApiClientConfig>;
+  private config: Required<Omit<ApiClientConfig, 'circuitBreaker' | 'onError'>> & {
+    circuitBreaker?: ApiClientConfig['circuitBreaker'];
+    onError?: ApiClientConfig['onError'];
+  };
 
   constructor(config: ApiClientConfig) {
     this.config = {
@@ -161,3 +164,48 @@ export const apiClient = createApiClient({
   },
   showToastOnError: true,
 });
+
+/**
+ * Fetch JSON with resilience (convenience function)
+ */
+export async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
+  return apiClient.get<T>(url, options);
+}
+
+/**
+ * Fetch with fallback (convenience function)
+ */
+export async function fetchWithFallback<T>(
+  url: string,
+  fallback: T | (() => T | Promise<T>),
+  options?: RequestInit
+): Promise<T> {
+  try {
+    return await apiClient.get<T>(url, options);
+  } catch (error) {
+    if (typeof fallback === 'function') {
+      return await (fallback as () => T | Promise<T>)();
+    }
+    return fallback;
+  }
+}
+
+/**
+ * Defensive fetch (convenience function with error handling)
+ */
+export async function defensiveFetch<T>(
+  url: string,
+  options?: RequestInit
+): Promise<T | null> {
+  try {
+    return await apiClient.get<T>(url, options);
+  } catch (error) {
+    console.error('[defensiveFetch] Failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Fetch options type (for compatibility)
+ */
+export type FetchOptions = RequestInit;
