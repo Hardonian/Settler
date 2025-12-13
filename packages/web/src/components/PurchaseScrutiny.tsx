@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { SafeImage } from "@/components/SafeImage";
 import { Shield, Lock, CreditCard, CheckCircle2, Clock, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -151,24 +151,30 @@ export function PurchaseScrutiny() {
             </p>
             <div className="flex items-center justify-center gap-6 flex-wrap">
               <div className="flex flex-col items-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                <Image
+                <SafeImage
                   src="/assets/icons/stripe-badge.svg"
-                  alt="Stripe"
+                  alt="Stripe payment processor badge"
                   width={80}
                   height={40}
                   className="opacity-80"
+                  fallbackTitle="Stripe"
+                  fallbackCaption="Payment processor"
                   unoptimized
+                  sizes="80px"
                 />
                 <p className="text-xs text-slate-600 dark:text-slate-400">Credit Cards</p>
               </div>
               <div className="flex flex-col items-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                <Image
+                <SafeImage
                   src="/assets/icons/paypal-payment-badge.svg"
-                  alt="PayPal"
+                  alt="PayPal payment processor badge"
                   width={80}
                   height={40}
                   className="opacity-80"
+                  fallbackTitle="PayPal"
+                  fallbackCaption="Payment processor"
                   unoptimized
+                  sizes="80px"
                 />
                 <p className="text-xs text-slate-600 dark:text-slate-400">PayPal</p>
               </div>

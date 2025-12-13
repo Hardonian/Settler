@@ -5,8 +5,15 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 function ArchitectureDiagram() {
   return (
-    <div className="w-full overflow-hidden bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8">
-      <svg viewBox="0 0 800 400" className="w-full h-auto" style={{ maxHeight: '500px' }}>
+    <figure className="w-full overflow-hidden bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8">
+      <svg 
+        viewBox="0 0 800 400" 
+        className="w-full h-auto" 
+        style={{ maxHeight: '500px' }}
+        role="img"
+        aria-labelledby="architecture-diagram-title"
+        aria-describedby="architecture-diagram-desc"
+      >
         <defs>
           <marker id="head" orient="auto" markerWidth="6" markerHeight="6" refX="6" refY="3">
             <path d="M0,0 L6,3 L0,6" fill="currentColor" className="text-slate-400" />
@@ -53,8 +60,15 @@ function ArchitectureDiagram() {
         <path d="M170,280 L170,330 L300,330 L300,350" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
         <path d="M400,280 L400,350" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
         <path d="M630,280 L630,330 L500,330 L500,350" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
+        <title id="architecture-diagram-title">Settler Architecture Diagram</title>
+        <desc id="architecture-diagram-desc">
+          Architecture showing API Gateway at the top connecting to three services: Reconciliation Matching Engine, Receipts OCR & Parsing, and Feature Flags Edge Evaluation. All services connect to a Distributed Data Store & Event Log at the bottom.
+        </desc>
       </svg>
-    </div>
+      <figcaption id="architecture-diagram-caption" className="mt-4 text-sm text-slate-600 dark:text-slate-400 text-center">
+        Settler architecture: API Gateway routes requests to core services (Reconciliation, Receipts, Feature Flags), all backed by a distributed event-sourced data store.
+      </figcaption>
+    </figure>
   );
 }
 

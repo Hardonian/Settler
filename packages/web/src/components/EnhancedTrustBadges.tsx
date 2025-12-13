@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { SafeImage } from "@/components/SafeImage";
 import { cn } from "@/lib/utils";
 
 interface Badge {
@@ -113,13 +113,16 @@ export function EnhancedTrustBadges() {
           aria-label={badge.name}
         >
           <div className="relative w-16 h-16 flex items-center justify-center">
-            <Image
+            <SafeImage
               src={badge.icon}
-              alt={badge.name}
+              alt={`${badge.name} certification badge`}
               width={64}
               height={64}
               className="object-contain"
+              fallbackTitle={badge.name}
+              fallbackCaption={badge.description}
               unoptimized
+              sizes="64px"
             />
             {badge.status === "active" && (
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-800" />
