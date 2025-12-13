@@ -46,6 +46,8 @@
     "db:migrate:auto": "tsx scripts/migrate-supabase.ts",
     "db:check": "tsx scripts/check-connection.ts",
     "prisma:generate": "PRISMA_CLIENT_ENGINE_TYPE=binary PRISMA_ENGINES_MIRROR= prisma generate",
+    "build:check": "tsx scripts/build-resilience-check.ts",
+    "build:optimize": "node scripts/vercel-build-optimizer.js",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",

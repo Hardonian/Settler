@@ -42,6 +42,52 @@ const nextConfig = {
     // Show type errors during build
     tsconfigPath: './tsconfig.json',
   },
+  // Build optimization
+  webpack: (config, { isServer, dev }) => {
+    // Optimize bundle size for production client builds
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'deterministic',
+        runtimeChunk: 'single',
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // Vendor chunk
+            vendor: {
+              name: 'vendor',
+              chunks: 'all',
+              test: /node_modules/,
+              priority: 20,
+            },
+            // Common chunk
+            common: {
+              name: 'common',
+              minChunks: 2,
+              chunks: 'all',
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
+          },
+        },
+      };
+    }
+
+    // Ensure server-only code is not bundled in client
+    // The 'server-only' package already handles this, but we add extra safety
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        // Prevent accidental imports of server-only modules in client
+        '@/shared/db/prismaClient.server': false,
+      };
+    }
+
+    return config;
+  },
   // Environment variables configuration
   // Note: Runtime-only env vars (DB_PASSWORD, ENCRYPTION_KEY, JWT_SECRET, etc.)
   // are not required during build and will be validated at runtime
