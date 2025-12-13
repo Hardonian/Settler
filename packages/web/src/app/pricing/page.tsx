@@ -56,6 +56,7 @@ export default function Pricing() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           planCode,
+          billingCycle,
           successUrl: `${window.location.origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${window.location.origin}/pricing?canceled=1`,
         }),

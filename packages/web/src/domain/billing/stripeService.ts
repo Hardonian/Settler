@@ -129,7 +129,8 @@ export async function createCheckoutSession(
   billingAccountId: string,
   planCode: PlanCode,
   successUrl: string,
-  cancelUrl: string
+  cancelUrl: string,
+  billingCycle: 'monthly' | 'annual' = 'monthly'
 ): Promise<Stripe.Checkout.Session> {
   // Input validation
   if (!billingAccountId || !isValidUUID(billingAccountId)) {
@@ -150,10 +151,19 @@ export async function createCheckoutSession(
   if (!planConfig) {
     throw new Error(`Invalid plan code: ${planCode}`);
   }
-  if (!planConfig.stripePriceId) {
+
+  // Select appropriate price ID based on billing cycle
+  const priceId = billingCycle === 'annual' 
+    ? (planConfig.stripeAnnualPriceId || planConfig.stripePriceId)
+    : planConfig.stripePriceId;
+
+  if (!priceId) {
+    const envVarName = billingCycle === 'annual'
+      ? `STRIPE_PRICE_ID_${planCode.toUpperCase()}_ANNUAL`
+      : `STRIPE_PRICE_ID_${planCode.toUpperCase()}_MONTHLY`;
     throw new Error(
-      `Plan ${planCode} does not have a Stripe price ID configured. ` +
-      `Please set STRIPE_PRICE_ID_${planCode.toUpperCase()} environment variable.`
+      `Plan ${planCode} does not have a Stripe ${billingCycle} price ID configured. ` +
+      `Please set ${envVarName} environment variable.`
     );
   }
 
@@ -165,7 +175,7 @@ export async function createCheckoutSession(
       mode: 'subscription',
       line_items: [
         {
-          price: planConfig.stripePriceId,
+          price: priceId,
           quantity: 1,
         },
       ],
@@ -174,16 +184,18 @@ export async function createCheckoutSession(
       metadata: {
         billingAccountId,
         planCode,
+        billingCycle,
       },
       subscription_data: {
         metadata: {
           billingAccountId,
           planCode,
+          billingCycle,
         },
       },
     },
     {
-      idempotencyKey: generateIdempotencyKey('checkout_session', billingAccountId, planCode),
+      idempotencyKey: generateIdempotencyKey('checkout_session', billingAccountId, planCode, billingCycle),
     }
   );
 

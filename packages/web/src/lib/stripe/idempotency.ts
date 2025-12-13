@@ -15,7 +15,8 @@ import { v4 as uuidv4 } from 'uuid';
 export function generateIdempotencyKey(
   operation: string,
   resourceId?: string,
-  additionalContext?: string
+  additionalContext?: string,
+  extraContext?: string
 ): string {
   const parts = [operation];
   
@@ -25,6 +26,10 @@ export function generateIdempotencyKey(
   
   if (additionalContext) {
     parts.push(additionalContext);
+  }
+  
+  if (extraContext) {
+    parts.push(extraContext);
   }
   
   parts.push(Date.now().toString());

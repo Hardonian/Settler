@@ -61,7 +61,10 @@ export async function POST(request: NextRequest) {
     });
 
     const body = await request.json();
-    const { planCode, successUrl, cancelUrl } = body;
+    const { planCode, successUrl, cancelUrl, billingCycle } = body;
+    
+    // Validate billing cycle
+    const validBillingCycle = billingCycle === 'annual' ? 'annual' : 'monthly';
 
     // Input validation
     if (!isValidPlanCode(planCode)) {
@@ -98,7 +101,8 @@ export async function POST(request: NextRequest) {
           newAccount.id,
           planCode,
           finalSuccessUrl,
-          finalCancelUrl
+          finalCancelUrl,
+          validBillingCycle
         );
         if (!session.url) {
           return NextResponse.json(
@@ -129,7 +133,8 @@ export async function POST(request: NextRequest) {
       billingAccount.id,
       planCode,
       finalSuccessUrl,
-      finalCancelUrl
+      finalCancelUrl,
+      validBillingCycle
     );
 
     if (!session.url) {
