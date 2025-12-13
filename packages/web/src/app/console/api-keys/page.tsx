@@ -19,7 +19,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Key, Plus, Trash2, Copy, Check } from 'lucide-react';
+import { Key, Plus, Trash2, Copy, Check, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface ApiKey {
@@ -93,10 +93,14 @@ export default function ApiKeysPage() {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
   };
 
   if (loading) {
@@ -150,29 +154,46 @@ export default function ApiKeysPage() {
 
       {/* New Key Display */}
       {newKey && (
-        <Card className="border-green-500 bg-green-50 dark:bg-green-900/20">
+        <Card className="border-green-500 bg-green-50 dark:bg-green-900/20 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-green-900 dark:text-green-300">
-              API Key Created
+            <CardTitle className="text-green-900 dark:text-green-300 flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5" />
+              API Key Created Successfully
             </CardTitle>
             <CardDescription className="text-green-800 dark:text-green-400">
-              Copy this key now. You won't be able to see it again!
+              ⚠️ Copy this key now. You won't be able to see it again!
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2 p-3 bg-white dark:bg-slate-800 rounded border">
-              <code className="flex-1 font-mono text-sm">{newKey.key}</code>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-2 p-4 bg-white dark:bg-slate-800 rounded-lg border-2 border-green-200 dark:border-green-800">
+              <code className="flex-1 font-mono text-sm break-all">{newKey.key}</code>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => copyToClipboard(newKey.key)}
+                className="shrink-0"
               >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy
+                  </>
+                )}
               </Button>
+            </div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                <strong>Next steps:</strong> Add this key to your environment variables or use it in your SDK initialization.
+              </p>
             </div>
             <Button
               variant="outline"
-              className="mt-4"
+              className="w-full"
               onClick={() => setNewKey(null)}
             >
               I've copied the key

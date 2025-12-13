@@ -21,7 +21,18 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
 async function ConsoleOverviewContent() {
+  const startTime = Date.now();
+  
   try {
+    // Structured logging for console requests (server-side only, no secrets)
+    const logContext = {
+      route: '/console',
+      timestamp: new Date().toISOString(),
+      userAgent: typeof process !== 'undefined' ? 'server' : 'client',
+    };
+    
+    console.log('[Console] Request started', logContext);
+    
     // Environment safety check
     const requiredEnvVars = [
       'NEXT_PUBLIC_SUPABASE_URL',
@@ -32,6 +43,10 @@ async function ConsoleOverviewContent() {
     );
     
     if (missingEnvVars.length > 0) {
+      console.warn('[Console] Missing environment variables', {
+        ...logContext,
+        missingVars: missingEnvVars,
+      });
       return (
         <div className="text-center py-12">
           <p className="text-slate-600 dark:text-slate-400 mb-4">
@@ -51,10 +66,24 @@ async function ConsoleOverviewContent() {
       user = authResult.data?.user;
       
       if (authResult.error) {
-        console.error('[Console] Auth error:', authResult.error);
+        console.error('[Console] Auth error', {
+          ...logContext,
+          error: authResult.error.message,
+          code: authResult.error.status,
+        });
+      } else if (user) {
+        console.log('[Console] User authenticated', {
+          ...logContext,
+          userId: user.id,
+          email: user.email ? '***' : undefined, // Don't log full email
+        });
       }
     } catch (error) {
-      console.error('[Console] Failed to get user:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('[Console] Failed to get user', {
+        ...logContext,
+        error: errorMessage,
+      });
       return (
         <div className="text-center py-12">
           <p className="text-slate-600 dark:text-slate-400 mb-4">
@@ -152,9 +181,11 @@ async function ConsoleOverviewContent() {
   try {
     const [apiKeysResult, receiptsResult, flagsResult, usageSummaryResult] = await Promise.allSettled([
       listApiKeys().catch((err) => {
-        // If auth error, re-throw to trigger redirect
+        // Don't re-throw - Promise.allSettled handles all errors gracefully
+        // Auth errors are already handled by the layout, so we can safely return empty array
         if (err instanceof Error && err.message.includes('Unauthorized')) {
-          throw err;
+          console.warn('[Console] listApiKeys: User not authenticated, returning empty array');
+          return [];
         }
         console.error('[Console] listApiKeys error:', err);
         return [];
@@ -215,6 +246,27 @@ async function ConsoleOverviewContent() {
   const receiptsCalls = (usageSummary.byService as Record<string, number>)['settler-receipts'] || 0;
   const flagsCalls = (usageSummary.byService as Record<string, number>)['settler-feature-flags'] || 0;
 
+  // Format numbers with proper formatting
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
+
+  // Log successful page load
+  const duration = Date.now() - startTime;
+  console.log('[Console] Page loaded successfully', {
+    route: '/console',
+    timestamp: new Date().toISOString(),
+    duration,
+    dataLoaded: {
+      apiKeys: apiKeys.length,
+      receipts: receipts.length,
+      flags: flags.length,
+      usageSummary: usageSummary.totalCalls,
+    },
+  });
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
@@ -238,10 +290,10 @@ async function ConsoleOverviewContent() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
             <CardDescription>Total API Calls</CardDescription>
-            <CardTitle className="text-3xl">{usageSummary.totalCalls.toLocaleString()}</CardTitle>
+            <CardTitle className="text-3xl">{formatNumber(usageSummary.totalCalls)}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
@@ -251,13 +303,13 @@ async function ConsoleOverviewContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
             <CardDescription>API Keys</CardDescription>
             <CardTitle className="text-3xl">{apiKeys.length}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="w-full">
               <Link href="/console/api-keys">
                 Manage Keys <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
@@ -265,13 +317,13 @@ async function ConsoleOverviewContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
             <CardDescription>Receipts Parsed</CardDescription>
-            <CardTitle className="text-3xl">{receipts.length}</CardTitle>
+            <CardTitle className="text-3xl">{formatNumber(receipts.length)}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="w-full">
               <Link href="/console/receipts">
                 View Receipts <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
@@ -279,13 +331,13 @@ async function ConsoleOverviewContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
             <CardDescription>Feature Flags</CardDescription>
             <CardTitle className="text-3xl">{flags.length}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="w-full">
               <Link href="/console/feature-flags">
                 Manage Flags <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
@@ -308,26 +360,26 @@ async function ConsoleOverviewContent() {
                   <div className="w-3 h-3 rounded-full bg-blue-500" />
                   <span className="font-medium">Reconcile API</span>
                 </div>
-                <span className="text-slate-600 dark:text-slate-400 font-mono">
-                  {reconcileCalls.toLocaleString()} calls
+                <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
+                  {formatNumber(reconcileCalls)} calls
                 </span>
               </div>
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                   <span className="font-medium">Receipts API</span>
                 </div>
-                <span className="text-slate-600 dark:text-slate-400 font-mono">
-                  {receiptsCalls.toLocaleString()} calls
+                <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
+                  {formatNumber(receiptsCalls)} calls
                 </span>
               </div>
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-purple-500" />
                   <span className="font-medium">Feature Flags API</span>
                 </div>
-                <span className="text-slate-600 dark:text-slate-400 font-mono">
-                  {flagsCalls.toLocaleString()} calls
+                <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
+                  {formatNumber(flagsCalls)} calls
                 </span>
               </div>
             </div>
@@ -382,10 +434,21 @@ async function ConsoleOverviewContent() {
   );
   } catch (error) {
     // Top-level error boundary - catch any unhandled errors
-    console.error('[Console] Unhandled error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    const duration = Date.now() - startTime;
+    
+    // Structured error logging (server-side only, no secrets)
+    console.error('[Console] Unhandled error', {
+      route: '/console',
+      timestamp: new Date().toISOString(),
+      error: errorMessage,
+      duration,
+      // Only log stack in development
+      ...(process.env.NODE_ENV === 'development' && errorStack ? { stack: errorStack } : {}),
+    });
     
     // Provide more detailed error information in development
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const isDevelopment = process.env.NODE_ENV === 'development';
     
     return (
