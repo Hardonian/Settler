@@ -51,46 +51,6 @@ export function SpotlightCard({
       onKeyDown(e);
     } else if (onClick && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
-      // Trigger click handler directly instead of creating synthetic event
-      // This avoids type conversion issues
-      if (typeof onClick === 'function') {
-        // Create a minimal click-like event object
-        const clickEvent = {
-          ...e,
-          type: 'click' as const,
-          button: 0,
-          buttons: 0,
-          clientX: 0,
-          clientY: 0,
-          movementX: 0,
-          movementY: 0,
-          offsetX: 0,
-          offsetY: 0,
-          pageX: 0,
-          pageY: 0,
-          screenX: 0,
-          screenY: 0,
-          x: 0,
-          y: 0,
-          getModifierState: () => false,
-          nativeEvent: e.nativeEvent,
-          currentTarget: e.currentTarget as HTMLDivElement,
-          target: e.target as EventTarget,
-          bubbles: true,
-          cancelable: true,
-          defaultPrevented: false,
-          eventPhase: 0,
-          isTrusted: false,
-          timeStamp: Date.now(),
-          preventDefault: () => {},
-          stopPropagation: () => {},
-          stopImmediatePropagation: () => {},
-          isDefaultPrevented: () => false,
-          isPropagationStopped: () => false,
-          persist: () => {},
-        } as unknown as React.MouseEvent<HTMLDivElement>;
-        onClick(clickEvent);
-      }
     }
   };
 
