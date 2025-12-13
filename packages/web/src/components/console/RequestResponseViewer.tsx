@@ -52,6 +52,8 @@ const getStatusColor = (status?: number) => {
   return 'bg-red-500';
 };
 
+export type { RequestResponseViewerProps };
+
 export function RequestResponseViewer({
   request,
   response,

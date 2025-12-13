@@ -40,9 +40,24 @@ print(receipt)`,
   }'`,
 };
 
+interface ReceiptItem {
+  desc?: string;
+  name?: string;
+  amount?: number;
+  lineTotal?: number;
+}
+
+interface ReceiptResult {
+  merchant: string;
+  date: string;
+  total: number;
+  currency: string;
+  items: ReceiptItem[];
+}
+
 export default function ReceiptsPlayground() {
   const [scanning, setScanning] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ReceiptResult | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<'node' | 'python' | 'curl'>('node');
 
   const scanReceipt = async () => {
@@ -175,7 +190,7 @@ export default function ReceiptsPlayground() {
                             <div className="space-y-2">
                                 <div className="text-xs font-medium text-slate-700 dark:text-slate-300">Line Items</div>
                                 <div className="space-y-1">
-                                    {result.items?.map((item: any, i: number) => (
+                                    {result.items?.map((item: ReceiptItem, i: number) => (
                                         <div key={i} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800">
                                             <span className="text-sm text-slate-700 dark:text-slate-300">{item.desc || item.name}</span>
                                             <span className="text-sm font-medium text-slate-900 dark:text-white">{item.amount?.toFixed(2) || item.lineTotal?.toFixed(2)}</span>

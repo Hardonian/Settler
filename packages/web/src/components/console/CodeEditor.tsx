@@ -26,10 +26,11 @@ interface CodeEditorProps {
   className?: string;
 }
 
-const syntaxHighlight = (code: string, language: string): string => {
+// Syntax highlighting function - reserved for future use if needed
+// Currently using plain textarea for better performance
+// In production, consider using a library like Prism.js or highlight.js for advanced highlighting
+const _syntaxHighlight = (code: string, language: string): string => {
   // Simple syntax highlighting using regex
-  // In production, consider using a library like Prism.js or highlight.js
-  
   if (language === 'json') {
     return code
       .replace(/"([^"]+)":/g, '<span class="text-blue-400">"$1":</span>')

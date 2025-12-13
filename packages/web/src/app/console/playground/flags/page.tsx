@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CodeEditor } from '@/components/console/CodeEditor';
-import { RequestResponseViewer } from '@/components/console/RequestResponseViewer';
+import { RequestResponseViewer, type RequestResponseViewerProps } from '@/components/console/RequestResponseViewer';
 import { Badge } from '@/components/ui/badge';
 import { Flag, Play, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 
@@ -16,15 +16,23 @@ const defaultContext = JSON.stringify({
   country: "US"
 }, null, 2);
 
+interface FlagEvaluationResult {
+  flag: string;
+  enabled: boolean;
+  variant?: string;
+  reason?: string;
+  value?: unknown;
+}
+
 export default function FlagsPlayground() {
   const [flagKey, setFlagKey] = useState('new-dashboard');
   const [environment, setEnvironment] = useState('production');
   const [context, setContext] = useState(defaultContext);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<FlagEvaluationResult | null>(null);
   const [isRunning, setIsRunning] = useState(false);
-  const [request, setRequest] = useState<any>();
-  const [response, setResponse] = useState<any>();
-  const [error, setError] = useState<any>();
+  const [request, setRequest] = useState<RequestResponseViewerProps['request']>();
+  const [response, setResponse] = useState<RequestResponseViewerProps['response']>();
+  const [error, setError] = useState<RequestResponseViewerProps['error']>();
 
   const evaluate = async () => {
     setIsRunning(true);

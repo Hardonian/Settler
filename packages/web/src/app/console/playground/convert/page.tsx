@@ -5,12 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RequestResponseViewer } from '@/components/console/RequestResponseViewer';
+import { RequestResponseViewer, type RequestResponseViewerProps } from '@/components/console/RequestResponseViewer';
 import { Badge } from '@/components/ui/badge';
 import { Calculator, ArrowRight, Play, Loader2, CheckCircle2 } from 'lucide-react';
 
 const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR', 'BRL'];
 const units = ['meter', 'kilometer', 'mile', 'foot', 'inch', 'yard', 'pound', 'kilogram', 'ounce', 'gram'];
+
+interface ConversionResult {
+  original: number;
+  converted: number;
+  from: string;
+  to: string;
+  rate: number;
+  type: 'currency' | 'unit';
+}
 
 export default function ConvertPlayground() {
   const [conversionType, setConversionType] = useState<'currency' | 'unit'>('currency');
@@ -19,11 +28,11 @@ export default function ConvertPlayground() {
   const [to, setTo] = useState("EUR");
   const [fromUnit, setFromUnit] = useState("meter");
   const [toUnit, setToUnit] = useState("kilometer");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ConversionResult | null>(null);
   const [isRunning, setIsRunning] = useState(false);
-  const [request, setRequest] = useState<any>();
-  const [response, setResponse] = useState<any>();
-  const [error, setError] = useState<any>();
+  const [request, setRequest] = useState<RequestResponseViewerProps['request']>();
+  const [response, setResponse] = useState<RequestResponseViewerProps['response']>();
+  const [error, setError] = useState<RequestResponseViewerProps['error']>();
 
   const convert = async () => {
     setIsRunning(true);

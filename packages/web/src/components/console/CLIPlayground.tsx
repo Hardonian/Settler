@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,8 @@ import { Label } from '@/components/ui/label';
 // Using native select for now - can be enhanced with a proper Select component later
 import { Badge } from '@/components/ui/badge';
 import { CodeEditor } from './CodeEditor';
-import { RequestResponseViewer } from './RequestResponseViewer';
-import { Terminal, Play, History, Save, Trash2, Loader2, CheckCircle2 } from 'lucide-react';
+import { RequestResponseViewer, type RequestResponseViewerProps } from './RequestResponseViewer';
+import { Terminal, Play, History, Trash2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface RequestHistory {
@@ -77,7 +77,8 @@ export function CLIPlayground() {
     const saved = localStorage.getItem('settler-cli-history');
     if (saved) {
       try {
-        setHistory(JSON.parse(saved).map((h: any) => ({
+        const parsed = JSON.parse(saved) as Array<Omit<RequestHistory, 'timestamp'> & { timestamp: string }>;
+        setHistory(parsed.map((h) => ({
           ...h,
           timestamp: new Date(h.timestamp),
         })));

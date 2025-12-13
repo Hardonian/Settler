@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CodeEditor } from '@/components/console/CodeEditor';
-import { RequestResponseViewer } from '@/components/console/RequestResponseViewer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RequestResponseViewer, type RequestResponseViewerProps } from '@/components/console/RequestResponseViewer';
 import { RefreshCw, Play, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -23,16 +22,23 @@ const defaultConfig = JSON.stringify({
   }
 }, null, 2);
 
+interface ReconciliationResult {
+  matched: number;
+  unmatched: number;
+  conflicts: number;
+  accuracy: string;
+}
+
 export default function ReconcilePlayground() {
   const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ReconciliationResult | null>(null);
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const [jobId, setJobId] = useState<string | null>(null);
   const [config, setConfig] = useState(defaultConfig);
-  const [request, setRequest] = useState<any>();
-  const [response, setResponse] = useState<any>();
-  const [error, setError] = useState<any>();
+  const [request, setRequest] = useState<RequestResponseViewerProps['request']>();
+  const [response, setResponse] = useState<RequestResponseViewerProps['response']>();
+  const [error, setError] = useState<RequestResponseViewerProps['error']>();
 
   const startRecon = async () => {
     setRunning(true);

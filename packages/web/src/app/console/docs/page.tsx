@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CopyButton } from '@/components/ui/CopyButton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Code, Terminal, Package, Download, CheckCircle2, ExternalLink, FileText, RefreshCw, Flag } from 'lucide-react';
+import { Code, Terminal, Package, CheckCircle2, ExternalLink, FileText, RefreshCw, Flag } from 'lucide-react';
 import Link from 'next/link';
 
 const serviceDocs = {
@@ -358,8 +358,8 @@ export default function DocsPage() {
       try {
         const res = await fetch('/api/console/api-keys');
         if (res.ok) {
-          const data = await res.json();
-          const activeKey = data.keys?.find((k: any) => !k.revokedAt);
+          const data = await res.json() as { keys?: Array<{ keyPrefix: string; revokedAt?: string | null }> };
+          const activeKey = data.keys?.find((k) => !k.revokedAt);
           if (activeKey) {
             setApiKey(`rk_${activeKey.keyPrefix}...`);
           }
