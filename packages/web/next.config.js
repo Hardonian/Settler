@@ -56,6 +56,19 @@ const nextConfig = {
     '@settler/protocol',
     '@settler/types',
   ],
+  webpack: (config) => {
+    // Ensure webpack can resolve path aliases in dynamic imports
+    // This is needed for marketing components in subdirectories
+    const originalResolve = config.resolve;
+    config.resolve = {
+      ...originalResolve,
+      alias: {
+        ...originalResolve.alias,
+        '@': require('path').resolve(__dirname, 'src'),
+      },
+    };
+    return config;
+  },
   // Image Optimization
   images: {
     formats: ['image/webp', 'image/avif'],
