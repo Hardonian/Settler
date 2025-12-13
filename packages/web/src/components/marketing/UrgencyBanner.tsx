@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
-interface UrgencyBannerProps {
+export interface UrgencyBannerProps {
   variant?: 'default' | 'minimal' | 'prominent';
   className?: string;
 }

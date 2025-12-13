@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import React from "react";
 import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";

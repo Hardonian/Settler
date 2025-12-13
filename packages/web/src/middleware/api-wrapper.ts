@@ -13,6 +13,7 @@ import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
 import { createErrorResponse } from '@/lib/server-error-handler';
 import { addVersionHeaders, getVersionFromPath } from '@/lib/api/versioning';
+import { checkRequestSize } from './request-size-limit';
 
 export interface ApiWrapperConfig {
   rateLimiter?: (req: NextRequest) => Promise<NextResponse | null>;
@@ -35,7 +36,7 @@ export function withApiWrapper<T extends (...args: any[]) => Promise<NextRespons
     try {
       // Check request size
       const maxSize = config.maxSizeBytes || 10 * 1024 * 1024; // 10MB default
-      const sizeCheck = checkRequestSizeLocal(request, maxSize);
+      const sizeCheck = checkRequestSize(request, maxSize);
       if (sizeCheck) {
         await trackApiMetric(path, request.method, 413, Date.now() - startTime);
         return sizeCheck;
@@ -71,26 +72,3 @@ export function withApiWrapper<T extends (...args: any[]) => Promise<NextRespons
   }) as T;
 }
 
-/**
- * Check request size helper
- */
-function checkRequestSize(
-  request: NextRequest,
-  maxSizeBytes: number
-): NextResponse | null {
-  const contentLength = request.headers.get('content-length');
-  if (contentLength) {
-    const size = parseInt(contentLength, 10);
-    if (size > maxSizeBytes) {
-      return NextResponse.json(
-        {
-          error: `Request body too large. Maximum size: ${Math.round(maxSizeBytes / 1024 / 1024)}MB`,
-          maxSizeBytes,
-          receivedSizeBytes: size,
-        },
-        { status: 413 }
-      );
-    }
-  }
-  return null;
-}

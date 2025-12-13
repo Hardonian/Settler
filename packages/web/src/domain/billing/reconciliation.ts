@@ -9,25 +9,13 @@ import Stripe from 'stripe';
 import { prisma } from '@/shared/db/prismaClient';
 import { getStripeClient } from './stripeService';
 import { syncSubscription as syncSubscriptionFromStripe } from './stripeService';
-import { getPlanConfig, PlanCode } from './planConfig';
 
 // Helper to safely access Stripe subscription period end
-function getStripePeriodEnd(subscription: Stripe.Subscription | Stripe.Response<Stripe.Subscription>): number {
-  // Check if it's a direct Subscription object
+function getStripePeriodEnd(subscription: Stripe.Subscription): number {
   if (subscription && typeof subscription === 'object' && 'current_period_end' in subscription) {
-    const periodEnd = (subscription as Stripe.Subscription).current_period_end;
+    const periodEnd = subscription.current_period_end;
     if (typeof periodEnd === 'number') {
       return periodEnd;
-    }
-  }
-  // If it's a Response object, access the data property
-  if (subscription && typeof subscription === 'object' && 'data' in subscription) {
-    const response = subscription as Stripe.Response<Stripe.Subscription>;
-    if (response.data && typeof response.data === 'object' && 'current_period_end' in response.data) {
-      const periodEnd = response.data.current_period_end;
-      if (typeof periodEnd === 'number') {
-        return periodEnd;
-      }
     }
   }
   return 0;
