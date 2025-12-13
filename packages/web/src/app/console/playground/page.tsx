@@ -1,8 +1,19 @@
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { ArrowRight, FileText, RefreshCw, Flag, Calculator } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowRight, FileText, RefreshCw, Flag, Calculator, Terminal } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const playgrounds = [
+  {
+    title: 'CLI Playground',
+    description: 'Interactive API testing with code editor, request builder, and response viewer.',
+    href: '/console/playground/cli',
+    icon: Terminal,
+    color: 'text-purple-500',
+    bg: 'bg-purple-100 dark:bg-purple-900/20',
+    featured: true
+  },
   {
     title: 'Reconciliation',
     description: 'Test transaction matching rules and conflict resolution.',
@@ -50,13 +61,23 @@ export default function PlaygroundOverview() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
         {playgrounds.map((item) => (
           <Link key={item.href} href={item.href}>
-            <Card className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer border-slate-200 dark:border-slate-800">
+            <Card className={cn(
+              "h-full hover:shadow-lg transition-all duration-200 cursor-pointer border-slate-200 dark:border-slate-800",
+              item.featured && "border-2 border-purple-300 dark:border-purple-700 bg-gradient-to-br from-purple-50/50 to-transparent dark:from-purple-900/10"
+            )}>
               <CardHeader className="flex flex-row items-center gap-4">
                 <div className={`p-3 rounded-lg ${item.bg}`}>
                   <item.icon className={`w-6 h-6 ${item.color}`} />
                 </div>
-                <div className="space-y-1">
-                  <CardTitle>{item.title}</CardTitle>
+                <div className="space-y-1 flex-1">
+                  <div className="flex items-center gap-2">
+                    <CardTitle>{item.title}</CardTitle>
+                    {item.featured && (
+                      <Badge variant="default" className="bg-purple-600 text-white">
+                        New
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
