@@ -46,7 +46,7 @@ export function Footer() {
               </li>
               <li>
                 <Link 
-                  href="/playground" 
+                  href="/console/playground" 
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Playground

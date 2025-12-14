@@ -616,7 +616,7 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
                   asChild
                   className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100"
                 >
-                  <Link href="/playground">Try in Playground</Link>
+                  <Link href="/console/playground">Try in Playground</Link>
                 </Button>
                 <Button
                   variant="outline"
@@ -646,7 +646,7 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
             >
-              <Link href="/signup">Start Free Trial</Link>
+              <Link href="/console/playground">Try Playground</Link>
             </Button>
             <Button
               variant="outline"
@@ -654,7 +654,7 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
               className="border-slate-300 dark:border-slate-700"
               asChild
             >
-              <Link href="/playground">Try Playground</Link>
+              <Link href="/console/playground">Try Playground</Link>
             </Button>
           </div>
         </div>

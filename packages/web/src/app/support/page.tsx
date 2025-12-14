@@ -46,7 +46,7 @@ export default function Support() {
       icon: '🎮',
       title: 'Interactive Playground',
       description: 'Test the API and see examples in action',
-      link: '/playground',
+      link: '/console/playground',
       linkText: 'Try Playground',
       tier: 'All Plans',
     },

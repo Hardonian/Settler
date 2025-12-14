@@ -251,7 +251,7 @@ export default function IntegrationDocsPage({ params }: IntegrationDocsPageProps
                 <Link href="/support">Get Support</Link>
               </Button>
               <Button asChild variant="outline" size="sm">
-                <Link href="/playground">Try Playground</Link>
+                <Link href="/console/playground">Try Playground</Link>
               </Button>
             </div>
           </div>

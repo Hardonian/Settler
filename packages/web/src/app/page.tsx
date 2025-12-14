@@ -188,8 +188,8 @@ if (flag.value) { /* ... */ }`;
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-7 text-xl font-bold shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:scale-110 animate-pulse hover:animate-none"
                     onClick={() => trackCTA('Get API Key', { location: 'hero' })}
                   >
-                    <Link href="/signup" className="flex items-center gap-2">
-                      <span>Start Free Trial — No Credit Card</span>
+                    <Link href="/console/playground" className="flex items-center gap-2">
+                      <span>Try Playground — No Signup Required</span>
                       <ArrowRight className="w-5 h-5" />
                     </Link>
                   </Button>
@@ -407,10 +407,10 @@ if (flag.value) { /* ... */ }`;
             <EnhancedConversionCTA
               title="Ready to Transform Your Financial Operations?"
               description="Join thousands of companies already using Settler. Start your free trial today—no credit card required, full access to all features."
-              primaryAction="Start Free Trial — No Credit Card"
-              primaryLink="/signup"
-              secondaryAction="View Pricing"
-              secondaryLink="/pricing"
+              primaryAction="Try Playground — No Signup Required"
+              primaryLink="/console/playground"
+              secondaryAction="Start Free Trial"
+              secondaryLink="/signup"
               showUrgency={true}
               showTrustBadges={true}
               variant="hero"

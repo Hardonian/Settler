@@ -43,7 +43,7 @@ export default function Pricing() {
         { text: 'Mobile & accessibility' },
       ],
       cta: 'Get Started',
-      ctaLink: '/playground',
+      ctaLink: '/console/playground',
       popular: false,
       badge: 'OSS',
     },
