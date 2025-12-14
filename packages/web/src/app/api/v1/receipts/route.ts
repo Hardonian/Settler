@@ -36,13 +36,13 @@ const requestSchema = z.object({
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const logger = await createLogger({ route: '/api/v1/receipts', method: 'POST' });
-  let correlationId: string;
+  
+  // Get correlation ID for tracing (initialize early)
+  const { getCorrelationId } = await import('@/lib/monitoring/correlation');
+  const correlationId = await getCorrelationId();
+  logger.info('Receipt parse request started', { correlationId });
 
   try {
-    // Get correlation ID for tracing
-    const { getCorrelationId } = await import('@/lib/monitoring/correlation');
-    correlationId = await getCorrelationId();
-    logger.info('Receipt parse request started', { correlationId });
 
     // Check request size
     const sizeCheck = requestSizeLimits.api(request);
@@ -64,13 +64,15 @@ export async function POST(request: NextRequest) {
 
     // Get billing account (required for usage tracking)
     if (!auth.billingAccountId) {
-        return createErrorResponse("BILLING_ACCOUNT_REQUIRED", "Billing account required", 400);
+        const response = createErrorResponse("BILLING_ACCOUNT_REQUIRED", "Billing account required", 400);
+        return addCorrelationHeaders(response, correlationId);
     }
 
     // Check entitlement
     const entitlement = await checkRequestEntitlement(auth, 'receipts');
     if (!entitlement.allowed && entitlement.error) {
-       return createEntitlementErrorResponse(entitlement.error);
+       const response = createEntitlementErrorResponse(entitlement.error);
+       return addCorrelationHeaders(response, correlationId);
     }
 
     // Parse request body
@@ -78,15 +80,17 @@ export async function POST(request: NextRequest) {
     try {
         body = await request.json();
     } catch (e) {
-        return createErrorResponse("BAD_REQUEST", "Invalid JSON", 400);
+        const response = createErrorResponse("BAD_REQUEST", "Invalid JSON", 400);
+        return addCorrelationHeaders(response, correlationId);
     }
 
     // Validate with Zod
     const validation = requestSchema.safeParse(body);
     if (!validation.success) {
-        return createErrorResponse("VALIDATION_ERROR", "Invalid request data", 400, {
+        const response = createErrorResponse("VALIDATION_ERROR", "Invalid request data", 400, {
             issues: validation.error.issues
         });
+        return addCorrelationHeaders(response, correlationId);
     }
 
     const { fileUrl, fileData, mimeType } = validation.data;
@@ -142,13 +146,18 @@ export async function POST(request: NextRequest) {
       if (!validation.valid) {
         logger.warn('Receipt validation failed', { 
           correlationId, 
-          errors: validation.errors?.errors.map(e => e.message) 
+          errors: validation.errors?.errors.map((e: { message: string }) => e.message) || []
         });
         // Continue with sanitized data even if validation fails (graceful degradation)
       }
 
       // Validate receipt totals (business logic)
-      const totalsValidation = validateReceiptTotals(sanitizedData);
+      const totalsValidation = validateReceiptTotals(sanitizedData as {
+        subtotal?: number | null;
+        tax?: number | null;
+        total?: number | null;
+        items?: Array<{ lineTotal?: number | null }>;
+      });
       if (!totalsValidation.valid) {
         logger.warn('Receipt totals validation failed', { 
           correlationId, 
@@ -176,18 +185,23 @@ export async function POST(request: NextRequest) {
       logger.info('Receipt created', { correlationId, receiptId: receipt.id });
 
       // Create receipt items (with retry)
+      // Use original parsed items (they're already validated by parser)
+      // but ensure they match the sanitized structure
       if (parseResult.receipt.items.length > 0) {
-        await withRetry(() => prisma.receiptItem.createMany({
-          data: parseResult.receipt.items.map(item => ({
-            receiptId: receipt.id,
-            name: item.name,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            lineTotal: item.lineTotal,
-            category: item.category,
-            metadata: {},
-          })),
+        const itemsToCreate = parseResult.receipt.items.map(item => ({
+          receiptId: receipt.id,
+          name: item.name || 'Unknown',
+          quantity: item.quantity ?? null,
+          unitPrice: item.unitPrice ?? null,
+          lineTotal: item.lineTotal ?? null,
+          category: item.category ?? null,
+          metadata: {},
         }));
+        
+        await withRetry(() => prisma.receiptItem.createMany({
+          data: itemsToCreate,
+        }));
+        logger.info('Receipt items created', { correlationId, itemCount: itemsToCreate.length });
       }
 
       // Update upload status (with retry)
@@ -230,7 +244,7 @@ export async function POST(request: NextRequest) {
         total: receipt.total,
         paymentMethod: receipt.paymentMethod,
         confidenceScore: receipt.confidenceScore,
-        items: receiptWithItems?.items.map((item: any) => ({
+        items: receiptWithItems?.items.map((item) => ({
           id: item.id,
           name: item.name,
           quantity: item.quantity ? Number(item.quantity) : 0,
@@ -277,10 +291,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Receipt parse request error', { 
-      correlationId: correlationId || 'unknown',
+      correlationId,
       error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
     });
     const response = handleApiError(error);
-    return correlationId ? addCorrelationHeaders(response, correlationId) : response;
+    return addCorrelationHeaders(response, correlationId);
   }
 }

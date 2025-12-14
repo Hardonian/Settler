@@ -44,8 +44,9 @@ export async function createCorrelationContext(additionalData?: Record<string, u
 
 /**
  * Add correlation ID to response headers
+ * Works with both Response and NextResponse
  */
-export function addCorrelationHeaders(response: Response, correlationId: string): Response {
+export function addCorrelationHeaders<T extends Response>(response: T, correlationId: string): T {
   response.headers.set(CORRELATION_ID_HEADER, correlationId);
   return response;
 }
