@@ -1,12 +1,18 @@
+/**
+ * Playground Overview Page
+ * 
+ * Shows all available playground tools.
+ */
+
+'use client';
+
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, FileText, RefreshCw, Flag, Calculator, Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getSubscriptionInfo } from '@/lib/console/subscription';
-
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+import { trackPlaygroundVisit } from '@/lib/analytics/conversion';
 
 const playgrounds = [
   {
@@ -52,9 +58,14 @@ const playgrounds = [
   }
 ];
 
-export default async function PlaygroundOverview() {
-  const subscription = await getSubscriptionInfo();
-  
+export default function PlaygroundOverview() {
+  // Track playground visit
+  useEffect(() => {
+    trackPlaygroundVisit().catch(() => {
+      // Don't block if tracking fails
+    });
+  }, []);
+
   return (
     <div className="space-y-8">
       <div className="flex items-start justify-between">
@@ -64,12 +75,6 @@ export default async function PlaygroundOverview() {
             Interactive tools to explore and test the Settler API capabilities.
           </p>
         </div>
-        {subscription.tier !== 'enterprise' && (
-          <Badge variant="outline" className="text-sm">
-            {subscription.tier === 'unauthenticated' ? 'Sign In' : 
-             subscription.tier === 'free' ? 'Free Plan' : 'Pro Plan'}
-          </Badge>
-        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
@@ -98,8 +103,9 @@ export default async function PlaygroundOverview() {
                 <CardDescription className="mb-4 text-base">
                   {item.description}
                 </CardDescription>
-                <div className="flex items-center text-sm font-medium text-primary">
-                  Try it out <ArrowRight className="ml-1 w-4 h-4" />
+                <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
+                  Try it now
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </div>
               </CardContent>
             </Card>

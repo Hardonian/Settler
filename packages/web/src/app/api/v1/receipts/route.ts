@@ -13,12 +13,15 @@ import { parseReceiptFromText } from '@/domain/receipts/parser';
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 import { z } from 'zod';
 import { createErrorResponse, handleApiError, createSuccessResponse } from '@/lib/api-response';
+import { createActionableErrorResponse } from '@/lib/errors/actionable';
 import { withRetry } from '@/lib/db/retry';
 import { requestSizeLimits } from '@/middleware/request-size-limit';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
 import { createLogger, addCorrelationHeaders } from '@/lib/monitoring/correlation';
 import { validateReceipt, sanitizeReceiptData, validateReceiptTotals } from '@/domain/receipts/validation';
+import { logReceiptParsed } from '@/lib/audit/logger';
+import { trackReceiptParsed } from '@/lib/analytics/conversion';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -93,7 +96,10 @@ export async function POST(request: NextRequest) {
 
     // Get billing account (required for usage tracking)
     if (!auth.billingAccountId) {
-        const response = createErrorResponse("BILLING_ACCOUNT_REQUIRED", "Billing account required", 400);
+        const response = NextResponse.json(
+          createActionableErrorResponse("BILLING_ACCOUNT_REQUIRED"),
+          { status: 400 }
+        );
         return addCorrelationHeaders(response, correlationId);
     }
 
@@ -259,6 +265,22 @@ export async function POST(request: NextRequest) {
           itemCount: parseResult.receipt.items.length,
         },
       });
+
+      // Audit logging
+      if (auth.userId && auth.billingAccountId) {
+        await logReceiptParsed(
+          auth.userId,
+          auth.billingAccountId,
+          receipt.id,
+          {
+            itemCount: parseResult.receipt.items.length,
+            total: receipt.total,
+            currency: receipt.currency,
+          }
+        ).catch(() => {
+          // Don't block response if audit logging fails
+        });
+      }
 
       // Return normalized receipt (with retry)
       const receiptWithItems = await withRetry(() => prisma.receipt.findUnique({

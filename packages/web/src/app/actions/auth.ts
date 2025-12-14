@@ -10,6 +10,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import type { Database } from '@/types/database.types';
+import { trackSignupComplete } from '@/lib/analytics/conversion';
 
 export interface SignUpResult {
   success: boolean;
@@ -102,7 +103,12 @@ export async function signUpUser(
       // Don't fail the sign-up if activity logging fails
     }
 
-    // 4. Revalidate relevant paths
+    // 4. Track conversion event
+    await trackSignupComplete(authData.user.id).catch(() => {
+      // Don't block signup if tracking fails
+    });
+
+    // 5. Revalidate relevant paths
     revalidatePath('/');
     revalidatePath('/dashboard');
 
