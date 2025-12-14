@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { getCurrentUsage } from '@/lib/usage/tracking';
+import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -28,7 +29,11 @@ interface UsageSummary {
 }
 
 export async function GET(request: NextRequest) {
+  const correlationId = await getCorrelationId();
+  const logger = await createLogger({ route: '/api/console/usage', method: 'GET' });
+  
   try {
+    logger.info('Console usage request started', { correlationId });
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -144,11 +149,18 @@ export async function GET(request: NextRequest) {
       limits,
     };
 
-    return NextResponse.json(summary, { status: 200 });
+    logger.info('Usage summary generated successfully', { correlationId, totalCalls, errorRate });
+    const response = NextResponse.json(summary, { status: 200 });
+    return addCorrelationHeaders(response, correlationId);
   } catch (error) {
-    console.error('[Usage API] Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Error fetching usage summary', {
+      correlationId,
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     // Never return 500 - return empty summary
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         totalCalls: 0,
         byService: {},
@@ -159,5 +171,6 @@ export async function GET(request: NextRequest) {
       },
       { status: 200 }
     );
+    return addCorrelationHeaders(response, correlationId);
   }
 }

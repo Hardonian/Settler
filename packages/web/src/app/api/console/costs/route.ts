@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentPeriodCosts } from '@/lib/cost/visibility';
 import { prisma } from '@/shared/db/prismaClient';
+import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -16,7 +17,11 @@ export const runtime = 'nodejs';
  * GET /api/console/costs
  */
 export async function GET() {
+  const correlationId = await getCorrelationId();
+  const logger = await createLogger({ route: '/api/console/costs', method: 'GET' });
+  
   try {
+    logger.info('Console costs request started', { correlationId });
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -44,18 +49,29 @@ export async function GET() {
     const costs = await getCurrentPeriodCosts(billingAccount.id);
 
     if (!costs) {
-      return NextResponse.json(
-        { error: 'Failed to calculate costs' },
-        { status: 500 }
+      logger.warn('Failed to calculate costs', { correlationId, billingAccountId: billingAccount.id });
+      const response = NextResponse.json(
+        { error: 'Failed to calculate costs', costs: null },
+        { status: 200 } // Return 200 with null to prevent UI crash
       );
+      return addCorrelationHeaders(response, correlationId);
     }
 
-    return NextResponse.json(costs);
+    logger.info('Costs calculated successfully', { correlationId, billingAccountId: billingAccount.id });
+    const response = NextResponse.json(costs);
+    return addCorrelationHeaders(response, correlationId);
   } catch (error) {
-    console.error('[Costs API] Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch costs' },
-      { status: 500 }
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Error fetching costs', {
+      correlationId,
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    // Return 200 with null instead of 500 to prevent UI crash
+    const response = NextResponse.json(
+      { error: 'Failed to fetch costs', costs: null },
+      { status: 200 }
     );
+    return addCorrelationHeaders(response, correlationId);
   }
 }
