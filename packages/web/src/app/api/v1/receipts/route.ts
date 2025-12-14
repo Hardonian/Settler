@@ -12,7 +12,7 @@ import { getOcrProvider } from '@/domain/receipts/ocrProvider';
 import { parseReceiptFromText } from '@/domain/receipts/parser';
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 import { z } from 'zod';
-import { createErrorResponse, handleApiError, createSuccessResponse } from '@/lib/api-response';
+import { createErrorResponse, createSuccessResponse } from '@/lib/api-response';
 import { createActionableErrorResponse } from '@/lib/errors/actionable';
 import { withRetry } from '@/lib/db/retry';
 import { requestSizeLimits } from '@/middleware/request-size-limit';
@@ -21,7 +21,6 @@ import { trackApiMetric } from '@/lib/monitoring/metrics';
 import { createLogger, addCorrelationHeaders } from '@/lib/monitoring/correlation';
 import { validateReceipt, sanitizeReceiptData, validateReceiptTotals } from '@/domain/receipts/validation';
 import { logReceiptParsed } from '@/lib/audit/logger';
-import { trackReceiptParsed } from '@/lib/analytics/conversion';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -62,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Try to authenticate API key, but allow unauthenticated access for playground
-    let auth;
+    let auth: Awaited<ReturnType<typeof authenticateApiKey>> | undefined;
     let isAuthenticated = false;
     
     try {
@@ -72,6 +71,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       // Unauthenticated access allowed for playground - will return demo response
       logger.info('Unauthenticated access for playground', { correlationId });
+      auth = undefined;
     }
 
     // For unauthenticated users, return demo response
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get billing account (required for usage tracking)
-    if (!auth.billingAccountId) {
+    if (!auth || !auth.billingAccountId) {
         const response = NextResponse.json(
           createActionableErrorResponse("BILLING_ACCOUNT_REQUIRED"),
           { status: 400 }
@@ -142,8 +142,8 @@ export async function POST(request: NextRequest) {
     // Create receipt upload record (with retry)
     const upload = await withRetry(() => prisma.receiptUpload.create({
       data: {
-        apiKeyId: auth.apiKeyId,
-        billingAccountId: auth.billingAccountId,
+        apiKeyId: auth!.apiKeyId,
+        billingAccountId: auth!.billingAccountId,
         storageLocation: fileUrl || 'data://inline',
         originalFilename: 'receipt.jpg',
         mimeType: mimeType || 'image/jpeg',
@@ -256,7 +256,7 @@ export async function POST(request: NextRequest) {
 
       // Record usage
       await recordServiceUsage({
-        billingAccountId: auth.billingAccountId,
+        billingAccountId: auth!.billingAccountId,
         service: 'settler-receipts',
         operation: 'parse_sync',
         quantity: 1,
@@ -267,7 +267,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Audit logging
-      if (auth.userId && auth.billingAccountId) {
+      if (auth && auth.userId && auth.billingAccountId) {
         await logReceiptParsed(
           auth.userId,
           auth.billingAccountId,

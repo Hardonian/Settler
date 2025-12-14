@@ -125,13 +125,14 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Try to authenticate, but don't fail if unauthenticated
-    let auth;
+    let auth: Awaited<ReturnType<typeof authenticateApiKey>> | undefined;
     let isAuthenticated = false;
     
     try {
       auth = await authenticateApiKey(request);
       isAuthenticated = true;
     } catch (error) {
+      auth = undefined;
       // Unauthenticated access allowed for playground
     }
 

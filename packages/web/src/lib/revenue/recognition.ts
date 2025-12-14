@@ -52,12 +52,14 @@ export async function calculateRevenue(
       // Calculate prorated subscription revenue for the period
       const daysInPeriod = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
       const daysInMonth = 30; // Simplified
-      const monthlyPrice = subscription.amount || 0;
+      // Simplified pricing: pro = $49, enterprise = $299
+      const planId = subscription.planId?.toLowerCase() || '';
+      const monthlyPrice = planId.includes('enterprise') ? 299 : planId.includes('pro') ? 49 : 0;
       subscriptionRevenue = (monthlyPrice / daysInMonth) * daysInPeriod;
     }
 
     // Usage-based revenue (simplified - would need actual usage pricing)
-    const usage = await getCurrentUsage(billingAccountId, 'api');
+    const usage = await getCurrentUsage(billingAccountId, 'reconcile');
     const usageRevenue = 0; // Would calculate based on usage pricing
 
     const totalRevenue = subscriptionRevenue + usageRevenue;
@@ -89,8 +91,10 @@ export async function recognizeRevenueForPeriod(
   try {
     const billingAccounts = await prisma.billingAccount.findMany({
       where: {
-        subscriptionStatus: {
-          in: ['active', 'trialing'],
+        subscriptions: {
+          some: {
+            status: { in: ['active', 'trialing'] },
+          },
         },
       },
     });

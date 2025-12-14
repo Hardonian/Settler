@@ -84,7 +84,7 @@ export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
         changes: entry.changes ? (entry.changes as never) : undefined,
         ipAddress,
         userAgent,
-        metadata: entry.metadata || {},
+        metadata: (entry.metadata || {}) as never,
       },
     });
   } catch (error) {
@@ -128,9 +128,10 @@ export async function queryAuditLogs(options: {
     if (resourceType) where.resourceType = resourceType;
     if (action) where.action = action;
     if (startDate || endDate) {
-      where.createdAt = {};
-      if (startDate) where.createdAt.gte = startDate;
-      if (endDate) where.createdAt.lte = endDate;
+      where.createdAt = {
+        ...(startDate ? { gte: startDate } : {}),
+        ...(endDate ? { lte: endDate } : {}),
+      };
     }
 
     const [logs, total] = await Promise.all([

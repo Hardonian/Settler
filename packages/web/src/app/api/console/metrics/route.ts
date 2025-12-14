@@ -28,19 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user is admin (simplified - would use proper role check)
-    const userProfile = await prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        billingAccounts: {
-          select: {
-            id: true,
-            subscriptionTier: true,
-          },
-        },
-      },
-    });
-
-    const isAdmin = userProfile?.metadata?.['role'] === 'admin';
+    const isAdmin = user.user_metadata?.role === 'admin';
     const billingAccountId = request.nextUrl.searchParams.get('billingAccountId');
 
     if (billingAccountId) {

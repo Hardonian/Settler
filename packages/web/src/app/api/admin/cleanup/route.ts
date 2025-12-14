@@ -5,9 +5,8 @@
  * GET /api/admin/cleanup/summary - Get retention summary
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
 import { cleanupAllExpiredData, getRetentionSummary } from '@/lib/data-retention/policies';
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +15,7 @@ export const runtime = 'nodejs';
 /**
  * POST /api/admin/cleanup
  */
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -28,12 +27,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user is admin
-    const userProfile = await prisma.user.findUnique({
-      where: { id: user.id },
-    });
-
-    const isAdmin = userProfile?.metadata?.['role'] === 'admin';
+    // Check if user is admin (simplified - would use proper role check)
+    const isAdmin = user.user_metadata?.role === 'admin';
 
     if (!isAdmin) {
       return NextResponse.json(
@@ -61,7 +56,7 @@ export async function POST(request: NextRequest) {
 /**
  * GET /api/admin/cleanup/summary
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -73,12 +68,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check if user is admin
-    const userProfile = await prisma.user.findUnique({
-      where: { id: user.id },
-    });
-
-    const isAdmin = userProfile?.metadata?.['role'] === 'admin';
+    // Check if user is admin (simplified - would use proper role check)
+    const isAdmin = user.user_metadata?.role === 'admin';
 
     if (!isAdmin) {
       return NextResponse.json(

@@ -9,7 +9,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getRedisClient } from '@/lib/redis/client';
 import type { SubscriptionTier } from '@/lib/console/subscription';
 
-export type ServiceCode = 'reconcile' | 'receipts' | 'featureFlags' | 'playground';
+export type ServiceCode = 'reconcile' | 'receipts' | 'featureFlags' | 'playground' | 'api' | 'reconciliation' | 'receipt_parsing';
 export type Period = 'daily' | 'monthly';
 
 export interface UsageCheckResult {
@@ -140,7 +140,7 @@ export async function getCurrentUsage(
     // Determine tier from subscription
     let tier: SubscriptionTier = 'free';
     if (billingAccount.subscriptions.length > 0) {
-      const planId = billingAccount.subscriptions[0].planId?.toLowerCase() || 'base';
+      const planId = billingAccount.subscriptions[0]?.planId?.toLowerCase() || 'base';
       if (planId.includes('enterprise') || planId.includes('custom')) {
         tier = 'enterprise';
       } else if (planId.includes('pro') || planId.includes('paid')) {
@@ -273,7 +273,7 @@ export async function checkAndIncrementUsage(
     // Determine tier from subscription
     let tier: SubscriptionTier = 'free';
     if (billingAccount.subscriptions.length > 0) {
-      const planId = billingAccount.subscriptions[0].planId?.toLowerCase() || 'base';
+      const planId = billingAccount.subscriptions[0]?.planId?.toLowerCase() || 'base';
       if (planId.includes('enterprise') || planId.includes('custom')) {
         tier = 'enterprise';
       } else if (planId.includes('pro') || planId.includes('paid')) {
@@ -475,7 +475,7 @@ export async function recordUsageEvent(
         service,
         operation,
         quantity,
-        metadata: metadata ?? {},
+        metadata: (metadata ?? {}) as never,
       },
     });
   } catch (error) {

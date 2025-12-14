@@ -74,8 +74,8 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - days);
     const endDate = new Date();
 
-    // Get subscription info for limits
-    const subscription = await getSubscriptionInfo();
+    // Get subscription info for limits (not used but kept for future use)
+    // const subscription = await getSubscriptionInfo();
 
     // Get usage events from database
     const usageEvents = await prisma.usageEvent.findMany({

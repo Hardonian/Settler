@@ -12,7 +12,7 @@ import { createCheckoutSession } from '@/domain/billing/stripeService';
 import { PlanCode, getPlanConfig } from '@/domain/billing/planConfig';
 import { requestSizeLimits } from '@/middleware/request-size-limit';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
-import { auditBilling } from '@/lib/audit/logger';
+import { logAuditEvent } from '@/lib/audit/logger';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
 
 export const dynamic = 'force-dynamic';
@@ -121,8 +121,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Audit log
-    await auditBilling('checkout_session_created', billingAccount.id, user.id, {
-      planCode,
+    await logAuditEvent({
+      userId: user.id,
+      billingAccountId: billingAccount.id,
+      action: 'create',
+      resourceType: 'billing_account',
+      resourceId: billingAccount.id,
+      metadata: {
+        event: 'checkout_session_created',
+        planCode,
+      },
     });
 
     // Track metrics

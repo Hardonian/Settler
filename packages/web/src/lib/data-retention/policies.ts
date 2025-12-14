@@ -101,7 +101,7 @@ export async function cleanupExpiredData(resourceType: string): Promise<number> 
         // Usage events are in UsageEvent table
         const usageEventsDeleted = await prisma.usageEvent.deleteMany({
           where: {
-            createdAt: {
+            timestamp: {
               lt: cutoffDate,
             },
           },
@@ -189,7 +189,7 @@ export async function getRetentionSummary(): Promise<Array<{
           totalRecords = await prisma.usageEvent.count();
           expiredRecords = await prisma.usageEvent.count({
             where: {
-              createdAt: {
+              timestamp: {
                 lt: cutoffDate,
               },
             },

@@ -97,7 +97,6 @@ export async function getConversionFunnel(startDate: Date, endDate: Date) {
 
     // Calculate conversion rates
     const pageViews = funnel['page_view'] || 0;
-    const playgroundVisits = funnel['playground_visit'] || 0;
     const signups = funnel['signup_complete'] || 0;
     const apiKeysCreated = funnel['api_key_created'] || 0;
     const upgrades = funnel['upgrade_complete'] || 0;

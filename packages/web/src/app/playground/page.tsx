@@ -416,8 +416,6 @@ client.webhooks.on("reconciliation.complete", (event) => {
             primaryLink="/signup"
             secondaryAction="View Pricing"
             secondaryLink="/pricing"
-            secondaryAction="View Documentation"
-            secondaryLink="/docs"
             variant="gradient"
           />
         </div>

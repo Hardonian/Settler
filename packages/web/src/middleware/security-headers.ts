@@ -43,7 +43,7 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
 /**
  * Middleware function to apply security headers
  */
-export function securityHeadersMiddleware(request: NextRequest) {
+export function securityHeadersMiddleware(_request: NextRequest) {
   const response = NextResponse.next();
   return addSecurityHeaders(response);
 }

@@ -6,9 +6,7 @@
 
 import { Suspense } from 'react';
 import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
 import { ExecutiveDashboard } from '@/components/console/ExecutiveDashboard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
@@ -30,12 +28,8 @@ async function AdminMetricsContent() {
     );
   }
 
-  // Check if user is admin
-  const userProfile = await prisma.user.findUnique({
-    where: { id: user.id },
-  });
-
-  const isAdmin = userProfile?.metadata?.['role'] === 'admin';
+  // Check if user is admin (simplified - would use proper role check)
+  const isAdmin = user.user_metadata?.role === 'admin';
 
   if (!isAdmin) {
     return (

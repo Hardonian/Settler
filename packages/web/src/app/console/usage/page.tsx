@@ -200,7 +200,7 @@ export default function UsagePage() {
             <CardContent>
               <div className="space-y-4">
                 {summary && Object.entries(summary.byService).map(([service, count]) => {
-                  const serviceKey = service.replace('settler-', '') as keyof typeof summary.limits;
+                  const serviceKey = service.replace('settler-', '') as 'reconcile' | 'receipts' | 'featureFlags' | 'playground';
                   const limit = summary.limits?.[serviceKey];
                   const hasLimit = limit && limit.limit > 0;
                   const usagePercent = hasLimit ? (limit.current / limit.limit) * 100 : (count / (summary.totalCalls || 1)) * 100;

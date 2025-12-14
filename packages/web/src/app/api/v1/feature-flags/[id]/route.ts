@@ -21,7 +21,7 @@ export async function PATCH(
 ) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
-    let auth;
+    let auth: Awaited<ReturnType<typeof authenticateApiKey>> | undefined;
     let isAuthenticated = false;
     
     try {
@@ -29,6 +29,7 @@ export async function PATCH(
       isAuthenticated = true;
     } catch (error) {
       // Unauthenticated access allowed for playground - will return demo response
+      auth = undefined;
     }
 
     const { id } = await params;
@@ -50,21 +51,18 @@ export async function PATCH(
       }, { status: 200 });
     }
 
-    if (!auth.billingAccountId) {
+    if (!auth || !auth.billingAccountId) {
       return NextResponse.json(
         { error: 'Billing account required' },
         { status: 400 }
       );
     }
 
-    const { id } = await params;
-    const body = await request.json();
-
     // Verify flag belongs to billing account
     const existing = await prisma.featureFlag.findFirst({
       where: {
         id,
-        billingAccountId: auth.billingAccountId,
+        billingAccountId: auth!.billingAccountId,
       },
     });
 

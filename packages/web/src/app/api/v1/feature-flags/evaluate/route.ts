@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       }, { status: 200 });
     }
 
-    if (!auth.billingAccountId) {
+    if (!auth || !auth.billingAccountId) {
       return NextResponse.json(
         { error: 'Billing account required' },
         { status: 400 }
@@ -64,22 +64,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Enforce usage limits (for authenticated users)
-    if (isAuthenticated && auth.billingAccountId) {
+    if (isAuthenticated && auth?.billingAccountId) {
       const { enforceUsageLimit } = await import('@/middleware/usage-enforcement');
       const usageCheck = await enforceUsageLimit(request, auth, 1);
       if (!usageCheck.allowed && usageCheck.response) {
         return usageCheck.response;
       }
-    }
-
-    const body = await request.json();
-    const { flagKey, environment, context } = body;
-
-    if (!flagKey || !environment) {
-      return NextResponse.json(
-        { error: 'flagKey and environment are required' },
-        { status: 400 }
-      );
     }
 
     // Evaluate flag

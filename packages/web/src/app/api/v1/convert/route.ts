@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     // For unauthenticated users, allow basic conversions (demo mode)
     if (!isAuthenticated) {
       const body = await request.json();
-      const { type, from, to, value, formula } = body;
+      const { type, from, to, value } = body;
 
       if (!type || value === undefined) {
         return NextResponse.json(
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (!auth.billingAccountId) {
+    if (!auth || !auth.billingAccountId) {
       return NextResponse.json(
         { error: 'Billing account required' },
         { status: 400 }
@@ -206,7 +206,7 @@ export async function POST(request: NextRequest) {
 
     // Record usage
     await recordServiceUsage({
-      billingAccountId: auth.billingAccountId,
+      billingAccountId: auth!.billingAccountId,
       service: 'settler-convert',
       operation: type,
       quantity: 1,

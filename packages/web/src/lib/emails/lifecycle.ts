@@ -168,43 +168,45 @@ export async function sendUpgradePromptEmail(
  */
 export async function scheduleLifecycleEmails(userId: string): Promise<void> {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        billingAccounts: {
-          take: 1,
-        },
-      },
+    // Get user from Supabase auth (Prisma doesn't have User model)
+    const supabase = await import('@/lib/supabase/server').then(m => m.createClient());
+    const { data: { user: authUser } } = await supabase.auth.getUserById(userId);
+    
+    if (!authUser) {
+      return;
+    }
+
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: { userId },
     });
 
     if (!user || !user.email) {
       return;
     }
 
-    const billingAccount = user.billingAccounts[0];
     if (!billingAccount) {
       // New user - send welcome email
-      await sendWelcomeEmail(userId, user.email);
+      await sendWelcomeEmail(userId, authUser.email || '');
       return;
     }
 
-    // Check subscription status and send appropriate emails
-    if (billingAccount.subscriptionTier === 'free') {
-      // Check usage and send upgrade prompts if needed
-      // This would integrate with usage tracking
-    }
+    // Get subscription
+    const subscription = await prisma.subscription.findFirst({
+      where: {
+        billingAccountId: billingAccount.id,
+        status: { in: ['active', 'trialing'] },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
     // Check trial status
-    if (billingAccount.subscriptionStatus === 'trialing') {
-      const trialEnd = billingAccount.trialEndsAt;
-      if (trialEnd) {
-        const daysRemaining = Math.ceil(
-          (trialEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-        );
-        
-        if (daysRemaining <= 3 && daysRemaining > 0) {
-          await sendTrialEndingEmail(userId, user.email, daysRemaining);
-        }
+    if (subscription?.status === 'trialing' && subscription.trialEnd) {
+      const daysRemaining = Math.ceil(
+        (subscription.trialEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      );
+      
+      if (daysRemaining <= 3 && daysRemaining > 0) {
+        await sendTrialEndingEmail(userId, authUser.email || '', daysRemaining);
       }
     }
   } catch (error) {

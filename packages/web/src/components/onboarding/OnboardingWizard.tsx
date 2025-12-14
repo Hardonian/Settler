@@ -35,9 +35,7 @@ interface OnboardingWizardProps {
 
 export function OnboardingWizard({
   progress = 0,
-  currentStep = 'welcome',
   steps = [],
-  onComplete,
   onSkip,
   className,
 }: OnboardingWizardProps) {

@@ -56,40 +56,22 @@ export async function getExecutiveMetrics(
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   try {
-    // User metrics
+    // User metrics - use billing accounts as proxy for users
     const [totalUsers, activeUsers, newUsers, paidUsers] = await Promise.all([
-      prisma.user.count({
-        where: billingAccountId
-          ? {
-              billingAccounts: {
-                some: { id: billingAccountId },
-              },
-            }
-          : undefined,
+      prisma.billingAccount.count({
+        where: billingAccountId ? { id: billingAccountId } : undefined,
       }),
-      prisma.user.count({
+      prisma.billingAccount.count({
         where: {
-          ...(billingAccountId
-            ? {
-                billingAccounts: {
-                  some: { id: billingAccountId },
-                },
-              }
-            : {}),
-          lastActiveAt: {
+          ...(billingAccountId ? { id: billingAccountId } : {}),
+          updatedAt: {
             gte: thirtyDaysAgo,
           },
         },
       }),
-      prisma.user.count({
+      prisma.billingAccount.count({
         where: {
-          ...(billingAccountId
-            ? {
-                billingAccounts: {
-                  some: { id: billingAccountId },
-                },
-              }
-            : {}),
+          ...(billingAccountId ? { id: billingAccountId } : {}),
           createdAt: {
             gte: sevenDaysAgo,
           },
@@ -98,8 +80,11 @@ export async function getExecutiveMetrics(
       prisma.billingAccount.count({
         where: {
           ...(billingAccountId ? { id: billingAccountId } : {}),
-          subscriptionTier: {
-            in: ['pro', 'enterprise'],
+          subscriptions: {
+            some: {
+              planId: { in: ['pro', 'enterprise'] },
+              status: { in: ['active', 'trialing'] },
+            },
           },
         },
       }),
@@ -108,18 +93,25 @@ export async function getExecutiveMetrics(
     // Revenue metrics
     const billingAccounts = await prisma.billingAccount.findMany({
       where: billingAccountId ? { id: billingAccountId } : {},
-      select: {
-        subscriptionTier: true,
-        subscriptionStatus: true,
-        createdAt: true,
+      include: {
+        subscriptions: {
+          where: {
+            status: { in: ['active', 'trialing'] },
+          },
+          take: 1,
+        },
       },
     });
 
     const mrr = billingAccounts
-      .filter(ba => ba.subscriptionTier === 'pro' || ba.subscriptionTier === 'enterprise')
+      .filter(ba => {
+        const planId = ba.subscriptions[0]?.planId?.toLowerCase() || '';
+        return planId.includes('pro') || planId.includes('enterprise');
+      })
       .reduce((sum, ba) => {
         // Simplified: pro = $49/month, enterprise = $299/month
-        const monthlyPrice = ba.subscriptionTier === 'enterprise' ? 299 : 49;
+        const planId = ba.subscriptions[0]?.planId?.toLowerCase() || '';
+        const monthlyPrice = planId.includes('enterprise') ? 299 : 49;
         return sum + monthlyPrice;
       }, 0);
 
@@ -154,24 +146,15 @@ export async function getExecutiveMetrics(
       .reduce((sum, uc) => sum + uc.count, 0);
 
     // Growth metrics
-    const [lastPeriodUsers, lastPeriodRevenue] = await Promise.all([
-      prisma.user.count({
-        where: {
-          ...(billingAccountId
-            ? {
-                billingAccounts: {
-                  some: { id: billingAccountId },
-                },
-              }
-            : {}),
-          createdAt: {
-            gte: lastPeriodStart,
-            lte: lastPeriodEnd,
-          },
+    const lastPeriodUsers = await prisma.billingAccount.count({
+      where: {
+        ...(billingAccountId ? { id: billingAccountId } : {}),
+        createdAt: {
+          gte: lastPeriodStart,
+          lte: lastPeriodEnd,
         },
-      }),
-      Promise.resolve(mrr), // Simplified - would need historical data
-    ]);
+      },
+    });
 
     const userGrowthRate =
       lastPeriodUsers > 0
@@ -183,9 +166,13 @@ export async function getExecutiveMetrics(
     const churnedAccounts = await prisma.billingAccount.count({
       where: {
         ...(billingAccountId ? { id: billingAccountId } : {}),
-        subscriptionStatus: 'cancelled',
-        updatedAt: {
-          gte: thirtyDaysAgo,
+        subscriptions: {
+          some: {
+            status: 'cancelled',
+            cancelledAt: {
+              gte: thirtyDaysAgo,
+            },
+          },
         },
       },
     });
@@ -195,7 +182,12 @@ export async function getExecutiveMetrics(
     const freeAccounts = await prisma.billingAccount.count({
       where: {
         ...(billingAccountId ? { id: billingAccountId } : {}),
-        subscriptionTier: 'free',
+        subscriptions: {
+          none: {
+            planId: { in: ['pro', 'enterprise'] },
+            status: { in: ['active', 'trialing'] },
+          },
+        },
       },
     });
     
@@ -261,7 +253,7 @@ export async function getExecutiveMetrics(
 export async function getBillingAccountMetrics(billingAccountId: string) {
   try {
     const metrics = await getExecutiveMetrics(billingAccountId);
-    const usage = await getCurrentUsage(billingAccountId, 'api');
+    const usage = await getCurrentUsage(billingAccountId, 'reconcile');
     
     return {
       ...metrics,

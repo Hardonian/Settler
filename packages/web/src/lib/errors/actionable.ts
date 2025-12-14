@@ -83,8 +83,7 @@ export function getActionableError(code: string): ActionableError | null {
  */
 export function createActionableErrorResponse(
   code: string,
-  customMessage?: string,
-  statusCode: number = 400
+  customMessage?: string
 ) {
   const guidance = getActionableError(code);
   

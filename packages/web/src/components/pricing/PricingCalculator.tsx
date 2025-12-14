@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Calculator, DollarSign } from 'lucide-react';
+import { Calculator } from 'lucide-react';
 
 interface PricingTier {
   name: string;
@@ -84,9 +84,9 @@ export function PricingCalculator() {
     };
   };
 
-  const freeCost = calculateCost(PRICING_TIERS[0]);
-  const proCost = calculateCost(PRICING_TIERS[1]);
-  const enterpriseCost = calculateCost(PRICING_TIERS[2]);
+  const freeCost = calculateCost(PRICING_TIERS[0]!);
+  const proCost = calculateCost(PRICING_TIERS[1]!);
+  const enterpriseCost = calculateCost(PRICING_TIERS[2]!);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -120,7 +120,7 @@ export function PricingCalculator() {
                 max={200000}
                 step={1000}
                 value={[apiCalls]}
-                onValueChange={([value]) => setApiCalls(value)}
+                onValueChange={(values: number[]) => setApiCalls(values[0] || 0)}
                 className="flex-1"
               />
               <Input
@@ -142,7 +142,7 @@ export function PricingCalculator() {
                 max={2000}
                 step={10}
                 value={[reconciliations]}
-                onValueChange={([value]) => setReconciliations(value)}
+                onValueChange={(values: number[]) => setReconciliations(values[0] || 0)}
                 className="flex-1"
               />
               <Input
@@ -164,7 +164,7 @@ export function PricingCalculator() {
                 max={20000}
                 step={100}
                 value={[receipts]}
-                onValueChange={([value]) => setReceipts(value)}
+                onValueChange={(values: number[]) => setReceipts(values[0] || 0)}
                 className="flex-1"
               />
               <Input

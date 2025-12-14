@@ -60,15 +60,15 @@ export async function getCostBreakdown(
 
     // Get usage for the period
     const [apiUsage, reconUsage, receiptUsage] = await Promise.all([
-      getCurrentUsage(billingAccountId, 'api'),
-      getCurrentUsage(billingAccountId, 'reconciliation'),
-      getCurrentUsage(billingAccountId, 'receipt_parsing'),
+      getCurrentUsage(billingAccountId, 'reconcile'), // Map 'api' to 'reconcile'
+      getCurrentUsage(billingAccountId, 'reconcile'),
+      getCurrentUsage(billingAccountId, 'receipts'),
     ]);
 
     // Calculate costs
-    const apiCost = apiUsage.count * COST_PER_API_REQUEST;
-    const reconCost = reconUsage.count * COST_PER_RECONCILIATION;
-    const receiptCost = receiptUsage.count * COST_PER_RECEIPT;
+    const apiCost = apiUsage.current * COST_PER_API_REQUEST;
+    const reconCost = reconUsage.current * COST_PER_RECONCILIATION;
+    const receiptCost = receiptUsage.current * COST_PER_RECEIPT;
 
     // Estimate storage (simplified - would query actual storage)
     const storageGB = 0; // Would calculate from actual storage usage
@@ -88,15 +88,15 @@ export async function getCostBreakdown(
       },
       services: {
         api: {
-          requests: apiUsage.count,
+          requests: apiUsage.current,
           cost: apiCost,
         },
         reconciliation: {
-          jobs: reconUsage.count,
+          jobs: reconUsage.current,
           cost: reconCost,
         },
         receiptParsing: {
-          receipts: receiptUsage.count,
+          receipts: receiptUsage.current,
           cost: receiptCost,
         },
         storage: {

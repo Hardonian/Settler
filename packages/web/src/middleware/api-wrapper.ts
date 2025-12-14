@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
 import { createErrorResponse } from '@/lib/server-error-handler';
-import { addVersionHeaders, getVersionFromPath } from '@/lib/api/versioning';
+import { getApiVersion } from '@/lib/api/versioning';
 import { checkRequestSize } from './request-size-limit';
 
 export interface ApiWrapperConfig {
@@ -54,8 +54,8 @@ export function withApiWrapper<T extends (...args: any[]) => Promise<NextRespons
       const response = await handler(...args);
 
       // Add version headers
-      const version = getVersionFromPath(path);
-      addVersionHeaders(version, response);
+      const version = getApiVersion(request);
+      response.headers.set('X-API-Version', version);
 
       // Track metrics
       const status = response.status;

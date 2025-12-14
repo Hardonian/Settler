@@ -15,7 +15,7 @@ import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
 import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, CheckCircle2 } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
-import { trackPageView, trackPlaygroundVisit } from "@/lib/analytics/conversion";
+import { trackPageView } from "@/lib/analytics/conversion";
 
 // Dynamic imports for marketing components - using index file for better webpack resolution
 // This provides code splitting and lazy loading benefits while avoiding webpack alias issues

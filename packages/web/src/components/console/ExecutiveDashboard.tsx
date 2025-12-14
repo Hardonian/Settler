@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Users, DollarSign, Activity, Zap, Target, AlertCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Users, DollarSign, Activity, Target, AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface ExecutiveMetrics {
