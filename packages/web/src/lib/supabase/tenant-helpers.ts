@@ -105,12 +105,12 @@ export async function getPrimaryTenant(): Promise<string | null> {
     });
     
     if (billingAccount?.tenantId) {
-      return billingAccount.tenantId;
+      return billingAccount.tenantId ?? null;
     }
     
     // Fallback to first tenant from tenant_users
     const tenants = await getUserTenants();
-    return tenants.length > 0 ? tenants[0] : null;
+    return tenants.length > 0 ? (tenants[0] ?? null) : null;
   } catch (error) {
     console.error('[getPrimaryTenant] Unexpected error:', error);
     return null;
