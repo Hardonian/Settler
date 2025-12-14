@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getExecutiveMetrics, getBillingAccountMetrics } from '@/lib/metrics/service';
+import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -15,7 +16,11 @@ export const runtime = 'nodejs';
  * GET /api/console/metrics
  */
 export async function GET(request: NextRequest) {
+  const correlationId = await getCorrelationId();
+  const logger = await createLogger({ route: '/api/console/metrics', method: 'GET' });
+  
   try {
+    logger.info('Console metrics request started', { correlationId });
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -54,12 +59,21 @@ export async function GET(request: NextRequest) {
 
     const metrics = await getExecutiveMetrics();
 
-    return NextResponse.json(metrics);
+    logger.info('Metrics fetched successfully', { correlationId });
+    const response = NextResponse.json(metrics);
+    return addCorrelationHeaders(response, correlationId);
   } catch (error) {
-    console.error('[Metrics API] Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch metrics' },
-      { status: 500 }
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Error fetching metrics', {
+      correlationId,
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    // Return 200 with null instead of 500 to prevent UI crash
+    const response = NextResponse.json(
+      { error: 'Failed to fetch metrics', metrics: null },
+      { status: 200 }
     );
+    return addCorrelationHeaders(response, correlationId);
   }
 }
