@@ -4,7 +4,8 @@
  * Tracks user journey and conversion funnel metrics.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+// Use dynamic import for Prisma Client to prevent bundling for browser
+// This ensures Prisma Client is only loaded on the server side
 
 export type ConversionEvent = 
   | 'page_view'
@@ -32,7 +33,14 @@ export interface ConversionEventData {
  * Track a conversion event
  */
 export async function trackConversionEvent(data: ConversionEventData): Promise<void> {
+  // Only run on server side - skip in browser
+  if (typeof window !== 'undefined') {
+    return;
+  }
+  
   try {
+    // Dynamically import Prisma Client to prevent browser bundling
+    const { prisma } = await import('@/shared/db/prismaClient');
     // Store in activity_log table (or create dedicated conversion_events table)
     await prisma.$executeRaw`
       INSERT INTO activity_log (
@@ -59,7 +67,26 @@ export async function trackConversionEvent(data: ConversionEventData): Promise<v
  * Get conversion funnel metrics
  */
 export async function getConversionFunnel(startDate: Date, endDate: Date) {
+  // Only run on server side - skip in browser
+  if (typeof window !== 'undefined') {
+    return {
+      funnel: {},
+      conversionRates: {
+        playgroundToSignup: 0,
+        signupToApiKey: 0,
+        apiKeyToUpgrade: 0,
+        overall: 0,
+      },
+      period: {
+        start: startDate,
+        end: endDate,
+      },
+    };
+  }
+  
   try {
+    // Dynamically import Prisma Client to prevent browser bundling
+    const { prisma } = await import('@/shared/db/prismaClient');
     // Query conversion events from activity_log
     const events = await prisma.$queryRaw<Array<{
       action: string;

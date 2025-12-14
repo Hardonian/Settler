@@ -28,6 +28,8 @@ const nextConfig = {
     swcMinify: true,
     // Optimize package imports
     optimizePackageImports: ['lucide-react', '@radix-ui/react-progress', '@radix-ui/react-radio-group'],
+    // Exclude server-only packages from client bundles
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },
   eslint: {
     // Ignore linting during builds - we run linting in pre-commit hooks and CI
@@ -56,7 +58,7 @@ const nextConfig = {
     '@settler/protocol',
     '@settler/types',
   ],
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     // Ensure webpack can resolve path aliases in dynamic imports
     // This is needed for marketing components in subdirectories
     const originalResolve = config.resolve;
@@ -74,6 +76,46 @@ const nextConfig = {
         '.jsx',
       ],
     };
+    
+    // Exclude Prisma Client from client bundles completely
+    // This prevents webpack from trying to bundle server-only code
+    if (!isServer) {
+      const path = require('path');
+      const stubPath = path.resolve(__dirname, 'src/shared/db/prismaClient.stub.ts');
+      
+      // Primary mechanism: Use alias to replace prismaClient with stub in client bundles
+      // This happens during module resolution, before webpack tries to bundle the code
+      config.resolve.alias['@/shared/db/prismaClient'] = stubPath;
+      
+      // Fallback: Use NormalModuleReplacementPlugin to catch any other import patterns
+      const NormalModuleReplacementPlugin = require('webpack').NormalModuleReplacementPlugin;
+      config.plugins.push(
+        new NormalModuleReplacementPlugin(
+          /shared[\\/]db[\\/]prismaClient/,
+          stubPath
+        )
+      );
+      
+      // Also mark Prisma packages as externals to prevent bundling
+      config.externals = config.externals || [];
+      if (typeof config.externals === 'function') {
+        const originalExternals = config.externals;
+        config.externals = [
+          originalExternals,
+          ({ request }, callback) => {
+            if (request && (request.includes('@prisma/client') || request.includes('prisma'))) {
+              return callback(null, 'commonjs ' + request);
+            }
+            callback();
+          },
+        ];
+      } else if (Array.isArray(config.externals)) {
+        config.externals.push({
+          '@prisma/client': 'commonjs @prisma/client',
+        });
+      }
+    }
+    
     return config;
   },
   // Image Optimization
