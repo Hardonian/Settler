@@ -1,0 +1,129 @@
+name: Receipt Console Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+  push:
+    branches: [main]
+    paths:
+      - 'packages/web/src/app/api/v1/receipts/**'
+      - 'packages/web/src/app/api/console/receipts/**'
+      - 'packages/web/src/app/console/receipts/**'
+      - 'packages/web/src/domain/console/receipts.ts'
+      - 'packages/web/src/domain/receipts/**'
+      - 'supabase/migrations/**receipt*'
+
+env:
+  NODE_VERSION: '24'
+  # Database password injected from GitHub secrets
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  # Supabase credentials from secrets
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+jobs:
+  deploy:
+    name: Deploy Receipt Console
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+        env:
+          # Database password auto-injected from GitHub secrets
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      
+      - name: Verify database connection
+        run: npm run db:check
+        env:
+          # Database password auto-injected from GitHub secrets
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      
+      - name: Run database migrations
+        run: npm run db:migrate:prod
+        env:
+          # Database password auto-injected from GitHub secrets
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+      
+      - name: Verify receipt tables exist
+        run: |
+          npx tsx -e "
+            import { createClient } from '@supabase/supabase-js';
+            const supabase = createClient(
+              process.env.SUPABASE_URL!,
+              process.env.SUPABASE_SERVICE_ROLE_KEY!
+            );
+            const tables = ['receipt_uploads', 'receipts', 'receipt_items'];
+            for (const table of tables) {
+              const { error } = await supabase.from(table).select('id').limit(1);
+              if (error) {
+                console.error(\`Table \${table} does not exist or is not accessible\`);
+                process.exit(1);
+              }
+              console.log(\`✓ Table \${table} exists\`);
+            }
+          "
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      
+      - name: Build application
+        run: npm run build
+        env:
+          # Database password auto-injected from GitHub secrets
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      
+      - name: Run smoke tests
+        run: npx tsx scripts/smoke-receipts.ts
+        env:
+          # Database password auto-injected from GitHub secrets
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      
+      - name: Deploy to Vercel (if configured)
+        if: env.VERCEL_TOKEN != ''
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+        env:
+          # Database password auto-injected from GitHub secrets
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}

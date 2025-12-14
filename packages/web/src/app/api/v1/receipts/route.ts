@@ -17,6 +17,8 @@ import { withRetry } from '@/lib/db/retry';
 import { requestSizeLimits } from '@/middleware/request-size-limit';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
+import { createLogger, addCorrelationHeaders } from '@/lib/monitoring/correlation';
+import { validateReceipt, sanitizeReceiptData, validateReceiptTotals } from '@/domain/receipts/validation';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -33,22 +35,32 @@ const requestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
+  const logger = await createLogger({ route: '/api/v1/receipts', method: 'POST' });
+  let correlationId: string;
 
   try {
+    // Get correlation ID for tracing
+    const { getCorrelationId } = await import('@/lib/monitoring/correlation');
+    correlationId = await getCorrelationId();
+    logger.info('Receipt parse request started', { correlationId });
+
     // Check request size
     const sizeCheck = requestSizeLimits.api(request);
     if (sizeCheck) {
-      return sizeCheck;
+      logger.warn('Request size limit exceeded', { correlationId });
+      return addCorrelationHeaders(sizeCheck, correlationId);
     }
 
     // Apply rate limiting
     const rateLimitCheck = await redisRateLimiters.api(request);
     if (rateLimitCheck) {
-      return rateLimitCheck;
+      logger.warn('Rate limit exceeded', { correlationId });
+      return addCorrelationHeaders(rateLimitCheck, correlationId);
     }
 
     // Authenticate API key
     const auth = await authenticateApiKey(request);
+    logger.info('API key authenticated', { correlationId, userId: auth.userId, apiKeyId: auth.apiKeyId });
 
     // Get billing account (required for usage tracking)
     if (!auth.billingAccountId) {
@@ -121,23 +133,47 @@ export async function POST(request: NextRequest) {
 
       // Parse receipt from OCR text
       const parseResult = parseReceiptFromText(ocrResult.text);
+      logger.info('Receipt parsed from OCR', { correlationId, itemCount: parseResult.receipt.items.length });
+
+      // Validate and sanitize receipt data
+      const sanitizedData = sanitizeReceiptData(parseResult.receipt);
+      const validation = validateReceipt(sanitizedData);
+
+      if (!validation.valid) {
+        logger.warn('Receipt validation failed', { 
+          correlationId, 
+          errors: validation.errors?.errors.map(e => e.message) 
+        });
+        // Continue with sanitized data even if validation fails (graceful degradation)
+      }
+
+      // Validate receipt totals (business logic)
+      const totalsValidation = validateReceiptTotals(sanitizedData);
+      if (!totalsValidation.valid) {
+        logger.warn('Receipt totals validation failed', { 
+          correlationId, 
+          errors: totalsValidation.errors 
+        });
+        // Log but continue (data might still be useful)
+      }
 
       // Create receipt record (with retry)
       const receipt = await withRetry(() => prisma.receipt.create({
         data: {
           uploadId: upload.id,
-          vendor: parseResult.receipt.vendor,
-          date: parseResult.receipt.date,
-          currency: parseResult.receipt.currency,
-          subtotal: parseResult.receipt.subtotal,
-          tax: parseResult.receipt.tax,
-          total: parseResult.receipt.total,
-          paymentMethod: parseResult.receipt.paymentMethod,
-          confidenceScore: parseResult.confidenceScore,
-          rawText: parseResult.rawText,
+          vendor: sanitizedData.vendor as string | null,
+          date: sanitizedData.date as Date | null,
+          currency: sanitizedData.currency as string | null,
+          subtotal: sanitizedData.subtotal as number | null,
+          tax: sanitizedData.tax as number | null,
+          total: sanitizedData.total as number | null,
+          paymentMethod: sanitizedData.paymentMethod as string | null,
+          confidenceScore: sanitizedData.confidenceScore as number | null,
+          rawText: sanitizedData.rawText as string | null,
           metadata: {},
         },
       }));
+      logger.info('Receipt created', { correlationId, receiptId: receipt.id });
 
       // Create receipt items (with retry)
       if (parseResult.receipt.items.length > 0) {
@@ -179,9 +215,11 @@ export async function POST(request: NextRequest) {
       }));
 
       // Track metrics
-      await trackApiMetric('/api/v1/receipts', 'POST', 200, Date.now() - startTime);
+      const duration = Date.now() - startTime;
+      await trackApiMetric('/api/v1/receipts', 'POST', 200, duration);
+      logger.info('Receipt parse request completed', { correlationId, duration });
 
-      return createSuccessResponse({
+      const response = createSuccessResponse({
         id: receipt.id,
         uploadId: upload.id,
         vendor: receipt.vendor,
@@ -203,12 +241,22 @@ export async function POST(request: NextRequest) {
         createdAt: receipt.createdAt,
       });
 
+      return addCorrelationHeaders(response, correlationId);
+
     } catch (error: unknown) {
       // Track error metrics
-      await trackApiMetric('/api/v1/receipts', 'POST', 500, Date.now() - startTime);
+      const duration = Date.now() - startTime;
+      await trackApiMetric('/api/v1/receipts', 'POST', 500, duration);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error('Receipt parse request failed', { 
+        correlationId, 
+        error: errorMessage,
+        duration,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
 
       // Update upload status to failed (with retry)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       await withRetry(() => prisma.receiptUpload.update({
         where: { id: upload.id },
         data: {
@@ -220,12 +268,19 @@ export async function POST(request: NextRequest) {
       });
 
       if (errorMessage.includes("OCR_FAILED")) {
-          return createErrorResponse("OCR_FAILED", "Could not extract text from image", 422, { originalError: errorMessage });
+          const response = createErrorResponse("OCR_FAILED", "Could not extract text from image", 422, { originalError: errorMessage });
+          return addCorrelationHeaders(response, correlationId);
       }
 
       throw error;
     }
   } catch (error) {
-    return handleApiError(error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Receipt parse request error', { 
+      correlationId: correlationId || 'unknown',
+      error: errorMessage,
+    });
+    const response = handleApiError(error);
+    return correlationId ? addCorrelationHeaders(response, correlationId) : response;
   }
 }
