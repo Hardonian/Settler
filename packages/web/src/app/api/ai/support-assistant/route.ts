@@ -65,15 +65,17 @@ export async function POST(request: NextRequest) {
 
     // Log support request for analytics
     if (user) {
-      await supabase.from("support_requests").insert({
-        user_id: user.id,
-        question,
-        context: context || {},
-        ai_response: aiResponse.answer,
-        helpful: null, // User can rate later
-      }).catch(() => {
+      try {
+        await supabase.from("support_requests").insert({
+          user_id: user.id,
+          question,
+          context: context || {},
+          ai_response: aiResponse.answer,
+          helpful: null, // User can rate later
+        } as never);
+      } catch {
         // Table might not exist, that's okay
-      });
+      }
     }
 
     return NextResponse.json({
@@ -93,8 +95,8 @@ export async function POST(request: NextRequest) {
 async function generateSupportResponse(
   question: string,
   context?: SupportRequest["context"],
-  userContext?: Record<string, unknown>,
-  userId?: string
+  _userContext?: Record<string, unknown>,
+  _userId?: string
 ): Promise<{
   answer: string;
   suggestions: string[];

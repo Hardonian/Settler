@@ -7,7 +7,7 @@ import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, ArrowRight, Zap, Shield, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
@@ -18,7 +18,7 @@ const useCases: Record<
     description: string;
     hero: string;
     features: string[];
-    benefits: Array<{ title: string; description: string; icon: React.ComponentType }>;
+    benefits: Array<{ title: string; description: string; icon: React.ComponentType<{ className?: string }> }>;
     cta: string;
   }
 > = {
@@ -219,12 +219,12 @@ export default async function UseCasePage({
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {useCase.benefits.map((benefit, i) => {
-              const Icon = benefit.icon;
+              const IconComponent = benefit.icon;
               return (
                 <Card key={i} className="text-center border-2">
                   <CardHeader>
                     <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                      <Icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      <IconComponent className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                     </div>
                     <CardTitle>{benefit.title}</CardTitle>
                     <CardDescription>{benefit.description}</CardDescription>

@@ -100,7 +100,6 @@ export function ShareButton({
               <div className="flex items-center justify-between">
                 <Label htmlFor="public">Make public</Label>
                 <Switch
-                  id="public"
                   checked={isPublic}
                   onCheckedChange={setIsPublic}
                 />
