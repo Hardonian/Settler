@@ -258,8 +258,8 @@ export class PredictiveOps {
     // Check for increasing trend
     const costs = Array.from(dailyCosts.values()).sort((a, b) => a - b);
     if (costs.length > 3) {
-      const recentAvg = costs.slice(-3).reduce((a, b) => a + b, 0) / 3;
-      const olderAvg = costs.slice(0, -3).reduce((a, b) => a + b, 0) / Math.max(1, costs.length - 3);
+      const recentAvg = costs.slice(-3).reduce((a: number, b: number) => a + b, 0) / 3;
+      const olderAvg = costs.slice(0, -3).reduce((a: number, b: number) => a + b, 0) / Math.max(1, costs.length - 3);
 
       if (recentAvg > olderAvg * 1.5) {
         predictions.push({
