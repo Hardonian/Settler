@@ -195,7 +195,7 @@ export class PredictiveOps {
       });
 
       // Check execution times
-      const results = await this.prisma.reconResult.findMany({
+      const results: Array<{ completedAt: Date | null; startedAt: Date | null }> = await this.prisma.reconResult.findMany({
         where: {
           reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
         },
