@@ -15,6 +15,7 @@ import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
 import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, CheckCircle2 } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
+import { trackPageView } from "@/lib/analytics/conversion";
 
 // Dynamic imports for marketing components - using index file for better webpack resolution
 // This provides code splitting and lazy loading benefits while avoiding webpack alias issues
@@ -70,6 +71,10 @@ export default function Home() {
   useEffect(() => {
     analytics.trackPageView('/', {
       title: 'Settler - The API Infrastructure for Financial Evidence',
+    });
+    // Track conversion event
+    trackPageView('/', undefined, undefined).catch(() => {
+      // Don't block if tracking fails
     });
   }, []);
 
@@ -188,8 +193,8 @@ if (flag.value) { /* ... */ }`;
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-7 text-xl font-bold shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:scale-110 animate-pulse hover:animate-none"
                     onClick={() => trackCTA('Get API Key', { location: 'hero' })}
                   >
-                    <Link href="/signup" className="flex items-center gap-2">
-                      <span>Start Free Trial — No Credit Card</span>
+                    <Link href="/console/playground" className="flex items-center gap-2">
+                      <span>Try Playground — No Signup Required</span>
                       <ArrowRight className="w-5 h-5" />
                     </Link>
                   </Button>
@@ -407,10 +412,10 @@ if (flag.value) { /* ... */ }`;
             <EnhancedConversionCTA
               title="Ready to Transform Your Financial Operations?"
               description="Join thousands of companies already using Settler. Start your free trial today—no credit card required, full access to all features."
-              primaryAction="Start Free Trial — No Credit Card"
-              primaryLink="/signup"
-              secondaryAction="View Pricing"
-              secondaryLink="/pricing"
+              primaryAction="Try Playground — No Signup Required"
+              primaryLink="/console/playground"
+              secondaryAction="Start Free Trial"
+              secondaryLink="/signup"
               showUrgency={true}
               showTrustBadges={true}
               variant="hero"

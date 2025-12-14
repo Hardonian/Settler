@@ -154,7 +154,7 @@ export default function JobsPage() {
             </p>
           </div>
           <Button asChild className="font-medium">
-            <Link href="/playground">
+            <Link href="/console/playground">
               <Plus className="mr-2 h-4 w-4" />
               Create New Job
             </Link>
@@ -200,7 +200,7 @@ export default function JobsPage() {
                 </p>
                 {!searchQuery && statusFilter === "all" && (
                   <Button asChild className="mt-4">
-                    <Link href="/playground">Create Your First Job</Link>
+                    <Link href="/console/playground">Create Your First Job</Link>
                   </Button>
                 )}
               </div>

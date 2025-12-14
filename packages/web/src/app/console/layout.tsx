@@ -28,6 +28,7 @@ export default async function ConsoleRootLayout({
     timestamp: new Date().toISOString(),
   };
   
+  
   // Environment safety check
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
@@ -78,8 +79,8 @@ export default async function ConsoleRootLayout({
       console.log('[Console Layout] No authenticated user', logContext);
     }
 
-    // If user is not authenticated, show public overview instead of redirecting
-    // This prevents 500 errors when navigating from main page
+    // If user is not authenticated, show public overview
+    // Note: Playground routes have their own layout that handles unauthenticated access
     if (error || !user) {
       return (
         <>
@@ -94,6 +95,7 @@ export default async function ConsoleRootLayout({
       );
     }
 
+    // Authenticated users get full console access
     return (
       <>
         <Navigation />

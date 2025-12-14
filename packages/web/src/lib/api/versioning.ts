@@ -1,73 +1,129 @@
 /**
- * API Versioning Utilities
+ * API Versioning Strategy
  * 
- * Provides utilities for API versioning and deprecation handling.
+ * Handles API version negotiation and routing.
  */
+
+import { NextRequest, NextResponse } from 'next/server';
 
 export type ApiVersion = 'v1' | 'v2';
 
-export interface VersionInfo {
-  version: ApiVersion;
-  status: 'active' | 'deprecated' | 'sunset';
-  deprecationDate?: string;
-  sunsetDate?: string;
-  migrationGuide?: string;
-}
+const CURRENT_VERSION: ApiVersion = 'v1';
+const SUPPORTED_VERSIONS: ApiVersion[] = ['v1'];
 
 /**
- * API version registry
+ * Extract API version from request
  */
-export const API_VERSIONS: Record<ApiVersion, VersionInfo> = {
-  v1: {
-    version: 'v1',
-    status: 'active',
-  },
-  v2: {
-    version: 'v2',
-    status: 'active',
-  },
-};
-
-/**
- * Get version info from request path
- */
-export function getVersionFromPath(path: string): ApiVersion | null {
-  const match = path.match(/^\/api\/(v\d+)\//);
-  if (match) {
-    const version = match[1] as ApiVersion;
-    return API_VERSIONS[version] ? version : null;
+export function extractApiVersion(request: NextRequest): ApiVersion | null {
+  // Check URL path: /api/v1/... or /api/v2/...
+  const pathMatch = request.nextUrl.pathname.match(/^\/api\/(v\d+)\//);
+  if (pathMatch) {
+    const version = pathMatch[1] as ApiVersion;
+    if (SUPPORTED_VERSIONS.includes(version)) {
+      return version;
+    }
   }
+
+  // Check Accept header: application/vnd.settler.v1+json
+  const acceptHeader = request.headers.get('accept');
+  if (acceptHeader) {
+    const versionMatch = acceptHeader.match(/application\/vnd\.settler\.(v\d+)\+json/);
+    if (versionMatch) {
+      const version = versionMatch[1] as ApiVersion;
+      if (SUPPORTED_VERSIONS.includes(version)) {
+        return version;
+      }
+    }
+  }
+
+  // Check X-API-Version header
+  const versionHeader = request.headers.get('x-api-version');
+  if (versionHeader && SUPPORTED_VERSIONS.includes(versionHeader as ApiVersion)) {
+    return versionHeader as ApiVersion;
+  }
+
   return null;
 }
 
 /**
- * Check if version is deprecated
+ * Get API version from request, defaulting to current version
  */
-export function isVersionDeprecated(version: ApiVersion): boolean {
-  const info = API_VERSIONS[version];
-  return info.status === 'deprecated' || info.status === 'sunset';
+export function getApiVersion(request: NextRequest): ApiVersion {
+  return extractApiVersion(request) || CURRENT_VERSION;
 }
 
 /**
- * Add version headers to response
+ * Create versioned error response
  */
-export function addVersionHeaders(
-  version: ApiVersion | null,
-  response: Response
-): Response {
-  if (version) {
-    const info = API_VERSIONS[version];
-    response.headers.set('API-Version', version);
-    response.headers.set('API-Status', info.status);
-
-    if (info.status === 'deprecated' && info.deprecationDate) {
-      response.headers.set('Sunset', info.deprecationDate);
+export function createVersionedErrorResponse(
+  request: NextRequest,
+  error: string,
+  status: number = 400
+): NextResponse {
+  const version = getApiVersion(request);
+  
+  return NextResponse.json(
+    {
+      error,
+      version,
+      timestamp: new Date().toISOString(),
+    },
+    {
+      status,
+      headers: {
+        'X-API-Version': version,
+        'Content-Type': `application/vnd.settler.${version}+json`,
+      },
     }
+  );
+}
 
-    if (info.migrationGuide) {
-      response.headers.set('Link', `<${info.migrationGuide}>; rel="deprecation"`);
+/**
+ * Create versioned success response
+ */
+export function createVersionedResponse<T>(
+  request: NextRequest,
+  data: T,
+  status: number = 200
+): NextResponse {
+  const version = getApiVersion(request);
+  
+  return NextResponse.json(
+    {
+      data,
+      version,
+      timestamp: new Date().toISOString(),
+    },
+    {
+      status,
+      headers: {
+        'X-API-Version': version,
+        'Content-Type': `application/vnd.settler.${version}+json`,
+      },
     }
+  );
+}
+
+/**
+ * Check if version is supported
+ */
+export function isVersionSupported(version: string): version is ApiVersion {
+  return SUPPORTED_VERSIONS.includes(version as ApiVersion);
+}
+
+/**
+ * Middleware to validate API version
+ */
+export function validateApiVersion(request: NextRequest): NextResponse | null {
+  const version = extractApiVersion(request);
+  
+  if (version && !isVersionSupported(version)) {
+    return createVersionedErrorResponse(
+      request,
+      `Unsupported API version: ${version}. Supported versions: ${SUPPORTED_VERSIONS.join(', ')}`,
+      400
+    );
   }
 
-  return response;
+  return null;
 }

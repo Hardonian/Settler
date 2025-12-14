@@ -64,6 +64,9 @@ export function ConsolePublicOverview() {
             <Link href="/signup">Get Started</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
+            <Link href="/console/playground">Try Playground</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
             <Link href="/docs">View Documentation</Link>
           </Button>
         </div>

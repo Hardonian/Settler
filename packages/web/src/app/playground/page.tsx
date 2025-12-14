@@ -412,10 +412,10 @@ client.webhooks.on("reconciliation.complete", (event) => {
           <ConversionCTA
             title="Ready to Integrate?"
             description="Get your API key and start reconciling in minutes. Free tier available."
-            primaryAction="Get API Key"
-            primaryLink="/pricing"
-            secondaryAction="View Documentation"
-            secondaryLink="/docs"
+            primaryAction="Start Free Trial"
+            primaryLink="/signup"
+            secondaryAction="View Pricing"
+            secondaryLink="/pricing"
             variant="gradient"
           />
         </div>

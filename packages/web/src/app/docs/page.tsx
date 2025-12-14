@@ -35,7 +35,7 @@ export default function Docs() {
             </p>
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
               <p className="text-sm text-blue-800 dark:text-blue-200">
-                <strong>💡 Pro Tip:</strong> Try our <Link href="/playground" className="underline hover:text-blue-600 dark:hover:text-blue-300">interactive playground</Link> to test the API without signing up, or explore our <Link href="/cookbooks" className="underline hover:text-blue-600 dark:hover:text-blue-300">cookbooks</Link> for ready-to-use examples.
+                <strong>💡 Pro Tip:</strong> Try our <Link href="/console/playground" className="underline hover:text-blue-600 dark:hover:text-blue-300">interactive playground</Link> to test the API without signing up, or explore our <Link href="/cookbooks" className="underline hover:text-blue-600 dark:hover:text-blue-300">cookbooks</Link> for ready-to-use examples.
               </p>
             </div>
           </div>
@@ -300,7 +300,7 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
             primaryAction="Start Free Trial"
             primaryLink="/signup"
             secondaryAction="Try Playground"
-            secondaryLink="/playground"
+            secondaryLink="/console/playground"
             variant="gradient"
           />
         </div>

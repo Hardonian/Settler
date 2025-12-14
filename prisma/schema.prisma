@@ -35,6 +35,7 @@ model BillingAccount {
   addOnPurchases    AddOnPurchase[]
   usageEvents       UsageEvent[]
   usageAggregates   UsageAggregateDaily[]
+  usageCounters     UsageCounter[]
 
   @@index([userId])
   @@index([tenantId])
@@ -195,6 +196,25 @@ model UsageAggregateDaily {
   @@index([eventType])
   @@index([integrationId])
   @@map("usage_aggregate_daily")
+}
+
+model UsageCounter {
+  id                String    @id @default(uuid())
+  billingAccountId  String    @db.Uuid
+  service           String    // 'reconcile', 'receipts', 'featureFlags', 'playground'
+  period            String    // 'daily', 'monthly'
+  periodStart       DateTime  @db.Date
+  count             Int       @default(0)
+  limit             Int       @default(0) // Cached limit for reference
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([billingAccountId, service, period, periodStart])
+  @@index([billingAccountId, service, period])
+  @@index([periodStart])
+  @@map("usage_counters")
 }
 
 // ============================================================================
@@ -668,6 +688,48 @@ model Tenant {
   @@index([billingAccountId])
   @@index([isActive])
   @@map("tenants")
+}
+
+model OnboardingProgress {
+  id                String    @id @default(uuid())
+  userId            String    @db.Uuid @unique
+  currentStep       String    @default("welcome")
+  completedSteps    String[]  @default([])
+  skippedSteps      String[]  @default([])
+  progress          Int       @default(0) // 0-100
+  metadata          Json      @default("{}")
+  completedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([currentStep])
+  @@index([progress])
+  @@map("onboarding_progress")
+}
+
+model AuditLog {
+  id                String    @id @default(uuid())
+  userId            String?   @db.Uuid
+  billingAccountId  String?   @db.Uuid
+  tenantId          String?   @db.Uuid
+  action            String    // 'create', 'update', 'delete', 'read', etc.
+  resourceType      String    // 'api_key', 'receipt', 'feature_flag', etc.
+  resourceId        String?   @db.Uuid
+  changes           Json?     // Before/after state
+  ipAddress         String?
+  userAgent         String?   @db.Text
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+
+  @@index([userId])
+  @@index([billingAccountId])
+  @@index([tenantId])
+  @@index([resourceType])
+  @@index([action])
+  @@index([createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("audit_logs")
 }
 
 model TenantBranding {

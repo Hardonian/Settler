@@ -395,10 +395,10 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);
                 asChild
                 className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
               >
-                <Link href="/signup">Start Free Trial</Link>
+                <Link href="/console/playground">Try Playground</Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
-                <Link href="/playground">Try Playground</Link>
+                <Link href="/console/playground">Try Playground</Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
                 <Link href="/docs">View Full Documentation</Link>

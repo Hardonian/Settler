@@ -36,7 +36,7 @@ export default function FeatureFlagsPage() {
               <Link href="/docs/api">View API Docs</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/signup">Get Started</Link>
+              <Link href="/console/playground/flags">Try Playground</Link>
             </Button>
           </div>
         </div>
@@ -153,7 +153,7 @@ Response:
             Free forever. No credit card. No limits on evaluations. Just simple, reliable feature flags.
           </p>
           <Button asChild size="lg" variant="secondary">
-            <Link href="/signup">Get Started Free</Link>
+            <Link href="/console/playground/flags">Try Playground</Link>
           </Button>
         </div>
       </main>

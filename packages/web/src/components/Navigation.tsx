@@ -18,7 +18,7 @@ const navigationItems = [
   { href: '/enterprise', label: 'Enterprise' },
   { href: '/community', label: 'Community' },
   { href: '/support', label: 'Support' },
-  { href: '/playground', label: 'Playground' },
+  { href: '/console/playground', label: 'Playground' },
 ];
 
 export function Navigation() {
@@ -104,7 +104,7 @@ export function Navigation() {
               variant="default"
               size="default"
             >
-              <Link href="/playground" aria-label="Get started with Settler">
+              <Link href="/console/playground" aria-label="Get started with Settler">
                 Get Started
               </Link>
             </Button>
@@ -178,7 +178,7 @@ export function Navigation() {
                 size="default"
                 className="w-full"
               >
-                <Link href="/playground" aria-label="Get started with Settler">
+                <Link href="/console/playground" aria-label="Get started with Settler">
                   Get Started
                 </Link>
               </Button>

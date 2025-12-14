@@ -31,6 +31,12 @@ interface UsageSummary {
     start: Date;
     end: Date;
   };
+  limits?: {
+    reconcile?: { current: number; limit: number; remaining: number };
+    receipts?: { current: number; limit: number; remaining: number };
+    featureFlags?: { current: number; limit: number; remaining: number };
+    playground?: { current: number; limit: number; remaining: number };
+  };
 }
 
 export default function UsagePage() {
@@ -47,15 +53,20 @@ export default function UsagePage() {
     try {
       setLoading(true);
       const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
+      // Fetch usage data with real-time tracking
       const res = await fetch(`/api/console/usage?days=${days}`);
       if (res.ok) {
         const data = await res.json();
-        setSummary(data.summary || {
-          totalCalls: 0,
-          byService: {},
-          byOperation: {},
-          errorRate: 0,
-          period: { start: new Date(), end: new Date() },
+        setSummary({
+          totalCalls: data.totalCalls || 0,
+          byService: data.byService || {},
+          byOperation: data.byOperation || {},
+          errorRate: data.errorRate || 0,
+          period: {
+            start: new Date(data.period?.start || Date.now()),
+            end: new Date(data.period?.end || Date.now()),
+          },
+          limits: data.limits || {},
         });
         setEvents(data.events || []);
       } else {
@@ -66,6 +77,7 @@ export default function UsagePage() {
           byOperation: {},
           errorRate: 0,
           period: { start: new Date(), end: new Date() },
+          limits: {},
         });
         setEvents([]);
       }
@@ -78,6 +90,7 @@ export default function UsagePage() {
         byOperation: {},
         errorRate: 0,
         period: { start: new Date(), end: new Date() },
+        limits: {},
       });
       setEvents([]);
     } finally {
@@ -182,30 +195,69 @@ export default function UsagePage() {
           <Card>
             <CardHeader>
               <CardTitle>Usage by Service</CardTitle>
-              <CardDescription>API calls broken down by service</CardDescription>
+              <CardDescription>API calls broken down by service with limits</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {summary && Object.entries(summary.byService).map(([service, count]) => (
-                  <div key={service} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium capitalize">
-                        {service.replace('settler-', '').replace('-', ' ')}
-                      </span>
-                      <span className="text-slate-600 dark:text-slate-400">
-                        {count.toLocaleString()} calls
-                      </span>
+                {summary && Object.entries(summary.byService).map(([service, count]) => {
+                  const serviceKey = service.replace('settler-', '') as 'reconcile' | 'receipts' | 'featureFlags' | 'playground';
+                  const limit = summary.limits?.[serviceKey];
+                  const hasLimit = limit && limit.limit > 0;
+                  const usagePercent = hasLimit ? (limit.current / limit.limit) * 100 : (count / (summary.totalCalls || 1)) * 100;
+                  
+                  return (
+                    <div key={service} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium capitalize">
+                          {service.replace('settler-', '').replace('-', ' ')}
+                        </span>
+                        <div className="flex items-center gap-4">
+                          {hasLimit ? (
+                            <>
+                              <span className="text-sm text-slate-600 dark:text-slate-400">
+                                {limit.current.toLocaleString()} / {limit.limit === -1 ? '∞' : limit.limit.toLocaleString()}
+                              </span>
+                              {limit.remaining !== -1 && (
+                                <span className={`text-xs px-2 py-1 rounded ${
+                                  limit.remaining < limit.limit * 0.1 
+                                    ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                    : limit.remaining < limit.limit * 0.25
+                                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                                    : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                }`}>
+                                  {limit.remaining.toLocaleString()} remaining
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-slate-600 dark:text-slate-400">
+                              {count.toLocaleString()} calls
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full ${
+                            hasLimit && usagePercent > 90
+                              ? 'bg-red-600'
+                              : hasLimit && usagePercent > 75
+                              ? 'bg-amber-600'
+                              : 'bg-blue-600'
+                          }`}
+                          style={{
+                            width: `${Math.min(usagePercent, 100)}%`,
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{
-                          width: `${(count / (summary.totalCalls || 1)) * 100}%`,
-                        }}
-                      />
-                    </div>
+                  );
+                })}
+                {(!summary || Object.keys(summary.byService).length === 0) && (
+                  <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                    No usage data available for this period.
                   </div>
-                ))}
+                )}
               </div>
             </CardContent>
           </Card>

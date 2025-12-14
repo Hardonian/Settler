@@ -33,7 +33,7 @@ export default function ReceiptsPage() {
               <Link href="/docs/api">View API Docs</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/signup">Get Started</Link>
+              <Link href="/console/playground/receipts">Try Playground</Link>
             </Button>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function ReceiptsPage() {
             Start parsing receipts in minutes. No credit card required for the first 100 requests.
           </p>
           <Button asChild size="lg" variant="secondary">
-            <Link href="/signup">Create Free Account</Link>
+            <Link href="/console/playground/receipts">Try Playground</Link>
           </Button>
         </div>
       </main>

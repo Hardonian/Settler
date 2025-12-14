@@ -186,7 +186,7 @@ function UserDashboardContent() {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Button asChild className="bg-blue-600 hover:bg-blue-700 font-medium">
-                      <Link href="/playground">Start Onboarding</Link>
+                      <Link href="/console/playground">Start Onboarding</Link>
                     </Button>
                     <Button asChild variant="outline" className="font-medium">
                       <Link href="/docs">View Guide</Link>
@@ -199,7 +199,7 @@ function UserDashboardContent() {
                   action={{
                     label: "Create Job",
                     onClick: () => {
-                      window.location.href = "/playground";
+                      window.location.href = "/console/playground";
                     },
                   }}
                 />
@@ -263,7 +263,7 @@ function UserDashboardContent() {
                 variant="outline"
                 className="h-auto py-5 md:py-6 flex-col items-center"
               >
-                <Link href="/playground" className="flex flex-col items-center">
+                <Link href="/console/playground" className="flex flex-col items-center">
                   <span className="text-xl mb-2">🚀</span>
                   <span className="font-semibold text-sm md:text-base mb-1">Create New Job</span>
                   <span className="text-xs text-slate-500 dark:text-slate-400">
