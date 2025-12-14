@@ -260,9 +260,35 @@ serve(async (req) => {
     });
 
     // Alert if unhealthy
-    if (unhealthyChecks.length > 0) {
-      // TODO: Send alert via email/webhook/Slack
-      console.error("UNHEALTHY CHECKS DETECTED:", unhealthyChecks);
+    if (unhealthyChecks.length > 0 || degradedChecks.length > 0) {
+      const alerts = [
+        ...unhealthyChecks.map((check) => ({
+          severity: "critical" as const,
+          title: `Unhealthy: ${check.check}`,
+          message: check.message,
+          check: check.check,
+          details: check.details,
+        })),
+        ...degradedChecks.map((check) => ({
+          severity: "high" as const,
+          title: `Degraded: ${check.check}`,
+          message: check.message,
+          check: check.check,
+          details: check.details,
+        })),
+      ];
+
+      // Send alerts asynchronously (don't block response)
+      fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/automated-alerting`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ alerts }),
+      }).catch((error) => {
+        console.error("Failed to send alerts:", error);
+      });
     }
 
     return new Response(

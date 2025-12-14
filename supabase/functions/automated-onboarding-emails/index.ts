@@ -150,39 +150,42 @@ async function sendWelcomeEmail(
   user: User,
   frontendUrl: string
 ): Promise<void> {
-  const subject = `Welcome to Settler, ${user.name || "there"}! 🎉`;
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>Welcome to Settler</title>
-    </head>
-    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1>Welcome to Settler!</h1>
-        <p>Hi ${user.name || "there"},</p>
-        <p>Thanks for signing up! You now have a <strong>14-day free trial</strong> with full access to all features.</p>
-        <p>Here's what you can do next:</p>
-        <ul>
-          <li>Create your first API key</li>
-          <li>Run your first reconciliation</li>
-          <li>Parse receipts with AI</li>
-        </ul>
-        <p style="margin-top: 30px;">
-          <a href="${frontendUrl}/console" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-            Go to Console
-          </a>
-        </p>
-        <p style="margin-top: 30px; font-size: 12px; color: #666;">
-          No credit card required. Cancel anytime.
-        </p>
-      </div>
-    </body>
-    </html>
-  `;
+  // Import premium template
+  const { getWelcomeEmailTemplate, getPlainTextVersion } = await import(
+    "https://esm.sh/@settler/api/services/email/premium-templates"
+  ).catch(() => {
+    // Fallback if import fails
+    return {
+      getWelcomeEmailTemplate: () => "",
+      getPlainTextVersion: () => "",
+    };
+  });
 
-  await logEmailSend(supabase, user.id, "welcome", subject, html);
+  // Get trial end date
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("trial_end_date")
+    .eq("id", user.id)
+    .single();
+
+  const trialEndDate = profile?.trial_end_date
+    ? new Date(profile.trial_end_date).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "14 days from now";
+
+  const html = getWelcomeEmailTemplate({
+    name: user.name || undefined,
+    dashboardUrl: `${frontendUrl}/console`,
+    trialEndDate,
+  });
+
+  const text = getPlainTextVersion(html);
+  const subject = `Welcome to Settler, ${user.name || "there"}! 🎉`;
+
+  await sendEmailViaResend(user.email, subject, html, text, supabase, user.id, "welcome");
 }
 
 async function sendDay1OnboardingEmail(
@@ -190,6 +193,8 @@ async function sendDay1OnboardingEmail(
   user: User,
   frontendUrl: string
 ): Promise<void> {
+  const { getDay1OnboardingEmailTemplate, getPlainTextVersion } = await import("./email-templates.ts");
+  
   // Check onboarding progress
   const { data: progress } = await supabase
     .from("onboarding_progress")
@@ -197,32 +202,20 @@ async function sendDay1OnboardingEmail(
     .eq("user_id", user.id);
 
   const completedSteps = progress?.filter((p: any) => p.completed) || [];
+  const completionPercentage = Math.round((completedSteps.length / 6) * 100);
   const nextStep = progress?.find((p: any) => !p.completed)?.step || "first_api_key";
 
-  const subject = `Let's get you started with Settler`;
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>Get Started with Settler</title>
-    </head>
-    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1>Ready to get started?</h1>
-        <p>Hi ${user.name || "there"},</p>
-        <p>You're ${completedSteps.length} steps into your onboarding. Your next step is: <strong>${nextStep}</strong></p>
-        <p style="margin-top: 30px;">
-          <a href="${frontendUrl}/console" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-            Continue Setup
-          </a>
-        </p>
-      </div>
-    </body>
-    </html>
-  `;
+  const html = getDay1OnboardingEmailTemplate({
+    name: user.name || undefined,
+    dashboardUrl: `${frontendUrl}/console`,
+    nextStep,
+    completionPercentage: String(completionPercentage),
+  });
 
-  await logEmailSend(supabase, user.id, "onboarding_day1", subject, html);
+  const text = getPlainTextVersion(html);
+  const subject = `Let's get you started with Settler`;
+
+  await sendEmailViaResend(user.email, subject, html, text, supabase, user.id, "onboarding_day1");
 }
 
 async function sendDay3ActivationEmail(
@@ -230,43 +223,28 @@ async function sendDay3ActivationEmail(
   user: User,
   frontendUrl: string
 ): Promise<void> {
+  const { getDay3ActivationEmailTemplate, getPlainTextVersion } = await import("./email-templates.ts");
+  
   // Check if onboarding is complete
   const { data: progress } = await supabase
     .from("onboarding_progress")
     .select("step, completed")
     .eq("user_id", user.id);
 
-  const allCompleted = progress?.every((p: any) => p.completed) || false;
+  const hasCompletedFirstJob = progress?.some((p: any) => p.step === "first_job" && p.completed) || false;
 
-  const subject = allCompleted
+  const html = getDay3ActivationEmailTemplate({
+    name: user.name || undefined,
+    dashboardUrl: `${frontendUrl}/console`,
+    hasCompletedFirstJob: hasCompletedFirstJob ? "true" : "false",
+  });
+
+  const text = getPlainTextVersion(html);
+  const subject = hasCompletedFirstJob
     ? "You're all set! 🎉"
     : "Complete your setup to unlock full value";
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>${subject}</title>
-    </head>
-    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1>${allCompleted ? "You're making great progress!" : "Almost there!"}</h1>
-        <p>Hi ${user.name || "there"},</p>
-        ${allCompleted
-      ? "<p>You've completed onboarding! Start using Settler to automate your financial operations.</p>"
-      : "<p>Complete your setup to unlock the full power of Settler.</p>"}
-        <p style="margin-top: 30px;">
-          <a href="${frontendUrl}/console" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-            ${allCompleted ? "Go to Console" : "Complete Setup"}
-          </a>
-        </p>
-      </div>
-    </body>
-    </html>
-  `;
-
-  await logEmailSend(supabase, user.id, "activation_day3", subject, html);
+  await sendEmailViaResend(user.email, subject, html, text, supabase, user.id, "activation_day3");
 }
 
 async function sendTrialExpirationWarning(
@@ -275,40 +253,68 @@ async function sendTrialExpirationWarning(
   frontendUrl: string,
   daysRemaining: number
 ): Promise<void> {
+  const { getTrialExpirationWarningTemplate, getPlainTextVersion } = await import("./email-templates.ts");
+  
+  const html = getTrialExpirationWarningTemplate({
+    name: trial.name || undefined,
+    upgradeUrl: `${frontendUrl}/pricing`,
+    daysRemaining: String(daysRemaining),
+    reconciliations: String(trial.reconciliations || 0),
+  });
+
+  const text = getPlainTextVersion(html);
   const subject = daysRemaining === 1
     ? "⚠️ Your trial ends tomorrow"
     : `⏰ Your trial ends in ${daysRemaining} days`;
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>${subject}</title>
-    </head>
-    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1>${subject}</h1>
-        <p>Hi ${trial.name || "there"},</p>
-        <p>Your 14-day free trial ends in ${daysRemaining} day${daysRemaining > 1 ? "s" : ""}.</p>
-        <p>Upgrade to continue using all features:</p>
-        <ul>
-          <li>100,000 reconciliations/month</li>
-          <li>10,000 receipt parses/month</li>
-          <li>Unlimited adapters</li>
-          <li>Email support</li>
-        </ul>
-        <p style="margin-top: 30px;">
-          <a href="${frontendUrl}/pricing" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-            Upgrade Now
-          </a>
-        </p>
-      </div>
-    </body>
-    </html>
-  `;
+  await sendEmailViaResend(trial.email, subject, html, text, supabase, trial.user_id, `trial_expiring_${daysRemaining}`);
+}
 
-  await logEmailSend(supabase, trial.user_id, `trial_expiring_${daysRemaining}`, subject, html);
+async function sendEmailViaResend(
+  email: string,
+  subject: string,
+  html: string,
+  text: string,
+  supabase: any,
+  userId: string,
+  emailType: string
+): Promise<void> {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  
+  if (!resendApiKey) {
+    console.warn("RESEND_API_KEY not configured, logging email send only");
+    await logEmailSend(supabase, userId, emailType, subject, html);
+    return;
+  }
+
+  try {
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: Deno.env.get("EMAIL_FROM") || "Settler <noreply@settler.dev>",
+        to: email,
+        subject,
+        html,
+        text,
+      }),
+    });
+
+    if (resendResponse.ok) {
+      const result = await resendResponse.json();
+      await logEmailSend(supabase, userId, emailType, subject, html, result.id);
+    } else {
+      const error = await resendResponse.text();
+      console.error("Resend API error:", error);
+      await logEmailSend(supabase, userId, emailType, subject, html);
+    }
+  } catch (error) {
+    console.error("Failed to send email via Resend:", error);
+    await logEmailSend(supabase, userId, emailType, subject, html);
+  }
 }
 
 async function logEmailSend(
@@ -316,7 +322,8 @@ async function logEmailSend(
   userId: string,
   emailType: string,
   subject: string,
-  html: string
+  html: string,
+  resendId?: string
 ): Promise<void> {
   // Get user email
   const { data: user } = await supabase
@@ -327,18 +334,17 @@ async function logEmailSend(
 
   if (!user?.email) return;
 
-  // Log email send (actual sending would be done via Resend API in production)
+  // Log email send
   await supabase.from("email_sends").insert({
     user_id: userId,
     email_address: user.email,
     subject,
-    status: "pending",
+    status: resendId ? "sent" : "pending",
+    sent_at: resendId ? new Date().toISOString() : null,
     metadata: {
       email_type: emailType,
       html_preview: html.substring(0, 200),
+      resend_id: resendId,
     },
   });
-
-  // TODO: Actually send email via Resend API
-  // For now, just log it. In production, call Resend API here.
 }
