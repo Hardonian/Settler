@@ -65,15 +65,17 @@ export async function POST(request: NextRequest) {
 
     // Log support request for analytics
     if (user) {
-      await supabase.from("support_requests").insert({
-        user_id: user.id,
-        question,
-        context: context || {},
-        ai_response: aiResponse.answer,
-        helpful: null, // User can rate later
-      } as never).catch(() => {
+      try {
+        await supabase.from("support_requests").insert({
+          user_id: user.id,
+          question,
+          context: context || {},
+          ai_response: aiResponse.answer,
+          helpful: null, // User can rate later
+        } as never);
+      } catch {
         // Table might not exist, that's okay
-      });
+      }
     }
 
     return NextResponse.json({

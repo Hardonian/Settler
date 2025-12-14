@@ -62,11 +62,11 @@ export async function GET(_request: NextRequest) {
       if (percentage >= 80 && percentage < 100) {
         return NextResponse.json({ moment: "approaching_limit" });
       }
-    }
 
-    // Check for high usage
-    if (typedUsage && typedUsage.length > 50) {
-      return NextResponse.json({ moment: "high_usage" });
+      // Check for high usage
+      if (typedUsage.length > 50) {
+        return NextResponse.json({ moment: "high_usage" });
+      }
     }
 
     return NextResponse.json({ moment: null });
