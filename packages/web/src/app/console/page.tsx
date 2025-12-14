@@ -16,6 +16,7 @@ import { listApiKeys } from '@/domain/console/apiKeys';
 import { listReceipts } from '@/domain/console/receipts';
 import { listFeatureFlags } from '@/domain/console/featureFlags';
 import { LiveActivityFeed } from '@/components/console/LiveActivityFeed';
+import { OnboardingWizardClient } from '@/components/onboarding/OnboardingWizardClient';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -269,6 +270,9 @@ async function ConsoleOverviewContent() {
 
   return (
     <div className="space-y-8">
+      {/* Onboarding Wizard */}
+      <OnboardingWizardClient />
+
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">

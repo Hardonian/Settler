@@ -19,6 +19,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 const ROICalculator = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.ROICalculator })), { ssr: true });
 const ComparisonTable = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.ComparisonTable })), { ssr: true });
 const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
+import { PricingCalculator } from '@/components/pricing/PricingCalculator';
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
@@ -250,6 +251,13 @@ export default function Pricing() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <ROICalculator />
+        </div>
+      </section>
+
+      {/* Pricing Calculator */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-4xl mx-auto">
+          <PricingCalculator />
         </div>
       </section>
 

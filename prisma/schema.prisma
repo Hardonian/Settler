@@ -690,6 +690,48 @@ model Tenant {
   @@map("tenants")
 }
 
+model OnboardingProgress {
+  id                String    @id @default(uuid())
+  userId            String    @db.Uuid @unique
+  currentStep       String    @default("welcome")
+  completedSteps    String[]  @default([])
+  skippedSteps      String[]  @default([])
+  progress          Int       @default(0) // 0-100
+  metadata          Json      @default("{}")
+  completedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([currentStep])
+  @@index([progress])
+  @@map("onboarding_progress")
+}
+
+model AuditLog {
+  id                String    @id @default(uuid())
+  userId            String?   @db.Uuid
+  billingAccountId  String?   @db.Uuid
+  tenantId          String?   @db.Uuid
+  action            String    // 'create', 'update', 'delete', 'read', etc.
+  resourceType      String    // 'api_key', 'receipt', 'feature_flag', etc.
+  resourceId        String?   @db.Uuid
+  changes           Json?     // Before/after state
+  ipAddress         String?
+  userAgent         String?   @db.Text
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+
+  @@index([userId])
+  @@index([billingAccountId])
+  @@index([tenantId])
+  @@index([resourceType])
+  @@index([action])
+  @@index([createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("audit_logs")
+}
+
 model TenantBranding {
   id                String    @id @default(uuid())
   tenantId           String    @db.Uuid @unique

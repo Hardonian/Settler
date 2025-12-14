@@ -1,123 +1,260 @@
 /**
- * Audit Logging Service
+ * Audit Logger
  * 
- * Provides structured audit logging for security and compliance.
- * All sensitive operations are logged here.
+ * Comprehensive audit logging for all sensitive operations.
+ * Provides compliance-ready audit trail.
  */
 
 import { prisma } from '@/shared/db/prismaClient';
+import { headers } from 'next/headers';
+
+export type AuditAction = 
+  | 'create'
+  | 'update'
+  | 'delete'
+  | 'read'
+  | 'execute'
+  | 'login'
+  | 'logout'
+  | 'export'
+  | 'import'
+  | 'approve'
+  | 'reject';
+
+export type AuditResourceType =
+  | 'api_key'
+  | 'receipt'
+  | 'feature_flag'
+  | 'reconciliation'
+  | 'billing_account'
+  | 'subscription'
+  | 'user'
+  | 'tenant'
+  | 'webhook'
+  | 'integration';
 
 export interface AuditLogEntry {
-  tenantId?: string;
   userId?: string;
-  action: string;
-  entityType: string;
-  entityId?: string;
-  changes?: Record<string, unknown>;
-  ipAddress?: string;
-  userAgent?: string;
+  billingAccountId?: string;
+  tenantId?: string;
+  action: AuditAction;
+  resourceType: AuditResourceType;
+  resourceId?: string;
+  changes?: {
+    before?: Record<string, unknown>;
+    after?: Record<string, unknown>;
+  };
   metadata?: Record<string, unknown>;
 }
 
 /**
- * Create audit log entry
- * Non-blocking - failures don't throw errors
+ * Get client IP and user agent from request headers
  */
-export async function createAuditLog(entry: AuditLogEntry): Promise<void> {
+async function getRequestMetadata(): Promise<{ ipAddress?: string; userAgent?: string }> {
   try {
-    await prisma.reconAudit.create({
-      data: {
-        tenantId: entry.tenantId || '00000000-0000-0000-0000-000000000000',
-        userId: entry.userId || null,
-        auditType: 'audit',
-        action: entry.action,
-        entityType: entry.entityType,
-        entityId: entry.entityId || null,
-        changes: JSON.parse(JSON.stringify(entry.changes || {})),
-        ipAddress: entry.ipAddress || null,
-        userAgent: entry.userAgent || null,
-        metadata: JSON.parse(JSON.stringify(entry.metadata || {})),
-      },
-    });
+    const headersList = await headers();
+    const ipAddress = 
+      headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      headersList.get('x-real-ip') ||
+      undefined;
+    const userAgent = headersList.get('user-agent') || undefined;
+    
+    return { ipAddress, userAgent };
   } catch (error) {
-    // Don't throw - audit logging is non-critical
-    console.warn('[Audit] Failed to create audit log:', error);
+    // Headers not available (e.g., in background job)
+    return {};
   }
 }
 
 /**
- * Audit log for authentication events
+ * Log an audit event
  */
-export async function auditAuth(
-  action: 'login' | 'logout' | 'signup' | 'password_reset',
-  userId: string,
-  ipAddress?: string,
-  userAgent?: string,
-  success = true
-): Promise<void> {
-  await createAuditLog({
-    userId,
-    action: `auth.${action}`,
-    entityType: 'user',
-    entityId: userId,
-    changes: { success },
-    ipAddress,
-    userAgent,
-  });
+export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
+  try {
+    const { ipAddress, userAgent } = await getRequestMetadata();
+
+    await prisma.auditLog.create({
+      data: {
+        userId: entry.userId,
+        billingAccountId: entry.billingAccountId,
+        tenantId: entry.tenantId,
+        action: entry.action,
+        resourceType: entry.resourceType,
+        resourceId: entry.resourceId,
+        changes: entry.changes ? (entry.changes as never) : undefined,
+        ipAddress,
+        userAgent,
+        metadata: entry.metadata || {},
+      },
+    });
+  } catch (error) {
+    // Don't block operations if audit logging fails
+    console.error('[Audit Logger] Error logging audit event:', error);
+  }
 }
 
 /**
- * Audit log for billing events
+ * Query audit logs
  */
-export async function auditBilling(
-  action: string,
+export async function queryAuditLogs(options: {
+  userId?: string;
+  billingAccountId?: string;
+  tenantId?: string;
+  resourceType?: AuditResourceType;
+  action?: AuditAction;
+  startDate?: Date;
+  endDate?: Date;
+  limit?: number;
+  offset?: number;
+}) {
+  try {
+    const {
+      userId,
+      billingAccountId,
+      tenantId,
+      resourceType,
+      action,
+      startDate,
+      endDate,
+      limit = 100,
+      offset = 0,
+    } = options;
+
+    const where: Record<string, unknown> = {};
+    
+    if (userId) where.userId = userId;
+    if (billingAccountId) where.billingAccountId = billingAccountId;
+    if (tenantId) where.tenantId = tenantId;
+    if (resourceType) where.resourceType = resourceType;
+    if (action) where.action = action;
+    if (startDate || endDate) {
+      where.createdAt = {};
+      if (startDate) where.createdAt.gte = startDate;
+      if (endDate) where.createdAt.lte = endDate;
+    }
+
+    const [logs, total] = await Promise.all([
+      prisma.auditLog.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.auditLog.count({ where }),
+    ]);
+
+    return {
+      logs,
+      total,
+      limit,
+      offset,
+    };
+  } catch (error) {
+    console.error('[Audit Logger] Error querying audit logs:', error);
+    return {
+      logs: [],
+      total: 0,
+      limit: options.limit || 100,
+      offset: options.offset || 0,
+    };
+  }
+}
+
+/**
+ * Helper: Log API key creation
+ */
+export async function logApiKeyCreated(
+  userId: string,
   billingAccountId: string,
-  userId: string,
-  changes?: Record<string, unknown>
-): Promise<void> {
-  await createAuditLog({
-    userId,
-    action: `billing.${action}`,
-    entityType: 'billing_account',
-    entityId: billingAccountId,
-    changes,
-  });
-}
-
-/**
- * Audit log for API key events
- */
-export async function auditApiKey(
-  action: 'create' | 'delete' | 'update',
   apiKeyId: string,
-  userId: string,
-  changes?: Record<string, unknown>
+  metadata?: Record<string, unknown>
 ): Promise<void> {
-  await createAuditLog({
+  await logAuditEvent({
     userId,
-    action: `api_key.${action}`,
-    entityType: 'api_key',
-    entityId: apiKeyId,
-    changes,
+    billingAccountId,
+    action: 'create',
+    resourceType: 'api_key',
+    resourceId: apiKeyId,
+    metadata,
   });
 }
 
 /**
- * Audit log for admin actions
+ * Helper: Log API key revocation
  */
-export async function auditAdmin(
-  action: string,
-  adminUserId: string,
-  targetEntityType: string,
-  targetEntityId: string,
-  changes?: Record<string, unknown>
+export async function logApiKeyRevoked(
+  userId: string,
+  billingAccountId: string,
+  apiKeyId: string,
+  metadata?: Record<string, unknown>
 ): Promise<void> {
-  await createAuditLog({
-    userId: adminUserId,
-    action: `admin.${action}`,
-    entityType: targetEntityType,
-    entityId: targetEntityId,
+  await logAuditEvent({
+    userId,
+    billingAccountId,
+    action: 'delete',
+    resourceType: 'api_key',
+    resourceId: apiKeyId,
+    metadata,
+  });
+}
+
+/**
+ * Helper: Log receipt parsing
+ */
+export async function logReceiptParsed(
+  userId: string,
+  billingAccountId: string,
+  receiptId: string,
+  metadata?: Record<string, unknown>
+): Promise<void> {
+  await logAuditEvent({
+    userId,
+    billingAccountId,
+    action: 'create',
+    resourceType: 'receipt',
+    resourceId: receiptId,
+    metadata,
+  });
+}
+
+/**
+ * Helper: Log feature flag update
+ */
+export async function logFeatureFlagUpdated(
+  userId: string,
+  billingAccountId: string,
+  flagId: string,
+  changes: { before?: Record<string, unknown>; after?: Record<string, unknown> },
+  metadata?: Record<string, unknown>
+): Promise<void> {
+  await logAuditEvent({
+    userId,
+    billingAccountId,
+    action: 'update',
+    resourceType: 'feature_flag',
+    resourceId: flagId,
     changes,
-    metadata: { adminAction: true },
+    metadata,
+  });
+}
+
+/**
+ * Helper: Log reconciliation job execution
+ */
+export async function logReconciliationExecuted(
+  userId: string,
+  billingAccountId: string,
+  tenantId: string,
+  jobId: string,
+  metadata?: Record<string, unknown>
+): Promise<void> {
+  await logAuditEvent({
+    userId,
+    billingAccountId,
+    tenantId,
+    action: 'execute',
+    resourceType: 'reconciliation',
+    resourceId: jobId,
+    metadata,
   });
 }

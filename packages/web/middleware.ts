@@ -9,6 +9,7 @@
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { addSecurityHeaders } from './src/middleware/security-headers';
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Explicitly bypass Stripe webhook - it needs raw body and no auth
@@ -86,7 +87,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   //   return NextResponse.redirect(new URL('/login', request.url));
   // }
 
-  return response;
+  // Add security headers to all responses
+  return addSecurityHeaders(response);
 }
 
 export const config = {
