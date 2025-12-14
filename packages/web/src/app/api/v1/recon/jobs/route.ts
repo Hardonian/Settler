@@ -75,6 +75,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Enforce usage limits (for authenticated users)
+    if (isAuthenticated && auth.billingAccountId) {
+      const { enforceUsageLimit } = await import('@/middleware/usage-enforcement');
+      const usageCheck = await enforceUsageLimit(request, auth, 1);
+      if (!usageCheck.allowed && usageCheck.response) {
+        return usageCheck.response;
+      }
+    }
+
     // TODO: In production, integrate with actual reconciliation service
     // For now, return a mock response that looks like a real job
     const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

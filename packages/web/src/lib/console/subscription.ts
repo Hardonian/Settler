@@ -152,17 +152,48 @@ export async function hasFeatureAccess(feature: keyof SubscriptionInfo['features
 
 /**
  * Check if user can make a playground request
- * In production, this would check actual usage against limits
+ * Now checks actual usage against limits using real-time tracking
  */
 export async function canMakePlaygroundRequest(): Promise<{ allowed: boolean; reason?: string; remaining?: number }> {
-  const info = await getSubscriptionInfo();
-  
-  // Enterprise has unlimited
-  if (info.features.playgroundRequestsPerDay === -1) {
-    return { allowed: true, remaining: -1 };
-  }
+  try {
+    const info = await getSubscriptionInfo();
+    
+    // Enterprise has unlimited
+    if (info.features.playgroundRequestsPerDay === -1) {
+      return { allowed: true, remaining: -1 };
+    }
 
-  // In production, check actual usage from database
-  // For now, always allow but show limits in UI
-  return { allowed: true, remaining: info.features.playgroundRequestsPerDay };
+    // Get billing account ID for usage tracking
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return { allowed: false, reason: 'Not authenticated', remaining: 0 };
+    }
+
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: { userId: user.id },
+      select: { id: true },
+    });
+
+    if (!billingAccount) {
+      // No billing account - use tier limits
+      return { allowed: true, remaining: info.features.playgroundRequestsPerDay };
+    }
+
+    // Check actual usage using usage tracking service
+    const { getCurrentUsage } = await import('@/lib/usage/tracking');
+    const usage = await getCurrentUsage(billingAccount.id, 'playground', 'daily');
+
+    return {
+      allowed: usage.allowed,
+      reason: usage.reason,
+      remaining: usage.remaining === -1 ? undefined : usage.remaining,
+    };
+  } catch (error) {
+    console.error('[canMakePlaygroundRequest] Error:', error);
+    // Fail open - allow request if tracking fails
+    const info = await getSubscriptionInfo();
+    return { allowed: true, remaining: info.features.playgroundRequestsPerDay };
+  }
 }

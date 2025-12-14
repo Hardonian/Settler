@@ -63,6 +63,15 @@ export async function POST(request: NextRequest) {
       return createEntitlementErrorResponse(entitlement.error);
     }
 
+    // Enforce usage limits (for authenticated users)
+    if (isAuthenticated && auth.billingAccountId) {
+      const { enforceUsageLimit } = await import('@/middleware/usage-enforcement');
+      const usageCheck = await enforceUsageLimit(request, auth, 1);
+      if (!usageCheck.allowed && usageCheck.response) {
+        return usageCheck.response;
+      }
+    }
+
     const body = await request.json();
     const { flagKey, environment, context } = body;
 

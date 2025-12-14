@@ -35,6 +35,7 @@ model BillingAccount {
   addOnPurchases    AddOnPurchase[]
   usageEvents       UsageEvent[]
   usageAggregates   UsageAggregateDaily[]
+  usageCounters     UsageCounter[]
 
   @@index([userId])
   @@index([tenantId])
@@ -195,6 +196,25 @@ model UsageAggregateDaily {
   @@index([eventType])
   @@index([integrationId])
   @@map("usage_aggregate_daily")
+}
+
+model UsageCounter {
+  id                String    @id @default(uuid())
+  billingAccountId  String    @db.Uuid
+  service           String    // 'reconcile', 'receipts', 'featureFlags', 'playground'
+  period            String    // 'daily', 'monthly'
+  periodStart       DateTime  @db.Date
+  count             Int       @default(0)
+  limit             Int       @default(0) // Cached limit for reference
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([billingAccountId, service, period, periodStart])
+  @@index([billingAccountId, service, period])
+  @@index([periodStart])
+  @@map("usage_counters")
 }
 
 // ============================================================================

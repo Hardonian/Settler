@@ -104,6 +104,15 @@ export async function POST(request: NextRequest) {
        return addCorrelationHeaders(response, correlationId);
     }
 
+    // Enforce usage limits (for authenticated users)
+    if (isAuthenticated && auth.billingAccountId) {
+      const { enforceUsageLimit } = await import('@/middleware/usage-enforcement');
+      const usageCheck = await enforceUsageLimit(request, auth, 1);
+      if (!usageCheck.allowed && usageCheck.response) {
+        return addCorrelationHeaders(usageCheck.response, correlationId);
+      }
+    }
+
     // Parse request body
     let body;
     try {

@@ -1,74 +1,164 @@
 /**
  * Console Usage API Route
  * 
- * Supports both session auth (Console UI) and API key auth (SDK/CLI)
+ * Returns usage statistics for the current user's billing account.
+ * Includes real-time usage tracking and limits.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/api/unified-auth';
+import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
-import { getUsageEvents, getUsageSummary } from '@/domain/console/usage';
+import { getCurrentUsage, type ServiceCode } from '@/lib/usage/tracking';
+import { getSubscriptionInfo } from '@/lib/console/subscription';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+interface UsageSummary {
+  totalCalls: number;
+  byService: Record<string, number>;
+  byOperation: Record<string, number>;
+  errorRate: number;
+  period: { start: Date; end: Date };
+  limits: {
+    reconcile?: { current: number; limit: number; remaining: number };
+    receipts?: { current: number; limit: number; remaining: number };
+    featureFlags?: { current: number; limit: number; remaining: number };
+    playground?: { current: number; limit: number; remaining: number };
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
-    // Authenticate using unified auth (session or API key)
-    const authContext = await requireAuth(request);
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    const billingAccount = await prisma.billingAccount.findFirst({
-      where: { userId: authContext.userId },
-    });
-
-    if (!billingAccount) {
-      // Return empty data instead of 404
-      return NextResponse.json({
-        summary: {
+    if (!user) {
+      return NextResponse.json(
+        {
           totalCalls: 0,
           byService: {},
           byOperation: {},
           errorRate: 0,
-          period: { start: new Date().toISOString(), end: new Date().toISOString() },
+          period: { start: new Date(), end: new Date() },
+          limits: {},
         },
-        events: [],
-      });
+        { status: 200 }
+      );
     }
 
+    // Get billing account
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: { userId: user.id },
+      select: { id: true },
+    });
+
+    if (!billingAccount) {
+      return NextResponse.json(
+        {
+          totalCalls: 0,
+          byService: {},
+          byOperation: {},
+          errorRate: 0,
+          period: { start: new Date(), end: new Date() },
+          limits: {},
+        },
+        { status: 200 }
+      );
+    }
+
+    // Get query parameters
     const { searchParams } = new URL(request.url);
     const days = parseInt(searchParams.get('days') || '7', 10);
-    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
     const endDate = new Date();
 
-    const [summary, events] = await Promise.all([
-      getUsageSummary(billingAccount.id, startDate, endDate),
-      getUsageEvents(billingAccount.id, {
-        startDate,
-        endDate,
-        limit: 100,
-      }),
-    ]);
+    // Get subscription info for limits
+    const subscription = await getSubscriptionInfo();
 
-    return NextResponse.json({ summary, events });
-  } catch (error) {
-    // If auth error, return 401
-    if (error instanceof Error && error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Get usage events from database
+    const usageEvents = await prisma.usageEvent.findMany({
+      where: {
+        billingAccountId: billingAccount.id,
+        timestamp: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: {
+        eventType: true,
+        quantity: true,
+        metadata: true,
+      },
+    });
+
+    // Aggregate usage by service
+    const byService: Record<string, number> = {};
+    const byOperation: Record<string, number> = {};
+    let totalCalls = 0;
+    let errorCount = 0;
+
+    for (const event of usageEvents) {
+      const service = event.eventType.split('-')[0] || 'unknown';
+      const operation = event.eventType.split('-').slice(1).join('-') || 'unknown';
+      const quantity = Number(event.quantity) || 1;
+
+      byService[service] = (byService[service] || 0) + quantity;
+      byOperation[operation] = (byOperation[operation] || 0) + quantity;
+      totalCalls += quantity;
+
+      if (event.metadata && typeof event.metadata === 'object' && 'error' in event.metadata) {
+        errorCount += quantity;
+      }
     }
-    console.error('[Console Usage] Error:', error);
-    // Return 200 with empty data instead of 500
-    return NextResponse.json({
-      summary: {
+
+    const errorRate = totalCalls > 0 ? errorCount / totalCalls : 0;
+
+    // Get real-time usage limits
+    const limits: UsageSummary['limits'] = {};
+
+    if (billingAccount.id) {
+      const services: ServiceCode[] = ['reconcile', 'receipts', 'featureFlags', 'playground'];
+      
+      for (const service of services) {
+        try {
+          const usage = await getCurrentUsage(billingAccount.id, service, 'monthly');
+          limits[service] = {
+            current: usage.current,
+            limit: usage.limit === -1 ? 0 : usage.limit, // -1 means unlimited, show as 0 for UI
+            remaining: usage.remaining === -1 ? -1 : usage.remaining,
+          };
+        } catch (error) {
+          console.error(`[Usage API] Error getting usage for ${service}:`, error);
+          // Continue with other services
+        }
+      }
+    }
+
+    const summary: UsageSummary = {
+      totalCalls,
+      byService,
+      byOperation,
+      errorRate,
+      period: { start: startDate, end: endDate },
+      limits,
+    };
+
+    return NextResponse.json(summary, { status: 200 });
+  } catch (error) {
+    console.error('[Usage API] Error:', error);
+    // Never return 500 - return empty summary
+    return NextResponse.json(
+      {
         totalCalls: 0,
         byService: {},
         byOperation: {},
         errorRate: 0,
-        period: { 
-          start: new Date().toISOString(), 
-          end: new Date().toISOString() 
-        },
+        period: { start: new Date(), end: new Date() },
+        limits: {},
       },
-      events: [],
-    });
+      { status: 200 }
+    );
   }
 }
