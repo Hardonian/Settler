@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { getImageUrl, SETTLER_IMAGES } from '@/lib/images/image-config';
 
 interface SEOHeadProps {
   title?: string;
@@ -12,7 +13,7 @@ export function SEOHead({
   title = 'Settler - Reconciliation as a Service API',
   description = 'Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. All Platforms. Real-Time.',
   canonical,
-  ogImage = '/opengraph-image',
+  ogImage = getImageUrl('ogImage'),
   noindex = false,
 }: SEOHeadProps) {
   const fullTitle = title.includes('Settler') ? title : `${title} | Settler`;
@@ -44,8 +45,9 @@ export function SEOHead({
       {canonical && <link rel="canonical" href={canonical} />}
 
       {/* Favicon */}
+      <link rel="icon" type={SETTLER_IMAGES.favicon.mimeType} href={SETTLER_IMAGES.favicon.path} />
       <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-      <link rel="apple-touch-icon" href="/icon-192x192.svg" />
+      <link rel="apple-touch-icon" href={SETTLER_IMAGES.favicon192.path} />
 
       {/* Structured Data */}
       <script
