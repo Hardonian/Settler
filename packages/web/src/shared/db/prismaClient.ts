@@ -13,8 +13,8 @@
  * - Setting DATABASE_URL explicitly helps force binary engine usage
  */
 
-// Mark this file as server-only to prevent bundling for browser
-import 'server-only';
+// This file is server-only and should not be bundled for the browser
+// Webpack configuration excludes this file from client bundles
 
 // CRITICAL: Set environment variables BEFORE importing PrismaClient
 // Prisma 7 determines engine type at import time, so we must set these first

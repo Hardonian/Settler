@@ -28,6 +28,8 @@ const nextConfig = {
     swcMinify: true,
     // Optimize package imports
     optimizePackageImports: ['lucide-react', '@radix-ui/react-progress', '@radix-ui/react-radio-group'],
+    // Exclude server-only packages from client bundles
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },
   eslint: {
     // Ignore linting during builds - we run linting in pre-commit hooks and CI
