@@ -5,7 +5,6 @@
  */
 
 import { prisma } from '@/shared/db/prismaClient';
-import { getCurrentUsage } from '@/lib/usage/tracking';
 
 export interface RevenueRecognition {
   billingAccountId: string;
