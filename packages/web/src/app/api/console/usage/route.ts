@@ -8,8 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
-import { getCurrentUsage, type ServiceCode } from '@/lib/usage/tracking';
-import { getSubscriptionInfo } from '@/lib/console/subscription';
+import { getCurrentUsage } from '@/lib/usage/tracking';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -119,7 +118,7 @@ export async function GET(request: NextRequest) {
     const limits: UsageSummary['limits'] = {};
 
     if (billingAccount.id) {
-      const services: ServiceCode[] = ['reconcile', 'receipts', 'featureFlags', 'playground'];
+      const services: Array<'reconcile' | 'receipts' | 'featureFlags' | 'playground'> = ['reconcile', 'receipts', 'featureFlags', 'playground'];
       
       for (const service of services) {
         try {

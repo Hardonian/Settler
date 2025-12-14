@@ -168,25 +168,19 @@ export async function sendUpgradePromptEmail(
  */
 export async function scheduleLifecycleEmails(userId: string): Promise<void> {
   try {
-    // Get user from Supabase auth (Prisma doesn't have User model)
-    const supabase = await import('@/lib/supabase/server').then(m => m.createClient());
-    const { data: { user: authUser } } = await supabase.auth.getUserById(userId);
-    
-    if (!authUser) {
-      return;
-    }
-
+    // Get billing account first (has userId)
     const billingAccount = await prisma.billingAccount.findFirst({
       where: { userId },
     });
 
-    if (!user || !user.email) {
+    if (!billingAccount) {
       return;
     }
 
-    if (!billingAccount) {
-      // New user - send welcome email
-      await sendWelcomeEmail(userId, authUser.email || '');
+    // Get user email from billing account
+    const userEmail = billingAccount.email;
+    
+    if (!userEmail) {
       return;
     }
 
@@ -206,7 +200,7 @@ export async function scheduleLifecycleEmails(userId: string): Promise<void> {
       );
       
       if (daysRemaining <= 3 && daysRemaining > 0) {
-        await sendTrialEndingEmail(userId, authUser.email || '', daysRemaining);
+        await sendTrialEndingEmail(userId, userEmail, daysRemaining);
       }
     }
   } catch (error) {

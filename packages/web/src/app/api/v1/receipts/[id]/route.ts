@@ -21,15 +21,13 @@ export async function GET(
 ) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
-    let auth: Awaited<ReturnType<typeof authenticateApiKey>> | undefined;
     let isAuthenticated = false;
     
     try {
-      auth = await authenticateApiKey(request);
+      await authenticateApiKey(request);
       isAuthenticated = true;
     } catch (error) {
       // Unauthenticated access allowed for playground - will return demo response
-      auth = undefined;
     }
 
     const { id } = await params;

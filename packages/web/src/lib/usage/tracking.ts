@@ -66,24 +66,36 @@ function getUsageLimit(tier: SubscriptionTier, service: ServiceCode, period: Per
       receipts: { daily: 0, monthly: 0 },
       featureFlags: { daily: 0, monthly: 0 },
       playground: { daily: 10, monthly: 0 },
+      api: { daily: 0, monthly: 0 },
+      reconciliation: { daily: 0, monthly: 0 },
+      receipt_parsing: { daily: 0, monthly: 0 },
     },
     free: {
       reconcile: { daily: 50, monthly: 1000 },
       receipts: { daily: 10, monthly: 100 },
       featureFlags: { daily: 1000, monthly: 100000 },
       playground: { daily: 50, monthly: 0 },
+      api: { daily: 50, monthly: 1000 },
+      reconciliation: { daily: 50, monthly: 1000 },
+      receipt_parsing: { daily: 10, monthly: 100 },
     },
     pro: {
       reconcile: { daily: 5000, monthly: 100000 },
       receipts: { daily: 500, monthly: 10000 },
       featureFlags: { daily: 100000, monthly: 10000000 },
       playground: { daily: 500, monthly: 0 },
+      api: { daily: 5000, monthly: 100000 },
+      reconciliation: { daily: 5000, monthly: 100000 },
+      receipt_parsing: { daily: 500, monthly: 10000 },
     },
     enterprise: {
       reconcile: { daily: -1, monthly: -1 }, // Unlimited
       receipts: { daily: -1, monthly: -1 },
       featureFlags: { daily: -1, monthly: -1 },
       playground: { daily: -1, monthly: -1 },
+      api: { daily: -1, monthly: -1 },
+      reconciliation: { daily: -1, monthly: -1 },
+      receipt_parsing: { daily: -1, monthly: -1 },
     },
   };
 
@@ -469,11 +481,23 @@ export async function recordUsageEvent(
   metadata?: Record<string, unknown>
 ): Promise<void> {
   try {
+    // Map service code to eventType for UsageEvent model
+    const eventTypeMap: Record<ServiceCode, string> = {
+      reconcile: 'settler-reconcile',
+      receipts: 'settler-receipts',
+      featureFlags: 'settler-feature-flags',
+      playground: 'settler-playground',
+      api: 'settler-api',
+      reconciliation: 'settler-reconcile',
+      receipt_parsing: 'settler-receipts',
+    };
+    
+    const eventType = `${eventTypeMap[service]}-${operation}`;
+    
     await prisma.usageEvent.create({
       data: {
         billingAccountId,
-        service,
-        operation,
+        eventType,
         quantity,
         metadata: (metadata ?? {}) as never,
       },

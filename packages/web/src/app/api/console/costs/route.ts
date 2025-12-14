@@ -4,7 +4,7 @@
  * GET /api/console/costs - Get cost breakdown for billing account
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentPeriodCosts } from '@/lib/cost/visibility';
 import { prisma } from '@/shared/db/prismaClient';
