@@ -33,7 +33,7 @@ export class ConsoleErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error for monitoring
     console.error('[ConsoleErrorBoundary] Caught error:', {
       error: error.message,
@@ -42,7 +42,7 @@ export class ConsoleErrorBoundary extends Component<Props, State> {
     });
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // Use custom fallback if provided
       if (this.props.fallback) {

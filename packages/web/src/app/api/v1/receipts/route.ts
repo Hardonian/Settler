@@ -140,13 +140,13 @@ export async function POST(request: NextRequest) {
       logger.info('Receipt parsed from OCR', { correlationId, itemCount: parseResult.receipt.items.length });
 
       // Validate and sanitize receipt data
-      const sanitizedData = sanitizeReceiptData(parseResult.receipt);
+      const sanitizedData = sanitizeReceiptData(parseResult.receipt as unknown as Record<string, unknown>);
       const validation = validateReceipt(sanitizedData);
 
       if (!validation.valid) {
         logger.warn('Receipt validation failed', { 
           correlationId, 
-          errors: validation.errors?.errors.map((e: { message: string }) => e.message) || []
+          errors: validation.errors?.issues.map((e) => e.message) || []
         });
         // Continue with sanitized data even if validation fails (graceful degradation)
       }
