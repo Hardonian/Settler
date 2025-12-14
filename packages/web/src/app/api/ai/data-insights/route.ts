@@ -40,21 +40,22 @@ export async function GET(request: NextRequest) {
         .limit(50);
 
       if (receipts && receipts.length > 0) {
-        const totalSpent = receipts.reduce((sum, r) => sum + (parseFloat(r.total as string) || 0), 0);
-        const avgSpent = totalSpent / receipts.length;
+        const typedReceipts = receipts as Array<{ total: string | number; merchant_name: string | null; created_at: string }>;
+        const totalSpent = typedReceipts.reduce((sum, r) => sum + (parseFloat(String(r.total)) || 0), 0);
+        const avgSpent = totalSpent / typedReceipts.length;
         const merchants = new Map<string, number>();
-        receipts.forEach((r) => {
+        typedReceipts.forEach((r) => {
           const merchant = r.merchant_name || "Unknown";
           merchants.set(merchant, (merchants.get(merchant) || 0) + 1);
         });
         const topMerchant = Array.from(merchants.entries()).sort((a, b) => b[1] - a[1])[0];
 
         insights = {
-          summary: `You've processed ${receipts.length} receipt${receipts.length !== 1 ? "s" : ""} with a total value of $${totalSpent.toFixed(2)}. Your average receipt value is $${avgSpent.toFixed(2)}.`,
+          summary: `You've processed ${typedReceipts.length} receipt${typedReceipts.length !== 1 ? "s" : ""} with a total value of $${totalSpent.toFixed(2)}. Your average receipt value is $${avgSpent.toFixed(2)}.`,
           trends: [
             {
               label: "Total Processed",
-              value: String(receipts.length),
+              value: String(typedReceipts.length),
             },
             {
               label: "Total Value",
@@ -92,8 +93,9 @@ export async function GET(request: NextRequest) {
         .limit(100);
 
       if (usage && usage.length > 0) {
+        const typedUsage = usage as Array<{ event_type: string | null; quantity: number | null; created_at: string }>;
         const usageByType = new Map<string, number>();
-        usage.forEach((u) => {
+        typedUsage.forEach((u) => {
           const type = u.event_type || "unknown";
           usageByType.set(type, (usageByType.get(type) || 0) + (u.quantity || 0));
         });

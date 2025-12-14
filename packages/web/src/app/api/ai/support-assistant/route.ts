@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
         context: context || {},
         ai_response: aiResponse.answer,
         helpful: null, // User can rate later
-      }).catch(() => {
+      } as never).catch(() => {
         // Table might not exist, that's okay
       });
     }
@@ -93,8 +93,8 @@ export async function POST(request: NextRequest) {
 async function generateSupportResponse(
   question: string,
   context?: SupportRequest["context"],
-  userContext?: Record<string, unknown>,
-  userId?: string
+  _userContext?: Record<string, unknown>,
+  _userId?: string
 ): Promise<{
   answer: string;
   suggestions: string[];

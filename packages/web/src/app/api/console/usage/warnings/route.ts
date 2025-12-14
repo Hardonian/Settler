@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -28,8 +28,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
+    const typedProfile = profile as { plan_type: string };
     // Get plan limits
-    const planLimits = getPlanLimits(profile.plan_type);
+    const planLimits = getPlanLimits(typedProfile.plan_type);
 
     // Get current usage (this month)
     const startOfMonth = new Date();
@@ -44,9 +45,11 @@ export async function GET(request: NextRequest) {
 
     // Calculate usage by type
     const usageByType = new Map<string, number>();
-    usage?.forEach((event) => {
-      const current = usageByType.get(event.event_type) || 0;
-      usageByType.set(event.event_type, current + (event.quantity || 0));
+    const typedUsage = (usage || []) as Array<{ event_type: string | null; quantity: number | null }>;
+    typedUsage.forEach((event) => {
+      const eventType = event.event_type || "unknown";
+      const current = usageByType.get(eventType) || 0;
+      usageByType.set(eventType, current + (event.quantity || 0));
     });
 
     // Generate warnings
