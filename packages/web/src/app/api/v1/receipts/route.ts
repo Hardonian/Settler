@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
       logger.info('Receipt parsed from OCR', { correlationId, itemCount: parseResult.receipt.items.length });
 
       // Validate and sanitize receipt data
-      const sanitizedData = sanitizeReceiptData(parseResult.receipt as Record<string, unknown>);
+      const sanitizedData = sanitizeReceiptData(parseResult.receipt as unknown as Record<string, unknown>);
       const validation = validateReceipt(sanitizedData);
 
       if (!validation.valid) {
