@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import { Receipt, Eye } from 'lucide-react';
 import { format } from 'date-fns';
+import { ConsoleErrorBoundary } from '@/components/console/ErrorBoundary';
 
 interface ReceiptListItem {
   id: string;
@@ -43,11 +44,12 @@ interface ReceiptDetail extends ReceiptListItem {
   }>;
 }
 
-export default function ReceiptsPage() {
+function ReceiptsPageContent() {
   const [receipts, setReceipts] = useState<ReceiptListItem[]>([]);
   const [selectedReceipt, setSelectedReceipt] = useState<ReceiptDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchReceipts();
@@ -57,12 +59,31 @@ export default function ReceiptsPage() {
     try {
       setLoading(true);
       const res = await fetch('/api/console/receipts');
+      
+      if (res.status === 401) {
+        // User not authenticated - redirect to sign in
+        window.location.href = '/signup';
+        return;
+      }
+      
       if (res.ok) {
         const data = await res.json();
         setReceipts(data.receipts || []);
+      } else {
+        // Handle non-200 responses gracefully
+        const errorText = await res.text().catch(() => 'Unknown error');
+        console.error('Failed to fetch receipts:', res.status, res.statusText, errorText);
+        if (res.status >= 500) {
+          setError('Server error. Please try again later.');
+        } else {
+          setReceipts([]); // Show empty state for client errors
+        }
       }
     } catch (error) {
-      console.error('Failed to fetch receipts:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Failed to fetch receipts:', errorMessage);
+      setError('Failed to load receipts. Please try again.');
+      setReceipts([]); // Show empty state on error
     } finally {
       setLoading(false);
     }
@@ -71,13 +92,31 @@ export default function ReceiptsPage() {
   const viewReceipt = async (id: string) => {
     try {
       const res = await fetch(`/api/console/receipts/${id}`);
+      
+      if (res.status === 401) {
+        // User not authenticated - redirect to sign in
+        window.location.href = '/signup';
+        return;
+      }
+      
       if (res.ok) {
         const data = await res.json();
-        setSelectedReceipt(data.receipt);
-        setDetailDialogOpen(true);
+        if (data.receipt) {
+          setSelectedReceipt(data.receipt);
+          setDetailDialogOpen(true);
+        } else {
+          console.error('Receipt not found in response');
+        }
+      } else if (res.status === 404) {
+        // Receipt not found - show error or close dialog
+        console.warn('Receipt not found:', id);
+        setDetailDialogOpen(false);
+      } else {
+        console.error('Failed to fetch receipt details:', res.status, res.statusText);
       }
     } catch (error) {
       console.error('Failed to fetch receipt details:', error);
+      setDetailDialogOpen(false);
     }
   };
 
@@ -86,6 +125,19 @@ export default function ReceiptsPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="py-12 text-center">
+          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+          <Button onClick={() => { setError(null); fetchReceipts(); }}>
+            Try Again
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -285,5 +337,13 @@ export default function ReceiptsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function ReceiptsPage() {
+  return (
+    <ConsoleErrorBoundary>
+      <ReceiptsPageContent />
+    </ConsoleErrorBoundary>
   );
 }

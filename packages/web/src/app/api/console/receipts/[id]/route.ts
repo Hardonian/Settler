@@ -24,18 +24,34 @@ export async function GET(
     // Authenticate using unified auth (session or API key)
     const authContext = await requireAuth(request);
 
-    const billingAccount = await prisma.billingAccount.findFirst({
-      where: { userId: authContext.userId },
-    });
+    // Get billing account
+    let billingAccountId = authContext.billingAccountId;
+    
+    if (!billingAccountId) {
+      // Try to find billing account for user
+      const billingAccount = await prisma.billingAccount.findFirst({
+        where: { userId: authContext.userId },
+        select: { id: true },
+      });
 
-    if (!billingAccount) {
-      return NextResponse.json({ error: 'Receipt not found' }, { status: 404 });
+      if (!billingAccount) {
+        return NextResponse.json({ error: 'Receipt not found' }, { status: 404 });
+      }
+
+      billingAccountId = billingAccount.id;
     }
 
     const { id } = await params;
-    const receipt = await getReceiptDetail(id, billingAccount.id);
+    
+    // Validate receipt ID format
+    if (!id || typeof id !== 'string') {
+      return NextResponse.json({ error: 'Invalid receipt ID' }, { status: 400 });
+    }
+
+    const receipt = await getReceiptDetail(id, billingAccountId);
 
     if (!receipt) {
+      // Receipt not found or doesn't belong to user's billing account
       return NextResponse.json({ error: 'Receipt not found' }, { status: 404 });
     }
 
@@ -45,8 +61,14 @@ export async function GET(
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    console.error('[Console Receipts] Error fetching detail:', error);
-    // Return 404 instead of 500
+    
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Console Receipts] Error fetching detail:', {
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    
+    // Return 404 instead of 500 to prevent page crashes
     return NextResponse.json(
       { error: 'Receipt not found' },
       { status: 404 }
