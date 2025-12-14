@@ -184,7 +184,7 @@ export async function incrementUsageCounter(
  * Returns 429 if limit exceeded
  */
 export async function enforceUsageLimit(
-  request: NextRequest,
+  _request: NextRequest,
   billingAccountId: string,
   service: ServiceType
 ): Promise<NextResponse | null> {

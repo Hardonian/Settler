@@ -78,7 +78,8 @@ export async function GET() {
       
       // Try to query stripe_events table
       try {
-        const eventCount = await prisma.stripeEvent.count({
+        // Test query to verify table exists and is accessible
+        await prisma.stripeEvent.count({
           take: 1,
         });
         result.checks.database.canQuery = true;

@@ -7,6 +7,7 @@
 
 import { prisma } from '@/shared/db/prismaClient';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database.types';
 
 export type ActivationEventType =
   | 'first_receipt_parsed'
@@ -45,7 +46,7 @@ export async function trackActivationEvent(event: ActivationEvent): Promise<void
 
     // Insert activation event into activity_log
     const supabase = await createClient();
-    const { error } = await supabase.from('activity_log').insert({
+    const activityData: Database['public']['Tables']['activity_log']['Insert'] = {
       user_id: event.userId,
       activity_type: event.eventType,
       entity_type: 'activation',
@@ -54,8 +55,12 @@ export async function trackActivationEvent(event: ActivationEvent): Promise<void
         billingAccountId: event.billingAccountId,
         tenantId: event.tenantId,
         ...event.metadata,
-      },
-    });
+      } as Record<string, unknown>,
+    };
+    
+    const { error } = await supabase
+      .from('activity_log')
+      .insert(activityData as any);
 
     if (error) {
       console.error('[Activation Events] Failed to track event:', {
