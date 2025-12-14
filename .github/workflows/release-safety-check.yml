@@ -1,0 +1,84 @@
+name: Release Safety Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main, production]
+
+jobs:
+  release-gatekeeper:
+    name: Release Gatekeeper Safety Check
+    runs-on: ubuntu-latest
+    
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Release Gatekeeper Agent
+        id: safety-check
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$SUPABASE_URL/functions/v1/release-gatekeeper-agent" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"release_id\": \"${{ github.sha }}\",
+              \"check_type\": \"${{ github.event_name == 'pull_request' && 'pre_merge' || 'post_deploy' }}\"
+            }")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          echo "HTTP Code: $HTTP_CODE"
+          echo "Response: $BODY"
+          
+          # Parse response
+          BLOCKS_DEPLOYMENT=$(echo "$BODY" | grep -o '"blocks_deployment":[^,}]*' | cut -d':' -f2 | tr -d ' ')
+          RECOMMEND_ROLLBACK=$(echo "$BODY" | grep -o '"recommend_rollback":[^,}]*' | cut -d':' -f2 | tr -d ' ')
+          
+          echo "blocks_deployment=$BLOCKS_DEPLOYMENT" >> $GITHUB_OUTPUT
+          echo "recommend_rollback=$RECOMMEND_ROLLBACK" >> $GITHUB_OUTPUT
+          
+          if [ "$HTTP_CODE" = "400" ] || [ "$BLOCKS_DEPLOYMENT" = "true" ]; then
+            echo "❌ Deployment blocked by Release Gatekeeper"
+            echo "$BODY"
+            exit 1
+          fi
+          
+          if [ "$RECOMMEND_ROLLBACK" = "true" ]; then
+            echo "⚠️ Rollback recommended by Release Gatekeeper"
+            echo "$BODY"
+          fi
+      
+      - name: Comment PR with Safety Check Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = `${{ steps.safety-check.outputs.body }}`;
+            const blocks = `${{ steps.safety-check.outputs.blocks_deployment }}` === 'true';
+            const rollback = `${{ steps.safety-check.outputs.recommend_rollback }}` === 'true';
+            
+            const comment = `## 🔒 Release Safety Check Results
+            
+            ${blocks ? '❌ **DEPLOYMENT BLOCKED**' : rollback ? '⚠️ **Rollback Recommended**' : '✅ **Safety Checks Passed**'}
+            
+            \`\`\`json
+            ${response}
+            \`\`\`
+            
+            ${blocks ? '**This deployment has been blocked due to safety concerns.**' : ''}
+            ${rollback ? '**Consider rolling back this deployment.**' : ''}
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
