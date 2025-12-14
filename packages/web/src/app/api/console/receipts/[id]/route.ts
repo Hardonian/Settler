@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { prisma } from '@/shared/db/prismaClient';
 import { getReceiptDetail } from '@/domain/console/receipts';
+import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -20,14 +21,30 @@ export async function GET(
   request: NextRequest,
   { params }: RouteParams
 ) {
+  const correlationId = await getCorrelationId();
+  const logger = await createLogger({ route: '/api/console/receipts/[id]', method: 'GET' });
+  
   try {
+    const { id } = await params;
+    logger.info('Console receipt detail request started', { correlationId, receiptId: id });
+    
+    // Validate receipt ID format
+    if (!id || typeof id !== 'string') {
+      logger.warn('Invalid receipt ID format', { correlationId, receiptId: id });
+      const response = NextResponse.json({ error: 'Invalid receipt ID' }, { status: 400 });
+      return addCorrelationHeaders(response, correlationId);
+    }
+
     // Authenticate using unified auth (session or API key)
     const authContext = await requireAuth(request);
+    logger.info('Authentication successful', { correlationId, userId: authContext.userId, type: authContext.type });
 
     // Get billing account
     let billingAccountId = authContext.billingAccountId;
     
     if (!billingAccountId) {
+      logger.info('No billing account in auth context, looking up', { correlationId, userId: authContext.userId });
+      
       // Try to find billing account for user
       const billingAccount = await prisma.billingAccount.findFirst({
         where: { userId: authContext.userId },
@@ -35,43 +52,48 @@ export async function GET(
       });
 
       if (!billingAccount) {
-        return NextResponse.json({ error: 'Receipt not found' }, { status: 404 });
+        logger.warn('No billing account found', { correlationId });
+        const response = NextResponse.json({ error: 'Receipt not found' }, { status: 404 });
+        return addCorrelationHeaders(response, correlationId);
       }
 
       billingAccountId = billingAccount.id;
+      logger.info('Found billing account', { correlationId, billingAccountId });
     }
 
-    const { id } = await params;
-    
-    // Validate receipt ID format
-    if (!id || typeof id !== 'string') {
-      return NextResponse.json({ error: 'Invalid receipt ID' }, { status: 400 });
-    }
-
+    logger.info('Fetching receipt detail', { correlationId, receiptId: id, billingAccountId });
     const receipt = await getReceiptDetail(id, billingAccountId);
 
     if (!receipt) {
       // Receipt not found or doesn't belong to user's billing account
-      return NextResponse.json({ error: 'Receipt not found' }, { status: 404 });
+      logger.warn('Receipt not found or access denied', { correlationId, receiptId: id, billingAccountId });
+      const response = NextResponse.json({ error: 'Receipt not found' }, { status: 404 });
+      return addCorrelationHeaders(response, correlationId);
     }
 
-    return NextResponse.json({ receipt });
+    logger.info('Receipt detail fetched successfully', { correlationId, receiptId: id });
+    const response = NextResponse.json({ receipt });
+    return addCorrelationHeaders(response, correlationId);
   } catch (error) {
     // If auth error, return 401
     if (error instanceof Error && error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      logger.warn('Authentication failed', { correlationId, error: error.message });
+      const response = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return addCorrelationHeaders(response, correlationId);
     }
     
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[Console Receipts] Error fetching detail:', {
+    logger.error('Error fetching receipt detail', {
+      correlationId,
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
     });
     
     // Return 404 instead of 500 to prevent page crashes
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Receipt not found' },
       { status: 404 }
     );
+    return addCorrelationHeaders(response, correlationId);
   }
 }
