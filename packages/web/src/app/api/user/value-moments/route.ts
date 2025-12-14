@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -24,8 +24,9 @@ export async function GET(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
+    const typedProfile = profile as { plan_type?: string } | null;
     // Don't show prompts for paid users
-    if (profile?.plan_type === "commercial" || profile?.plan_type === "enterprise") {
+    if (typedProfile?.plan_type === "commercial" || typedProfile?.plan_type === "enterprise") {
       return NextResponse.json({ moment: null });
     }
 
@@ -53,8 +54,9 @@ export async function GET(request: NextRequest) {
       .gte("created_at", new Date(new Date().setDate(1)).toISOString()); // This month
 
     if (usage) {
-      const totalUsage = usage.reduce((sum, u) => sum + (u.quantity || 0), 0);
-      const limit = profile?.plan_type === "free" ? 1000 : 100000;
+      const typedUsage = usage as Array<{ quantity: number | null }>;
+      const totalUsage = typedUsage.reduce((sum, u) => sum + (u.quantity || 0), 0);
+      const limit = typedProfile?.plan_type === "free" ? 1000 : 100000;
       const percentage = (totalUsage / limit) * 100;
 
       if (percentage >= 80 && percentage < 100) {
@@ -63,7 +65,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check for high usage
-    if (usage && usage.length > 50) {
+    if (typedUsage && typedUsage.length > 50) {
       return NextResponse.json({ moment: "high_usage" });
     }
 

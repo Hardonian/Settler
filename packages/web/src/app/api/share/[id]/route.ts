@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       artifact_id: artifactId,
       public: isPublic || false,
       expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
-    });
+    } as never);
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
     const shareUrl = `${baseUrl}/share/${shareId}`;
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -77,8 +77,17 @@ export async function GET(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
+    const typedArtifact = artifact as {
+      expires_at: string;
+      public: boolean;
+      user_id: string;
+      artifact_type: string;
+      artifact_id: string;
+      created_at: string;
+    };
+
     // Check if expired
-    if (new Date(artifact.expires_at) < new Date()) {
+    if (new Date(typedArtifact.expires_at) < new Date()) {
       return NextResponse.json({ error: "Link expired" }, { status: 410 });
     }
 
@@ -87,25 +96,25 @@ export async function GET(
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!artifact.public && (!user || user.id !== artifact.user_id)) {
+    if (!typedArtifact.public && (!user || user.id !== typedArtifact.user_id)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     // Get artifact data based on type
     let artifactData = null;
 
-    if (artifact.artifact_type === "reconciliation_report") {
+    if (typedArtifact.artifact_type === "reconciliation_report") {
       const { data } = await supabase
         .from("reconciliation_jobs")
         .select("*")
-        .eq("id", artifact.artifact_id)
+        .eq("id", typedArtifact.artifact_id)
         .single();
       artifactData = data;
-    } else if (artifact.artifact_type === "receipt") {
+    } else if (typedArtifact.artifact_type === "receipt") {
       const { data } = await supabase
         .from("receipts")
         .select("*")
-        .eq("id", artifact.artifact_id)
+        .eq("id", typedArtifact.artifact_id)
         .single();
       artifactData = data;
     }
@@ -113,9 +122,9 @@ export async function GET(
     return NextResponse.json({
       artifact: artifactData,
       metadata: {
-        type: artifact.artifact_type,
-        createdAt: artifact.created_at,
-        expiresAt: artifact.expires_at,
+        type: typedArtifact.artifact_type,
+        createdAt: typedArtifact.created_at,
+        expiresAt: typedArtifact.expires_at,
       },
     });
   } catch (error) {
