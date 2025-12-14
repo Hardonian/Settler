@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Check if migration files were committed
+if git diff HEAD~1 HEAD --name-only | grep -q "supabase/migrations/.*\.sql$"; then
+  echo "🔍 Migration files detected in commit, applying migrations..."
+  
+  # Check if we're in CI/CD (don't run migrations in CI, GitHub Actions handles it)
+  if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ]; then
+    echo "ℹ️  Running in CI/CD, skipping local migration (GitHub Actions will handle it)"
+    exit 0
+  fi
+  
+  # Check if DATABASE_URL is set (only run if connected to database)
+  if [ -z "$DATABASE_URL" ]; then
+    echo "⚠️  DATABASE_URL not set, skipping migration application"
+    echo "💡 To apply migrations manually, run: npm run db:migrate:auto"
+    exit 0
+  fi
+  
+  # Ask user if they want to apply migrations (non-blocking)
+  echo "❓ Apply migrations to connected database? (y/N)"
+  read -t 5 -n 1 answer || answer="n"
+  echo ""
+  
+  if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
+    echo "🔄 Applying migrations..."
+    bash scripts/apply-migrations.sh || {
+      echo "❌ Migration failed. Please check errors above."
+      echo "💡 You can apply migrations manually later with: npm run db:migrate:auto"
+    }
+  else
+    echo "⏭️  Skipping migration application"
+    echo "💡 Apply migrations manually with: npm run db:migrate:auto"
+  fi
+fi

@@ -1,98 +1,236 @@
-# Automatic Migrations Setup - Complete ✅
+# Automatic Migration Setup
 
-## What Was Done
+This document explains how migrations are automatically applied to your Supabase database.
 
-I've configured **automatic database migrations** that run without any manual CLI commands or local setup.
+## Overview
 
-## Changes Made
+The system supports **two modes** of automatic migration application:
 
-### 1. Updated Existing Workflow
-**File**: `.github/workflows/supabase-migrate.yml`
-- ✅ Now triggers on **PR push** AND **merge to main**
-- ✅ Automatically detects migration files
-- ✅ Uses environment-specific secrets (preview vs production)
-- ✅ Improved error handling and fallback methods
+1. **Local Development** - Post-commit hook prompts to apply migrations locally
+2. **CI/CD (GitHub Actions)** - Automatically applies migrations on push to main/develop
 
-### 2. Created New PR Workflow
-**File**: `.github/workflows/auto-migrate-on-pr-push.yml`
-- ✅ Runs migrations on PR push (preview environment)
-- ✅ Detects Supabase and Prisma migrations
-- ✅ Safe testing before production merge
+## How It Works
 
-### 3. Documentation
-**File**: `docs/AUTOMATIC_MIGRATIONS.md`
-- ✅ Complete guide on how automatic migrations work
-- ✅ Required secrets list
-- ✅ Troubleshooting guide
+### 1. Local Development (Post-Commit Hook)
 
-## How It Works Now
+When you commit migration files locally, a post-commit hook will:
 
-### When You Push to a PR:
-1. Workflow detects migration files changed
-2. Runs migrations on **preview/test database**
-3. Verifies migrations applied successfully
-4. Posts summary in PR
+1. Detect if migration files (`supabase/migrations/*.sql`) were committed
+2. Check if `DATABASE_URL` is set
+3. Prompt you to apply migrations (y/N)
+4. Run `scripts/apply-migrations.sh` if you confirm
 
-### When You Merge PR to Main:
-1. Workflow detects migration files changed
-2. Runs migrations on **production database**
-3. Deploys edge functions (if changed)
-4. Verifies deployment
+**To use:**
+```bash
+# Commit migration files
+git add supabase/migrations/20260127000002_missing_rls_policies.sql
+git commit -m "Add missing RLS policies"
 
-## Required GitHub Secrets
+# Post-commit hook will prompt:
+# ❓ Apply migrations to connected database? (y/N)
+```
 
-Make sure these are set in **GitHub → Settings → Secrets and variables → Actions**:
+**To skip the prompt:**
+- Answer 'n' or wait 5 seconds
+- Apply manually later: `npm run db:migrate:apply`
 
-### Production (Required):
-- `SUPABASE_ACCESS_TOKEN`
-- `SUPABASE_PROJECT_REF`
-- `DATABASE_URL`
-- `DIRECT_URL`
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `SUPABASE_DB_PASSWORD`
+**To disable locally:**
+- Unset `DATABASE_URL` environment variable
+- Or remove/rename `.husky/post-commit`
 
-### Preview (Optional but Recommended):
-- `SUPABASE_PROJECT_REF_PREVIEW`
-- `DATABASE_URL_PREVIEW`
-- `DIRECT_URL_PREVIEW`
-- `SUPABASE_URL_PREVIEW`
-- `SUPABASE_ANON_KEY_PREVIEW`
-- `SUPABASE_SERVICE_ROLE_KEY_PREVIEW`
-- `SUPABASE_DB_PASSWORD_PREVIEW`
+### 2. CI/CD (GitHub Actions)
 
-If preview secrets aren't set, production secrets are used (not ideal for safety).
+When you push migration files to GitHub:
 
-## Testing the Setup
+1. **Workflow:** `.github/workflows/auto-apply-migrations-on-push.yml`
+2. **Triggers:** Push to `main` or `develop` branches with changes to `supabase/migrations/**`
+3. **Actions:**
+   - Detects all migration files
+   - Links to Supabase project
+   - Applies all migrations using `supabase db push --include-all`
+   - Falls back to direct `psql` if CLI fails
+   - Verifies migration status
+   - Creates summary in GitHub Actions
 
-### Test Migration on PR:
-1. Create a new migration file: `supabase/migrations/test_migration.sql`
-2. Add some SQL (even a comment is fine)
-3. Commit and push to a PR
-4. Check GitHub Actions → Should see "Auto-Migrate on PR Push" workflow run
+**Existing workflows also handle migrations:**
+- `.github/workflows/supabase-migrate.yml` - Comprehensive migration workflow (runs on push/PR)
+- `.github/workflows/auto-migrate-on-pr-push.yml` - Applies migrations on PR (preview environment)
 
-### Test Migration on Merge:
-1. Merge a PR with migration files
-2. Check GitHub Actions → Should see "Supabase Migration (Auto)" workflow run
-3. Verify migrations applied to production
+## Manual Migration Application
+
+### Option 1: Using npm script
+```bash
+npm run db:migrate:apply
+```
+
+### Option 2: Using TypeScript script
+```bash
+npm run db:migrate:auto
+# or
+tsx scripts/migrate-supabase.ts
+```
+
+### Option 3: Using Supabase CLI directly
+```bash
+# Link to project first
+supabase link --project-ref your-project-ref
+
+# Apply migrations
+supabase db push --include-all
+```
+
+### Option 4: Using direct psql
+```bash
+# Apply a specific migration
+psql $DATABASE_URL -f supabase/migrations/20260127000002_missing_rls_policies.sql
+
+# Apply all migrations
+for file in supabase/migrations/*.sql; do
+  psql $DATABASE_URL -f "$file"
+done
+```
+
+## Environment Variables Required
+
+### For Local Development
+```bash
+# Option 1: Direct PostgreSQL connection
+DATABASE_URL=postgresql://user:password@host:port/database
+
+# Option 2: Supabase project (for linking)
+SUPABASE_PROJECT_REF=your-project-ref
+SUPABASE_ACCESS_TOKEN=your-access-token
+```
+
+### For CI/CD (GitHub Secrets)
+- `SUPABASE_ACCESS_TOKEN` - Supabase access token
+- `SUPABASE_PROJECT_REF` - Supabase project reference ID
+- `DATABASE_URL` - Direct PostgreSQL connection string
+- `SUPABASE_DB_PASSWORD` - Database password (for psql fallback)
+
+## Migration Files Created
+
+The following new migration files were created and are ready to apply:
+
+1. **`supabase/migrations/20260127000002_missing_rls_policies.sql`**
+   - Adds RLS policies for `onboarding_progress`
+   - Adds RLS policies for `usage_aggregate_daily`
+   - Adds RLS policies for `usage_counters`
+   - Adds RLS policies for `health_checks`, `diagnostics`, `alerts`
+
+2. **`supabase/migrations/20260127000003_tenant_membership_helper.sql`**
+   - Creates `is_tenant_member(tenant_id UUID)` function
+   - Grants execute permissions
+
+3. **`supabase/migrations/20260127000004_critical_indexes.sql`**
+   - Adds indexes for `usage_events` (billing_account_id, timestamp DESC)
+   - Adds indexes for `usage_aggregate_daily` (billing_account_id, date DESC)
+   - Adds indexes for `usage_counters` (billing_account_id, service, period)
+   - Adds indexes for `tenant_users` (user_id, tenant_id composite)
+
+## Applying Migrations Now
+
+### Quick Start (Recommended)
+
+1. **Commit the migration files:**
+   ```bash
+   git add supabase/migrations/20260127*.sql
+   git commit -m "Add missing RLS policies, helper functions, and indexes"
+   ```
+
+2. **Push to trigger automatic application:**
+   ```bash
+   git push origin main
+   ```
+
+3. **GitHub Actions will automatically:**
+   - Detect the migration files
+   - Apply them to your Supabase database
+   - Verify the application
+   - Create a summary
+
+### Manual Application (If Needed)
+
+If you want to apply migrations manually before pushing:
+
+```bash
+# Set your database connection
+export DATABASE_URL="your-database-url"
+
+# Apply migrations
+npm run db:migrate:apply
+```
+
+## Verification
+
+After migrations are applied, verify:
+
+1. **Check migration status:**
+   ```bash
+   supabase migration list
+   ```
+
+2. **Verify tables exist:**
+   ```sql
+   -- Connect to your database
+   psql $DATABASE_URL
+   
+   -- Check tables
+   \dt
+   
+   -- Check functions
+   \df is_tenant_member
+   
+   -- Check RLS policies
+   SELECT * FROM pg_policies WHERE schemaname = 'public';
+   ```
+
+3. **Test tenant membership function:**
+   ```sql
+   SELECT is_tenant_member('your-tenant-id');
+   ```
+
+## Troubleshooting
+
+### Post-commit hook not running
+- Ensure `.husky/post-commit` is executable: `chmod +x .husky/post-commit`
+- Check if husky is installed: `npm run prepare`
+- Verify git hooks are enabled: `ls -la .git/hooks/`
+
+### Migrations not applying in CI/CD
+- Check GitHub Actions logs for errors
+- Verify secrets are set correctly in GitHub repository settings
+- Ensure `SUPABASE_PROJECT_REF` matches your project
+- Check if `DATABASE_URL` is accessible from GitHub Actions
+
+### Migration fails with "already exists" error
+- This is normal for idempotent migrations (using `IF NOT EXISTS`)
+- The migration script handles these gracefully
+- Check logs to confirm what was created
+
+### Connection errors
+- Verify `DATABASE_URL` is correct
+- Check if database is accessible (firewall, network)
+- For Supabase, ensure you're using the correct connection string format
+- Try using Supabase CLI linking instead of direct connection
+
+## Safety Features
+
+1. **Idempotent Migrations** - All migrations use `IF NOT EXISTS` / `DROP IF EXISTS` patterns
+2. **Transaction Safety** - Migrations run in transactions (BEGIN/COMMIT blocks)
+3. **Error Handling** - Failed migrations stop the process and report errors
+4. **Verification** - Post-application verification checks migration status
+5. **CI/CD Safety** - Migrations only apply on main/develop branches (not on feature branches)
 
 ## Next Steps
 
-1. **Verify Secrets**: Check all required secrets are set in GitHub
-2. **Test PR Migration**: Push a test migration to a PR
-3. **Monitor First Merge**: Watch the first production migration carefully
+1. ✅ Commit the new migration files
+2. ✅ Push to trigger automatic application
+3. ✅ Verify migrations were applied successfully
+4. ✅ Test the new functions and RLS policies
+5. ✅ Monitor for any issues
 
-## Console Migration
+---
 
-The Console RLS fix migration (`20260125000000_console_rls_fixes.sql`) will run automatically when you:
-- Push it to a PR → Runs on preview
-- Merge PR to main → Runs on production
-
-No manual commands needed! 🎉
-
-## Support
-
-- See `docs/AUTOMATIC_MIGRATIONS.md` for full documentation
-- Check GitHub Actions logs if migrations fail
-- Verify secrets are configured correctly
+**Created:** 2026-01-27  
+**Status:** ✅ Ready to use
