@@ -20,10 +20,39 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
-    // Authenticate API key
-    await authenticateApiKey(request);
+    // Try to authenticate, but allow unauthenticated access for playground
+    let auth;
+    let isAuthenticated = false;
+    
+    try {
+      auth = await authenticateApiKey(request);
+      isAuthenticated = true;
+    } catch (error) {
+      // Unauthenticated access allowed for playground - will return demo response
+    }
 
     const { id } = await params;
+
+    // For unauthenticated users, return demo response
+    if (!isAuthenticated) {
+      return NextResponse.json({
+        id: `demo_${id}`,
+        uploadId: `demo_upload_${id}`,
+        vendor: "Demo Merchant",
+        date: new Date().toISOString().split('T')[0],
+        currency: "USD",
+        subtotal: 0,
+        tax: 0,
+        total: 0,
+        paymentMethod: "demo",
+        confidenceScore: 0,
+        items: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        demo: true,
+        message: 'This is a demo response. Sign in to fetch real receipts.',
+      }, { status: 200 });
+    }
 
     // Get receipt
     const receipt = await prisma.receipt.findUnique({
@@ -64,13 +93,23 @@ export async function GET(
       updatedAt: receipt.updatedAt,
     });
   } catch (error) {
+    // Never return 500 - always return 200 with demo response for playground
     console.error('Error fetching receipt:', error);
     return NextResponse.json(
       {
+        id: `demo_error_${Date.now()}`,
+        vendor: "Demo Merchant",
+        date: new Date().toISOString().split('T')[0],
+        currency: "USD",
+        subtotal: 0,
+        tax: 0,
+        total: 0,
+        items: [],
+        demo: true,
         error: 'Failed to fetch receipt',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

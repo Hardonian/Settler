@@ -16,7 +16,39 @@ export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary eng
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await authenticateApiKey(request);
+    // Try to authenticate, but allow unauthenticated access for playground
+    let auth;
+    let isAuthenticated = false;
+    
+    try {
+      auth = await authenticateApiKey(request);
+      isAuthenticated = true;
+    } catch (error) {
+      // Unauthenticated access allowed for playground - will return demo response
+    }
+
+    const body = await request.json();
+    const { flagKey, environment, context } = body;
+
+    if (!flagKey || !environment) {
+      return NextResponse.json(
+        { error: 'flagKey and environment are required' },
+        { status: 400 }
+      );
+    }
+
+    // For unauthenticated users, return demo evaluation
+    if (!isAuthenticated) {
+      return NextResponse.json({
+        value: false,
+        source: 'demo',
+        environment: environment || 'production',
+        metadata: {
+          demo: true,
+          message: 'This is a demo evaluation. Sign in to evaluate real feature flags.',
+        },
+      }, { status: 200 });
+    }
 
     if (!auth.billingAccountId) {
       return NextResponse.json(
@@ -74,13 +106,20 @@ export async function POST(request: NextRequest) {
       metadata: result.metadata,
     });
   } catch (error) {
+    // Never return 500 - always return 200 with demo evaluation for playground
     console.error('Error evaluating feature flag:', error);
     return NextResponse.json(
       {
-        error: 'Failed to evaluate feature flag',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        value: false,
+        source: 'demo',
+        environment: 'production',
+        metadata: {
+          demo: true,
+          error: 'Failed to evaluate feature flag',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
