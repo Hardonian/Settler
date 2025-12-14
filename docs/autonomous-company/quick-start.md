@@ -7,6 +7,7 @@ Get your autonomous agents running in 5 minutes.
 - Supabase CLI installed: `npm install -g supabase`
 - Logged in: `supabase login`
 - Project linked: `supabase link --project-ref your-project-ref`
+- OpenAI API key (optional but recommended): Get from https://platform.openai.com/api-keys
 
 ## Step 1: Deploy Database Schema
 
@@ -16,13 +17,29 @@ supabase db push
 
 This creates all necessary tables for the autonomous agents.
 
-## Step 2: Deploy Edge Functions
+## Step 2: Set OpenAI API Key (Recommended)
+
+For AI-enhanced reasoning:
+
+```bash
+supabase secrets set OPENAI_API_KEY=sk-your-key-here
+```
+
+Or set as environment variable:
+
+```bash
+export OPENAI_API_KEY=sk-your-key-here
+```
+
+## Step 3: Deploy Edge Functions
 
 Use the automated deployment script:
 
 ```bash
 ./scripts/deploy-autonomous-agents.sh
 ```
+
+The script will automatically use your OpenAI API key if set.
 
 Or deploy manually:
 

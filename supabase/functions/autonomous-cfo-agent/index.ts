@@ -16,6 +16,42 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
+// OpenAI helper
+async function generateInsights(
+  context: string,
+  data: Record<string, unknown>,
+  task: string
+): Promise<string> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) return "";
+
+  try {
+    const prompt = `Given the following ${context}:\n\n${JSON.stringify(data, null, 2)}\n\n${task}\n\nProvide concise, actionable insights. Be specific and data-driven.`;
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: "You are an expert financial analyst providing strategic insights. Be concise, specific, and actionable." },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!response.ok) return "";
+    const result = await response.json();
+    return result.choices[0]?.message?.content || "";
+  } catch {
+    return "";
+  }
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -237,6 +273,35 @@ serve(async (req) => {
         urgency: "low",
         recommended_action: "Maintain growth rate through marketing and product improvements.",
       });
+    }
+
+    // ========================================================================
+    // ENHANCE INSIGHTS WITH AI (if OpenAI available)
+    // ========================================================================
+
+    if (Deno.env.get("OPENAI_API_KEY")) {
+      try {
+        // Enhance financial insights with AI analysis
+        for (const insight of insights) {
+          const aiAnalysis = await generateInsights(
+            "financial metrics",
+            {
+              insight_type: insight.insight_type,
+              current_value: insight.current_value,
+              projected_value: insight.projected_value,
+              threshold_value: insight.threshold_value,
+              urgency: insight.urgency,
+            },
+            `Provide strategic financial analysis and recommendations. What actions should be taken? Consider both short-term and long-term implications.`
+          );
+
+          if (aiAnalysis) {
+            insight.recommended_action = `${insight.recommended_action}\n\nAI Analysis: ${aiAnalysis}`;
+          }
+        }
+      } catch (error) {
+        console.warn("AI enhancement failed, using default insights:", error);
+      }
     }
 
     // ========================================================================

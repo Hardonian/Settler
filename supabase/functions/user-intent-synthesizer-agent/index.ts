@@ -15,6 +15,42 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
+// OpenAI helper
+async function generateInsights(
+  context: string,
+  data: Record<string, unknown>,
+  task: string
+): Promise<string> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) return "";
+
+  try {
+    const prompt = `Given the following ${context}:\n\n${JSON.stringify(data, null, 2)}\n\n${task}\n\nProvide concise, actionable insights. Be specific and data-driven.`;
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: "You are an expert analyst providing strategic insights. Be concise, specific, and actionable." },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!response.ok) return "";
+    const result = await response.json();
+    return result.choices[0]?.message?.content || "";
+  } catch {
+    return "";
+  }
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -317,6 +353,36 @@ serve(async (req) => {
           recommended_action: `Fix ${topError[0]} error. This affects ${topError[1].users.size} users.`,
           feature_suggestion: `Add better error handling or validation to prevent ${topError[0]}`,
         });
+      }
+    }
+
+    // ========================================================================
+    // ENHANCE INSIGHTS WITH AI (if OpenAI available)
+    // ========================================================================
+
+    if (Deno.env.get("OPENAI_API_KEY")) {
+      try {
+        // Enhance each insight with AI-generated recommendations
+        for (const insight of insights) {
+          const aiRecommendation = await generateInsights(
+            "user behavior pattern",
+            {
+              insight_type: insight.insight_type,
+              user_goal: insight.user_goal,
+              observed_behavior: insight.observed_behavior,
+              failure_pattern: insight.failure_pattern,
+              affected_users: insight.affected_user_count,
+              evidence: insight.evidence.slice(0, 3), // Limit evidence for context
+            },
+            `Based on this user behavior pattern, provide specific, actionable recommendations. What should we build or fix?`
+          );
+
+          if (aiRecommendation) {
+            insight.recommended_action = `${insight.recommended_action}\n\nAI Analysis: ${aiRecommendation}`;
+          }
+        }
+      } catch (error) {
+        console.warn("AI enhancement failed, using default insights:", error);
       }
     }
 

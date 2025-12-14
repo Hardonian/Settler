@@ -10,6 +10,7 @@ Use this checklist to ensure complete deployment of the autonomous company syste
 - [ ] Environment variables set:
   - [ ] `SUPABASE_URL`
   - [ ] `SUPABASE_SERVICE_ROLE_KEY`
+  - [ ] `OPENAI_API_KEY` (optional but recommended for AI features)
 - [ ] Database backup created (recommended)
 
 ## Database Setup
@@ -31,6 +32,10 @@ Use this checklist to ensure complete deployment of the autonomous company syste
 
 ## Edge Functions Deployment
 
+- [ ] OpenAI API key set (recommended):
+  ```bash
+  supabase secrets set OPENAI_API_KEY=sk-your-key-here
+  ```
 - [ ] Strategic Governor Agent deployed
 - [ ] Architecture Sentinel Agent deployed
 - [ ] User Intent Synthesizer Agent deployed
@@ -42,6 +47,7 @@ Use this checklist to ensure complete deployment of the autonomous company syste
 
 **Quick deploy all:**
 ```bash
+export OPENAI_API_KEY=sk-your-key-here  # Optional
 ./scripts/deploy-autonomous-agents.sh
 ```
 

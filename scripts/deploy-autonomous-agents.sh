@@ -44,6 +44,15 @@ fi
 echo ""
 echo "📦 Step 2: Deploying edge functions..."
 
+# Check for OpenAI API key
+if [ -z "$OPENAI_API_KEY" ]; then
+    echo -e "${YELLOW}⚠️  OPENAI_API_KEY not set${NC}"
+    echo "   Agents will work but without AI-enhanced reasoning"
+    echo "   Set OPENAI_API_KEY environment variable for full AI capabilities"
+else
+    echo -e "${GREEN}✓${NC} OPENAI_API_KEY found - AI features enabled"
+fi
+
 FUNCTIONS=(
     "strategic-governor-agent"
     "architecture-sentinel-agent"
@@ -57,6 +66,12 @@ FUNCTIONS=(
 
 for func in "${FUNCTIONS[@]}"; do
     echo "  Deploying $func..."
+    
+    # Deploy with secrets if OpenAI key is set
+    if [ -n "$OPENAI_API_KEY" ]; then
+        supabase secrets set OPENAI_API_KEY="$OPENAI_API_KEY" 2>/dev/null || true
+    fi
+    
     supabase functions deploy "$func" --no-verify-jwt
     
     if [ $? -eq 0 ]; then

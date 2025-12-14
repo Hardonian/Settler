@@ -15,6 +15,40 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
+// OpenAI helper
+async function callOpenAI(
+  prompt: string,
+  systemPrompt?: string
+): Promise<string> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) return "";
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!response.ok) return "";
+    const result = await response.json();
+    return result.choices[0]?.message?.content || "";
+  } catch {
+    return "";
+  }
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -104,18 +138,38 @@ serve(async (req) => {
         let actionContent = "";
         let confidence = 0.8;
 
-        if (topError[0].includes("receipt")) {
-          actionContent = `We noticed you're having trouble uploading receipts. Make sure your receipt image is clear and in a supported format (JPG, PNG, PDF). The receipt should show the vendor name, date, and total amount clearly.`;
-          confidence = 0.85;
-        } else if (topError[0].includes("api_key") || topError[0].includes("auth")) {
-          actionContent = `It looks like there's an authentication issue. Please check that your API key is correct and hasn't expired. You can regenerate your API key in the settings.`;
-          confidence = 0.9;
-        } else if (topError[0].includes("rate_limit")) {
-          actionContent = `You've hit a rate limit. Your current plan allows ${topError[1]} requests per minute. Consider upgrading your plan for higher limits, or wait a moment before trying again.`;
-          confidence = 0.95;
-        } else {
-          actionContent = `We noticed you're experiencing ${topError[0]} errors. Our team has been notified. In the meantime, try refreshing the page or checking our documentation.`;
-          confidence = 0.6; // Lower confidence for unknown errors
+        // Try AI-generated explanation first if OpenAI is available
+        if (Deno.env.get("OPENAI_API_KEY")) {
+          try {
+            const aiExplanation = await callOpenAI(
+              `A user is experiencing ${topError[0]} errors (${topError[1]} occurrences). Generate a helpful, friendly explanation and solution. Be specific and actionable.`,
+              "You are a helpful support agent. Provide clear, actionable guidance."
+            );
+
+            if (aiExplanation) {
+              actionContent = aiExplanation;
+              confidence = 0.9; // Higher confidence with AI
+            }
+          } catch (error) {
+            console.warn("AI explanation failed, using default:", error);
+          }
+        }
+
+        // Fallback to rule-based explanations
+        if (!actionContent) {
+          if (topError[0].includes("receipt")) {
+            actionContent = `We noticed you're having trouble uploading receipts. Make sure your receipt image is clear and in a supported format (JPG, PNG, PDF). The receipt should show the vendor name, date, and total amount clearly.`;
+            confidence = 0.85;
+          } else if (topError[0].includes("api_key") || topError[0].includes("auth")) {
+            actionContent = `It looks like there's an authentication issue. Please check that your API key is correct and hasn't expired. You can regenerate your API key in the settings.`;
+            confidence = 0.9;
+          } else if (topError[0].includes("rate_limit")) {
+            actionContent = `You've hit a rate limit. Your current plan allows ${topError[1]} requests per minute. Consider upgrading your plan for higher limits, or wait a moment before trying again.`;
+            confidence = 0.95;
+          } else {
+            actionContent = `We noticed you're experiencing ${topError[0]} errors. Our team has been notified. In the meantime, try refreshing the page or checking our documentation.`;
+            confidence = 0.6; // Lower confidence for unknown errors
+          }
         }
 
         if (confidence >= CONFIDENCE_THRESHOLD) {

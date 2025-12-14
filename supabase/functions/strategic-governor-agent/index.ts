@@ -14,6 +14,70 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
+// OpenAI helper functions (inline to avoid import issues)
+async function callOpenAI(
+  prompt: string,
+  systemPrompt?: string,
+  model: string = "gpt-4o-mini"
+): Promise<string> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) return "";
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!response.ok) return "";
+    const data = await response.json();
+    return data.choices[0]?.message?.content || "";
+  } catch {
+    return "";
+  }
+}
+
+async function generateInsights(
+  context: string,
+  data: Record<string, unknown>,
+  task: string
+): Promise<string> {
+  const prompt = `Given the following ${context}:\n\n${JSON.stringify(data, null, 2)}\n\n${task}\n\nProvide concise, actionable insights. Be specific and data-driven.`;
+  return await callOpenAI(
+    prompt,
+    "You are an expert analyst providing strategic insights. Be concise, specific, and actionable."
+  );
+}
+
+async function prioritizeWithAI(
+  items: Array<{ title: string; metrics: Record<string, unknown> }>,
+  context: string
+): Promise<Array<{ title: string; priority: number; rationale: string }>> {
+  const prompt = `Given these ${context}:\n\n${JSON.stringify(items, null, 2)}\n\nPrioritize them based on business impact, urgency, and strategic value. Return a JSON array with priority (1=highest), title, and rationale for each.`;
+  const response = await callOpenAI(
+    prompt,
+    "You are a strategic prioritization expert. Return only valid JSON array."
+  );
+  try {
+    const parsed = JSON.parse(response);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -312,6 +376,60 @@ serve(async (req) => {
 
     // Sort by priority
     backlog.sort((a, b) => a.priority - b.priority);
+
+    // ========================================================================
+    // STEP 3.5: ENHANCE WITH AI REASONING (if OpenAI available)
+    // ========================================================================
+
+    if (Deno.env.get("OPENAI_API_KEY")) {
+      try {
+        // Generate AI-enhanced rationale for top items
+        const aiInsight = await generateInsights(
+          "business metrics and goals",
+          {
+            goals,
+            metrics: {
+              new_users: newUsers?.length || 0,
+              mrr,
+              at_risk_users: atRiskUsers?.length || 0,
+              error_rate: errorRate,
+              open_tickets: openTickets,
+            },
+            backlog_items: backlog.slice(0, 5),
+          },
+          "Provide strategic insights on what should be prioritized and why. Focus on compounding value and long-term impact."
+        );
+
+        // Enhance backlog items with AI if insight generated
+        if (aiInsight && backlog.length > 0) {
+          // Use AI to refine priorities
+          const aiPrioritized = await prioritizeWithAI(
+            backlog.map((item) => ({
+              title: item.title,
+              metrics: item.driving_metrics,
+            })),
+            "strategic backlog items"
+          );
+
+          // Merge AI prioritization if available
+          if (aiPrioritized.length > 0) {
+            backlog.forEach((item) => {
+              const aiItem = aiPrioritized.find((ai) => ai.title === item.title);
+              if (aiItem) {
+                item.rationale = `${item.rationale}\n\nAI Insight: ${aiItem.rationale}`;
+                // Adjust priority based on AI if significantly different
+                if (Math.abs(aiItem.priority - item.priority) > 2) {
+                  item.priority = Math.min(item.priority, aiItem.priority);
+                }
+              }
+            });
+            backlog.sort((a, b) => a.priority - b.priority);
+          }
+        }
+      } catch (error) {
+        console.warn("AI enhancement failed, using default prioritization:", error);
+      }
+    }
 
     // ========================================================================
     // STEP 4: WRITE TO DATABASE

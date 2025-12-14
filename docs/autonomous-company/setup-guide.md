@@ -7,7 +7,10 @@ This guide explains how to set up and operate Settler's autonomous company agent
 1. Supabase project with all migrations applied
 2. Edge Functions deployed
 3. Database tables created (from `20260127000000_autonomous_agents_schema.sql`)
-4. Environment variables configured
+4. Environment variables configured:
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `OPENAI_API_KEY` (optional but recommended for AI-enhanced reasoning)
 
 ## Database Setup
 
@@ -107,6 +110,23 @@ SELECT cron.schedule(
 
 ## Deploy Edge Functions
 
+### Set OpenAI API Key (Recommended)
+
+For AI-enhanced reasoning, set your OpenAI API key:
+
+```bash
+supabase secrets set OPENAI_API_KEY=sk-your-key-here
+```
+
+Or set it as an environment variable before deploying:
+
+```bash
+export OPENAI_API_KEY=sk-your-key-here
+./scripts/deploy-autonomous-agents.sh
+```
+
+### Deploy Functions
+
 Deploy all agent functions:
 
 ```bash
@@ -119,6 +139,14 @@ supabase functions deploy autonomous-cfo-agent
 supabase functions deploy release-gatekeeper-agent
 supabase functions deploy agent-orchestrator
 ```
+
+Or use the automated script:
+
+```bash
+./scripts/deploy-autonomous-agents.sh
+```
+
+**Note:** Agents work without OpenAI API key but will have enhanced reasoning capabilities with it.
 
 ## Manual Testing
 

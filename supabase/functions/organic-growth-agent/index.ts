@@ -13,6 +13,42 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
+// OpenAI helper
+async function generateContent(
+  contentType: string,
+  data: Record<string, unknown>,
+  requirements: string
+): Promise<string> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) return "";
+
+  try {
+    const prompt = `Create ${contentType} based on this data:\n\n${JSON.stringify(data, null, 2)}\n\nRequirements: ${requirements}\n\nGenerate high-quality, engaging content.`;
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: `You are an expert content creator specializing in ${contentType}. Create engaging, accurate content.` },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!response.ok) return "";
+    const result = await response.json();
+    return result.choices[0]?.message?.content || "";
+  } catch {
+    return "";
+  }
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -72,7 +108,31 @@ serve(async (req) => {
       .limit(20);
 
     if (recentFeatures && recentFeatures.length > 0) {
-      const changelogContent = `# Changelog - ${now.toISOString().split("T")[0]}
+      // Generate changelog with AI if available
+      let changelogContent = "";
+
+      if (Deno.env.get("OPENAI_API_KEY")) {
+        try {
+          changelogContent = await generateContent(
+            "changelog",
+            {
+              date: now.toISOString().split("T")[0],
+              features: recentFeatures.map((f) => ({
+                name: f.name,
+                description: f.description,
+                key: f.key,
+              })),
+            },
+            "Create an engaging changelog that highlights new features. Use markdown format with clear sections. Make it exciting and user-friendly."
+          );
+        } catch (error) {
+          console.warn("AI changelog generation failed, using template:", error);
+        }
+      }
+
+      // Fallback to template if AI failed or not available
+      if (!changelogContent) {
+        changelogContent = `# Changelog - ${now.toISOString().split("T")[0]}
 
 ## New Features
 
@@ -88,6 +148,7 @@ ${f.description || "New feature available"}
 ---
 
 *Automatically generated from product updates*`;
+      }
 
       contentItems.push({
         content_type: "changelog",
@@ -189,7 +250,28 @@ These benchmarks help you understand typical usage patterns and plan your integr
 
     if (errorRate < 0.01 && totalUsage > 1000) {
       // Low error rate + high usage = success story
-      const caseStudyContent = `# How Settler Processes Millions of Receipts with 99%+ Accuracy
+      let caseStudyContent = "";
+
+      // Generate with AI if available
+      if (Deno.env.get("OPENAI_API_KEY")) {
+        try {
+          caseStudyContent = await generateContent(
+            "case study",
+            {
+              total_requests: totalUsage,
+              success_rate: ((1 - errorRate) * 100).toFixed(2),
+              error_rate: (errorRate * 100).toFixed(2),
+            },
+            "Create an engaging case study highlighting Settler's success metrics. Include use cases, benefits, and a call-to-action. Use markdown format."
+          );
+        } catch (error) {
+          console.warn("AI case study generation failed, using template:", error);
+        }
+      }
+
+      // Fallback to template
+      if (!caseStudyContent) {
+        caseStudyContent = `# How Settler Processes Millions of Receipts with 99%+ Accuracy
 
 ## Overview
 
@@ -218,6 +300,7 @@ Start using Settler's receipt API today with our free tier.
 ---
 
 *Based on anonymized production data*`;
+      }
 
       contentItems.push({
         content_type: "case_study",
