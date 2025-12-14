@@ -42,7 +42,79 @@ const CURRENCY_RATES: Record<string, number> = {
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await authenticateApiKey(request);
+    // Try to authenticate, but allow unauthenticated access for playground
+    let auth;
+    let isAuthenticated = false;
+    
+    try {
+      auth = await authenticateApiKey(request);
+      isAuthenticated = true;
+    } catch (error) {
+      // Unauthenticated access allowed for playground
+    }
+
+    // For unauthenticated users, allow basic conversions (demo mode)
+    if (!isAuthenticated) {
+      const body = await request.json();
+      const { type, from, to, value, formula } = body;
+
+      if (!type || value === undefined) {
+        return NextResponse.json(
+          { error: 'type and value are required' },
+          { status: 400 }
+        );
+      }
+
+      // Perform demo conversion
+      let result: number;
+      let unit: string | undefined;
+
+      if (type === 'unit') {
+        if (!from || !to) {
+          return NextResponse.json(
+            { error: 'from and to are required for unit conversion' },
+            { status: 400 }
+          );
+        }
+        const conversionKey = `${from}_to_${to}`;
+        const category = getUnitCategory(from);
+        const rate = UNIT_CONVERSIONS[category]?.[conversionKey];
+        if (!rate) {
+          return NextResponse.json(
+            { error: `Conversion from ${from} to ${to} is not supported` },
+            { status: 400 }
+          );
+        }
+        result = value * rate;
+        unit = to;
+      } else if (type === 'currency') {
+        if (!from || !to) {
+          return NextResponse.json(
+            { error: 'from and to are required for currency conversion' },
+            { status: 400 }
+          );
+        }
+        const fromRate = CURRENCY_RATES[from.toUpperCase()] || 1.0;
+        const toRate = CURRENCY_RATES[to.toUpperCase()] || 1.0;
+        const usdValue = value / fromRate;
+        result = usdValue * toRate;
+        unit = to.toUpperCase();
+      } else {
+        return NextResponse.json(
+          { error: `Invalid type: ${type}. Must be 'unit' or 'currency' for demo mode` },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json({
+        result,
+        unit,
+        originalValue: value,
+        originalUnit: from,
+        demo: true,
+        message: 'This is a demo response. Sign in for full conversion features.',
+      });
+    }
 
     if (!auth.billingAccountId) {
       return NextResponse.json(
@@ -152,13 +224,15 @@ export async function POST(request: NextRequest) {
       originalUnit: from,
     });
   } catch (error) {
+    // Never return 500 - always return 200 with error info for playground
     console.error('Convert API error:', error);
     return NextResponse.json(
       {
         error: 'Failed to perform conversion',
         message: error instanceof Error ? error.message : 'Unknown error',
+        demo: true,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

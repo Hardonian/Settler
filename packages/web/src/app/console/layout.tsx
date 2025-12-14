@@ -13,6 +13,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -27,6 +28,7 @@ export default async function ConsoleRootLayout({
     route: '/console/layout',
     timestamp: new Date().toISOString(),
   };
+  
   
   // Environment safety check
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -78,8 +80,8 @@ export default async function ConsoleRootLayout({
       console.log('[Console Layout] No authenticated user', logContext);
     }
 
-    // If user is not authenticated, show public overview instead of redirecting
-    // This prevents 500 errors when navigating from main page
+    // If user is not authenticated, show public overview
+    // Note: Playground routes have their own layout that handles unauthenticated access
     if (error || !user) {
       return (
         <>
@@ -94,6 +96,7 @@ export default async function ConsoleRootLayout({
       );
     }
 
+    // Authenticated users get full console access
     return (
       <>
         <Navigation />
