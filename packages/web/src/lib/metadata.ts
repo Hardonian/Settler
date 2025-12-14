@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
+import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 export interface PageMetadata {
   title: string;

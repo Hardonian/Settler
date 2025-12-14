@@ -23,14 +23,14 @@ export interface ImageConfig {
  * Settler brand images configuration
  * All images are located in /public/assets/images/
  */
-export const SETTLER_IMAGES: Record<string, ImageConfig> = {
+const SETTLER_IMAGES_CONFIG = {
   // Favicons
   favicon: {
     path: '/assets/images/favicons/settler-favicon-512.jpg',
     width: 512,
     height: 279,
     alt: 'Settler Favicon',
-    category: 'favicon',
+    category: 'favicon' as const,
     mimeType: 'image/jpeg',
   },
   favicon192: {
@@ -38,7 +38,7 @@ export const SETTLER_IMAGES: Record<string, ImageConfig> = {
     width: 192,
     height: 192,
     alt: 'Settler Icon 192x192',
-    category: 'favicon',
+    category: 'favicon' as const,
     mimeType: 'image/svg+xml',
   },
   favicon512: {
@@ -46,7 +46,7 @@ export const SETTLER_IMAGES: Record<string, ImageConfig> = {
     width: 512,
     height: 512,
     alt: 'Settler Icon 512x512',
-    category: 'favicon',
+    category: 'favicon' as const,
     mimeType: 'image/svg+xml',
   },
 
@@ -56,7 +56,7 @@ export const SETTLER_IMAGES: Record<string, ImageConfig> = {
     width: 2816,
     height: 1536,
     alt: 'Settler - Financial Infrastructure for Developers',
-    category: 'social',
+    category: 'social' as const,
     mimeType: 'image/jpeg',
   },
   twitterCard: {
@@ -64,7 +64,7 @@ export const SETTLER_IMAGES: Record<string, ImageConfig> = {
     width: 1408,
     height: 768,
     alt: 'Settler - Financial Infrastructure for Developers',
-    category: 'social',
+    category: 'social' as const,
     mimeType: 'image/png',
   },
 
@@ -74,7 +74,7 @@ export const SETTLER_IMAGES: Record<string, ImageConfig> = {
     width: 1408,
     height: 768,
     alt: 'Settler Logo',
-    category: 'logo',
+    category: 'logo' as const,
     mimeType: 'image/jpeg',
   },
 
@@ -84,16 +84,22 @@ export const SETTLER_IMAGES: Record<string, ImageConfig> = {
     width: 1408,
     height: 768,
     alt: 'Settler Thumbnail',
-    category: 'thumbnail',
+    category: 'thumbnail' as const,
     mimeType: 'image/jpeg',
   },
 } as const;
+
+export const SETTLER_IMAGES: Record<keyof typeof SETTLER_IMAGES_CONFIG, ImageConfig> = SETTLER_IMAGES_CONFIG;
 
 /**
  * Get image configuration by key
  */
 export function getImageConfig(key: keyof typeof SETTLER_IMAGES): ImageConfig {
-  return SETTLER_IMAGES[key];
+  const config = SETTLER_IMAGES[key];
+  if (!config) {
+    throw new Error(`Image config not found for key: ${String(key)}`);
+  }
+  return config;
 }
 
 /**
@@ -109,7 +115,7 @@ export function getImageUrl(key: keyof typeof SETTLER_IMAGES, baseUrl?: string):
  * Get images by category
  */
 export function getImagesByCategory(category: ImageCategory): ImageConfig[] {
-  return Object.values(SETTLER_IMAGES).filter(img => img.category === category);
+  return Object.values(SETTLER_IMAGES).filter((img): img is ImageConfig => img !== undefined && img.category === category);
 }
 
 /**
