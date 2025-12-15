@@ -54,7 +54,7 @@ export function MobileMenu({ open, onClose, items }: MobileMenuProps) {
           className="w-full"
           onClick={onClose}
         >
-          <Link href="/playground" aria-label="Get started with Settler">
+          <Link href="/console/playground" aria-label="Get started with Settler">
             Get Started
           </Link>
         </Button>

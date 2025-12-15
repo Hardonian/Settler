@@ -190,11 +190,11 @@ if (flag.value) { /* ... */ }`;
                   <Button 
                     size="lg" 
                     asChild 
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-7 text-xl font-bold shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:scale-110 animate-pulse hover:animate-none"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-7 text-xl font-bold shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:scale-105"
                     onClick={() => trackCTA('Get API Key', { location: 'hero' })}
                   >
                     <Link href="/console/playground" className="flex items-center gap-2">
-                      <span>Try Playground — No Signup Required</span>
+                      <span>Try Playground</span>
                       <ArrowRight className="w-5 h-5" />
                     </Link>
                   </Button>
@@ -268,9 +268,13 @@ if (flag.value) { /* ... */ }`;
                       </div>
                       <h3 className="text-2xl font-bold mb-3 text-slate-900 dark:text-white">{feature.title}</h3>
                       <p className="text-slate-600 dark:text-slate-300 text-lg mb-6 flex-grow">{feature.description}</p>
-                      <div className="flex items-center text-blue-600 dark:text-blue-400 font-semibold group cursor-pointer">
+                      <Link 
+                        href="/docs" 
+                        className="flex items-center text-blue-600 dark:text-blue-400 font-semibold group transition-colors hover:text-blue-700 dark:hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded"
+                        aria-label={`Learn more about ${feature.title}`}
+                      >
                         Learn more <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                      </div>
+                      </Link>
                     </SpotlightCard>
                   </BentoGridItem>
                 );
@@ -412,7 +416,7 @@ if (flag.value) { /* ... */ }`;
             <EnhancedConversionCTA
               title="Ready to Transform Your Financial Operations?"
               description="Join thousands of companies already using Settler. Start your free trial today—no credit card required, full access to all features."
-              primaryAction="Try Playground — No Signup Required"
+              primaryAction="Try Playground"
               primaryLink="/console/playground"
               secondaryAction="Start Free Trial"
               secondaryLink="/signup"
