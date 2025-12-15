@@ -134,7 +134,7 @@ export async function executeReconciliationWithFailSafe(
 async function getPartialResults(jobId: string): Promise<ReconciliationResult | null> {
   try {
     // Try to get any partial results from the database
-    const partialData = await prisma.reconciliationJob.findUnique({
+    const partialData = await prisma.reconJob.findUnique({
       where: { id: jobId },
       select: {
         matchedCount: true,
