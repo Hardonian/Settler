@@ -8,6 +8,7 @@ import { RequestResponseViewer, type RequestResponseViewerProps } from '@/compon
 import { UsageLimit } from '@/components/console/FeatureGate';
 import { RefreshCw, Play, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
+import { ConfidenceIndicator, calculateConfidenceLevel } from '@/components/reconciliation/ConfidenceIndicator';
 
 const defaultConfig = JSON.stringify({
   name: "Monthly Reconciliation",
@@ -380,7 +381,20 @@ export default function ReconcilePlayground() {
                             </div>
                             <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800 text-center">
                                 <div className="text-sm text-slate-600 dark:text-slate-400 mb-2">Match Accuracy</div>
-                                <div className="font-bold text-4xl text-blue-700 dark:text-blue-400">{result.accuracy}</div>
+                                <div className="font-bold text-4xl text-blue-700 dark:text-blue-400 mb-4">{result.accuracy}</div>
+                                {/* Confidence Indicator */}
+                                <div className="flex justify-center">
+                                    <ConfidenceIndicator
+                                        level={calculateConfidenceLevel(
+                                            result.matched,
+                                            result.matched + result.unmatched + result.conflicts,
+                                            result.unmatched,
+                                            result.conflicts
+                                        )}
+                                        matchCount={result.matched}
+                                        totalCount={result.matched + result.unmatched + result.conflicts}
+                                    />
+                                </div>
                             </div>
                             
                             {/* Next Steps */}

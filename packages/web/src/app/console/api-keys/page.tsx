@@ -21,6 +21,7 @@ import {
 import { EmptyState } from '@/components/ui/empty-state';
 import { Key, Plus, Trash2, Copy, Check, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { MilestoneCelebration, MilestoneType } from '@/components/milestones/MilestoneCelebration';
 
 interface ApiKey {
   id: string;
@@ -40,6 +41,7 @@ export default function ApiKeysPage() {
   const [copied, setCopied] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [keyName, setKeyName] = useState('');
+  const [milestone, setMilestone] = useState<MilestoneType | null>(null);
 
   useEffect(() => {
     fetchKeys();
@@ -71,6 +73,11 @@ export default function ApiKeysPage() {
         setNewKey({ key: data.key, id: data.id });
         setKeyName('');
         await fetchKeys();
+        
+        // Check if this is the first API key (milestone)
+        if (keys.length === 0) {
+          setMilestone('first_api_key');
+        }
       }
     } catch (error) {
       console.error('Failed to create API key:', error);
@@ -151,6 +158,14 @@ export default function ApiKeysPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Milestone Celebration */}
+      {milestone && (
+        <MilestoneCelebration
+          milestone={milestone}
+          onDismiss={() => setMilestone(null)}
+        />
+      )}
 
       {/* New Key Display */}
       {newKey && (
