@@ -133,24 +133,30 @@ export async function executeReconciliationWithFailSafe(
  */
 async function getPartialResults(jobId: string): Promise<ReconciliationResult | null> {
   try {
-    // Try to get any partial results from the database
-    const partialData = await prisma.reconJob.findUnique({
-      where: { id: jobId },
+    // Try to get any partial results from ReconResult (where these fields actually exist)
+    const latestResult = await prisma.reconResult.findFirst({
+      where: { reconJobId: jobId },
+      orderBy: { createdAt: 'desc' },
       select: {
         matchedCount: true,
-        unmatchedCount: true,
-        conflictsCount: true,
-        accuracy: true,
+        unmatchedSourceCount: true,
+        unmatchedTargetCount: true,
+        conflictCount: true,
+        summary: true,
       },
     });
 
-    if (partialData) {
+    if (latestResult) {
+      // Calculate accuracy from summary metadata if available
+      const summary = latestResult.summary as Record<string, unknown> | null;
+      const accuracy = summary?.accuracy ? Number(summary.accuracy) : 0;
+      
       return {
-        matched: partialData.matchedCount || 0,
-        unmatched: partialData.unmatchedCount || 0,
-        conflicts: partialData.conflictsCount || 0,
-        total: (partialData.matchedCount || 0) + (partialData.unmatchedCount || 0) + (partialData.conflictsCount || 0),
-        accuracy: partialData.accuracy || 0,
+        matched: latestResult.matchedCount || 0,
+        unmatched: (latestResult.unmatchedSourceCount || 0) + (latestResult.unmatchedTargetCount || 0),
+        conflicts: latestResult.conflictCount || 0,
+        total: (latestResult.matchedCount || 0) + (latestResult.unmatchedSourceCount || 0) + (latestResult.unmatchedTargetCount || 0) + (latestResult.conflictCount || 0),
+        accuracy,
       };
     }
 
@@ -183,15 +189,20 @@ export async function validateReconciliationSafety(
       warnings.push('Another reconciliation is already running for this job.');
     }
 
-    // Check data freshness
-    const lastRun = await prisma.reconJob.findFirst({
+    // Check data freshness - get from ReconResult since completedAt is there
+    const lastRun = await prisma.reconResult.findFirst({
       where: {
-        id: { not: jobId },
-        sourceAdapter: job.sourceAdapter,
-        targetAdapter: job.targetAdapter,
+        reconJob: {
+          id: { not: jobId },
+          sourceAdapter: job.sourceAdapter,
+          targetAdapter: job.targetAdapter,
+        },
         status: 'completed',
       },
       orderBy: { completedAt: 'desc' },
+      select: {
+        completedAt: true,
+      },
       take: 1,
     });
 

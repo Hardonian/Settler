@@ -111,7 +111,8 @@ export async function analyzeUsageInsights(
 
     if (onboardingSteps.length > 0) {
       const allSteps = ['welcome', 'create_api_key', 'try_playground', 'first_reconciliation', 'invite_team', 'complete'];
-      const completedSteps = onboardingSteps.map((s: { eventType?: string }) => s.eventType).filter(Boolean) as string[];
+      // AuditLog uses 'action' field, not 'eventType'
+      const completedSteps = onboardingSteps.map((s) => s.action).filter(Boolean) as string[];
       const incompleteSteps = allSteps.filter((step) => !completedSteps.includes(step));
 
       if (incompleteSteps.length > 0) {
@@ -125,22 +126,26 @@ export async function analyzeUsageInsights(
       }
     }
 
-    // Analyze success patterns
-    const reconciliations = await prisma.reconJob.findMany({
+    // Analyze success patterns - get from ReconResult instead
+    const reconciliationResults = await prisma.reconResult.findMany({
       where: {
-        userId,
-        createdAt: { gte: startDate },
+        reconJob: {
+          userId,
+          createdAt: { gte: startDate },
+        },
         status: 'completed',
       },
       select: {
-        accuracy: true,
-        matchedCount: true,
-        unmatchedCount: true,
+        summary: true,
       },
     });
 
-    if (reconciliations.length > 0) {
-      const highAccuracyCount = reconciliations.filter((r: { accuracy?: number | null }) => (r.accuracy || 0) >= 95).length;
+    if (reconciliationResults.length > 0) {
+      const highAccuracyCount = reconciliationResults.filter((r) => {
+        const summary = r.summary as Record<string, unknown> | null;
+        const accuracy = summary?.accuracy ? Number(summary.accuracy) : 0;
+        return accuracy >= 95;
+      }).length;
 
       if (highAccuracyCount / reconciliations.length > 0.8) {
         insights.push({
