@@ -1,6 +1,6 @@
 {
   "buildCommand": "cd packages/web && npm run build:vercel",
-  "installCommand": "npm ci --prefer-offline --no-audit",
+  "installCommand": "npm ci --prefer-offline --no-audit --omit=optional",
   "framework": "nextjs",
   "regions": ["iad1", "sfo1", "lhr1", "syd1"],
   "build": {
