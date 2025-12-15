@@ -72,15 +72,17 @@ export default function Enterprise() {
     setSubmitStatus('idle');
     
     try {
-      // TODO: Replace with actual API endpoint when available
-      // const response = await fetch('/api/enterprise/contact', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData),
-      // });
+      const response = await fetch('/api/enterprise/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
+      
+      const data = await response.json();
       
       setSubmitStatus('success');
       setFormData({ name: '', email: '', company: '', message: '' });
@@ -142,6 +144,16 @@ export default function Enterprise() {
             >
               <Link href="/pricing" aria-label="View pricing plans">
                 View Pricing
+              </Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              asChild
+              className="px-8 py-6 text-lg border-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all transform hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              <Link href="/enterprise/dashboard" aria-label="Enterprise dashboard">
+                Enterprise Dashboard
               </Link>
             </Button>
           </div>
