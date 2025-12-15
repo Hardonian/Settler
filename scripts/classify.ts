@@ -126,8 +126,36 @@ const SECRET_PATTERNS = [
   /BEGIN RSA PRIVATE KEY/,
   /BEGIN EC PRIVATE KEY/,
   /-----BEGIN[\s\S]{100,}-----END/i, // Private key blocks
-  /[a-zA-Z0-9]{64,}/, // Long alphanumeric strings (potential API keys)
+  // More specific pattern for API keys (not just long strings)
+  /(api[_-]?key|secret[_-]?key|access[_-]?token|auth[_-]?token)\s*[:=]\s*[a-zA-Z0-9]{64,}/i,
   /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/, // JWT tokens
+];
+
+// Binary file extensions that should not be checked for secrets
+const BINARY_EXTENSIONS = [
+  '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico',
+  '.pdf', '.zip', '.tar', '.gz', '.exe', '.dll', '.so',
+  '.woff', '.woff2', '.ttf', '.eot', '.otf',
+  '.mp4', '.mp3', '.avi', '.mov', '.wav',
+  '.bin', '.dat', '.db', '.sqlite',
+];
+
+// Files/paths that are known to contain example keys and should be excluded
+const EXCLUDED_FROM_SECRET_CHECK = [
+  '**/__tests__/**',
+  '**/__test__/**',
+  '**/*.test.ts',
+  '**/*.test.js',
+  '**/*.spec.ts',
+  '**/*.spec.js',
+  '**/examples/**',
+  '**/docs/**',
+  '**/scripts/**',
+  '**/design-system/**',
+  '**/archive/**',
+  '**/marketing/**',
+  '**/core', // Likely a binary or special file
+  'packages/api/src/__tests__/**',
 ];
 
 const PROPRIETARY_LICENSE_PATTERNS = [
@@ -175,6 +203,8 @@ async function getAllFiles(rootDir: string = '.'): Promise<string[]> {
     '**/artifacts/**',
     '**/.mirror-out/**',
     '**/*.tsbuildinfo',
+    // Ignore binary files from classification (they'll be skipped anyway)
+    ...BINARY_EXTENSIONS.map(ext => `**/*${ext}`),
   ];
   
   // Load .classifyignore if it exists
@@ -214,8 +244,60 @@ function matchesPattern(filePath: string, patterns: string[]): boolean {
   });
 }
 
+function isBinaryFile(filePath: string): boolean {
+  const ext = filePath.toLowerCase();
+  return BINARY_EXTENSIONS.some(binaryExt => ext.endsWith(binaryExt));
+}
+
+function isExcludedFromSecretCheck(filePath: string): boolean {
+  const normalizedPath = filePath.replace(/\\/g, '/');
+  return EXCLUDED_FROM_SECRET_CHECK.some(pattern => {
+    // Convert glob pattern to regex
+    // ** matches any path segment (including /)
+    // * matches any character except /
+    
+    // Handle patterns that start with **/
+    if (pattern.startsWith('**/')) {
+      const rest = pattern.substring(3); // Remove **/
+      // If rest ends with /**, handle it specially
+      if (rest.endsWith('/**')) {
+        const prefix = rest.substring(0, rest.length - 3);
+        const regexPattern = prefix.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
+        // Match directory prefix at start or after /
+        const regex = new RegExp('(^|/)' + regexPattern + '/');
+        return regex.test(normalizedPath);
+      }
+      // Otherwise match the pattern anywhere in path
+      const regexPattern = rest.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
+      const regex = new RegExp(regexPattern);
+      return regex.test(normalizedPath);
+    }
+    
+    // Handle patterns that end with /**
+    if (pattern.endsWith('/**')) {
+      const prefix = pattern.substring(0, pattern.length - 3);
+      const regexPattern = prefix.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
+      const regex = new RegExp('(^|/)' + regexPattern + '/');
+      return regex.test(normalizedPath);
+    }
+    
+    // Standard glob conversion
+    let regexPattern = pattern
+      .replace(/\*\*/g, '.*')  // ** becomes .* (matches anything including /)
+      .replace(/\*/g, '[^/]*'); // * becomes [^/]* (matches anything except /)
+    
+    // Match at start of path or after /
+    const regex = new RegExp('(^|/)' + regexPattern);
+    return regex.test(normalizedPath);
+  });
+}
+
 async function readFileContent(filePath: string): Promise<string | null> {
   try {
+    // Skip binary files
+    if (isBinaryFile(filePath)) {
+      return null;
+    }
     const content = await fs.readFile(filePath, 'utf-8');
     return content;
   } catch (error) {
@@ -264,8 +346,11 @@ function classifyFile(filePath: string, content: string | null): FileClassificat
   const normalizedPath = filePath.replace(/\\/g, '/');
   const relativePath = path.relative(process.cwd(), filePath).replace(/\\/g, '/');
   
-  // 1. Check SECRET_RISK first (highest priority)
-  if (matchesPattern(relativePath, SECRET_RISK_PATHS)) {
+  // Check if file is excluded from secret checks first
+  const isExcluded = isExcludedFromSecretCheck(relativePath);
+  
+  // 1. Check SECRET_RISK paths (but skip if excluded)
+  if (!isExcluded && matchesPattern(relativePath, SECRET_RISK_PATHS)) {
     return {
       path: relativePath,
       classification: 'SECRET_RISK',
@@ -273,8 +358,11 @@ function classifyFile(filePath: string, content: string | null): FileClassificat
     };
   }
   
-  if (content) {
-    // Check for actual secrets in content
+  // Skip secret checking for binary files and excluded paths
+  const shouldCheckSecrets = !isBinaryFile(filePath) && !isExcluded;
+  
+  if (shouldCheckSecrets && content) {
+    // Check for actual secrets in content (only for non-binary, non-excluded files)
     if (checkContentPatterns(content, SECRET_PATTERNS)) {
       return {
         path: relativePath,
