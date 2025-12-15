@@ -162,8 +162,8 @@ const OSS_IMPORT_PATTERNS = [
 async function getAllFiles(rootDir: string = '.'): Promise<string[]> {
   const files: string[] = [];
   
-  // Exclude node_modules, .git, .next, dist, build, coverage
-  const ignorePatterns = [
+  // Default ignore patterns
+  let ignorePatterns = [
     '**/node_modules/**',
     '**/.git/**',
     '**/.next/**',
@@ -173,8 +173,29 @@ async function getAllFiles(rootDir: string = '.'): Promise<string[]> {
     '**/.turbo/**',
     '**/.vercel/**',
     '**/artifacts/**',
+    '**/.mirror-out/**',
     '**/*.tsbuildinfo',
   ];
+  
+  // Load .classifyignore if it exists
+  try {
+    const ignoreFile = path.join(rootDir, '.classifyignore');
+    const ignoreContent = await fs.readFile(ignoreFile, 'utf-8');
+    const customIgnores = ignoreContent
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line && !line.startsWith('#'))
+      .map(line => {
+        // Convert to glob pattern
+        if (line.endsWith('/')) {
+          return `${line}**`;
+        }
+        return line.startsWith('/') ? line.substring(1) : line;
+      });
+    ignorePatterns = [...ignorePatterns, ...customIgnores];
+  } catch (error) {
+    // .classifyignore doesn't exist, use defaults only
+  }
 
   const allFiles = await glob('**/*', {
     cwd: rootDir,

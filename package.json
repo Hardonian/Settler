@@ -62,6 +62,7 @@
     "classify": "tsx scripts/classify.ts",
     "classify:json": "tsx scripts/classify.ts --json",
     "classify:strict": "tsx scripts/classify.ts --strict",
+    "classify:fix-suggestions": "tsx scripts/classify-fix-suggestions.ts",
     "mirror:dryrun": "tsx scripts/mirror-dryrun.ts",
     "mirror:verify": "tsx scripts/mirror-verify.ts",
     "mirror:publish": "tsx scripts/mirror-publish.ts",

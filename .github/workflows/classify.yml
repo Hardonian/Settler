@@ -48,6 +48,31 @@ jobs:
             SECRET_RISK=$(node -e "const fs=require('fs'); const d=JSON.parse(fs.readFileSync('artifacts/classification-report.json')); console.log(d.summary.secret_risk);")
             if [ "$SECRET_RISK" -gt 0 ]; then
               echo "❌ CRITICAL: Found $SECRET_RISK SECRET_RISK files"
+              echo "::error::SECRET_RISK files detected. Review classification report."
               exit 1
             fi
           fi
+      
+      - name: Generate fix suggestions
+        if: failure()
+        run: |
+          npm run classify:fix-suggestions || echo "⚠️  Could not generate fix suggestions"
+        continue-on-error: true
+      
+      - name: Comment PR with fix suggestions
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            try {
+              const suggestions = execSync('npm run classify:fix-suggestions', { encoding: 'utf-8' });
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 🔧 Fix Suggestions\n\n\`\`\`\n${suggestions}\n\`\`\``
+              });
+            } catch (error) {
+              // Ignore errors
+            }

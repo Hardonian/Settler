@@ -1,0 +1,69 @@
+name: Pre-Commit Classification Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pre-commit-classify:
+    name: Quick Classification Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          files: |
+            **/*.ts
+            **/*.tsx
+            **/*.js
+            **/*.jsx
+            **/*.md
+            **/*.json
+            **/*.yaml
+            **/*.yml
+      
+      - run: npm ci
+      
+      - name: Quick classification check (changed files only)
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "🔍 Checking changed files for classification violations..."
+          
+          # Check for obvious violations in changed files
+          CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
+          
+          VIOLATIONS=0
+          
+          for file in $CHANGED_FILES; do
+            # Check for secret patterns
+            if grep -qiE "(sk_live_|sk_test_|BEGIN PRIVATE KEY|eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+)" "$file" 2>/dev/null; then
+              echo "❌ SECRET_RISK detected in: $file"
+              VIOLATIONS=$((VIOLATIONS + 1))
+            fi
+            
+            # Check for business keywords in OSS paths
+            if echo "$file" | grep -qE "(packages/sdk|packages/protocol|docs/public|examples)" && \
+               grep -qiE "(investor|pitch|valuation|seed round|confidential|NDA)" "$file" 2>/dev/null; then
+              echo "⚠️  Business keywords in OSS path: $file"
+              VIOLATIONS=$((VIOLATIONS + 1))
+            fi
+          done
+          
+          if [ $VIOLATIONS -gt 0 ]; then
+            echo "❌ Found $VIOLATIONS potential violations"
+            echo "Run 'pnpm classify:strict' for full analysis"
+            exit 1
+          else
+            echo "✅ No obvious violations in changed files"
+          fi
+        continue-on-error: true

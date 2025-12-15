@@ -71,22 +71,30 @@ jobs:
                 if (report.violations.length > 0) {
                   comment += '### ⚠️ Violations Detected\n\n';
                   report.violations.forEach(v => {
-                    comment += `- **${v.severity.toUpperCase()}**: ${v.file} - ${v.message}\n`;
+                    comment += `- **${v.severity.toUpperCase()}**: \`${v.file}\` - ${v.message}\n`;
                   });
-                  comment += '\n**⚠️ This PR cannot be merged until violations are resolved.**\n';
+                  comment += '\n**⚠️ This PR cannot be merged until violations are resolved.**\n\n';
+                  comment += '💡 **Tip**: Run `pnpm classify:fix-suggestions` for fix suggestions.\n';
                 } else {
                   comment += '✅ **No violations detected. Safe to merge!**\n';
                 }
+                
+                comment += '\n---\n';
+                comment += '📊 [View full classification report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n';
               } else {
                 comment += '⚠️ Classification report not found.\n';
+                comment += 'This may indicate the classification check failed.\n';
               }
             } catch (error) {
               comment += `❌ Error reading classification report: ${error.message}\n`;
             }
             
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+            // Only comment if this is a PR
+            if (context.eventName === 'pull_request') {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
