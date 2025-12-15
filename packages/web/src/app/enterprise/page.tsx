@@ -82,7 +82,7 @@ export default function Enterprise() {
         throw new Error('Failed to submit form');
       }
       
-      const data = await response.json();
+      await response.json();
       
       setSubmitStatus('success');
       setFormData({ name: '', email: '', company: '', message: '' });

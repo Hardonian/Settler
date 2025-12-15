@@ -46,13 +46,15 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
     // Find most popular service
     if (serviceUsage.length > 0) {
       const topService = serviceUsage[0];
-      insights.push({
-        type: 'feature_popularity',
-        insight: `${topService.service} is the most used service (${Number(topService.count)} calls in last 7 days)`,
-        recommendation: `Highlight ${topService.service} in homepage messaging and quick-start guides`,
-        confidence: 0.9,
-        lastUpdated: new Date(),
-      });
+      if (topService) {
+        insights.push({
+          type: 'feature_popularity',
+          insight: `${topService.service} is the most used service (${Number(topService.count)} calls in last 7 days)`,
+          recommendation: `Highlight ${topService.service} in homepage messaging and quick-start guides`,
+          confidence: 0.9,
+          lastUpdated: new Date(),
+        });
+      }
     }
 
     // Analyze error patterns

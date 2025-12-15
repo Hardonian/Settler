@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CodeBlock } from '@/components/ui/code-block';
 import Link from 'next/link';
-import { CheckCircle2, Package, Code2, Zap, Shield, ArrowRight } from 'lucide-react';
+import { Package, Code2, Zap, Shield } from 'lucide-react';
 
 export default function GoSDKPage() {
   const features = [

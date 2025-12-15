@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Button } from './button';
 import { cn } from '@/lib/utils';

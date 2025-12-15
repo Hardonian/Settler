@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { CodeBlock } from '@/components/ui/code-block';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
-import { CheckCircle2, Package, Code2, Zap, Shield, ArrowRight } from 'lucide-react';
+import { Package, Code2, Zap, Shield, ArrowRight } from 'lucide-react';
 
 export default function NodeJSSDKPage() {
   const features = [
