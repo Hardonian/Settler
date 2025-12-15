@@ -43,7 +43,7 @@ When you open a PR, these checks run **automatically**:
 3. ✅ **Smoke tests run** against production
 4. ✅ **Classification verified** (no leaks)
 
-## One-Time Setup (5 Minutes)
+## One-Time Setup (Optional - 5 Minutes)
 
 ### Step 1: Run Setup Script
 
@@ -65,9 +65,9 @@ git push origin pre-open-core-split
 git push origin backup/pre-open-core-split
 ```
 
-### Step 3: Configure Branch Protection (After First PR)
+### Step 3: Configure Branch Protection (Optional - After First PR)
 
-**After your first PR**, GitHub will show available checks. Then:
+**This is OPTIONAL but recommended.** After your first PR, GitHub will show available checks. Then:
 
 1. Go to: **GitHub → Settings → Branches**
 2. Click **"Add rule"** for `main`
@@ -80,7 +80,7 @@ git push origin backup/pre-open-core-split
    - ✅ `smoke / smoke`
 5. Click **"Save"**
 
-**That's it!** Now every merge is automatically gated.
+**Note**: This is **optional**. Checks will still run automatically, but merge won't be blocked if you skip this step.
 
 ## What You'll See
 
