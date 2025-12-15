@@ -213,5 +213,6 @@ export function AIInsightsPanel() {
         </div>
       </CardContent>
     </Card>
+    </ConsoleErrorBoundary>
   );
 }

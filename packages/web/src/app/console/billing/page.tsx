@@ -399,6 +399,7 @@ export default function BillingPage() {
                   </Button>
                 )}
               </div>
+            </div>
             </CardContent>
         </Card>
 

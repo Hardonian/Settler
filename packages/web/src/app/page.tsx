@@ -19,10 +19,6 @@ import { trackPageView } from "@/lib/analytics/conversion";
 
 // Dynamic imports for marketing components - using index file for better webpack resolution
 // This provides code splitting and lazy loading benefits while avoiding webpack alias issues
-const InvestorMetrics = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InvestorMetrics })), { 
-  ssr: true,
-  loading: () => <div className="py-20" /> // Placeholder while loading
-});
 const LiveMetricsCounter = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.LiveMetricsCounter })), { 
   ssr: false,
   loading: () => <div className="py-12" />
@@ -38,10 +34,6 @@ const SocialProofCounter = dynamic(() => import("@/components/marketing").then(m
 const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing").then(mod => ({ default: mod.UrgencyBanner })), { 
   ssr: true,
   loading: () => null // No placeholder for banner
-});
-const InvestorPitch = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InvestorPitch })), { 
-  ssr: true,
-  loading: () => <div className="py-20" />
 });
 const TestimonialCarousel = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.TestimonialCarousel })), { 
   ssr: true,
@@ -171,7 +163,7 @@ if (flag.value) { /* ... */ }`;
                 <Badge 
                   className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30"
                 >
-                  Trusted by engineering teams to automate reconciliation
+                  Trusted by small businesses to automate financial reconciliation
                 </Badge>
                 
                 <TextRevealHeading
@@ -185,7 +177,7 @@ if (flag.value) { /* ... */ }`;
                 />
                 
                 <TextReveal
-                  text="Match transactions between Stripe, Shopify, QuickBooks, and 50+ platforms automatically. Parse receipts, convert currencies, and manage feature flags—all through simple APIs."
+                  text="Automatically match transactions between Stripe, Shopify, QuickBooks, and 50+ platforms. Save hours of manual work with reliable, automatic reconciliation."
                   className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
                   delay={0.2}
                   staggerDelay={0.01}
@@ -197,10 +189,10 @@ if (flag.value) { /* ... */ }`;
                     size="lg" 
                     asChild 
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-7 text-xl font-bold shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:scale-105"
-                    onClick={() => trackCTA('Get API Key', { location: 'hero' })}
+                    onClick={() => trackCTA('Start Free Trial', { location: 'hero' })}
                   >
-                    <Link href="/console/playground" className="flex items-center gap-2">
-                      <span>Try Playground</span>
+                    <Link href="/signup" className="flex items-center gap-2">
+                      <span>Start Free Trial - No Credit Card</span>
                       <ArrowRight className="w-5 h-5" />
                     </Link>
                   </Button>
@@ -259,7 +251,7 @@ if (flag.value) { /* ... */ }`;
                 Core Primitives
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                Everything you need to build reliable financial software, exposed as simple, composable APIs.
+                Everything you need to automate financial reconciliation, without the complexity.
               </p>
             </div>
             
@@ -297,7 +289,7 @@ if (flag.value) { /* ... */ }`;
                  Developer Experience First
                </h2>
                <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
-                 We've obsessed over every detail of our SDKs. Fully typed, extensive documentation, and zero-config defaults mean you can ship features faster.
+                 Simple APIs that work out of the box. No complex configuration, no learning curve—just reliable reconciliation.
                </p>
                <div className="space-y-4">
                  {[
@@ -357,9 +349,6 @@ if (flag.value) { /* ... */ }`;
         {/* Infographics Section - Workflow Diagram (moved after Architecture section per audit requirements) */}
         <InfographicSection />
 
-        {/* Investor Metrics */}
-        <InvestorMetrics />
-
         {/* Live Metrics Counter */}
         <LiveMetricsCounter />
 
@@ -412,9 +401,6 @@ if (flag.value) { /* ... */ }`;
 
         {/* Testimonial Carousel */}
         <TestimonialCarousel />
-
-        {/* Investor Pitch Section */}
-        <InvestorPitch />
 
         {/* Enhanced Conversion CTA */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">

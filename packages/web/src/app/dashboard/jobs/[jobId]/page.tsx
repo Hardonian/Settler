@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import { logger } from "@/lib/logging/logger";
 import { JobCompletionBanner } from "@/components/jobs/JobCompletionBanner";
+import { ConfidenceIndicator, calculateConfidenceLevel } from "@/components/reconciliation/ConfidenceIndicator";
 
 interface JobDetail {
   id: string;
@@ -212,14 +213,30 @@ export default function JobDetailPage() {
 
         {/* Job Completion Banner */}
         {job.status === "completed" && job.completedAt && (
-          <JobCompletionBanner
-            jobName={job.name}
-            matchedCount={job.matchedCount}
-            unmatchedCount={job.unmatchedCount}
-            accuracy={job.accuracy}
-            completedAt={job.completedAt}
-            jobId={job.id}
-          />
+          <>
+            <JobCompletionBanner
+              jobName={job.name}
+              matchedCount={job.matchedCount}
+              unmatchedCount={job.unmatchedCount}
+              accuracy={job.accuracy}
+              completedAt={job.completedAt}
+              jobId={job.id}
+            />
+            {/* Confidence Indicator */}
+            <div className="mb-6">
+              <ConfidenceIndicator
+                level={calculateConfidenceLevel(
+                  job.matchedCount,
+                  job.summary.total,
+                  job.unmatchedCount,
+                  job.conflictsCount
+                )}
+                matchCount={job.matchedCount}
+                totalCount={job.summary.total}
+                showDetails={true}
+              />
+            </div>
+          </>
         )}
 
         {/* Summary Stats */}
