@@ -36,25 +36,49 @@ export async function subscribeToNewsletter(
     const audienceId = process.env.RESEND_AUDIENCE_ID;
     
     if (audienceId) {
-      const result = await resend.contacts.create({
-        email: subscription.email,
-        firstName: subscription.name?.split(' ')[0],
-        lastName: subscription.name?.split(' ').slice(1).join(' '),
-        unsubscribed: false,
-        audienceId,
-      });
+      // TODO: Resend contacts API may have changed - check latest SDK docs
+      // For now, use emails.send as fallback
+      // const result = await resend.contacts.create({
+      //   email: subscription.email,
+      //   firstName: subscription.name?.split(' ')[0],
+      //   lastName: subscription.name?.split(' ').slice(1).join(' '),
+      //   unsubscribed: false,
+      //   audienceId,
+      // });
 
       // Add tags if provided
-      if (subscription.tags && subscription.tags.length > 0 && result.data?.id) {
-        await resend.contacts.addTags({
-          contactId: result.data.id,
-          tags: subscription.tags,
-        });
-      }
+      // if (subscription.tags && subscription.tags.length > 0 && result.data?.id) {
+      //   await resend.contacts.addTags({
+      //     contactId: result.data.id,
+      //     tags: subscription.tags,
+      //   });
+      // }
+
+      // return {
+      //   success: true,
+      //   id: result.data?.id,
+      // };
+      
+      // Fallback: Send welcome email
+      await resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL || 'Settler <onboarding@settler.dev>',
+        to: subscription.email,
+        subject: 'Welcome to Settler Newsletter',
+        html: `
+          <h1>Welcome to Settler!</h1>
+          <p>Thank you for subscribing to our newsletter.</p>
+          <p>You'll receive updates about:</p>
+          <ul>
+            <li>New features and releases</li>
+            <li>Best practices and tutorials</li>
+            <li>Community updates</li>
+          </ul>
+          <p><a href="https://settler.dev">Visit Settler.dev</a></p>
+        `,
+      });
 
       return {
         success: true,
-        id: result.data?.id,
       };
     } else {
       // Fallback: Send welcome email

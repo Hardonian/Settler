@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 const conversionEventSchema = z.object({
   event: z.string(),
-  properties: z.record(z.any()).optional(),
+  properties: z.record(z.string(), z.any()).optional(),
   userId: z.string().optional(),
   sessionId: z.string().optional(),
   timestamp: z.string().optional(),

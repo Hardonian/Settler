@@ -4,8 +4,9 @@
  */
 
 import { NextRequest } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/next-auth-config';
+// TODO: Install next-auth package or use alternative auth
+// import { getServerSession } from 'next-auth';
+// import { authOptions } from '@/lib/auth/next-auth-config';
 
 export interface AuthResult {
   authorized: boolean;
@@ -28,24 +29,25 @@ export async function checkInvestorAuth(request: NextRequest): Promise<AuthResul
   }
 
   // Option 2: Check for authenticated session with admin role
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (session?.user) {
-      // Check if user has investor/admin role
-      // TODO: Implement role checking based on your auth system
-      const userRoles = (session.user as any).roles || [];
-      
-      if (userRoles.includes('admin') || userRoles.includes('investor')) {
-        return {
-          authorized: true,
-          userId: session.user.id || session.user.email,
-        };
-      }
-    }
-  } catch (error) {
-    // Session check failed, continue to API key check
-  }
+  // TODO: Re-enable when next-auth is installed
+  // try {
+  //   const session = await getServerSession(authOptions);
+  //   
+  //   if (session?.user) {
+  //     // Check if user has investor/admin role
+  //     // TODO: Implement role checking based on your auth system
+  //     const userRoles = (session.user as any).roles || [];
+  //     
+  //     if (userRoles.includes('admin') || userRoles.includes('investor')) {
+  //       return {
+  //         authorized: true,
+  //         userId: session.user.id || session.user.email,
+  //       };
+  //     }
+  //   }
+  // } catch (error) {
+  //   // Session check failed, continue to API key check
+  // }
 
   return {
     authorized: false,

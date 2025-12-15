@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 const chatbotEventSchema = z.object({
   type: z.enum(['chat_opened', 'chat_closed', 'message_sent', 'message_received', 'file_uploaded', 'error']),
-  data: z.record(z.any()).optional(),
+  data: z.record(z.string(), z.any()).optional(),
   timestamp: z.string().optional(),
 });
 

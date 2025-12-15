@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 const sdkEventSchema = z.object({
   type: z.enum(['download', 'playground', 'docs_view', 'github_star', 'stats_view']),
-  data: z.record(z.any()),
+  data: z.record(z.string(), z.any()),
 });
 
 export async function POST(request: NextRequest) {

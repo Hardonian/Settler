@@ -27,8 +27,6 @@ export function generateEnhancedMetadata({
   ogImage,
   canonical,
   noindex = false,
-  structuredData,
-  breadcrumbs,
 }: EnhancedMetadataOptions): Metadata {
   const baseMetadata = baseGenerateMetadata({
     title,

@@ -11,6 +11,28 @@ export async function GET() {
     // TODO: Fetch from database and aggregate
     // For now, return mock data that matches the expected structure
     
+    const downloadStats = {
+      total: 45000,
+      weekly: 1250,
+      monthly: 5200,
+      byPackage: {
+        '@settler/sdk': 35000,
+        '@settler/react-settler': 10000,
+      },
+    };
+    
+    const playgroundStats = {
+      totalSessions: 3200,
+      activeUsers: 850,
+      usageByFeature: {
+        'reconciliation': 1200,
+        'receipts': 800,
+        'feature-flags': 600,
+        'conversion': 400,
+        'cli': 200,
+      },
+    };
+    
     const stats = {
       downloads: downloadStats,
       playground: {

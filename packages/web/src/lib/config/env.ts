@@ -36,10 +36,10 @@ const envSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
   // Feature Flags
-  ENABLE_CHATBOT: z.string().transform((val) => val === 'true').default('true'),
-  ENABLE_ANALYTICS: z.string().transform((val) => val === 'true').default('true'),
-  ENABLE_NEWSLETTER: z.string().transform((val) => val === 'true').default('true'),
-  ENABLE_IMAGE_OPTIMIZATION: z.string().transform((val) => val === 'true').default('true'),
+  ENABLE_CHATBOT: z.string().default('true').transform((val) => val === 'true').optional(),
+  ENABLE_ANALYTICS: z.string().default('true').transform((val) => val === 'true').optional(),
+  ENABLE_NEWSLETTER: z.string().default('true').transform((val) => val === 'true').optional(),
+  ENABLE_IMAGE_OPTIMIZATION: z.string().default('true').transform((val) => val === 'true').optional(),
 
   // Node
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
