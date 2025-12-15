@@ -82,7 +82,7 @@ export default function Home() {
     {
       icon: RefreshCw,
       title: "Reconcile Anything",
-      description: "Match transactions across Stripe, Shopify, DBs, and more using deterministic matching algorithms. Our event-sourced engine processes high-volume transactions efficiently.",
+      description: "Match transactions across Stripe, Shopify, databases, and more using precise matching algorithms. Process high-volume transactions efficiently and reliably.",
       gradient: "from-blue-500 to-indigo-500",
     },
     {
@@ -165,13 +165,13 @@ if (flag.value) { /* ... */ }`;
                 <Badge 
                   className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30"
                 >
-                  The Financial Infrastructure for Developers
+                  Trusted by engineering teams to automate reconciliation
                 </Badge>
                 
                 <TextRevealHeading
                   as="h1"
                   id="hero-heading"
-                  text="The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags."
+                  text="Automate Financial Reconciliation in Minutes, Not Hours"
                   className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent"
                   delay={0}
                   staggerDelay={0.02}
@@ -179,7 +179,7 @@ if (flag.value) { /* ... */ }`;
                 />
                 
                 <TextReveal
-                  text="Settler gives engineering teams reconciliation, receipts parsing, deterministic conversions, and production-grade feature flags—all through clean, typed APIs."
+                  text="Match transactions between Stripe, Shopify, QuickBooks, and 50+ platforms automatically. Parse receipts, convert currencies, and manage feature flags—all through simple APIs."
                   className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
                   delay={0.2}
                   staggerDelay={0.01}

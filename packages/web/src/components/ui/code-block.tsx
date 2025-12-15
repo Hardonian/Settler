@@ -1,55 +1,66 @@
-import * as React from 'react';
+/**
+ * Code Block Component
+ * 
+ * Displays code with syntax highlighting
+ */
+
+'use client';
+
+import { useRef, useState } from 'react';
+import { Copy, Check } from 'lucide-react';
+import { Button } from './button';
 import { cn } from '@/lib/utils';
 
-export interface CodeBlockProps extends React.HTMLAttributes<HTMLPreElement> {
+interface CodeBlockProps {
   code: string;
   language?: string;
-  showLineNumbers?: boolean;
-  highlightLines?: number[];
+  className?: string;
+  showCopy?: boolean;
 }
 
-const CodeBlock = React.forwardRef<HTMLPreElement, CodeBlockProps>(
-  ({ code, language: _language, className, showLineNumbers, highlightLines, ...props }, ref) => {
-    const lines = code.split('\n');
-    
-    return (
-      <pre
-        ref={ref}
-        className={cn(
-          'relative w-full overflow-auto rounded-lg border bg-muted p-4',
-          className
-        )}
-        {...props}
-      >
-        <code className="text-sm font-mono">
-          {showLineNumbers ? (
-            <div className="flex">
-              <div className="select-none pr-4 text-right text-muted-foreground">
-                {lines.map((_, i) => (
-                  <div key={i} className={highlightLines?.includes(i + 1) ? 'bg-accent' : ''}>
-                    {i + 1}
-                  </div>
-                ))}
-              </div>
-              <div className="flex-1">
-                {lines.map((line, i) => (
-                  <div
-                    key={i}
-                    className={highlightLines?.includes(i + 1) ? 'bg-accent' : ''}
-                  >
-                    {line || '\u00A0'}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            code
-          )}
-        </code>
-      </pre>
-    );
-  }
-);
-CodeBlock.displayName = 'CodeBlock';
+export function CodeBlock({ code, language, className, showCopy = true }: CodeBlockProps) {
+  const [copied, setCopied] = useState(false);
+  const codeRef = useRef<HTMLPreElement>(null);
 
-export { CodeBlock };
+  const handleCopy = async () => {
+    if (!codeRef.current) return;
+    
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy code:', error);
+    }
+  };
+
+  return (
+    <div className={cn('relative group', className)}>
+      {showCopy && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleCopy}
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+          aria-label="Copy code"
+        >
+          {copied ? (
+            <Check className="w-4 h-4 text-green-600" />
+          ) : (
+            <Copy className="w-4 h-4" />
+          )}
+        </Button>
+      )}
+      <pre
+        ref={codeRef}
+        className={cn(
+          'bg-slate-900 dark:bg-slate-950 text-slate-100 p-4 rounded-lg overflow-x-auto',
+          'text-sm font-mono',
+          language && `language-${language}`
+        )}
+      >
+        <code className={language ? `language-${language}` : ''}>{code}</code>
+      </pre>
+    </div>
+  );
+}

@@ -1,9 +1,7 @@
 /**
  * User Sign-up Page
  * 
- * Data Flow Diagram:
- * User Sign-up (Vercel Form) → Next.js Server Action → Supabase profiles table (RLS Check)
- * → Profile Page Reload (Server Component Fetch)
+ * Handles user registration and account creation.
  */
 
 import { signUpUser } from '@/app/actions/auth';
@@ -32,7 +30,8 @@ function SignUpForm() {
     const result = await signUpUser(email, password, name);
     
     if (result.success) {
-      redirect('/dashboard');
+      // Redirect to console with welcome flag
+      redirect('/console?welcome=true');
     }
   }
 
@@ -153,15 +152,6 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
           </div>
         </div>
 
-        {/* Data Flow Info */}
-        <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
-          <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">
-            Data Flow
-          </h3>
-          <p className="text-xs text-blue-800 dark:text-blue-400">
-            Form → Server Action → Supabase (RLS Check) → Profile Created → Activity Logged
-          </p>
-        </div>
       </div>
 
       <Footer />

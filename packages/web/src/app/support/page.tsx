@@ -166,11 +166,11 @@ export default function Support() {
     },
     {
       question: 'What platforms does Settler support?',
-      answer: 'Settler supports 50+ platforms including Stripe, Shopify, QuickBooks, PayPal, Square, Amazon Pay, and many more. We have pre-built adapters for the most popular platforms, and you can easily build custom adapters for any platform with our adapter SDK.',
+      answer: 'Settler supports 50+ platforms including Stripe, Shopify, QuickBooks, PayPal, Square, Amazon Pay, and many more. We have pre-built integrations for the most popular platforms, and you can easily build custom integrations for any platform with our integration SDK.',
     },
     {
       question: 'Is there a free tier?',
-      answer: 'Yes! Our OSS (Open Source) tier is free forever with 1,000 reconciliations per month, access to 2 adapters, and 7-day log retention. Perfect for getting started and small projects. Check out our pricing page for full details on all tiers.',
+      answer: 'Yes! Our OSS (Open Source) tier is free forever with 1,000 reconciliations per month, access to 2 platform integrations, and 7-day log retention. Perfect for getting started and small projects. Check out our pricing page for full details on all tiers.',
     },
     {
       question: 'How accurate is the reconciliation?',
@@ -186,7 +186,7 @@ export default function Support() {
     },
     {
       question: 'How do I handle unmatched records?',
-      answer: 'Settler provides a comprehensive exception queue where you can review unmatched records, see confidence scores, and manually resolve discrepancies. You can also configure automatic retry rules and webhook notifications for unmatched records.',
+      answer: 'Settler provides a comprehensive exception queue where you can review unmatched records, see match quality indicators, and manually resolve discrepancies. You can also configure automatic retry rules and webhook notifications for unmatched records.',
     },
     {
       question: 'What happens if my reconciliation job fails?',
@@ -206,7 +206,7 @@ export default function Support() {
     },
     {
       question: 'How do I build a custom adapter?',
-      answer: 'Custom adapters are built using our adapter SDK. Each adapter implements a simple interface to fetch and normalize data from your platform. Check out our adapter documentation and examples in the cookbooks section.',
+      answer: 'Custom platform integrations are built using our integration SDK. Each integration implements a simple interface to fetch and standardize data from your platform. Check out our integration documentation and examples in the cookbooks section.',
     },
     {
       question: 'What data retention policies do you have?',
