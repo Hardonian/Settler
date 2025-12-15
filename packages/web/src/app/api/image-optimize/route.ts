@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         format: 'webp',
       });
 
-      return new NextResponse(optimizedBuffer, {
+      return new NextResponse(optimizedBuffer as unknown as BodyInit, {
         headers: {
           'Content-Type': 'image/webp',
           ...getCacheHeaders('STATIC'),
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
       // Fallback to original if optimization fails
       console.error('Image optimization error:', error);
-      return new NextResponse(imageBuffer, {
+      return new NextResponse(imageBuffer as unknown as BodyInit, {
         headers: {
           'Content-Type': imageResponse.headers.get('content-type') || 'image/jpeg',
           ...getCacheHeaders('STATIC'),
