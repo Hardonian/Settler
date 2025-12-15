@@ -81,7 +81,8 @@ function getDefaultKey(request: Request): string {
 
 function cleanupExpiredEntries(now: number): void {
   for (const key in store) {
-    if (store[key].resetAt < now) {
+    const entry = store[key];
+    if (entry && entry.resetAt < now) {
       delete store[key];
     }
   }

@@ -6,7 +6,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { ZodError } from 'zod';
+import { ZodError, type ZodIssue } from 'zod';
 
 export interface ErrorEnvelope {
   error: string;
@@ -53,9 +53,9 @@ export function handleApiError(
         error: 'Validation error',
         code: ErrorCode.VALIDATION_ERROR,
         details: {
-          issues: error.errors.map((e) => ({
-            path: e.path.join('.'),
-            message: e.message,
+          issues: error.issues.map((issue: ZodIssue) => ({
+            path: issue.path.map(String).join('.'),
+            message: issue.message,
           })),
         },
         timestamp: new Date().toISOString(),
