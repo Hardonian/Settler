@@ -6,6 +6,7 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck
 > tsc --noEmit --incremental
 
+src/app/console/billing/page.tsx(276,14): error TS17008: JSX element 'div' has no corresponding closing tag.
 src/components/console/AIInsightsPanel.tsx(127,6): error TS17008: JSX element 'ConsoleErrorBoundary' has no corresponding closing tag.
 src/components/console/AIInsightsPanel.tsx(217,1): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
 src/components/console/AIInsightsPanel.tsx(218,1): error TS1005: '</' expected.
