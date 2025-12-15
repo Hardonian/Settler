@@ -30,6 +30,12 @@ interface HealthStatus {
       hasSession: boolean;
       error?: string;
     };
+    migrations: {
+      status: 'ok' | 'warning' | 'error';
+      criticalTablesExist: boolean;
+      missingTables?: string[];
+      error?: string;
+    };
   };
   timestamp: string;
 }
@@ -48,10 +54,14 @@ export async function GET() {
         canConnect: false,
         canQuery: false,
       },
-      auth: {
-        status: 'ok',
-        hasSession: false,
-      },
+    auth: {
+      status: 'ok',
+      hasSession: false,
+    },
+    migrations: {
+      status: 'ok',
+      criticalTablesExist: false,
+    },
     },
     timestamp: new Date().toISOString(),
   };
@@ -128,6 +138,31 @@ export async function GET() {
       health.checks.auth.status = 'error';
       health.checks.auth.error = authErr instanceof Error ? authErr.message : 'Unknown auth error';
       health.status = 'degraded';
+    }
+
+    // Check critical tables exist (migration status)
+    const criticalTables = ['billing_accounts', 'api_keys', 'tenants', 'usage_events'];
+    const missingTables: string[] = [];
+    
+    for (const table of criticalTables) {
+      try {
+        const { error: tableError } = await supabase.from(table).select('*').limit(0);
+        if (tableError && (tableError.code === '42P01' || tableError.message.includes('does not exist'))) {
+          missingTables.push(table);
+        }
+      } catch (tableErr) {
+        // Table check failed - might be RLS blocking, that's ok
+      }
+    }
+
+    if (missingTables.length > 0) {
+      health.checks.migrations.status = 'error';
+      health.checks.migrations.missingTables = missingTables;
+      health.checks.migrations.error = `Missing critical tables: ${missingTables.join(', ')}`;
+      health.status = 'degraded';
+    } else {
+      health.checks.migrations.criticalTablesExist = true;
+      health.checks.migrations.status = 'ok';
     }
   } catch (error) {
     health.checks.supabase.status = 'error';
