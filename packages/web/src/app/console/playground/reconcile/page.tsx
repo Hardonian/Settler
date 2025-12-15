@@ -339,6 +339,22 @@ export default function ReconcilePlayground() {
 
                     {result ? (
                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {/* Value Acknowledgment */}
+                            <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border-2 border-green-200 dark:border-green-800">
+                                <div className="flex items-start gap-3">
+                                    <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-green-900 dark:text-green-300 mb-1">
+                                            Reconciliation Complete
+                                        </h3>
+                                        <p className="text-sm text-green-800 dark:text-green-400">
+                                            You've matched {result.matched.toLocaleString()} transactions automatically. 
+                                            This would have taken approximately {Math.ceil(result.matched * 2 / 60)} minutes of manual work.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div className="grid grid-cols-3 gap-3">
                                 <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                                     <div className="flex items-center gap-2 mb-1">
@@ -366,6 +382,24 @@ export default function ReconcilePlayground() {
                                 <div className="text-sm text-slate-600 dark:text-slate-400 mb-2">Match Accuracy</div>
                                 <div className="font-bold text-4xl text-blue-700 dark:text-blue-400">{result.accuracy}</div>
                             </div>
+                            
+                            {/* Next Steps */}
+                            {result.unmatched > 0 && (
+                                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                                    <div className="flex items-start gap-2">
+                                        <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                                        <div>
+                                            <p className="text-sm font-medium text-amber-900 dark:text-amber-300 mb-1">
+                                                Review Required
+                                            </p>
+                                            <p className="text-xs text-amber-800 dark:text-amber-400">
+                                                {result.unmatched} transaction{result.unmatched !== 1 ? 's' : ''} couldn't be automatically matched. 
+                                                Review them to ensure accuracy.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ) : !running && (
                         <div className="text-center py-12 text-slate-500 dark:text-slate-400">
