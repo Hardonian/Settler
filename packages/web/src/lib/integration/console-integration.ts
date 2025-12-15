@@ -8,6 +8,7 @@
  * - Error boundary wrapping
  */
 
+import * as React from 'react';
 import { ConsoleErrorBoundary } from '@/components/console/ErrorBoundary';
 
 /**

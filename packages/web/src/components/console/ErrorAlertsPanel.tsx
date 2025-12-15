@@ -183,5 +183,6 @@ export function ErrorAlertsPanel() {
         </div>
       </CardContent>
     </Card>
+    </ConsoleErrorBoundary>
   );
 }
