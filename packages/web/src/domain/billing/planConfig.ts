@@ -32,10 +32,15 @@ export interface PlanConfig {
   monthlyPrice?: number; // Monthly price in USD
   annualPrice?: number; // Annual price in USD (if different)
   limits: ServiceLimits;
+  aiTokens?: {
+    included: number; // Monthly AI tokens included
+    overagePrice?: number; // Price per 1k tokens over limit
+  };
   features: {
     reconcile: boolean;
     receipts: boolean;
     featureFlags: boolean; // Always true - free dev toolkit
+    aiInsights: boolean; // AI-powered insights and recommendations
     prioritySupport: boolean;
     customIntegrations: boolean;
   };
@@ -60,10 +65,14 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
         monthlyEvaluations: 100000, // 100k evaluations/month (generous free tier)
       },
     },
+    aiTokens: {
+      included: 0, // No AI tokens on free plan
+    },
     features: {
       reconcile: true,
       receipts: true,
       featureFlags: true,
+      aiInsights: false, // AI insights require paid plan
       prioritySupport: false,
       customIntegrations: false,
     },
@@ -89,10 +98,15 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
         rateLimit: 1000, // 1k evaluations/minute
       },
     },
+    aiTokens: {
+      included: 100000, // 100k AI tokens/month (~$2.50 value)
+      overagePrice: 0.025, // $0.025 per 1k tokens ($25 per 1M tokens)
+    },
     features: {
       reconcile: true,
       receipts: true,
       featureFlags: true,
+      aiInsights: true, // AI-powered insights included
       prioritySupport: true,
       customIntegrations: false,
     },
@@ -118,10 +132,15 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
         rateLimit: 5000, // 5k evaluations/minute
       },
     },
+    aiTokens: {
+      included: 1000000, // 1M AI tokens/month (~$25 value)
+      overagePrice: 0.02, // $0.02 per 1k tokens ($20 per 1M tokens) - volume discount
+    },
     features: {
       reconcile: true,
       receipts: true,
       featureFlags: true,
+      aiInsights: true, // AI-powered insights included
       prioritySupport: true,
       customIntegrations: true,
     },

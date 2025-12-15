@@ -24,10 +24,21 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'; // Assuming Sheet is standard
 
+import {
+  Sparkles,
+  Activity,
+  Webhook,
+  MessageSquare,
+  Zap,
+} from 'lucide-react';
+
 const consoleNavItems = [
     { href: '/console', label: 'Overview', icon: LayoutDashboard },
     { href: '/console/api-keys', label: 'API Keys', icon: Key },
     { href: '/console/usage', label: 'Usage & Metrics', icon: BarChart3 },
+    { href: '/console/performance', label: 'Performance', icon: Activity },
+    { href: '/console/insights', label: 'AI Insights', icon: Sparkles },
+    { href: '/console/webhooks', label: 'Webhooks', icon: Webhook },
     { href: '/console/billing', label: 'Billing & Plan', icon: CreditCard },
     { href: '/console/receipts', label: 'Receipts', icon: Receipt },
     { href: '/console/feature-flags', label: 'Feature Flags', icon: ToggleLeft },

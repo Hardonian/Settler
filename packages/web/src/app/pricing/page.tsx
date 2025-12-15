@@ -42,6 +42,7 @@ export default function Pricing() {
         { text: 'Basic components' },
         { text: 'Security basics' },
         { text: 'Mobile & accessibility' },
+        { text: 'AI Insights: Not included' },
       ],
       cta: 'Get Started',
       ctaLink: '/console/playground',
@@ -59,6 +60,9 @@ export default function Pricing() {
         { text: '100,000 reconciliations/month' },
         { text: '10,000 receipt parses/month' },
         { text: '1M feature flag evaluations/month' },
+        { text: '100k AI tokens/month included' },
+        { text: 'AI-powered insights & recommendations' },
+        { text: 'Performance monitoring & analytics' },
         { text: 'Unlimited adapters' },
         { text: '30-day log retention' },
         { text: 'Email support' },
@@ -67,6 +71,7 @@ export default function Pricing() {
         { text: 'Telemetry & analytics' },
         { text: 'Priority updates' },
         { text: 'Commercial License' },
+        { text: 'AI token add-ons: $25 per 1M tokens' },
       ],
       cta: 'Start Free Trial',
       ctaLink: '/signup',
@@ -83,6 +88,9 @@ export default function Pricing() {
         { text: '1M+ reconciliations/month' },
         { text: '100k+ receipt parses/month' },
         { text: '10M+ feature flag evaluations/month' },
+        { text: '1M AI tokens/month included' },
+        { text: 'AI-powered insights & recommendations' },
+        { text: 'Advanced performance monitoring' },
         { text: 'Unlimited adapters' },
         { text: 'Unlimited log retention' },
         { text: 'Dedicated support (SLA)' },
@@ -93,6 +101,7 @@ export default function Pricing() {
         { text: 'On-premise deployment' },
         { text: 'Dedicated account manager' },
         { text: 'Custom SLA' },
+        { text: 'AI token add-ons: $20 per 1M tokens (volume discount)' },
       ],
       cta: 'Contact Sales',
       ctaLink: '/enterprise',
@@ -105,7 +114,17 @@ export default function Pricing() {
     {
       question: "What's the difference between OSS and Commercial?",
       answer:
-        'OSS (Open Source) is free forever with MIT license, includes basic components and core protocol. Commercial adds platform integrations (Shopify, Stripe, MCP), virtualization, telemetry, and requires a subscription.',
+        'OSS (Open Source) is free forever with MIT license, includes basic components and core protocol. Commercial adds platform integrations (Shopify, Stripe, MCP), virtualization, telemetry, AI-powered insights, and requires a subscription.',
+    },
+    {
+      question: 'What are AI tokens used for?',
+      answer:
+        'AI tokens power our AI-powered insights feature, which provides actionable recommendations for cost optimization, performance improvements, and usage patterns. Each insight generation uses tokens. Commercial plans include 100k tokens/month, Enterprise includes 1M tokens/month.',
+    },
+    {
+      question: 'Can I purchase additional AI tokens?',
+      answer:
+        'Yes! Commercial customers can purchase AI token add-ons at $25 per 1M tokens. Enterprise customers get volume discounts at $20 per 1M tokens. Tokens roll over month-to-month and never expire.',
     },
     {
       question: 'Can I switch plans later?',
@@ -251,6 +270,49 @@ export default function Pricing() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <ROICalculator />
+        </div>
+      </section>
+
+      {/* AI Features Highlight */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+              AI-Powered
+            </Badge>
+            <h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+              AI-Powered Insights & Recommendations
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Get actionable recommendations powered by AI to optimize costs, improve performance, and understand usage patterns.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">100k</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">AI Tokens/Month</div>
+              <div className="text-sm text-slate-700 dark:text-slate-300">
+                <strong>Commercial Plan</strong><br />
+                Includes AI insights, performance monitoring, and cost optimization recommendations.
+              </div>
+            </div>
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md">
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-2">1M</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">AI Tokens/Month</div>
+              <div className="text-sm text-slate-700 dark:text-slate-300">
+                <strong>Enterprise Plan</strong><br />
+                Advanced AI insights with volume discounts and priority processing.
+              </div>
+            </div>
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">$20-25</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">Per 1M Tokens</div>
+              <div className="text-sm text-slate-700 dark:text-slate-300">
+                <strong>Add-On Pricing</strong><br />
+                Purchase additional tokens as needed. Tokens never expire.
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

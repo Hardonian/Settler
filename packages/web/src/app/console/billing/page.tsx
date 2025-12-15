@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { AITokensWidget } from '@/components/console/AITokensWidget';
 
 interface BillingData {
   billingAccount: {
@@ -330,6 +331,8 @@ export default function BillingPage() {
                   <li>• 100,000 reconciliations/month</li>
                   <li>• 10,000 receipt parses/month</li>
                   <li>• 1M feature flag evaluations/month</li>
+                  <li>• 100k AI tokens/month</li>
+                  <li>• AI-powered insights</li>
                   <li>• Priority support</li>
                 </ul>
                 {!isPro && (
@@ -373,6 +376,8 @@ export default function BillingPage() {
                   <li>• 1M reconciliations/month</li>
                   <li>• 100k receipt parses/month</li>
                   <li>• 10M feature flag evaluations/month</li>
+                  <li>• 1M AI tokens/month</li>
+                  <li>• AI-powered insights</li>
                   <li>• Priority support</li>
                   <li>• Custom integrations</li>
                 </ul>
@@ -394,9 +399,11 @@ export default function BillingPage() {
                   </Button>
                 )}
               </div>
-            </div>
-          </CardContent>
+            </CardContent>
         </Card>
+
+        {/* AI Tokens Widget */}
+        <AITokensWidget />
       </div>
     </ConsoleLayout>
   );
