@@ -20,6 +20,23 @@ export async function POST(request: NextRequest) {
 
     // Integrate with Resend
     const { subscribeToNewsletter } = await import('@/lib/email/resend');
+    const { prisma } = await import('@/lib/db/prisma-analytics');
+    
+    // Check if already subscribed
+    const existing = await prisma.newsletterSubscription.findUnique({
+      where: { email: validated.email },
+    });
+
+    if (existing && existing.subscribed) {
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'Already subscribed to newsletter',
+        },
+        { status: 200 }
+      );
+    }
+
     const result = await subscribeToNewsletter({
       email: validated.email,
       name: validated.name,
@@ -35,6 +52,32 @@ export async function POST(request: NextRequest) {
         },
         { status: 500 }
       );
+    }
+
+    // Save to database
+    if (existing) {
+      await prisma.newsletterSubscription.update({
+        where: { email: validated.email },
+        data: {
+          name: validated.name,
+          source: validated.source,
+          tags: validated.tags || [],
+          resendContactId: result.id,
+          subscribed: true,
+          unsubscribedAt: null,
+        },
+      });
+    } else {
+      await prisma.newsletterSubscription.create({
+        data: {
+          email: validated.email,
+          name: validated.name,
+          source: validated.source,
+          tags: validated.tags || [],
+          resendContactId: result.id,
+          subscribed: true,
+        },
+      });
     }
 
     return NextResponse.json(

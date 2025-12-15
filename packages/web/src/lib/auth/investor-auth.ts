@@ -5,7 +5,7 @@
 
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/config';
+import { authOptions } from '@/lib/auth/next-auth-config';
 
 export interface AuthResult {
   authorized: boolean;

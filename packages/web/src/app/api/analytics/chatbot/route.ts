@@ -17,21 +17,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = chatbotEventSchema.parse(body);
 
-    // TODO: Store in analytics database
-    console.log('Chatbot analytics event:', {
+    // Store in database
+    const { saveChatbotAnalytics } = await import('@/lib/db/prisma-analytics');
+    await saveChatbotAnalytics({
       type: validated.type,
-      data: validated.data,
-      timestamp: validated.timestamp || new Date().toISOString(),
+      data: validated.data || {},
+      sessionId: validated.data?.sessionId,
+      userId: validated.data?.userId,
     });
-
-    // Example: Store in database
-    // await db.chatbotAnalytics.create({
-    //   data: {
-    //     type: validated.type,
-    //     data: validated.data,
-    //     timestamp: new Date(validated.timestamp || Date.now()),
-    //   },
-    // });
 
     return NextResponse.json({
       success: true,

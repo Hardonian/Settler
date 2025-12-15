@@ -21,29 +21,44 @@ export async function POST(request: NextRequest) {
     const referrer = request.headers.get('referer') || '';
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
-    // TODO: Store in analytics database
-    console.log('SDK analytics event:', {
-      type: validated.type,
-      data: {
-        ...validated.data,
+    // Store in database
+    const { saveAnalyticsEvent, saveSDKDownload, savePlaygroundUsage } = await import('@/lib/db/prisma-analytics');
+    
+    if (validated.type === 'download') {
+      await saveSDKDownload({
+        packageName: validated.data.packageName || '',
+        version: validated.data.version || '',
+        packageManager: validated.data.packageManager || 'unknown',
+        userId: validated.data.userId,
+        sessionId: validated.data.sessionId,
         userAgent,
         referrer,
-        ip,
-      },
-      timestamp: new Date().toISOString(),
-    });
-
-    // Example: Store in database
-    // await db.sdkAnalytics.create({
-    //   data: {
-    //     type: validated.type,
-    //     data: validated.data,
-    //     userAgent,
-    //     referrer,
-    //     ip,
-    //     timestamp: new Date(),
-    //   },
-    // });
+        ipAddress: ip,
+      });
+    } else if (validated.type === 'playground') {
+      await savePlaygroundUsage({
+        feature: validated.data.feature || '',
+        action: validated.data.action || '',
+        integration: validated.data.integration,
+        durationMs: validated.data.duration,
+        success: validated.data.success,
+        userId: validated.data.userId,
+        sessionId: validated.data.sessionId,
+        metadata: validated.data,
+      });
+    } else {
+      await saveAnalyticsEvent({
+        type: validated.type,
+        data: {
+          ...validated.data,
+          userAgent,
+          referrer,
+          ip,
+        },
+        userId: validated.data.userId,
+        sessionId: validated.data.sessionId,
+      });
+    }
 
     return NextResponse.json({
       success: true,
@@ -77,34 +92,18 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Fetch from database
-    // For now, return mock data
+    // Fetch from database
+    const { getSDKDownloadStats, getPlaygroundStats } = await import('@/lib/db/prisma-analytics');
+    
+    const [downloadStats, playgroundStats] = await Promise.all([
+      getSDKDownloadStats(),
+      getPlaygroundStats(),
+    ]);
+
     const stats = {
-      downloads: {
-        total: 45000,
-        weekly: 1250,
-        monthly: 5200,
-        byPackage: {
-          '@settler/sdk': 35000,
-          '@settler/react-settler': 8000,
-          '@settler/cli': 2000,
-        },
-        trend: [
-          { date: '2026-01-01', count: 1100 },
-          { date: '2026-01-08', count: 1200 },
-          { date: '2026-01-15', count: 1250 },
-        ],
-      },
+      downloads: downloadStats,
       playground: {
-        totalSessions: 8500,
-        activeUsers: 320,
-        usageByFeature: {
-          reconcile: 4200,
-          receipts: 2800,
-          flags: 1500,
-          convert: 800,
-          cli: 200,
-        },
+        ...playgroundStats,
         popularIntegrations: [
           { name: 'Stripe', count: 3200 },
           { name: 'Shopify', count: 2100 },

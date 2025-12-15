@@ -46,27 +46,20 @@ export interface ChatbotEvent extends AnalyticsEvent {
 
 /**
  * Save analytics event to database
- * TODO: Implement with Prisma
  */
 export async function saveAnalyticsEvent(event: AnalyticsEvent): Promise<void> {
-  // Example Prisma implementation:
-  // await prisma.analyticsEvent.create({
-  //   data: {
-  //     type: event.type,
-  //     data: event.data,
-  //     userId: event.userId,
-  //     sessionId: event.sessionId,
-  //     timestamp: event.timestamp,
-  //     metadata: event.metadata,
-  //   },
-  // });
-  
-  console.log('Analytics event (would save to DB):', event);
+  const { saveAnalyticsEvent: saveEvent } = await import('./prisma-analytics');
+  await saveEvent({
+    type: event.type,
+    data: event.data,
+    userId: event.userId,
+    sessionId: event.sessionId,
+    metadata: event.metadata,
+  });
 }
 
 /**
  * Get SDK download statistics
- * TODO: Implement with Prisma
  */
 export async function getSDKDownloadStats(
   startDate?: Date,
@@ -77,61 +70,24 @@ export async function getSDKDownloadStats(
   monthly: number;
   byPackage: Record<string, number>;
 }> {
-  // Example Prisma implementation:
-  // const events = await prisma.analyticsEvent.findMany({
-  //   where: {
-  //     type: 'sdk_download',
-  //     timestamp: {
-  //       gte: startDate,
-  //       lte: endDate,
-  //     },
-  //   },
-  // });
-  
-  return {
-    total: 45000,
-    weekly: 1250,
-    monthly: 5200,
-    byPackage: {
-      '@settler/sdk': 35000,
-      '@settler/react-settler': 8000,
-      '@settler/cli': 2000,
-    },
-  };
+  const { getSDKDownloadStats: getStats } = await import('./prisma-analytics');
+  return await getStats(startDate, endDate);
 }
 
 /**
  * Get playground usage statistics
- * TODO: Implement with Prisma
  */
 export async function getPlaygroundStats(): Promise<{
   totalSessions: number;
   activeUsers: number;
   usageByFeature: Record<string, number>;
 }> {
-  // Example Prisma implementation:
-  // const events = await prisma.analyticsEvent.findMany({
-  //   where: {
-  //     type: 'playground_usage',
-  //   },
-  // });
-  
-  return {
-    totalSessions: 8500,
-    activeUsers: 320,
-    usageByFeature: {
-      reconcile: 4200,
-      receipts: 2800,
-      flags: 1500,
-      convert: 800,
-      cli: 200,
-    },
-  };
+  const { getPlaygroundStats: getStats } = await import('./prisma-analytics');
+  return await getStats();
 }
 
 /**
  * Get chatbot analytics
- * TODO: Implement with Prisma
  */
 export async function getChatbotAnalytics(): Promise<{
   totalInteractions: number;
@@ -139,14 +95,6 @@ export async function getChatbotAnalytics(): Promise<{
   satisfactionScore: number;
   popularQuestions: Array<{ question: string; count: number }>;
 }> {
-  return {
-    totalInteractions: 1250,
-    averageResponseTime: 1.2, // seconds
-    satisfactionScore: 4.6,
-    popularQuestions: [
-      { question: 'How do I install the SDK?', count: 120 },
-      { question: 'What is the difference between OSS and SaaS?', count: 95 },
-      { question: 'What platforms does Settler integrate with?', count: 78 },
-    ],
-  };
+  const { getChatbotAnalytics: getAnalytics } = await import('./prisma-analytics');
+  return await getAnalytics();
 }

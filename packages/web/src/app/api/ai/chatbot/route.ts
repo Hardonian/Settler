@@ -128,25 +128,22 @@ export async function POST(request: NextRequest) {
 
     const assistantMessage = completion.choices[0]?.message?.content || 'I apologize, but I could not generate a response.';
 
-    // Track conversation (in production, save to database)
+    // Track conversation
     const conversationId = validated.conversationId || `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // TODO: Save to database
-    // await db.chatbotConversations.create({
-    //   data: {
-    //     conversationId,
-    //     message: validated.message,
-    //     response: assistantMessage,
-    //     metadata: validated.metadata,
-    //     timestamp: new Date(),
-    //   },
-    // });
-
-    console.log('Chatbot conversation:', {
+    // Save to database
+    const { saveChatbotConversation } = await import('@/lib/db/prisma-analytics');
+    await saveChatbotConversation({
       conversationId,
       message: validated.message,
-      response: assistantMessage.substring(0, 100),
-      metadata: validated.metadata,
+      response: assistantMessage,
+      userId: validated.metadata?.userId,
+      sessionId: validated.metadata?.sessionId,
+      deviceInfo: validated.metadata,
+      metadata: {
+        attachments: validated.attachments,
+        model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+      },
     });
 
     return NextResponse.json({
