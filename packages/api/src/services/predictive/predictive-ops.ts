@@ -195,7 +195,7 @@ export class PredictiveOps {
       });
 
       // Check execution times
-      const results = await this.prisma.reconResult.findMany({
+      const results: Array<{ completedAt: Date | null; startedAt: Date | null }> = await this.prisma.reconResult.findMany({
         where: {
           reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
         },
@@ -203,8 +203,8 @@ export class PredictiveOps {
       });
 
       const durations = results
-        .filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt !== null && r.startedAt !== null)
-        .map((r: { completedAt: Date; startedAt: Date }) => (r.completedAt.getTime() - r.startedAt.getTime()));
+        .filter((r: { completedAt: Date | null; startedAt: Date | null }): r is { completedAt: Date; startedAt: Date } => r.completedAt !== null && r.startedAt !== null)
+        .map((r: { completedAt: Date; startedAt: Date }) => r.completedAt.getTime() - r.startedAt.getTime());
       
       const avgDuration = durations.length > 0
         ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
@@ -258,8 +258,8 @@ export class PredictiveOps {
     // Check for increasing trend
     const costs = Array.from(dailyCosts.values()).sort((a, b) => a - b);
     if (costs.length > 3) {
-      const recentAvg = costs.slice(-3).reduce((a, b) => a + b, 0) / 3;
-      const olderAvg = costs.slice(0, -3).reduce((a, b) => a + b, 0) / Math.max(1, costs.length - 3);
+      const recentAvg = costs.slice(-3).reduce((a: number, b: number) => a + b, 0) / 3;
+      const olderAvg = costs.slice(0, -3).reduce((a: number, b: number) => a + b, 0) / Math.max(1, costs.length - 3);
 
       if (recentAvg > olderAvg * 1.5) {
         predictions.push({

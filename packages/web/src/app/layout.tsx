@@ -13,6 +13,7 @@ import { getTenantContext } from "@/lib/tenant/server";
 import { requireEnvironment } from "@/lib/env/validation";
 import { ToastContainer } from "@/components/ux/ToastContainer";
 import { initSentry } from "@/lib/monitoring/sentry";
+import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,12 +53,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/icon-192x192.svg", sizes: "192x192", type: "image/svg+xml" },
-      { url: "/icon-512x512.svg", sizes: "512x512", type: "image/svg+xml" },
+      { url: SETTLER_IMAGES.favicon.path, type: SETTLER_IMAGES.favicon.mimeType, sizes: `${SETTLER_IMAGES.favicon.width}x${SETTLER_IMAGES.favicon.height}` },
+      { url: SETTLER_IMAGES.favicon192.path, sizes: "192x192", type: SETTLER_IMAGES.favicon192.mimeType },
+      { url: SETTLER_IMAGES.favicon512.path, sizes: "512x512", type: SETTLER_IMAGES.favicon512.mimeType },
+      { url: "/favicon.svg", type: "image/svg+xml" }, // Fallback SVG
     ],
     apple: [
-      { url: "/icon-192x192.svg", sizes: "192x192", type: "image/svg+xml" },
+      { url: SETTLER_IMAGES.favicon192.path, sizes: "192x192", type: SETTLER_IMAGES.favicon192.mimeType },
     ],
   },
   openGraph: {
@@ -69,10 +71,10 @@ export const metadata: Metadata = {
     description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev'}/opengraph-image`,
-        width: 1200,
-        height: 630,
-        alt: "Settler - Financial Infrastructure for Developers",
+        url: getImageUrl('ogImage'),
+        width: SETTLER_IMAGES.ogImage.width,
+        height: SETTLER_IMAGES.ogImage.height,
+        alt: SETTLER_IMAGES.ogImage.alt,
       },
     ],
   },
@@ -80,7 +82,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Settler - Financial Infrastructure for Developers",
     description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
-    images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev'}/opengraph-image`],
+    images: [getImageUrl('twitterCard')],
     creator: "@settler_io",
   },
   robots: {

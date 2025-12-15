@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/images/image-config';
+
 interface StructuredDataProps {
   data: Record<string, any>;
 }
@@ -17,7 +19,7 @@ export function OrganizationSchema() {
     '@type': 'Organization',
     name: 'Settler',
     url: 'https://settler.dev',
-    logo: 'https://settler.dev/icon-512x512.png',
+    logo: getImageUrl('logoMain'),
     description: 'Reconciliation-as-a-Service API. Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems.',
     sameAs: [
       'https://github.com/shardie-github/Settler-API',

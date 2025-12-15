@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 export interface PageMetadata {
   title: string;
@@ -17,7 +18,7 @@ export function generateMetadata({
   title,
   description,
   keywords = [],
-  ogImage = "/opengraph-image",
+  ogImage = SETTLER_IMAGES.ogImage.path,
   canonical,
   noindex = false,
 }: PageMetadata): Metadata {
