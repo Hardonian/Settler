@@ -36,12 +36,33 @@ export async function createTicket(
   billingAccountId: string,
   input: CreateTicketInput
 ): Promise<SupportTicket> {
+  // Validate inputs
+  if (!input.subject || input.subject.trim().length === 0) {
+    throw new Error('Subject is required');
+  }
+
+  if (input.subject.length > 200) {
+    throw new Error('Subject must be 200 characters or less');
+  }
+
+  if (!input.description || input.description.trim().length === 0) {
+    throw new Error('Description is required');
+  }
+
+  if (input.description.length > 5000) {
+    throw new Error('Description must be 5000 characters or less');
+  }
+
+  // Sanitize inputs
+  const sanitizedSubject = input.subject.trim().substring(0, 200);
+  const sanitizedDescription = input.description.trim().substring(0, 5000);
+
   const ticket = await prisma.supportTicket.create({
     data: {
       userId,
       billingAccountId,
-      subject: input.subject,
-      description: input.description,
+      subject: sanitizedSubject,
+      description: sanitizedDescription,
       category: input.category,
       priority: input.priority || 'medium',
       status: 'open',

@@ -18,6 +18,9 @@ import { listFeatureFlags } from '@/domain/console/featureFlags';
 import { LiveActivityFeed } from '@/components/console/LiveActivityFeed';
 import { OnboardingWizardClient } from '@/components/onboarding/OnboardingWizardClient';
 import { WelcomeBannerClient } from '@/components/onboarding/WelcomeBannerClient';
+import { AIInsightsPanel } from '@/components/console/AIInsightsPanel';
+import { ErrorAlertsPanel } from '@/components/console/ErrorAlertsPanel';
+import { UsageWarningBanner } from '@/components/console/UsageWarningBanner';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -277,6 +280,9 @@ async function ConsoleOverviewContent() {
       {/* Welcome Banner */}
       <WelcomeBannerClient userName={userName} />
       
+      {/* Usage Warning Banner */}
+      <UsageWarningBanner />
+      
       {/* Onboarding Wizard */}
       <OnboardingWizardClient />
 
@@ -401,6 +407,12 @@ async function ConsoleOverviewContent() {
         <div className="lg:col-span-1 h-full">
           <LiveActivityFeed />
         </div>
+      </div>
+
+      {/* AI Insights & Error Alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <AIInsightsPanel />
+        <ErrorAlertsPanel />
       </div>
 
       {/* Quick Actions */}

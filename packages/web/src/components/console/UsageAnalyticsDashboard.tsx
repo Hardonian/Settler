@@ -14,8 +14,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, TrendingUp, TrendingDown, AlertTriangle, DollarSign } from 'lucide-react';
+import { Download, TrendingUp, TrendingDown, AlertTriangle, DollarSign, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
+import { ConsoleErrorBoundary } from './ErrorBoundary';
 
 interface UsageAnalytics {
   totalCalls: number;
@@ -57,6 +58,9 @@ export function UsageAnalyticsDashboard() {
         const data = await res.json();
         setAnalytics(data);
       } else {
+        // Handle non-200 responses gracefully
+        const errorData = await res.json().catch(() => ({}));
+        console.error('Failed to fetch analytics:', res.status, errorData);
         setAnalytics(null);
       }
     } catch (error) {
@@ -65,6 +69,10 @@ export function UsageAnalyticsDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRefresh = () => {
+    fetchAnalytics();
   };
 
   const exportData = async (format: 'csv' | 'json') => {
@@ -105,32 +113,42 @@ export function UsageAnalyticsDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Usage Analytics</h2>
-          <p className="text-slate-600 dark:text-slate-400">Detailed usage insights and trends</p>
+    <ConsoleErrorBoundary>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Usage Analytics</h2>
+            <p className="text-slate-600 dark:text-slate-400">Detailed usage insights and trends</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | '90d')}
+              className="px-3 py-2 border rounded-md bg-white dark:bg-slate-800"
+            >
+              <option value="7d">Last 7 days</option>
+              <option value="30d">Last 30 days</option>
+              <option value="90d">Last 90 days</option>
+            </select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={loading}
+              aria-label="Refresh analytics"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => exportData('csv')}>
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => exportData('json')}>
+              <Download className="w-4 h-4 mr-2" />
+              Export JSON
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | '90d')}
-            className="px-3 py-2 border rounded-md bg-white dark:bg-slate-800"
-          >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-          </select>
-          <Button variant="outline" size="sm" onClick={() => exportData('csv')}>
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => exportData('json')}>
-            <Download className="w-4 h-4 mr-2" />
-            Export JSON
-          </Button>
-        </div>
-      </div>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -250,5 +268,6 @@ export function UsageAnalyticsDashboard() {
         </CardContent>
       </Card>
     </div>
+    </ConsoleErrorBoundary>
   );
 }

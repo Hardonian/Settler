@@ -14,9 +14,9 @@ export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -31,18 +31,38 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'csv';
-    const days = parseInt(searchParams.get('days') || '30', 10);
+    
+    // Validate format
+    if (format !== 'csv' && format !== 'json') {
+      return NextResponse.json({ error: 'Format must be csv or json' }, { status: 400 });
+    }
+
+    const daysParam = searchParams.get('days') || '30';
+    const days = parseInt(daysParam, 10);
+    
+    // Validate days
+    if (isNaN(days) || days < 1 || days > 365) {
+      return NextResponse.json({ error: 'Days must be between 1 and 365' }, { status: 400 });
+    }
+
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     const endDate = new Date();
 
+    // Limit to prevent huge exports
+    const maxEvents = 10000;
     const events = await prisma.usageEvent.findMany({
       where: {
         billingAccountId: billingAccount.id,
         timestamp: { gte: startDate, lte: endDate },
       },
       orderBy: { timestamp: 'desc' },
+      take: maxEvents,
     });
+
+    if (events.length >= maxEvents) {
+      console.warn(`[Usage Export] Limited to ${maxEvents} events for export`);
+    }
 
     if (format === 'csv') {
       const csv = [

@@ -47,10 +47,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Billing account not found' }, { status: 404 });
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
+    
+    // Validate inputs
+    if (!body.url || typeof body.url !== 'string') {
+      return NextResponse.json({ error: 'URL is required and must be a string' }, { status: 400 });
+    }
+
+    if (!body.events || !Array.isArray(body.events)) {
+      return NextResponse.json({ error: 'Events must be an array' }, { status: 400 });
+    }
+
     const input: CreateWebhookInput = {
       url: body.url,
-      events: body.events || [],
+      events: body.events,
       secret: body.secret,
     };
 

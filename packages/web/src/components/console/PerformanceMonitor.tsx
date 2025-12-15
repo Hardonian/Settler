@@ -10,7 +10,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Gauge, TrendingUp, Activity, AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Gauge, TrendingUp, Activity, AlertCircle, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ConsoleErrorBoundary } from './ErrorBoundary';
 
 interface PerformanceMetrics {
   endpoint: string;
@@ -55,12 +58,21 @@ export function PerformanceMonitor() {
       if (res.ok) {
         const data = await res.json();
         setMetrics(data);
+      } else {
+        // Handle non-200 responses gracefully
+        console.error('Failed to fetch performance metrics:', res.status);
+        setMetrics(null);
       }
     } catch (error) {
       console.error('Failed to fetch performance metrics:', error);
+      setMetrics(null);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRefresh = () => {
+    fetchMetrics();
   };
 
   const getLatencyColor = (latency: number) => {
@@ -88,21 +100,33 @@ export function PerformanceMonitor() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Performance Monitor</h2>
-          <p className="text-slate-600 dark:text-slate-400">API performance metrics and monitoring</p>
+    <ConsoleErrorBoundary>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Performance Monitor</h2>
+            <p className="text-slate-600 dark:text-slate-400">API performance metrics and monitoring</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value as '7d' | '30d')}
+              className="px-3 py-2 border rounded-md bg-white dark:bg-slate-800"
+            >
+              <option value="7d">Last 7 days</option>
+              <option value="30d">Last 30 days</option>
+            </select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={loading}
+              aria-label="Refresh metrics"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
         </div>
-        <select
-          value={timeRange}
-          onChange={(e) => setTimeRange(e.target.value as '7d' | '30d')}
-          className="px-3 py-2 border rounded-md bg-white dark:bg-slate-800"
-        >
-          <option value="7d">Last 7 days</option>
-          <option value="30d">Last 30 days</option>
-        </select>
-      </div>
 
       {/* Overall Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -235,7 +259,6 @@ export function PerformanceMonitor() {
         </CardContent>
       </Card>
     </div>
+    </ConsoleErrorBoundary>
   );
 }
-
-import { Badge } from '@/components/ui/badge';

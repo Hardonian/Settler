@@ -35,16 +35,26 @@ export function ErrorAlertsPanel() {
 
   const fetchAlerts = async () => {
     try {
+      setLoading(true);
       const res = await fetch('/api/console/alerts');
       if (res.ok) {
         const data = await res.json();
         setAlerts(data.alerts || []);
+      } else {
+        // Handle non-200 responses gracefully
+        console.error('Failed to fetch alerts:', res.status);
+        setAlerts([]); // Show empty state
       }
     } catch (error) {
       console.error('Failed to fetch alerts:', error);
+      setAlerts([]); // Show empty state on error
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRefresh = () => {
+    fetchAlerts();
   };
 
   if (loading) {
@@ -105,11 +115,30 @@ export function ErrorAlertsPanel() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Error Alerts</CardTitle>
-        <CardDescription>{alerts.length} active alert{alerts.length !== 1 ? 's' : ''}</CardDescription>
-      </CardHeader>
+    <ConsoleErrorBoundary>
+      <Card className="hover:shadow-lg transition-shadow">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                Error Alerts
+              </CardTitle>
+              <CardDescription>
+                {alerts.length} active alert{alerts.length !== 1 ? 's' : ''}
+              </CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={loading}
+              aria-label="Refresh alerts"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {alerts.map((alert) => (

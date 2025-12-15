@@ -10,8 +10,9 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Copy, Check } from 'lucide-react';
-import { generateAllCodeSnippets, CodeSnippet, ApiCall } from '@/lib/playground/code-generator';
+import { Copy, Check, AlertCircle } from 'lucide-react';
+import { generateAllCodeSnippets, ApiCall } from '@/lib/playground/code-generator';
+import { useState } from 'react';
 
 interface CodeGeneratorProps {
   apiCall: ApiCall;
@@ -20,7 +21,37 @@ interface CodeGeneratorProps {
 
 export function CodeGenerator({ apiCall, apiKey }: CodeGeneratorProps) {
   const [copied, setCopied] = useState<string | null>(null);
-  const snippets = generateAllCodeSnippets(apiCall, apiKey);
+  const [error, setError] = useState<string | null>(null);
+
+  // Validate inputs
+  if (!apiKey || !apiKey.startsWith('rk_')) {
+    return (
+      <Card>
+        <CardContent className="py-8">
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+            <AlertCircle className="w-5 h-5" />
+            <p className="text-sm">Please create an API key to generate code snippets.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  let snippets;
+  try {
+    snippets = generateAllCodeSnippets(apiCall, apiKey);
+  } catch (err) {
+    return (
+      <Card>
+        <CardContent className="py-8">
+          <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+            <AlertCircle className="w-5 h-5" />
+            <p className="text-sm">Failed to generate code. Please try again.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const copyToClipboard = async (code: string, language: string) => {
     try {

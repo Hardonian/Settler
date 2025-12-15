@@ -36,12 +36,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Billing account not found' }, { status: 404 });
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
+    
+    // Validate inputs
+    if (!body.subject || typeof body.subject !== 'string' || body.subject.trim().length === 0) {
+      return NextResponse.json({ error: 'Subject is required' }, { status: 400 });
+    }
+
+    if (!body.description || typeof body.description !== 'string' || body.description.trim().length === 0) {
+      return NextResponse.json({ error: 'Description is required' }, { status: 400 });
+    }
+
+    const validCategories = ['technical', 'billing', 'feature_request', 'bug', 'other'];
+    if (!body.category || !validCategories.includes(body.category)) {
+      return NextResponse.json({ error: `Category must be one of: ${validCategories.join(', ')}` }, { status: 400 });
+    }
+
     const input: CreateTicketInput = {
-      subject: body.subject,
-      description: body.description,
+      subject: body.subject.trim(),
+      description: body.description.trim(),
       category: body.category,
-      priority: body.priority,
+      priority: body.priority || 'medium',
     };
 
     const ticket = await createTicket(

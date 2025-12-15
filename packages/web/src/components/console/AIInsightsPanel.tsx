@@ -10,8 +10,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, TrendingUp, AlertTriangle, DollarSign, Zap, Lightbulb } from 'lucide-react';
+import { Sparkles, TrendingUp, AlertTriangle, DollarSign, Zap, Lightbulb, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+import { ConsoleErrorBoundary } from './ErrorBoundary';
 
 interface Insight {
   id: string;
@@ -41,16 +42,27 @@ export function AIInsightsPanel() {
 
   const fetchInsights = async () => {
     try {
+      setLoading(true);
       const res = await fetch('/api/console/insights');
       if (res.ok) {
         const data = await res.json();
         setInsights(data.insights || []);
+      } else {
+        // Handle non-200 responses gracefully
+        const errorData = await res.json().catch(() => ({}));
+        console.error('Failed to fetch insights:', res.status, errorData);
+        setInsights([]); // Show empty state
       }
     } catch (error) {
       console.error('Failed to fetch insights:', error);
+      setInsights([]); // Show empty state on error
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRefresh = () => {
+    fetchInsights();
   };
 
   const getInsightIcon = (type: string) => {
@@ -112,16 +124,30 @@ export function AIInsightsPanel() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5" />
-          AI Insights
-        </CardTitle>
-        <CardDescription>
-          {insights.length} actionable recommendation{insights.length !== 1 ? 's' : ''}
-        </CardDescription>
-      </CardHeader>
+    <ConsoleErrorBoundary>
+      <Card className="hover:shadow-lg transition-shadow">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                AI Insights
+              </CardTitle>
+              <CardDescription>
+                {insights.length} actionable recommendation{insights.length !== 1 ? 's' : ''}
+              </CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={loading}
+              aria-label="Refresh insights"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {insights.slice(0, 5).map((insight) => (

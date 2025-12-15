@@ -6,147 +6,15 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck
 > tsc --noEmit --incremental
 
-scripts/verify-routes.ts(9,1): error TS6133: 'readFileSync' is declared but its value is never read.
-scripts/verify-routes.ts(11,1): error TS6133: 'glob' is declared but its value is never read.
-scripts/verify-routes.ts(78,9): error TS6133: 'pageFile' is declared but its value is never read.
-scripts/verify-routes.ts(90,35): error TS6133: 'f' is declared but its value is never read.
-scripts/verify-routes.ts(92,37): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/alerts/route.ts(14,27): error TS6133: 'request' is declared but its value is never read.
-src/app/api/console/support/tickets/route.ts(10,1): error TS6133: 'prisma' is declared but its value is never read.
-src/app/api/console/usage/alerts/route.ts(14,27): error TS6133: 'request' is declared but its value is never read.
-src/app/api/console/usage/analytics/route.ts(85,37): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/usage/analytics/route.ts(90,20): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/usage/analytics/route.ts(109,65): error TS2339: Property 'pricing' does not exist on type 'PlanConfig'.
-src/app/api/console/webhooks/route.ts(10,1): error TS6133: 'prisma' is declared but its value is never read.
-src/app/api/docs/openapi/route.ts(15,3): error TS6133: 'updateFlagEnvironmentSchema' is declared but its value is never read.
-src/app/console/webhooks/page.tsx(21,3): error TS2305: Module '"@/components/ui/dialog"' has no exported member 'DialogTrigger'.
-src/app/console/webhooks/page.tsx(24,24): error TS6133: 'RotateCw' is declared but its value is never read.
-src/components/console/UsageAnalyticsDashboard.tsx(16,1): error TS6192: All imports in import declaration are unused.
-src/components/console/UsageAnalyticsDashboard.tsx(18,1): error TS6133: 'format' is declared but its value is never read.
-src/lib/alerts/usage-alerts.ts(32,11): error TS6133: 'planConfig' is declared but its value is never read.
-src/lib/api/console-handler.ts(113,69): error TS2339: Property 'errors' does not exist on type 'ZodError<TInput>'.
-src/lib/api/console-handler.ts(178,9): error TS2322: Type 'NextResponse<unknown>' is not assignable to type 'NextResponse<ConsoleApiResponse<TOutput>>'.
-  Type 'unknown' is not assignable to type 'ConsoleApiResponse<TOutput>'.
-src/lib/api/openapi-generator.ts(56,34): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(predicate: (value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => value is $ZodCheck<string>, thisArg?: any): $ZodCheck<string> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => value is $ZodCheck<string>'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<string>' but required in type '{ kind: string; }'.
-  Overload 2 of 2, '(predicate: (value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => unknown, thisArg?: any): $ZodCheck<string> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => unknown'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<string>' but required in type '{ kind: string; }'.
-src/lib/api/openapi-generator.ts(57,42): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(predicate: (value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => value is $ZodCheck<string>, thisArg?: any): $ZodCheck<string> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => value is $ZodCheck<string>'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<string>' but required in type '{ kind: string; }'.
-  Overload 2 of 2, '(predicate: (value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => unknown, thisArg?: any): $ZodCheck<string> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => unknown'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<string>' but required in type '{ kind: string; }'.
-src/lib/api/openapi-generator.ts(57,86): error TS2339: Property 'value' does not exist on type '$ZodCheck<string>'.
-src/lib/api/openapi-generator.ts(59,34): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(predicate: (value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => value is $ZodCheck<string>, thisArg?: any): $ZodCheck<string> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => value is $ZodCheck<string>'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<string>' but required in type '{ kind: string; }'.
-  Overload 2 of 2, '(predicate: (value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => unknown, thisArg?: any): $ZodCheck<string> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => unknown'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<string>' but required in type '{ kind: string; }'.
-src/lib/api/openapi-generator.ts(60,42): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(predicate: (value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => value is $ZodCheck<string>, thisArg?: any): $ZodCheck<string> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => value is $ZodCheck<string>'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<string>' but required in type '{ kind: string; }'.
-  Overload 2 of 2, '(predicate: (value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => unknown, thisArg?: any): $ZodCheck<string> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<string>, index: number, obj: $ZodCheck<string>[]) => unknown'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<string>' but required in type '{ kind: string; }'.
-src/lib/api/openapi-generator.ts(60,86): error TS2339: Property 'value' does not exist on type '$ZodCheck<string>'.
-src/lib/api/openapi-generator.ts(68,34): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(predicate: (value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => value is $ZodCheck<never>, thisArg?: any): $ZodCheck<never> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => value is $ZodCheck<never>'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<never>' but required in type '{ kind: string; }'.
-  Overload 2 of 2, '(predicate: (value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => unknown, thisArg?: any): $ZodCheck<never> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => unknown'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<never>' but required in type '{ kind: string; }'.
-src/lib/api/openapi-generator.ts(69,40): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(predicate: (value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => value is $ZodCheck<never>, thisArg?: any): $ZodCheck<never> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => value is $ZodCheck<never>'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<never>' but required in type '{ kind: string; }'.
-  Overload 2 of 2, '(predicate: (value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => unknown, thisArg?: any): $ZodCheck<never> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => unknown'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<never>' but required in type '{ kind: string; }'.
-src/lib/api/openapi-generator.ts(69,84): error TS2339: Property 'value' does not exist on type '$ZodCheck<never>'.
-src/lib/api/openapi-generator.ts(71,34): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(predicate: (value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => value is $ZodCheck<never>, thisArg?: any): $ZodCheck<never> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => value is $ZodCheck<never>'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<never>' but required in type '{ kind: string; }'.
-  Overload 2 of 2, '(predicate: (value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => unknown, thisArg?: any): $ZodCheck<never> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => unknown'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<never>' but required in type '{ kind: string; }'.
-src/lib/api/openapi-generator.ts(72,40): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(predicate: (value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => value is $ZodCheck<never>, thisArg?: any): $ZodCheck<never> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => value is $ZodCheck<never>'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<never>' but required in type '{ kind: string; }'.
-  Overload 2 of 2, '(predicate: (value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => unknown, thisArg?: any): $ZodCheck<never> | undefined', gave the following error.
-    Argument of type '(c: { kind: string; }) => boolean' is not assignable to parameter of type '(value: $ZodCheck<never>, index: number, obj: $ZodCheck<never>[]) => unknown'.
-      Types of parameters 'c' and 'value' are incompatible.
-        Property 'kind' is missing in type '$ZodCheck<never>' but required in type '{ kind: string; }'.
-src/lib/api/openapi-generator.ts(72,84): error TS2339: Property 'value' does not exist on type '$ZodCheck<never>'.
-src/lib/api/openapi-generator.ts(84,31): error TS2345: Argument of type 'string' is not assignable to parameter of type 'ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>'.
-src/lib/api/openapi-generator.ts(91,23): error TS2339: Property 'values' does not exist on type '$ZodEnumDef<Readonly<Record<string, EnumValue>>>'.
-src/lib/api/openapi-generator.ts(96,29): error TS2345: Argument of type '$ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>' is not assignable to parameter of type 'ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>'.
-  Type '$ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>' is missing the following properties from type 'ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>': def, type, _def, _output, and 38 more.
-src/lib/api/openapi-generator.ts(160,5): error TS2532: Object is possibly 'undefined'.
-src/lib/db/cache.ts(12,10): error TS2724: '"@/lib/monitoring/metrics"' has no exported member named 'trackCacheMetric'. Did you mean 'trackMetric'?
-src/lib/db/query-builder.ts(15,39): error TS6133: 'CachePatterns' is declared but its value is never read.
-src/lib/db/query-builder.ts(165,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/lib/db/query-builder.ts(202,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/lib/db/query-builder.ts(231,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/lib/db/query-builder.ts(260,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/lib/db/query-builder.ts(293,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/lib/monitoring/error-alerts.ts(188,11): error TS6133: 'supabase' is declared but its value is never read.
-src/lib/security/input-sanitization.ts(138,42): error TS2769: No overload matches this call.
-  The last overload gave the following error.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/support/ticket-system.ts(8,1): error TS6133: 'createClient' is declared but its value is never read.
-src/lib/support/ticket-system.ts(39,31): error TS2339: Property 'supportTicket' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/lib/support/ticket-system.ts(58,32): error TS2339: Property 'supportTicket' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/lib/support/ticket-system.ts(73,31): error TS2339: Property 'supportTicket' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/lib/support/ticket-system.ts(93,16): error TS2339: Property 'ticketComment' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/lib/webhooks/manager.ts(8,1): error TS6133: 'createClient' is declared but its value is never read.
-src/lib/webhooks/manager.ts(71,7): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type '(Without<WebhookCreateInput, WebhookUncheckedCreateInput> & WebhookUncheckedCreateInput) | (Without<...> & WebhookCreateInput)'.
-src/lib/webhooks/manager.ts(80,10): error TS2352: Conversion of type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' to type 'Webhook' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' is missing the following properties from type 'Webhook': billingAccountId, active, failureCount
-src/lib/webhooks/manager.ts(88,14): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
-src/lib/webhooks/manager.ts(92,10): error TS2352: Conversion of type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }[]' to type 'Webhook[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' is missing the following properties from type 'Webhook': billingAccountId, active, failureCount
-src/lib/webhooks/manager.ts(105,29): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
-src/lib/webhooks/manager.ts(130,10): error TS2352: Conversion of type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' to type 'Webhook' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' is missing the following properties from type 'Webhook': billingAccountId, active, failureCount
-src/lib/webhooks/manager.ts(141,29): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
-src/lib/webhooks/manager.ts(161,29): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
-src/lib/webhooks/manager.ts(184,3): error TS6133: 'limit' is declared but its value is never read.
-src/lib/webhooks/manager.ts(194,29): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
+src/components/console/AIInsightsPanel.tsx(127,6): error TS17008: JSX element 'ConsoleErrorBoundary' has no corresponding closing tag.
+src/components/console/AIInsightsPanel.tsx(217,1): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/components/console/AIInsightsPanel.tsx(218,1): error TS1005: '</' expected.
+src/components/console/ErrorAlertsPanel.tsx(118,6): error TS17008: JSX element 'ConsoleErrorBoundary' has no corresponding closing tag.
+src/components/console/ErrorAlertsPanel.tsx(187,1): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/components/console/ErrorAlertsPanel.tsx(188,1): error TS1005: '</' expected.
+src/lib/integration/console-integration.ts(21,18): error TS1005: '>' expected.
+src/lib/integration/console-integration.ts(21,30): error TS1109: Expression expected.
+src/lib/integration/console-integration.ts(22,6): error TS1110: Type expected.
 npm error Lifecycle script `typecheck` failed with error:
 npm error code 2
 npm error path /workspace/packages/web

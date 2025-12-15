@@ -41,11 +41,23 @@ export async function createWebhook(
   billingAccountId: string,
   input: CreateWebhookInput
 ): Promise<Webhook> {
-  // Validate URL
+  // Validate URL format
   try {
-    new URL(input.url);
-  } catch {
-    throw new Error('Invalid webhook URL');
+    const url = new URL(input.url);
+    // Only allow HTTPS in production
+    if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:') {
+      throw new Error('Webhook URLs must use HTTPS in production');
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('HTTPS')) {
+      throw error;
+    }
+    throw new Error('Invalid webhook URL format');
+  }
+
+  // Validate URL length
+  if (input.url.length > 2048) {
+    throw new Error('Webhook URL is too long (max 2048 characters)');
   }
 
   // Validate events
@@ -59,9 +71,27 @@ export async function createWebhook(
     'billing.subscription_updated',
   ];
 
-  const invalidEvents = input.events.filter((e) => !validEvents.includes(e));
+  // Validate events array
+  if (!Array.isArray(input.events)) {
+    throw new Error('Events must be an array');
+  }
+
+  if (input.events.length === 0) {
+    throw new Error('At least one event must be specified');
+  }
+
+  if (input.events.length > 20) {
+    throw new Error('Maximum 20 events allowed per webhook');
+  }
+
+  // Validate each event
+  const invalidEvents = input.events.filter((e) => {
+    if (typeof e !== 'string') return true;
+    return !validEvents.includes(e);
+  });
+
   if (invalidEvents.length > 0) {
-    throw new Error(`Invalid events: ${invalidEvents.join(', ')}`);
+    throw new Error(`Invalid events: ${invalidEvents.join(', ')}. Valid events: ${validEvents.join(', ')}`);
   }
 
   const secret = input.secret || generateWebhookSecret();

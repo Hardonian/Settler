@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { ConsoleErrorBoundary } from '@/components/console/ErrorBoundary';
+import { AlertCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -61,6 +63,20 @@ export default function WebhooksPage() {
   };
 
   const createWebhook = async () => {
+    // Validate URL
+    try {
+      new URL(newWebhookUrl);
+    } catch {
+      alert('Please enter a valid URL');
+      return;
+    }
+
+    // Validate events
+    if (newWebhookEvents.length === 0) {
+      alert('Please select at least one event');
+      return;
+    }
+
     try {
       const res = await fetch('/api/console/webhooks', {
         method: 'POST',
@@ -83,7 +99,7 @@ export default function WebhooksPage() {
       }
     } catch (error) {
       console.error('Failed to create webhook:', error);
-      alert('Failed to create webhook');
+      alert('Failed to create webhook. Please try again.');
     }
   };
 
@@ -135,16 +151,17 @@ export default function WebhooksPage() {
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Webhooks
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Configure webhooks to receive real-time notifications about events.
-          </p>
-        </div>
+    <ConsoleErrorBoundary>
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+              Webhooks
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400">
+              Configure webhooks to receive real-time notifications about events.
+            </p>
+          </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -313,5 +330,6 @@ export default function WebhooksPage() {
         </Card>
       )}
     </div>
+    </ConsoleErrorBoundary>
   );
 }

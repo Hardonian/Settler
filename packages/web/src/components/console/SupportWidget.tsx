@@ -19,7 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { MessageSquare, CheckCircle2 } from 'lucide-react';
+import { MessageSquare, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ConsoleErrorBoundary } from './ErrorBoundary';
+import { BrandMessages } from '@/lib/brand/messaging';
 
 export function SupportWidget() {
   const [subject, setSubject] = useState('');
@@ -31,6 +33,28 @@ export function SupportWidget() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate inputs
+    if (!subject.trim()) {
+      alert('Please enter a subject');
+      return;
+    }
+
+    if (!description.trim()) {
+      alert('Please enter a description');
+      return;
+    }
+
+    if (subject.length > 200) {
+      alert('Subject must be 200 characters or less');
+      return;
+    }
+
+    if (description.length > 5000) {
+      alert('Description must be 5000 characters or less');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -38,8 +62,8 @@ export function SupportWidget() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          subject,
-          description,
+          subject: subject.trim(),
+          description: description.trim(),
           category,
           priority,
         }),
@@ -52,12 +76,13 @@ export function SupportWidget() {
         setCategory('technical');
         setPriority('medium');
       } else {
-        const error = await res.json();
-        alert(error.error || 'Failed to create ticket');
+        const errorData = await res.json().catch(() => ({}));
+        const errorMessage = errorData.error || BrandMessages.errors.generic;
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('Failed to create ticket:', error);
-      alert('Failed to create ticket');
+      alert(BrandMessages.errors.network);
     } finally {
       setSubmitting(false);
     }
@@ -81,16 +106,17 @@ export function SupportWidget() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageSquare className="w-5 h-5" />
-          Contact Support
-        </CardTitle>
-        <CardDescription>
-          Create a support ticket and we'll help you resolve your issue.
-        </CardDescription>
-      </CardHeader>
+    <ConsoleErrorBoundary>
+      <Card className="hover:shadow-lg transition-shadow">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            Contact Support
+          </CardTitle>
+          <CardDescription>
+            Create a support ticket and we'll help you resolve your issue.
+          </CardDescription>
+        </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -153,5 +179,6 @@ export function SupportWidget() {
         </form>
       </CardContent>
     </Card>
+    </ConsoleErrorBoundary>
   );
 }
