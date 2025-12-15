@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
 
     for (const event of events) {
       try {
-        const service = event.eventType.split('-')[0] || 'unknown';
+        const service = event.eventType?.split('-')[0] || 'unknown';
         const operation = event.eventType?.split('-').slice(1).join('-') || 'unknown';
         const quantity = event.quantity ? Number(event.quantity) : 1;
 

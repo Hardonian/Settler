@@ -163,7 +163,7 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as Record<string, unknown>)[modelName] as {
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
           findMany: (args: {
             where: Record<string, unknown>;
             take: number;
@@ -205,7 +205,7 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as Record<string, unknown>)[modelName] as {
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
           findUnique: (args: { where: Record<string, unknown> }) => Promise<T | null>;
         } | undefined;
         
@@ -239,7 +239,7 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as Record<string, unknown>)[modelName] as {
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
           create: (args: { data: Record<string, unknown> }) => Promise<T>;
         } | undefined;
         
@@ -273,7 +273,7 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as Record<string, unknown>)[modelName] as {
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
           update: (args: {
             where: Record<string, unknown>;
             data: Record<string, unknown>;
@@ -311,7 +311,7 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as Record<string, unknown>)[modelName] as {
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
           delete: (args: { where: Record<string, unknown> }) => Promise<T>;
         } | undefined;
         

@@ -5,6 +5,7 @@
  */
 
 import { prisma } from '@/shared/db/prismaClient';
+import { Prisma } from '@prisma/client';
 import { MilestoneType } from '@/components/milestones/MilestoneCelebration';
 
 export interface MilestoneEvent {
@@ -56,7 +57,7 @@ export async function recordMilestone(event: MilestoneEvent): Promise<void> {
         userId: event.userId,
         resourceType: 'milestone',
         action: event.milestone,
-        changes: (event.metadata || {}) as Record<string, unknown>,
+        changes: (event.metadata || {}) as Prisma.InputJsonValue,
       },
     });
   } catch (error) {

@@ -4,7 +4,7 @@
  * Returns active error alerts for the authenticated user.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getActiveAlerts } from '@/lib/monitoring/error-alerts';
 
