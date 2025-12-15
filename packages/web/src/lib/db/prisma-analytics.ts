@@ -177,7 +177,7 @@ export async function saveChatbotAnalytics(data: {
  * Get SDK download statistics
  * TODO: Add sDKDownload model to Prisma schema
  */
-export async function getSDKDownloadStats(startDate?: Date, endDate?: Date) {
+export async function getSDKDownloadStats(_startDate?: Date, _endDate?: Date) {
   // TODO: Implement when sDKDownload model is added to Prisma schema
   // Return mock data for now
   return {
