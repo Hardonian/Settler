@@ -12,7 +12,21 @@ scripts/verify-routes.ts(78,9): error TS6133: 'pageFile' is declared but its val
 scripts/verify-routes.ts(90,35): error TS6133: 'f' is declared but its value is never read.
 scripts/verify-routes.ts(92,37): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
+src/app/api/console/alerts/route.ts(14,27): error TS6133: 'request' is declared but its value is never read.
+src/app/api/console/support/tickets/route.ts(10,1): error TS6133: 'prisma' is declared but its value is never read.
+src/app/api/console/usage/alerts/route.ts(14,27): error TS6133: 'request' is declared but its value is never read.
+src/app/api/console/usage/analytics/route.ts(85,37): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/app/api/console/usage/analytics/route.ts(90,20): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/app/api/console/usage/analytics/route.ts(109,65): error TS2339: Property 'pricing' does not exist on type 'PlanConfig'.
+src/app/api/console/webhooks/route.ts(10,1): error TS6133: 'prisma' is declared but its value is never read.
 src/app/api/docs/openapi/route.ts(15,3): error TS6133: 'updateFlagEnvironmentSchema' is declared but its value is never read.
+src/app/console/webhooks/page.tsx(21,3): error TS2305: Module '"@/components/ui/dialog"' has no exported member 'DialogTrigger'.
+src/app/console/webhooks/page.tsx(24,24): error TS6133: 'RotateCw' is declared but its value is never read.
+src/components/console/UsageAnalyticsDashboard.tsx(16,1): error TS6192: All imports in import declaration are unused.
+src/components/console/UsageAnalyticsDashboard.tsx(18,1): error TS6133: 'format' is declared but its value is never read.
+src/lib/alerts/usage-alerts.ts(32,11): error TS6133: 'planConfig' is declared but its value is never read.
 src/lib/api/console-handler.ts(113,69): error TS2339: Property 'errors' does not exist on type 'ZodError<TInput>'.
 src/lib/api/console-handler.ts(178,9): error TS2322: Type 'NextResponse<unknown>' is not assignable to type 'NextResponse<ConsoleApiResponse<TOutput>>'.
   Type 'unknown' is not assignable to type 'ConsoleApiResponse<TOutput>'.
@@ -109,10 +123,30 @@ src/lib/db/query-builder.ts(260,29): error TS7053: Element implicitly has an 'an
   No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
 src/lib/db/query-builder.ts(293,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
   No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/monitoring/error-alerts.ts(188,11): error TS6133: 'supabase' is declared but its value is never read.
 src/lib/security/input-sanitization.ts(138,42): error TS2769: No overload matches this call.
   The last overload gave the following error.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
+src/lib/support/ticket-system.ts(8,1): error TS6133: 'createClient' is declared but its value is never read.
+src/lib/support/ticket-system.ts(39,31): error TS2339: Property 'supportTicket' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/support/ticket-system.ts(58,32): error TS2339: Property 'supportTicket' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/support/ticket-system.ts(73,31): error TS2339: Property 'supportTicket' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/support/ticket-system.ts(93,16): error TS2339: Property 'ticketComment' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/webhooks/manager.ts(8,1): error TS6133: 'createClient' is declared but its value is never read.
+src/lib/webhooks/manager.ts(71,7): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type '(Without<WebhookCreateInput, WebhookUncheckedCreateInput> & WebhookUncheckedCreateInput) | (Without<...> & WebhookCreateInput)'.
+src/lib/webhooks/manager.ts(80,10): error TS2352: Conversion of type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' to type 'Webhook' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' is missing the following properties from type 'Webhook': billingAccountId, active, failureCount
+src/lib/webhooks/manager.ts(88,14): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
+src/lib/webhooks/manager.ts(92,10): error TS2352: Conversion of type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }[]' to type 'Webhook[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' is missing the following properties from type 'Webhook': billingAccountId, active, failureCount
+src/lib/webhooks/manager.ts(105,29): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
+src/lib/webhooks/manager.ts(130,10): error TS2352: Conversion of type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' to type 'Webhook' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ id: string; userId: string; tenantId: string; status: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; deletedAt: Date | null; url: string; events: JsonValue; secret: string; }' is missing the following properties from type 'Webhook': billingAccountId, active, failureCount
+src/lib/webhooks/manager.ts(141,29): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
+src/lib/webhooks/manager.ts(161,29): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
+src/lib/webhooks/manager.ts(184,3): error TS6133: 'limit' is declared but its value is never read.
+src/lib/webhooks/manager.ts(194,29): error TS2353: Object literal may only specify known properties, and 'billingAccountId' does not exist in type 'WebhookWhereInput'.
 npm error Lifecycle script `typecheck` failed with error:
 npm error code 2
 npm error path /workspace/packages/web
