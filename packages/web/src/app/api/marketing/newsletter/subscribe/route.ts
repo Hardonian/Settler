@@ -18,25 +18,24 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = subscribeSchema.parse(body);
 
-    // TODO: Integrate with your email service provider (e.g., Resend, Mailchimp, ConvertKit)
-    // For now, we'll log and return success
-    console.log('Newsletter subscription:', {
+    // Integrate with Resend
+    const { subscribeToNewsletter } = await import('@/lib/email/resend');
+    const result = await subscribeToNewsletter({
       email: validated.email,
       name: validated.name,
       source: validated.source,
       tags: validated.tags,
-      timestamp: new Date().toISOString(),
     });
 
-    // Example integration with Resend (uncomment when ready):
-    // const resend = new Resend(process.env.RESEND_API_KEY);
-    // await resend.contacts.create({
-    //   email: validated.email,
-    //   firstName: validated.name?.split(' ')[0],
-    //   lastName: validated.name?.split(' ').slice(1).join(' '),
-    //   unsubscribed: false,
-    //   audienceId: process.env.RESEND_AUDIENCE_ID,
-    // });
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.error || 'Failed to subscribe to newsletter',
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       {

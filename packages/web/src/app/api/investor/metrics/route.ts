@@ -53,11 +53,16 @@ async function getInvestorMetrics() {
 
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Add authentication check
-    // const session = await getServerSession();
-    // if (!session || !session.user.isAdmin) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
+    // Check authentication
+    const { checkInvestorAuth } = await import('@/lib/auth/investor-auth');
+    const auth = await checkInvestorAuth(request);
+    
+    if (!auth.authorized) {
+      return NextResponse.json(
+        { error: auth.error || 'Unauthorized' },
+        { status: 401 }
+      );
+    }
 
     const metrics = await getInvestorMetrics();
 

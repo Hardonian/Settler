@@ -21,30 +21,46 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // In production, use Next.js Image Optimization or a service like Cloudinary
-    // For now, return the original URL with optimization hints
-    // TODO: Implement actual image optimization using sharp or similar
+    // Fetch image
+    const imageResponse = imageUrl.startsWith('http')
+      ? await fetch(imageUrl)
+      : await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev'}${imageUrl}`);
     
-    // Next.js automatically optimizes images served from /public or external domains
-    // configured in next.config.js
-    const optimizedUrl = imageUrl.startsWith('http')
-      ? imageUrl
-      : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev'}${imageUrl}`;
+    if (!imageResponse.ok) {
+      return NextResponse.json(
+        { error: 'Failed to fetch image' },
+        { status: 404 }
+      );
+    }
 
-    // Return redirect to optimized image or proxy it
-    // For now, return metadata about optimization
-    return NextResponse.json(
-      {
-        url: optimizedUrl,
+    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+
+    // Optimize with Sharp
+    try {
+      const { optimizeImage } = await import('@/lib/images/sharp-optimizer');
+      const optimizedBuffer = await optimizeImage(imageBuffer, {
         width: width ? parseInt(width) : undefined,
         height: height ? parseInt(height) : undefined,
         quality: parseInt(quality),
-        optimized: true,
-      },
-      {
-        headers: getCacheHeaders('STATIC'),
-      }
-    );
+        format: 'webp',
+      });
+
+      return new NextResponse(optimizedBuffer, {
+        headers: {
+          'Content-Type': 'image/webp',
+          ...getCacheHeaders('STATIC'),
+        },
+      });
+    } catch (error) {
+      // Fallback to original if optimization fails
+      console.error('Image optimization error:', error);
+      return new NextResponse(imageBuffer, {
+        headers: {
+          'Content-Type': imageResponse.headers.get('content-type') || 'image/jpeg',
+          ...getCacheHeaders('STATIC'),
+        },
+      });
+    }
   } catch (error) {
     console.error('Image optimization error:', error);
     return NextResponse.json(
