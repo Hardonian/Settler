@@ -1,25 +1,35 @@
 'use client';
 
 import { useEffect } from 'react';
-import { reportWebVitals } from '@/lib/analytics/web-vitals';
 
 /**
  * Performance Monitor Component
  * 
  * Tracks Core Web Vitals and performance metrics.
- * Integrates with Vercel Analytics and custom analytics.
+ * Vercel Analytics already handles Web Vitals reporting automatically.
+ * This component is a placeholder for any custom performance tracking.
  */
 export function PerformanceMonitor() {
   useEffect(() => {
-    // Report Web Vitals to analytics
-    if (typeof window !== 'undefined') {
-      reportWebVitals((metric) => {
-        // Send to Vercel Analytics (already handled by @vercel/analytics)
-        // Also send to custom analytics if needed
-        if (process.env.NODE_ENV === 'development') {
-          console.log('[Performance]', metric);
+    // Vercel Analytics automatically tracks Web Vitals
+    // This component can be extended for custom performance tracking if needed
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+      // Optional: Log performance metrics in development
+      if ('PerformanceObserver' in window) {
+        try {
+          const observer = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+              if (entry.entryType === 'navigation' || entry.entryType === 'paint') {
+                console.log('[Performance]', entry.name, entry.duration);
+              }
+            }
+          });
+          observer.observe({ entryTypes: ['navigation', 'paint'] });
+          return () => observer.disconnect();
+        } catch (e) {
+          // PerformanceObserver not supported or error
         }
-      });
+      }
     }
   }, []);
 
