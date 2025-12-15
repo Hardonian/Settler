@@ -26,9 +26,18 @@ export interface SignUpResult {
 export async function signUpUser(
   email: string,
   password: string,
-  name?: string
+  name?: string,
+  acceptTerms?: boolean
 ): Promise<SignUpResult> {
   try {
+    // Server-side validation: Terms acceptance is required
+    if (acceptTerms !== true) {
+      return {
+        success: false,
+        error: 'You must accept the Terms of Service and Privacy Policy to create an account.',
+      };
+    }
+
     const supabase = await createClient();
 
     // 1. Create auth user in Supabase

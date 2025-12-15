@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { listApiKeys, createApiKey, CreateApiKeyInput } from '@/domain/console/apiKeys';
+import { handleApiError } from '@/lib/api/error-handler';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -22,13 +23,8 @@ export async function GET(request: NextRequest) {
     const keys = await listApiKeys();
     return NextResponse.json({ keys });
   } catch (error) {
-    // If auth error, return 401
-    if (error instanceof Error && error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    console.error('[Console API Keys] Error:', error);
-    // Return 200 with empty array instead of 500 to prevent crashes
-    return NextResponse.json({ keys: [] });
+    // Use unified error handler (returns 200 with error envelope)
+    return handleApiError(error, 'Failed to fetch API keys');
   }
 }
 
@@ -46,20 +42,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    // If auth error, return 401
-    if (error instanceof Error && error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    // If permission error, return 403
-    if (error instanceof Error && error.message.includes('Permission denied')) {
-      return NextResponse.json({ error: error.message }, { status: 403 });
-    }
-    console.error('[Console API Keys] Error creating:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create API key';
-    // Return 200 with error message instead of 500
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 200 }
-    );
+    // Use unified error handler (returns 200 with error envelope)
+    return handleApiError(error, 'Failed to create API key');
   }
 }

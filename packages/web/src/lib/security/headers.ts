@@ -1,92 +1,68 @@
 /**
- * Security Headers Configuration
+ * Security Headers Middleware
  * 
- * Provides security headers for Next.js API routes and pages.
+ * Adds security headers to API responses.
+ * Protects against common vulnerabilities.
  */
 
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+export interface SecurityHeaders {
+  'X-Content-Type-Options': string;
+  'X-Frame-Options': string;
+  'X-XSS-Protection': string;
+  'Strict-Transport-Security'?: string;
+  'Content-Security-Policy'?: string;
+  'Referrer-Policy': string;
+  'Permissions-Policy': string;
+}
 
 /**
- * Security headers for API routes
+ * Default security headers
  */
-export function addSecurityHeaders(response: NextResponse): NextResponse {
-  // Content Security Policy
-  const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // 'unsafe-eval' needed for Next.js
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https:",
-    "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co https://*.stripe.com https://*.upstash.io",
-    "frame-src 'self' https://js.stripe.com",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-    "upgrade-insecure-requests",
-  ].join('; ');
+export const defaultSecurityHeaders: SecurityHeaders = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+};
 
-  // Set security headers
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  response.headers.set('Content-Security-Policy', csp);
+/**
+ * Add security headers to response
+ */
+export function addSecurityHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  
+  // Add default security headers
+  Object.entries(defaultSecurityHeaders).forEach(([key, value]) => {
+    if (value) {
+      headers.set(key, value);
+    }
+  });
 
-  // Strict Transport Security (only in production)
-  if (process.env.NODE_ENV === 'production') {
-    response.headers.set(
-      'Strict-Transport-Security',
-      'max-age=31536000; includeSubDomains; preload'
+  // Add CSP for API routes (if not already set)
+  if (!headers.has('Content-Security-Policy')) {
+    headers.set(
+      'Content-Security-Policy',
+      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
     );
   }
 
-  return response;
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 /**
- * CORS headers for API routes
+ * Middleware to add security headers
  */
-export function addCorsHeaders(
-  response: NextResponse,
-  origin?: string | null
-): NextResponse {
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['*'];
-  const isAllowed = allowedOrigins.includes('*') || 
-                    (origin && allowedOrigins.includes(origin));
-
-  if (isAllowed) {
-    response.headers.set('Access-Control-Allow-Origin', origin || '*');
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    response.headers.set('Access-Control-Max-Age', '86400');
-  }
-
-  return response;
-}
-
-/**
- * Rate limit headers
- */
-export function addRateLimitHeaders(
-  response: NextResponse,
-  remaining: number,
-  reset: number
-): NextResponse {
-  response.headers.set('X-RateLimit-Remaining', String(remaining));
-  response.headers.set('X-RateLimit-Reset', String(reset));
-  return response;
-}
-
-/**
- * Request size limit check
- */
-export function checkRequestSize(request: NextRequest, maxSizeBytes = 10 * 1024 * 1024): boolean {
-  const contentLength = request.headers.get('content-length');
-  if (contentLength) {
-    const size = parseInt(contentLength, 10);
-    return size <= maxSizeBytes;
-  }
-  return true; // Unknown size, allow (will fail on actual read if too large)
+export function withSecurityHeaders<T extends (...args: any[]) => Promise<Response>>(
+  handler: T
+): T {
+  return (async (...args: Parameters<T>) => {
+    const response = await handler(...args);
+    return addSecurityHeaders(response);
+  }) as T;
 }

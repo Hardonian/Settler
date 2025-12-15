@@ -22,12 +22,13 @@ function SignUpForm() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const name = formData.get('name') as string;
+    const acceptTerms = formData.get('acceptTerms') === 'on';
 
     if (!email || !password) {
       return;
     }
 
-    const result = await signUpUser(email, password, name);
+    const result = await signUpUser(email, password, name, acceptTerms);
     
     if (result.success) {
       // Redirect to console with welcome flag
@@ -80,6 +81,27 @@ function SignUpForm() {
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
           Must be at least 8 characters
         </p>
+      </div>
+
+      <div className="flex items-start gap-2">
+        <input
+          type="checkbox"
+          id="accept-terms"
+          name="acceptTerms"
+          required
+          className="mt-1 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        />
+        <Label htmlFor="accept-terms" className="text-sm text-slate-600 dark:text-slate-400">
+          I agree to the{' '}
+          <Link href="/legal/terms" className="text-blue-600 dark:text-electric-cyan hover:underline" target="_blank">
+            Terms of Service
+          </Link>
+          {' '}and{' '}
+          <Link href="/legal/privacy" className="text-blue-600 dark:text-electric-cyan hover:underline" target="_blank">
+            Privacy Policy
+          </Link>
+          *
+        </Label>
       </div>
 
       <Button
