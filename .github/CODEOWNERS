@@ -1,0 +1,41 @@
+# Code Owners
+
+# Protect proprietary/internal paths
+# These paths require maintainer approval for changes
+
+# Internal business documents
+/internal/ @settler/maintainers
+/strategic/ @settler/maintainers
+/docs/internal/ @settler/maintainers
+/docs/investor/ @settler/maintainers
+/docs/business/ @settler/maintainers
+
+# Platform proprietary code
+/packages/web/ @settler/maintainers
+/packages/api/ @settler/maintainers
+/packages/adapters/ @settler/maintainers
+/packages/edge-ai-core/ @settler/maintainers
+/packages/edge-node/ @settler/maintainers
+/prisma/ @settler/maintainers
+/supabase/ @settler/maintainers
+/config/ @settler/maintainers
+
+# Classification and mirror tools
+/scripts/classify.ts @settler/maintainers
+/scripts/mirror-*.ts @settler/maintainers
+/.github/workflows/publish-mirror.yml @settler/maintainers
+
+# Vercel configuration
+/vercel.json @settler/maintainers
+
+# OSS packages (open for contributions)
+/packages/sdk/ @settler/maintainers @settler/contributors
+/packages/sdk-python/ @settler/maintainers @settler/contributors
+/packages/sdk-go/ @settler/maintainers @settler/contributors
+/packages/sdk-ruby/ @settler/maintainers @settler/contributors
+/packages/api-client/ @settler/maintainers @settler/contributors
+/packages/protocol/ @settler/maintainers @settler/contributors
+/packages/react-settler/ @settler/maintainers @settler/contributors
+/packages/cli/ @settler/maintainers @settler/contributors
+/docs/public/ @settler/maintainers @settler/contributors
+/examples/ @settler/maintainers @settler/contributors

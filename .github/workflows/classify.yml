@@ -1,0 +1,51 @@
+name: Classification Check
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  classify:
+    name: Classify Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: Run classification
+        run: npm run classify:strict
+      - name: Upload classification report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: classification-report
+          path: artifacts/classification-report.json
+      - name: Upload classification summary
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: classification-summary
+          path: artifacts/classification-summary.md
+      - name: Check for violations
+        run: |
+          if [ -f artifacts/classification-report.json ]; then
+            VIOLATIONS=$(node -e "const fs=require('fs'); const d=JSON.parse(fs.readFileSync('artifacts/classification-report.json')); console.log(d.violations.length);")
+            if [ "$VIOLATIONS" -gt 0 ]; then
+              echo "❌ Found $VIOLATIONS violations"
+              exit 1
+            fi
+          fi
+      - name: Check for SECRET_RISK
+        run: |
+          if [ -f artifacts/classification-report.json ]; then
+            SECRET_RISK=$(node -e "const fs=require('fs'); const d=JSON.parse(fs.readFileSync('artifacts/classification-report.json')); console.log(d.summary.secret_risk);")
+            if [ "$SECRET_RISK" -gt 0 ]; then
+              echo "❌ CRITICAL: Found $SECRET_RISK SECRET_RISK files"
+              exit 1
+            fi
+          fi

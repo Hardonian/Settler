@@ -1,0 +1,40 @@
+name: Smoke Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: Build application
+        run: npm run build
+        env:
+          # Use dummy values for build (smoke tests will use actual deployment URL)
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-key
+          SKIP_ENV_VALIDATION: true
+      - name: Run smoke tests against deployment
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: npm run test:smoke
+        env:
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL || 'https://settler.dev' }}
+        continue-on-error: true
+      - name: Run smoke tests against preview
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "⚠️  Smoke tests require a deployed preview URL"
+          echo "Configure preview URL in PR comments or use workflow_dispatch"
+        continue-on-error: true
