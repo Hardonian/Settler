@@ -12,6 +12,23 @@ scripts/verify-routes.ts(78,9): error TS6133: 'pageFile' is declared but its val
 scripts/verify-routes.ts(90,35): error TS6133: 'f' is declared but its value is never read.
 scripts/verify-routes.ts(92,37): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
+src/lib/api/console-handler.ts(113,69): error TS2339: Property 'errors' does not exist on type 'ZodError<TInput>'.
+src/lib/api/console-handler.ts(178,9): error TS2322: Type 'NextResponse<unknown>' is not assignable to type 'NextResponse<ConsoleApiResponse<TOutput>>'.
+  Type 'unknown' is not assignable to type 'ConsoleApiResponse<TOutput>'.
+src/lib/db/query-builder.ts(125,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/db/query-builder.ts(162,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/db/query-builder.ts(191,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/db/query-builder.ts(220,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/db/query-builder.ts(253,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+  No index signature with a parameter of type 'string' was found on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/security/input-sanitization.ts(138,42): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
 npm error Lifecycle script `typecheck` failed with error:
 npm error code 2
 npm error path /workspace/packages/web
