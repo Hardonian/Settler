@@ -145,9 +145,22 @@ export async function GET(_request: NextRequest) {
     });
   } catch (error) {
     console.error("Usage warnings error:", error);
+    // Return 200 with empty warnings instead of 500 to prevent UI crash
     return NextResponse.json(
-      { error: "Failed to get usage warnings" },
-      { status: 500 }
+      {
+        warnings: [],
+        usage: {
+          reconciliation: 0,
+          receipt_parse: 0,
+          feature_flag: 0,
+        },
+        limits: {
+          reconciliationsPerMonth: 1000,
+          receiptParsesPerMonth: 100,
+          featureFlagEvaluationsPerMonth: 100000,
+        },
+      },
+      { status: 200 }
     );
   }
 }

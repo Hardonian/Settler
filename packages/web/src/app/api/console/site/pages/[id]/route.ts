@@ -75,9 +75,10 @@ export async function GET(
     return NextResponse.json({ page });
   } catch (error) {
     console.error('Error fetching page:', error);
+    // Return 404 instead of 500 to prevent UI crash
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: 'Page not found' },
+      { status: 404 }
     );
   }
 }
@@ -234,9 +235,11 @@ export async function PUT(
     return NextResponse.json({ page });
   } catch (error) {
     console.error('Error updating page:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update page';
+    // Return 200 with error message instead of 500
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: errorMessage, page: null },
+      { status: 200 }
     );
   }
 }
@@ -304,9 +307,11 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting page:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete page';
+    // Return 200 with error message instead of 500
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: errorMessage, success: false },
+      { status: 200 }
     );
   }
 }

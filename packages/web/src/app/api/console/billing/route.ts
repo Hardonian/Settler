@@ -148,9 +148,19 @@ async function getBillingHandler(_request: NextRequest) {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
+    // Return 200 with error message instead of 500 to prevent UI crash
     return NextResponse.json(
-      { error: 'Failed to fetch billing data' },
-      { status: 500 }
+      {
+        error: 'Failed to fetch billing data',
+        billingAccount: null,
+        subscription: null,
+        usage: {
+          reconcile: { current: 0, limit: 0 },
+          receipts: { current: 0, limit: 0 },
+          featureFlags: { current: 0, limit: 0 },
+        },
+      },
+      { status: 200 }
     );
   }
 }

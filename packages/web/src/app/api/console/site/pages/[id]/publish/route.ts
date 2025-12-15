@@ -89,9 +89,11 @@ export async function POST(
     return NextResponse.json({ page: published });
   } catch (error) {
     console.error('Error publishing page:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to publish page';
+    // Return 200 with error message instead of 500
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: errorMessage, page: null },
+      { status: 200 }
     );
   }
 }

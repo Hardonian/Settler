@@ -6,3 +6,16 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck
 > tsc --noEmit --incremental
 
+scripts/verify-routes.ts(9,1): error TS6133: 'readFileSync' is declared but its value is never read.
+scripts/verify-routes.ts(11,1): error TS6133: 'glob' is declared but its value is never read.
+scripts/verify-routes.ts(78,9): error TS6133: 'pageFile' is declared but its value is never read.
+scripts/verify-routes.ts(90,35): error TS6133: 'f' is declared but its value is never read.
+scripts/verify-routes.ts(92,37): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /workspace/packages/web
+npm error workspace @settler/web@1.0.0
+npm error location /workspace/packages/web
+npm error command failed
+npm error command sh -c tsc --noEmit --incremental

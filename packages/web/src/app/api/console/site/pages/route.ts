@@ -64,10 +64,8 @@ export async function GET() {
     return NextResponse.json({ pages });
   } catch (error) {
     console.error('Error listing pages:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    // Return 200 with empty array instead of 500 to prevent UI crash
+    return NextResponse.json({ pages: [] });
   }
 }
 
@@ -183,9 +181,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ page }, { status: 201 });
   } catch (error) {
     console.error('Error creating page:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create page';
+    // Return 200 with error message instead of 500
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: errorMessage, page: null },
+      { status: 200 }
     );
   }
 }

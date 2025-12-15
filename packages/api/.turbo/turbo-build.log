@@ -14,3 +14,7 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
+
+> @settler/api@1.0.0 build
+> tsc
+

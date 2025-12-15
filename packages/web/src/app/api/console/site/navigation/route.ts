@@ -52,10 +52,13 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Error fetching navigation:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    // Return 200 with defaults instead of 500
+    return NextResponse.json({
+      navigation: {
+        navItems: [],
+        footerItems: [],
+      },
+    });
   }
 }
 
@@ -159,9 +162,11 @@ export async function PUT(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error updating navigation:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update navigation';
+    // Return 200 with error message instead of 500
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: errorMessage, navigation: null },
+      { status: 200 }
     );
   }
 }

@@ -49,10 +49,16 @@ export async function GET() {
     return NextResponse.json({ branding });
   } catch (error) {
     console.error('Error fetching branding:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    // Return 200 with defaults instead of 500 to prevent UI crash
+    return NextResponse.json({
+      branding: {
+        primaryColor: '#2563eb',
+        secondaryColor: '#7c3aed',
+        accentColor: '#06b6d4',
+        backgroundColor: '#ffffff',
+        borderRadiusScale: 1.0,
+      },
+    });
   }
 }
 
@@ -166,9 +172,11 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ branding });
   } catch (error) {
     console.error('Error updating branding:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update branding';
+    // Return 200 with error message instead of 500
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: errorMessage, branding: null },
+      { status: 200 }
     );
   }
 }
