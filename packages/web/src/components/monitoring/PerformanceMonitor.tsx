@@ -25,12 +25,16 @@ export function PerformanceMonitor() {
             }
           });
           observer.observe({ entryTypes: ['navigation', 'paint'] });
-          return () => observer.disconnect();
+          return () => {
+            observer.disconnect();
+          };
         } catch (e) {
           // PerformanceObserver not supported or error
+          return undefined;
         }
       }
     }
+    return undefined;
   }, []);
 
   return null; // This component doesn't render anything
