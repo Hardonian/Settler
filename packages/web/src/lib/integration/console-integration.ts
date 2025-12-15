@@ -14,14 +14,18 @@ import { ConsoleErrorBoundary } from '@/components/console/ErrorBoundary';
 /**
  * Wrap component with error boundary
  */
-export function withErrorBoundary<T extends React.ComponentType<any>>(
-  Component: T
-): T {
-  return ((props: any) => (
-    <ConsoleErrorBoundary>
-      <Component {...props} />
-    </ConsoleErrorBoundary>
-  )) as T;
+export function withErrorBoundary<P extends Record<string, unknown>>(
+  Component: React.ComponentType<P>
+): React.ComponentType<P> {
+  function WrappedComponent(props: P): React.ReactElement {
+    return (
+      <ConsoleErrorBoundary>
+        <Component {...props} />
+      </ConsoleErrorBoundary>
+    );
+  }
+  WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name || 'Component'})`;
+  return WrappedComponent;
 }
 
 /**
