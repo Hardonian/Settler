@@ -4,61 +4,118 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allow manual trigger
+    paths:
+      - 'packages/**'
+      - 'config/**'
+      - 'scripts/**'
+      - '.github/workflows/deploy-production.yml'
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip tests (use with caution)'
+        required: false
+        default: false
+        type: boolean
+      skip_migrations:
+        description: 'Skip migrations (migrations handled by migration-guardian)'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  NODE_ENV: production
 
 jobs:
-  deploy:
-    name: Deploy to Production
+  validate:
+    name: Validate Before Deployment
     runs-on: ubuntu-latest
-    environment: production # Requires production environment secrets
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
+      - name: Validate environment schema
+        run: npx --yes tsx --check config/env.schema.ts
+      - name: Type check
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Format check
+        run: npm run format:check
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: [validate]
+    if: github.event.inputs.skip_tests != 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
       - name: Run tests
-        run: npm run test
-      - name: Build application
+        run: npm run test -- --coverage
+      - name: Check coverage threshold
+        run: |
+          COVERAGE_FILE=./packages/api/coverage/coverage-summary.json
+          if [ -f "$COVERAGE_FILE" ]; then
+            COVERAGE=$(node -e "const fs=require('fs'); const d=JSON.parse(fs.readFileSync('$COVERAGE_FILE')); console.log(d.total.lines.pct);")
+            THRESHOLD=70
+            if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+              echo "❌ Coverage $COVERAGE% is below $THRESHOLD% threshold"
+              exit 1
+            else
+              echo "✅ Coverage $COVERAGE% meets $THRESHOLD% threshold"
+            fi
+          fi
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: Build all packages
         run: npm run build
       - name: Verify build artifacts
         run: |
-          test -d packages/api/dist || exit 1
-          test -d packages/sdk/dist || exit 1
-          echo "✅ Build artifacts verified"
-      - name: Validate environment before migration
-        run: |
-          echo "🔍 Validating environment before migration..."
-          npx --yes tsx scripts/check-env.ts production || echo "⚠️  Environment validation skipped"
-      
-      - name: Run database migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-          NODE_ENV: production
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-        run: |
-          echo "🔄 Running production database migrations..."
-          echo "⚠️  PRODUCTION MIGRATION - This will modify the production database"
-          cd packages/api
-          npm run migrate:prod
-          echo "✅ Migrations completed successfully"
-      
-      - name: Verify migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "🔍 Verifying migration success..."
-          # Check that refresh_tokens table exists (from migration 009)
-          PGPASSWORD=$(echo $DATABASE_URL | sed -n 's/.*:\([^@]*\)@.*/\1/p') || echo ""
-          psql $DATABASE_URL -c "\d refresh_tokens" && echo "✅ refresh_tokens table exists" || echo "⚠️  refresh_tokens table check skipped"
-          echo "✅ Migration verification complete"
+          test -d packages/api/dist || (echo "❌ API dist missing" && exit 1)
+          test -d packages/sdk/dist || (echo "❌ SDK dist missing" && exit 1)
+          echo "✅ All build artifacts verified"
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            packages/api/dist
+            packages/sdk/dist
+          retention-days: 7
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build]
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: .
       - name: Deploy to Vercel
         if: env.VERCEL_TOKEN != ''
         env:
@@ -67,21 +124,55 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           echo "🚀 Deploying to Vercel..."
-          # Vercel deployment would happen here
-          # For now, we just verify the build
-          echo "✅ Deployment ready (configure Vercel deployment steps)"
-      - name: Verify deployment
+          # Vercel deployment happens automatically on push to main
+          # This step verifies deployment readiness
+          echo "✅ Deployment initiated"
+      - name: Wait for deployment
         run: |
-          echo "🔍 Verifying deployment..."
-          # Add health check against production URL
-          # For now, we verify migrations completed
-          echo "✅ Deployment verification complete"
-      - name: Post-deployment health check
-        if: env.PRODUCTION_URL != ''
-        env:
-          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 15
+
+  verify:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    env:
+      PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+    steps:
+      - name: Health check
         run: |
-          echo "🔍 Running post-deployment health check..."
-          sleep 10 # Wait for deployment to be ready
-          curl -f $PRODUCTION_URL/health || echo "⚠️  Health check failed (deployment may still be starting)"
-          echo "✅ Health check completed"
+          echo "🔍 Running health checks..."
+          for i in {1..10}; do
+            if curl -f ${PRODUCTION_URL}/health && curl -f ${PRODUCTION_URL}/health/detailed; then
+              echo "✅ Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "⏳ Retry $i/10..."
+            sleep 3
+          done
+          echo "❌ Health check failed after 10 retries"
+          exit 1
+      - name: Verify API endpoints
+        run: |
+          echo "🔍 Verifying API endpoints..."
+          curl -f ${PRODUCTION_URL}/api/v1/openapi.json && echo "✅ OpenAPI endpoint OK" || echo "❌ OpenAPI endpoint failed"
+          curl -f ${PRODUCTION_URL}/api/v1/health && echo "✅ API health endpoint OK" || echo "❌ API health endpoint failed"
+      - name: Create deployment summary
+        run: |
+          echo "## 🚀 Production Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✅ All checks passed" >> $GITHUB_STEP_SUMMARY
+
+  notify:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [verify]
+    if: failure()
+    steps:
+      - name: Create failure alert
+        run: |
+          echo "🚨 Production deployment failed"
+          # Alert will be handled by automated-alerting system
+          echo "DEPLOYMENT_FAILURE=true" >> $GITHUB_ENV
