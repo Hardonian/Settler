@@ -6,9 +6,7 @@
  * and can be accessed without errors.
  */
 
-import { readFileSync } from 'fs';
 import { join } from 'path';
-import { glob } from 'glob';
 
 interface RouteInfo {
   path: string;
@@ -75,26 +73,25 @@ function routeToFilePath(route: string): string[] {
 
 function checkRouteExists(route: string, appDir: string): RouteInfo {
   const files = routeToFilePath(route);
-  const pageFile = files[0];
   const layoutFile = files[1];
   
-  const pageExists = files.some(f => {
+  const pageExists = files.some(file => {
     try {
-      const fullPath = join(appDir, f);
+      const fullPath = join(appDir, file);
       return require('fs').existsSync(fullPath);
     } catch {
       return false;
     }
   });
   
-  const layoutExists = files.some(f => {
+  const layoutExists = layoutFile ? (() => {
     try {
       const fullPath = join(appDir, layoutFile);
       return require('fs').existsSync(fullPath);
     } catch {
       return false;
     }
-  });
+  })() : false;
   
   return {
     path: route,

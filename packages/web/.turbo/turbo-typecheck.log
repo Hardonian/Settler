@@ -6,20 +6,3 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck
 > tsc --noEmit --incremental
 
-src/app/console/billing/page.tsx(276,14): error TS17008: JSX element 'div' has no corresponding closing tag.
-src/components/console/AIInsightsPanel.tsx(127,6): error TS17008: JSX element 'ConsoleErrorBoundary' has no corresponding closing tag.
-src/components/console/AIInsightsPanel.tsx(217,1): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
-src/components/console/AIInsightsPanel.tsx(218,1): error TS1005: '</' expected.
-src/components/console/ErrorAlertsPanel.tsx(118,6): error TS17008: JSX element 'ConsoleErrorBoundary' has no corresponding closing tag.
-src/components/console/ErrorAlertsPanel.tsx(187,1): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
-src/components/console/ErrorAlertsPanel.tsx(188,1): error TS1005: '</' expected.
-src/lib/integration/console-integration.ts(21,18): error TS1005: '>' expected.
-src/lib/integration/console-integration.ts(21,30): error TS1109: Expression expected.
-src/lib/integration/console-integration.ts(22,6): error TS1110: Type expected.
-npm error Lifecycle script `typecheck` failed with error:
-npm error code 2
-npm error path /workspace/packages/web
-npm error workspace @settler/web@1.0.0
-npm error location /workspace/packages/web
-npm error command failed
-npm error command sh -c tsc --noEmit --incremental
