@@ -20,7 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CodeEditor } from './CodeEditor';
 import { RequestResponseViewer } from './RequestResponseViewer';
 import { CodeGenerator } from './CodeGenerator';
-import { Play, History, Sparkles, Loader2 } from 'lucide-react';
+import { Play, Loader2 } from 'lucide-react';
 import { ConsoleErrorBoundary } from './ErrorBoundary';
 
 interface ApiCall {

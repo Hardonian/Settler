@@ -4,7 +4,7 @@
  * Client-side validation for console components.
  */
 
-import { z } from 'zod';
+// Zod imports removed - not currently used in this file
 
 /**
  * Validate API key format

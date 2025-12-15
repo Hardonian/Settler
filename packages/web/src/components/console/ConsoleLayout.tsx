@@ -28,8 +28,6 @@ import {
   Sparkles,
   Activity,
   Webhook,
-  MessageSquare,
-  Zap,
 } from 'lucide-react';
 
 const consoleNavItems = [

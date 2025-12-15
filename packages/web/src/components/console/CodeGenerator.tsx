@@ -21,7 +21,6 @@ interface CodeGeneratorProps {
 
 export function CodeGenerator({ apiCall, apiKey }: CodeGeneratorProps) {
   const [copied, setCopied] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   // Validate inputs
   if (!apiKey || !apiKey.startsWith('rk_')) {

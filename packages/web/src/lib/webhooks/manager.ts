@@ -5,7 +5,6 @@
  */
 
 import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
 import crypto from 'crypto';
 
 export interface Webhook {
@@ -96,14 +95,24 @@ export async function createWebhook(
 
   const secret = input.secret || generateWebhookSecret();
 
+  // Get userId and tenantId from billingAccountId
+  const billingAccount = await prisma.billingAccount.findUnique({
+    where: { id: billingAccountId },
+    select: { userId: true, tenantId: true },
+  });
+
+  if (!billingAccount) {
+    throw new Error('Billing account not found');
+  }
+
   const webhook = await prisma.webhook.create({
     data: {
-      billingAccountId,
+      userId: billingAccount.userId,
+      tenantId: billingAccount.tenantId || billingAccount.userId, // Fallback to userId if tenantId is null
       url: input.url,
       events: input.events,
       secret,
-      active: true,
-      failureCount: 0,
+      status: 'active',
     },
   });
 
@@ -114,12 +123,29 @@ export async function createWebhook(
  * List webhooks for a billing account
  */
 export async function listWebhooks(billingAccountId: string): Promise<Webhook[]> {
+  // Get userId from billingAccountId
+  const billingAccount = await prisma.billingAccount.findUnique({
+    where: { id: billingAccountId },
+    select: { userId: true },
+  });
+
+  if (!billingAccount) {
+    return [];
+  }
+
   const webhooks = await prisma.webhook.findMany({
-    where: { billingAccountId },
+    where: { userId: billingAccount.userId },
     orderBy: { createdAt: 'desc' },
   });
 
-  return webhooks as Webhook[];
+  // Map to Webhook interface format
+  return webhooks.map((w) => ({
+    ...w,
+    billingAccountId,
+    active: w.status === 'active',
+    failureCount: 0, // Not tracked in schema
+    events: Array.isArray(w.events) ? w.events : [],
+  })) as Webhook[];
 }
 
 /**
@@ -130,9 +156,18 @@ export async function updateWebhook(
   billingAccountId: string,
   updates: Partial<Pick<Webhook, 'url' | 'events' | 'active'>>
 ): Promise<Webhook> {
-  // Verify ownership
+  // Get userId from billingAccountId and verify ownership
+  const billingAccount = await prisma.billingAccount.findUnique({
+    where: { id: billingAccountId },
+    select: { userId: true },
+  });
+
+  if (!billingAccount) {
+    throw new Error('Billing account not found');
+  }
+
   const existing = await prisma.webhook.findFirst({
-    where: { id: webhookId, billingAccountId },
+    where: { id: webhookId, userId: billingAccount.userId },
   });
 
   if (!existing) {
@@ -153,7 +188,7 @@ export async function updateWebhook(
     data: {
       ...(updates.url && { url: updates.url }),
       ...(updates.events && { events: updates.events }),
-      ...(updates.active !== undefined && { active: updates.active }),
+      ...(updates.active !== undefined && { status: updates.active ? 'active' : 'inactive' }),
     },
   });
 
@@ -167,8 +202,18 @@ export async function deleteWebhook(
   webhookId: string,
   billingAccountId: string
 ): Promise<void> {
+  // Get userId from billingAccountId and verify ownership
+  const billingAccount = await prisma.billingAccount.findUnique({
+    where: { id: billingAccountId },
+    select: { userId: true },
+  });
+
+  if (!billingAccount) {
+    throw new Error('Billing account not found');
+  }
+
   const existing = await prisma.webhook.findFirst({
-    where: { id: webhookId, billingAccountId },
+    where: { id: webhookId, userId: billingAccount.userId },
   });
 
   if (!existing) {
@@ -187,8 +232,18 @@ export async function rotateWebhookSecret(
   webhookId: string,
   billingAccountId: string
 ): Promise<{ secret: string }> {
+  // Get userId from billingAccountId and verify ownership
+  const billingAccount = await prisma.billingAccount.findUnique({
+    where: { id: billingAccountId },
+    select: { userId: true },
+  });
+
+  if (!billingAccount) {
+    throw new Error('Billing account not found');
+  }
+
   const existing = await prisma.webhook.findFirst({
-    where: { id: webhookId, billingAccountId },
+    where: { id: webhookId, userId: billingAccount.userId },
   });
 
   if (!existing) {
@@ -220,8 +275,18 @@ export async function getWebhookDeliveries(
   responseBody?: string;
   attemptedAt: Date;
 }>> {
+  // Get userId from billingAccountId and verify ownership
+  const billingAccount = await prisma.billingAccount.findUnique({
+    where: { id: billingAccountId },
+    select: { userId: true },
+  });
+
+  if (!billingAccount) {
+    throw new Error('Billing account not found');
+  }
+
   const existing = await prisma.webhook.findFirst({
-    where: { id: webhookId, billingAccountId },
+    where: { id: webhookId, userId: billingAccount.userId },
   });
 
   if (!existing) {

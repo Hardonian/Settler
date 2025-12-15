@@ -185,7 +185,6 @@ export async function checkAllAlerts(
  */
 export async function getActiveAlerts(userId: string): Promise<ErrorAlert[]> {
   try {
-    const supabase = await createClient();
     const billingAccount = await prisma.billingAccount.findFirst({
       where: { userId },
       select: { id: true },

@@ -153,6 +153,7 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
 
   const handleCTAClick = () => {
     const step = TOUR_STEPS[currentStep];
+    if (!step) return;
     if (step.ctaUrl !== '#') {
       router.push(step.ctaUrl);
     }
@@ -168,6 +169,9 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
   }
 
   const step = TOUR_STEPS[currentStep];
+  if (!step) {
+    return null;
+  }
   const Icon = step.icon;
   const progress = ((currentStep + 1) / TOUR_STEPS.length) * 100;
   const isFirstStep = currentStep === 0;

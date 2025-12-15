@@ -135,5 +135,5 @@ export function escapeHtml(text: string): string {
     '"': '&quot;',
     "'": '&#039;',
   };
-  return text.replace(/[&<>"']/g, (m) => map[m]);
+  return text.replace(/[&<>"']/g, (m) => map[m as keyof typeof map] ?? m);
 }
