@@ -15,6 +15,7 @@ import { ToastContainer } from "@/components/ux/ToastContainer";
 import { initSentry } from "@/lib/monitoring/sentry";
 import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 import { FloatingHelpButton } from "@/components/support/FloatingHelpButton";
+import { Chatbot } from "@/components/chatbot/Chatbot";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -206,6 +207,7 @@ export default async function RootLayout({
               <PwaInstallPrompt />
               <ToastContainer />
               <FloatingHelpButton />
+              <Chatbot />
               <Analytics />
               <SpeedInsights />
             </QueryProvider>

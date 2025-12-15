@@ -1,14 +1,17 @@
 import { getImageUrl } from '@/lib/images/image-config';
+import { generateProductSchema } from '@/lib/seo/structured-data';
 
 interface StructuredDataProps {
   data: Record<string, any>;
+  id?: string;
 }
 
-export function StructuredData({ data }: StructuredDataProps) {
+export function StructuredData({ data, id }: StructuredDataProps) {
   return (
     <script
+      id={id || 'structured-data'}
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data, null, 0) }}
     />
   );
 }
@@ -44,28 +47,10 @@ export function OrganizationSchema() {
 }
 
 export function SoftwareApplicationSchema() {
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: 'Settler API',
-    applicationCategory: 'DeveloperApplication',
-    operatingSystem: 'Any',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      ratingCount: '127',
-    },
-    description: 'Reconciliation-as-a-Service API for automating financial data reconciliation across platforms.',
-    url: 'https://settler.dev',
-    downloadUrl: 'https://www.npmjs.com/package/@settler/sdk',
-  };
+  // Use enhanced product schema from lib/seo/structured-data
+  const schema = generateProductSchema();
 
-  return <StructuredData data={schema} />;
+  return <StructuredData data={schema} id="software-application-schema" />;
 }
 
 export function FAQSchema({ faqs }: { faqs: Array<{ question: string; answer: string }> }) {

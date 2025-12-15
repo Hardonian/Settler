@@ -1,216 +1,155 @@
 /**
- * Conversion Analytics
- * 
- * Tracks user journey and conversion funnel metrics.
+ * Conversion Tracking Analytics
+ * Tracks conversion events for marketing and sales optimization
  */
 
-// Use dynamic import for Prisma Client to prevent bundling for browser
-// This ensures Prisma Client is only loaded on the server side
-
-export type ConversionEvent = 
-  | 'page_view'
-  | 'playground_visit'
-  | 'playground_action'
-  | 'signup_start'
-  | 'signup_complete'
-  | 'api_key_created'
-  | 'first_api_call'
-  | 'first_reconciliation'
-  | 'upgrade_intent'
-  | 'upgrade_complete'
-  | 'trial_start'
-  | 'trial_end';
-
-export interface ConversionEventData {
+export interface ConversionEvent {
+  event: string;
+  properties?: Record<string, any>;
   userId?: string;
   sessionId?: string;
-  event: ConversionEvent;
-  properties?: Record<string, unknown>;
   timestamp?: Date;
 }
 
-/**
- * Track a conversion event
- */
-export async function trackConversionEvent(data: ConversionEventData): Promise<void> {
-  // Only run on server side - skip in browser
-  if (typeof window !== 'undefined') {
-    return;
-  }
-  
-  try {
-    // Dynamically import Prisma Client to prevent browser bundling
-    const { prisma } = await import('@/shared/db/prismaClient');
-    // Store in activity_log table (or create dedicated conversion_events table)
-    await prisma.$executeRaw`
-      INSERT INTO activity_log (
-        user_id,
-        action,
-        resource_type,
-        metadata,
-        created_at
-      ) VALUES (
-        ${data.userId || null}::uuid,
-        ${data.event},
-        'conversion',
-        ${JSON.stringify(data.properties || {})}::jsonb,
-        ${data.timestamp || new Date()}
-      )
-    `;
-  } catch (error) {
-    // Don't block operations if tracking fails
-    console.error('[Conversion Analytics] Error tracking event:', error);
-  }
-}
+// Conversion funnel stages
+export const CONVERSION_STAGES = {
+  PAGE_VIEW: 'page_view',
+  SIGNUP_START: 'signup_start',
+  SIGNUP_COMPLETE: 'signup_complete',
+  TRIAL_START: 'trial_start',
+  FIRST_RECONCILIATION: 'first_reconciliation',
+  FIRST_PAID_INVOICE: 'first_paid_invoice',
+  UPGRADE: 'upgrade',
+  CHURN: 'churn',
+} as const;
 
 /**
- * Get conversion funnel metrics
+ * Track conversion event
  */
-export async function getConversionFunnel(startDate: Date, endDate: Date) {
-  // Only run on server side - skip in browser
-  if (typeof window !== 'undefined') {
-    return {
-      funnel: {},
-      conversionRates: {
-        playgroundToSignup: 0,
-        signupToApiKey: 0,
-        apiKeyToUpgrade: 0,
-        overall: 0,
+export async function trackConversion(
+  event: string,
+  properties?: Record<string, any>
+): Promise<void> {
+  try {
+    // Get session ID from localStorage or generate
+    const sessionId =
+      typeof window !== 'undefined'
+        ? localStorage.getItem('analytics_session_id') ||
+          `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        : undefined;
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('analytics_session_id', sessionId || '');
+    }
+
+    const conversionEvent: ConversionEvent = {
+      event,
+      properties: {
+        ...properties,
+        sessionId,
+        url: typeof window !== 'undefined' ? window.location.href : undefined,
+        referrer: typeof window !== 'undefined' ? document.referrer : undefined,
       },
-      period: {
-        start: startDate,
-        end: endDate,
-      },
+      timestamp: new Date(),
     };
-  }
-  
-  try {
-    // Dynamically import Prisma Client to prevent browser bundling
-    const { prisma } = await import('@/shared/db/prismaClient');
-    // Query conversion events from activity_log
-    const events = await prisma.$queryRaw<Array<{
-      action: string;
-      count: bigint;
-    }>>`
-      SELECT 
-        action,
-        COUNT(*) as count
-      FROM activity_log
-      WHERE 
-        resource_type = 'conversion'
-        AND created_at >= ${startDate}
-        AND created_at <= ${endDate}
-      GROUP BY action
-      ORDER BY 
-        CASE action
-          WHEN 'page_view' THEN 1
-          WHEN 'playground_visit' THEN 2
-          WHEN 'playground_action' THEN 3
-          WHEN 'signup_start' THEN 4
-          WHEN 'signup_complete' THEN 5
-          WHEN 'api_key_created' THEN 6
-          WHEN 'first_api_call' THEN 7
-          WHEN 'first_reconciliation' THEN 8
-          WHEN 'upgrade_intent' THEN 9
-          WHEN 'upgrade_complete' THEN 10
-          ELSE 99
-        END
-    `;
 
-    const funnel: Record<string, number> = {};
-    events.forEach(event => {
-      funnel[event.action] = Number(event.count);
+    // Send to analytics endpoint
+    await fetch('/api/analytics/conversion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(conversionEvent),
+    }).catch((error) => {
+      console.error('Failed to track conversion:', error);
+      // Don't throw - analytics failures shouldn't break the app
     });
-
-    // Calculate conversion rates
-    const pageViews = funnel['page_view'] || 0;
-    const signups = funnel['signup_complete'] || 0;
-    const apiKeysCreated = funnel['api_key_created'] || 0;
-    const upgrades = funnel['upgrade_complete'] || 0;
-
-    return {
-      funnel,
-      conversionRates: {
-        playgroundToSignup: pageViews > 0 ? (signups / pageViews) * 100 : 0,
-        signupToApiKey: signups > 0 ? (apiKeysCreated / signups) * 100 : 0,
-        apiKeyToUpgrade: apiKeysCreated > 0 ? (upgrades / apiKeysCreated) * 100 : 0,
-        overall: pageViews > 0 ? (upgrades / pageViews) * 100 : 0,
-      },
-      period: {
-        start: startDate,
-        end: endDate,
-      },
-    };
   } catch (error) {
-    console.error('[Conversion Analytics] Error getting funnel:', error);
-    return {
-      funnel: {},
-      conversionRates: {
-        playgroundToSignup: 0,
-        signupToApiKey: 0,
-        apiKeyToUpgrade: 0,
-        overall: 0,
-      },
-      period: {
-        start: startDate,
-        end: endDate,
-      },
-    };
+    console.error('Conversion tracking error:', error);
   }
 }
 
 /**
- * Track page view
+ * Track page view with conversion context
  */
 export async function trackPageView(
   path: string,
-  userId?: string,
-  sessionId?: string
+  properties?: Record<string, any>,
+  conversionStage?: string
 ): Promise<void> {
-  await trackConversionEvent({
-    userId,
-    sessionId,
-    event: 'page_view',
-    properties: {
-      path,
-    },
-  });
-}
-
-/**
- * Track playground visit
- */
-export async function trackPlaygroundVisit(
-  userId?: string,
-  sessionId?: string
-): Promise<void> {
-  await trackConversionEvent({
-    userId,
-    sessionId,
-    event: 'playground_visit',
+  await trackConversion(CONVERSION_STAGES.PAGE_VIEW, {
+    path,
+    ...properties,
+    conversionStage: conversionStage || 'awareness',
   });
 }
 
 /**
  * Track signup start
  */
-export async function trackSignupStart(
-  sessionId: string
-): Promise<void> {
-  await trackConversionEvent({
-    sessionId,
-    event: 'signup_start',
+export async function trackSignupStart(source?: string): Promise<void> {
+  await trackConversion(CONVERSION_STAGES.SIGNUP_START, {
+    source: source || 'unknown',
   });
 }
 
 /**
- * Track signup complete
+ * Track signup completion
  */
-export async function trackSignupComplete(
-  userId: string
-): Promise<void> {
-  await trackConversionEvent({
+export async function trackSignupComplete(userId: string, plan?: string): Promise<void> {
+  await trackConversion(CONVERSION_STAGES.SIGNUP_COMPLETE, {
     userId,
-    event: 'signup_complete',
+    plan,
+  });
+}
+
+/**
+ * Track trial start
+ */
+export async function trackTrialStart(userId: string): Promise<void> {
+  await trackConversion(CONVERSION_STAGES.TRIAL_START, {
+    userId,
+  });
+}
+
+/**
+ * Track first reconciliation (key conversion milestone)
+ */
+export async function trackFirstReconciliation(userId: string, jobId: string): Promise<void> {
+  await trackConversion(CONVERSION_STAGES.FIRST_RECONCILIATION, {
+    userId,
+    jobId,
+  });
+}
+
+/**
+ * Track first paid invoice (conversion to paid)
+ */
+export async function trackFirstPaidInvoice(userId: string, amount: number, plan: string): Promise<void> {
+  await trackConversion(CONVERSION_STAGES.FIRST_PAID_INVOICE, {
+    userId,
+    amount,
+    plan,
+  });
+}
+
+/**
+ * Track upgrade
+ */
+export async function trackUpgrade(userId: string, fromPlan: string, toPlan: string): Promise<void> {
+  await trackConversion(CONVERSION_STAGES.UPGRADE, {
+    userId,
+    fromPlan,
+    toPlan,
+  });
+}
+
+/**
+ * Track churn
+ */
+export async function trackChurn(userId: string, reason?: string): Promise<void> {
+  await trackConversion(CONVERSION_STAGES.CHURN, {
+    userId,
+    reason,
   });
 }
