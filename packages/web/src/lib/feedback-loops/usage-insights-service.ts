@@ -37,14 +37,9 @@ export async function analyzeUsageInsights(
 
   try {
     // Analyze feature popularity
-<<<<<<< HEAD
-    const featureUsage = await prisma.auditLog.groupBy({
-      by: ['eventType'],
-=======
     // Using AuditLog instead of activityLog (which doesn't exist in schema)
     const featureUsage = await prisma.auditLog.groupBy({
       by: ['resourceType'],
->>>>>>> origin/main
       where: {
         userId,
         createdAt: { gte: startDate },
@@ -61,12 +56,12 @@ export async function analyzeUsageInsights(
       take: 10,
     });
 
-    featureUsage.forEach((usage: { eventType?: string | null; _count: { id: number } }) => {
+    featureUsage.forEach((usage: { resourceType: string | null; _count: { id: number } }) => {
       insights.push({
         type: 'feature_popularity',
         feature: usage.resourceType || 'unknown',
         frequency: usage._count.id,
-        recommendation: `Feature "${usage.eventType}" is frequently used. Consider highlighting it in the UI.`,
+        recommendation: `Feature "${usage.resourceType}" is frequently used. Consider highlighting it in the UI.`,
         priority: usage._count.id > 50 ? 'high' : usage._count.id > 20 ? 'medium' : 'low',
       });
     });
@@ -85,13 +80,8 @@ export async function analyzeUsageInsights(
     });
 
     const errorCounts = new Map<string, number>();
-<<<<<<< HEAD
-    errors.forEach((error: { eventType?: string | null }) => {
-      const errorType = error.eventType || 'unknown';
-=======
     errors.forEach((error) => {
       const errorType = error.resourceType || 'unknown';
->>>>>>> origin/main
       errorCounts.set(errorType, (errorCounts.get(errorType) || 0) + 1);
     });
 

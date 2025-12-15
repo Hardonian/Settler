@@ -127,11 +127,6 @@ export function generateGoCode(apiCall: ApiCall, apiKey: string): string {
     ...apiCall.headers,
   };
 
-<<<<<<< HEAD
-  // Headers are included in the code snippet below
-
-=======
->>>>>>> origin/main
   const bodyString = apiCall.body
     ? `\n\tbody, _ := json.Marshal(${JSON.stringify(apiCall.body)})\n\treq, _ := http.NewRequest("${apiCall.method}", "${apiCall.endpoint}", bytes.NewBuffer(body))`
     : `\n\treq, _ := http.NewRequest("${apiCall.method}", "${apiCall.endpoint}", nil)`;

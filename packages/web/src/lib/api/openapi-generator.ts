@@ -51,42 +51,24 @@ export function zodToOpenAPI(schema: z.ZodSchema): Record<string, unknown> {
  */
 function zodTypeToOpenAPI(type: z.ZodType): Record<string, unknown> {
   if (type instanceof z.ZodString) {
-<<<<<<< HEAD
-    const checks = (type._def as { checks?: Array<{ kind: string; value?: number }> }).checks;
-=======
     const checks = (type._def as { checks?: Array<{ kind: string; value?: unknown }> }).checks;
->>>>>>> origin/main
     const minCheck = checks?.find((c) => c.kind === 'min');
     const maxCheck = checks?.find((c) => c.kind === 'max');
     return {
       type: 'string',
-<<<<<<< HEAD
-      ...(minCheck?.value !== undefined && { minLength: minCheck.value }),
-      ...(maxCheck?.value !== undefined && { maxLength: maxCheck.value }),
-=======
       ...(minCheck && typeof minCheck.value === 'number' && { minLength: minCheck.value }),
       ...(maxCheck && typeof maxCheck.value === 'number' && { maxLength: maxCheck.value }),
->>>>>>> origin/main
     };
   }
 
   if (type instanceof z.ZodNumber) {
-<<<<<<< HEAD
-    const checks = (type._def as { checks?: Array<{ kind: string; value?: number }> }).checks;
-=======
     const checks = (type._def as { checks?: Array<{ kind: string; value?: unknown }> }).checks;
->>>>>>> origin/main
     const minCheck = checks?.find((c) => c.kind === 'min');
     const maxCheck = checks?.find((c) => c.kind === 'max');
     return {
       type: 'number',
-<<<<<<< HEAD
-      ...(minCheck?.value !== undefined && { minimum: minCheck.value }),
-      ...(maxCheck?.value !== undefined && { maximum: maxCheck.value }),
-=======
       ...(minCheck && typeof minCheck.value === 'number' && { minimum: minCheck.value }),
       ...(maxCheck && typeof maxCheck.value === 'number' && { maximum: maxCheck.value }),
->>>>>>> origin/main
     };
   }
 
@@ -98,32 +80,19 @@ function zodTypeToOpenAPI(type: z.ZodType): Record<string, unknown> {
     const innerType = (type._def as { type: z.ZodType }).type;
     return {
       type: 'array',
-<<<<<<< HEAD
       items: zodTypeToOpenAPI(innerType),
-=======
-      items: zodTypeToOpenAPI((type._def as { type: z.ZodType }).type),
->>>>>>> origin/main
     };
   }
 
   if (type instanceof z.ZodEnum) {
     return {
       type: 'string',
-<<<<<<< HEAD
-      enum: (type._def as { values: readonly string[] }).values,
-=======
       enum: (type._def as { values: readonly [string, ...string[]] }).values,
->>>>>>> origin/main
     };
   }
 
   if (type instanceof z.ZodOptional) {
-<<<<<<< HEAD
-    const innerType = (type._def as { innerType: z.ZodType }).innerType;
-    return zodTypeToOpenAPI(innerType);
-=======
     return zodTypeToOpenAPI((type._def as { innerType: z.ZodType }).innerType);
->>>>>>> origin/main
   }
 
   return { type: 'object' };

@@ -202,32 +202,8 @@ export async function POST(request: NextRequest) {
     const pricePer1M = planCode === 'scale' ? 20 : 25;
     const price = (quantity / 1000000) * pricePer1M;
 
-<<<<<<< HEAD
-    // Find or create AI tokens add-on
-    let aiTokensAddOn = await prisma.addOn.findUnique({
-      where: { integrationId: 'ai_tokens' },
-    });
-
-    if (!aiTokensAddOn) {
-      // Create the add-on if it doesn't exist
-      aiTokensAddOn = await prisma.addOn.create({
-        data: {
-          integrationId: 'ai_tokens',
-          name: 'AI Tokens',
-          description: 'Additional AI tokens for API usage',
-          category: 'feature',
-          basePriceMonthly: new Decimal(price),
-          isActive: true,
-        },
-      });
-    }
-
-    // Create add-on purchase record (would integrate with Stripe for payment)
-    const addOnPurchase = await prisma.addOnPurchase.create({
-=======
     // Create add-on purchase record (would integrate with Stripe for payment)
     const purchase = await prisma.addOnPurchase.create({
->>>>>>> origin/main
       data: {
         billingAccountId: billingAccount.id,
         addOnId: aiTokensAddOn.id,
@@ -236,10 +212,7 @@ export async function POST(request: NextRequest) {
           planCode,
           pricePer1M,
           quantity,
-<<<<<<< HEAD
-=======
           price,
->>>>>>> origin/main
         },
       },
     });
@@ -248,17 +221,10 @@ export async function POST(request: NextRequest) {
     // For now, return the purchase details
     const response = NextResponse.json({
       addOn: {
-<<<<<<< HEAD
-        id: addOnPurchase.id,
-        quantity,
-        price,
-        status: addOnPurchase.status,
-=======
         id: purchase.id,
         quantity,
         price,
         status: purchase.status,
->>>>>>> origin/main
       },
       checkoutUrl: null, // Would be Stripe checkout URL in production
       message: 'Add-on created. Payment processing required.',
