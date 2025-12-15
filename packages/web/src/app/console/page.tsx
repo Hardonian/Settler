@@ -21,7 +21,7 @@ import { WelcomeBannerClient } from '@/components/onboarding/WelcomeBannerClient
 import { AIInsightsPanel } from '@/components/console/AIInsightsPanel';
 import { ErrorAlertsPanel } from '@/components/console/ErrorAlertsPanel';
 import { UsageWarningBanner } from '@/components/console/UsageWarningBanner';
-import { GuidedTour } from '@/components/console/GuidedTour';
+import { GuidedTourClient } from '@/components/console/GuidedTourClient';
 import { UsageInsightsPanel } from '@/components/console/UsageInsightsPanel';
 
 export const dynamic = 'force-dynamic';
@@ -289,7 +289,7 @@ async function ConsoleOverviewContent() {
       <OnboardingWizardClient />
       
       {/* Guided Tour */}
-      <GuidedTour />
+      <GuidedTourClient />
 
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
