@@ -95,8 +95,8 @@ scripts/mirror-*.ts
 #### Secret Patterns
 
 **Patterns**:
-- `SUPABASE_SERVICE_ROLE_KEY=sk_live_` or `sk_test_` (example pattern)
-- `STRIPE_SECRET_KEY=sk_live_` or `sk_test_` (example pattern)
+- `SUPABASE_SERVICE_ROLE_KEY=sk_live_` or `sk_test_`
+- `STRIPE_SECRET_KEY=sk_live_` or `sk_test_`
 - `BEGIN PRIVATE KEY` (actual key material)
 - `BEGIN RSA PRIVATE KEY`
 - `BEGIN EC PRIVATE KEY`
