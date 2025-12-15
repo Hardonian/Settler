@@ -169,9 +169,13 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
   }
 
   const step = TOUR_STEPS[currentStep];
+<<<<<<< HEAD
+  if (!step) return null;
+=======
   if (!step) {
     return null;
   }
+>>>>>>> origin/main
   const Icon = step.icon;
   const progress = ((currentStep + 1) / TOUR_STEPS.length) * 100;
   const isFirstStep = currentStep === 0;
@@ -195,10 +199,10 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
               <Icon className="w-5 h-5 text-white" />
             </div>
             <div>
-              <CardTitle>{step.title}</CardTitle>
+              <CardTitle>{step?.title || ''}</CardTitle>
               <CardDescription>
                 Step {currentStep + 1} of {TOUR_STEPS.length}
-                {step.optional && ' (Optional)'}
+                {step?.optional && ' (Optional)'}
               </CardDescription>
             </div>
           </div>
@@ -206,7 +210,7 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-            {step.description}
+            {step?.description || ''}
           </p>
           
           <div className="flex items-center justify-between gap-4">
@@ -233,7 +237,7 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
                 'Complete Tour'
               ) : (
                 <>
-                  {step.ctaLabel}
+                  {step?.ctaLabel || 'Next'}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </>
               )}

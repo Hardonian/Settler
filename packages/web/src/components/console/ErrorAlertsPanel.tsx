@@ -117,8 +117,7 @@ export function ErrorAlertsPanel() {
   };
 
   return (
-    <ConsoleErrorBoundary>
-      <Card className="hover:shadow-lg transition-shadow">
+    <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -185,6 +184,5 @@ export function ErrorAlertsPanel() {
         </div>
       </CardContent>
     </Card>
-    </ConsoleErrorBoundary>
   );
 }

@@ -9,15 +9,15 @@ import crypto from 'crypto';
 
 export interface Webhook {
   id: string;
-  billingAccountId: string;
+  userId: string;
+  tenantId: string;
   url: string;
   events: string[];
   secret: string;
-  active: boolean;
+  status: string; // active, inactive, deleted
   createdAt: Date;
   updatedAt: Date;
-  lastTriggeredAt?: Date;
-  failureCount: number;
+  deletedAt?: Date | null;
 }
 
 export interface CreateWebhookInput {
@@ -37,7 +37,8 @@ function generateWebhookSecret(): string {
  * Create a new webhook
  */
 export async function createWebhook(
-  billingAccountId: string,
+  userId: string,
+  tenantId: string,
   input: CreateWebhookInput
 ): Promise<Webhook> {
   // Validate URL format
@@ -107,8 +108,13 @@ export async function createWebhook(
 
   const webhook = await prisma.webhook.create({
     data: {
+<<<<<<< HEAD
+      userId,
+      tenantId,
+=======
       userId: billingAccount.userId,
       tenantId: billingAccount.tenantId || billingAccount.userId, // Fallback to userId if tenantId is null
+>>>>>>> origin/main
       url: input.url,
       events: input.events,
       secret,
@@ -116,12 +122,47 @@ export async function createWebhook(
     },
   });
 
-  return webhook as Webhook;
+  return {
+    id: webhook.id,
+    userId: webhook.userId,
+    tenantId: webhook.tenantId,
+    url: webhook.url,
+    events: webhook.events as string[],
+    secret: webhook.secret,
+    status: webhook.status,
+    createdAt: webhook.createdAt,
+    updatedAt: webhook.updatedAt,
+    deletedAt: webhook.deletedAt,
+  };
 }
 
 /**
- * List webhooks for a billing account
+ * List webhooks for a user/tenant
  */
+<<<<<<< HEAD
+export async function listWebhooks(userId: string, tenantId: string): Promise<Webhook[]> {
+  const webhooks = await prisma.webhook.findMany({
+    where: {
+      userId,
+      tenantId,
+      deletedAt: null,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return webhooks.map((w) => ({
+    id: w.id,
+    userId: w.userId,
+    tenantId: w.tenantId,
+    url: w.url,
+    events: w.events as string[],
+    secret: w.secret,
+    status: w.status,
+    createdAt: w.createdAt,
+    updatedAt: w.updatedAt,
+    deletedAt: w.deletedAt,
+  }));
+=======
 export async function listWebhooks(billingAccountId: string): Promise<Webhook[]> {
   // Get userId from billingAccountId
   const billingAccount = await prisma.billingAccount.findUnique({
@@ -146,6 +187,7 @@ export async function listWebhooks(billingAccountId: string): Promise<Webhook[]>
     failureCount: 0, // Not tracked in schema
     events: Array.isArray(w.events) ? w.events : [],
   })) as Webhook[];
+>>>>>>> origin/main
 }
 
 /**
@@ -153,8 +195,9 @@ export async function listWebhooks(billingAccountId: string): Promise<Webhook[]>
  */
 export async function updateWebhook(
   webhookId: string,
-  billingAccountId: string,
-  updates: Partial<Pick<Webhook, 'url' | 'events' | 'active'>>
+  userId: string,
+  tenantId: string,
+  updates: Partial<Pick<Webhook, 'url' | 'events' | 'status'>>
 ): Promise<Webhook> {
   // Get userId from billingAccountId and verify ownership
   const billingAccount = await prisma.billingAccount.findUnique({
@@ -167,7 +210,16 @@ export async function updateWebhook(
   }
 
   const existing = await prisma.webhook.findFirst({
+<<<<<<< HEAD
+    where: {
+      id: webhookId,
+      userId,
+      tenantId,
+      deletedAt: null,
+    },
+=======
     where: { id: webhookId, userId: billingAccount.userId },
+>>>>>>> origin/main
   });
 
   if (!existing) {
@@ -188,19 +240,35 @@ export async function updateWebhook(
     data: {
       ...(updates.url && { url: updates.url }),
       ...(updates.events && { events: updates.events }),
+<<<<<<< HEAD
+      ...(updates.status && { status: updates.status }),
+=======
       ...(updates.active !== undefined && { status: updates.active ? 'active' : 'inactive' }),
+>>>>>>> origin/main
     },
   });
 
-  return webhook as Webhook;
+  return {
+    id: webhook.id,
+    userId: webhook.userId,
+    tenantId: webhook.tenantId,
+    url: webhook.url,
+    events: webhook.events as string[],
+    secret: webhook.secret,
+    status: webhook.status,
+    createdAt: webhook.createdAt,
+    updatedAt: webhook.updatedAt,
+    deletedAt: webhook.deletedAt,
+  };
 }
 
 /**
- * Delete webhook
+ * Delete webhook (soft delete)
  */
 export async function deleteWebhook(
   webhookId: string,
-  billingAccountId: string
+  userId: string,
+  tenantId: string
 ): Promise<void> {
   // Get userId from billingAccountId and verify ownership
   const billingAccount = await prisma.billingAccount.findUnique({
@@ -213,15 +281,28 @@ export async function deleteWebhook(
   }
 
   const existing = await prisma.webhook.findFirst({
+<<<<<<< HEAD
+    where: {
+      id: webhookId,
+      userId,
+      tenantId,
+      deletedAt: null,
+    },
+=======
     where: { id: webhookId, userId: billingAccount.userId },
+>>>>>>> origin/main
   });
 
   if (!existing) {
     throw new Error('Webhook not found');
   }
 
-  await prisma.webhook.delete({
+  await prisma.webhook.update({
     where: { id: webhookId },
+    data: {
+      status: 'deleted',
+      deletedAt: new Date(),
+    },
   });
 }
 
@@ -230,7 +311,8 @@ export async function deleteWebhook(
  */
 export async function rotateWebhookSecret(
   webhookId: string,
-  billingAccountId: string
+  userId: string,
+  tenantId: string
 ): Promise<{ secret: string }> {
   // Get userId from billingAccountId and verify ownership
   const billingAccount = await prisma.billingAccount.findUnique({
@@ -243,7 +325,16 @@ export async function rotateWebhookSecret(
   }
 
   const existing = await prisma.webhook.findFirst({
+<<<<<<< HEAD
+    where: {
+      id: webhookId,
+      userId,
+      tenantId,
+      deletedAt: null,
+    },
+=======
     where: { id: webhookId, userId: billingAccount.userId },
+>>>>>>> origin/main
   });
 
   if (!existing) {
@@ -265,8 +356,9 @@ export async function rotateWebhookSecret(
  */
 export async function getWebhookDeliveries(
   webhookId: string,
-  billingAccountId: string,
-  limit = 50
+  userId: string,
+  tenantId: string,
+  _limit = 50
 ): Promise<Array<{
   id: string;
   webhookId: string;
@@ -286,14 +378,34 @@ export async function getWebhookDeliveries(
   }
 
   const existing = await prisma.webhook.findFirst({
+<<<<<<< HEAD
+    where: {
+      id: webhookId,
+      userId,
+      tenantId,
+      deletedAt: null,
+    },
+=======
     where: { id: webhookId, userId: billingAccount.userId },
+>>>>>>> origin/main
   });
 
   if (!existing) {
     throw new Error('Webhook not found');
   }
 
-  // This would query webhook_deliveries table if it exists
-  // For now, return empty array
-  return [];
+  const deliveries = await prisma.webhookDelivery.findMany({
+    where: { webhookId },
+    orderBy: { createdAt: 'desc' },
+    take: _limit,
+  });
+
+  return deliveries.map((d) => ({
+    id: d.id,
+    webhookId: d.webhookId,
+    status: d.status === 'delivered' ? 'success' : 'failed',
+    responseCode: d.statusCode || undefined,
+    responseBody: d.responseBody || undefined,
+    attemptedAt: d.createdAt,
+  }));
 }

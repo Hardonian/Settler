@@ -169,7 +169,11 @@ export class QueryBuilder {
             skip: number;
             orderBy?: Record<string, 'asc' | 'desc'>;
           }) => Promise<T[]>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.findMany({
           where: {
@@ -201,7 +205,11 @@ export class QueryBuilder {
       async (prismaClient) => {
         const modelClient = (prismaClient as Record<string, unknown>)[model] as {
           findUnique: (args: { where: Record<string, unknown> }) => Promise<T | null>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.findUnique({
           where: {
@@ -230,7 +238,11 @@ export class QueryBuilder {
       async (prismaClient) => {
         const modelClient = (prismaClient as Record<string, unknown>)[model] as {
           create: (args: { data: Record<string, unknown> }) => Promise<T>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.create({
           data: {
@@ -262,7 +274,11 @@ export class QueryBuilder {
             where: Record<string, unknown>;
             data: Record<string, unknown>;
           }) => Promise<T>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.update({
           where: {
@@ -292,7 +308,11 @@ export class QueryBuilder {
       async (prismaClient) => {
         const modelClient = (prismaClient as Record<string, unknown>)[model] as {
           delete: (args: { where: Record<string, unknown> }) => Promise<T>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.delete({
           where: {

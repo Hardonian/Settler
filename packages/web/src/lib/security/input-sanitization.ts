@@ -127,7 +127,8 @@ export function isValidEmail(email: string): boolean {
 /**
  * Escape HTML to prevent XSS
  */
-export function escapeHtml(text: string): string {
+export function escapeHtml(text: string | undefined): string {
+  if (!text) return '';
   const map: Record<string, string> = {
     '&': '&amp;',
     '<': '&lt;',
@@ -135,5 +136,9 @@ export function escapeHtml(text: string): string {
     '"': '&quot;',
     "'": '&#039;',
   };
+<<<<<<< HEAD
+  return text.replace(/[&<>"']/g, (m) => map[m] || m);
+=======
   return text.replace(/[&<>"']/g, (m) => map[m as keyof typeof map] ?? m);
+>>>>>>> origin/main
 }

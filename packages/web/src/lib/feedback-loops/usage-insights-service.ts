@@ -37,9 +37,14 @@ export async function analyzeUsageInsights(
 
   try {
     // Analyze feature popularity
+<<<<<<< HEAD
+    const featureUsage = await prisma.auditLog.groupBy({
+      by: ['eventType'],
+=======
     // Using AuditLog instead of activityLog (which doesn't exist in schema)
     const featureUsage = await prisma.auditLog.groupBy({
       by: ['resourceType'],
+>>>>>>> origin/main
       where: {
         userId,
         createdAt: { gte: startDate },
@@ -56,7 +61,7 @@ export async function analyzeUsageInsights(
       take: 10,
     });
 
-    featureUsage.forEach((usage) => {
+    featureUsage.forEach((usage: { eventType?: string | null; _count: { id: number } }) => {
       insights.push({
         type: 'feature_popularity',
         feature: usage.resourceType || 'unknown',
@@ -80,8 +85,13 @@ export async function analyzeUsageInsights(
     });
 
     const errorCounts = new Map<string, number>();
+<<<<<<< HEAD
+    errors.forEach((error: { eventType?: string | null }) => {
+      const errorType = error.eventType || 'unknown';
+=======
     errors.forEach((error) => {
       const errorType = error.resourceType || 'unknown';
+>>>>>>> origin/main
       errorCounts.set(errorType, (errorCounts.get(errorType) || 0) + 1);
     });
 
@@ -110,9 +120,8 @@ export async function analyzeUsageInsights(
     });
 
     if (onboardingSteps.length > 0) {
-      const lastStep = onboardingSteps[onboardingSteps.length - 1];
       const allSteps = ['welcome', 'create_api_key', 'try_playground', 'first_reconciliation', 'invite_team', 'complete'];
-      const completedSteps = onboardingSteps.map((s) => s.eventType).filter(Boolean) as string[];
+      const completedSteps = onboardingSteps.map((s: { eventType?: string }) => s.eventType).filter(Boolean) as string[];
       const incompleteSteps = allSteps.filter((step) => !completedSteps.includes(step));
 
       if (incompleteSteps.length > 0) {
@@ -141,8 +150,7 @@ export async function analyzeUsageInsights(
     });
 
     if (reconciliations.length > 0) {
-      const avgAccuracy = reconciliations.reduce((sum, r) => sum + (r.accuracy || 0), 0) / reconciliations.length;
-      const highAccuracyCount = reconciliations.filter((r) => (r.accuracy || 0) >= 95).length;
+      const highAccuracyCount = reconciliations.filter((r: { accuracy?: number | null }) => (r.accuracy || 0) >= 95).length;
 
       if (highAccuracyCount / reconciliations.length > 0.8) {
         insights.push({

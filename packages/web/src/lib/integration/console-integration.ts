@@ -17,13 +17,13 @@ import { ConsoleErrorBoundary } from '@/components/console/ErrorBoundary';
 export function withErrorBoundary<P extends Record<string, unknown>>(
   Component: React.ComponentType<P>
 ): React.ComponentType<P> {
-  function WrappedComponent(props: P): React.ReactElement {
+  const WrappedComponent = (props: P): React.ReactElement => {
     return React.createElement(
       ConsoleErrorBoundary,
       {},
       React.createElement(Component, props)
     );
-  }
+  };
   WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name || 'Component'})`;
   return WrappedComponent;
 }
