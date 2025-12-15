@@ -169,7 +169,13 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
   }
 
   const step = TOUR_STEPS[currentStep];
+<<<<<<< HEAD
   if (!step) return null;
+=======
+  if (!step) {
+    return null;
+  }
+>>>>>>> origin/main
   const Icon = step.icon;
   const progress = ((currentStep + 1) / TOUR_STEPS.length) * 100;
   const isFirstStep = currentStep === 0;

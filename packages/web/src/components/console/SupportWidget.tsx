@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { MessageSquare, CheckCircle2, AlertCircle } from 'lucide-react';
+import { MessageSquare, CheckCircle2 } from 'lucide-react';
 import { ConsoleErrorBoundary } from './ErrorBoundary';
 import { BrandMessages } from '@/lib/brand/messaging';
 

@@ -15,7 +15,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Download, TrendingUp, TrendingDown, AlertTriangle, DollarSign, RefreshCw } from 'lucide-react';
+<<<<<<< HEAD
 import { format as formatDate } from 'date-fns';
+=======
+>>>>>>> origin/main
 import { ConsoleErrorBoundary } from './ErrorBoundary';
 
 interface UsageAnalytics {

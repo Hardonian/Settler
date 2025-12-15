@@ -56,6 +56,7 @@ export async function getCached<T>(
     );
 
     if (result) {
+<<<<<<< HEAD
       await trackMetric('hit', key);
       return result as T;
     }
@@ -65,6 +66,16 @@ export async function getCached<T>(
   } catch (error) {
     console.error('[Cache] Error getting cached value:', error);
     await trackMetric('error', key);
+=======
+      await trackMetric({ name: 'cache.hit', value: 1, tags: { key: key.substring(0, 50) } });
+      return result as T;
+    }
+
+    await trackMetric({ name: 'cache.miss', value: 1, tags: { key: key.substring(0, 50) } });
+    return null;
+  } catch (error) {
+    await trackMetric({ name: 'cache.error', value: 1, tags: { key: key.substring(0, 50) } });
+>>>>>>> origin/main
     return null;
   }
 }
@@ -89,10 +100,16 @@ export async function setCached<T>(
       () => {} // Fallback to no-op
     );
 
+<<<<<<< HEAD
     await trackMetric('set', key);
   } catch (error) {
     console.error('[Cache] Error setting cached value:', error);
     await trackMetric('error', key);
+=======
+    await trackMetric({ name: 'cache.set', value: 1, tags: { key: key.substring(0, 50) } });
+  } catch (error) {
+    await trackMetric({ name: 'cache.error', value: 1, tags: { key: key.substring(0, 50) } });
+>>>>>>> origin/main
   }
 }
 
@@ -120,9 +137,13 @@ export async function invalidateCache(pattern: string): Promise<void> {
       () => {} // Fallback to no-op
     );
 
+<<<<<<< HEAD
     await trackMetric('invalidate', pattern);
+=======
+    await trackMetric({ name: 'cache.invalidate', value: 1, tags: { pattern: pattern.substring(0, 50) } });
+>>>>>>> origin/main
   } catch (error) {
-    console.error('[Cache] Error invalidating cache:', error);
+    await trackMetric({ name: 'cache.error', value: 1, tags: { operation: 'invalidate' } });
   }
 }
 

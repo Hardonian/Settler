@@ -37,12 +37,18 @@ export async function analyzeUsageInsights(
 
   try {
     // Analyze feature popularity
+<<<<<<< HEAD
     const featureUsage = await prisma.auditLog.groupBy({
       by: ['eventType'],
+=======
+    // Using AuditLog instead of activityLog (which doesn't exist in schema)
+    const featureUsage = await prisma.auditLog.groupBy({
+      by: ['resourceType'],
+>>>>>>> origin/main
       where: {
         userId,
         createdAt: { gte: startDate },
-        entityType: { in: ['reconciliation', 'receipt', 'feature_flag', 'api_key'] },
+        resourceType: { in: ['reconciliation', 'receipt', 'feature_flag', 'api_key'] },
       },
       _count: {
         id: true,
@@ -58,7 +64,7 @@ export async function analyzeUsageInsights(
     featureUsage.forEach((usage: { eventType?: string | null; _count: { id: number } }) => {
       insights.push({
         type: 'feature_popularity',
-        feature: usage.eventType || 'unknown',
+        feature: usage.resourceType || 'unknown',
         frequency: usage._count.id,
         recommendation: `Feature "${usage.eventType}" is frequently used. Consider highlighting it in the UI.`,
         priority: usage._count.id > 50 ? 'high' : usage._count.id > 20 ? 'medium' : 'low',
@@ -70,17 +76,22 @@ export async function analyzeUsageInsights(
       where: {
         userId,
         createdAt: { gte: startDate },
-        entityType: 'error',
+        action: 'error',
       },
       select: {
-        eventType: true,
+        resourceType: true,
         metadata: true,
       },
     });
 
     const errorCounts = new Map<string, number>();
+<<<<<<< HEAD
     errors.forEach((error: { eventType?: string | null }) => {
       const errorType = error.eventType || 'unknown';
+=======
+    errors.forEach((error) => {
+      const errorType = error.resourceType || 'unknown';
+>>>>>>> origin/main
       errorCounts.set(errorType, (errorCounts.get(errorType) || 0) + 1);
     });
 
@@ -101,7 +112,7 @@ export async function analyzeUsageInsights(
       where: {
         userId,
         createdAt: { gte: startDate },
-        entityType: 'onboarding',
+        resourceType: 'onboarding',
       },
       orderBy: {
         createdAt: 'asc',

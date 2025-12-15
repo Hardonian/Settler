@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, XCircle, AlertCircle, Info, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
+import { ConsoleErrorBoundary } from './ErrorBoundary';
 
 interface ErrorAlert {
   id: string;

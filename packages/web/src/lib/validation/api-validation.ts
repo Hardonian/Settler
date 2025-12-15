@@ -9,7 +9,7 @@
  */
 
 import { z } from 'zod';
-import { sanitizeString, sanitizeUrl, isValidUUID, isValidEmail } from '@/lib/security/input-sanitization';
+import { sanitizeString, sanitizeUrl, isValidUUID } from '@/lib/security/input-sanitization';
 
 /**
  * Validate and sanitize API key input
