@@ -1,0 +1,226 @@
+[
+  {
+    "key": "SUPABASE_URL",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_SUPABASE_URL]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview",
+      "development"
+    ],
+    "comment": "Supabase project URL"
+  },
+  {
+    "key": "SUPABASE_ANON_KEY",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_SUPABASE_ANON_KEY]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview",
+      "development"
+    ],
+    "comment": "Supabase anonymous key (server-side)"
+  },
+  {
+    "key": "SUPABASE_SERVICE_ROLE_KEY",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_SUPABASE_SERVICE_ROLE_KEY]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview",
+      "development"
+    ],
+    "comment": "Supabase service role key (NEVER expose to client)"
+  },
+  {
+    "key": "NEXT_PUBLIC_SUPABASE_URL",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_SUPABASE_URL]",
+    "type": "plain",
+    "target": [
+      "production",
+      "preview",
+      "development"
+    ],
+    "comment": "Supabase URL exposed to client (use same value as SUPABASE_URL)"
+  },
+  {
+    "key": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_SUPABASE_ANON_KEY]",
+    "type": "plain",
+    "target": [
+      "production",
+      "preview",
+      "development"
+    ],
+    "comment": "Supabase anonymous key exposed to client (use same value as SUPABASE_ANON_KEY)"
+  },
+  {
+    "key": "DATABASE_URL",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_DATABASE_URL]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview",
+      "development"
+    ],
+    "comment": "PostgreSQL connection string"
+  },
+  {
+    "key": "DIRECT_URL",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_DIRECT_URL]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Direct database connection (bypass pooler)"
+  },
+  {
+    "key": "JWT_SECRET",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_JWT_SECRET]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "JWT token signing secret (32+ characters)"
+  },
+  {
+    "key": "ENCRYPTION_KEY",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_ENCRYPTION_KEY]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "AES-256-GCM encryption key (exactly 32 characters)"
+  },
+  {
+    "key": "UPSTASH_REDIS_REST_URL",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_UPSTASH_REDIS_REST_URL]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Upstash Redis REST API URL"
+  },
+  {
+    "key": "UPSTASH_REDIS_REST_TOKEN",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_UPSTASH_REDIS_REST_TOKEN]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Upstash Redis REST API token"
+  },
+  {
+    "key": "REDIS_URL",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_REDIS_URL]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Redis connection URL (fallback)"
+  },
+  {
+    "key": "RESEND_API_KEY",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_RESEND_API_KEY]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Resend API key for transactional emails"
+  },
+  {
+    "key": "RESEND_FROM_EMAIL",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_RESEND_FROM_EMAIL]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Default sender email address"
+  },
+  {
+    "key": "STRIPE_SECRET_KEY",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_STRIPE_SECRET_KEY]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Stripe secret key (NEVER expose to client)"
+  },
+  {
+    "key": "STRIPE_WEBHOOK_SECRET",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_STRIPE_WEBHOOK_SECRET]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Stripe webhook secret for verification"
+  },
+  {
+    "key": "SENTRY_DSN",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_SENTRY_DSN]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Sentry DSN for error tracking"
+  },
+  {
+    "key": "NEXT_PUBLIC_SENTRY_DSN",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_SENTRY_DSN]",
+    "type": "plain",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Sentry DSN for client-side error tracking (use same value as SENTRY_DSN)"
+  },
+  {
+    "key": "NEXT_PUBLIC_SITE_URL",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_NEXT_PUBLIC_SITE_URL]",
+    "type": "plain",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Public site URL (e.g., https://settler.dev)"
+  },
+  {
+    "key": "NEXT_PUBLIC_APP_URL",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_NEXT_PUBLIC_APP_URL]",
+    "type": "plain",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Public app URL (e.g., https://settler.dev)"
+  },
+  {
+    "key": "NEXT_PUBLIC_GA4_MEASUREMENT_ID",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_NEXT_PUBLIC_GA4_MEASUREMENT_ID]",
+    "type": "plain",
+    "target": [
+      "production"
+    ],
+    "comment": "Google Analytics 4 measurement ID"
+  },
+  {
+    "key": "NEXT_PUBLIC_POSTHOG_KEY",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_NEXT_PUBLIC_POSTHOG_KEY]",
+    "type": "plain",
+    "target": [
+      "production"
+    ],
+    "comment": "PostHog API key"
+  }
+]

@@ -31,7 +31,9 @@ const job = await client.jobs.create({
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY || "",
+      // SECURITY: Never expose secret keys client-side!
+      // Use server-side API routes to handle Stripe operations
+      apiKey: "sk_test_...", // Placeholder - use server-side API in production
     },
   },
   rules: {
