@@ -5,7 +5,6 @@
  */
 
 import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
 
 export interface ErrorAlert {
   id: string;

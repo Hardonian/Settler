@@ -5,7 +5,6 @@
  */
 
 import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
 
 export interface SupportTicket {
   id: string;
@@ -58,7 +57,7 @@ export async function createTicket(
   const sanitizedDescription = input.description.trim().substring(0, 5000);
 
   // TODO: Support ticket system not yet implemented in Prisma schema
-  // Using AuditLog as temporary storage until supportTicket model is added
+  // Using AuditLog as temporary storage until supportTicket model is added to schema
   const auditLog = await prisma.auditLog.create({
     data: {
       userId,

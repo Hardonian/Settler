@@ -7,7 +7,6 @@
 import { prisma } from '@/shared/db/prismaClient';
 import { getCurrentUsage } from '@/lib/usage/tracking';
 import { getAccountPlanCode } from '@/domain/billing/entitlements';
-import { getPlanConfig } from '@/domain/billing/planConfig';
 
 export interface UsageAlert {
   service: 'reconcile' | 'receipts' | 'featureFlags' | 'playground';
@@ -29,7 +28,6 @@ export async function checkUsageAlerts(
 
   try {
     const planCode = await getAccountPlanCode(billingAccountId).catch(() => 'free');
-    const planConfig = getPlanConfig(planCode);
 
     const services: Array<'reconcile' | 'receipts' | 'featureFlags' | 'playground'> = [
       'reconcile',
@@ -110,5 +108,4 @@ export async function getCurrentUserUsageAlerts(): Promise<UsageAlert[]> {
   }
 }
 
-// Import createClient
 import { createClient } from '@/lib/supabase/server';

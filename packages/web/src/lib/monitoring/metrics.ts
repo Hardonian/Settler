@@ -5,8 +5,6 @@
  * Integrates with Sentry and custom logging.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-
 export interface MetricEvent {
   name: string;
   value: number;
@@ -93,12 +91,15 @@ export async function trackError(event: ErrorEvent): Promise<void> {
       }
     }
 
-    // Store in audit log if critical
+    // Store in audit log if critical (optional - requires prisma import if needed)
+    // Uncomment if you want to persist critical errors to database
+    /*
     if (event.severity === 'critical' || event.severity === 'high') {
       try {
+        const { prisma } = await import('@/shared/db/prismaClient');
         await prisma.reconAudit.create({
           data: {
-            tenantId: '00000000-0000-0000-0000-000000000000', // System tenant
+            tenantId: '00000000-0000-0000-0000-000000000000',
             auditType: 'error',
             action: 'error_occurred',
             entityType: 'system',
@@ -114,6 +115,7 @@ export async function trackError(event: ErrorEvent): Promise<void> {
         // Audit log failed, non-critical
       }
     }
+    */
   } catch (error) {
     // Don't throw - error tracking is non-critical
     console.warn('[Monitoring] Failed to track error:', error);
