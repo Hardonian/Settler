@@ -19,7 +19,6 @@ interface JobCompletionBannerProps {
   accuracy: number;
   completedAt: string;
   jobId: string;
-  onDismiss?: () => void;
 }
 
 export function JobCompletionBanner({
@@ -29,7 +28,6 @@ export function JobCompletionBanner({
   accuracy,
   completedAt,
   jobId,
-  onDismiss,
 }: JobCompletionBannerProps) {
   const isHighAccuracy = accuracy >= 95;
   const hasUnmatched = unmatchedCount > 0;

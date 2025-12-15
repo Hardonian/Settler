@@ -168,7 +168,6 @@ async function storeInsights(insights: UsageInsight[]): Promise<void> {
           ${JSON.stringify(insight)}::jsonb,
           ${new Date()}
         )
-        ON CONFLICT DO NOTHING
       `;
     }
   } catch (error) {
@@ -195,7 +194,20 @@ export async function getLatestInsights(limit: number = 5): Promise<UsageInsight
       LIMIT ${limit}
     `;
 
-    return results.map(r => r.metadata as UsageInsight);
+    return results
+      .map(r => {
+        try {
+          const insight = r.metadata as UsageInsight;
+          // Ensure all required fields are present
+          if (insight && typeof insight === 'object' && 'type' in insight && 'insight' in insight && 'recommendation' in insight && 'confidence' in insight) {
+            return insight;
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      })
+      .filter((insight): insight is UsageInsight => insight !== null);
   } catch (error) {
     console.error('[Usage Insights] Error fetching insights:', error);
     return [];
