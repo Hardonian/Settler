@@ -7,5 +7,9 @@ export * from "./paypal-enhanced";
 export * from "./square-enhanced";
 export * from "./shopify";
 export * from "./quickbooks";
+export * from "./enhanced-quickbooks";
+export * from "./enhanced-paypal";
 export * from "./xero";
+export * from "./netsuite";
+export * from "./woocommerce";
 //# sourceMappingURL=index.d.ts.map

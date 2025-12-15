@@ -35,50 +35,62 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     return response;
   }
 
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      get(name: string) {
-        return request.cookies.get(name)?.value;
+  try {
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+        },
       },
-      set(name: string, value: string, options: CookieOptions) {
-        request.cookies.set({
-          name,
-          value,
-          ...options,
-        });
-        response = NextResponse.next({
-          request: {
-            headers: request.headers,
-          },
-        });
-        response.cookies.set({
-          name,
-          value,
-          ...options,
-        });
-      },
-      remove(name: string, options: CookieOptions) {
-        request.cookies.set({
-          name,
-          value: '',
-          ...options,
-        });
-        response = NextResponse.next({
-          request: {
-            headers: request.headers,
-          },
-        });
-        response.cookies.set({
-          name,
-          value: '',
-          ...options,
-        });
-      },
-    },
-  });
+    });
 
-  // Refresh session if expired - required for Server Components
-  await supabase.auth.getUser();
+    // Refresh session if expired - required for Server Components
+    // Wrap in try/catch to prevent middleware from crashing on auth errors
+    try {
+      await supabase.auth.getUser();
+    } catch (authError) {
+      // Log but don't fail - let the route handler deal with auth
+      console.warn('[Middleware] Auth refresh failed (non-fatal):', authError instanceof Error ? authError.message : 'Unknown error');
+    }
+  } catch (error) {
+    // If Supabase client creation fails, log but continue
+    // Routes will handle auth errors themselves
+    console.error('[Middleware] Failed to create Supabase client (non-fatal):', error instanceof Error ? error.message : 'Unknown error');
+  }
 
   // Add route protection logic here if needed
   // Example: Protect /dashboard routes

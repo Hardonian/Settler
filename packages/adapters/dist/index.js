@@ -23,5 +23,9 @@ __exportStar(require("./paypal-enhanced"), exports);
 __exportStar(require("./square-enhanced"), exports);
 __exportStar(require("./shopify"), exports);
 __exportStar(require("./quickbooks"), exports);
+__exportStar(require("./enhanced-quickbooks"), exports);
+__exportStar(require("./enhanced-paypal"), exports);
 __exportStar(require("./xero"), exports);
+__exportStar(require("./netsuite"), exports);
+__exportStar(require("./woocommerce"), exports);
 //# sourceMappingURL=index.js.map

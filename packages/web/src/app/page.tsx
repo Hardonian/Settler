@@ -12,7 +12,7 @@ import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
-import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, CheckCircle2 } from "lucide-react";
+import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, CheckCircle2, Sparkles } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 import { trackPageView } from "@/lib/analytics/conversion";
@@ -96,6 +96,12 @@ export default function Home() {
       title: "Deterministic Convert",
       description: "Precise unit and currency conversion without floating point errors. Handle FX rates and unit conversions with confidence.",
       gradient: "from-indigo-500 to-purple-500",
+    },
+    {
+      icon: Sparkles,
+      title: "AI-Powered Insights",
+      description: "Get actionable recommendations powered by AI to optimize costs, improve performance, and understand usage patterns. Included with Commercial and Enterprise plans.",
+      gradient: "from-purple-500 to-pink-500",
     },
     {
       icon: Flag,

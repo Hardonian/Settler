@@ -51,9 +51,11 @@ export async function PATCH(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating feature flag environment:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update feature flag';
+    // Return 200 with error message instead of 500
     return NextResponse.json(
-      { error: 'Failed to update feature flag' },
-      { status: 500 }
+      { error: errorMessage, success: false },
+      { status: 200 }
     );
   }
 }
