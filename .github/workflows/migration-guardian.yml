@@ -2,19 +2,37 @@ name: Migration Guardian
 
 on:
   schedule:
-    # Run every hour
+    # Run every hour to check for pending migrations
     - cron: '0 * * * *'
   workflow_dispatch: # Allow manual trigger
+    inputs:
+      environment:
+        description: 'Environment to migrate'
+        required: false
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      force:
+        description: 'Force migration even if checks fail'
+        required: false
+        default: false
+        type: boolean
   push:
     branches:
       - main
     paths:
       - 'prisma/migrations/**'
       - 'prisma/schema.prisma'
+      - 'supabase/migrations/**'
       - 'scripts/migration-guardian.ts'
+  pull_request:
+    types: [closed]
+    branches:
+      - main
 
 env:
-  # GitHub Secrets - these will be available as environment variables
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -23,9 +41,80 @@ env:
   UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
 jobs:
+  detect-migrations:
+    name: Detect Migration Changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_migrations: ${{ steps.check.outputs.has_migrations }}
+      migration_files: ${{ steps.check.outputs.migration_files }}
+      migration_type: ${{ steps.check.outputs.migration_type }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for migration files
+        id: check
+        run: |
+          echo "🔍 Detecting migration changes..."
+          
+          # Determine migration type and files
+          MIGRATION_TYPE="none"
+          MIGRATION_FILES=""
+          
+          # Check for Prisma migrations
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            PRISMA_MIGRATIONS=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E "prisma/migrations/.*\.sql$" || true)
+            SCHEMA_CHANGES=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep "prisma/schema.prisma" || true)
+          else
+            PRISMA_MIGRATIONS=$(git diff --name-only HEAD~1 HEAD | grep -E "prisma/migrations/.*\.sql$" || true)
+            SCHEMA_CHANGES=$(git diff --name-only HEAD~1 HEAD | grep "prisma/schema.prisma" || true)
+          fi
+          
+          # Check for Supabase migrations
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SUPABASE_MIGRATIONS=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E "supabase/migrations/.*\.sql$" || true)
+          else
+            SUPABASE_MIGRATIONS=$(git diff --name-only HEAD~1 HEAD | grep -E "supabase/migrations/.*\.sql$" || true)
+          fi
+          
+          if [ -n "$PRISMA_MIGRATIONS" ] || [ -n "$SCHEMA_CHANGES" ]; then
+            MIGRATION_TYPE="prisma"
+            MIGRATION_FILES="$PRISMA_MIGRATIONS"
+            echo "has_migrations=true" >> $GITHUB_OUTPUT
+            echo "migration_type=prisma" >> $GITHUB_OUTPUT
+            echo "migration_files<<EOF" >> $GITHUB_OUTPUT
+            echo "$PRISMA_MIGRATIONS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "✅ Found Prisma migrations"
+          elif [ -n "$SUPABASE_MIGRATIONS" ]; then
+            MIGRATION_TYPE="supabase"
+            MIGRATION_FILES="$SUPABASE_MIGRATIONS"
+            echo "has_migrations=true" >> $GITHUB_OUTPUT
+            echo "migration_type=supabase" >> $GITHUB_OUTPUT
+            echo "migration_files<<EOF" >> $GITHUB_OUTPUT
+            echo "$SUPABASE_MIGRATIONS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "✅ Found Supabase migrations"
+          else
+            echo "has_migrations=false" >> $GITHUB_OUTPUT
+            echo "migration_type=none" >> $GITHUB_OUTPUT
+            echo "migration_files=" >> $GITHUB_OUTPUT
+            echo "ℹ️  No migration files detected"
+          fi
+
   migration-guardian:
     name: Run Migration Guardian
     runs-on: ubuntu-latest
+    needs: [detect-migrations]
+    if: |
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (needs.detect-migrations.outputs.has_migrations == 'true' && github.event_name == 'push') ||
+      (needs.detect-migrations.outputs.has_migrations == 'true' && github.event.pull_request.merged == true)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,15 +134,19 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Migration Guardian
+        id: guardian
         run: npm run migration:guardian
         env:
-          # All secrets are already in env: section above, but explicitly list here for clarity
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          MIGRATION_TYPE: ${{ needs.detect-migrations.outputs.migration_type }}
+          MIGRATION_FILES: ${{ needs.detect-migrations.outputs.migration_files }}
+          FORCE_MIGRATION: ${{ github.event.inputs.force || 'false' }}
+          TARGET_ENV: ${{ github.event.inputs.environment || 'staging' }}
 
       - name: Upload Migration Log
         if: always()
@@ -64,7 +157,7 @@ jobs:
           retention-days: 30
 
       - name: Comment on PR (if applicable)
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
         uses: actions/github-script@v7
         with:
           script: |
@@ -72,7 +165,6 @@ jobs:
             let logContent = '';
             try {
               logContent = fs.readFileSync('MIGRATION_LOG.md', 'utf-8');
-              // Extract the latest run summary
               const runs = logContent.split('## Run:');
               const latestRun = runs[runs.length - 1];
               const outcomeMatch = latestRun.match(/STATE: (.*?)(?:\n|$)/);
@@ -148,3 +240,100 @@ jobs:
               body: body,
               labels: ['bug', 'migration-failure', 'urgent']
             });
+
+      - name: Alert on Critical Failure
+        if: failure()
+        run: |
+          echo "🚨 Migration Guardian failed - alerting..."
+          # This will be handled by automated-alerting system
+          echo "MIGRATION_FAILURE=true" >> $GITHUB_ENV
+
+  apply-staging-migrations:
+    name: Apply Migrations to Staging
+    runs-on: ubuntu-latest
+    needs: [migration-guardian]
+    if: |
+      success() &&
+      (github.event_name == 'push' || github.event.pull_request.merged == true) &&
+      needs.detect-migrations.outputs.has_migrations == 'true'
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: Build application
+        run: npm run build
+      - name: Apply staging migrations
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          NODE_ENV: staging
+          JWT_SECRET: ${{ secrets.STAGING_JWT_SECRET }}
+          ENCRYPTION_KEY: ${{ secrets.STAGING_ENCRYPTION_KEY }}
+        run: |
+          echo "🔄 Applying migrations to staging..."
+          cd packages/api
+          npm run migrate:prod
+          echo "✅ Staging migrations completed"
+      - name: Verify staging health
+        env:
+          STAGING_URL: ${{ secrets.STAGING_URL }}
+        run: |
+          echo "🔍 Verifying staging health..."
+          sleep 5
+          for i in {1..5}; do
+            if curl -f ${STAGING_URL}/health; then
+              echo "✅ Staging health check passed"
+              exit 0
+            fi
+            echo "⏳ Retry $i/5..."
+            sleep 2
+          done
+          echo "❌ Staging health check failed after 5 retries"
+          exit 1
+
+  apply-production-migrations:
+    name: Apply Migrations to Production
+    runs-on: ubuntu-latest
+    needs: [apply-staging-migrations]
+    if: success()
+    environment: production # Requires approval
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: Build application
+        run: npm run build
+      - name: Apply production migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NODE_ENV: production
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        run: |
+          echo "🔄 Applying migrations to production..."
+          echo "⚠️  PRODUCTION MIGRATION - This will modify the production database"
+          cd packages/api
+          npm run migrate:prod
+          echo "✅ Production migrations completed"
+      - name: Verify production health
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+        run: |
+          echo "🔍 Verifying production health..."
+          sleep 10
+          for i in {1..10}; do
+            if curl -f ${PRODUCTION_URL}/health && curl -f ${PRODUCTION_URL}/health/detailed; then
+              echo "✅ Production health check passed"
+              exit 0
+            fi
+            echo "⏳ Retry $i/10..."
+            sleep 3
+          done
+          echo "❌ Production health check failed after 10 retries"
+          exit 1
