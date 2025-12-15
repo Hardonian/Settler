@@ -26,6 +26,8 @@ const chatMessageSchema = z.object({
       userAgent: z.string().optional(),
       referrer: z.string().optional(),
       url: z.string().optional(),
+      userId: z.string().optional(),
+      sessionId: z.string().optional(),
     })
     .optional(),
 });
@@ -160,7 +162,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Invalid chat message data',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 }
       );

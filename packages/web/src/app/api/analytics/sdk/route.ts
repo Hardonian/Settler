@@ -26,24 +26,24 @@ export async function POST(request: NextRequest) {
     
     if (validated.type === 'download') {
       await saveSDKDownload({
-        packageName: validated.data.packageName || '',
-        version: validated.data.version || '',
-        packageManager: validated.data.packageManager || 'unknown',
-        userId: validated.data.userId,
-        sessionId: validated.data.sessionId,
+        packageName: typeof validated.data.packageName === 'string' ? validated.data.packageName : '',
+        version: typeof validated.data.version === 'string' ? validated.data.version : '',
+        packageManager: typeof validated.data.packageManager === 'string' ? validated.data.packageManager : 'unknown',
+        userId: typeof validated.data.userId === 'string' ? validated.data.userId : undefined,
+        sessionId: typeof validated.data.sessionId === 'string' ? validated.data.sessionId : undefined,
         userAgent,
         referrer,
         ipAddress: ip,
       });
     } else if (validated.type === 'playground') {
       await savePlaygroundUsage({
-        feature: validated.data.feature || '',
-        action: validated.data.action || '',
-        integration: validated.data.integration,
-        durationMs: validated.data.duration,
-        success: validated.data.success,
-        userId: validated.data.userId,
-        sessionId: validated.data.sessionId,
+        feature: typeof validated.data.feature === 'string' ? validated.data.feature : '',
+        action: typeof validated.data.action === 'string' ? validated.data.action : '',
+        integration: typeof validated.data.integration === 'string' ? validated.data.integration : undefined,
+        durationMs: typeof validated.data.duration === 'number' ? validated.data.duration : undefined,
+        success: typeof validated.data.success === 'boolean' ? validated.data.success : undefined,
+        userId: typeof validated.data.userId === 'string' ? validated.data.userId : undefined,
+        sessionId: typeof validated.data.sessionId === 'string' ? validated.data.sessionId : undefined,
         metadata: validated.data,
       });
     } else {
@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
           referrer,
           ip,
         },
-        userId: validated.data.userId,
-        sessionId: validated.data.sessionId,
+        userId: typeof validated.data.userId === 'string' ? validated.data.userId : undefined,
+        sessionId: typeof validated.data.sessionId === 'string' ? validated.data.sessionId : undefined,
       });
     }
 
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Invalid SDK analytics event data',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 }
       );
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
 /**
  * Get SDK statistics
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Fetch from database
     const { getSDKDownloadStats, getPlaygroundStats } = await import('@/lib/db/prisma-analytics');

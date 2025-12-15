@@ -19,11 +19,12 @@ export async function POST(request: NextRequest) {
 
     // Store in database
     const { saveChatbotAnalytics } = await import('@/lib/db/prisma-analytics');
+    const data = validated.data || {};
     await saveChatbotAnalytics({
       type: validated.type,
-      data: validated.data || {},
-      sessionId: validated.data?.sessionId,
-      userId: validated.data?.userId,
+      data: data,
+      sessionId: typeof data.sessionId === 'string' ? data.sessionId : undefined,
+      userId: typeof data.userId === 'string' ? data.userId : undefined,
     });
 
     return NextResponse.json({
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Invalid chatbot analytics event data',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 }
       );
