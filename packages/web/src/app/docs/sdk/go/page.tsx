@@ -2,6 +2,8 @@
  * Go SDK Documentation Page
  */
 
+'use client';
+
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
