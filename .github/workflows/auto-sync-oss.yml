@@ -1,0 +1,220 @@
+name: Auto-Sync to OSS Repository
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+      - 'docs/**'
+  workflow_dispatch:
+    inputs:
+      force_sync:
+        description: 'Force sync all OSS content (ignores changes)'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  ENABLE_AUTO_SYNC: ${{ vars.ENABLE_AUTO_SYNC || 'true' }}
+  OSS_REPO_URL: ${{ secrets.PUBLIC_MIRROR_REPO_URL || 'https://github.com/shardie-github/settler-oss.git' }}
+  OSS_REPO_TOKEN: ${{ secrets.PUBLIC_MIRROR_GIT_TOKEN }}
+  OSS_REPO_USERNAME: ${{ secrets.PUBLIC_MIRROR_GIT_USERNAME || 'github-actions[bot]' }}
+
+jobs:
+  sync-to-oss:
+    if: env.ENABLE_AUTO_SYNC == 'true' && env.OSS_REPO_TOKEN != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout private repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            npm ci || npm install
+          fi
+      
+      - name: Classify OSS_PUBLIC content
+        id: classify
+        run: |
+          echo "🔍 Classifying OSS_PUBLIC content..."
+          
+          # Create classification script if it doesn't exist
+          if [ ! -f "scripts/classify-oss.sh" ]; then
+            mkdir -p scripts
+            cat > scripts/classify-oss.sh << 'SCRIPT'
+          #!/bin/bash
+          # Classify files as OSS_PUBLIC or private
+          
+          OSS_FILES=""
+          
+          # Find all files marked as OSS_PUBLIC
+          find . -type f \( -name "OSS_PUBLIC" -o -name ".oss-public" \) | while read marker; do
+            dir=$(dirname "$marker")
+            find "$dir" -type f ! -name "OSS_PUBLIC" ! -name ".oss-public" ! -path "*/.git/*" | while read file; do
+              echo "$file"
+            done
+          done
+          
+          # Also check for explicit OSS_PUBLIC directories
+          for dir in packages/sdk packages/sdk-python packages/sdk-go packages/sdk-ruby packages/api-client packages/protocol packages/react-settler packages/cli examples docs; do
+            if [ -d "$dir" ] && [ ! -f "$dir/.private" ]; then
+              find "$dir" -type f ! -path "*/.git/*" ! -name "*.private" | while read file; do
+                echo "$file"
+              done
+            fi
+          done
+          SCRIPT
+            chmod +x scripts/classify-oss.sh
+          fi
+          
+          # Run classification
+          OSS_FILES=$(./scripts/classify-oss.sh | sort -u)
+          echo "$OSS_FILES" > /tmp/oss_files.txt
+          
+          # Count files
+          FILE_COUNT=$(echo "$OSS_FILES" | grep -v '^$' | wc -l)
+          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
+          echo "Found $FILE_COUNT OSS_PUBLIC files"
+      
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.force_sync }}" == "true" ]; then
+            echo "force_sync=true" >> $GITHUB_OUTPUT
+            echo "🔄 Force sync enabled - syncing all OSS content"
+          else
+            # Get changed files in this commit
+            if [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+              CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+            else
+              CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+            fi
+            
+            echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            
+            # Check if any OSS files changed
+            OSS_FILES=$(cat /tmp/oss_files.txt)
+            HAS_OSS_CHANGES=false
+            
+            echo "$CHANGED_FILES" | while read file; do
+              if echo "$OSS_FILES" | grep -q "^\./$file$" || echo "$OSS_FILES" | grep -q "^$file$"; then
+                HAS_OSS_CHANGES=true
+                echo "Found OSS change: $file"
+              fi
+            done
+            
+            if [ "$HAS_OSS_CHANGES" = "true" ] || [ -z "$CHANGED_FILES" ]; then
+              echo "has_oss_changes=true" >> $GITHUB_OUTPUT
+            else
+              echo "has_oss_changes=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+      
+      - name: Sync to OSS repository
+        if: steps.changes.outputs.has_oss_changes == 'true' || steps.changes.outputs.force_sync == 'true'
+        env:
+          GIT_AUTHOR_NAME: ${{ env.OSS_REPO_USERNAME }}
+          GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: ${{ env.OSS_REPO_USERNAME }}
+          GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
+        run: |
+          echo "🚀 Syncing to OSS repository..."
+          
+          # Clone OSS repo
+          git clone --depth 1 "https://${{ env.OSS_REPO_USERNAME }}:${{ env.OSS_REPO_TOKEN }}@github.com/shardie-github/settler-oss.git" /tmp/oss-repo
+          cd /tmp/oss-repo
+          
+          # Configure git
+          git config user.name "${{ env.OSS_REPO_USERNAME }}"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Get OSS files list
+          OSS_FILES=$(cat /tmp/oss_files.txt)
+          
+          # Copy OSS files
+          echo "📋 Copying OSS_PUBLIC files..."
+          echo "$OSS_FILES" | while read file; do
+            if [ -n "$file" ] && [ -f "${{ github.workspace }}/$file" ]; then
+              # Create directory structure
+              dir=$(dirname "$file")
+              mkdir -p "$dir"
+              
+              # Copy file
+              cp "${{ github.workspace }}/$file" "$file"
+              echo "  ✓ $file"
+            fi
+          done
+          
+          # Copy common OSS files
+          for file in LICENSE README.public.md CONTRIBUTING.md SECURITY.md; do
+            if [ -f "${{ github.workspace }}/$file" ]; then
+              cp "${{ github.workspace }}/$file" "$file"
+              if [ "$file" == "README.public.md" ]; then
+                mv README.public.md README.md
+              fi
+            fi
+          done
+          
+          # Handle deletions - check what was deleted
+          if [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            DELETED_FILES=$(git diff --name-only --diff-filter=D ${{ github.event.before }} ${{ github.sha }} || true)
+            echo "$DELETED_FILES" | while read file; do
+              if echo "$OSS_FILES" | grep -q "^\./$file$" || echo "$OSS_FILES" | grep -q "^$file$"; then
+                if [ -f "$file" ]; then
+                  rm "$file"
+                  echo "  ✗ Deleted: $file"
+                fi
+              fi
+            done
+          fi
+          
+          # Stage all changes
+          git add -A
+          
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "ℹ️  No changes to sync"
+          else
+            # Create commit
+            COMMIT_MSG="chore: auto-sync OSS content from private repo
+
+          Auto-synced from: ${{ github.repository }}@${{ github.sha }}
+          Commit: ${{ github.event.head_commit.message || 'Auto-sync' }}
+          
+          [skip ci]"
+            
+            git commit -m "$COMMIT_MSG" || exit 0
+            
+            # Push to OSS repo
+            git push origin main || git push origin master
+            
+            echo "✅ Successfully synced to OSS repository"
+          fi
+      
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **OSS Files Found**: ${{ steps.classify.outputs.file_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Has OSS Changes**: ${{ steps.changes.outputs.has_oss_changes }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Force Sync**: ${{ steps.changes.outputs.force_sync }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
