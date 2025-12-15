@@ -16,6 +16,7 @@ import { initSentry } from "@/lib/monitoring/sentry";
 import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 import { FloatingHelpButton } from "@/components/support/FloatingHelpButton";
 import { Chatbot } from "@/components/chatbot/Chatbot";
+import { CookieConsent } from "@/components/consent/CookieConsent";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -208,6 +209,7 @@ export default async function RootLayout({
               <ToastContainer />
               <FloatingHelpButton />
               <Chatbot />
+              <CookieConsent />
               <Analytics />
               <SpeedInsights />
             </QueryProvider>

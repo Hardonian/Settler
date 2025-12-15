@@ -153,6 +153,30 @@ export function Footer() {
                   License
                 </Link>
               </li>
+              <li>
+                <Link 
+                  href="/legal/cookies" 
+                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
+                >
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/legal/aup" 
+                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
+                >
+                  Acceptable Use Policy
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/legal/dpa" 
+                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
+                >
+                  Data Processing Agreement
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>

@@ -9,6 +9,7 @@ import { vercelProvider } from './providers/vercel';
 import { createGA4Provider } from './providers/ga4';
 import { createPostHogProvider } from './providers/posthog';
 import { createCustomProvider } from './providers/custom';
+import { canTrackAnalytics, onConsentChange } from './consent-gate';
 
 class Analytics {
   private providers: AnalyticsProvider[] = [];
@@ -74,8 +75,14 @@ class Analytics {
 
   /**
    * Track a page view
+   * Respects cookie consent preferences
    */
   trackPageView(route: string, properties?: PageViewProperties) {
+    // Check consent before tracking
+    if (typeof window !== 'undefined' && !canTrackAnalytics()) {
+      return; // Don't track if user hasn't consented
+    }
+
     if (!this.initialized) this.init();
 
     this.providers.forEach((provider) => {
@@ -89,8 +96,14 @@ class Analytics {
 
   /**
    * Track a custom event
+   * Respects cookie consent preferences
    */
   trackEvent(name: string, payload?: EventProperties) {
+    // Check consent before tracking
+    if (typeof window !== 'undefined' && !canTrackAnalytics()) {
+      return; // Don't track if user hasn't consented
+    }
+
     if (!this.initialized) this.init();
 
     this.providers.forEach((provider) => {
@@ -185,9 +198,19 @@ class Analytics {
 // Singleton instance
 export const analytics = new Analytics();
 
-// Initialize on client-side
+// Initialize on client-side, respecting consent
 if (typeof window !== 'undefined') {
-  analytics.init();
+  // Only initialize if consent is given
+  if (canTrackAnalytics()) {
+    analytics.init();
+  }
+
+  // Listen for consent changes
+  onConsentChange((category, granted) => {
+    if (category === 'analytics' && granted) {
+      analytics.init(); // Initialize when consent is granted
+    }
+  });
 }
 
 // Export types
