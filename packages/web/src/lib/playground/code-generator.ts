@@ -121,17 +121,6 @@ export function generateCurlCode(apiCall: ApiCall, apiKey: string): string {
  * Generate Go code
  */
 export function generateGoCode(apiCall: ApiCall, apiKey: string): string {
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': apiKey,
-    ...apiCall.headers,
-  };
-
-<<<<<<< HEAD
-  // Headers are included in the code snippet below
-
-=======
->>>>>>> origin/main
   const bodyString = apiCall.body
     ? `\n\tbody, _ := json.Marshal(${JSON.stringify(apiCall.body)})\n\treq, _ := http.NewRequest("${apiCall.method}", "${apiCall.endpoint}", bytes.NewBuffer(body))`
     : `\n\treq, _ := http.NewRequest("${apiCall.method}", "${apiCall.endpoint}", nil)`;

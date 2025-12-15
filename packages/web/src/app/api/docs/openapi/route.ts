@@ -12,7 +12,6 @@ import {
   listReceiptsSchema,
   getReceiptSchema,
   listFeatureFlagsSchema,
-  updateFlagEnvironmentSchema,
   getUsageSchema,
   createPageSchema,
   updatePageSchema,

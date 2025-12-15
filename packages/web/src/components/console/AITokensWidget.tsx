@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Plus, TrendingUp } from 'lucide-react';
+import { Sparkles, Plus } from 'lucide-react';
 import { ConsoleErrorBoundary } from './ErrorBoundary';
 import Link from 'next/link';
 

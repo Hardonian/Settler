@@ -136,9 +136,5 @@ export function escapeHtml(text: string | undefined): string {
     '"': '&quot;',
     "'": '&#039;',
   };
-<<<<<<< HEAD
-  return text.replace(/[&<>"']/g, (m) => map[m] || m);
-=======
   return text.replace(/[&<>"']/g, (m) => map[m as keyof typeof map] ?? m);
->>>>>>> origin/main
 }

@@ -51,42 +51,24 @@ export function zodToOpenAPI(schema: z.ZodSchema): Record<string, unknown> {
  */
 function zodTypeToOpenAPI(type: z.ZodType): Record<string, unknown> {
   if (type instanceof z.ZodString) {
-<<<<<<< HEAD
-    const checks = (type._def as { checks?: Array<{ kind: string; value?: number }> }).checks;
-=======
     const checks = (type._def as { checks?: Array<{ kind: string; value?: unknown }> }).checks;
->>>>>>> origin/main
     const minCheck = checks?.find((c) => c.kind === 'min');
     const maxCheck = checks?.find((c) => c.kind === 'max');
     return {
       type: 'string',
-<<<<<<< HEAD
-      ...(minCheck?.value !== undefined && { minLength: minCheck.value }),
-      ...(maxCheck?.value !== undefined && { maxLength: maxCheck.value }),
-=======
       ...(minCheck && typeof minCheck.value === 'number' && { minLength: minCheck.value }),
       ...(maxCheck && typeof maxCheck.value === 'number' && { maxLength: maxCheck.value }),
->>>>>>> origin/main
     };
   }
 
   if (type instanceof z.ZodNumber) {
-<<<<<<< HEAD
-    const checks = (type._def as { checks?: Array<{ kind: string; value?: number }> }).checks;
-=======
     const checks = (type._def as { checks?: Array<{ kind: string; value?: unknown }> }).checks;
->>>>>>> origin/main
     const minCheck = checks?.find((c) => c.kind === 'min');
     const maxCheck = checks?.find((c) => c.kind === 'max');
     return {
       type: 'number',
-<<<<<<< HEAD
-      ...(minCheck?.value !== undefined && { minimum: minCheck.value }),
-      ...(maxCheck?.value !== undefined && { maximum: maxCheck.value }),
-=======
       ...(minCheck && typeof minCheck.value === 'number' && { minimum: minCheck.value }),
       ...(maxCheck && typeof maxCheck.value === 'number' && { maximum: maxCheck.value }),
->>>>>>> origin/main
     };
   }
 
@@ -95,35 +77,35 @@ function zodTypeToOpenAPI(type: z.ZodType): Record<string, unknown> {
   }
 
   if (type instanceof z.ZodArray) {
-    const innerType = (type._def as { type: z.ZodType }).type;
+    const def = type._def as unknown as { type?: z.ZodType };
+    const innerType = def.type;
+    if (innerType) {
+      return {
+        type: 'array',
+        items: zodTypeToOpenAPI(innerType),
+      };
+    }
     return {
       type: 'array',
-<<<<<<< HEAD
-      items: zodTypeToOpenAPI(innerType),
-=======
-      items: zodTypeToOpenAPI((type._def as { type: z.ZodType }).type),
->>>>>>> origin/main
+      items: {},
     };
   }
 
   if (type instanceof z.ZodEnum) {
+    const def = type._def as unknown as { values?: readonly string[] };
     return {
       type: 'string',
-<<<<<<< HEAD
-      enum: (type._def as { values: readonly string[] }).values,
-=======
-      enum: (type._def as { values: readonly [string, ...string[]] }).values,
->>>>>>> origin/main
+      enum: def.values || [],
     };
   }
 
   if (type instanceof z.ZodOptional) {
-<<<<<<< HEAD
-    const innerType = (type._def as { innerType: z.ZodType }).innerType;
-    return zodTypeToOpenAPI(innerType);
-=======
-    return zodTypeToOpenAPI((type._def as { innerType: z.ZodType }).innerType);
->>>>>>> origin/main
+    const def = type._def as unknown as { innerType?: z.ZodType };
+    const innerType = def.innerType;
+    if (innerType) {
+      return zodTypeToOpenAPI(innerType);
+    }
+    return { type: 'object' };
   }
 
   return { type: 'object' };
@@ -192,7 +174,10 @@ export function generateOpenAPISpec(routes: OpenAPIRoute[]): Record<string, unkn
       ];
     }
 
-    paths[route.path][route.method] = pathItem;
+    const pathObj = paths[route.path];
+    if (pathObj) {
+      pathObj[route.method] = pathItem;
+    }
   }
 
   return {
