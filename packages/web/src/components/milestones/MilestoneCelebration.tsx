@@ -104,6 +104,7 @@ export function MilestoneCelebration({
       }, autoDismissAfter);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [autoDismissAfter]);
 
   const handleDismiss = () => {

@@ -171,7 +171,7 @@ export async function GET(request: NextRequest) {
     try {
       const planCode = await getAccountPlanCode(billingAccount.id).catch(() => 'free');
       const planConfig = getPlanConfig(planCode);
-      costEstimate = planCode === 'free' ? 0 : (planConfig?.pricing?.monthly || 0);
+      costEstimate = planCode === 'free' ? 0 : (planConfig?.monthlyPrice || 0);
     } catch {
       costEstimate = 0;
     }

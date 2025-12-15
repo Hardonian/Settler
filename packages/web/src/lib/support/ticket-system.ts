@@ -5,7 +5,6 @@
  */
 
 import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
 
 export interface SupportTicket {
   id: string;
@@ -57,31 +56,64 @@ export async function createTicket(
   const sanitizedSubject = input.subject.trim().substring(0, 200);
   const sanitizedDescription = input.description.trim().substring(0, 5000);
 
-  const ticket = await prisma.supportTicket.create({
+  // TODO: Support ticket system not yet implemented in Prisma schema
+  // Using AuditLog as temporary storage until supportTicket model is added to schema
+  const auditLog = await prisma.auditLog.create({
     data: {
       userId,
-      billingAccountId,
-      subject: sanitizedSubject,
-      description: sanitizedDescription,
-      category: input.category,
-      priority: input.priority || 'medium',
-      status: 'open',
+      billingAccountId: billingAccountId || null,
+      action: 'create',
+      resourceType: 'support_ticket',
+      changes: {
+        subject: sanitizedSubject,
+        description: sanitizedDescription,
+        category: input.category,
+        priority: input.priority || 'medium',
+      },
     },
   });
 
-  return ticket as SupportTicket;
+  // Return stub ticket object
+  return {
+    id: auditLog.id,
+    userId,
+    billingAccountId: billingAccountId || '',
+    subject: sanitizedSubject,
+    description: sanitizedDescription,
+    category: input.category,
+    priority: input.priority || 'medium',
+    status: 'open' as const,
+    createdAt: auditLog.createdAt,
+    updatedAt: auditLog.createdAt,
+  } as SupportTicket;
 }
 
 /**
  * List tickets for a user
  */
 export async function listTickets(userId: string): Promise<SupportTicket[]> {
-  const tickets = await prisma.supportTicket.findMany({
-    where: { userId },
+  // TODO: Support ticket system not yet implemented in Prisma schema
+  const tickets = await prisma.auditLog.findMany({
+    where: {
+      userId,
+      resourceType: 'support_ticket',
+    },
     orderBy: { createdAt: 'desc' },
   });
 
-  return tickets as SupportTicket[];
+  // Convert AuditLog entries to SupportTicket format
+  return tickets.map((log) => ({
+    id: log.id,
+    userId: log.userId || '',
+    billingAccountId: log.billingAccountId || '',
+    subject: (log.changes as Record<string, unknown>)?.subject as string || '',
+    description: (log.changes as Record<string, unknown>)?.description as string || '',
+    category: (log.changes as Record<string, unknown>)?.category as SupportTicket['category'] || 'other',
+    priority: (log.changes as Record<string, unknown>)?.priority as SupportTicket['priority'] || 'medium',
+    status: 'open' as const,
+    createdAt: log.createdAt,
+    updatedAt: log.createdAt,
+  })) as SupportTicket[];
 }
 
 /**
@@ -91,11 +123,29 @@ export async function getTicket(
   ticketId: string,
   userId: string
 ): Promise<SupportTicket | null> {
-  const ticket = await prisma.supportTicket.findFirst({
-    where: { id: ticketId, userId },
+  // TODO: Support ticket system not yet implemented in Prisma schema
+  const log = await prisma.auditLog.findFirst({
+    where: {
+      id: ticketId,
+      userId,
+      resourceType: 'support_ticket',
+    },
   });
 
-  return ticket as SupportTicket | null;
+  if (!log) return null;
+
+  return {
+    id: log.id,
+    userId: log.userId || '',
+    billingAccountId: log.billingAccountId || '',
+    subject: (log.changes as Record<string, unknown>)?.subject as string || '',
+    description: (log.changes as Record<string, unknown>)?.description as string || '',
+    category: (log.changes as Record<string, unknown>)?.category as SupportTicket['category'] || 'other',
+    priority: (log.changes as Record<string, unknown>)?.priority as SupportTicket['priority'] || 'medium',
+    status: 'open' as const,
+    createdAt: log.createdAt,
+    updatedAt: log.createdAt,
+  } as SupportTicket;
 }
 
 /**
@@ -111,11 +161,15 @@ export async function addTicketComment(
     throw new Error('Ticket not found');
   }
 
-  await prisma.ticketComment.create({
+  // TODO: Ticket comments not yet implemented in Prisma schema
+  // Using AuditLog as temporary storage
+  await prisma.auditLog.create({
     data: {
-      ticketId,
       userId,
-      comment,
+      action: 'comment',
+      resourceType: 'support_ticket',
+      resourceId: ticketId,
+      changes: { comment },
     },
   });
 }

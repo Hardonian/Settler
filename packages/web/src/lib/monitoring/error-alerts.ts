@@ -5,7 +5,6 @@
  */
 
 import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
 
 export interface ErrorAlert {
   id: string;
@@ -185,7 +184,6 @@ export async function checkAllAlerts(
  */
 export async function getActiveAlerts(userId: string): Promise<ErrorAlert[]> {
   try {
-    const supabase = await createClient();
     const billingAccount = await prisma.billingAccount.findFirst({
       where: { userId },
       select: { id: true },

@@ -9,8 +9,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, XCircle, AlertCircle, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, XCircle, AlertCircle, Info, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
+import { ConsoleErrorBoundary } from './ErrorBoundary';
 
 interface ErrorAlert {
   id: string;

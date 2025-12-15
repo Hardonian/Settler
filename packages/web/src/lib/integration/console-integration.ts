@@ -18,10 +18,10 @@ export function withErrorBoundary<P extends Record<string, unknown>>(
   Component: React.ComponentType<P>
 ): React.ComponentType<P> {
   function WrappedComponent(props: P): React.ReactElement {
-    return (
-      <ConsoleErrorBoundary>
-        <Component {...props} />
-      </ConsoleErrorBoundary>
+    return React.createElement(
+      ConsoleErrorBoundary,
+      {},
+      React.createElement(Component, props)
     );
   }
   WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name || 'Component'})`;

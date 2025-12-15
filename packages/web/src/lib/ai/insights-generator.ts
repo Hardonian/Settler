@@ -109,12 +109,12 @@ async function generateCostInsights(
         severity: 'info',
         title: 'Consider Downgrading',
         description: 'You haven\'t used any services in the last 30 days. Consider downgrading to save costs.',
-        impact: `Save $${planConfig?.pricing?.monthly || 0}/month`,
+        impact: `Save $${planConfig?.monthlyPrice || 0}/month`,
         action: {
           label: 'View Plans',
           url: '/pricing',
         },
-        estimatedSavings: planConfig?.pricing?.monthly || 0,
+        estimatedSavings: planConfig?.monthlyPrice || 0,
         confidence: 0.8,
       });
     }
@@ -245,7 +245,9 @@ async function generateUsagePatternInsights(
     const dailyUsage: Record<string, number> = {};
     for (const event of events) {
       const date = event.timestamp.toISOString().split('T')[0];
-      dailyUsage[date] = (dailyUsage[date] || 0) + 1;
+      if (date) {
+        dailyUsage[date] = (dailyUsage[date] || 0) + 1;
+      }
     }
 
     const dailyValues = Object.values(dailyUsage);

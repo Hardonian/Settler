@@ -127,10 +127,6 @@ export function generateGoCode(apiCall: ApiCall, apiKey: string): string {
     ...apiCall.headers,
   };
 
-  const headersString = Object.entries(headers)
-    .map(([key, value]) => `\t\t"${key}": "${value}",`)
-    .join('\n');
-
   const bodyString = apiCall.body
     ? `\n\tbody, _ := json.Marshal(${JSON.stringify(apiCall.body)})\n\treq, _ := http.NewRequest("${apiCall.method}", "${apiCall.endpoint}", bytes.NewBuffer(body))`
     : `\n\treq, _ := http.NewRequest("${apiCall.method}", "${apiCall.endpoint}", nil)`;

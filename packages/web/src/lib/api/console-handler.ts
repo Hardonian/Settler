@@ -51,7 +51,7 @@ interface ConsoleApiConfig<TInput = unknown> {
   /** Require specific scopes for API key auth */
   requiredScopes?: string[];
   /** Custom error handler */
-  onError?: (error: unknown, context: ConsoleApiContext) => NextResponse;
+  onError?: <TOutput = unknown>(error: unknown, context: ConsoleApiContext) => NextResponse<ConsoleApiResponse<TOutput>>;
 }
 
 /**
@@ -110,7 +110,7 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
           const body = await request.json().catch(() => ({}));
           const parsed = config.schema.safeParse(body);
           if (!parsed.success) {
-            logger.warn('Validation failed', { errors: parsed.error.errors });
+            logger.warn('Validation failed', { errors: parsed.error.issues });
             const response = NextResponse.json<ConsoleApiResponse>(
               {
                 error: 'Validation failed',
@@ -175,7 +175,7 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
           logger,
           request,
         };
-        return config.onError(error, context);
+        return config.onError<TOutput>(error, context);
       }
 
       // Default error handling

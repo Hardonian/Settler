@@ -9,7 +9,7 @@
  */
 
 import { safeRedisOperation } from '@/lib/redis/client';
-import { trackCacheMetric } from '@/lib/monitoring/metrics';
+import { trackMetric } from '@/lib/monitoring/metrics';
 
 export interface CacheOptions {
   /** Cache TTL in seconds */
@@ -56,15 +56,14 @@ export async function getCached<T>(
     );
 
     if (result) {
-      await trackCacheMetric('hit', key);
+      await trackMetric({ name: 'cache.hit', value: 1, tags: { key: key.substring(0, 50) } });
       return result as T;
     }
 
-    await trackCacheMetric('miss', key);
+    await trackMetric({ name: 'cache.miss', value: 1, tags: { key: key.substring(0, 50) } });
     return null;
   } catch (error) {
-    console.error('[Cache] Error getting cached value:', error);
-    await trackCacheMetric('error', key);
+    await trackMetric({ name: 'cache.error', value: 1, tags: { key: key.substring(0, 50) } });
     return null;
   }
 }
@@ -89,10 +88,9 @@ export async function setCached<T>(
       () => {} // Fallback to no-op
     );
 
-    await trackCacheMetric('set', key);
+    await trackMetric({ name: 'cache.set', value: 1, tags: { key: key.substring(0, 50) } });
   } catch (error) {
-    console.error('[Cache] Error setting cached value:', error);
-    await trackCacheMetric('error', key);
+    await trackMetric({ name: 'cache.error', value: 1, tags: { key: key.substring(0, 50) } });
   }
 }
 
@@ -120,9 +118,9 @@ export async function invalidateCache(pattern: string): Promise<void> {
       () => {} // Fallback to no-op
     );
 
-    await trackCacheMetric('invalidate', pattern);
+    await trackMetric({ name: 'cache.invalidate', value: 1, tags: { pattern: pattern.substring(0, 50) } });
   } catch (error) {
-    console.error('[Cache] Error invalidating cache:', error);
+    await trackMetric({ name: 'cache.error', value: 1, tags: { operation: 'invalidate' } });
   }
 }
 
