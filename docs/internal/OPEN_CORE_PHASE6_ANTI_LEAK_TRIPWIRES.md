@@ -95,8 +95,8 @@ scripts/mirror-*.ts
 #### Secret Patterns
 
 **Patterns**:
-- `SUPABASE_SERVICE_ROLE_KEY=sk_live_` or `sk_test_`
-- `STRIPE_SECRET_KEY=sk_live_` or `sk_test_`
+- `SUPABASE_SERVICE_ROLE_KEY=sk_live_` or `sk_test_` (example pattern)
+- `STRIPE_SECRET_KEY=sk_live_` or `sk_test_` (example pattern)
 - `BEGIN PRIVATE KEY` (actual key material)
 - `BEGIN RSA PRIVATE KEY`
 - `BEGIN EC PRIVATE KEY`
@@ -215,7 +215,7 @@ scripts/mirror-*.ts
 ### Example 2: Secret Leak
 
 **File**: `.env.example`
-**Content**: `STRIPE_SECRET_KEY=sk_live_51AbCdEfGhIjKlMnOpQrStUvWxYz`
+**Content**: `STRIPE_SECRET_KEY=sk_live_EXAMPLE_PATTERN_DO_NOT_USE_REAL_SECRETS_HERE`
 
 **Detection**:
 - ✅ Content check: Contains actual secret pattern

@@ -483,11 +483,13 @@ Valuation: $10M
 ### Example 4: Secret Leak (Should Never Happen)
 **File**: `.env.local`
 ```
-STRIPE_SECRET_KEY=sk_live_51AbCdEfGhIjKlMnOpQrStUvWxYz
+STRIPE_SECRET_KEY=sk_live_EXAMPLE_PATTERN_DO_NOT_USE_REAL_SECRETS_HERE
 ```
 **Classification**: SECRET_RISK ❌
-**Reason**: Actual secret value detected
+**Reason**: Actual secret value detected (example pattern)
 **Action**: CI FAILS immediately
+
+**Note**: This is an example pattern showing what a secret leak would look like. Never commit real secrets.
 
 ### Example 5: OSS Package Importing Proprietary (Violation)
 **File**: `packages/sdk/src/advanced.ts`
