@@ -1,0 +1,45 @@
+# Classification Ignore File
+# Files/directories to exclude from classification scanning
+
+# Build artifacts
+node_modules/
+.next/
+dist/
+build/
+coverage/
+.turbo/
+.vercel/
+out/
+
+# Generated files
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+*.log
+
+# Lock files (safe to ignore)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Mirror output (temporary)
+.mirror-out/
+
+# Artifacts (generated)
+artifacts/
+
+# Git files
+.git/
+
+# Environment files (handled separately)
+.env*.local

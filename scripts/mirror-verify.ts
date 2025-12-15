@@ -1,0 +1,245 @@
+#!/usr/bin/env tsx
+/**
+ * Mirror Verification Tool
+ * 
+ * Verifies that a mirror export contains ONLY OSS_PUBLIC content.
+ * 
+ * Usage:
+ *   pnpm mirror:verify
+ *   pnpm mirror:verify --path ./.mirror-out
+ */
+
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import { glob } from 'glob';
+import { execSync } from 'child_process';
+
+const MIRROR_OUT_DIR = process.env.MIRROR_OUT_DIR || './.mirror-out';
+
+// OSS_PUBLIC allowlist paths (must match classification spec)
+const OSS_ALLOWLIST_PATTERNS = [
+  'packages/sdk/**',
+  'packages/sdk-python/**',
+  'packages/sdk-go/**',
+  'packages/sdk-ruby/**',
+  'packages/api-client/**',
+  'packages/protocol/**',
+  'packages/react-settler/**',
+  'packages/cli/**',
+  'docs/public/**',
+  'examples/**',
+  'README.md',
+  'LICENSE',
+  'CONTRIBUTING.md',
+  'SECURITY.md',
+  'CODE_OF_CONDUCT.md',
+  '.gitignore',
+];
+
+// Denylist paths (must NEVER be in mirror)
+const DENYLIST_PATTERNS = [
+  'internal/**',
+  'proprietary/**',
+  'strategic/**',
+  'docs/internal/**',
+  'docs/investor/**',
+  'docs/business/**',
+  'packages/web/**',
+  'packages/api/**',
+  'packages/adapters/**',
+  'packages/edge-ai-core/**',
+  'packages/edge-node/**',
+  'prisma/**',
+  'supabase/**',
+  'config/**',
+  'scripts/classify.ts',
+  'scripts/mirror-*.ts',
+  '.github/workflows/publish-mirror.yml',
+];
+
+function matchesPattern(filePath: string, patterns: string[]): boolean {
+  const normalizedPath = filePath.replace(/\\/g, '/');
+  return patterns.some(pattern => {
+    const regex = new RegExp('^' + pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*') + '$');
+    return regex.test(normalizedPath);
+  });
+}
+
+async function getAllFiles(rootDir: string): Promise<string[]> {
+  const files: string[] = [];
+  
+  const ignorePatterns = [
+    '**/node_modules/**',
+    '**/.git/**',
+    '**/.next/**',
+    '**/dist/**',
+    '**/build/**',
+    '**/coverage/**',
+    '**/.turbo/**',
+    '**/.vercel/**',
+  ];
+
+  const allFiles = await glob('**/*', {
+    cwd: rootDir,
+    ignore: ignorePatterns,
+    nodir: true,
+  });
+
+  return allFiles.map(f => path.resolve(rootDir, f));
+}
+
+async function readFileContent(filePath: string): Promise<string | null> {
+  try {
+    const content = await fs.readFile(filePath, 'utf-8');
+    return content;
+  } catch (error) {
+    return null;
+  }
+}
+
+function checkForSecrets(content: string): boolean {
+  const secretPatterns = [
+    /SUPABASE_SERVICE_ROLE_KEY=(sk_live_|sk_test_)/i,
+    /STRIPE_SECRET_KEY=(sk_live_|sk_test_)/i,
+    /BEGIN PRIVATE KEY/,
+    /-----BEGIN[\s\S]{100,}-----END/i,
+    /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/, // JWT tokens
+  ];
+  
+  return secretPatterns.some(pattern => pattern.test(content));
+}
+
+function checkForBusinessKeywords(content: string): boolean {
+  const keywords = [
+    'investor',
+    'pitch',
+    'valuation',
+    'seed round',
+    'confidential',
+    'NDA',
+  ];
+  
+  const lowerContent = content.toLowerCase();
+  return keywords.some(keyword => lowerContent.includes(keyword));
+}
+
+interface VerificationResult {
+  path: string;
+  allowed: boolean;
+  reason: string;
+  violations?: string[];
+}
+
+async function verifyMirror(mirrorDir: string): Promise<{
+  passed: boolean;
+  results: VerificationResult[];
+  errors: string[];
+}> {
+  const errors: string[] = [];
+  const results: VerificationResult[] = [];
+  
+  if (!await fs.access(mirrorDir).then(() => true).catch(() => false)) {
+    errors.push(`Mirror directory does not exist: ${mirrorDir}`);
+    return { passed: false, results, errors };
+  }
+  
+  const files = await getAllFiles(mirrorDir);
+  
+  for (const filePath of files) {
+    const relativePath = path.relative(mirrorDir, filePath).replace(/\\/g, '/');
+    
+    // Check denylist first
+    if (matchesPattern(relativePath, DENYLIST_PATTERNS)) {
+      results.push({
+        path: relativePath,
+        allowed: false,
+        reason: 'denylist_match',
+        violations: ['File matches denylist pattern'],
+      });
+      errors.push(`DENYLIST VIOLATION: ${relativePath}`);
+      continue;
+    }
+    
+    // Check allowlist
+    const inAllowlist = matchesPattern(relativePath, OSS_ALLOWLIST_PATTERNS);
+    
+    if (!inAllowlist) {
+      results.push({
+        path: relativePath,
+        allowed: false,
+        reason: 'not_in_allowlist',
+        violations: ['File not in OSS_PUBLIC allowlist'],
+      });
+      errors.push(`ALLOWLIST VIOLATION: ${relativePath} is not in OSS_PUBLIC allowlist`);
+      continue;
+    }
+    
+    // Check content for secrets or business keywords
+    const content = await readFileContent(filePath);
+    const violations: string[] = [];
+    
+    if (content) {
+      if (checkForSecrets(content)) {
+        violations.push('Secret pattern detected in content');
+        errors.push(`SECRET VIOLATION: ${relativePath} contains secret patterns`);
+      }
+      
+      if (checkForBusinessKeywords(content)) {
+        violations.push('Business keyword detected in content');
+        errors.push(`BUSINESS KEYWORD VIOLATION: ${relativePath} contains business keywords`);
+      }
+    }
+    
+    if (violations.length > 0) {
+      results.push({
+        path: relativePath,
+        allowed: false,
+        reason: 'content_violation',
+        violations,
+      });
+    } else {
+      results.push({
+        path: relativePath,
+        allowed: true,
+        reason: 'oss_public_allowed',
+      });
+    }
+  }
+  
+  const passed = errors.length === 0;
+  return { passed, results, errors };
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  const mirrorDir = args.find(arg => arg.startsWith('--path='))?.split('=')[1] || MIRROR_OUT_DIR;
+  
+  console.log(`🔍 Verifying mirror export: ${mirrorDir}\n`);
+  
+  const { passed, results, errors } = await verifyMirror(mirrorDir);
+  
+  const allowed = results.filter(r => r.allowed).length;
+  const denied = results.filter(r => !r.allowed).length;
+  
+  console.log(`📊 Verification Results:\n`);
+  console.log(`  Total files: ${results.length}`);
+  console.log(`  ✅ Allowed: ${allowed}`);
+  console.log(`  ❌ Denied: ${denied}\n`);
+  
+  if (errors.length > 0) {
+    console.log(`❌ Verification FAILED with ${errors.length} errors:\n`);
+    errors.forEach(error => {
+      console.log(`  - ${error}`);
+    });
+    console.log('');
+    process.exit(1);
+  } else {
+    console.log(`✅ Verification PASSED: All files are OSS_PUBLIC\n`);
+    process.exit(0);
+  }
+}
+
+main().catch(error => {
+  console.error('❌ Verification error:', error);
+  process.exit(1);
+});

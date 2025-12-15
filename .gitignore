@@ -37,6 +37,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# classification artifacts
+artifacts/
+.mirror-out/
+
 # private venture documents
 .private/
 INVESTOR-RELATIONS-PRIVATE/

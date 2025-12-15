@@ -1,0 +1,100 @@
+name: Auto-Merge Safety Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  pre-merge-checks:
+    name: Pre-Merge Safety Checks
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      
+      - run: npm ci
+      
+      - name: Run Classification Check
+        id: classify
+        run: |
+          npm run classify:strict
+          echo "classification_passed=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Check Classification Status
+        if: steps.classify.outcome == 'failure'
+        run: |
+          echo "❌ Classification check failed!"
+          echo "Review artifacts/classification-report.json for details"
+          exit 1
+      
+      - name: Upload Classification Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: classification-report-pr-${{ github.event.pull_request.number }}
+          path: artifacts/
+          retention-days: 7
+      
+      - name: Comment PR with Classification Status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            let comment = '## 🔍 Classification Check Results\n\n';
+            
+            try {
+              const reportPath = path.join('artifacts', 'classification-report.json');
+              if (fs.existsSync(reportPath)) {
+                const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+                
+                comment += `- **Total Files**: ${report.summary.total}\n`;
+                comment += `- **OSS_PUBLIC**: ${report.summary.oss_public} ✅\n`;
+                comment += `- **PLATFORM_PROPRIETARY**: ${report.summary.platform_proprietary}\n`;
+                comment += `- **INTERNAL_BUSINESS**: ${report.summary.internal_business}\n`;
+                comment += `- **SECRET_RISK**: ${report.summary.secret_risk} ${report.summary.secret_risk > 0 ? '❌' : '✅'}\n`;
+                comment += `- **Violations**: ${report.violations.length} ${report.violations.length > 0 ? '❌' : '✅'}\n\n`;
+                
+                if (report.violations.length > 0) {
+                  comment += '### ⚠️ Violations Detected\n\n';
+                  report.violations.forEach(v => {
+                    comment += `- **${v.severity.toUpperCase()}**: \`${v.file}\` - ${v.message}\n`;
+                  });
+                  comment += '\n**⚠️ This PR cannot be merged until violations are resolved.**\n\n';
+                  comment += '💡 **Tip**: Run `pnpm classify:fix-suggestions` for fix suggestions.\n';
+                } else {
+                  comment += '✅ **No violations detected. Safe to merge!**\n';
+                }
+                
+                comment += '\n---\n';
+                comment += '📊 [View full classification report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n';
+              } else {
+                comment += '⚠️ Classification report not found.\n';
+                comment += 'This may indicate the classification check failed.\n';
+              }
+            } catch (error) {
+              comment += `❌ Error reading classification report: ${error.message}\n`;
+            }
+            
+            // Only comment if this is a PR
+            if (context.eventName === 'pull_request') {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }

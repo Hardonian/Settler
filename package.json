@@ -58,7 +58,15 @@
     "agents:setup": "tsx scripts/setup-autonomous-agents.ts",
     "agents:monitor": "bash scripts/monitor-agents.sh",
     "agents:run": "tsx scripts/run-agent.ts",
-    "agents:status": "tsx scripts/run-agent.ts status"
+    "agents:status": "tsx scripts/run-agent.ts status",
+    "classify": "tsx scripts/classify.ts",
+    "classify:json": "tsx scripts/classify.ts --json",
+    "classify:strict": "tsx scripts/classify.ts --strict",
+    "classify:fix-suggestions": "tsx scripts/classify-fix-suggestions.ts",
+    "mirror:dryrun": "tsx scripts/mirror-dryrun.ts",
+    "mirror:verify": "tsx scripts/mirror-verify.ts",
+    "mirror:publish": "tsx scripts/mirror-publish.ts",
+    "setup:open-core": "bash scripts/setup-open-core.sh"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -75,6 +83,7 @@
     "@types/node": "^24.0.0",
     "dotenv": "^17.2.3",
     "eslint-config-prettier": "^10.1.8",
+    "glob": "^10.4.5",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "pg": "^8.16.3",
