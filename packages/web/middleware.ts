@@ -3,6 +3,7 @@
  * 
  * CTO Mode: Deployment Guardrails
  * - Handles Supabase auth cookie refresh
+ * - Handles Auth0 authentication routes
  * - Protects routes requiring authentication
  * - Must be at root of project (not in src/)
  */
@@ -10,6 +11,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { addSecurityHeaders } from './src/middleware/security-headers';
+import { auth0 } from './src/lib/auth0';
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Explicitly bypass Stripe webhook - it needs raw body and no auth
@@ -19,6 +21,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         headers: request.headers,
       },
     });
+  }
+
+  // Handle Auth0 authentication routes
+  if (request.nextUrl.pathname.startsWith('/auth/')) {
+    const auth0Response = await auth0.middleware(request);
+    return addSecurityHeaders(auth0Response);
   }
 
   let response = NextResponse.next({
@@ -32,7 +40,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     // If Supabase not configured, skip auth middleware
-    return response;
+    return addSecurityHeaders(response);
   }
 
   try {

@@ -17,6 +17,7 @@ import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 import { FloatingHelpButton } from "@/components/support/FloatingHelpButton";
 import { Chatbot } from "@/components/chatbot/Chatbot";
 import { CookieConsent } from "@/components/consent/CookieConsent";
+import { Auth0Provider } from "@auth0/nextjs-auth0/client";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -197,21 +198,23 @@ export default async function RootLayout({
             tenantSlug={tenantContext.tenantSlug || null}
           >
             <QueryProvider>
-              {/* Skip to main content link for accessibility */}
-              <a
-                href="#main-content"
-                className="skip-to-main"
-              >
-                Skip to main content
-              </a>
-              <SmoothScroll>{children}</SmoothScroll>
-              <PwaInstallPrompt />
-              <ToastContainer />
-              <FloatingHelpButton />
-              <Chatbot />
-              <CookieConsent />
-              <Analytics />
-              <SpeedInsights />
+              <Auth0Provider>
+                {/* Skip to main content link for accessibility */}
+                <a
+                  href="#main-content"
+                  className="skip-to-main"
+                >
+                  Skip to main content
+                </a>
+                <SmoothScroll>{children}</SmoothScroll>
+                <PwaInstallPrompt />
+                <ToastContainer />
+                <FloatingHelpButton />
+                <Chatbot />
+                <CookieConsent />
+                <Analytics />
+                <SpeedInsights />
+              </Auth0Provider>
             </QueryProvider>
           </TenantThemeProvider>
         </ErrorBoundary>
