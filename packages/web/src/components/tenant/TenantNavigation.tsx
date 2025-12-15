@@ -135,7 +135,7 @@ export function TenantNavigation({
                 backgroundColor: primaryColor,
               }}
             >
-              <Link href="/playground" aria-label={`Get started with ${tenantName}`}>
+              <Link href="/console/playground" aria-label={`Get started with ${tenantName}`}>
                 Get Started
               </Link>
             </Button>
@@ -207,7 +207,7 @@ export function TenantNavigation({
                   backgroundColor: primaryColor,
                 }}
               >
-                <Link href="/playground" aria-label={`Get started with ${tenantName}`}>
+                <Link href="/console/playground" aria-label={`Get started with ${tenantName}`}>
                   Get Started
                 </Link>
               </Button>

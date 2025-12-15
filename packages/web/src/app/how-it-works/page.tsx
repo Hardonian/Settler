@@ -174,7 +174,7 @@ export default function HowItWorksPage() {
               <Link href="/signup">Start Free Trial</Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
-              <Link href="/playground">Try Playground</Link>
+              <Link href="/console/playground">Try Playground</Link>
             </Button>
           </div>
         </div>
@@ -398,7 +398,7 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);
                 <Link href="/console/playground">Try Playground</Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
-                <Link href="/console/playground">Try Playground</Link>
+                <Link href="/docs">View Documentation</Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
                 <Link href="/docs">View Full Documentation</Link>
