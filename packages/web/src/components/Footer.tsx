@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StatusIndicator } from "@/components/monitoring/StatusIndicator";
 
 export function Footer() {
   return (
@@ -156,9 +157,12 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
-          <div className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © 2026 Settler. All rights reserved.
+        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="text-sm text-muted-foreground">
+              © 2026 Settler. All rights reserved.
+            </div>
+            <StatusIndicator />
           </div>
           <nav className="flex space-x-6 text-sm" aria-label="Social media links">
             <a 

@@ -14,6 +14,7 @@ import { requireEnvironment } from "@/lib/env/validation";
 import { ToastContainer } from "@/components/ux/ToastContainer";
 import { initSentry } from "@/lib/monitoring/sentry";
 import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
+import { FloatingHelpButton } from "@/components/support/FloatingHelpButton";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -204,6 +205,7 @@ export default async function RootLayout({
               <SmoothScroll>{children}</SmoothScroll>
               <PwaInstallPrompt />
               <ToastContainer />
+              <FloatingHelpButton />
               <Analytics />
               <SpeedInsights />
             </QueryProvider>
