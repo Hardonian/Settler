@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { logger } from "@/lib/logging/logger";
+import { JobCompletionBanner } from "@/components/jobs/JobCompletionBanner";
 
 interface JobDetail {
   id: string;
@@ -209,6 +210,18 @@ export default function JobDetailPage() {
           </div>
         </div>
 
+        {/* Job Completion Banner */}
+        {job.status === "completed" && job.completedAt && (
+          <JobCompletionBanner
+            jobName={job.name}
+            matchedCount={job.matchedCount}
+            unmatchedCount={job.unmatchedCount}
+            accuracy={job.accuracy}
+            completedAt={job.completedAt}
+            jobId={job.id}
+          />
+        )}
+
         {/* Summary Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card>
@@ -266,13 +279,13 @@ export default function JobDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>Source Configuration</CardTitle>
-              <CardDescription>Source adapter and settings</CardDescription>
+              <CardDescription>Source platform and settings</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div>
                   <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Adapter:
+                    Platform:
                   </span>
                   <span className="ml-2 text-sm text-slate-600 dark:text-slate-400 capitalize">
                     {job.source.adapter}
@@ -295,13 +308,13 @@ export default function JobDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>Target Configuration</CardTitle>
-              <CardDescription>Target adapter and settings</CardDescription>
+              <CardDescription>Target platform and settings</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div>
                   <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Adapter:
+                    Platform:
                   </span>
                   <span className="ml-2 text-sm text-slate-600 dark:text-slate-400 capitalize">
                     {job.target.adapter}

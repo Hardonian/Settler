@@ -17,6 +17,7 @@ import { listReceipts } from '@/domain/console/receipts';
 import { listFeatureFlags } from '@/domain/console/featureFlags';
 import { LiveActivityFeed } from '@/components/console/LiveActivityFeed';
 import { OnboardingWizardClient } from '@/components/onboarding/OnboardingWizardClient';
+import { WelcomeBannerClient } from '@/components/onboarding/WelcomeBannerClient';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -268,8 +269,14 @@ async function ConsoleOverviewContent() {
     },
   });
 
+  // Get user name from user metadata or email
+  const userName = user.user_metadata?.name || user.email?.split('@')[0];
+
   return (
     <div className="space-y-8">
+      {/* Welcome Banner */}
+      <WelcomeBannerClient userName={userName} />
+      
       {/* Onboarding Wizard */}
       <OnboardingWizardClient />
 
