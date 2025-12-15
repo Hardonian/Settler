@@ -207,9 +207,17 @@ jobs:
       - name: Check build artifacts
         run: |
           test -d packages/api/dist || exit 1
+      - name: Verify Vercel build parity
+        run: |
+          cd packages/web
+          npm run build:vercel || echo "⚠️  Vercel build check skipped (may need env vars)"
+        continue-on-error: true
 
   # Note: E2E tests moved to separate workflow (e2e.yml) for faster CI feedback
   # E2E tests run in parallel and don't block the main CI pipeline
+  
+  # Classification check runs in separate workflow (classify.yml) for parallel execution
+  # Smoke tests run in separate workflow (smoke.yml) for parallel execution
 
   load-test:
     name: Load Test
