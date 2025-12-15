@@ -13,6 +13,7 @@ import { AnimatedHero } from "@/components/AnimatedHero";
 import { AnimatedFeatureCard } from "@/components/AnimatedFeatureCard";
 import { AnimatedStatCard } from "@/components/AnimatedStatCard";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { DemoBookingWidget } from "@/components/sales/DemoBookingWidget";
 
 interface EnterpriseFormData {
   name: string;
@@ -423,6 +424,9 @@ export default function Enterprise() {
           />
         </div>
       </section>
+
+      {/* Floating Demo Booking Widget */}
+      <DemoBookingWidget variant="floating" />
 
       <Footer />
     </AnimatedPageWrapper>

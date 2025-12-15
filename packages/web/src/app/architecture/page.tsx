@@ -2,6 +2,12 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import dynamic from 'next/dynamic';
+
+const InfographicSection = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InfographicSection })), { 
+  ssr: true,
+  loading: () => <div className="py-20" />
+});
 
 function ArchitectureDiagram() {
   return (
@@ -95,6 +101,11 @@ export default function ArchitecturePage() {
 
         <div className="max-w-6xl mx-auto mb-20">
           <ArchitectureDiagram />
+        </div>
+
+        {/* Reconciliation Workflow Diagram */}
+        <div className="max-w-7xl mx-auto mb-20">
+          <InfographicSection />
         </div>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
