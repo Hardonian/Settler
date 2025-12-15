@@ -21,10 +21,10 @@ export interface ABTest {
 /**
  * Simple A/B test assignment based on consistent hashing
  */
-export function assignVariant(testId: string, userId: string): string {
+export function assignVariant(testId: string, userId: string): number {
   // Use consistent hashing to ensure same user gets same variant
   const hash = simpleHash(`${testId}:${userId}`);
-  return hash.toString();
+  return hash;
 }
 
 /**
@@ -68,7 +68,7 @@ export function getVariant(
   }
 
   // Fallback to first variant
-  return test.variants[0];
+  return test.variants[0] || null;
 }
 
 /**

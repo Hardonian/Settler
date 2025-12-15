@@ -285,7 +285,7 @@ export function Chatbot({ className }: ChatbotProps) {
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    const dataUrl = await handleFileUpload(file, 'image');
+                    await handleFileUpload(file, 'image');
                     // TODO: Send image in message
                   }
                 }}
@@ -297,7 +297,7 @@ export function Chatbot({ className }: ChatbotProps) {
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    const content = await handleFileUpload(file, 'file');
+                    await handleFileUpload(file, 'file');
                     // TODO: Send file in message
                   }
                 }}

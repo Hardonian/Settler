@@ -32,10 +32,16 @@ const chatMessageSchema = z.object({
     .optional(),
 });
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy initialization of OpenAI client to avoid build-time errors
+function getOpenAIClient(): OpenAI | null {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+  return new OpenAI({
+    apiKey,
+  });
+}
 
 const SYSTEM_PROMPT = `You are a helpful AI assistant for Settler.dev, a financial reconciliation API platform.
 
@@ -64,7 +70,8 @@ export async function POST(request: NextRequest) {
     const validated = chatMessageSchema.parse(body);
 
     // Check if OpenAI API key is configured
-    if (!process.env.OPENAI_API_KEY) {
+    const openai = getOpenAIClient();
+    if (!openai) {
       return NextResponse.json(
         {
           success: false,

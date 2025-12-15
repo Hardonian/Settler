@@ -153,3 +153,12 @@ export async function trackChurn(userId: string, reason?: string): Promise<void>
     reason,
   });
 }
+
+/**
+ * Track playground visit
+ */
+export async function trackPlaygroundVisit(): Promise<void> {
+  await trackConversion('playground_visit', {
+    path: typeof window !== 'undefined' ? window.location.pathname : undefined,
+  });
+}

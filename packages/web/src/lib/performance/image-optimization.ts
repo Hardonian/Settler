@@ -3,8 +3,6 @@
  * Provides optimized image loading and caching strategies
  */
 
-import { getImageUrl } from '@/lib/images/image-config';
-
 export interface OptimizedImageOptions {
   src: string;
   alt: string;

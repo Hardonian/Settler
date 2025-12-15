@@ -6,11 +6,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { TrendingUp, Download, Users, Code, Globe, Calendar } from 'lucide-react';
+import { Download, Users, Code } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { trackSDKStatsView } from '@/lib/analytics/sdk-tracking';
 

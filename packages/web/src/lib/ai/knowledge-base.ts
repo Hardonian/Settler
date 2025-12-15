@@ -3,9 +3,6 @@
  * Builds knowledge base from FAQ, docs, and planning documents
  */
 
-import fs from 'fs';
-import path from 'path';
-
 export interface KnowledgeBaseEntry {
   id: string;
   title: string;
