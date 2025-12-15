@@ -8,7 +8,7 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Info } from 'lucide-react';
 import { FailSafeResult } from '@/lib/fail-safe/reconciliation-fail-safe';
 
 interface FailSafeBannerProps {

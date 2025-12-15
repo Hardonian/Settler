@@ -28,7 +28,7 @@ interface ReconciliationResult {
   matched: number;
   unmatched: number;
   conflicts: number;
-  accuracy: string;
+  accuracy: number; // Changed from string to number for type safety
 }
 
 export default function ReconcilePlayground() {
@@ -205,7 +205,7 @@ export default function ReconcilePlayground() {
           matched: Math.floor(Math.random() * 500) + 100,
           unmatched: Math.floor(Math.random() * 50),
           conflicts: Math.floor(Math.random() * 20),
-          accuracy: `${(95 + Math.random() * 5).toFixed(1)}%`
+          accuracy: 95 + Math.random() * 5 // Store as number
         };
         
         setResult(finalResult);
@@ -215,7 +215,10 @@ export default function ReconcilePlayground() {
           body: {
             id: newJobId,
             status: 'completed',
-            ...finalResult
+            matched: finalResult.matched,
+            unmatched: finalResult.unmatched,
+            conflicts: finalResult.conflicts,
+            accuracy: `${finalResult.accuracy.toFixed(1)}%`
           },
           duration: Date.now() - startTime
         });
@@ -381,7 +384,7 @@ export default function ReconcilePlayground() {
                             </div>
                             <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800 text-center">
                                 <div className="text-sm text-slate-600 dark:text-slate-400 mb-2">Match Accuracy</div>
-                                <div className="font-bold text-4xl text-blue-700 dark:text-blue-400 mb-4">{result.accuracy}</div>
+                                <div className="font-bold text-4xl text-blue-700 dark:text-blue-400 mb-4">{result.accuracy.toFixed(1)}%</div>
                                 {/* Confidence Indicator */}
                                 <div className="flex justify-center">
                                     <ConfidenceIndicator
