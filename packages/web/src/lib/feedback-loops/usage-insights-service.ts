@@ -147,7 +147,7 @@ export async function analyzeUsageInsights(
         return accuracy >= 95;
       }).length;
 
-      if (highAccuracyCount / reconciliations.length > 0.8) {
+      if (highAccuracyCount / reconciliationResults.length > 0.8) {
         insights.push({
           type: 'success_pattern',
           pattern: 'high_accuracy_reconciliations',

@@ -134,7 +134,9 @@ export async function GET(request: NextRequest) {
     const dailyMap = new Map<string, { calls: number; errors: number }>();
     for (const event of events) {
       try {
+        if (!event.timestamp) continue;
         const date = event.timestamp.toISOString().split('T')[0];
+        if (!date) continue;
         const existing = dailyMap.get(date) || { calls: 0, errors: 0 };
         const quantity = event.quantity ? Number(event.quantity) : 1;
         existing.calls += quantity;
