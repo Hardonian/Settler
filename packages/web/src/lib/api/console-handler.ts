@@ -110,7 +110,7 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
           const body = await request.json().catch(() => ({}));
           const parsed = config.schema.safeParse(body);
           if (!parsed.success) {
-            logger.warn('Validation failed', { errors: parsed.error.errors });
+            logger.warn('Validation failed', { errors: parsed.error.issues });
             const response = NextResponse.json<ConsoleApiResponse>(
               {
                 error: 'Validation failed',

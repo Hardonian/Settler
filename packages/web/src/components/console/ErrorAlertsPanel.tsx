@@ -9,7 +9,8 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, XCircle, AlertCircle, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, XCircle, AlertCircle, Info, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface ErrorAlert {
@@ -115,8 +116,7 @@ export function ErrorAlertsPanel() {
   };
 
   return (
-    <ConsoleErrorBoundary>
-      <Card className="hover:shadow-lg transition-shadow">
+    <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -183,6 +183,5 @@ export function ErrorAlertsPanel() {
         </div>
       </CardContent>
     </Card>
-    </ConsoleErrorBoundary>
   );
 }

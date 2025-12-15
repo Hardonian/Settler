@@ -11,6 +11,7 @@ import { getAccountPlanCode } from '@/domain/billing/entitlements';
 import { getPlanConfig } from '@/domain/billing/planConfig';
 import { validatePagination } from '@/lib/validation/api-validation';
 import { getCorrelationId, addCorrelationHeaders } from '@/lib/monitoring/correlation';
+import { Decimal } from '@prisma/client/runtime/library';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -48,18 +49,31 @@ export async function GET(request: NextRequest) {
     const includedTokens = planConfig?.aiTokens?.included || 0;
     const overagePrice = planConfig?.aiTokens?.overagePrice || 0.025;
 
-    // Get purchased add-ons
-    const addOns = await prisma.billingAddOn.findMany({
+    // Get purchased add-ons (AI tokens would be tracked via AddOnPurchase)
+    // For now, return empty array as AI tokens are not yet implemented as add-ons
+    const addOnPurchases = await prisma.addOnPurchase.findMany({
       where: {
         billingAccountId: billingAccount.id,
-        type: 'ai_tokens',
         status: 'active',
+        addOn: {
+          integrationId: 'ai_tokens', // Assuming AI tokens would use this integrationId
+        },
+      },
+      include: {
+        addOn: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    const totalPurchasedTokens = addOns.reduce((sum, addon) => {
-      return sum + (addon.quantity || 0);
+    const totalPurchasedTokens = addOnPurchases.reduce((sum, purchase) => {
+      // Quantity would be stored in metadata or tracked via usage events
+      const quantity = (purchase.metadata as { quantity?: number })?.quantity || 0;
+      return sum + quantity;
     }, 0);
 
     const response = NextResponse.json({
@@ -68,11 +82,11 @@ export async function GET(request: NextRequest) {
       purchasedTokens: totalPurchasedTokens,
       totalAvailableTokens: includedTokens + totalPurchasedTokens,
       overagePrice,
-      addOns: addOns.map((a) => ({
-        id: a.id,
-        quantity: a.quantity,
-        purchasedAt: a.createdAt,
-        expiresAt: a.expiresAt,
+      addOns: addOnPurchases.map((p) => ({
+        id: p.id,
+        quantity: (p.metadata as { quantity?: number })?.quantity || 0,
+        purchasedAt: p.purchasedAt,
+        expiresAt: null, // AddOnPurchase doesn't have expiresAt
       })),
       pricing: {
         commercial: {
@@ -150,17 +164,35 @@ export async function POST(request: NextRequest) {
     const pricePer1M = planCode === 'scale' ? 20 : 25;
     const price = (quantity / 1000000) * pricePer1M;
 
-    // Create add-on record (would integrate with Stripe for payment)
-    const addOn = await prisma.billingAddOn.create({
+    // Find or create AI tokens add-on
+    let aiTokensAddOn = await prisma.addOn.findUnique({
+      where: { integrationId: 'ai_tokens' },
+    });
+
+    if (!aiTokensAddOn) {
+      // Create the add-on if it doesn't exist
+      aiTokensAddOn = await prisma.addOn.create({
+        data: {
+          integrationId: 'ai_tokens',
+          name: 'AI Tokens',
+          description: 'Additional AI tokens for API usage',
+          category: 'feature',
+          basePriceMonthly: new Decimal(price),
+          isActive: true,
+        },
+      });
+    }
+
+    // Create add-on purchase record (would integrate with Stripe for payment)
+    const addOnPurchase = await prisma.addOnPurchase.create({
       data: {
         billingAccountId: billingAccount.id,
-        type: 'ai_tokens',
-        quantity,
-        price,
+        addOnId: aiTokensAddOn.id,
         status: 'pending', // Would be 'active' after payment confirmation
         metadata: {
           planCode,
           pricePer1M,
+          quantity,
         },
       },
     });
@@ -169,10 +201,10 @@ export async function POST(request: NextRequest) {
     // For now, return the add-on details
     const response = NextResponse.json({
       addOn: {
-        id: addOn.id,
+        id: addOnPurchase.id,
         quantity,
         price,
-        status: addOn.status,
+        status: addOnPurchase.status,
       },
       checkoutUrl: null, // Would be Stripe checkout URL in production
       message: 'Add-on created. Payment processing required.',

@@ -34,7 +34,7 @@ export async function executeReconciliationWithFailSafe(
   const errors: string[] = [];
 
   try {
-    const job = await prisma.reconciliationJob.findUnique({
+    const job = await prisma.reconJob.findUnique({
       where: { id: jobId },
     });
 
@@ -134,7 +134,7 @@ export async function executeReconciliationWithFailSafe(
 async function getPartialResults(jobId: string): Promise<ReconciliationResult | null> {
   try {
     // Try to get any partial results from the database
-    const partialData = await prisma.reconciliationJob.findUnique({
+    const partialData = await prisma.reconJob.findUnique({
       where: { id: jobId },
       select: {
         matchedCount: true,
@@ -170,7 +170,7 @@ export async function validateReconciliationSafety(
   const warnings: string[] = [];
 
   try {
-    const job = await prisma.reconciliationJob.findUnique({
+    const job = await prisma.reconJob.findUnique({
       where: { id: jobId },
     });
 
@@ -184,7 +184,7 @@ export async function validateReconciliationSafety(
     }
 
     // Check data freshness
-    const lastRun = await prisma.reconciliationJob.findFirst({
+    const lastRun = await prisma.reconJob.findFirst({
       where: {
         id: { not: jobId },
         sourceAdapter: job.sourceAdapter,

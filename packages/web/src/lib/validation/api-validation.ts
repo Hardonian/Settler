@@ -34,7 +34,7 @@ export function validateApiKeyInput(input: unknown): {
   if (!result.success) {
     return {
       valid: false,
-      errors: result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`),
+      errors: result.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`),
     };
   }
 
@@ -121,7 +121,7 @@ export function validatePagination(params: {
   if (!result.success) {
     return {
       valid: false,
-      errors: result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`),
+      errors: result.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`),
     };
   }
 
@@ -152,7 +152,7 @@ export function validateDateRange(params: {
   if (!result.success) {
     return {
       valid: false,
-      errors: result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`),
+      errors: result.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`),
     };
   }
 

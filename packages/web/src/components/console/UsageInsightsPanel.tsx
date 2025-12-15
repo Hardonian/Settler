@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, AlertTriangle, Target, Loader2 } from 'lucide-react';
+import { TrendingUp, Target, Loader2 } from 'lucide-react';
 import { UIEmphasis } from '@/lib/feedback-loops/usage-insights-service';
 
 export function UsageInsightsPanel() {

@@ -12,7 +12,7 @@
 import { PrismaClient } from '@prisma/client';
 import { prisma } from '@/shared/db/prismaClient';
 import { UnifiedAuthContext } from '@/lib/api/unified-auth';
-import { withCache, generateCacheKey, CachePatterns } from '@/lib/db/cache';
+import { withCache, generateCacheKey } from '@/lib/db/cache';
 
 export interface QueryOptions {
   /** Cache TTL in seconds (0 = no cache) */
@@ -162,14 +162,18 @@ export class QueryBuilder {
     return executeQuery(
       this.context,
       async (prismaClient) => {
-        const modelClient = prismaClient[model as string] as {
+        const modelClient = (prismaClient as Record<string, unknown>)[model] as {
           findMany: (args: {
             where: Record<string, unknown>;
             take: number;
             skip: number;
             orderBy?: Record<string, 'asc' | 'desc'>;
           }) => Promise<T[]>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.findMany({
           where: {
@@ -199,9 +203,13 @@ export class QueryBuilder {
     return executeQuery(
       this.context,
       async (prismaClient) => {
-        const modelClient = prismaClient[model as string] as {
+        const modelClient = (prismaClient as Record<string, unknown>)[model] as {
           findUnique: (args: { where: Record<string, unknown> }) => Promise<T | null>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.findUnique({
           where: {
@@ -228,9 +236,13 @@ export class QueryBuilder {
     return executeQuery(
       this.context,
       async (prismaClient) => {
-        const modelClient = prismaClient[model as string] as {
+        const modelClient = (prismaClient as Record<string, unknown>)[model] as {
           create: (args: { data: Record<string, unknown> }) => Promise<T>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.create({
           data: {
@@ -257,12 +269,16 @@ export class QueryBuilder {
     return executeQuery(
       this.context,
       async (prismaClient) => {
-        const modelClient = prismaClient[model as string] as {
+        const modelClient = (prismaClient as Record<string, unknown>)[model] as {
           update: (args: {
             where: Record<string, unknown>;
             data: Record<string, unknown>;
           }) => Promise<T>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.update({
           where: {
@@ -290,9 +306,13 @@ export class QueryBuilder {
     return executeQuery(
       this.context,
       async (prismaClient) => {
-        const modelClient = prismaClient[model as string] as {
+        const modelClient = (prismaClient as Record<string, unknown>)[model] as {
           delete: (args: { where: Record<string, unknown> }) => Promise<T>;
-        };
+        } | undefined;
+        
+        if (!modelClient) {
+          throw new Error(`Model ${String(model)} not found in PrismaClient`);
+        }
 
         return modelClient.delete({
           where: {

@@ -5,7 +5,6 @@
  */
 
 import { NextRequest } from 'next/server';
-import { createMockAuthContext } from './console-test-utils';
 
 /**
  * Create authenticated request for testing
@@ -18,7 +17,7 @@ export function createAuthenticatedRequest(
     body?: unknown;
   } = {}
 ): NextRequest {
-  const { method = 'GET', headers = {}, body } = options;
+  const { method = 'GET', headers = {} } = options;
 
   // Add auth headers
   const authHeaders = {

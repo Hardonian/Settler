@@ -37,7 +37,7 @@ export async function analyzeUsageInsights(
 
   try {
     // Analyze feature popularity
-    const featureUsage = await prisma.activityLog.groupBy({
+    const featureUsage = await prisma.auditLog.groupBy({
       by: ['eventType'],
       where: {
         userId,
@@ -55,7 +55,7 @@ export async function analyzeUsageInsights(
       take: 10,
     });
 
-    featureUsage.forEach((usage) => {
+    featureUsage.forEach((usage: { eventType?: string | null; _count: { id: number } }) => {
       insights.push({
         type: 'feature_popularity',
         feature: usage.eventType || 'unknown',
@@ -66,7 +66,7 @@ export async function analyzeUsageInsights(
     });
 
     // Analyze common errors
-    const errors = await prisma.activityLog.findMany({
+    const errors = await prisma.auditLog.findMany({
       where: {
         userId,
         createdAt: { gte: startDate },
@@ -79,7 +79,7 @@ export async function analyzeUsageInsights(
     });
 
     const errorCounts = new Map<string, number>();
-    errors.forEach((error) => {
+    errors.forEach((error: { eventType?: string | null }) => {
       const errorType = error.eventType || 'unknown';
       errorCounts.set(errorType, (errorCounts.get(errorType) || 0) + 1);
     });
@@ -97,7 +97,7 @@ export async function analyzeUsageInsights(
     });
 
     // Analyze dropoff points
-    const onboardingSteps = await prisma.activityLog.findMany({
+    const onboardingSteps = await prisma.auditLog.findMany({
       where: {
         userId,
         createdAt: { gte: startDate },
@@ -109,9 +109,8 @@ export async function analyzeUsageInsights(
     });
 
     if (onboardingSteps.length > 0) {
-      const lastStep = onboardingSteps[onboardingSteps.length - 1];
       const allSteps = ['welcome', 'create_api_key', 'try_playground', 'first_reconciliation', 'invite_team', 'complete'];
-      const completedSteps = onboardingSteps.map((s) => s.eventType).filter(Boolean) as string[];
+      const completedSteps = onboardingSteps.map((s: { eventType?: string }) => s.eventType).filter(Boolean) as string[];
       const incompleteSteps = allSteps.filter((step) => !completedSteps.includes(step));
 
       if (incompleteSteps.length > 0) {
@@ -126,7 +125,7 @@ export async function analyzeUsageInsights(
     }
 
     // Analyze success patterns
-    const reconciliations = await prisma.reconciliationJob.findMany({
+    const reconciliations = await prisma.reconJob.findMany({
       where: {
         userId,
         createdAt: { gte: startDate },
@@ -140,8 +139,7 @@ export async function analyzeUsageInsights(
     });
 
     if (reconciliations.length > 0) {
-      const avgAccuracy = reconciliations.reduce((sum, r) => sum + (r.accuracy || 0), 0) / reconciliations.length;
-      const highAccuracyCount = reconciliations.filter((r) => (r.accuracy || 0) >= 95).length;
+      const highAccuracyCount = reconciliations.filter((r: { accuracy?: number | null }) => (r.accuracy || 0) >= 95).length;
 
       if (highAccuracyCount / reconciliations.length > 0.8) {
         insights.push({
