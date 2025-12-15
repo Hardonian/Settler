@@ -7,11 +7,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, DollarSign, Zap, TrendingUp, Lightbulb, AlertTriangle } from 'lucide-react';
+import { Sparkles, DollarSign, Zap, TrendingUp, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 
 interface Insight {
@@ -49,30 +49,6 @@ export default function InsightsPage() {
       console.error('Failed to fetch insights:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getInsightIcon = (type: string) => {
-    switch (type) {
-      case 'cost_optimization':
-        return <DollarSign className="w-5 h-5" />;
-      case 'performance':
-        return <Zap className="w-5 h-5" />;
-      case 'usage_pattern':
-        return <TrendingUp className="w-5 h-5" />;
-      default:
-        return <Lightbulb className="w-5 h-5" />;
-    }
-  };
-
-  const getSeverityBadge = (severity: string) => {
-    switch (severity) {
-      case 'critical':
-        return <Badge variant="destructive">Critical</Badge>;
-      case 'warning':
-        return <Badge className="bg-amber-500">Warning</Badge>;
-      default:
-        return <Badge variant="secondary">Info</Badge>;
     }
   };
 

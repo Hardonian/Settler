@@ -13,17 +13,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { ConsoleErrorBoundary } from '@/components/console/ErrorBoundary';
-import { AlertCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Trash2, RotateCw, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Webhook {
@@ -162,13 +160,11 @@ export default function WebhooksPage() {
               Configure webhooks to receive real-time notifications about events.
             </p>
           </div>
+        <Button onClick={() => setDialogOpen(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Create Webhook
+        </Button>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Webhook
-            </Button>
-          </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create Webhook</DialogTitle>

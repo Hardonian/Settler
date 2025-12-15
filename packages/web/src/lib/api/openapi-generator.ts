@@ -77,22 +77,35 @@ function zodTypeToOpenAPI(type: z.ZodType): Record<string, unknown> {
   }
 
   if (type instanceof z.ZodArray) {
-    const innerType = (type._def as { type: z.ZodType }).type;
+    const def = type._def as unknown as { type?: z.ZodType };
+    const innerType = def.type;
+    if (innerType) {
+      return {
+        type: 'array',
+        items: zodTypeToOpenAPI(innerType),
+      };
+    }
     return {
       type: 'array',
-      items: zodTypeToOpenAPI(innerType),
+      items: {},
     };
   }
 
   if (type instanceof z.ZodEnum) {
+    const def = type._def as unknown as { values?: readonly string[] };
     return {
       type: 'string',
-      enum: (type._def as { values: readonly [string, ...string[]] }).values,
+      enum: def.values || [],
     };
   }
 
   if (type instanceof z.ZodOptional) {
-    return zodTypeToOpenAPI((type._def as { innerType: z.ZodType }).innerType);
+    const def = type._def as unknown as { innerType?: z.ZodType };
+    const innerType = def.innerType;
+    if (innerType) {
+      return zodTypeToOpenAPI(innerType);
+    }
+    return { type: 'object' };
   }
 
   return { type: 'object' };
@@ -161,7 +174,10 @@ export function generateOpenAPISpec(routes: OpenAPIRoute[]): Record<string, unkn
       ];
     }
 
-    paths[route.path][route.method] = pathItem;
+    const pathObj = paths[route.path];
+    if (pathObj) {
+      pathObj[route.method] = pathItem;
+    }
   }
 
   return {

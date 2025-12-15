@@ -11,7 +11,6 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getCurrentUsage } from '@/lib/usage/tracking';
 import { getAccountPlanCode } from '@/domain/billing/entitlements';
 import { getPlanConfig } from '@/domain/billing/planConfig';
-import { validatePagination, validateDateRange } from '@/lib/validation/api-validation';
 import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
 
 export const dynamic = 'force-dynamic';
@@ -109,8 +108,8 @@ export async function GET(request: NextRequest) {
     for (const event of events) {
       try {
         const service = event.eventType.split('-')[0] || 'unknown';
-        const operation = event.eventType.split('-').slice(1).join('-') || 'unknown';
-        const quantity = Number(event.quantity) || 1;
+        const operation = event.eventType?.split('-').slice(1).join('-') || 'unknown';
+        const quantity = event.quantity ? Number(event.quantity) : 1;
 
         byService[service] = (byService[service] || 0) + quantity;
         byOperation[operation] = (byOperation[operation] || 0) + quantity;
@@ -137,9 +136,10 @@ export async function GET(request: NextRequest) {
       try {
         const date = event.timestamp.toISOString().split('T')[0];
         const existing = dailyMap.get(date) || { calls: 0, errors: 0 };
-        existing.calls += Number(event.quantity) || 1;
+        const quantity = event.quantity ? Number(event.quantity) : 1;
+        existing.calls += quantity;
         if (event.metadata && typeof event.metadata === 'object' && 'error' in event.metadata) {
-          existing.errors += Number(event.quantity) || 1;
+          existing.errors += quantity;
         }
         dailyMap.set(date, existing);
       } catch {

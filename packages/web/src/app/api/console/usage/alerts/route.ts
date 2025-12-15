@@ -11,7 +11,7 @@ import { getCurrentUserUsageAlerts } from '@/lib/alerts/usage-alerts';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

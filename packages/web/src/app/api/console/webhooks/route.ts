@@ -7,7 +7,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
-import { prisma } from '@/shared/db/prismaClient';
 import { createWebhook, listWebhooks, CreateWebhookInput } from '@/lib/webhooks/manager';
 
 export const dynamic = 'force-dynamic';
@@ -17,11 +16,11 @@ export async function GET(request: NextRequest) {
   try {
     const authContext = await requireAuth(request);
     
-    if (!authContext.billingAccountId) {
+    if (!authContext.userId) {
       return NextResponse.json({ webhooks: [] });
     }
 
-    const webhooks = await listWebhooks(authContext.billingAccountId);
+    const webhooks = await listWebhooks(authContext.userId, authContext.tenantId || authContext.userId);
 
     // Don't expose secrets in list
     const safeWebhooks = webhooks.map((w) => ({
@@ -43,8 +42,8 @@ export async function POST(request: NextRequest) {
   try {
     const authContext = await requireAuth(request);
     
-    if (!authContext.billingAccountId) {
-      return NextResponse.json({ error: 'Billing account not found' }, { status: 404 });
+    if (!authContext.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json().catch(() => ({}));
@@ -64,7 +63,7 @@ export async function POST(request: NextRequest) {
       secret: body.secret,
     };
 
-    const webhook = await createWebhook(authContext.billingAccountId, input);
+    const webhook = await createWebhook(authContext.userId, authContext.tenantId || authContext.userId, input);
 
     // Return full secret only on creation
     return NextResponse.json({ webhook }, { status: 201 });

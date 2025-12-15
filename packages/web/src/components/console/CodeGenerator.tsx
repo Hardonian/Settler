@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Copy, Check, AlertCircle } from 'lucide-react';
 import { generateAllCodeSnippets, ApiCall } from '@/lib/playground/code-generator';
-import { useState } from 'react';
 
 interface CodeGeneratorProps {
   apiCall: ApiCall;

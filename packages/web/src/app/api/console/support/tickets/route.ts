@@ -7,7 +7,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
-import { prisma } from '@/shared/db/prismaClient';
 import { createTicket, listTickets, CreateTicketInput } from '@/lib/support/ticket-system';
 
 export const dynamic = 'force-dynamic';

@@ -27,7 +27,7 @@ export async function checkUsageAlerts(
   const alerts: UsageAlert[] = [];
 
   try {
-    const planCode = await getAccountPlanCode(billingAccountId).catch(() => 'free');
+    await getAccountPlanCode(billingAccountId).catch(() => 'free');
 
     const services: Array<'reconcile' | 'receipts' | 'featureFlags' | 'playground'> = [
       'reconcile',

@@ -121,12 +121,6 @@ export function generateCurlCode(apiCall: ApiCall, apiKey: string): string {
  * Generate Go code
  */
 export function generateGoCode(apiCall: ApiCall, apiKey: string): string {
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': apiKey,
-    ...apiCall.headers,
-  };
-
   const bodyString = apiCall.body
     ? `\n\tbody, _ := json.Marshal(${JSON.stringify(apiCall.body)})\n\treq, _ := http.NewRequest("${apiCall.method}", "${apiCall.endpoint}", bytes.NewBuffer(body))`
     : `\n\treq, _ := http.NewRequest("${apiCall.method}", "${apiCall.endpoint}", nil)`;

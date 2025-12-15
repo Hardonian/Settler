@@ -24,15 +24,15 @@ export async function PATCH(
     const authContext = await requireAuth(request);
     const { id } = await params;
 
-    if (!authContext.billingAccountId) {
-      return NextResponse.json({ error: 'Billing account not found' }, { status: 404 });
+    if (!authContext.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const webhook = await updateWebhook(id, authContext.billingAccountId, {
+    const webhook = await updateWebhook(id, authContext.userId, authContext.tenantId || authContext.userId, {
       url: body.url,
       events: body.events,
-      active: body.active,
+      status: body.active ? 'active' : 'inactive',
     });
 
     return NextResponse.json({ webhook });
@@ -53,11 +53,11 @@ export async function DELETE(
     const authContext = await requireAuth(request);
     const { id } = await params;
 
-    if (!authContext.billingAccountId) {
-      return NextResponse.json({ error: 'Billing account not found' }, { status: 404 });
+    if (!authContext.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await deleteWebhook(id, authContext.billingAccountId);
+    await deleteWebhook(id, authContext.userId, authContext.tenantId || authContext.userId);
 
     return NextResponse.json({ success: true });
   } catch (error) {

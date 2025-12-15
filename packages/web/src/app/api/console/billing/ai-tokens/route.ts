@@ -9,9 +9,7 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { getAccountPlanCode } from '@/domain/billing/entitlements';
 import { getPlanConfig } from '@/domain/billing/planConfig';
-import { validatePagination } from '@/lib/validation/api-validation';
 import { getCorrelationId, addCorrelationHeaders } from '@/lib/monitoring/correlation';
-import { Decimal } from '@prisma/client/runtime/library';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -19,7 +17,7 @@ export const runtime = 'nodejs';
 /**
  * GET - Get current AI token usage and available add-ons
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   const correlationId = await getCorrelationId();
 
   try {

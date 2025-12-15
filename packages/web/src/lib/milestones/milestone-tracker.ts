@@ -56,7 +56,7 @@ export async function recordMilestone(event: MilestoneEvent): Promise<void> {
         userId: event.userId,
         resourceType: 'milestone',
         action: event.milestone,
-        changes: event.metadata || {},
+        changes: (event.metadata || {}) as Record<string, unknown>,
       },
     });
   } catch (error) {
