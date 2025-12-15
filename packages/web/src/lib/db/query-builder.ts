@@ -12,6 +12,7 @@
 import { PrismaClient } from '@prisma/client';
 import { prisma } from '@/shared/db/prismaClient';
 import { UnifiedAuthContext } from '@/lib/api/unified-auth';
+import { withCache, generateCacheKey, CachePatterns } from '@/lib/db/cache';
 
 export interface QueryOptions {
   /** Cache TTL in seconds (0 = no cache) */
@@ -69,15 +70,54 @@ export async function executeQuery<T>(
     }
   }
 
-  // Execute query with retry logic
+  // Execute query with caching and retry logic
   let lastError: Error | null = null;
   const retries = options.retries ?? 3;
 
+  // Generate cache key
+  const cacheKey = options.cacheTtl
+    ? generateCacheKey(`query:${billingAccountId}`, {
+        userId: auth.userId,
+        type: auth.type,
+      })
+    : null;
+
+  // Try cache first
+  if (cacheKey && options.cacheTtl) {
+    try {
+      const cached = await withCache(
+        cacheKey,
+        async () => {
+          // Fall through to query execution
+          return null;
+        },
+        { ttl: options.cacheTtl, skip: false }
+      );
+      if (cached !== null) {
+        return cached;
+      }
+    } catch (error) {
+      // Cache error, continue to query
+      console.warn('[Query Builder] Cache error, continuing:', error);
+    }
+  }
+
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      // TODO: Add caching layer here
       // TODO: Add timeout handling
       const result = await query(prisma);
+      
+      // Cache result if cache TTL specified
+      if (cacheKey && options.cacheTtl) {
+        await withCache(
+          cacheKey,
+          async () => result,
+          { ttl: options.cacheTtl, skip: false }
+        ).catch(() => {
+          // Cache write error, don't fail query
+        });
+      }
+      
       return result;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('Unknown error');
