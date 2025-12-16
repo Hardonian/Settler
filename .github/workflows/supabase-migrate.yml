@@ -160,19 +160,40 @@ jobs:
           echo "Environment: ${{ steps.env-info.outputs.environment }}"
           echo "Project: ${{ env.SUPABASE_PROJECT_REF }}"
           
-          # Use db push to apply all pending migrations
-          supabase db push --include-all --db-url "${{ env.DATABASE_URL }}" || {
-            echo "⚠️  db push failed, trying direct psql connection..."
-            # Fallback: apply migrations directly via psql
-            for file in supabase/migrations/*.sql; do
-              if [ -f "$file" ]; then
-                echo "Applying: $(basename $file)"
-                psql "${{ env.DATABASE_URL }}" -f "$file" || echo "⚠️  Failed to apply $file"
-              fi
-            done
-          }
+          # Install PostgreSQL client if not available
+          if ! command -v psql &> /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+          fi
           
-          echo "✅ Migrations completed"
+          # Apply migrations in order
+          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
+          
+          # Get list of migration files sorted by name
+          MIGRATIONS=$(ls -1 supabase/migrations/*.sql 2>/dev/null | sort)
+          
+          if [ -z "$MIGRATIONS" ]; then
+            echo "⚠️  No migration files found"
+            exit 1
+          fi
+          
+          echo "Found $(echo "$MIGRATIONS" | wc -l) migration(s) to apply"
+          
+          # Apply each migration
+          for migration in $MIGRATIONS; do
+            migration_name=$(basename $migration)
+            echo "📦 Applying: $migration_name"
+            
+            # Apply with error handling
+            if psql "${{ env.DATABASE_URL }}" -v ON_ERROR_STOP=1 -f "$migration"; then
+              echo "✅ Applied: $migration_name"
+            else
+              echo "❌ Failed: $migration_name"
+              exit 1
+            fi
+          done
+          
+          echo "✅ All migrations completed successfully"
         env:
           SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
           PGPASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
@@ -180,13 +201,38 @@ jobs:
       - name: Verify migration status
         run: |
           echo "🔍 Checking migration status..."
-          if command -v supabase > /dev/null; then
-            supabase migration list || echo "⚠️  Could not list migrations (may be expected)"
-          fi
+          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
           
-          # Verify by checking if key tables exist
-          echo "Verifying database schema..."
-          psql "${{ env.DATABASE_URL }}" -c "\dt" | head -20 || echo "⚠️  Could not verify schema"
+          # Verify key tables exist
+          echo "Verifying Settler schema..."
+          psql "${{ env.DATABASE_URL }}" -c "
+            SELECT 
+              'receipts' as table_name,
+              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'receipts') THEN '✓ exists' ELSE '✗ missing' END as status
+            UNION ALL
+            SELECT 
+              'ai_analysis_usage' as table_name,
+              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ai_analysis_usage') THEN '✓ exists' ELSE '✗ missing' END as status
+            UNION ALL
+            SELECT 
+              'ai_analyses' as table_name,
+              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ai_analyses') THEN '✓ exists' ELSE '✗ missing' END as status
+            UNION ALL
+            SELECT 
+              'set_tenant_context' as function_name,
+              CASE WHEN EXISTS (SELECT FROM pg_proc WHERE proname = 'set_tenant_context') THEN '✓ exists' ELSE '✗ missing' END as status;
+          " || echo "⚠️  Could not verify schema (non-critical)"
+          
+          # Check RLS policies
+          echo ""
+          echo "Checking RLS policies..."
+          psql "${{ env.DATABASE_URL }}" -c "
+            SELECT tablename, policyname 
+            FROM pg_policies 
+            WHERE schemaname = 'public' 
+            AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses', 'recon_results', 'alerts')
+            ORDER BY tablename, policyname;
+          " || echo "⚠️  Could not list policies (non-critical)"
         env:
           SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
           PGPASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
