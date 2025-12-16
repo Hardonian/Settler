@@ -20,6 +20,7 @@ const ROICalculator = dynamic(() => import("@/components/marketing").then(mod =>
 const ComparisonTable = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.ComparisonTable })), { ssr: true });
 const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
 import { PricingCalculator } from '@/components/pricing/PricingCalculator';
+import { PricingWithFeatures } from '@/components/pricing/PricingWithFeatures';
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
@@ -228,7 +229,10 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* Pricing Cards */}
+      {/* Enhanced Pricing with Features */}
+      <PricingWithFeatures />
+
+      {/* Legacy Pricing Cards (fallback) */}
       <section
         className="py-20 px-4 sm:px-6 lg:px-8"
         aria-labelledby="pricing-heading"

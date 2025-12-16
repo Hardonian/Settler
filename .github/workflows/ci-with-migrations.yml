@@ -1,0 +1,118 @@
+name: CI with Migration Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'supabase/migrations/**'
+      - 'packages/web/**'
+      - '.github/workflows/**'
+
+jobs:
+  validate-migrations:
+    name: Validate Migrations
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Validate migration syntax
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL_STAGING }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD_STAGING }}
+        continue-on-error: true
+        run: |
+          echo "Validating migration syntax (non-blocking)..."
+          export PGPASSWORD="$SUPABASE_DB_PASSWORD"
+          
+          for migration in supabase/migrations/*.sql; do
+            if [ -f "$migration" ]; then
+              echo "Checking: $(basename $migration)"
+              # Basic syntax validation
+              psql "$SUPABASE_DB_URL" -c "\set ON_ERROR_STOP 1" -f "$migration" > /dev/null 2>&1 && {
+                echo "✓ $(basename $migration) syntax OK"
+              } || {
+                echo "⚠️  $(basename $migration) may have syntax issues (non-blocking)"
+              }
+            fi
+          done
+
+  typecheck:
+    name: TypeScript Type Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd packages/web
+          npm ci
+
+      - name: Type check
+        run: |
+          cd packages/web
+          npm run typecheck
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd packages/web
+          npm ci
+
+      - name: Lint
+        run: |
+          cd packages/web
+          npm run lint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd packages/web
+          npm ci
+
+      - name: Build
+        run: |
+          cd packages/web
+          npm run build

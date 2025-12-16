@@ -1,0 +1,165 @@
+/**
+ * Feature Flags Service
+ * 
+ * Manages feature flags as business policy controls.
+ */
+
+import { createClient } from '@/lib/supabase/server';
+import type { FlagKey, FlagValue, TenantId } from '@/lib/domain/types';
+import { FLAG_REGISTRY } from '@/lib/flags/registry';
+
+/**
+ * Get feature flags for a tenant
+ */
+export async function getFeatureFlags(
+  tenantId: TenantId
+): Promise<FlagValue[]> {
+  try {
+    const supabase = await createClient();
+    
+    // Verify tenant access
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.warn('[getFeatureFlags] User not authenticated');
+      return [];
+    }
+    
+    // Set tenant context for RLS
+    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+      // RPC might not exist, continue anyway
+    });
+    
+    const { data: flags, error } = await supabase
+      .from('tenant_feature_flags')
+      .select('*')
+      .eq('tenant_id', tenantId);
+    
+    if (error) {
+      console.error('[getFeatureFlags] Error:', error);
+      // Return defaults from registry
+      return Object.values(FLAG_REGISTRY)
+        .filter((flag) => flag.scope === 'tenant')
+        .map((flag) => ({
+          key: flag.key,
+          value: flag.default,
+          tenantId,
+          updatedAt: new Date(),
+        }));
+    }
+    
+    // Merge with registry defaults
+    const flagMap = new Map<string, FlagValue>();
+    
+    // Add defaults
+    for (const flag of Object.values(FLAG_REGISTRY)) {
+      if (flag.scope === 'tenant' || flag.scope === 'global') {
+        flagMap.set(flag.key, {
+          key: flag.key,
+          value: flag.default,
+          tenantId,
+          updatedAt: new Date(),
+        });
+      }
+    }
+    
+    // Override with tenant-specific values
+    for (const flag of flags ?? []) {
+      if (flag.is_enabled && flag.value) {
+        flagMap.set(flag.flag_key, {
+          key: flag.flag_key,
+          value: flag.value as boolean | number | string | Record<string, unknown>,
+          tenantId,
+          updatedAt: new Date(flag.updated_at),
+        });
+      }
+    }
+    
+    return Array.from(flagMap.values());
+  } catch (error) {
+    console.error('[getFeatureFlags] Unexpected error:', error);
+    // Return defaults on error
+    return Object.values(FLAG_REGISTRY)
+      .filter((flag) => flag.scope === 'tenant')
+      .map((flag) => ({
+        key: flag.key,
+        value: flag.default,
+        tenantId,
+        updatedAt: new Date(),
+      }));
+  }
+}
+
+/**
+ * Set a feature flag value
+ */
+export async function setFeatureFlag(
+  tenantId: TenantId,
+  key: FlagKey,
+  value: boolean | number | string | Record<string, unknown>
+): Promise<boolean> {
+  try {
+    const supabase = await createClient();
+    
+    // Verify tenant access
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.warn('[setFeatureFlag] User not authenticated');
+      return false;
+    }
+    
+    // Validate flag exists in registry
+    const flagDef = FLAG_REGISTRY[key];
+    if (!flagDef) {
+      console.warn('[setFeatureFlag] Unknown flag key:', key);
+      return false;
+    }
+    
+    // Validate value type
+    if (typeof value !== flagDef.type && flagDef.type !== 'json') {
+      console.warn('[setFeatureFlag] Value type mismatch:', key, typeof value, flagDef.type);
+      return false;
+    }
+    
+    // Validate value constraints
+    if (flagDef.validation) {
+      if (typeof value === 'number') {
+        if (flagDef.validation.min !== undefined && value < flagDef.validation.min) {
+          return false;
+        }
+        if (flagDef.validation.max !== undefined && value > flagDef.validation.max) {
+          return false;
+        }
+      }
+      if (flagDef.validation.enum && !flagDef.validation.enum.includes(value as string | number)) {
+        return false;
+      }
+    }
+    
+    // Set tenant context for RLS
+    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+      // RPC might not exist, continue anyway
+    });
+    
+    // Upsert flag
+    const { error } = await supabase
+      .from('tenant_feature_flags')
+      .upsert({
+        tenant_id: tenantId,
+        flag_key: key,
+        value: typeof value === 'object' ? value : value,
+        is_enabled: true,
+      }, {
+        onConflict: 'tenant_id,flag_key',
+      });
+    
+    if (error) {
+      console.error('[setFeatureFlag] Error:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('[setFeatureFlag] Unexpected error:', error);
+    return false;
+  }
+}

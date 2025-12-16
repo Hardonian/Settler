@@ -13,6 +13,15 @@ import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackg
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
 import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, CheckCircle2, Sparkles } from "lucide-react";
+// Dynamic imports for new landing components (code splitting)
+const FeatureShowcase = dynamic(() => import("@/components/landing/FeatureShowcase").then(mod => ({ default: mod.FeatureShowcase })), { 
+  ssr: true,
+  loading: () => <div className="py-24" />
+});
+const ComparisonTable = dynamic(() => import("@/components/landing/ComparisonTable").then(mod => ({ default: mod.ComparisonTable })), { 
+  ssr: true,
+  loading: () => <div className="py-24" />
+});
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 import { trackPageView } from "@/lib/analytics/conversion";
@@ -322,6 +331,12 @@ if (flag.value) { /* ... */ }`;
              </div>
            </div>
         </section>
+
+        {/* Feature Showcase */}
+        <FeatureShowcase />
+
+        {/* Comparison Table */}
+        <ComparisonTable />
 
         {/* Architecture Preview */}
         <section className="py-20 px-4 sm:px-6 lg:px-8">

@@ -110,7 +110,7 @@ export default function NewEdgeNodePage() {
                   <Label htmlFor="deviceType">Device Type</Label>
                   <Select
                     value={formData.deviceType}
-                    onValueChange={(value) => setFormData({ ...formData, deviceType: value })}
+                    onValueChange={(value: string) => setFormData({ ...formData, deviceType: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select device type" />

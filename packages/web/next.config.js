@@ -27,7 +27,14 @@ const nextConfig = {
     // Enable SWC minification for faster builds
     swcMinify: true,
     // Optimize package imports
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-progress', '@radix-ui/react-radio-group'],
+    optimizePackageImports: [
+      'lucide-react', 
+      '@radix-ui/react-progress', 
+      '@radix-ui/react-radio-group',
+      'framer-motion',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-select',
+    ],
     // Exclude server-only packages from client bundles
     serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },

@@ -150,7 +150,7 @@ export default function NavigationEditorPage() {
                 <Label>Type</Label>
                 <Select
                   value={item.type}
-                  onValueChange={(value) =>
+                  onValueChange={(value: string) =>
                     handleUpdateItem(type, index, { type: value as 'internal' | 'external' })
                   }
                 >
