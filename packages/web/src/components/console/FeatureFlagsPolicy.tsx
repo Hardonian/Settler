@@ -29,7 +29,7 @@ export function FeatureFlagsPolicy() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [changes, setChanges] = useState<Map<string, boolean | number | string>>(new Map());
+  const [changes, setChanges] = useState<Map<string, boolean | number | string | Record<string, unknown>>>(new Map());
 
   useEffect(() => {
     fetchFlags();

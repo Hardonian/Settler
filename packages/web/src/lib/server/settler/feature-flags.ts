@@ -25,9 +25,11 @@ export async function getFeatureFlags(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     const { data: flags, error } = await supabase
       .from('tenant_feature_flags')
@@ -136,9 +138,11 @@ export async function setFeatureFlag(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     // Upsert flag
     const { error } = await supabase

@@ -35,9 +35,11 @@ export async function listMeaningfulChanges(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     // Query events (from recon_results, drift_events, or a unified events table)
     // For now, we'll query recon_results and drift_events

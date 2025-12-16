@@ -6,9 +6,6 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck
 > tsc --noEmit --incremental
 
-src/components/console/FeatureFlagsPolicy.tsx(62,25): error TS2345: Argument of type 'string | number | boolean | Record<string, unknown>' is not assignable to parameter of type 'string | number | boolean'.
-  Type 'Record<string, unknown>' is not assignable to type 'string | number | boolean'.
-src/lib/judgment/rules.ts(96,10): error TS6133: 'getSourceReliabilityScore' is declared but its value is never read.
 src/lib/server/settler/ai-tokens.ts(32,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
 src/lib/server/settler/ai-tokens.ts(71,11): error TS2322: Type 'TokenUsage | undefined' is not assignable to type 'TokenUsage'.
   Type 'undefined' is not assignable to type 'TokenUsage'.
@@ -20,156 +17,143 @@ src/lib/server/settler/ai-tokens.ts(148,8): error TS2769: No overload matches th
     Argument of type '{ tenant_id: string; period_start: string; tokens_used: number; updated_at: string; }' is not assignable to parameter of type 'never'.
   Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
     Object literal may only specify known properties, and 'tenant_id' does not exist in type 'never[]'.
-src/lib/server/settler/alerts.ts(29,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/alerts.ts(29,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/alerts.ts(51,13): error TS2339: Property 'id' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(52,19): error TS2339: Property 'tenant_id' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(53,19): error TS2339: Property 'severity' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(54,16): error TS2339: Property 'title' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(55,18): error TS2339: Property 'message' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(58,21): error TS2339: Property 'source_id' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(59,31): error TS2339: Property 'created_at' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(61,24): error TS2339: Property 'alert_type' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(62,24): error TS2339: Property 'threshold_value' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(63,21): error TS2339: Property 'actual_value' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(66,20): error TS2339: Property 'threshold_value' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(66,41): error TS2339: Property 'actual_value' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(67,17): error TS2339: Property 'alert_type' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(68,25): error TS2339: Property 'threshold_value' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(69,26): error TS2339: Property 'actual_value' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(71,23): error TS2339: Property 'acknowledged' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(72,25): error TS2339: Property 'acknowledged_by' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(73,25): error TS2339: Property 'acknowledged_at' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(73,54): error TS2339: Property 'acknowledged_at' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(74,29): error TS2339: Property 'created_at' does not exist on type 'never'.
-src/lib/server/settler/alerts.ts(100,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/alerts.ts(100,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/alerts.ts(106,15): error TS2345: Argument of type '{ acknowledged: boolean; acknowledged_by: string; acknowledged_at: string; }' is not assignable to parameter of type 'never'.
-src/lib/server/settler/feature-flags.ts(28,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/feature-flags.ts(28,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/feature-flags.ts(67,16): error TS2339: Property 'is_enabled' does not exist on type 'never'.
-src/lib/server/settler/feature-flags.ts(67,35): error TS2339: Property 'value' does not exist on type 'never'.
-src/lib/server/settler/feature-flags.ts(68,26): error TS2339: Property 'flag_key' does not exist on type 'never'.
-src/lib/server/settler/feature-flags.ts(69,21): error TS2339: Property 'flag_key' does not exist on type 'never'.
-src/lib/server/settler/feature-flags.ts(70,23): error TS2339: Property 'value' does not exist on type 'never'.
-src/lib/server/settler/feature-flags.ts(72,36): error TS2339: Property 'updated_at' does not exist on type 'never'.
-src/lib/server/settler/feature-flags.ts(139,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/feature-flags.ts(139,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/feature-flags.ts(146,8): error TS2769: No overload matches this call.
+src/lib/server/settler/alerts.ts(30,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/alerts.ts(53,13): error TS2339: Property 'id' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(54,19): error TS2339: Property 'tenant_id' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(55,19): error TS2339: Property 'severity' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(56,16): error TS2339: Property 'title' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(57,18): error TS2339: Property 'message' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(60,21): error TS2339: Property 'source_id' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(61,31): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(63,24): error TS2339: Property 'alert_type' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(64,24): error TS2339: Property 'threshold_value' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(65,21): error TS2339: Property 'actual_value' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(68,20): error TS2339: Property 'threshold_value' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(68,41): error TS2339: Property 'actual_value' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(69,17): error TS2339: Property 'alert_type' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(70,25): error TS2339: Property 'threshold_value' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(71,26): error TS2339: Property 'actual_value' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(73,23): error TS2339: Property 'acknowledged' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(74,25): error TS2339: Property 'acknowledged_by' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(75,25): error TS2339: Property 'acknowledged_at' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(75,54): error TS2339: Property 'acknowledged_at' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(76,29): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/server/settler/alerts.ts(103,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/alerts.ts(110,15): error TS2345: Argument of type '{ acknowledged: boolean; acknowledged_by: string; acknowledged_at: string; }' is not assignable to parameter of type 'never'.
+src/lib/server/settler/feature-flags.ts(29,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/feature-flags.ts(69,16): error TS2339: Property 'is_enabled' does not exist on type 'never'.
+src/lib/server/settler/feature-flags.ts(69,35): error TS2339: Property 'value' does not exist on type 'never'.
+src/lib/server/settler/feature-flags.ts(70,26): error TS2339: Property 'flag_key' does not exist on type 'never'.
+src/lib/server/settler/feature-flags.ts(71,21): error TS2339: Property 'flag_key' does not exist on type 'never'.
+src/lib/server/settler/feature-flags.ts(72,23): error TS2339: Property 'value' does not exist on type 'never'.
+src/lib/server/settler/feature-flags.ts(74,36): error TS2339: Property 'updated_at' does not exist on type 'never'.
+src/lib/server/settler/feature-flags.ts(142,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/feature-flags.ts(150,8): error TS2769: No overload matches this call.
   Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., "POST">', gave the following error.
     Argument of type '{ tenant_id: string; flag_key: string; value: string | number | boolean | Record<string, unknown>; is_enabled: boolean; }' is not assignable to parameter of type 'never'.
   Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
     Object literal may only specify known properties, and 'tenant_id' does not exist in type 'never[]'.
-src/lib/server/settler/meaningful-changes.ts(9,66): error TS2459: Module '"@/lib/judgment/rules"' declares 'getSourceReliabilityScore' locally, but it is not exported.
-src/lib/server/settler/meaningful-changes.ts(38,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/meaningful-changes.ts(38,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/meaningful-changes.ts(77,30): error TS2339: Property 'total_amount_unmatched' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(78,27): error TS2339: Property 'total_amount_unmatched' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(81,68): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(84,28): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(85,38): error TS2339: Property 'started_at' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(86,27): error TS2339: Property 'summary' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(89,54): error TS2339: Property 'currency' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(94,40): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(97,22): error TS2339: Property 'id' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(100,30): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(101,40): error TS2339: Property 'started_at' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(102,29): error TS2339: Property 'summary' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(108,38): error TS2339: Property 'created_at' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(116,67): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(119,27): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(120,37): error TS2339: Property 'created_at' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(122,30): error TS2339: Property 'drift_type' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(123,29): error TS2339: Property 'severity' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(124,30): error TS2339: Property 'field_path' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(137,49): error TS2339: Property 'severity' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(140,39): error TS2339: Property 'severity' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(143,21): error TS2339: Property 'id' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(146,29): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(147,39): error TS2339: Property 'created_at' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(149,32): error TS2339: Property 'drift_type' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(150,31): error TS2339: Property 'severity' does not exist on type 'never'.
-src/lib/server/settler/meaningful-changes.ts(157,37): error TS2339: Property 'created_at' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(66,13): error TS2339: Property 'eq' does not exist on type 'PostgrestBuilder<{ PostgrestVersion: "12"; }, null, false>'.
-src/lib/server/settler/receipts.ts(70,18): error TS2339: Property 'hash' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(104,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/receipts.ts(104,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/receipts.ts(120,8): error TS2769: No overload matches this call.
+src/lib/server/settler/meaningful-changes.ts(39,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/meaningful-changes.ts(79,30): error TS2339: Property 'total_amount_unmatched' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(80,27): error TS2339: Property 'total_amount_unmatched' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(83,68): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(86,28): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(87,38): error TS2339: Property 'started_at' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(88,27): error TS2339: Property 'summary' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(91,54): error TS2339: Property 'currency' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(96,40): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(99,22): error TS2339: Property 'id' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(102,30): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(103,40): error TS2339: Property 'started_at' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(104,29): error TS2339: Property 'summary' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(110,38): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(118,67): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(121,27): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(122,37): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(124,30): error TS2339: Property 'drift_type' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(125,29): error TS2339: Property 'severity' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(126,30): error TS2339: Property 'field_path' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(139,49): error TS2339: Property 'severity' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(142,39): error TS2339: Property 'severity' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(145,21): error TS2339: Property 'id' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(148,29): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(149,39): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(151,32): error TS2339: Property 'drift_type' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(152,31): error TS2339: Property 'severity' does not exist on type 'never'.
+src/lib/server/settler/meaningful-changes.ts(159,37): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(69,18): error TS2339: Property 'hash' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(104,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/receipts.ts(121,8): error TS2769: No overload matches this call.
   Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "receipts", never, "POST">', gave the following error.
     Argument of type '{ tenant_id: string; source_id: string | undefined; canonical_json: Record<string, unknown>; hash: string; prev_hash: string | undefined; evidence_refs: Evidence[]; summary: string; why_it_matters: string; next_steps: string | undefined; created_by: string; }' is not assignable to parameter of type 'never'.
   Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "receipts", never, "POST">', gave the following error.
     Object literal may only specify known properties, and 'tenant_id' does not exist in type 'never[]'.
-src/lib/server/settler/receipts.ts(141,19): error TS2339: Property 'id' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(143,25): error TS2339: Property 'source_id' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(144,30): error TS2339: Property 'canonical_json' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(145,21): error TS2339: Property 'hash' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(146,25): error TS2339: Property 'prev_hash' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(147,29): error TS2339: Property 'evidence_refs' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(149,26): error TS2339: Property 'summary' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(150,31): error TS2339: Property 'why_it_matters' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(151,28): error TS2339: Property 'next_steps' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(153,26): error TS2339: Property 'created_by' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(154,35): error TS2339: Property 'created_at' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(179,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/receipts.ts(179,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/receipts.ts(197,55): error TS2339: Property 'canonical_json' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(199,17): error TS2339: Property 'hash' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(204,17): error TS2339: Property 'prev_hash' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(208,29): error TS2339: Property 'prev_hash' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(245,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/receipts.ts(245,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/receipts.ts(262,13): error TS2339: Property 'id' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(263,19): error TS2339: Property 'tenant_id' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(264,19): error TS2339: Property 'source_id' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(265,24): error TS2339: Property 'canonical_json' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(266,15): error TS2339: Property 'hash' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(267,19): error TS2339: Property 'prev_hash' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(268,23): error TS2339: Property 'evidence_refs' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(270,20): error TS2339: Property 'summary' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(271,25): error TS2339: Property 'why_it_matters' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(272,22): error TS2339: Property 'next_steps' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(274,20): error TS2339: Property 'created_by' does not exist on type 'never'.
-src/lib/server/settler/receipts.ts(275,29): error TS2339: Property 'created_at' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(35,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/reconciliation.ts(35,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/reconciliation.ts(52,32): error TS2339: Property 'id' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(57,8): error TS2769: No overload matches this call.
+src/lib/server/settler/receipts.ts(142,19): error TS2339: Property 'id' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(144,25): error TS2339: Property 'source_id' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(145,30): error TS2339: Property 'canonical_json' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(146,21): error TS2339: Property 'hash' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(147,25): error TS2339: Property 'prev_hash' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(148,29): error TS2339: Property 'evidence_refs' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(150,26): error TS2339: Property 'summary' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(151,31): error TS2339: Property 'why_it_matters' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(152,28): error TS2339: Property 'next_steps' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(154,26): error TS2339: Property 'created_by' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(155,35): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(181,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/receipts.ts(200,55): error TS2339: Property 'canonical_json' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(202,17): error TS2339: Property 'hash' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(207,17): error TS2339: Property 'prev_hash' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(211,29): error TS2339: Property 'prev_hash' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(249,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/receipts.ts(267,13): error TS2339: Property 'id' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(268,19): error TS2339: Property 'tenant_id' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(269,19): error TS2339: Property 'source_id' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(270,24): error TS2339: Property 'canonical_json' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(271,15): error TS2339: Property 'hash' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(272,19): error TS2339: Property 'prev_hash' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(273,23): error TS2339: Property 'evidence_refs' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(275,20): error TS2339: Property 'summary' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(276,25): error TS2339: Property 'why_it_matters' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(277,22): error TS2339: Property 'next_steps' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(279,20): error TS2339: Property 'created_by' does not exist on type 'never'.
+src/lib/server/settler/receipts.ts(280,29): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(36,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/reconciliation.ts(54,32): error TS2339: Property 'id' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(59,8): error TS2769: No overload matches this call.
   Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "recon_results", never, "POST">', gave the following error.
     Argument of type '{ recon_job_id: any; tenant_id: string; status: string; started_at: string; }' is not assignable to parameter of type 'never'.
   Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "recon_results", never, "POST">', gave the following error.
     Object literal may only specify known properties, and 'recon_job_id' does not exist in type 'never[]'.
-src/lib/server/settler/reconciliation.ts(74,18): error TS2339: Property 'id' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(81,34): error TS2339: Property 'started_at' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(107,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/reconciliation.ts(107,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/reconciliation.ts(124,11): error TS6133: 'items' is declared but its value is never read.
-src/lib/server/settler/reconciliation.ts(131,18): error TS2339: Property 'id' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(133,24): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(134,22): error TS2339: Property 'status' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(135,26): error TS2339: Property 'total_amount_unmatched' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(135,65): error TS2339: Property 'total_amount_unmatched' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(136,24): error TS2339: Property 'currency' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(137,29): error TS2339: Property 'unmatched_source_count' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(138,34): error TS2339: Property 'started_at' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(139,27): error TS2339: Property 'completed_at' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(139,58): error TS2339: Property 'completed_at' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(165,46): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
-src/lib/server/settler/reconciliation.ts(165,71): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, never, never, never, "RPC">'. Did you mean 'match'?
-src/lib/server/settler/reconciliation.ts(185,25): error TS2339: Property 'data' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(190,50): error TS2339: Property 'currency' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(190,74): error TS2339: Property 'confidence' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(190,99): error TS2339: Property 'confidence' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(193,24): error TS2339: Property 'source_id' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(194,34): error TS2339: Property 'timestamp' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(199,18): error TS2339: Property 'id' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(201,24): error TS2339: Property 'source_id' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(203,30): error TS2339: Property 'currency' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(205,30): error TS2339: Property 'currency' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(76,18): error TS2339: Property 'id' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(83,34): error TS2339: Property 'started_at' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(110,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/reconciliation.ts(128,18): error TS2339: Property 'id' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(130,24): error TS2339: Property 'recon_job_id' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(131,22): error TS2339: Property 'status' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(132,26): error TS2339: Property 'total_amount_unmatched' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(132,65): error TS2339: Property 'total_amount_unmatched' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(133,24): error TS2339: Property 'currency' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(134,29): error TS2339: Property 'unmatched_source_count' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(135,34): error TS2339: Property 'started_at' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(136,27): error TS2339: Property 'completed_at' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(136,58): error TS2339: Property 'completed_at' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(163,48): error TS2345: Argument of type '{ tenant_id: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/server/settler/reconciliation.ts(184,25): error TS2339: Property 'data' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(189,50): error TS2339: Property 'currency' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(189,74): error TS2339: Property 'confidence' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(189,99): error TS2339: Property 'confidence' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(192,24): error TS2339: Property 'source_id' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(193,34): error TS2339: Property 'timestamp' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(198,18): error TS2339: Property 'id' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(200,24): error TS2339: Property 'source_id' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(202,30): error TS2339: Property 'currency' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(204,30): error TS2339: Property 'currency' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(206,22): error TS2339: Property 'node_type' does not exist on type 'never'.
 src/lib/server/settler/reconciliation.ts(207,22): error TS2339: Property 'node_type' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(208,22): error TS2339: Property 'node_type' does not exist on type 'never'.
-src/lib/server/settler/reconciliation.ts(212,34): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/server/settler/reconciliation.ts(211,34): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/types/database.types.ts(953,7): error TS2411: Property 'set_tenant_context' of type '{ Args: { tenant_id: string; }; Returns: null; } | undefined' is not assignable to 'string' index type '{ Args: Record<string, unknown>; Returns: unknown; }'.
 npm error Lifecycle script `typecheck` failed with error:
-npm error code 2
+npm error code 1
 npm error path /workspace/packages/web
 npm error workspace @settler/web@1.0.0
 npm error location /workspace/packages/web

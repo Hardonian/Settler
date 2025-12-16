@@ -32,9 +32,11 @@ export async function runReconciliation(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     // Find or create recon_job
     const { data: existingJob, error: findError } = await supabase
@@ -104,9 +106,11 @@ export async function getReconciliationSummary(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     const { data: result, error } = await supabase
       .from('recon_results')
@@ -119,13 +123,6 @@ export async function getReconciliationSummary(
       console.error('[getReconciliationSummary] Error:', error);
       return null;
     }
-    
-    // Get highest risk item
-    const { data: items } = await supabase
-      .from('recon_results')
-      .select('*')
-      .eq('id', reconciliationId)
-      .limit(1);
     
     return {
       id: result.id,
@@ -162,9 +159,11 @@ export async function listReconciliationItems(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     // Query reconciliation graph nodes for items
     const { data: nodes, error } = await supabase

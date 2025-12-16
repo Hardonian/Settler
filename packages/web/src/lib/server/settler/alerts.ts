@@ -26,9 +26,11 @@ export async function listAlerts(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     let query = supabase
       .from('alerts')
@@ -97,9 +99,11 @@ export async function acknowledgeAlert(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     const { error } = await supabase
       .from('alerts')

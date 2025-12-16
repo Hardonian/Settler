@@ -93,7 +93,7 @@ function detectComplianceBreach(
 // Rule: Source Reliability Scoring
 // ============================================================================
 
-function getSourceReliabilityScore(sourceId: string): number {
+export function getSourceReliabilityScore(sourceId: string): number {
   // In production, this would query historical accuracy
   // For now, return default confidence based on source type
   const sourceType = sourceId.split('_')[0];

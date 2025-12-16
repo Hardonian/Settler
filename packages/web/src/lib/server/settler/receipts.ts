@@ -54,19 +54,18 @@ async function getPreviousReceiptHash(
   sourceId?: string
 ): Promise<string | undefined> {
   try {
-    const query = supabase
+    let query = supabase
       .from('receipts')
       .select('hash')
       .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .limit(1);
     
     if (sourceId) {
-      query.eq('source_id', sourceId);
+      query = query.eq('source_id', sourceId);
     }
     
-    const { data } = await query;
+    const { data } = await query.maybeSingle();
     return data?.hash;
   } catch (error) {
     console.error('[getPreviousReceiptHash] Error:', error);
@@ -101,9 +100,11 @@ export async function createReceipt(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     // Canonicalize JSON
     const canonicalJsonStr = canonicalizeJson(payload.canonicalJson);
@@ -176,9 +177,11 @@ export async function verifyReceiptChain(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     const { data: receipt, error } = await supabase
       .from('receipts')
@@ -242,9 +245,11 @@ export async function listReceipts(
     }
     
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
+    }
     
     const { data: receipts, error } = await supabase
       .from('receipts')

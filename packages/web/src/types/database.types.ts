@@ -637,6 +637,242 @@ export interface Database {
           [key: string]: unknown;
         };
       };
+      ai_analysis_usage: {
+        Row: {
+          tenant_id: string;
+          period_start: string;
+          tokens_used: number;
+          updated_at: string;
+        };
+        Insert: {
+          tenant_id: string;
+          period_start: string;
+          tokens_used: number;
+          updated_at?: string;
+        };
+        Update: {
+          tenant_id?: string;
+          period_start?: string;
+          tokens_used?: number;
+          updated_at?: string;
+        };
+      };
+      alerts: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          severity: string;
+          title: string;
+          message: string;
+          source_id: string | null;
+          alert_type: string | null;
+          threshold_value: number | null;
+          actual_value: number | null;
+          acknowledged: boolean;
+          acknowledged_by: string | null;
+          acknowledged_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          severity: string;
+          title: string;
+          message: string;
+          source_id?: string | null;
+          alert_type?: string | null;
+          threshold_value?: number | null;
+          actual_value?: number | null;
+          acknowledged?: boolean;
+          acknowledged_by?: string | null;
+          acknowledged_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          severity?: string;
+          title?: string;
+          message?: string;
+          source_id?: string | null;
+          alert_type?: string | null;
+          threshold_value?: number | null;
+          actual_value?: number | null;
+          acknowledged?: boolean;
+          acknowledged_by?: string | null;
+          acknowledged_at?: string | null;
+          created_at?: string;
+        };
+      };
+      feature_flags: {
+        Row: {
+          tenant_id: string;
+          flag_key: string;
+          value: string | number | boolean | Record<string, unknown>;
+          is_enabled: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          tenant_id: string;
+          flag_key: string;
+          value: string | number | boolean | Record<string, unknown>;
+          is_enabled?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          tenant_id?: string;
+          flag_key?: string;
+          value?: string | number | boolean | Record<string, unknown>;
+          is_enabled?: boolean;
+          updated_at?: string;
+        };
+      };
+      meaningful_changes: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          recon_job_id: string;
+          drift_type: string;
+          severity: string;
+          field_path: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          recon_job_id: string;
+          drift_type: string;
+          severity: string;
+          field_path: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          recon_job_id?: string;
+          drift_type?: string;
+          severity?: string;
+          field_path?: string;
+          created_at?: string;
+        };
+      };
+      receipts: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          source_id: string | null;
+          canonical_json: Record<string, unknown>;
+          hash: string;
+          prev_hash: string | null;
+          evidence_refs: unknown[];
+          summary: string;
+          why_it_matters: string;
+          next_steps: string | null;
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          source_id?: string | null;
+          canonical_json: Record<string, unknown>;
+          hash: string;
+          prev_hash?: string | null;
+          evidence_refs?: unknown[];
+          summary: string;
+          why_it_matters: string;
+          next_steps?: string | null;
+          created_by: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          source_id?: string | null;
+          canonical_json?: Record<string, unknown>;
+          hash?: string;
+          prev_hash?: string | null;
+          evidence_refs?: unknown[];
+          summary?: string;
+          why_it_matters?: string;
+          next_steps?: string | null;
+          created_by?: string;
+          created_at?: string;
+        };
+      };
+      recon_results: {
+        Row: {
+          id: string;
+          recon_job_id: string;
+          tenant_id: string;
+          status: string;
+          total_amount_unmatched: number;
+          currency: string;
+          unmatched_source_count: number;
+          started_at: string;
+          completed_at: string | null;
+          summary: Record<string, unknown> | null;
+          data: unknown;
+        };
+        Insert: {
+          id?: string;
+          recon_job_id: string;
+          tenant_id: string;
+          status: string;
+          total_amount_unmatched?: number;
+          currency?: string;
+          unmatched_source_count?: number;
+          started_at: string;
+          completed_at?: string | null;
+          summary?: Record<string, unknown> | null;
+          data?: unknown;
+        };
+        Update: {
+          id?: string;
+          recon_job_id?: string;
+          tenant_id?: string;
+          status?: string;
+          total_amount_unmatched?: number;
+          currency?: string;
+          unmatched_source_count?: number;
+          started_at?: string;
+          completed_at?: string | null;
+          summary?: Record<string, unknown> | null;
+          data?: unknown;
+        };
+      };
+      recon_jobs: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          source_id: string;
+          status: string;
+          currency: string;
+          confidence: number;
+          timestamp: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          source_id: string;
+          status?: string;
+          currency?: string;
+          confidence?: number;
+          timestamp?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          source_id?: string;
+          status?: string;
+          currency?: string;
+          confidence?: number;
+          timestamp?: string;
+          created_at?: string;
+        };
+      };
       [key: string]: {
         Row: Record<string, unknown>;
         Insert: Record<string, unknown>;
@@ -713,6 +949,12 @@ export interface Database {
           usage_percentage?: number;
           [key: string]: unknown;
         };
+      };
+      set_tenant_context?: {
+        Args: {
+          tenant_id: string;
+        };
+        Returns: null;
       };
       [key: string]: {
         Args: Record<string, unknown>;
