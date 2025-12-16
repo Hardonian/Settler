@@ -1,44 +1,48 @@
 /**
  * Feature Flags Service
- * 
+ *
  * Manages feature flags as business policy controls.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import type { FlagKey, FlagValue, TenantId } from '@/lib/domain/types';
-import { FLAG_REGISTRY } from '@/lib/flags/registry';
+import { createClient } from "@/lib/supabase/server";
+import type { FlagKey, FlagValue, TenantId } from "@/lib/domain/types";
+import { FLAG_REGISTRY } from "@/lib/flags/registry";
+import type { Database } from "@/types/database.types";
 
 /**
  * Get feature flags for a tenant
  */
-export async function getFeatureFlags(
-  tenantId: TenantId
-): Promise<FlagValue[]> {
+export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> {
   try {
     const supabase = await createClient();
-    
+
     // Verify tenant access
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      console.warn('[getFeatureFlags] User not authenticated');
+      console.warn("[getFeatureFlags] User not authenticated");
       return [];
     }
-    
+
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
-    
-    const { data: flags, error } = await supabase
-      .from('tenant_feature_flags')
-      .select('*')
-      .eq('tenant_id', tenantId);
-    
+    }
+
+    type FeatureFlagRow = Database["public"]["Tables"]["feature_flags"]["Row"];
+    const { data: flags, error } = (await supabase
+      .from("feature_flags")
+      .select("*")
+      .eq("tenant_id", tenantId)) as { data: FeatureFlagRow[] | null; error: any };
+
     if (error) {
-      console.error('[getFeatureFlags] Error:', error);
+      console.error("[getFeatureFlags] Error:", error);
       // Return defaults from registry
       return Object.values(FLAG_REGISTRY)
-        .filter((flag) => flag.scope === 'tenant')
+        .filter((flag) => flag.scope === "tenant")
         .map((flag) => ({
           key: flag.key,
           value: flag.default,
@@ -46,13 +50,13 @@ export async function getFeatureFlags(
           updatedAt: new Date(),
         }));
     }
-    
+
     // Merge with registry defaults
     const flagMap = new Map<string, FlagValue>();
-    
+
     // Add defaults
     for (const flag of Object.values(FLAG_REGISTRY)) {
-      if (flag.scope === 'tenant' || flag.scope === 'global') {
+      if (flag.scope === "tenant" || flag.scope === "global") {
         flagMap.set(flag.key, {
           key: flag.key,
           value: flag.default,
@@ -61,7 +65,7 @@ export async function getFeatureFlags(
         });
       }
     }
-    
+
     // Override with tenant-specific values
     for (const flag of flags ?? []) {
       if (flag.is_enabled && flag.value) {
@@ -73,13 +77,13 @@ export async function getFeatureFlags(
         });
       }
     }
-    
+
     return Array.from(flagMap.values());
   } catch (error) {
-    console.error('[getFeatureFlags] Unexpected error:', error);
+    console.error("[getFeatureFlags] Unexpected error:", error);
     // Return defaults on error
     return Object.values(FLAG_REGISTRY)
-      .filter((flag) => flag.scope === 'tenant')
+      .filter((flag) => flag.scope === "tenant")
       .map((flag) => ({
         key: flag.key,
         value: flag.default,
@@ -99,30 +103,32 @@ export async function setFeatureFlag(
 ): Promise<boolean> {
   try {
     const supabase = await createClient();
-    
+
     // Verify tenant access
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      console.warn('[setFeatureFlag] User not authenticated');
+      console.warn("[setFeatureFlag] User not authenticated");
       return false;
     }
-    
+
     // Validate flag exists in registry
     const flagDef = FLAG_REGISTRY[key];
     if (!flagDef) {
-      console.warn('[setFeatureFlag] Unknown flag key:', key);
+      console.warn("[setFeatureFlag] Unknown flag key:", key);
       return false;
     }
-    
+
     // Validate value type
-    if (typeof value !== flagDef.type && flagDef.type !== 'json') {
-      console.warn('[setFeatureFlag] Value type mismatch:', key, typeof value, flagDef.type);
+    if (typeof value !== flagDef.type && flagDef.type !== "json") {
+      console.warn("[setFeatureFlag] Value type mismatch:", key, typeof value, flagDef.type);
       return false;
     }
-    
+
     // Validate value constraints
     if (flagDef.validation) {
-      if (typeof value === 'number') {
+      if (typeof value === "number") {
         if (flagDef.validation.min !== undefined && value < flagDef.validation.min) {
           return false;
         }
@@ -134,32 +140,35 @@ export async function setFeatureFlag(
         return false;
       }
     }
-    
+
     // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {
+    try {
+      await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
+    } catch {
       // RPC might not exist, continue anyway
-    });
-    
+    }
+
     // Upsert flag
-    const { error } = await supabase
-      .from('tenant_feature_flags')
-      .upsert({
+    const { error } = await (supabase.from("feature_flags") as any).upsert(
+      {
         tenant_id: tenantId,
         flag_key: key,
-        value: typeof value === 'object' ? value : value,
+        value: typeof value === "object" ? value : value,
         is_enabled: true,
-      }, {
-        onConflict: 'tenant_id,flag_key',
-      });
-    
+      },
+      {
+        onConflict: "tenant_id,flag_key",
+      }
+    );
+
     if (error) {
-      console.error('[setFeatureFlag] Error:', error);
+      console.error("[setFeatureFlag] Error:", error);
       return false;
     }
-    
+
     return true;
   } catch (error) {
-    console.error('[setFeatureFlag] Unexpected error:', error);
+    console.error("[setFeatureFlag] Unexpected error:", error);
     return false;
   }
 }

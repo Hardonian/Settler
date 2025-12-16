@@ -1,22 +1,16 @@
 /**
  * Supabase Database Types
- * 
+ *
  * CTO Mode: Type Safety
  * - Generated from Supabase schema
  * - Use these types instead of 'any'
  * - Run: supabase gen types typescript --project-id <project-ref> > src/types/database.types.ts
- * 
+ *
  * TODO: Generate actual types from Supabase schema
  * For now, this is a placeholder structure
  */
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
   public: {
@@ -36,8 +30,11 @@ export interface Database {
           updated_at: string;
           deleted_at: string | null;
         };
-        Insert: Omit<Database['public']['Tables']['tenants']['Row'], 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['tenants']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["tenants"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["tenants"]["Insert"]>;
       };
       users: {
         Row: {
@@ -54,8 +51,11 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['users']['Row'], 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['users']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["users"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["users"]["Insert"]>;
       };
       activity_logs: {
         Row: {
@@ -68,8 +68,8 @@ export interface Database {
           metadata: Json | null;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['activity_logs']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['activity_logs']['Insert']>;
+        Insert: Omit<Database["public"]["Tables"]["activity_logs"]["Row"], "id" | "created_at">;
+        Update: Partial<Database["public"]["Tables"]["activity_logs"]["Insert"]>;
       };
       // Ecosystem tables
       profiles: {
@@ -147,8 +147,11 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['posts']['Row'], 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['posts']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["posts"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["posts"]["Insert"]>;
       };
       activity_log: {
         Row: {
@@ -236,8 +239,8 @@ export interface Database {
           metadata: Json;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['notifications']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['notifications']['Insert']>;
+        Insert: Omit<Database["public"]["Tables"]["notifications"]["Row"], "id" | "created_at">;
+        Update: Partial<Database["public"]["Tables"]["notifications"]["Insert"]>;
       };
       // Add other tables as needed
       affiliate_programs: {
@@ -637,6 +640,242 @@ export interface Database {
           [key: string]: unknown;
         };
       };
+      ai_analysis_usage: {
+        Row: {
+          tenant_id: string;
+          period_start: string;
+          tokens_used: number;
+          updated_at: string;
+        };
+        Insert: {
+          tenant_id: string;
+          period_start: string;
+          tokens_used: number;
+          updated_at?: string;
+        };
+        Update: {
+          tenant_id?: string;
+          period_start?: string;
+          tokens_used?: number;
+          updated_at?: string;
+        };
+      };
+      alerts: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          severity: string;
+          title: string;
+          message: string;
+          source_id: string | null;
+          alert_type: string | null;
+          threshold_value: number | null;
+          actual_value: number | null;
+          acknowledged: boolean;
+          acknowledged_by: string | null;
+          acknowledged_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          severity: string;
+          title: string;
+          message: string;
+          source_id?: string | null;
+          alert_type?: string | null;
+          threshold_value?: number | null;
+          actual_value?: number | null;
+          acknowledged?: boolean;
+          acknowledged_by?: string | null;
+          acknowledged_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          severity?: string;
+          title?: string;
+          message?: string;
+          source_id?: string | null;
+          alert_type?: string | null;
+          threshold_value?: number | null;
+          actual_value?: number | null;
+          acknowledged?: boolean;
+          acknowledged_by?: string | null;
+          acknowledged_at?: string | null;
+          created_at?: string;
+        };
+      };
+      feature_flags: {
+        Row: {
+          tenant_id: string;
+          flag_key: string;
+          value: string | number | boolean | Record<string, unknown>;
+          is_enabled: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          tenant_id: string;
+          flag_key: string;
+          value: string | number | boolean | Record<string, unknown>;
+          is_enabled?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          tenant_id?: string;
+          flag_key?: string;
+          value?: string | number | boolean | Record<string, unknown>;
+          is_enabled?: boolean;
+          updated_at?: string;
+        };
+      };
+      meaningful_changes: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          recon_job_id: string;
+          drift_type: string;
+          severity: string;
+          field_path: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          recon_job_id: string;
+          drift_type: string;
+          severity: string;
+          field_path: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          recon_job_id?: string;
+          drift_type?: string;
+          severity?: string;
+          field_path?: string;
+          created_at?: string;
+        };
+      };
+      receipts: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          source_id: string | null;
+          canonical_json: Record<string, unknown>;
+          hash: string;
+          prev_hash: string | null;
+          evidence_refs: unknown[];
+          summary: string;
+          why_it_matters: string;
+          next_steps: string | null;
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          source_id?: string | null;
+          canonical_json: Record<string, unknown>;
+          hash: string;
+          prev_hash?: string | null;
+          evidence_refs?: unknown[];
+          summary: string;
+          why_it_matters: string;
+          next_steps?: string | null;
+          created_by: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          source_id?: string | null;
+          canonical_json?: Record<string, unknown>;
+          hash?: string;
+          prev_hash?: string | null;
+          evidence_refs?: unknown[];
+          summary?: string;
+          why_it_matters?: string;
+          next_steps?: string | null;
+          created_by?: string;
+          created_at?: string;
+        };
+      };
+      recon_results: {
+        Row: {
+          id: string;
+          recon_job_id: string;
+          tenant_id: string;
+          status: string;
+          total_amount_unmatched: number;
+          currency: string;
+          unmatched_source_count: number;
+          started_at: string;
+          completed_at: string | null;
+          summary: Record<string, unknown> | null;
+          data: unknown;
+        };
+        Insert: {
+          id?: string;
+          recon_job_id: string;
+          tenant_id: string;
+          status: string;
+          total_amount_unmatched?: number;
+          currency?: string;
+          unmatched_source_count?: number;
+          started_at: string;
+          completed_at?: string | null;
+          summary?: Record<string, unknown> | null;
+          data?: unknown;
+        };
+        Update: {
+          id?: string;
+          recon_job_id?: string;
+          tenant_id?: string;
+          status?: string;
+          total_amount_unmatched?: number;
+          currency?: string;
+          unmatched_source_count?: number;
+          started_at?: string;
+          completed_at?: string | null;
+          summary?: Record<string, unknown> | null;
+          data?: unknown;
+        };
+      };
+      recon_jobs: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          source_id: string;
+          status: string;
+          currency: string;
+          confidence: number;
+          timestamp: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          source_id: string;
+          status?: string;
+          currency?: string;
+          confidence?: number;
+          timestamp?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          source_id?: string;
+          status?: string;
+          currency?: string;
+          confidence?: number;
+          timestamp?: string;
+          created_at?: string;
+        };
+      };
       [key: string]: {
         Row: Record<string, unknown>;
         Insert: Record<string, unknown>;
@@ -713,6 +952,12 @@ export interface Database {
           usage_percentage?: number;
           [key: string]: unknown;
         };
+      };
+      set_tenant_context: {
+        Args: {
+          tenant_id: string;
+        };
+        Returns: null;
       };
       [key: string]: {
         Args: Record<string, unknown>;
