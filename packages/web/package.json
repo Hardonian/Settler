@@ -29,6 +29,7 @@
     "@prisma/client": "^7.1.0",
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-radio-group": "^1.2.0",
+    "@radix-ui/react-select": "^2.1.0",
     "@sentry/nextjs": "^7.91.0",
     "@settler/api": "*",
     "@settler/protocol": "*",

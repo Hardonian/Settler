@@ -7,7 +7,7 @@
  * Rules compound over time as we learn what matters to customers.
  */
 
-import type { MeaningfulChange, ReconciliationItem, Impact, Explanation, Evidence } from '@/lib/domain/types';
+import type { MeaningfulChange, Impact, Explanation, Evidence } from '@/lib/domain/types';
 
 // ============================================================================
 // Rule: Currency Delta Thresholds
@@ -97,6 +97,7 @@ function getSourceReliabilityScore(sourceId: string): number {
   // In production, this would query historical accuracy
   // For now, return default confidence based on source type
   const sourceType = sourceId.split('_')[0];
+  if (!sourceType) return 0.75;
   
   const reliabilityMap: Record<string, number> = {
     stripe: 0.95,
@@ -107,6 +108,8 @@ function getSourceReliabilityScore(sourceId: string): number {
   
   return reliabilityMap[sourceType] ?? 0.75;
 }
+
+// Note: getSourceReliabilityScore is kept for future use but currently unused
 
 // ============================================================================
 // Main Rule Engine: Generate Explanation
@@ -241,7 +244,7 @@ export function calculateImpact(
 
 export function calculateUrgency(
   impact: Impact,
-  explanation: Explanation
+  _explanation: Explanation
 ): 'low' | 'medium' | 'high' | 'critical' {
   // Critical if risk score > 0.9 or currency delta > critical threshold
   if (impact.riskScore > 0.9) return 'critical';

@@ -27,8 +27,12 @@ export async function getTokenUsage(tenantId: TenantId): Promise<TokenUsage | nu
       return null;
     }
     
-    // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {});
+    // Set tenant context for RLS (optional, RLS policies handle tenant isolation)
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
+      // RPC may not exist, RLS policies handle isolation
+    }
     
     // Get subscription tier (mock for now - integrate with actual billing)
     // Free: 1 per week, Pro: 10 per month, Enterprise: unlimited
@@ -55,7 +59,7 @@ export async function getTokenUsage(tenantId: TenantId): Promise<TokenUsage | nu
       },
     };
     
-    // Query actual usage from database (mock for now)
+    // Query actual usage from database
     const { data: usage } = await supabase
       .from('ai_analysis_usage')
       .select('tokens_used, period_start')
@@ -64,10 +68,10 @@ export async function getTokenUsage(tenantId: TenantId): Promise<TokenUsage | nu
       .limit(1)
       .maybeSingle();
     
-    const tokenUsage = limits[tier] || limits.free;
+    const tokenUsage: TokenUsage = limits[tier] || limits.free;
     
-    if (usage) {
-      tokenUsage.used = usage.tokens_used || 0;
+    if (usage && typeof usage.tokens_used === 'number') {
+      tokenUsage.used = usage.tokens_used;
     }
     
     return tokenUsage;
@@ -118,8 +122,12 @@ export async function consumeTokens(
       return false;
     }
     
-    // Set tenant context for RLS
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId }).catch(() => {});
+    // Set tenant context for RLS (optional, RLS policies handle tenant isolation)
+    try {
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    } catch {
+      // RPC may not exist, RLS policies handle isolation
+    }
     
     // Get current period
     const usage = await getTokenUsage(tenantId);
@@ -133,12 +141,13 @@ export async function consumeTokens(
       return false;
     }
     
-    // Record usage (mock for now - create table if needed)
+    // Record usage
+    const periodStart = getPeriodStart(usage.period);
     await supabase
       .from('ai_analysis_usage')
       .upsert({
         tenant_id: tenantId,
-        period_start: getPeriodStart(usage.period),
+        period_start: periodStart.toISOString(),
         tokens_used: (usage.used || 0) + tokens,
         updated_at: new Date().toISOString(),
       }, {

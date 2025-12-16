@@ -58,7 +58,9 @@ export function FeatureFlagsPolicy() {
   };
 
   const handleFlagChange = (key: string, value: boolean | number | string | Record<string, unknown>) => {
-    setChanges(new Map(changes.set(key, value)));
+    const newChanges = new Map(changes);
+    newChanges.set(key, value);
+    setChanges(newChanges);
   };
 
   const saveFlag = async (key: string) => {

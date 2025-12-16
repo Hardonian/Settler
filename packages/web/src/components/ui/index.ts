@@ -12,7 +12,6 @@ export { Badge } from './badge';
 export type { BadgeProps } from './badge';
 
 export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './select';
-export type { SelectProps } from './select';
 
 export { Label } from './label';
 export type { LabelProps } from './label';

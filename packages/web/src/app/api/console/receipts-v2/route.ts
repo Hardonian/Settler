@@ -15,7 +15,7 @@ export const runtime = 'nodejs';
 
 const CreateReceiptSchema = z.object({
   sourceId: z.string().optional(),
-  canonicalJson: z.record(z.unknown()),
+  canonicalJson: z.record(z.string(), z.unknown()),
   evidenceRefs: z.array(z.object({
     type: z.enum(['hash', 'source_ref', 'transaction_id', 'receipt_id']),
     value: z.string(),

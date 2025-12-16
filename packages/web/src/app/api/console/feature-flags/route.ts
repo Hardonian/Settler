@@ -13,7 +13,7 @@ export const runtime = 'nodejs';
 
 const SetFlagSchema = z.object({
   key: z.string().min(1),
-  value: z.union([z.boolean(), z.number(), z.string(), z.record(z.unknown())]),
+  value: z.union([z.boolean(), z.number(), z.string(), z.record(z.string(), z.unknown())]),
 });
 
 export async function GET(request: NextRequest) {

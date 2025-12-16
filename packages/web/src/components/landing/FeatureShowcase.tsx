@@ -17,7 +17,6 @@ import {
   RefreshCw, 
   Sparkles,
   ArrowRight,
-  CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, useInView, useAnimation } from 'framer-motion';

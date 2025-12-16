@@ -7,7 +7,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, XCircle, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -60,7 +60,7 @@ const competitors: Competitor[] = [
   },
 ];
 
-const features = Object.keys(competitors[0].features);
+const features = Object.keys(competitors[0]?.features || {});
 
 export function ComparisonTable() {
   const [hoveredFeature, setHoveredFeature] = useState<string | null>(null);
