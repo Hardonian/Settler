@@ -13,6 +13,8 @@ import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackg
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
 import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, CheckCircle2, Sparkles } from "lucide-react";
+import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
+import { ComparisonTable } from "@/components/landing/ComparisonTable";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 import { trackPageView } from "@/lib/analytics/conversion";
@@ -322,6 +324,12 @@ if (flag.value) { /* ... */ }`;
              </div>
            </div>
         </section>
+
+        {/* Feature Showcase */}
+        <FeatureShowcase />
+
+        {/* Comparison Table */}
+        <ComparisonTable />
 
         {/* Architecture Preview */}
         <section className="py-20 px-4 sm:px-6 lg:px-8">
