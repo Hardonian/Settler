@@ -1,22 +1,16 @@
 /**
  * Supabase Database Types
- * 
+ *
  * CTO Mode: Type Safety
  * - Generated from Supabase schema
  * - Use these types instead of 'any'
  * - Run: supabase gen types typescript --project-id <project-ref> > src/types/database.types.ts
- * 
+ *
  * TODO: Generate actual types from Supabase schema
  * For now, this is a placeholder structure
  */
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
   public: {
@@ -36,8 +30,11 @@ export interface Database {
           updated_at: string;
           deleted_at: string | null;
         };
-        Insert: Omit<Database['public']['Tables']['tenants']['Row'], 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['tenants']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["tenants"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["tenants"]["Insert"]>;
       };
       users: {
         Row: {
@@ -54,8 +51,11 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['users']['Row'], 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['users']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["users"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["users"]["Insert"]>;
       };
       activity_logs: {
         Row: {
@@ -68,8 +68,8 @@ export interface Database {
           metadata: Json | null;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['activity_logs']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['activity_logs']['Insert']>;
+        Insert: Omit<Database["public"]["Tables"]["activity_logs"]["Row"], "id" | "created_at">;
+        Update: Partial<Database["public"]["Tables"]["activity_logs"]["Insert"]>;
       };
       // Ecosystem tables
       profiles: {
@@ -147,8 +147,11 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['posts']['Row'], 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['posts']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["posts"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["posts"]["Insert"]>;
       };
       activity_log: {
         Row: {
@@ -236,8 +239,8 @@ export interface Database {
           metadata: Json;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['notifications']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['notifications']['Insert']>;
+        Insert: Omit<Database["public"]["Tables"]["notifications"]["Row"], "id" | "created_at">;
+        Update: Partial<Database["public"]["Tables"]["notifications"]["Insert"]>;
       };
       // Add other tables as needed
       affiliate_programs: {
@@ -950,7 +953,7 @@ export interface Database {
           [key: string]: unknown;
         };
       };
-      set_tenant_context?: {
+      set_tenant_context: {
         Args: {
           tenant_id: string;
         };
