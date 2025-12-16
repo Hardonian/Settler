@@ -57,7 +57,7 @@ export function FeatureFlagsPolicy() {
     }
   };
 
-  const handleFlagChange = (key: string, value: boolean | number | string) => {
+  const handleFlagChange = (key: string, value: boolean | number | string | Record<string, unknown>) => {
     setChanges(new Map(changes.set(key, value)));
   };
 
@@ -106,11 +106,13 @@ export function FeatureFlagsPolicy() {
     if (flag) {
       // Check if there's a pending change
       if (changes.has(key)) {
-        return changes.get(key)!;
+        const changeValue = changes.get(key);
+        return changeValue !== undefined ? changeValue : flag.value;
       }
       return flag.value;
     }
-    return FLAG_REGISTRY[key]?.default ?? false;
+    const flagDef = FLAG_REGISTRY[key];
+    return flagDef?.default ?? false;
   };
 
   const tenantFlags = getFlagsByScope('tenant');
@@ -142,10 +144,12 @@ export function FeatureFlagsPolicy() {
   const flagsByCategory: Record<string, typeof tenantFlags> = {};
   for (const flag of tenantFlags) {
     const category = flag.key.split('.')[0];
-    if (!flagsByCategory[category]) {
+    if (category && !flagsByCategory[category]) {
       flagsByCategory[category] = [];
     }
-    flagsByCategory[category].push(flag);
+    if (category) {
+      flagsByCategory[category]!.push(flag);
+    }
   }
 
   return (
@@ -164,7 +168,9 @@ export function FeatureFlagsPolicy() {
         </Button>
       </div>
 
-      {Object.entries(flagsByCategory).map(([category, categoryFlags]) => (
+      {Object.entries(flagsByCategory).map(([category, categoryFlags]) => {
+        if (!categoryFlags) return null;
+        return (
         <Card key={category}>
           <CardHeader>
             <CardTitle className="capitalize">{category}</CardTitle>
@@ -238,8 +244,10 @@ export function FeatureFlagsPolicy() {
                         <div>
                           {flagDef.validation?.enum ? (
                             <Select
-                              value={currentValue as string}
-                              onValueChange={(value) => handleFlagChange(flagDef.key, value)}
+                              value={String(currentValue)}
+                              onValueChange={(value: string) => {
+                                handleFlagChange(flagDef.key, value);
+                              }}
                             >
                               <SelectTrigger className="w-48">
                                 <SelectValue />
@@ -300,7 +308,8 @@ export function FeatureFlagsPolicy() {
             </div>
           </CardContent>
         </Card>
-      ))}
+        );
+      })}
 
       {tenantFlags.length === 0 && (
         <Card>

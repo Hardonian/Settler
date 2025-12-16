@@ -156,7 +156,7 @@ export function ComparisonTable() {
                               </motion.div>
                             ) : isString ? (
                               <Badge variant="outline" className="text-xs">
-                                {value}
+                                {String(value)}
                               </Badge>
                             ) : (
                               <XCircle className="w-6 h-6 text-slate-300 dark:text-slate-700 mx-auto" />

@@ -19,7 +19,7 @@ interface MeaningfulChangesFeedProps {
   limit?: number;
 }
 
-export function MeaningfulChangesFeed({ tenantId, limit = 50 }: MeaningfulChangesFeedProps) {
+export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps) {
   const [changes, setChanges] = useState<MeaningfulChange[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

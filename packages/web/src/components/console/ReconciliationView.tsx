@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { AlertTriangle, CheckCircle2, XCircle, RefreshCw, Play } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, RefreshCw, Play } from 'lucide-react';
 import type { ReconciliationSummary, ReconciliationItem } from '@/lib/domain/types';
 
 interface ReconciliationViewProps {

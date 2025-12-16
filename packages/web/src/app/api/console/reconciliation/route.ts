@@ -27,7 +27,7 @@ const RunReconciliationSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Authenticate
-    const authContext = await requireAuth(request);
+    await requireAuth(request);
     
     // Get tenant ID
     const tenantId = await getPrimaryTenant();
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     // Return typed error, not 500
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
+        { error: 'Invalid request', details: error.issues },
         { status: 400 }
       );
     }
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Authenticate
-    const authContext = await requireAuth(request);
+    await requireAuth(request);
     
     // Get tenant ID
     const tenantId = await getPrimaryTenant();

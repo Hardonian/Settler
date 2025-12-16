@@ -16,7 +16,7 @@ export async function POST(
 ) {
   try {
     // Authenticate
-    const authContext = await requireAuth(request);
+    await requireAuth(request);
     
     // Get tenant ID
     const tenantId = await getPrimaryTenant();

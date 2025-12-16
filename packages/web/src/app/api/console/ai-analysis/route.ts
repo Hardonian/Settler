@@ -22,7 +22,7 @@ const RunAnalysisSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Authenticate
-    const authContext = await requireAuth(request);
+    await requireAuth(request);
     
     // Get tenant ID
     const tenantId = await getPrimaryTenant();
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
+        { error: 'Invalid request', details: error.issues },
         { status: 400 }
       );
     }
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     // Authenticate
-    const authContext = await requireAuth({} as NextRequest);
+    await requireAuth({} as NextRequest);
     
     // Get tenant ID
     const tenantId = await getPrimaryTenant();
@@ -181,7 +181,7 @@ async function runAIAnalysis(
   };
 }
 
-async function listAnalyses(tenantId: string) {
+async function listAnalyses(_tenantId: string) {
   // Mock - replace with actual database query
   return [];
 }

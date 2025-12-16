@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { AlertTriangle, CheckCircle2, Info, X, Bell } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Info, Bell } from 'lucide-react';
 import type { Alert } from '@/lib/domain/types';
 
 interface AlertsViewProps {

@@ -24,7 +24,7 @@ const QuerySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     // Authenticate
-    const authContext = await requireAuth(request);
+    await requireAuth(request);
     
     // Get tenant ID
     const tenantId = await getPrimaryTenant();

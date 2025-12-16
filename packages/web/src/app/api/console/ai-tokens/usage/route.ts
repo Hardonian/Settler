@@ -13,7 +13,7 @@ export const runtime = 'nodejs';
 export async function GET() {
   try {
     // Authenticate
-    const authContext = await requireAuth({} as NextRequest);
+    await requireAuth({} as NextRequest);
     
     // Get tenant ID
     const tenantId = await getPrimaryTenant();

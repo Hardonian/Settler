@@ -16,10 +16,10 @@ const SetFlagSchema = z.object({
   value: z.union([z.boolean(), z.number(), z.string(), z.record(z.unknown())]),
 });
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Authenticate
-    const authContext = await requireAuth({} as NextRequest);
+    await requireAuth(request);
     
     // Get tenant ID
     const tenantId = await getPrimaryTenant();
@@ -40,7 +40,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     // Authenticate
-    const authContext = await requireAuth(request);
+    await requireAuth(request);
     
     // Get tenant ID
     const tenantId = await getPrimaryTenant();
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
+        { error: 'Invalid request', details: error.issues },
         { status: 400 }
       );
     }
