@@ -1,41 +1,83 @@
 /**
- * Console Feature Flags API Route
- * 
- * Supports both session auth (Console UI) and API key auth (SDK/CLI)
+ * Feature Flags API Route
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
-import { prisma } from '@/shared/db/prismaClient';
-import { listFeatureFlags } from '@/domain/console/featureFlags';
+import { getFeatureFlags, setFeatureFlag } from '@/lib/server/settler/feature-flags';
+import { getPrimaryTenant } from '@/lib/supabase/tenant-helpers';
+import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+const SetFlagSchema = z.object({
+  key: z.string().min(1),
+  value: z.union([z.boolean(), z.number(), z.string(), z.record(z.unknown())]),
+});
+
+export async function GET() {
   try {
-    // Authenticate using unified auth (session or API key)
-    const authContext = await requireAuth(request);
-
-    const billingAccount = await prisma.billingAccount.findFirst({
-      where: { userId: authContext.userId },
-    });
-
-    if (!billingAccount) {
-      // Return empty array instead of 404
-      return NextResponse.json({ flags: [] });
+    // Authenticate
+    const authContext = await requireAuth({} as NextRequest);
+    
+    // Get tenant ID
+    const tenantId = await getPrimaryTenant();
+    if (!tenantId) {
+      return NextResponse.json({ flags: [] }, { status: 200 });
     }
-
-    const flags = await listFeatureFlags(billingAccount.id);
-
+    
+    // Get flags
+    const flags = await getFeatureFlags(tenantId);
+    
     return NextResponse.json({ flags });
   } catch (error) {
-    // If auth error, return 401
-    if (error instanceof Error && error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    console.error('[Feature Flags API] Error:', error);
+    return NextResponse.json({ flags: [] }, { status: 200 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // Authenticate
+    const authContext = await requireAuth(request);
+    
+    // Get tenant ID
+    const tenantId = await getPrimaryTenant();
+    if (!tenantId) {
+      return NextResponse.json(
+        { error: 'No tenant found' },
+        { status: 400 }
+      );
     }
-    console.error('[Console Feature Flags] Error:', error);
-    // Return 200 with empty array instead of 500
-    return NextResponse.json({ flags: [] });
+    
+    // Parse and validate body
+    const body = await request.json();
+    const { key, value } = SetFlagSchema.parse(body);
+    
+    // Set flag
+    const success = await setFeatureFlag(tenantId, key, value);
+    
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Failed to set feature flag' },
+        { status: 500 }
+      );
+    }
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: error.errors },
+        { status: 400 }
+      );
+    }
+    
+    console.error('[Feature Flags API] Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to set feature flag' },
+      { status: 500 }
+    );
   }
 }
