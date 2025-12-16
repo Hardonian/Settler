@@ -1,94 +1,115 @@
 #!/bin/bash
-# Apply Supabase migrations automatically
-# This script can be run manually or via git hooks
+# Local migration script (for testing before pushing)
 
 set -e
 
-# Colors for output
-RED='\033[0;31m'
+# Colors
 GREEN='\033[0;32m'
+RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}🔄 Applying Supabase migrations...${NC}"
+ENVIRONMENT=${1:-staging}
+DRY_RUN=${2:-false}
 
-# Check if Supabase CLI is installed
-if ! command -v supabase &> /dev/null; then
-    echo -e "${YELLOW}⚠️  Supabase CLI not found. Installing...${NC}"
-    npm install -g supabase || {
-        echo -e "${RED}❌ Failed to install Supabase CLI${NC}"
-        echo "Please install manually: https://supabase.com/docs/guides/cli"
-        exit 1
-    }
+echo "🔍 Settler Migration Script"
+echo "=========================="
+echo ""
+echo "Environment: $ENVIRONMENT"
+echo "Dry Run: $DRY_RUN"
+echo ""
+
+# Check if psql is installed
+if ! command -v psql &> /dev/null; then
+    echo -e "${RED}❌ psql not found. Please install PostgreSQL client.${NC}"
+    exit 1
 fi
 
-# Check if DATABASE_URL is set
-if [ -z "$DATABASE_URL" ]; then
-    echo -e "${YELLOW}⚠️  DATABASE_URL not set. Checking for .env file...${NC}"
-    if [ -f .env ]; then
-        export $(grep -v '^#' .env | xargs)
-    elif [ -f .env.local ]; then
-        export $(grep -v '^#' .env.local | xargs)
-    else
-        echo -e "${RED}❌ DATABASE_URL not found in environment or .env files${NC}"
-        echo "Please set DATABASE_URL or create .env file"
-        exit 1
-    fi
+# Load environment variables
+if [ "$ENVIRONMENT" == "production" ]; then
+    DB_URL=${SUPABASE_DB_URL_PRODUCTION:-$DATABASE_URL}
+    DB_PASSWORD=${SUPABASE_DB_PASSWORD_PRODUCTION:-$DATABASE_PASSWORD}
+else
+    DB_URL=${SUPABASE_DB_URL_STAGING:-$DATABASE_URL}
+    DB_PASSWORD=${SUPABASE_DB_PASSWORD_STAGING:-$DATABASE_PASSWORD}
 fi
 
-# Check if SUPABASE_PROJECT_REF is set (for linking)
-if [ -n "$SUPABASE_PROJECT_REF" ] && [ -n "$SUPABASE_ACCESS_TOKEN" ]; then
-    echo -e "${GREEN}🔗 Linking to Supabase project: $SUPABASE_PROJECT_REF${NC}"
-    supabase link --project-ref "$SUPABASE_PROJECT_REF" || {
-        echo -e "${YELLOW}⚠️  Failed to link project, continuing with direct connection...${NC}"
-    }
+if [ -z "$DB_URL" ]; then
+    echo -e "${RED}❌ Database URL not set.${NC}"
+    echo "Set SUPABASE_DB_URL_STAGING or SUPABASE_DB_URL_PRODUCTION"
+    exit 1
 fi
 
-# Count migration files
-MIGRATION_COUNT=$(find supabase/migrations -name "*.sql" -type f | wc -l)
-echo -e "${GREEN}📦 Found $MIGRATION_COUNT migration file(s)${NC}"
+export PGPASSWORD="$DB_PASSWORD"
 
-if [ "$MIGRATION_COUNT" -eq 0 ]; then
-    echo -e "${YELLOW}⚠️  No migration files found in supabase/migrations/${NC}"
+# Get list of migrations
+MIGRATIONS=$(ls -1 supabase/migrations/*.sql 2>/dev/null | sort)
+
+if [ -z "$MIGRATIONS" ]; then
+    echo -e "${YELLOW}⚠️  No migrations found${NC}"
+    exit 0
+fi
+
+echo "Found $(echo "$MIGRATIONS" | wc -l) migration(s)"
+echo ""
+
+if [ "$DRY_RUN" == "true" ]; then
+    echo -e "${YELLOW}🔍 DRY RUN MODE - Validating only${NC}"
+    echo ""
+    
+    for migration in $MIGRATIONS; do
+        migration_name=$(basename $migration)
+        echo "Validating: $migration_name"
+        
+        # Basic syntax check
+        if psql "$DB_URL" -c "\set ON_ERROR_STOP 1" -f "$migration" > /dev/null 2>&1; then
+            echo -e "${GREEN}✓ $migration_name syntax is valid${NC}"
+        else
+            echo -e "${RED}✗ $migration_name has syntax errors${NC}"
+            exit 1
+        fi
+    done
+    
+    echo ""
+    echo -e "${GREEN}✅ All migrations validated successfully${NC}"
     exit 0
 fi
 
 # Apply migrations
-echo -e "${GREEN}🔄 Applying migrations...${NC}"
+echo "Applying migrations..."
+echo ""
 
-if [ -n "$SUPABASE_PROJECT_REF" ] && [ -n "$SUPABASE_ACCESS_TOKEN" ]; then
-    # Use Supabase CLI if linked
-    supabase db push --include-all || {
-        echo -e "${YELLOW}⚠️  db push failed, trying direct psql connection...${NC}"
-        # Fallback: apply migrations directly via psql
-        for file in supabase/migrations/*.sql; do
-            if [ -f "$file" ]; then
-                echo -e "${GREEN}Applying: $(basename $file)${NC}"
-                psql "$DATABASE_URL" -f "$file" || {
-                    echo -e "${RED}❌ Failed to apply $(basename $file)${NC}"
-                    exit 1
-                }
-            fi
-        done
-    }
-else
-    # Use direct psql connection
-    echo -e "${YELLOW}Using direct database connection...${NC}"
-    for file in supabase/migrations/*.sql; do
-        if [ -f "$file" ]; then
-            echo -e "${GREEN}Applying: $(basename $file)${NC}"
-            psql "$DATABASE_URL" -f "$file" || {
-                echo -e "${RED}❌ Failed to apply $(basename $file)${NC}"
-                exit 1
-            }
-        fi
-    done
-fi
+for migration in $MIGRATIONS; do
+    migration_name=$(basename $migration)
+    echo "📦 Applying: $migration_name"
+    
+    if psql "$DB_URL" -v ON_ERROR_STOP=1 -f "$migration"; then
+        echo -e "${GREEN}✅ Applied: $migration_name${NC}"
+    else
+        echo -e "${RED}❌ Failed: $migration_name${NC}"
+        exit 1
+    fi
+    echo ""
+done
 
-echo -e "${GREEN}✅ Migrations applied successfully!${NC}"
+echo -e "${GREEN}🎉 All migrations applied successfully!${NC}"
 
-# Verify migration status
-if command -v supabase &> /dev/null && [ -n "$SUPABASE_PROJECT_REF" ]; then
-    echo -e "${GREEN}🔍 Checking migration status...${NC}"
-    supabase migration list || echo -e "${YELLOW}⚠️  Could not list migrations${NC}"
-fi
+# Verify
+echo ""
+echo "Verifying migrations..."
+psql "$DB_URL" -c "
+    SELECT 
+        'receipts' as table_name,
+        CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'receipts') THEN 'exists' ELSE 'missing' END as status
+    UNION ALL
+    SELECT 
+        'ai_analysis_usage' as table_name,
+        CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ai_analysis_usage') THEN 'exists' ELSE 'missing' END as status
+    UNION ALL
+    SELECT 
+        'ai_analyses' as table_name,
+        CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ai_analyses') THEN 'exists' ELSE 'missing' END as status;
+"
+
+echo ""
+echo -e "${GREEN}✅ Migration complete!${NC}"

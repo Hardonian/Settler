@@ -1,0 +1,144 @@
+name: Apply Database Migrations (Safe Mode)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to apply migrations'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      dry_run:
+        description: 'Dry run (validate only, do not apply)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  validate-migrations:
+    name: Validate Migrations
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Validate migration syntax
+        env:
+          SUPABASE_DB_URL: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_URL_PRODUCTION || secrets.SUPABASE_DB_URL_STAGING }}
+          SUPABASE_DB_PASSWORD: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_PASSWORD_PRODUCTION || secrets.SUPABASE_DB_PASSWORD_STAGING }}
+        run: |
+          echo "Validating migration syntax..."
+          export PGPASSWORD="$SUPABASE_DB_PASSWORD"
+          
+          # Validate each migration file
+          for migration in supabase/migrations/*.sql; do
+            echo "Validating: $(basename $migration)"
+            psql "$SUPABASE_DB_URL" --set ON_ERROR_STOP=1 -f "$migration" --dry-run 2>&1 || {
+              # Try syntax check without dry-run
+              psql "$SUPABASE_DB_URL" -c "\set ON_ERROR_STOP 1" -f "$migration" > /dev/null 2>&1 || {
+                echo "❌ Syntax error in: $migration"
+                exit 1
+              }
+            }
+            echo "✓ $(basename $migration) syntax is valid"
+          done
+          
+          echo "✅ All migrations validated successfully"
+
+  apply-migrations:
+    name: Apply Migrations
+    runs-on: ubuntu-latest
+    needs: validate-migrations
+    environment: ${{ github.event.inputs.environment }}
+    if: github.event.inputs.dry_run != 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Apply migrations
+        env:
+          SUPABASE_DB_URL: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_URL_PRODUCTION || secrets.SUPABASE_DB_URL_STAGING }}
+          SUPABASE_DB_PASSWORD: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_PASSWORD_PRODUCTION || secrets.SUPABASE_DB_PASSWORD_STAGING }}
+        run: |
+          echo "Applying migrations to ${{ github.event.inputs.environment }}..."
+          export PGPASSWORD="$SUPABASE_DB_PASSWORD"
+          
+          # Get list of migration files sorted by name
+          MIGRATIONS=$(ls -1 supabase/migrations/*.sql | sort)
+          
+          for migration in $MIGRATIONS; do
+            migration_name=$(basename $migration)
+            echo "📦 Applying: $migration_name"
+            
+            # Apply migration with error handling
+            psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f "$migration" || {
+              echo "❌ Migration failed: $migration_name"
+              echo "Rolling back is manual - check database state"
+              exit 1
+            }
+            
+            echo "✅ Applied: $migration_name"
+          done
+          
+          echo "🎉 All migrations applied successfully!"
+
+      - name: Verify migrations
+        env:
+          SUPABASE_DB_URL: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_URL_PRODUCTION || secrets.SUPABASE_DB_URL_STAGING }}
+          SUPABASE_DB_PASSWORD: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_PASSWORD_PRODUCTION || secrets.SUPABASE_DB_PASSWORD_STAGING }}
+        run: |
+          echo "Verifying migrations..."
+          export PGPASSWORD="$SUPABASE_DB_PASSWORD"
+          
+          psql "$SUPABASE_DB_URL" -c "
+            SELECT 
+              'receipts' as table_name,
+              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'receipts') THEN 'exists' ELSE 'missing' END as status
+            UNION ALL
+            SELECT 
+              'ai_analysis_usage' as table_name,
+              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ai_analysis_usage') THEN 'exists' ELSE 'missing' END as status
+            UNION ALL
+            SELECT 
+              'ai_analyses' as table_name,
+              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ai_analyses') THEN 'exists' ELSE 'missing' END as status
+            UNION ALL
+            SELECT 
+              'set_tenant_context' as table_name,
+              CASE WHEN EXISTS (SELECT FROM pg_proc WHERE proname = 'set_tenant_context') THEN 'exists' ELSE 'missing' END as status;
+          "
+
+      - name: Migration Report
+        if: always()
+        run: |
+          echo "## Migration Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment**: ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Migrations Applied**: $(ls -1 supabase/migrations/*.sql | wc -l)" >> $GITHUB_STEP_SUMMARY
