@@ -167,7 +167,7 @@ See [Automatic Migrations Guide](../../docs/AUTOMATIC_MIGRATIONS.md) for details
 
 - [Console Complete Guide](../../docs/CONSOLE_COMPLETE.md)
 - [SDK/CLI/Console Integration](../../docs/SDK_CLI_CONSOLE_INTEGRATION.md)
-- [Console Setup Guide](../../CONSOLE_SETUP_GUIDE.md)
+- [Console Setup Guide](../../docs/CONSOLE_SETUP.md)
 
 ## Support
 

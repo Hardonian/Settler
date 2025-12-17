@@ -1,21 +1,60 @@
-MIT License
+Proprietary Software License
 
-Copyright (c) 2025 Scott Hardie
+Copyright (c) 2024-2026 Settler, Inc. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software and associated documentation files (the "Software") are proprietary
+to Settler, Inc. and are protected by copyright laws and international copyright
+treaties, as well as other intellectual property laws and treaties.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+RESTRICTIONS:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. The Software is licensed, not sold, to you by Settler, Inc. for use strictly
+   in accordance with the terms and conditions of this license.
+
+2. You may NOT:
+   - Copy, modify, adapt, alter, translate, or create derivative works of the Software
+   - Reverse engineer, disassemble, decompile, or otherwise attempt to derive the
+     source code of the Software
+   - Remove, alter, or obscure any proprietary notices, labels, or marks on the Software
+   - Use the Software to develop competing products or services
+   - Sublicense, rent, lease, loan, or otherwise transfer the Software to any third party
+   - Use the Software in any manner that violates any applicable law or regulation
+
+3. This license does not grant you any rights to use Settler's trademarks, service
+   marks, or trade names.
+
+4. The Software is provided "AS IS" without warranty of any kind, express or implied,
+   including but not limited to warranties of merchantability, fitness for a particular
+   purpose, and non-infringement.
+
+5. In no event shall Settler, Inc. be liable for any damages whatsoever arising out
+   of or in connection with your use or inability to use the Software.
+
+OPEN SOURCE COMPONENTS:
+
+Certain components of this repository are licensed under open source licenses:
+- `packages/protocol` - Licensed under MIT License (see packages/protocol/LICENSE)
+- `packages/react-settler` - Dual licensed: MIT License (OSS components) and Commercial License (Commercial features)
+
+For details on open source licensing, see:
+- /docs/LICENSING_OVERVIEW.md
+- /LEGAL/COMMERCIAL_LICENSE.md
+
+TERMINATION:
+
+This license is effective until terminated. Your rights under this license will
+terminate automatically without notice if you fail to comply with any of its terms.
+
+GOVERNING LAW:
+
+This license is governed by the laws of the United States and the State of Delaware,
+and the laws of Canada (federal and provincial), without regard to conflict of law principles.
+For disputes involving Canadian customers, the laws of Canada and the province of Ontario shall apply.
+For disputes involving United States customers, the laws of the United States and the State of Delaware shall apply.
+
+For questions about licensing, contact: legal@settler.dev
+
+---
+
+Settler, Inc.
+All rights reserved.

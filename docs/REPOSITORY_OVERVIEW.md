@@ -277,8 +277,8 @@ npm run test:smoke
 ### Main Docs
 
 - [README.md](../README.md) - Main repository README
-- [SETUP_GUIDE.md](../SETUP_GUIDE.md) - Complete setup guide
-- [CONSOLE_SETUP_GUIDE.md](../CONSOLE_SETUP_GUIDE.md) - Console setup
+- [GETTING_STARTED.md](GETTING_STARTED.md) - Complete setup guide
+- [CONSOLE_SETUP.md](CONSOLE_SETUP.md) - Console setup guide
 
 ### Console Docs
 
