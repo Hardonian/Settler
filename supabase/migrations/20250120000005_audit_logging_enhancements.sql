@@ -18,7 +18,7 @@ BEGIN
     WHERE table_name = 'audit_logs' AND column_name = 'billing_account_id'
   ) THEN
     ALTER TABLE audit_logs ADD COLUMN billing_account_id UUID REFERENCES billing_accounts(id) ON DELETE SET NULL;
-    CREATE INDEX IF NOT EXISTS idx_audit_logs_billing_account_id ON audit_logs(billing_account_id);
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_audit_logs_billing_account_id ON audit_logs(billing_account_id)';
   END IF;
 
   -- Add integration_id if not exists
@@ -27,7 +27,7 @@ BEGIN
     WHERE table_name = 'audit_logs' AND column_name = 'integration_id'
   ) THEN
     ALTER TABLE audit_logs ADD COLUMN integration_id VARCHAR(100);
-    CREATE INDEX IF NOT EXISTS idx_audit_logs_integration_id ON audit_logs(integration_id);
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_audit_logs_integration_id ON audit_logs(integration_id)';
   END IF;
 
   -- Add action_type if not exists
@@ -36,7 +36,7 @@ BEGIN
     WHERE table_name = 'audit_logs' AND column_name = 'action_type'
   ) THEN
     ALTER TABLE audit_logs ADD COLUMN action_type VARCHAR(50); -- 'create', 'update', 'delete', 'read', 'export'
-    CREATE INDEX IF NOT EXISTS idx_audit_logs_action_type ON audit_logs(action_type);
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_audit_logs_action_type ON audit_logs(action_type)';
   END IF;
 
   -- Add resource_type if not exists
@@ -45,7 +45,7 @@ BEGIN
     WHERE table_name = 'audit_logs' AND column_name = 'resource_type'
   ) THEN
     ALTER TABLE audit_logs ADD COLUMN resource_type VARCHAR(100); -- 'billing_account', 'subscription', 'usage_event', etc.
-    CREATE INDEX IF NOT EXISTS idx_audit_logs_resource_type ON audit_logs(resource_type);
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_audit_logs_resource_type ON audit_logs(resource_type)';
   END IF;
 
   -- Add resource_id if not exists
@@ -54,7 +54,7 @@ BEGIN
     WHERE table_name = 'audit_logs' AND column_name = 'resource_id'
   ) THEN
     ALTER TABLE audit_logs ADD COLUMN resource_id UUID;
-    CREATE INDEX IF NOT EXISTS idx_audit_logs_resource_id ON audit_logs(resource_id);
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_audit_logs_resource_id ON audit_logs(resource_id)';
   END IF;
 END $$;
 
@@ -63,10 +63,10 @@ END $$;
 -- ============================================================================
 
 CREATE OR REPLACE FUNCTION log_audit_event(
+  p_event VARCHAR(100),
   p_tenant_id UUID DEFAULT NULL,
   p_user_id UUID DEFAULT NULL,
   p_api_key_id UUID DEFAULT NULL,
-  p_event VARCHAR(100),
   p_action_type VARCHAR(50) DEFAULT NULL,
   p_resource_type VARCHAR(100) DEFAULT NULL,
   p_resource_id UUID DEFAULT NULL,

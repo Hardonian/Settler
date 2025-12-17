@@ -23,6 +23,7 @@ CREATE INDEX IF NOT EXISTS idx_usage_event_idempotency_billing_account ON usage_
 CREATE INDEX IF NOT EXISTS idx_usage_event_idempotency_expires_at ON usage_event_idempotency(expires_at);
 
 -- Cleanup expired idempotency keys (run via cron)
+DROP FUNCTION IF EXISTS cleanup_expired_idempotency_keys() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_expired_idempotency_keys()
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -63,6 +64,7 @@ CREATE INDEX IF NOT EXISTS idx_fraud_signals_type ON fraud_signals(signal_type);
 -- ENHANCED: log_usage_event with idempotency and fraud detection
 -- ============================================================================
 
+DROP FUNCTION IF EXISTS log_usage_event(UUID, VARCHAR, DECIMAL, UUID, UUID, UUID, VARCHAR, UUID, VARCHAR, JSONB, VARCHAR) CASCADE;
 CREATE OR REPLACE FUNCTION log_usage_event(
   p_billing_account_id UUID,
   p_event_type VARCHAR(100),
@@ -223,7 +225,8 @@ BEGIN
     RETURNING id INTO v_fraud_signal_id;
 
     -- Log fraud signal for monitoring
-    RAISE WARNING 'Fraud signal created: % (spike: %%)', v_fraud_signal_id, v_usage_spike_percentage;
+    RAISE WARNING 'Fraud signal created: % (spike: %%)', 
+      format('%s (spike: %s%%)', v_fraud_signal_id::text, ROUND(v_usage_spike_percentage, 2)::text);
   END IF;
 
   RETURN v_event_id;
@@ -236,6 +239,7 @@ $$;
 -- Checks for accounts with multiple fraud signals and suspends them
 -- Should be run via cron job
 
+DROP FUNCTION IF EXISTS check_and_suspend_abusive_accounts() CASCADE;
 CREATE OR REPLACE FUNCTION check_and_suspend_abusive_accounts()
 RETURNS TABLE(
   billing_account_id UUID,
@@ -282,6 +286,7 @@ $$;
 -- Server-side validation to ensure usage events are legitimate
 -- This function should be called before logging usage events
 
+DROP FUNCTION IF EXISTS validate_usage_event_server_side(UUID, VARCHAR, VARCHAR, UUID) CASCADE;
 CREATE OR REPLACE FUNCTION validate_usage_event_server_side(
   p_billing_account_id UUID,
   p_event_type VARCHAR(100),

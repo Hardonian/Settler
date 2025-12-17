@@ -22,7 +22,8 @@ ALTER TABLE profiles
 -- Create indexes for efficient queries
 CREATE INDEX IF NOT EXISTS idx_profiles_plan_type ON profiles(plan_type);
 CREATE INDEX IF NOT EXISTS idx_profiles_trial_end_date ON profiles(trial_end_date) WHERE trial_end_date IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_profiles_trial_active ON profiles(trial_end_date) WHERE plan_type = 'trial' AND trial_end_date > NOW();
+-- Note: Cannot use NOW() in index predicate (not IMMUTABLE), so filter by trial_end_date > NOW() in queries
+CREATE INDEX IF NOT EXISTS idx_profiles_trial_active ON profiles(trial_end_date) WHERE plan_type = 'trial' AND trial_end_date IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_profiles_subscription_end ON profiles(subscription_end_date) WHERE subscription_end_date IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_profiles_last_email ON profiles(last_email_sent_at, last_email_type);
 

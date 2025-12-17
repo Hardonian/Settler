@@ -47,12 +47,30 @@ CREATE TABLE IF NOT EXISTS integration_credentials (
   UNIQUE(tenant_id, integration_id, credential_type) -- One credential per type per tenant
 );
 
-CREATE INDEX IF NOT EXISTS idx_integration_credentials_tenant_id ON integration_credentials(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_integration_credentials_user_id ON integration_credentials(user_id);
-CREATE INDEX IF NOT EXISTS idx_integration_credentials_billing_account_id ON integration_credentials(billing_account_id);
-CREATE INDEX IF NOT EXISTS idx_integration_credentials_integration_id ON integration_credentials(integration_id);
-CREATE INDEX IF NOT EXISTS idx_integration_credentials_status ON integration_credentials(status);
-CREATE INDEX IF NOT EXISTS idx_integration_credentials_expires_at ON integration_credentials(expires_at) WHERE expires_at IS NOT NULL;
+-- Create indexes conditionally
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'integration_credentials') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'integration_credentials' AND column_name = 'tenant_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_integration_credentials_tenant_id ON integration_credentials(tenant_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'integration_credentials' AND column_name = 'user_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_integration_credentials_user_id ON integration_credentials(user_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'integration_credentials' AND column_name = 'billing_account_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_integration_credentials_billing_account_id ON integration_credentials(billing_account_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'integration_credentials' AND column_name = 'integration_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_integration_credentials_integration_id ON integration_credentials(integration_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'integration_credentials' AND column_name = 'status') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_integration_credentials_status ON integration_credentials(status)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'integration_credentials' AND column_name = 'expires_at') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_integration_credentials_expires_at ON integration_credentials(expires_at) WHERE expires_at IS NOT NULL';
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- ENABLE ROW LEVEL SECURITY
@@ -62,19 +80,37 @@ ALTER TABLE integration_credentials ENABLE ROW LEVEL SECURITY;
 
 -- Users can only SELECT credentials for their tenant
 DROP POLICY IF EXISTS integration_credentials_select_tenant ON integration_credentials;
-CREATE POLICY integration_credentials_select_tenant ON integration_credentials
-  FOR SELECT
-  USING (
-    tenant_id = (
-      SELECT tenant_id FROM users
-      WHERE users.id = (current_setting('request.jwt.claims', true)::jsonb->>'sub')::UUID
-    )
-    OR EXISTS (
-      SELECT 1 FROM billing_accounts
-      WHERE billing_accounts.id = integration_credentials.billing_account_id
-        AND billing_accounts.user_id = (current_setting('request.jwt.claims', true)::jsonb->>'sub')::UUID
-    )
-  );
+-- Create policy conditionally based on column existence
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'integration_credentials' AND column_name = 'billing_account_id') THEN
+    EXECUTE '
+      CREATE POLICY integration_credentials_select_tenant ON integration_credentials
+        FOR SELECT
+        USING (
+          tenant_id = (
+            SELECT tenant_id FROM users
+            WHERE users.id = (current_setting(''request.jwt.claims'', true)::jsonb->>''sub'')::UUID
+          )
+          OR EXISTS (
+            SELECT 1 FROM billing_accounts
+            WHERE billing_accounts.id = integration_credentials.billing_account_id
+              AND billing_accounts.user_id = (current_setting(''request.jwt.claims'', true)::jsonb->>''sub'')::UUID
+          )
+        )';
+  ELSE
+    -- Fallback policy without billing_account_id reference
+    EXECUTE '
+      CREATE POLICY integration_credentials_select_tenant ON integration_credentials
+        FOR SELECT
+        USING (
+          tenant_id = (
+            SELECT tenant_id FROM users
+            WHERE users.id = (current_setting(''request.jwt.claims'', true)::jsonb->>''sub'')::UUID
+          )
+        )';
+  END IF;
+END $$;
 
 -- Users can only INSERT credentials for their tenant
 DROP POLICY IF EXISTS integration_credentials_insert_tenant ON integration_credentials;

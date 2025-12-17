@@ -14,28 +14,44 @@ BEGIN;
 
 -- Insert demo profiles (only if they don't already exist)
 -- In a real scenario, these would be created via the sign-up flow
-INSERT INTO profiles (id, user_id, email, name, bio, role, impact_score, created_at)
-SELECT 
-  gen_random_uuid(),
-  gen_random_uuid(),
-  'demo.user' || generate_series || '@example.com',
-  CASE (generate_series % 5)
-    WHEN 0 THEN 'Alex Developer'
-    WHEN 1 THEN 'Sam Engineer'
-    WHEN 2 THEN 'Jordan Designer'
-    WHEN 3 THEN 'Casey Product'
-    WHEN 4 THEN 'Taylor DevOps'
-  END,
-  'Demo community member interested in financial reconciliation automation',
-  CASE (generate_series % 3)
-    WHEN 0 THEN 'community_member'
-    WHEN 1 THEN 'contributor'
-    WHEN 2 THEN 'maintainer'
-  END,
-  (random() * 100)::integer,
-  NOW() - (random() * INTERVAL '30 days')
-FROM generate_series(1, 75)
-ON CONFLICT DO NOTHING;
+-- Skip if profiles table doesn't exist or already has data
+DO $$
+DECLARE
+  v_profile_count INTEGER;
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
+    -- Check if required columns exist
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'email')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'user_id') THEN
+      SELECT COUNT(*) INTO v_profile_count FROM profiles;
+      -- Only insert if table is empty
+      IF v_profile_count = 0 THEN
+        INSERT INTO profiles (id, user_id, email, name, bio, role, impact_score, created_at)
+        SELECT 
+          gen_random_uuid(),
+          gen_random_uuid(),
+          'demo.user' || generate_series || '@example.com',
+          CASE (generate_series % 5)
+            WHEN 0 THEN 'Alex Developer'
+            WHEN 1 THEN 'Sam Engineer'
+            WHEN 2 THEN 'Jordan Designer'
+            WHEN 3 THEN 'Casey Product'
+            WHEN 4 THEN 'Taylor DevOps'
+          END,
+          'Demo community member interested in financial reconciliation automation',
+          CASE (generate_series % 3)
+            WHEN 0 THEN 'community_member'
+            WHEN 1 THEN 'contributor'
+            WHEN 2 THEN 'maintainer'
+          END,
+          (random() * 100)::integer,
+          NOW() - (random() * INTERVAL '30 days')
+        FROM generate_series(1, 75)
+        ON CONFLICT DO NOTHING;
+      END IF;
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- DEMO DATA: Posts
@@ -48,49 +64,57 @@ DECLARE
   profile_id UUID;
   i INTEGER;
 BEGIN
-  -- Get array of profile IDs
-  SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
+  -- Get array of profile IDs (only if profiles table exists and has data)
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
+    SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
+  END IF;
   
-  -- Create demo posts
-  FOR i IN 1..25 LOOP
-    profile_id := profile_ids[1 + (i % array_length(profile_ids, 1))];
-    
-    INSERT INTO posts (
-      user_id,
-      title,
-      content,
-      post_type,
-      status,
-      views,
-      upvotes,
-      downvotes,
-      comments_count,
-      created_at
-    ) VALUES (
-      profile_id,
-      CASE (i % 5)
-        WHEN 0 THEN 'How to integrate Settler with Stripe webhooks'
-        WHEN 1 THEN 'Best practices for reconciliation accuracy'
-        WHEN 2 THEN 'QuickBooks adapter setup guide'
-        WHEN 3 THEN 'Handling multi-currency transactions'
-        WHEN 4 THEN 'Real-time dashboard implementation tips'
-      END,
-      'This is a demo post showcasing community engagement. In a real scenario, this would contain valuable content from community members sharing their experiences, questions, and solutions.',
-      CASE (i % 4)
-        WHEN 0 THEN 'post'
-        WHEN 1 THEN 'question'
-        WHEN 2 THEN 'announcement'
-        WHEN 3 THEN 'answer'
-      END,
-      'published',
-      (random() * 500 + 50)::integer,
-      (random() * 50 + 5)::integer,
-      (random() * 5)::integer,
-      (random() * 20)::integer,
-      NOW() - (random() * INTERVAL '7 days')
-    )
-    ON CONFLICT DO NOTHING;
-  END LOOP;
+  -- Only create demo posts if we have profiles and posts table exists
+  IF profile_ids IS NOT NULL 
+     AND array_length(profile_ids, 1) > 0
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'posts')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'user_id') THEN
+    -- Create demo posts
+    FOR i IN 1..25 LOOP
+      profile_id := profile_ids[1 + ((i - 1) % array_length(profile_ids, 1))];
+      
+      INSERT INTO posts (
+        user_id,
+        title,
+        content,
+        post_type,
+        status,
+        views,
+        upvotes,
+        downvotes,
+        comments_count,
+        created_at
+      ) VALUES (
+        profile_id,
+        CASE (i % 5)
+          WHEN 0 THEN 'How to integrate Settler with Stripe webhooks'
+          WHEN 1 THEN 'Best practices for reconciliation accuracy'
+          WHEN 2 THEN 'QuickBooks adapter setup guide'
+          WHEN 3 THEN 'Handling multi-currency transactions'
+          WHEN 4 THEN 'Real-time dashboard implementation tips'
+        END,
+        'This is a demo post showcasing community engagement. In a real scenario, this would contain valuable content from community members sharing their experiences, questions, and solutions.',
+        CASE (i % 4)
+          WHEN 0 THEN 'post'
+          WHEN 1 THEN 'question'
+          WHEN 2 THEN 'announcement'
+          WHEN 3 THEN 'answer'
+        END,
+        'published',
+        (random() * 500 + 50)::integer,
+        (random() * 50 + 5)::integer,
+        (random() * 5)::integer,
+        (random() * 20)::integer,
+        NOW() - (random() * INTERVAL '7 days')
+      )
+      ON CONFLICT DO NOTHING;
+    END LOOP;
+  END IF;
 END $$;
 
 -- ============================================================================
@@ -106,16 +130,30 @@ DECLARE
   activity_types TEXT[] := ARRAY['signup', 'login', 'post_view', 'post_upvote', 'scroll', 'click', 'feedback_submit'];
   i INTEGER;
 BEGIN
-  -- Get arrays of IDs
-  SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
-  SELECT ARRAY_AGG(id) INTO post_ids FROM posts LIMIT 10;
+  -- Get arrays of IDs (only if tables exist)
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
+    SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
+  END IF;
+  
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'posts') THEN
+    SELECT ARRAY_AGG(id) INTO post_ids FROM posts LIMIT 10;
+  END IF;
   
   -- Create demo activity logs (last 24 hours, with higher concentration in last hour)
-  FOR i IN 1..150 LOOP
-    profile_id := profile_ids[1 + (i % array_length(profile_ids, 1))];
-    post_id := post_ids[1 + (i % array_length(post_ids, 1))];
-    
-    INSERT INTO activity_log (
+  -- Only if we have profiles and activity_log table exists
+  IF profile_ids IS NOT NULL 
+     AND array_length(profile_ids, 1) > 0
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'activity_log')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'activity_log' AND column_name = 'activity_type') THEN
+    FOR i IN 1..150 LOOP
+      profile_id := profile_ids[1 + ((i - 1) % array_length(profile_ids, 1))];
+      IF post_ids IS NOT NULL AND array_length(post_ids, 1) > 0 THEN
+        post_id := post_ids[1 + ((i - 1) % array_length(post_ids, 1))];
+      ELSE
+        post_id := NULL;
+      END IF;
+      
+      INSERT INTO activity_log (
       user_id,
       activity_type,
       entity_type,
@@ -124,7 +162,7 @@ BEGIN
       created_at
     ) VALUES (
       CASE WHEN random() > 0.3 THEN profile_id ELSE NULL END, -- 30% anonymous
-      activity_types[1 + (random() * array_length(activity_types, 1))::integer],
+      activity_types[1 + ((i - 1) % array_length(activity_types, 1))],
       CASE (i % 3)
         WHEN 0 THEN 'post'
         WHEN 1 THEN 'profile'
@@ -142,7 +180,8 @@ BEGIN
       END
     )
     ON CONFLICT DO NOTHING;
-  END LOOP;
+    END LOOP;
+  END IF;
 END $$;
 
 -- ============================================================================
@@ -169,10 +208,18 @@ DECLARE
   ];
   i INTEGER;
 BEGIN
-  SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
+  -- Get arrays of IDs (only if tables exist)
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
+    SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
+  END IF;
   
-  FOR i IN 1..20 LOOP
-    profile_id := profile_ids[1 + (i % array_length(profile_ids, 1))];
+  -- Only insert if we have profiles and positioning_feedback table exists
+  IF profile_ids IS NOT NULL 
+     AND array_length(profile_ids, 1) > 0
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'positioning_feedback')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'positioning_feedback' AND column_name = 'user_id') THEN
+    FOR i IN 1..20 LOOP
+      profile_id := profile_ids[1 + ((i - 1) % array_length(profile_ids, 1))];
     
     INSERT INTO positioning_feedback (
       user_id,
@@ -193,7 +240,8 @@ BEGIN
       NOW() - (random() * INTERVAL '14 days')
     )
     ON CONFLICT DO NOTHING;
-  END LOOP;
+    END LOOP;
+  END IF;
 END $$;
 
 -- ============================================================================
@@ -208,15 +256,30 @@ DECLARE
   feedback_id UUID;
   i INTEGER;
 BEGIN
-  SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
-  SELECT ARRAY_AGG(id) INTO feedback_ids FROM positioning_feedback LIMIT 10;
+  -- Only proceed if profiles table exists and has data
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
+    SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
+  END IF;
   
-  FOR i IN 1..30 LOOP
-    profile_id := profile_ids[1 + (i % array_length(profile_ids, 1))];
-    feedback_id := feedback_ids[1 + (i % array_length(feedback_ids, 1))];
-    
-    INSERT INTO notifications (
-      user_id,
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'positioning_feedback') THEN
+    SELECT ARRAY_AGG(id) INTO feedback_ids FROM positioning_feedback LIMIT 10;
+  END IF;
+  
+  -- Only insert notifications if we have profiles and notifications table exists
+  IF profile_ids IS NOT NULL 
+     AND array_length(profile_ids, 1) > 0
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notifications')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'notifications' AND column_name = 'user_id') THEN
+    FOR i IN 1..30 LOOP
+      profile_id := profile_ids[1 + ((i - 1) % array_length(profile_ids, 1))];
+      IF feedback_ids IS NOT NULL AND array_length(feedback_ids, 1) > 0 THEN
+        feedback_id := feedback_ids[1 + ((i - 1) % array_length(feedback_ids, 1))];
+      ELSE
+        feedback_id := NULL;
+      END IF;
+      
+      INSERT INTO notifications (
+        user_id,
       notification_type,
       title,
       message,
@@ -225,7 +288,7 @@ BEGIN
       read,
       created_at
     ) VALUES (
-      profile_id,
+      COALESCE(profile_id, (SELECT id FROM profiles LIMIT 1)),
       CASE (i % 3)
         WHEN 0 THEN 'impact_score_update'
         WHEN 1 THEN 'new_post'
@@ -254,7 +317,8 @@ BEGIN
       NOW() - (random() * INTERVAL '7 days')
     )
     ON CONFLICT DO NOTHING;
-  END LOOP;
+    END LOOP;
+  END IF;
 END $$;
 
 COMMIT;

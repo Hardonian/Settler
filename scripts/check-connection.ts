@@ -54,8 +54,11 @@ async function checkConnection() {
     const supabaseUrl = process.env.SUPABASE_URL;
     const hostMatch = supabaseUrl.match(/https?:\/\/([^.]+)\.supabase\.co/);
     if (hostMatch) {
-      const host = `${hostMatch[1]}.supabase.co`;
-      connectionString = `postgresql://postgres:${process.env.SUPABASE_DB_PASSWORD}@${host}:5432/postgres`;
+      const projectRef = hostMatch[1];
+      // Use session pooler format for IPv4 connectivity
+      const region = process.env.DB_REGION || 'us-west-2';
+      const host = `aws-0-${region}.pooler.supabase.com`;
+      connectionString = `postgresql://postgres.${projectRef}:${process.env.SUPABASE_DB_PASSWORD}@${host}:5432/postgres`;
     }
   } else {
     connectionString = 'postgresql://postgres:postgres@localhost:54322/postgres';

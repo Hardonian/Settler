@@ -35,13 +35,37 @@ CREATE TABLE IF NOT EXISTS recon_jobs (
   deleted_at TIMESTAMPTZ
 );
 
-CREATE INDEX IF NOT EXISTS idx_recon_jobs_tenant_id ON recon_jobs(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_recon_jobs_user_id ON recon_jobs(user_id);
-CREATE INDEX IF NOT EXISTS idx_recon_jobs_status ON recon_jobs(status);
-CREATE INDEX IF NOT EXISTS idx_recon_jobs_template_id ON recon_jobs(template_id);
-CREATE INDEX IF NOT EXISTS idx_recon_jobs_active ON recon_jobs(tenant_id) WHERE status = 'active' AND deleted_at IS NULL;
-CREATE INDEX IF NOT EXISTS idx_recon_jobs_schedule ON recon_jobs(tenant_id, schedule_cron) WHERE schedule_cron IS NOT NULL AND status = 'active';
-CREATE INDEX IF NOT EXISTS idx_recon_jobs_metadata_gin ON recon_jobs USING GIN (metadata);
+-- Create indexes conditionally for recon_jobs
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'recon_jobs') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'tenant_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_jobs_tenant_id ON recon_jobs(tenant_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'user_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_jobs_user_id ON recon_jobs(user_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'status') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_jobs_status ON recon_jobs(status)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'template_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_jobs_template_id ON recon_jobs(template_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'tenant_id')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'status')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'deleted_at') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_jobs_active ON recon_jobs(tenant_id) WHERE status = ''active'' AND deleted_at IS NULL';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'tenant_id')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'schedule_cron')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'status') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_jobs_schedule ON recon_jobs(tenant_id, schedule_cron) WHERE schedule_cron IS NOT NULL AND status = ''active''';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_jobs' AND column_name = 'metadata') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_jobs_metadata_gin ON recon_jobs USING GIN (metadata)';
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- RECON RESULTS TABLE
@@ -113,11 +137,50 @@ CREATE TABLE IF NOT EXISTS recon_templates (
   deleted_at TIMESTAMPTZ
 );
 
-CREATE INDEX IF NOT EXISTS idx_recon_templates_tenant_id ON recon_templates(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_recon_templates_category ON recon_templates(category);
-CREATE INDEX IF NOT EXISTS idx_recon_templates_public ON recon_templates(is_public, category) WHERE is_public = true AND deleted_at IS NULL;
-CREATE INDEX IF NOT EXISTS idx_recon_templates_adapter_types ON recon_templates(source_adapter_type, target_adapter_type);
-CREATE INDEX IF NOT EXISTS idx_recon_templates_metadata_gin ON recon_templates USING GIN (metadata);
+-- Add missing columns if table exists with partial schema
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'recon_templates') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'is_public') THEN
+      ALTER TABLE recon_templates ADD COLUMN is_public BOOLEAN DEFAULT false;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'is_system') THEN
+      ALTER TABLE recon_templates ADD COLUMN is_system BOOLEAN DEFAULT false;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'usage_count') THEN
+      ALTER TABLE recon_templates ADD COLUMN usage_count INTEGER DEFAULT 0;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'deleted_at') THEN
+      ALTER TABLE recon_templates ADD COLUMN deleted_at TIMESTAMPTZ;
+    END IF;
+  END IF;
+END $$;
+
+-- Create indexes conditionally
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'recon_templates') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'category') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_templates_category ON recon_templates(category)';
+    END IF;
+    -- Check for is_public column before creating index
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'is_public') THEN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'category')
+         AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'deleted_at') THEN
+        EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_templates_public ON recon_templates(is_public, category) WHERE is_public = true AND deleted_at IS NULL';
+      ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'is_public') THEN
+        EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_templates_public_simple ON recon_templates(is_public) WHERE is_public = true';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'source_adapter_type')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'target_adapter_type') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_templates_adapter_types ON recon_templates(source_adapter_type, target_adapter_type)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'recon_templates' AND column_name = 'metadata') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_recon_templates_metadata_gin ON recon_templates USING GIN (metadata)';
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- RECON AUDITS TABLE
