@@ -46,12 +46,13 @@ function getConnectionString(): string {
       const hostMatch = supabaseUrl.match(/https?:\/\/([^.]+)\.supabase\.co/);
       if (hostMatch) {
         const projectRef = hostMatch[1];
-        // Try transaction pooler first (better connectivity, port 6543)
-        // Format: postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
-        // For now, try direct connection with db. prefix
-        const host = `db.${projectRef}.supabase.co`;
-        const port = process.env.DB_PORT || '5432';
-        return `postgresql://postgres:${process.env.SUPABASE_DB_PASSWORD}@${host}:${port}/postgres`;
+        // Use session pooler (port 5432) for IPv4 connectivity
+        // Format: postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres
+        // Default to us-west-2, but can be overridden via DB_REGION env var
+        const region = process.env.DB_REGION || 'us-west-2';
+        const host = `aws-0-${region}.pooler.supabase.com`;
+        const port = '5432'; // Session pooler port
+        return `postgresql://postgres.${projectRef}:${process.env.SUPABASE_DB_PASSWORD}@${host}:${port}/postgres`;
       }
     }
     
@@ -178,31 +179,13 @@ async function runMigrations(): Promise<MigrationResult[]> {
     console.log('   For local Supabase: Make sure Supabase is running locally (supabase start)');
   }
 
-  // Parse connection string to handle IPv6 issues
+  // Parse connection string to handle IPv4 connectivity
   let parsedConnection = connectionString;
   
-  // If using pooler hostname, resolve to IPv4 to avoid IPv6 issues
+  // Session pooler connections (port 5432) already use IPv4-friendly hostnames
+  // No need to resolve DNS - pooler handles IPv4/IPv6 routing automatically
   if (connectionString.includes('pooler.supabase.com')) {
-    try {
-      const dns = require('dns');
-      const { promisify } = require('util');
-      const resolve4 = promisify(dns.resolve4);
-      
-      // Extract hostname from connection string
-      const hostMatch = connectionString.match(/@([^:]+):/);
-      if (hostMatch) {
-        const hostname = hostMatch[1];
-        const ipv4 = await resolve4(hostname);
-        if (ipv4 && ipv4[0]) {
-          // Replace hostname with IPv4 address
-          parsedConnection = connectionString.replace(hostname, ipv4[0]);
-          console.log(`   Resolved ${hostname} to IPv4: ${ipv4[0]}`);
-        }
-      }
-    } catch (error) {
-      // If resolution fails, use original connection string
-      console.log(`   Could not resolve to IPv4, using original hostname`);
-    }
+    console.log(`   Using session pooler connection (IPv4 compatible)`);
   }
 
   const pool = new Pool({

@@ -173,11 +173,14 @@ function constructSupabaseUrl(env: Record<string, string>): string | null {
   const hostMatch = env.SUPABASE_URL.match(/https?:\/\/([^.]+)\.supabase\.co/);
   if (!hostMatch) return null;
 
-  const host = `db.${hostMatch[1]}.supabase.co`;
+  // Use session pooler format for IPv4 connectivity
+  const projectRef = hostMatch[1];
+  const region = env.DB_REGION || 'us-west-2';
+  const host = `aws-0-${region}.pooler.supabase.com`;
   const password = env.SUPABASE_DB_PASSWORD || env.DB_PASSWORD;
   if (!password) return null;
 
-  return `postgresql://postgres:${password}@${host}:5432/postgres?sslmode=require`;
+  return `postgresql://postgres.${projectRef}:${password}@${host}:5432/postgres?sslmode=require`;
 }
 
 function determineMode(file: string, url: string): "LIVE/PROD" | "STAGING/DEV" {

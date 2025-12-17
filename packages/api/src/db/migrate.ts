@@ -141,11 +141,15 @@ async function initializeSupabaseExtensions(): Promise<void> {
       if (process.env.SUPABASE_DB_PASSWORD) {
         const supabaseUrl = process.env.SUPABASE_URL || '';
         const hostMatch = supabaseUrl.match(/https?:\/\/([^.]+)\.supabase\.co/);
-        const host = hostMatch 
-          ? `${hostMatch[1]}.supabase.co`
-          : config.database.host;
-        
-        connectionString = `postgresql://postgres:${process.env.SUPABASE_DB_PASSWORD}@${host}:${config.database.port || 5432}/postgres`;
+        if (hostMatch) {
+          const projectRef = hostMatch[1];
+          // Use session pooler format: postgres.[project-ref]@aws-0-[region].pooler.supabase.com:5432
+          const region = process.env.DB_REGION || 'us-west-2';
+          const host = `aws-0-${region}.pooler.supabase.com`;
+          connectionString = `postgresql://postgres.${projectRef}:${process.env.SUPABASE_DB_PASSWORD}@${host}:5432/postgres`;
+        } else {
+          connectionString = `postgresql://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.name}`;
+        }
       } else {
         connectionString = `postgresql://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.name}`;
       }
