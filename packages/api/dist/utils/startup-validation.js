@@ -42,6 +42,7 @@ const config_1 = require("../config");
 const db_1 = require("../db");
 const cache_1 = require("./cache");
 const logger_1 = require("./logger");
+const schema_validation_1 = require("./schema-validation");
 // Import env schema functions - using require to avoid rootDir issues
 const envSchema = require('../../../../config/env.schema');
 const getRequiredEnvVars = envSchema.getRequiredEnvVars;
@@ -213,6 +214,22 @@ async function validateStartup() {
     try {
         const dbResult = await validateDatabase();
         results.push(dbResult);
+        // Schema validation (after database connection is established)
+        try {
+            await (0, schema_validation_1.validateSchema)();
+            results.push({
+                name: 'schema',
+                status: 'ok',
+                message: 'Database schema validated successfully',
+            });
+        }
+        catch (error) {
+            results.push({
+                name: 'schema',
+                status: 'error',
+                message: `Schema validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            });
+        }
     }
     catch (error) {
         results.push({

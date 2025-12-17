@@ -18,7 +18,7 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co https://*.upstash.io https://vercel.live wss://*.supabase.co",
+    "connect-src 'self' https://*.supabase.co https://*.upstash.io https://vercel.live https://status.settler.dev wss://*.supabase.co",
     "frame-src 'self' https://vercel.live",
     "object-src 'none'",
     "base-uri 'self'",

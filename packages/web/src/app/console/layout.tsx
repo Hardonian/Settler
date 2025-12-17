@@ -59,16 +59,38 @@ export default async function ConsoleRootLayout({
   }
 
   try {
-    // Check authentication
-    const supabase = await createClient();
-    const authResult = await supabase.auth.getUser();
-    const { data: { user }, error } = authResult;
+    // Check authentication with timeout to prevent hanging
+    let supabase;
+    let authResult;
+    let user;
+    let authError;
     
-    if (error) {
+    try {
+      supabase = await createClient();
+      // Wrap auth check in timeout
+      authResult = await Promise.race([
+        supabase.auth.getUser(),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Auth check timeout')), 10000)
+        ),
+      ]);
+      
+      user = authResult.data?.user;
+      authError = authResult.error;
+    } catch (authCheckError) {
       console.warn('[Console Layout] Auth check failed', {
         ...logContext,
-        error: error.message,
-        code: error.status,
+        error: authCheckError instanceof Error ? authCheckError.message : 'Unknown error',
+      });
+      authError = authCheckError as any;
+      user = null;
+    }
+    
+    if (authError) {
+      console.warn('[Console Layout] Auth check failed', {
+        ...logContext,
+        error: authError instanceof Error ? authError.message : authError?.message || 'Unknown error',
+        code: authError?.status,
       });
     } else if (user) {
       console.log('[Console Layout] User authenticated', {
@@ -81,7 +103,7 @@ export default async function ConsoleRootLayout({
 
     // If user is not authenticated, show public overview
     // Note: Playground routes have their own layout that handles unauthenticated access
-    if (error || !user) {
+    if (authError || !user) {
       return (
         <>
           <Navigation />

@@ -116,24 +116,44 @@ async function ConsoleOverviewContent() {
       );
     }
 
-  // Get billing account with error handling
+  // Get billing account with comprehensive error handling
   let billingAccount;
   try {
     // Check if Prisma is available and database is accessible
     if (!prisma || typeof prisma.billingAccount === 'undefined') {
-      throw new Error('Prisma client not properly initialized');
+      console.warn('[Console] Prisma client not available, using fallback');
+      // Continue without billing account - use user.id as fallback
+      billingAccount = null;
+    } else {
+      // Wrap Prisma call in additional try-catch to handle connection errors
+      try {
+        billingAccount = await Promise.race([
+          prisma.billingAccount.findFirst({
+            where: { userId: user.id },
+          }),
+          // Timeout after 5 seconds
+          new Promise<never>((_, reject) => 
+            setTimeout(() => reject(new Error('Database query timeout')), 5000)
+          ),
+        ]);
+      } catch (prismaError) {
+        console.error('[Console] Prisma query failed:', prismaError);
+        // Don't throw - continue with null billingAccount
+        billingAccount = null;
+      }
     }
-    
-    billingAccount = await prisma.billingAccount.findFirst({
-      where: { userId: user.id },
-    });
   } catch (error) {
     console.error('[Console] Failed to fetch billing account:', error);
-    // Return safe fallback UI instead of crashing
+    // Don't return early - continue with null billingAccount
+    billingAccount = null;
+  }
+  
+  // If Prisma completely failed, show a helpful message but don't crash
+  if (!billingAccount && (!prisma || typeof prisma.billingAccount === 'undefined')) {
     return (
       <div className="text-center py-12">
         <p className="text-slate-600 dark:text-slate-400 mb-4">
-          Unable to load billing information. Please try again or contact support.
+          Database connection unavailable. Some features may be limited.
         </p>
         <div className="flex gap-2 justify-center">
           <Button asChild>
@@ -147,25 +167,28 @@ async function ConsoleOverviewContent() {
     );
   }
 
-  if (!billingAccount) {
+  if (!billingAccount && prisma && typeof prisma.billingAccount !== 'undefined') {
     // Create billing account automatically if missing (graceful degradation)
     try {
-      // Check if Prisma is available before attempting to create
-      if (!prisma || typeof prisma.billingAccount === 'undefined') {
-        throw new Error('Prisma client not properly initialized');
-      }
-      
-      billingAccount = await prisma.billingAccount.create({
-        data: {
-          userId: user.id,
-          email: user.email || '',
-          status: 'active',
-        },
-      });
+      // Wrap in timeout to prevent hanging
+      billingAccount = await Promise.race([
+        prisma.billingAccount.create({
+          data: {
+            userId: user.id,
+            email: user.email || '',
+            status: 'active',
+          },
+        }),
+        // Timeout after 5 seconds
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Database create timeout')), 5000)
+        ),
+      ]);
     } catch (createError) {
       console.error('[Console] Failed to create billing account:', createError);
       // Don't crash - continue with null billingAccount and handle gracefully below
       // The domain functions will handle missing billingAccount gracefully
+      billingAccount = null;
     }
   }
   
