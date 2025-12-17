@@ -126,6 +126,36 @@
     "comment": "Redis connection URL (fallback)"
   },
   {
+    "key": "IP_RPM",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_IP_RPM]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Rate limit per IP (requests per minute) for auth_edge_guard"
+  },
+  {
+    "key": "USER_RPM",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_USER_RPM]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Rate limit per user (requests per minute) for auth_edge_guard"
+  },
+  {
+    "key": "CACHE_MAX_AGE",
+    "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_CACHE_MAX_AGE]",
+    "type": "encrypted",
+    "target": [
+      "production",
+      "preview"
+    ],
+    "comment": "Authentication cache TTL in seconds for auth_edge_guard"
+  },
+  {
     "key": "RESEND_API_KEY",
     "value": "[REPLACE_WITH_VALUE_FROM_GITHUB_SECRET_RESEND_API_KEY]",
     "type": "encrypted",

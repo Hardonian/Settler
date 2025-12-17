@@ -23,9 +23,46 @@ jobs:
         with:
           version: latest
 
+      - name: Set Supabase Secrets (if needed)
+        run: |
+          supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          
+          # Set secrets for auth_edge_guard function
+          # Note: These secrets should already be set, but this ensures they're up to date
+          if [ -n "${{ secrets.UPSTASH_REDIS_REST_URL }}" ]; then
+            echo "Setting UPSTASH_REDIS_REST_URL..."
+            supabase secrets set UPSTASH_REDIS_REST_URL="${{ secrets.UPSTASH_REDIS_REST_URL }}" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} || true
+          fi
+          
+          if [ -n "${{ secrets.UPSTASH_REDIS_REST_TOKEN }}" ]; then
+            echo "Setting UPSTASH_REDIS_REST_TOKEN..."
+            supabase secrets set UPSTASH_REDIS_REST_TOKEN="${{ secrets.UPSTASH_REDIS_REST_TOKEN }}" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} || true
+          fi
+          
+          if [ -n "${{ secrets.IP_RPM }}" ]; then
+            echo "Setting IP_RPM..."
+            supabase secrets set IP_RPM="${{ secrets.IP_RPM }}" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} || true
+          fi
+          
+          if [ -n "${{ secrets.USER_RPM }}" ]; then
+            echo "Setting USER_RPM..."
+            supabase secrets set USER_RPM="${{ secrets.USER_RPM }}" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} || true
+          fi
+          
+          if [ -n "${{ secrets.CACHE_MAX_AGE }}" ]; then
+            echo "Setting CACHE_MAX_AGE..."
+            supabase secrets set CACHE_MAX_AGE="${{ secrets.CACHE_MAX_AGE }}" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} || true
+          fi
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+
       - name: Deploy Edge Functions
         run: |
           supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          
+          # Deploy authentication and rate limiting function
+          supabase functions deploy auth_edge_guard --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
           
           # Deploy all billing-related edge functions
           supabase functions deploy log-usage --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
