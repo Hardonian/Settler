@@ -47,7 +47,7 @@ export async function validateSchema(): Promise<void> {
         [table]
       );
 
-      const exists = result[0]?.exists ?? false;
+      const exists = result[0]?.exists || false;
       checks.push({ table, exists });
 
       if (exists) {
@@ -60,7 +60,10 @@ export async function validateSchema(): Promise<void> {
            ORDER BY ordinal_position`,
           [table]
         );
-        checks[checks.length - 1].columns = columns.map(c => c.column_name);
+        const lastCheck = checks[checks.length - 1];
+        if (lastCheck) {
+          lastCheck.columns = columns.map(c => c.column_name);
+        }
       }
     } catch (error) {
       logError(`Failed to check table ${table}`, error);
@@ -81,7 +84,7 @@ export async function validateSchema(): Promise<void> {
   const migrationsCheck = await query<{ count: string }>(
     `SELECT COUNT(*) as count FROM schema_migrations`
   );
-  const migrationCount = parseInt(migrationsCheck[0]?.count ?? '0', 10);
+  const migrationCount = parseInt((migrationsCheck[0]?.count || '0'), 10);
 
   logInfo('Schema validation passed', {
     tablesChecked: checks.length,
@@ -92,7 +95,7 @@ export async function validateSchema(): Promise<void> {
   logInfo('Database schema summary', {
     tables: checks.map(c => ({
       name: c.table,
-      columns: c.columns?.length ?? 0,
+      columns: (c.columns?.length || 0),
     })),
   });
 }
