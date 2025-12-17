@@ -139,6 +139,31 @@ const ENV_MAPPINGS: EnvVarMapping[] = [
     environments: ['production', 'preview'],
     description: 'Redis connection URL (fallback)',
   },
+  // Rate Limiting (auth_edge_guard)
+  {
+    githubSecret: 'IP_RPM',
+    vercelKey: 'IP_RPM',
+    isPublic: false,
+    required: false,
+    environments: ['production', 'preview'],
+    description: 'Rate limit per IP (requests per minute) for auth_edge_guard',
+  },
+  {
+    githubSecret: 'USER_RPM',
+    vercelKey: 'USER_RPM',
+    isPublic: false,
+    required: false,
+    environments: ['production', 'preview'],
+    description: 'Rate limit per user (requests per minute) for auth_edge_guard',
+  },
+  {
+    githubSecret: 'CACHE_MAX_AGE',
+    vercelKey: 'CACHE_MAX_AGE',
+    isPublic: false,
+    required: false,
+    environments: ['production', 'preview'],
+    description: 'Authentication cache TTL in seconds for auth_edge_guard',
+  },
   // Email
   {
     githubSecret: 'RESEND_API_KEY',
