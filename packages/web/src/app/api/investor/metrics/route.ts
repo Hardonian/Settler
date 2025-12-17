@@ -6,6 +6,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // TODO: Replace with actual database queries
 // This is a mock implementation for demonstration
 async function getInvestorMetrics() {

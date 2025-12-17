@@ -159,7 +159,8 @@ export function requireEnvironment(): void {
     }
   }
 
-  if (result.warnings.length > 0) {
+  if (result.warnings.length > 0 && !isBuild) {
+    // Only show warnings at runtime, not during build (to reduce build log noise)
     console.warn('⚠️  Environment validation warnings:');
     result.warnings.forEach((warning) => console.warn(`  - ${warning}`));
   }
