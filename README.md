@@ -97,7 +97,7 @@ Access the Console at `/console` after signing up. See [Console Documentation](d
    - `UPSTASH_REDIS_REST_URL` - Redis REST URL
    - `UPSTASH_REDIS_REST_TOKEN` - Redis REST token
    
-   See [Setup Guide](SETUP_GUIDE.md) for complete configuration.
+   See [Getting Started Guide](docs/GETTING_STARTED.md) for complete configuration.
 
 4. **Start local services** (optional):
    ```bash
@@ -133,7 +133,7 @@ Access the Console at `/console` after signing up. See [Console Documentation](d
 3. Access Console at `/console`
 4. Create API keys, monitor usage, manage resources
 
-See [Setup Guide](SETUP_GUIDE.md) for detailed instructions.
+See [Getting Started Guide](docs/GETTING_STARTED.md) for detailed instructions.
 
 ### Enterprise Deployment
 
@@ -162,12 +162,13 @@ Usage is tracked for reconciliation operations, receipt parsing, and feature fla
 ### Developer Console
 - **[Console Complete Guide](docs/CONSOLE_COMPLETE.md)**: Full Console documentation
 - **[Console Integration](docs/SDK_CLI_CONSOLE_INTEGRATION.md)**: Console integration guide
-- **[Console Setup](CONSOLE_SETUP_GUIDE.md)**: Console setup and configuration
+- **[Console Setup](docs/CONSOLE_COMPLETE.md)**: Console setup and configuration
 
 ### Setup & Deployment
+- **[Getting Started](docs/GETTING_STARTED.md)**: Quick setup instructions
 - **[Automatic Migrations](docs/AUTOMATIC_MIGRATIONS.md)**: Database migration automation
-- **[Quick Start Guide](QUICK_START_GUIDE.md)**: Quick setup instructions
 - **[GitHub Secrets Setup](docs/GITHUB_SECRETS_SETUP.md)**: CI/CD configuration
+- **[Deployment Guide](docs/DEPLOYMENT.md)**: Production deployment instructions
 
 Full documentation is also available at [settler.dev/docs](https://settler.dev/docs).
 
@@ -182,7 +183,7 @@ The **Developer Console** (`/console`) provides a unified interface for managing
 - ✅ **Real-time Feed** - Live activity monitoring
 - ✅ **Never Returns 500** - Graceful error handling
 
-See [Console Setup Guide](CONSOLE_SETUP_GUIDE.md) and [Console Integration](docs/SDK_CLI_CONSOLE_INTEGRATION.md).
+See [Console Documentation](docs/CONSOLE_COMPLETE.md) and [Console Integration](docs/SDK_CLI_CONSOLE_INTEGRATION.md).
 
 ## Production Readiness
 
@@ -274,3 +275,5 @@ To report a security vulnerability, please see [SECURITY.md](SECURITY.md).
 ## License
 
 This is proprietary software. All rights reserved.
+
+See [LICENSE](LICENSE) for full license terms. For licensing details including open source components, see [Licensing Overview](docs/LICENSING_OVERVIEW.md).
