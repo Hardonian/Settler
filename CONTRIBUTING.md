@@ -1,6 +1,6 @@
-# Contributing to Settler
+# Contributing to Settler Enterprise
 
-Thank you for contributing to Settler! This guide will help you get started.
+Thank you for your interest in contributing to Settler Enterprise! This document provides guidelines and instructions for contributing to the enterprise platform.
 
 ## Developer Console
 
