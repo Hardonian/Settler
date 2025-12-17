@@ -13,6 +13,7 @@
     "test:e2e": "playwright test",
     "test:smoke": "tsx scripts/smoke-test.ts",
     "test:smoke:console": "playwright test tests/e2e/console-smoke.spec.ts",
+    "diagnose:console": "tsx scripts/diagnose-console-backend.ts",
     "verify:schema": "tsx scripts/verify-schema.ts",
     "verify:contracts": "tsx scripts/check-contract-compatibility.ts",
     "monitor:errors": "tsx scripts/monitor-api-errors.ts",
