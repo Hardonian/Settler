@@ -98,7 +98,17 @@ CREATE INDEX IF NOT EXISTS idx_api_keys_prefix ON api_keys(key_prefix);
 CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
 CREATE INDEX IF NOT EXISTS idx_api_keys_revoked ON api_keys(revoked_at);
 CREATE INDEX IF NOT EXISTS idx_api_keys_tenant_id ON api_keys(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_api_keys_active_tenant ON api_keys(tenant_id, created_at DESC) WHERE revoked_at IS NULL;
+-- Create index conditionally (WHERE clause requires column to exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'api_keys') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'api_keys' AND column_name = 'tenant_id')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'api_keys' AND column_name = 'created_at')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'api_keys' AND column_name = 'revoked_at') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_api_keys_active_tenant ON api_keys(tenant_id, created_at DESC) WHERE revoked_at IS NULL';
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- 4. JOBS TABLE
@@ -157,8 +167,18 @@ CREATE INDEX IF NOT EXISTS idx_executions_status ON executions(status);
 CREATE INDEX IF NOT EXISTS idx_executions_tenant_id ON executions(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_executions_tenant_status_started ON executions(tenant_id, status, started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_executions_job_status_started ON executions(job_id, status, started_at DESC);
-CREATE INDEX IF NOT EXISTS idx_executions_running_tenant_started ON executions(tenant_id, started_at DESC) WHERE status = 'running';
-CREATE INDEX IF NOT EXISTS idx_executions_failed_tenant_started ON executions(tenant_id, started_at DESC) WHERE status = 'failed';
+-- Create indexes conditionally
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'executions') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'executions' AND column_name = 'tenant_id')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'executions' AND column_name = 'started_at')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'executions' AND column_name = 'status') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_executions_running_tenant_started ON executions(tenant_id, started_at DESC) WHERE status = ''running''';
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_executions_failed_tenant_started ON executions(tenant_id, started_at DESC) WHERE status = ''failed''';
+    END IF;
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_executions_summary_gin ON executions USING GIN (summary);
 CREATE INDEX IF NOT EXISTS idx_executions_list_covering ON executions(tenant_id, started_at DESC) INCLUDE (id, job_id, status, completed_at);
 CREATE INDEX IF NOT EXISTS idx_executions_cursor_pagination ON executions(tenant_id, started_at DESC, id DESC);
@@ -255,7 +275,17 @@ CREATE TABLE IF NOT EXISTS webhooks (
 CREATE INDEX IF NOT EXISTS idx_webhooks_user_id ON webhooks(user_id);
 CREATE INDEX IF NOT EXISTS idx_webhooks_status ON webhooks(status);
 CREATE INDEX IF NOT EXISTS idx_webhooks_tenant_id ON webhooks(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_webhooks_active_tenant ON webhooks(tenant_id, created_at DESC) WHERE status = 'active';
+-- Create index conditionally
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'webhooks') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhooks' AND column_name = 'tenant_id')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhooks' AND column_name = 'created_at')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhooks' AND column_name = 'status') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_webhooks_active_tenant ON webhooks(tenant_id, created_at DESC) WHERE status = ''active''';
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- 10. WEBHOOK PAYLOADS TABLE
@@ -299,8 +329,21 @@ CREATE TABLE IF NOT EXISTS webhook_deliveries (
 
 CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_webhook_id ON webhook_deliveries(webhook_id);
 CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_status ON webhook_deliveries(status);
-CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_retry ON webhook_deliveries(next_retry_at) WHERE status = 'failed';
-CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_pending_retry ON webhook_deliveries(webhook_id, next_retry_at) WHERE status = 'failed' AND next_retry_at IS NOT NULL;
+-- Create indexes conditionally
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'webhook_deliveries') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhook_deliveries' AND column_name = 'next_retry_at')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhook_deliveries' AND column_name = 'status') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_retry ON webhook_deliveries(next_retry_at) WHERE status = ''failed''';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhook_deliveries' AND column_name = 'webhook_id')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhook_deliveries' AND column_name = 'next_retry_at')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhook_deliveries' AND column_name = 'status') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_pending_retry ON webhook_deliveries(webhook_id, next_retry_at) WHERE status = ''failed'' AND next_retry_at IS NOT NULL';
+    END IF;
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_payload_gin ON webhook_deliveries USING GIN (payload);
 
 -- ============================================================================
@@ -360,7 +403,18 @@ CREATE TABLE IF NOT EXISTS idempotency_keys (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_idempotency_user_key ON idempotency_keys(user_id, key);
 CREATE INDEX IF NOT EXISTS idx_idempotency_expires ON idempotency_keys(expires_at);
 CREATE INDEX IF NOT EXISTS idx_idempotency_tenant_id ON idempotency_keys(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_idempotency_keys_active_tenant ON idempotency_keys(tenant_id, created_at DESC) WHERE expires_at > NOW();
+-- Note: Cannot use NOW() in index predicate (not IMMUTABLE), filter by expires_at > NOW() in queries instead
+-- Create index conditionally (WHERE clause requires column to exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'idempotency_keys') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'idempotency_keys' AND column_name = 'tenant_id')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'idempotency_keys' AND column_name = 'created_at')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'idempotency_keys' AND column_name = 'expires_at') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_idempotency_keys_active_tenant ON idempotency_keys(tenant_id, created_at DESC) WHERE expires_at IS NOT NULL';
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- 15. SECURITY TABLES
@@ -391,7 +445,16 @@ CREATE TABLE IF NOT EXISTS blocked_ips (
 
 CREATE INDEX IF NOT EXISTS idx_blocked_ips_ip ON blocked_ips(ip);
 CREATE INDEX IF NOT EXISTS idx_blocked_ips_tenant_id ON blocked_ips(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_blocked_ips_active ON blocked_ips(ip) WHERE unblocked_at IS NULL;
+-- Create index conditionally
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'blocked_ips') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'blocked_ips' AND column_name = 'ip')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'blocked_ips' AND column_name = 'unblocked_at') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_blocked_ips_active ON blocked_ips(ip) WHERE unblocked_at IS NULL';
+    END IF;
+  END IF;
+END $$;
 
 -- Security events table (enhanced audit logging)
 CREATE TABLE IF NOT EXISTS security_events (
