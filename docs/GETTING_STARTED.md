@@ -207,7 +207,7 @@ Just use the web interface at `/console` - no code needed!
 
 - [Console Complete Guide](CONSOLE_COMPLETE.md)
 - [SDK/CLI/Console Integration](SDK_CLI_CONSOLE_INTEGRATION.md)
-- [Setup Guide](../SETUP_GUIDE.md)
+- [Getting Started Guide](GETTING_STARTED.md) (this document)
 - [API Reference](api.md)
 - [Architecture](ARCHITECTURE.md)
 

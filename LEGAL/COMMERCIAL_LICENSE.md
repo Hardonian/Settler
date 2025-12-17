@@ -90,7 +90,11 @@ OSS Components remain licensed under MIT License and may be used freely, subject
 
 Licensor's liability limited to fees paid in the 12 months preceding the claim.
 
-## 10. Contact
+## 10. Governing Law
+
+This Agreement is governed by the laws of the United States and the State of Delaware, and the laws of Canada (federal and provincial), without regard to conflict of law principles. For disputes involving Canadian customers, the laws of Canada and the province of Ontario shall apply. For disputes involving United States customers, the laws of the United States and the State of Delaware shall apply.
+
+## 11. Contact
 
 **Email:** legal@settler.dev
 

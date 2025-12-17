@@ -248,7 +248,7 @@ You agree to indemnify Settler against claims arising from:
 
 ## 15. Governing Law
 
-These Terms are governed by the laws of [Jurisdiction], without regard to conflict of law principles.
+These Terms are governed by the laws of the United States and the State of Delaware, and the laws of Canada (federal and provincial), without regard to conflict of law principles. For disputes involving Canadian customers, the laws of Canada and the province of Ontario shall apply. For disputes involving United States customers, the laws of the United States and the State of Delaware shall apply.
 
 ## 16. Changes to Terms
 
@@ -258,7 +258,7 @@ Settler may modify these Terms with 30 days' notice. Continued use after changes
 
 For questions about these Terms:
 - **Email:** legal@settler.dev
-- **Address:** [Company Address]
+- **Address:** Settler, Inc., Delaware, United States
 
 ## 18. Entire Agreement
 

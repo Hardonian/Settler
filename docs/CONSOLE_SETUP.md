@@ -203,5 +203,5 @@ supabase db push
 
 - [Console Complete Guide](CONSOLE_COMPLETE.md)
 - [SDK/CLI/Console Integration](SDK_CLI_CONSOLE_INTEGRATION.md)
-- [Setup Guide](../SETUP_GUIDE.md)
+- [Getting Started Guide](GETTING_STARTED.md)
 - [API Reference](api.md)

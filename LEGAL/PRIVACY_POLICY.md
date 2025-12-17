@@ -94,7 +94,9 @@ We may update this Privacy Policy with notice. Continued use after changes const
 
 For privacy questions:
 - **Email:** privacy@settler.dev
-- **Address:** [Company Address]
+- **Address:** Settler, Inc., Delaware, United States
+
+**Canadian Privacy Rights:** If you are located in Canada, you have additional rights under the Personal Information Protection and Electronic Documents Act (PIPEDA). You may contact our Privacy Officer at privacy@settler.dev to exercise these rights.
 
 ---
 

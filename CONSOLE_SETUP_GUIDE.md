@@ -54,7 +54,7 @@ Required:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `DATABASE_URL`
 
-See [Setup Guide](SETUP_GUIDE.md) for details.
+See [Getting Started Guide](docs/GETTING_STARTED.md) for details.
 
 ## Database Migrations
 
@@ -114,7 +114,7 @@ supabase db push
 
 - [Console Complete Guide](docs/CONSOLE_COMPLETE.md)
 - [SDK/CLI Integration](docs/SDK_CLI_CONSOLE_INTEGRATION.md)
-- [Setup Guide](SETUP_GUIDE.md)
+- [Getting Started Guide](docs/GETTING_STARTED.md)
 
 ## Support
 
