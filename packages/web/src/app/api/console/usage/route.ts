@@ -10,6 +10,8 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { getCurrentUsage } from '@/lib/usage/tracking';
 import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
+import { getBillingAccountOptimized } from '@/lib/db/query-optimizer';
+import { executeWithRetry } from '@/lib/db/connection-pool';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -51,11 +53,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get billing account
-    const billingAccount = await prisma.billingAccount.findFirst({
-      where: { userId: user.id },
-      select: { id: true },
-    });
+    // Get billing account with optimized query and caching
+    const billingAccount = await getBillingAccountOptimized(user.id, true);
 
     if (!billingAccount) {
       return NextResponse.json(
@@ -81,21 +80,23 @@ export async function GET(request: NextRequest) {
     // Get subscription info for limits (not used but kept for future use)
     // const subscription = await getSubscriptionInfo();
 
-    // Get usage events from database
-    const usageEvents = await prisma.usageEvent.findMany({
-      where: {
-        billingAccountId: billingAccount.id,
-        timestamp: {
-          gte: startDate,
-          lte: endDate,
+    // Get usage events from database with connection pooling and retry
+    const usageEvents = await executeWithRetry(() =>
+      prisma.usageEvent.findMany({
+        where: {
+          billingAccountId: billingAccount.id,
+          timestamp: {
+            gte: startDate,
+            lte: endDate,
+          },
         },
-      },
-      select: {
-        eventType: true,
-        quantity: true,
-        metadata: true,
-      },
-    });
+        select: {
+          eventType: true,
+          quantity: true,
+          metadata: true,
+        },
+      })
+    );
 
     // Aggregate usage by service
     const byService: Record<string, number> = {};

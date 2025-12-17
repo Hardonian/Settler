@@ -1,10 +1,11 @@
 /**
- * Supabase Server Client
+ * Supabase Server Client - Optimized
  *
  * CTO Mode: Deployment Guardrails
  * - Uses @supabase/ssr for proper SSR cookie handling
  * - Safe for use in Server Components, Server Actions, and Route Handlers
  * - NEVER expose service role key to client
+ * - Optimized with connection reuse and error recovery
  */
 
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
@@ -12,10 +13,16 @@ import { cookies } from "next/headers";
 import { Database } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+// Client cache to reuse connections
+let cachedClient: SupabaseClient<Database> | null = null;
+let clientCacheTimestamp = 0;
+const CLIENT_CACHE_TTL = 60000; // 1 minute
+
 /**
  * Get Supabase server client for authenticated requests
  * Uses cookies for session management
  * Gracefully handles errors to prevent page crashes
+ * Optimized with connection reuse
  */
 export async function createClient(): Promise<SupabaseClient<Database>> {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -27,6 +34,12 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
     console.warn("Supabase environment variables not set - some features may not work");
   }
 
+  // Reuse cached client if available and fresh
+  const now = Date.now();
+  if (cachedClient && now - clientCacheTimestamp < CLIENT_CACHE_TTL) {
+    return cachedClient;
+  }
+
   // Get cookie store with error handling
   let cookieStore;
   try {
@@ -34,7 +47,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
   } catch (error) {
     console.error("Failed to get cookies:", error);
     // Return a client with empty cookie handlers if cookies() fails
-    return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+    const fallbackClient = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
       cookies: {
         get() {
           return undefined;
@@ -47,9 +60,13 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
         },
       },
     }) as SupabaseClient<Database>;
+    
+    cachedClient = fallbackClient;
+    clientCacheTimestamp = now;
+    return fallbackClient;
   }
 
-  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+  const client = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
         try {
@@ -79,13 +96,23 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
       },
     },
   }) as SupabaseClient<Database>;
+
+  // Cache the client
+  cachedClient = client;
+  clientCacheTimestamp = now;
+
+  return client;
 }
 
 /**
  * Get Supabase admin client (service role)
  * WARNING: Only use in Server Actions/Route Handlers, never expose to client
  * Gracefully handles errors to prevent crashes
+ * Optimized with connection reuse
  */
+let cachedAdminClient: SupabaseClient<Database> | null = null;
+let adminClientCacheTimestamp = 0;
+
 export async function createAdminClient(): Promise<SupabaseClient<Database>> {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
@@ -95,20 +122,54 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
     console.warn("Supabase admin environment variables not set - admin features may not work");
   }
 
+  // Reuse cached admin client if available and fresh
+  const now = Date.now();
+  if (cachedAdminClient && now - adminClientCacheTimestamp < CLIENT_CACHE_TTL) {
+    return cachedAdminClient;
+  }
+
   try {
     // Use regular supabase client with service role key (bypasses RLS)
     const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
 
-    return createSupabaseClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
+    const adminClient = createSupabaseClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
       },
+      // Optimize connection settings
+      db: {
+        schema: 'public',
+      },
+      global: {
+        headers: {
+          'x-client-info': 'settler-web-admin',
+        },
+      },
     });
+
+    // Cache the admin client
+    cachedAdminClient = adminClient;
+    adminClientCacheTimestamp = now;
+
+    return adminClient;
   } catch (error) {
     console.error("Failed to create Supabase admin client:", error);
     // Return a minimal mock client to prevent crashes
     // This will fail on actual operations but won't crash the page
-    return {} as SupabaseClient<Database>;
+    const fallbackClient = {} as SupabaseClient<Database>;
+    cachedAdminClient = fallbackClient;
+    adminClientCacheTimestamp = now;
+    return fallbackClient;
   }
+}
+
+/**
+ * Clear client cache (useful for testing or when credentials change)
+ */
+export function clearSupabaseCache(): void {
+  cachedClient = null;
+  cachedAdminClient = null;
+  clientCacheTimestamp = 0;
+  adminClientCacheTimestamp = 0;
 }

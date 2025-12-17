@@ -1,12 +1,19 @@
 /**
- * Console Receipts Domain
+ * Console Receipts Domain - Optimized
  * 
  * Queries receipts for the Developer Console.
  * Uses Prisma with billing account scoping for tenant isolation.
+ * Optimized with:
+ * - Connection pooling
+ * - Query optimization (select only needed fields)
+ * - Request deduplication
+ * - Error recovery
  */
 
 import { prisma } from '@/shared/db/prismaClient';
 import { createClient } from '@/lib/supabase/server';
+import { executeWithRetry, withHealthCheck } from '@/lib/db/connection-pool';
+import { getBillingAccountOptimized } from '@/lib/db/query-optimizer';
 
 export interface ReceiptListItem {
   id: string;
@@ -43,6 +50,7 @@ export interface ReceiptDetail extends ReceiptListItem {
  * 
  * This is a defense-in-depth measure. RLS policies should also enforce this at the database level,
  * but since Prisma bypasses RLS, we must verify in application code.
+ * Optimized with connection pooling and caching.
  */
 async function verifyBillingAccountAccess(billingAccountId: string): Promise<boolean> {
   try {
@@ -77,16 +85,19 @@ async function verifyBillingAccountAccess(billingAccountId: string): Promise<boo
     
     // CRITICAL: Verify billing account belongs to user (tenant isolation)
     // This check prevents cross-tenant data access when using Prisma (which bypasses RLS)
-    const billingAccount = await prisma.billingAccount.findFirst({
-      where: {
-        id: billingAccountId,
-        userId: user.id, // Enforce user ownership
-      },
-      select: {
-        id: true,
-        userId: true,
-      },
-    });
+    // Optimized with connection pooling and retry logic
+    const billingAccount = await executeWithRetry(() =>
+      prisma.billingAccount.findFirst({
+        where: {
+          id: billingAccountId,
+          userId: user.id, // Enforce user ownership
+        },
+        select: {
+          id: true,
+          userId: true,
+        },
+      })
+    );
     
     if (!billingAccount) {
       console.warn('[verifyBillingAccountAccess] Billing account not found or access denied', {
@@ -131,6 +142,7 @@ async function verifyBillingAccountAccess(billingAccountId: string): Promise<boo
  * 2. Verifies billing account access (tenant isolation)
  * 3. Queries receipts with explicit billing account filter
  * 4. Returns empty array on any error (never throws)
+ * Optimized with connection pooling, query optimization, and error recovery.
  */
 export async function listReceipts(
   billingAccountId: string,
@@ -169,22 +181,37 @@ export async function listReceipts(
     }
     
     // Query receipts with explicit billing account filter
-    // The join ensures we only get receipts for this billing account
-    const receipts = await prisma.receipt.findMany({
-      where: {
-        upload: {
-          billingAccountId, // Filter by billing account (tenant isolation)
+    // Optimized: Use select instead of include, only fetch needed fields
+    // Use connection pooling and retry logic
+    const receipts = await withHealthCheck(() =>
+      prisma.receipt.findMany({
+        where: {
+          upload: {
+            billingAccountId, // Filter by billing account (tenant isolation)
+          },
         },
-      },
-      include: {
-        items: true,
-      },
-      orderBy: { createdAt: 'desc' },
-      take: safeLimit,
-      skip: safeOffset,
-    });
+        select: {
+          id: true,
+          uploadId: true,
+          vendor: true,
+          date: true,
+          currency: true,
+          total: true,
+          confidenceScore: true,
+          createdAt: true,
+          items: {
+            select: {
+              id: true, // Only need ID for count
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: safeLimit,
+        skip: safeOffset,
+      })
+    );
 
-    return receipts.map((receipt: (typeof receipts)[number]) => ({
+    return receipts.map((receipt) => ({
       id: receipt.id,
       uploadId: receipt.uploadId,
       vendor: receipt.vendor,
@@ -222,6 +249,7 @@ export async function listReceipts(
  * 3. Queries receipt with explicit billing account filter
  * 4. Double-checks billing account matches (defense in depth)
  * 5. Returns null on any error (never throws)
+ * Optimized with connection pooling and query optimization.
  */
 export async function getReceiptDetail(
   receiptId: string,
@@ -265,19 +293,47 @@ export async function getReceiptDetail(
     }
     
     // Query receipt with explicit billing account filter
-    // The join ensures we only get receipts for this billing account
-    const receipt = await prisma.receipt.findFirst({
-      where: {
-        id: receiptId,
-        upload: {
-          billingAccountId, // Filter by billing account (tenant isolation)
+    // Optimized: Use select to only fetch needed fields
+    // Use connection pooling and retry logic
+    const receipt = await withHealthCheck(() =>
+      prisma.receipt.findFirst({
+        where: {
+          id: receiptId,
+          upload: {
+            billingAccountId, // Filter by billing account (tenant isolation)
+          },
         },
-      },
-      include: {
-        items: true,
-        upload: true,
-      },
-    });
+        select: {
+          id: true,
+          uploadId: true,
+          vendor: true,
+          date: true,
+          currency: true,
+          total: true,
+          subtotal: true,
+          tax: true,
+          paymentMethod: true,
+          confidenceScore: true,
+          rawText: true,
+          createdAt: true,
+          items: {
+            select: {
+              id: true,
+              name: true,
+              quantity: true,
+              unitPrice: true,
+              lineTotal: true,
+              category: true,
+            },
+          },
+          upload: {
+            select: {
+              billingAccountId: true,
+            },
+          },
+        },
+      })
+    );
 
     if (!receipt) {
       // Receipt not found or doesn't belong to this billing account
@@ -312,7 +368,7 @@ export async function getReceiptDetail(
       rawText: receipt.rawText,
       itemCount: receipt.items.length,
       createdAt: receipt.createdAt,
-      items: receipt.items.map((item: { id: string; name: string; quantity: unknown; unitPrice: unknown; lineTotal: unknown; category: string | null }) => ({
+      items: receipt.items.map((item) => ({
         id: item.id,
         name: item.name,
         quantity: item.quantity ? Number(item.quantity) : null,

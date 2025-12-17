@@ -6,9 +6,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
-import { prisma } from '@/shared/db/prismaClient';
 import { listReceipts } from '@/domain/console/receipts';
 import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
+import { getBillingAccountOptimized } from '@/lib/db/query-optimizer';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -28,11 +28,8 @@ export async function GET(request: NextRequest) {
     if (!authContext.billingAccountId) {
       logger.info('No billing account in auth context, looking up', { correlationId, userId: authContext.userId });
       
-      // Try to find billing account for user
-      const billingAccount = await prisma.billingAccount.findFirst({
-        where: { userId: authContext.userId },
-        select: { id: true },
-      });
+      // Use optimized billing account lookup with caching
+      const billingAccount = await getBillingAccountOptimized(authContext.userId, true);
 
       if (!billingAccount) {
         // No billing account - return empty array (user hasn't created one yet)

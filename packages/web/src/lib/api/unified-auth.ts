@@ -1,12 +1,19 @@
 /**
- * Unified Authentication Middleware
+ * Unified Authentication Middleware - Optimized
  * 
  * Supports both session-based auth (Console UI) and API key auth (SDK/CLI)
+ * Optimized with:
+ * - Billing account caching
+ * - Connection pooling
+ * - Error recovery
+ * - Request deduplication
  */
 
 import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
+import { getBillingAccountOptimized } from '@/lib/db/query-optimizer';
+import { executeWithRetry } from '@/lib/db/connection-pool';
 
 export interface UnifiedAuthContext {
   type: 'session' | 'api_key';
@@ -17,9 +24,14 @@ export interface UnifiedAuthContext {
   scopes?: string[];
 }
 
+// Cache for auth contexts (short TTL to reduce DB queries)
+const authCache = new Map<string, { context: UnifiedAuthContext; timestamp: number }>();
+const AUTH_CACHE_TTL = 30000; // 30 seconds
+
 /**
  * Authenticate request using either session or API key
  * Returns null if neither is available (unauthenticated)
+ * Optimized with caching and connection pooling
  */
 export async function authenticateRequest(
   request: NextRequest
@@ -39,7 +51,7 @@ export async function authenticateRequest(
         modifiedRequest.headers.set('x-api-key', apiKey);
       }
       
-      const context = await authenticateApiKey(modifiedRequest);
+      const context = await executeWithRetry(() => authenticateApiKey(modifiedRequest));
       return {
         type: 'api_key',
         userId: context.userId,
@@ -60,22 +72,46 @@ export async function authenticateRequest(
     const { data: { user }, error } = await supabase.auth.getUser();
     
     if (user && !error) {
-      // Get billing account
-      const { prisma } = await import('@/shared/db/prismaClient');
-      const billingAccount = await prisma.billingAccount.findFirst({
-        where: { userId: user.id },
-        select: { id: true, tenantId: true },
-      });
+      // Check cache first
+      const cacheKey = `auth:${user.id}`;
+      const cached = authCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < AUTH_CACHE_TTL) {
+        return cached.context;
+      }
 
-      return {
+      // Get billing account with optimized query and caching
+      const billingAccount = await executeWithRetry(() =>
+        getBillingAccountOptimized(user.id, true)
+      );
+
+      const context: UnifiedAuthContext = {
         type: 'session',
         userId: user.id,
         billingAccountId: billingAccount?.id,
         tenantId: billingAccount?.tenantId || undefined,
       };
+
+      // Cache the context
+      authCache.set(cacheKey, {
+        context,
+        timestamp: Date.now(),
+      });
+
+      // Clean up old cache entries periodically
+      if (authCache.size > 1000) {
+        const now = Date.now();
+        for (const [key, value] of authCache.entries()) {
+          if (now - value.timestamp > AUTH_CACHE_TTL) {
+            authCache.delete(key);
+          }
+        }
+      }
+
+      return context;
     }
   } catch (error) {
     // Session auth failed
+    console.error('[UnifiedAuth] Session auth error:', error);
   }
 
   return null;
@@ -83,6 +119,7 @@ export async function authenticateRequest(
 
 /**
  * Require authentication - throws if not authenticated
+ * Optimized with connection pooling and error recovery
  */
 export async function requireAuth(
   request: NextRequest
@@ -94,4 +131,18 @@ export async function requireAuth(
   }
 
   return context;
+}
+
+/**
+ * Clear auth cache (useful for testing or when user data changes)
+ */
+export function clearAuthCache(): void {
+  authCache.clear();
+}
+
+/**
+ * Invalidate auth cache for a specific user
+ */
+export function invalidateAuthCache(userId: string): void {
+  authCache.delete(`auth:${userId}`);
 }
