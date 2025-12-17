@@ -7,6 +7,7 @@ import { config } from '../config';
 import { initDatabase } from '../db';
 import { getRedisClient } from './cache';
 import { logInfo, logError, logWarn } from './logger';
+import { validateSchema } from './schema-validation';
 // Import env schema functions - using require to avoid rootDir issues
 const envSchema = require('../../../../config/env.schema');
 const getRequiredEnvVars = envSchema.getRequiredEnvVars as (environment: 'local' | 'development' | 'preview' | 'staging' | 'production') => Array<{ name: string; required: boolean; defaultValue?: string }>;
@@ -204,6 +205,22 @@ export async function validateStartup(): Promise<StartupValidation> {
   try {
     const dbResult = await validateDatabase();
     results.push(dbResult);
+    
+    // Schema validation (after database connection is established)
+    try {
+      await validateSchema();
+      results.push({
+        name: 'schema',
+        status: 'ok',
+        message: 'Database schema validated successfully',
+      });
+    } catch (error: unknown) {
+      results.push({
+        name: 'schema',
+        status: 'error',
+        message: `Schema validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      });
+    }
   } catch (error: unknown) {
     results.push({
       name: 'database',

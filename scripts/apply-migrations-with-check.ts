@@ -85,14 +85,37 @@ async function executeMigration(
     
     return { success: true };
   } catch (error: any) {
+    const errorMessage = error.message.toLowerCase();
+    
     // Check if it's a "already exists" error that we can ignore
-    if (error.message.includes('already exists') ||
-        error.message.includes('duplicate') ||
-        error.message.includes('already enabled') ||
-        (error.message.includes('does not exist') && error.message.includes('DROP'))) {
+    if (errorMessage.includes('already exists') ||
+        errorMessage.includes('duplicate') ||
+        errorMessage.includes('already enabled') ||
+        errorMessage.includes('already defined') ||
+        (errorMessage.includes('does not exist') && errorMessage.includes('drop'))) {
       // Still mark as applied since the objects exist
       await markMigrationApplied(pool, migrationName);
       return { success: true };
+    }
+    
+    // Handle deadlocks - retry once
+    if (errorMessage.includes('deadlock') || errorMessage.includes('lock')) {
+      console.log(`   ⚠️  Deadlock detected, retrying...`);
+      try {
+        // Wait a bit and retry
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await pool.query(migrationSQL);
+        await markMigrationApplied(pool, migrationName);
+        return { success: true };
+      } catch (retryError: any) {
+        const retryMessage = retryError.message.toLowerCase();
+        // If retry also fails but objects exist, mark as applied
+        if (retryMessage.includes('already exists') || retryMessage.includes('duplicate')) {
+          await markMigrationApplied(pool, migrationName);
+          return { success: true };
+        }
+        return { success: false, error: `Deadlock retry failed: ${retryError.message}` };
+      }
     }
     
     return { success: false, error: error.message };
