@@ -9,6 +9,7 @@ BEGIN;
 -- ============================================================================
 
 -- Function to propagate tenant_id from user to jobs
+DROP FUNCTION IF EXISTS propagate_tenant_id_to_jobs() CASCADE;
 CREATE OR REPLACE FUNCTION propagate_tenant_id_to_jobs()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -24,6 +25,7 @@ CREATE TRIGGER set_job_tenant_id BEFORE INSERT OR UPDATE ON jobs
   FOR EACH ROW EXECUTE FUNCTION propagate_tenant_id_to_jobs();
 
 -- Function to propagate tenant_id from job to executions
+DROP FUNCTION IF EXISTS propagate_tenant_id_to_executions() CASCADE;
 CREATE OR REPLACE FUNCTION propagate_tenant_id_to_executions()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -39,6 +41,7 @@ CREATE TRIGGER set_execution_tenant_id BEFORE INSERT OR UPDATE ON executions
   FOR EACH ROW EXECUTE FUNCTION propagate_tenant_id_to_executions();
 
 -- Function to propagate tenant_id from job to matches
+DROP FUNCTION IF EXISTS propagate_tenant_id_to_matches() CASCADE;
 CREATE OR REPLACE FUNCTION propagate_tenant_id_to_matches()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -54,6 +57,7 @@ CREATE TRIGGER set_match_tenant_id BEFORE INSERT OR UPDATE ON matches
   FOR EACH ROW EXECUTE FUNCTION propagate_tenant_id_to_matches();
 
 -- Function to propagate tenant_id from job to unmatched
+DROP FUNCTION IF EXISTS propagate_tenant_id_to_unmatched() CASCADE;
 CREATE OR REPLACE FUNCTION propagate_tenant_id_to_unmatched()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -69,6 +73,7 @@ CREATE TRIGGER set_unmatched_tenant_id BEFORE INSERT OR UPDATE ON unmatched
   FOR EACH ROW EXECUTE FUNCTION propagate_tenant_id_to_unmatched();
 
 -- Function to propagate tenant_id from job to reports
+DROP FUNCTION IF EXISTS propagate_tenant_id_to_reports() CASCADE;
 CREATE OR REPLACE FUNCTION propagate_tenant_id_to_reports()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -84,6 +89,7 @@ CREATE TRIGGER set_report_tenant_id BEFORE INSERT OR UPDATE ON reports
   FOR EACH ROW EXECUTE FUNCTION propagate_tenant_id_to_reports();
 
 -- Function to propagate tenant_id from user to webhooks
+DROP FUNCTION IF EXISTS propagate_tenant_id_to_webhooks() CASCADE;
 CREATE OR REPLACE FUNCTION propagate_tenant_id_to_webhooks()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -99,6 +105,7 @@ CREATE TRIGGER set_webhook_tenant_id BEFORE INSERT OR UPDATE ON webhooks
   FOR EACH ROW EXECUTE FUNCTION propagate_tenant_id_to_webhooks();
 
 -- Function to propagate tenant_id from user to api_keys
+DROP FUNCTION IF EXISTS propagate_tenant_id_to_api_keys() CASCADE;
 CREATE OR REPLACE FUNCTION propagate_tenant_id_to_api_keys()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -114,6 +121,7 @@ CREATE TRIGGER set_api_key_tenant_id BEFORE INSERT OR UPDATE ON api_keys
   FOR EACH ROW EXECUTE FUNCTION propagate_tenant_id_to_api_keys();
 
 -- Function to propagate tenant_id from user to idempotency_keys
+DROP FUNCTION IF EXISTS propagate_tenant_id_to_idempotency_keys() CASCADE;
 CREATE OR REPLACE FUNCTION propagate_tenant_id_to_idempotency_keys()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -129,6 +137,7 @@ CREATE TRIGGER set_idempotency_key_tenant_id BEFORE INSERT OR UPDATE ON idempote
   FOR EACH ROW EXECUTE FUNCTION propagate_tenant_id_to_idempotency_keys();
 
 -- Function to auto-update updated_at timestamp
+DROP FUNCTION IF EXISTS handle_updated_at() CASCADE;
 CREATE OR REPLACE FUNCTION handle_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -173,6 +182,7 @@ CREATE TRIGGER on_reconciliation_graph_nodes_updated
 -- ============================================================================
 
 -- Function to check if IP is blocked
+DROP FUNCTION IF EXISTS is_ip_blocked(VARCHAR, UUID) CASCADE;
 CREATE OR REPLACE FUNCTION is_ip_blocked(p_ip VARCHAR(45), p_tenant_id UUID DEFAULT NULL)
 RETURNS BOOLEAN AS $$
 BEGIN
@@ -186,6 +196,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
 
 -- Function to cleanup expired revoked tokens
+DROP FUNCTION IF EXISTS cleanup_expired_revoked_tokens() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_expired_revoked_tokens()
 RETURNS void AS $$
 BEGIN

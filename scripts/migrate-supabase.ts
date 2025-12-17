@@ -107,7 +107,11 @@ async function executeMigration(
       if (error.message.includes('already exists') ||
           error.message.includes('duplicate') ||
           error.message.includes('already enabled') ||
-          (error.message.includes('does not exist') && error.message.includes('DROP'))) {
+          error.message.includes('already defined') ||
+          error.message.includes('relation') && error.message.includes('already exists') ||
+          (error.message.includes('does not exist') && error.message.includes('DROP')) ||
+          error.message.includes('policy') && error.message.includes('already exists') ||
+          error.message.includes('constraint') && error.message.includes('already exists')) {
         console.log(`⚠ Migration warning (ignored): ${migrationName} - ${error.message}`);
         result.success = true;
         result.statementsExecuted = 0;

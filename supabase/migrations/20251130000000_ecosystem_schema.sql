@@ -24,10 +24,45 @@ CREATE TABLE IF NOT EXISTS profiles (
   UNIQUE(user_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_profiles_user_id ON profiles(user_id);
-CREATE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
-CREATE INDEX IF NOT EXISTS idx_profiles_impact_score ON profiles(impact_score DESC);
-CREATE INDEX IF NOT EXISTS idx_profiles_created_at ON profiles(created_at DESC);
+-- Add missing columns if table exists with partial schema
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'user_id') THEN
+      ALTER TABLE profiles ADD COLUMN user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
+      -- Set user_id = id for existing rows
+      UPDATE profiles SET user_id = id WHERE user_id IS NULL;
+      ALTER TABLE profiles ALTER COLUMN user_id SET NOT NULL;
+    END IF;
+  END IF;
+END $$;
+
+-- Create indexes conditionally to avoid duplicates
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'user_id') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'profiles' AND indexname = 'idx_profiles_user_id') THEN
+        EXECUTE 'CREATE INDEX idx_profiles_user_id ON profiles(user_id)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'email') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'profiles' AND indexname = 'idx_profiles_email') THEN
+        EXECUTE 'CREATE INDEX idx_profiles_email ON profiles(email)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'impact_score') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'profiles' AND indexname = 'idx_profiles_impact_score') THEN
+        EXECUTE 'CREATE INDEX idx_profiles_impact_score ON profiles(impact_score DESC)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'created_at') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'profiles' AND indexname = 'idx_profiles_created_at') THEN
+        EXECUTE 'CREATE INDEX idx_profiles_created_at ON profiles(created_at DESC)';
+      END IF;
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- 2. POSTS TABLE (Community posts/content)
@@ -58,8 +93,19 @@ CREATE INDEX IF NOT EXISTS idx_posts_upvotes ON posts(upvotes DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_engagement ON posts((views + upvotes * 2) DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_metadata_gin ON posts USING GIN (metadata);
 
--- Enable realtime for posts
-ALTER PUBLICATION supabase_realtime ADD TABLE posts;
+-- Enable realtime for posts (only if not already added)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'posts') THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_publication_tables 
+      WHERE pubname = 'supabase_realtime' 
+      AND tablename = 'posts'
+    ) THEN
+      ALTER PUBLICATION supabase_realtime ADD TABLE posts;
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- 3. ACTIVITY_LOG TABLE (Track all user interactions)
@@ -129,7 +175,19 @@ CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created
 CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(notification_type);
 
 -- Enable realtime for notifications
-ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
+-- Enable realtime for notifications (only if not already added)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notifications') THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_publication_tables 
+      WHERE pubname = 'supabase_realtime' 
+      AND tablename = 'notifications'
+    ) THEN
+      ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- 6. FUNCTIONS
