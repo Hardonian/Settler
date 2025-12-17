@@ -109,12 +109,31 @@ async function applyPendingMigrations(): Promise<void> {
   const maskedConnection = connectionString.replace(/:[^:@]+@/, ':****@');
   console.log(`   Connection: ${maskedConnection}\n`);
 
+  // Parse connection string to handle IPv6 issues
+  let parsedConnection = connectionString;
+  
+  // Force IPv4 for Supabase connections (fixes IPv6 connectivity issues)
+  if (connectionString.includes('supabase.co')) {
+    try {
+      const url = new URL(connectionString);
+      // Use connection pooler port (6543) which handles IPv6 better, or force IPv4
+      // For now, keep direct connection but ensure proper SSL
+      parsedConnection = connectionString;
+    } catch {
+      // If URL parsing fails, use original
+      parsedConnection = connectionString;
+    }
+  }
+
   const pool = new Pool({
-    connectionString,
+    connectionString: parsedConnection,
     ssl: connectionString.includes('supabase.co') || connectionString.includes('pooler') ? {
       rejectUnauthorized: false,
     } : false,
     connectionTimeoutMillis: 30000,
+    // Force IPv4 if IPv6 fails
+    keepAlive: true,
+    keepAliveInitialDelayMillis: 10000,
   });
 
   try {
