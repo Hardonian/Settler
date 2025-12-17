@@ -25,10 +25,96 @@ CREATE TABLE IF NOT EXISTS billing_accounts (
   deleted_at TIMESTAMPTZ
 );
 
-CREATE INDEX IF NOT EXISTS idx_billing_accounts_user_id ON billing_accounts(user_id);
-CREATE INDEX IF NOT EXISTS idx_billing_accounts_tenant_id ON billing_accounts(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_billing_accounts_stripe_customer_id ON billing_accounts(stripe_customer_id);
-CREATE INDEX IF NOT EXISTS idx_billing_accounts_status ON billing_accounts(status);
+-- Add columns if table exists but columns are missing (for idempotency)
+DO $$ 
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'billing_accounts') THEN
+    -- Add missing columns (all columns from the CREATE TABLE statement)
+    -- Note: For NOT NULL columns, add as nullable first, then set default and add constraint
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'user_id') THEN
+      ALTER TABLE billing_accounts ADD COLUMN user_id UUID;
+      -- Set default for existing rows if any
+      UPDATE billing_accounts SET user_id = gen_random_uuid() WHERE user_id IS NULL;
+      -- Now add NOT NULL constraint
+      ALTER TABLE billing_accounts ALTER COLUMN user_id SET NOT NULL;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'tenant_id') THEN
+      ALTER TABLE billing_accounts ADD COLUMN tenant_id UUID;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'stripe_customer_id') THEN
+      ALTER TABLE billing_accounts ADD COLUMN stripe_customer_id VARCHAR(255);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'stripe_account_id') THEN
+      ALTER TABLE billing_accounts ADD COLUMN stripe_account_id VARCHAR(255);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'email') THEN
+      ALTER TABLE billing_accounts ADD COLUMN email VARCHAR(255) DEFAULT '';
+      -- Set default for existing rows
+      UPDATE billing_accounts SET email = '' WHERE email IS NULL;
+      -- Now add NOT NULL constraint
+      ALTER TABLE billing_accounts ALTER COLUMN email SET NOT NULL;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'name') THEN
+      ALTER TABLE billing_accounts ADD COLUMN name VARCHAR(255);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'address') THEN
+      ALTER TABLE billing_accounts ADD COLUMN address JSONB;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'tax_id') THEN
+      ALTER TABLE billing_accounts ADD COLUMN tax_id VARCHAR(255);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'currency') THEN
+      ALTER TABLE billing_accounts ADD COLUMN currency VARCHAR(10) DEFAULT 'usd';
+      UPDATE billing_accounts SET currency = 'usd' WHERE currency IS NULL;
+      ALTER TABLE billing_accounts ALTER COLUMN currency SET NOT NULL;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'status') THEN
+      ALTER TABLE billing_accounts ADD COLUMN status VARCHAR(50) DEFAULT 'active';
+      UPDATE billing_accounts SET status = 'active' WHERE status IS NULL;
+      ALTER TABLE billing_accounts ALTER COLUMN status SET NOT NULL;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'created_at') THEN
+      ALTER TABLE billing_accounts ADD COLUMN created_at TIMESTAMPTZ DEFAULT NOW();
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'updated_at') THEN
+      ALTER TABLE billing_accounts ADD COLUMN updated_at TIMESTAMPTZ DEFAULT NOW();
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'deleted_at') THEN
+      ALTER TABLE billing_accounts ADD COLUMN deleted_at TIMESTAMPTZ;
+    END IF;
+  END IF;
+END $$;
+
+-- Add unique constraint if it doesn't exist (after ensuring column exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'billing_accounts') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'stripe_customer_id') THEN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'billing_accounts_stripe_customer_id_key'
+      ) THEN
+        ALTER TABLE billing_accounts ADD CONSTRAINT billing_accounts_stripe_customer_id_key UNIQUE (stripe_customer_id);
+      END IF;
+    END IF;
+  END IF;
+END $$;
+
+-- Create indexes only if columns exist (using EXECUTE to avoid parse-time errors)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'user_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_billing_accounts_user_id ON billing_accounts(user_id)';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'tenant_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_billing_accounts_tenant_id ON billing_accounts(tenant_id)';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'stripe_customer_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_billing_accounts_stripe_customer_id ON billing_accounts(stripe_customer_id) WHERE stripe_customer_id IS NOT NULL';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'status') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_billing_accounts_status ON billing_accounts(status)';
+  END IF;
+END $$;
 
 -- ============================================================================
 -- SUBSCRIPTIONS TABLE
@@ -143,15 +229,41 @@ CREATE TABLE IF NOT EXISTS usage_events (
   aggregated BOOLEAN DEFAULT false
 );
 
-CREATE INDEX IF NOT EXISTS idx_usage_events_billing_account_id ON usage_events(billing_account_id);
-CREATE INDEX IF NOT EXISTS idx_usage_events_project_id ON usage_events(project_id);
-CREATE INDEX IF NOT EXISTS idx_usage_events_user_id ON usage_events(user_id);
-CREATE INDEX IF NOT EXISTS idx_usage_events_tenant_id ON usage_events(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_usage_events_event_type ON usage_events(event_type);
-CREATE INDEX IF NOT EXISTS idx_usage_events_integration_id ON usage_events(integration_id);
-CREATE INDEX IF NOT EXISTS idx_usage_events_timestamp ON usage_events(timestamp);
-CREATE INDEX IF NOT EXISTS idx_usage_events_aggregated ON usage_events(aggregated);
-CREATE INDEX IF NOT EXISTS idx_usage_events_billing_account_event_timestamp ON usage_events(billing_account_id, event_type, timestamp);
+-- Create indexes conditionally to handle cases where table exists with partial columns
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'usage_events') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'billing_account_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_usage_events_billing_account_id ON usage_events(billing_account_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'project_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_usage_events_project_id ON usage_events(project_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'user_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_usage_events_user_id ON usage_events(user_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'tenant_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_usage_events_tenant_id ON usage_events(tenant_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'event_type') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_usage_events_event_type ON usage_events(event_type)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'integration_id') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_usage_events_integration_id ON usage_events(integration_id)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'timestamp') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_usage_events_timestamp ON usage_events(timestamp)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'aggregated') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_usage_events_aggregated ON usage_events(aggregated)';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'billing_account_id') 
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'event_type')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_events' AND column_name = 'timestamp') THEN
+      EXECUTE 'CREATE INDEX IF NOT EXISTS idx_usage_events_billing_account_event_timestamp ON usage_events(billing_account_id, event_type, timestamp)';
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- USAGE AGGREGATE DAILY TABLE

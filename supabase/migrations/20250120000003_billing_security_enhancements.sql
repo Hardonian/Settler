@@ -223,7 +223,8 @@ BEGIN
     RETURNING id INTO v_fraud_signal_id;
 
     -- Log fraud signal for monitoring
-    RAISE WARNING 'Fraud signal created: % (spike: %%)', v_fraud_signal_id, v_usage_spike_percentage;
+    RAISE WARNING 'Fraud signal created: % (spike: %%)', 
+      format('%s (spike: %s%%)', v_fraud_signal_id::text, ROUND(v_usage_spike_percentage, 2)::text);
   END IF;
 
   RETURN v_event_id;
