@@ -13,7 +13,6 @@
 import { prisma } from '@/shared/db/prismaClient';
 import { createClient } from '@/lib/supabase/server';
 import { executeWithRetry, withHealthCheck } from '@/lib/db/connection-pool';
-import { getBillingAccountOptimized } from '@/lib/db/query-optimizer';
 
 export interface ReceiptListItem {
   id: string;

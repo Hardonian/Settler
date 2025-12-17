@@ -9,7 +9,7 @@
  * - Timeout handling
  */
 
-import { prisma, checkDatabaseHealth } from '@/shared/db/prismaClient';
+import { checkDatabaseHealth } from '@/shared/db/prismaClient';
 
 export interface ConnectionPoolStats {
   healthy: boolean;
