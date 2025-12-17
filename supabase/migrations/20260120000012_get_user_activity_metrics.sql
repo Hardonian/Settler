@@ -4,6 +4,7 @@
 
 BEGIN;
 
+DROP FUNCTION IF EXISTS get_user_activity_metrics(UUID) CASCADE;
 CREATE OR REPLACE FUNCTION get_user_activity_metrics(user_id UUID)
 RETURNS TABLE (
   active_last_7_days BOOLEAN,
@@ -29,23 +30,26 @@ BEGIN
     ) AS active_last_7_days,
     
     -- Active days in last 30
-    COUNT(DISTINCT DATE(created_at))::INTEGER AS active_days_last_30
-    FROM reconciliation_jobs
-    WHERE reconciliation_jobs.user_id = get_user_activity_metrics.user_id
-    AND created_at > NOW() - INTERVAL '30 days',
+    COALESCE((
+      SELECT COUNT(DISTINCT DATE(created_at))::INTEGER
+      FROM reconciliation_jobs
+      WHERE reconciliation_jobs.user_id = get_user_activity_metrics.user_id
+      AND created_at > NOW() - INTERVAL '30 days'
+    ), 0) AS active_days_last_30,
     
     -- Days since last activity
-    COALESCE(
-      EXTRACT(DAY FROM NOW() - MAX(created_at))::INTEGER,
-      999
-    ) AS days_since_last_activity
-    FROM reconciliation_jobs
-    WHERE reconciliation_jobs.user_id = get_user_activity_metrics.user_id,
+    COALESCE((
+      SELECT EXTRACT(DAY FROM NOW() - MAX(created_at))::INTEGER
+      FROM reconciliation_jobs
+      WHERE reconciliation_jobs.user_id = get_user_activity_metrics.user_id
+    ), 999) AS days_since_last_activity,
     
     -- Total jobs created
-    COUNT(*)::INTEGER AS total_jobs_created
-    FROM reconciliation_jobs
-    WHERE reconciliation_jobs.user_id = get_user_activity_metrics.user_id,
+    COALESCE((
+      SELECT COUNT(*)::INTEGER
+      FROM reconciliation_jobs
+      WHERE reconciliation_jobs.user_id = get_user_activity_metrics.user_id
+    ), 0) AS total_jobs_created,
     
     -- Has upgraded
     EXISTS (
@@ -77,10 +81,12 @@ BEGIN
     50.0 AS usage_percentage,
     
     -- Integration count
-    COUNT(*)::INTEGER AS integration_count
-    FROM integration_credentials
-    WHERE integration_credentials.user_id = get_user_activity_metrics.user_id
-    AND is_connected = TRUE,
+    COALESCE((
+      SELECT COUNT(*)::INTEGER
+      FROM integration_credentials
+      WHERE integration_credentials.user_id = get_user_activity_metrics.user_id
+      AND status = 'active'
+    ), 0) AS integration_count,
     
     -- Viewed enterprise features (mock)
     FALSE AS viewed_enterprise_features;

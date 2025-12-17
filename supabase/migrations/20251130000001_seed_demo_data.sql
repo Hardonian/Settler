@@ -76,7 +76,7 @@ BEGIN
      AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'user_id') THEN
     -- Create demo posts
     FOR i IN 1..25 LOOP
-      profile_id := profile_ids[1 + (i % array_length(profile_ids, 1))];
+      profile_id := profile_ids[1 + ((i - 1) % array_length(profile_ids, 1))];
       
       INSERT INTO posts (
         user_id,
@@ -130,16 +130,30 @@ DECLARE
   activity_types TEXT[] := ARRAY['signup', 'login', 'post_view', 'post_upvote', 'scroll', 'click', 'feedback_submit'];
   i INTEGER;
 BEGIN
-  -- Get arrays of IDs
-  SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
-  SELECT ARRAY_AGG(id) INTO post_ids FROM posts LIMIT 10;
+  -- Get arrays of IDs (only if tables exist)
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
+    SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
+  END IF;
+  
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'posts') THEN
+    SELECT ARRAY_AGG(id) INTO post_ids FROM posts LIMIT 10;
+  END IF;
   
   -- Create demo activity logs (last 24 hours, with higher concentration in last hour)
-  FOR i IN 1..150 LOOP
-    profile_id := profile_ids[1 + (i % array_length(profile_ids, 1))];
-    post_id := post_ids[1 + (i % array_length(post_ids, 1))];
-    
-    INSERT INTO activity_log (
+  -- Only if we have profiles and activity_log table exists
+  IF profile_ids IS NOT NULL 
+     AND array_length(profile_ids, 1) > 0
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'activity_log')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'activity_log' AND column_name = 'activity_type') THEN
+    FOR i IN 1..150 LOOP
+      profile_id := profile_ids[1 + ((i - 1) % array_length(profile_ids, 1))];
+      IF post_ids IS NOT NULL AND array_length(post_ids, 1) > 0 THEN
+        post_id := post_ids[1 + ((i - 1) % array_length(post_ids, 1))];
+      ELSE
+        post_id := NULL;
+      END IF;
+      
+      INSERT INTO activity_log (
       user_id,
       activity_type,
       entity_type,
@@ -166,7 +180,8 @@ BEGIN
       END
     )
     ON CONFLICT DO NOTHING;
-  END LOOP;
+    END LOOP;
+  END IF;
 END $$;
 
 -- ============================================================================
@@ -193,10 +208,18 @@ DECLARE
   ];
   i INTEGER;
 BEGIN
-  SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
+  -- Get arrays of IDs (only if tables exist)
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
+    SELECT ARRAY_AGG(id) INTO profile_ids FROM profiles LIMIT 10;
+  END IF;
   
-  FOR i IN 1..20 LOOP
-    profile_id := profile_ids[1 + (i % array_length(profile_ids, 1))];
+  -- Only insert if we have profiles and positioning_feedback table exists
+  IF profile_ids IS NOT NULL 
+     AND array_length(profile_ids, 1) > 0
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'positioning_feedback')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'positioning_feedback' AND column_name = 'user_id') THEN
+    FOR i IN 1..20 LOOP
+      profile_id := profile_ids[1 + ((i - 1) % array_length(profile_ids, 1))];
     
     INSERT INTO positioning_feedback (
       user_id,
@@ -248,9 +271,9 @@ BEGIN
      AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notifications')
      AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'notifications' AND column_name = 'user_id') THEN
     FOR i IN 1..30 LOOP
-      profile_id := profile_ids[1 + (i % array_length(profile_ids, 1))];
+      profile_id := profile_ids[1 + ((i - 1) % array_length(profile_ids, 1))];
       IF feedback_ids IS NOT NULL AND array_length(feedback_ids, 1) > 0 THEN
-        feedback_id := feedback_ids[1 + (i % array_length(feedback_ids, 1))];
+        feedback_id := feedback_ids[1 + ((i - 1) % array_length(feedback_ids, 1))];
       ELSE
         feedback_id := NULL;
       END IF;
@@ -294,7 +317,8 @@ BEGIN
       NOW() - (random() * INTERVAL '7 days')
     )
     ON CONFLICT DO NOTHING;
-  END LOOP;
+    END LOOP;
+  END IF;
 END $$;
 
 COMMIT;

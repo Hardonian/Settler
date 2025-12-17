@@ -35,12 +35,37 @@ BEGIN
     CREATE INDEX IF NOT EXISTS idx_webhooks_deleted_at ON webhooks(deleted_at);
   ELSE
     -- Table exists, add missing columns if needed
-    ALTER TABLE webhooks
-      ADD COLUMN IF NOT EXISTS events JSONB DEFAULT '[]'::jsonb,
-      ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
-
-    -- Update existing rows to have default events array if null
-    UPDATE webhooks SET events = '[]'::jsonb WHERE events IS NULL;
+    -- Check if events column exists and its type
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhooks' AND column_name = 'events') THEN
+      ALTER TABLE webhooks ADD COLUMN events JSONB DEFAULT '[]'::jsonb;
+    ELSE
+      -- Column exists, check if it's text[] and needs conversion
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'webhooks' 
+        AND column_name = 'events' 
+        AND data_type = 'ARRAY'
+      ) THEN
+        -- Convert text[] to JSONB by creating a new column, migrating data, dropping old, renaming
+        ALTER TABLE webhooks ADD COLUMN events_jsonb JSONB DEFAULT '[]'::jsonb;
+        UPDATE webhooks SET events_jsonb = to_jsonb(events) WHERE events IS NOT NULL;
+        ALTER TABLE webhooks DROP COLUMN events;
+        ALTER TABLE webhooks RENAME COLUMN events_jsonb TO events;
+      ELSIF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'webhooks' 
+        AND column_name = 'events' 
+        AND udt_name = 'jsonb'
+      ) THEN
+        -- Already JSONB, just update defaults
+        ALTER TABLE webhooks ALTER COLUMN events SET DEFAULT '[]'::jsonb;
+        UPDATE webhooks SET events = '[]'::jsonb WHERE events IS NULL;
+      END IF;
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'webhooks' AND column_name = 'deleted_at') THEN
+      ALTER TABLE webhooks ADD COLUMN deleted_at TIMESTAMPTZ;
+    END IF;
   END IF;
 END $$;
 
@@ -102,19 +127,26 @@ DROP POLICY IF EXISTS "Users can delete their own webhooks" ON webhooks;
 -- Create RLS policies
 CREATE POLICY "Users can view their own webhooks" ON webhooks
   FOR SELECT
-  USING (auth.uid() = user_id::text OR auth.uid() IN (SELECT id::text FROM users WHERE tenant_id = webhooks.tenant_id));
+  USING (
+    auth.uid()::uuid = user_id 
+    OR EXISTS (
+      SELECT 1 FROM users 
+      WHERE users.id = auth.uid()::uuid
+      AND users.tenant_id = webhooks.tenant_id
+    )
+  );
 
 CREATE POLICY "Users can create their own webhooks" ON webhooks
   FOR INSERT
-  WITH CHECK (auth.uid() = user_id::text);
+  WITH CHECK (auth.uid()::uuid = user_id);
 
 CREATE POLICY "Users can update their own webhooks" ON webhooks
   FOR UPDATE
-  USING (auth.uid() = user_id::text);
+  USING (auth.uid()::uuid = user_id);
 
 CREATE POLICY "Users can delete their own webhooks" ON webhooks
   FOR DELETE
-  USING (auth.uid() = user_id::text);
+  USING (auth.uid()::uuid = user_id);
 
 -- ============================================================================
 -- RLS POLICIES FOR WEBHOOK_DELIVERIES
@@ -134,7 +166,14 @@ CREATE POLICY "Users can view webhook deliveries for their webhooks" ON webhook_
     EXISTS (
       SELECT 1 FROM webhooks 
       WHERE webhooks.id = webhook_deliveries.webhook_id 
-      AND (auth.uid() = webhooks.user_id::text OR auth.uid() IN (SELECT id::text FROM users WHERE tenant_id = webhooks.tenant_id))
+      AND (
+        auth.uid()::uuid = webhooks.user_id 
+        OR EXISTS (
+          SELECT 1 FROM users 
+          WHERE users.id = auth.uid()::uuid
+          AND users.tenant_id = webhooks.tenant_id
+        )
+      )
     )
   );
 

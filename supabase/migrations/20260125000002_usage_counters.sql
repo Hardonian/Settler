@@ -17,28 +17,53 @@ CREATE TABLE IF NOT EXISTS usage_counters (
   CONSTRAINT unique_billing_service_period UNIQUE (billing_account_id, service, period, period_start)
 );
 
--- Create indexes for fast lookups
-CREATE INDEX IF NOT EXISTS idx_usage_counters_billing_service_period 
-  ON usage_counters(billing_account_id, service, period);
-CREATE INDEX IF NOT EXISTS idx_usage_counters_period_start 
-  ON usage_counters(period_start);
+-- Create indexes conditionally to avoid duplicates
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'usage_counters') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_counters' AND column_name = 'billing_account_id')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_counters' AND column_name = 'service')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_counters' AND column_name = 'period') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'usage_counters' AND indexname = 'idx_usage_counters_billing_service_period') THEN
+        EXECUTE 'CREATE INDEX idx_usage_counters_billing_service_period ON usage_counters(billing_account_id, service, period)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_counters' AND column_name = 'period_start') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'usage_counters' AND indexname = 'idx_usage_counters_period_start') THEN
+        EXECUTE 'CREATE INDEX idx_usage_counters_period_start ON usage_counters(period_start)';
+      END IF;
+    END IF;
+  END IF;
+END $$;
 
 -- Add RLS policies
 ALTER TABLE usage_counters ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can only see their own usage counters
-CREATE POLICY usage_counters_user_access ON usage_counters
-  FOR SELECT
-  USING (
-    billing_account_id IN (
-      SELECT id FROM billing_accounts WHERE user_id = auth.uid()
-    )
-  );
+DROP POLICY IF EXISTS usage_counters_user_access ON usage_counters;
+-- Only create policy if billing_accounts table exists and has user_id column
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'billing_accounts')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'billing_accounts' AND column_name = 'user_id')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'usage_counters')
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usage_counters' AND column_name = 'billing_account_id') THEN
+    EXECUTE '
+      CREATE POLICY usage_counters_user_access ON usage_counters
+        FOR SELECT
+        USING (
+          billing_account_id IN (
+            SELECT id FROM billing_accounts WHERE user_id = auth.uid()::uuid
+          )
+        )';
+  END IF;
+END $$;
 
 -- Policy: System can insert/update usage counters (via service role)
 -- Note: This is handled by application code with service role key
 
 -- Add updated_at trigger
+DROP FUNCTION IF EXISTS update_usage_counters_updated_at() CASCADE;
 CREATE OR REPLACE FUNCTION update_usage_counters_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -47,6 +72,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_usage_counters_updated_at ON usage_counters;
 CREATE TRIGGER update_usage_counters_updated_at
   BEFORE UPDATE ON usage_counters
   FOR EACH ROW

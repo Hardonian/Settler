@@ -24,13 +24,43 @@ CREATE TABLE IF NOT EXISTS console_activities (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_console_activities_user_id ON console_activities(user_id);
-CREATE INDEX IF NOT EXISTS idx_console_activities_billing_account_id ON console_activities(billing_account_id);
-CREATE INDEX IF NOT EXISTS idx_console_activities_tenant_id ON console_activities(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_console_activities_type ON console_activities(activity_type);
-CREATE INDEX IF NOT EXISTS idx_console_activities_status ON console_activities(status);
-CREATE INDEX IF NOT EXISTS idx_console_activities_created_at ON console_activities(billing_account_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_console_activities_recent ON console_activities(billing_account_id, created_at DESC) WHERE created_at > NOW() - INTERVAL '24 hours';
+-- Create indexes conditionally to avoid duplicates
+-- Note: Cannot use NOW() in index predicate (not IMMUTABLE), so filter by created_at in queries
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'console_activities') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'console_activities' AND column_name = 'user_id') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'console_activities' AND indexname = 'idx_console_activities_user_id') THEN
+        EXECUTE 'CREATE INDEX idx_console_activities_user_id ON console_activities(user_id)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'console_activities' AND column_name = 'billing_account_id') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'console_activities' AND indexname = 'idx_console_activities_billing_account_id') THEN
+        EXECUTE 'CREATE INDEX idx_console_activities_billing_account_id ON console_activities(billing_account_id)';
+      END IF;
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'console_activities' AND column_name = 'created_at') THEN
+        IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'console_activities' AND indexname = 'idx_console_activities_created_at') THEN
+          EXECUTE 'CREATE INDEX idx_console_activities_created_at ON console_activities(billing_account_id, created_at DESC)';
+        END IF;
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'console_activities' AND column_name = 'tenant_id') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'console_activities' AND indexname = 'idx_console_activities_tenant_id') THEN
+        EXECUTE 'CREATE INDEX idx_console_activities_tenant_id ON console_activities(tenant_id)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'console_activities' AND column_name = 'activity_type') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'console_activities' AND indexname = 'idx_console_activities_type') THEN
+        EXECUTE 'CREATE INDEX idx_console_activities_type ON console_activities(activity_type)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'console_activities' AND column_name = 'status') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'console_activities' AND indexname = 'idx_console_activities_status') THEN
+        EXECUTE 'CREATE INDEX idx_console_activities_status ON console_activities(status)';
+      END IF;
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- ENABLE RLS
@@ -39,6 +69,7 @@ CREATE INDEX IF NOT EXISTS idx_console_activities_recent ON console_activities(b
 ALTER TABLE console_activities ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can only see their own activities
+DROP POLICY IF EXISTS console_activities_user_access ON console_activities;
 CREATE POLICY console_activities_user_access ON console_activities
   FOR SELECT USING (
     user_id = current_user_id()
@@ -51,6 +82,7 @@ CREATE POLICY console_activities_user_access ON console_activities
   );
 
 -- Policy: Users can insert their own activities
+DROP POLICY IF EXISTS console_activities_user_insert ON console_activities;
 CREATE POLICY console_activities_user_insert ON console_activities
   FOR INSERT WITH CHECK (
     user_id = current_user_id()

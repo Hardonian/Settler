@@ -6,7 +6,19 @@
 BEGIN;
 
 -- Enable pg_cron extension if not already enabled
-CREATE EXTENSION IF NOT EXISTS pg_cron;
+-- Note: Extension creation may require superuser privileges
+-- If extension already exists, this will be ignored
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
+    CREATE EXTENSION IF NOT EXISTS pg_cron;
+  END IF;
+EXCEPTION
+  WHEN insufficient_privilege THEN
+    RAISE NOTICE 'pg_cron extension requires superuser privileges. Skipping.';
+  WHEN OTHERS THEN
+    RAISE NOTICE 'Could not create pg_cron extension: %', SQLERRM;
+END $$;
 
 -- ============================================================================
 -- CRON JOB CONFIGURATION

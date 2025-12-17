@@ -26,13 +26,27 @@ CREATE TABLE IF NOT EXISTS circuit_breakers (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_circuit_breakers_status ON circuit_breakers(status);
-CREATE INDEX IF NOT EXISTS idx_circuit_breakers_service ON circuit_breakers(service_name);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'circuit_breakers') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'circuit_breakers' AND column_name = 'status') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'circuit_breakers' AND indexname = 'idx_circuit_breakers_status') THEN
+        EXECUTE 'CREATE INDEX idx_circuit_breakers_status ON circuit_breakers(status)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'circuit_breakers' AND column_name = 'service_name') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'circuit_breakers' AND indexname = 'idx_circuit_breakers_service') THEN
+        EXECUTE 'CREATE INDEX idx_circuit_breakers_service ON circuit_breakers(service_name)';
+      END IF;
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- CIRCUIT BREAKER FUNCTIONS
 -- ============================================================================
 
+DROP FUNCTION IF EXISTS record_circuit_breaker_failure(VARCHAR) CASCADE;
 CREATE OR REPLACE FUNCTION record_circuit_breaker_failure(p_service_name VARCHAR)
 RETURNS jsonb AS $$
 DECLARE
@@ -99,6 +113,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP FUNCTION IF EXISTS record_circuit_breaker_success(VARCHAR) CASCADE;
 CREATE OR REPLACE FUNCTION record_circuit_breaker_success(p_service_name VARCHAR)
 RETURNS jsonb AS $$
 DECLARE
@@ -146,6 +161,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP FUNCTION IF EXISTS check_circuit_breaker(VARCHAR) CASCADE;
 CREATE OR REPLACE FUNCTION check_circuit_breaker(p_service_name VARCHAR)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -210,14 +226,33 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   UNIQUE(identifier, identifier_type, endpoint, window_start)
 );
 
-CREATE INDEX IF NOT EXISTS idx_rate_limits_identifier ON rate_limits(identifier, identifier_type);
-CREATE INDEX IF NOT EXISTS idx_rate_limits_window ON rate_limits(window_start);
-CREATE INDEX IF NOT EXISTS idx_rate_limits_blocked ON rate_limits(blocked) WHERE blocked = true;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'rate_limits') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'rate_limits' AND column_name = 'identifier') AND
+       EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'rate_limits' AND column_name = 'identifier_type') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'rate_limits' AND indexname = 'idx_rate_limits_identifier') THEN
+        EXECUTE 'CREATE INDEX idx_rate_limits_identifier ON rate_limits(identifier, identifier_type)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'rate_limits' AND column_name = 'window_start') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'rate_limits' AND indexname = 'idx_rate_limits_window') THEN
+        EXECUTE 'CREATE INDEX idx_rate_limits_window ON rate_limits(window_start)';
+      END IF;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'rate_limits' AND column_name = 'blocked') THEN
+      IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'rate_limits' AND indexname = 'idx_rate_limits_blocked') THEN
+        EXECUTE 'CREATE INDEX idx_rate_limits_blocked ON rate_limits(blocked) WHERE blocked = true';
+      END IF;
+    END IF;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- RATE LIMIT CHECK
 -- ============================================================================
 
+DROP FUNCTION IF EXISTS check_rate_limit(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER) CASCADE;
 CREATE OR REPLACE FUNCTION check_rate_limit(
   p_identifier VARCHAR,
   p_identifier_type VARCHAR,
@@ -303,6 +338,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- CLEANUP OLD RATE LIMIT WINDOWS
 -- ============================================================================
 
+DROP FUNCTION IF EXISTS cleanup_old_rate_limits() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_rate_limits()
 RETURNS void AS $$
 BEGIN
@@ -315,6 +351,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- DEGRADED MODE DETECTION
 -- ============================================================================
 
+DROP FUNCTION IF EXISTS check_degraded_mode() CASCADE;
 CREATE OR REPLACE FUNCTION check_degraded_mode()
 RETURNS jsonb AS $$
 DECLARE

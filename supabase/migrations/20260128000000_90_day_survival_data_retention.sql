@@ -10,6 +10,7 @@ BEGIN;
 -- ============================================================================
 
 -- 1. Cleanup old health checks (keep last 90 days)
+DROP FUNCTION IF EXISTS cleanup_old_health_checks() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_health_checks()
 RETURNS void AS $$
 BEGIN
@@ -33,6 +34,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 2. Cleanup old diagnostics (keep last 90 days)
+DROP FUNCTION IF EXISTS cleanup_old_diagnostics() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_diagnostics()
 RETURNS void AS $$
 BEGIN
@@ -42,6 +44,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 3. Cleanup old alerts (keep resolved alerts for 30 days, unresolved forever)
+DROP FUNCTION IF EXISTS cleanup_old_alerts() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_alerts()
 RETURNS void AS $$
 BEGIN
@@ -52,6 +55,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 4. Cleanup old agent runs (keep last 90 days)
+DROP FUNCTION IF EXISTS cleanup_old_agent_runs() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_agent_runs()
 RETURNS void AS $$
 BEGIN
@@ -61,6 +65,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 5. Cleanup old usage events (aggregate first, then delete raw events older than 30 days)
+DROP FUNCTION IF EXISTS cleanup_old_usage_events() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_usage_events()
 RETURNS void AS $$
 BEGIN
@@ -80,6 +85,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 6. Cleanup old audit logs (keep last 365 days for compliance)
+DROP FUNCTION IF EXISTS cleanup_old_audit_logs() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_audit_logs()
 RETURNS void AS $$
 BEGIN
@@ -89,6 +95,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 7. Cleanup old console activities (keep last 90 days)
+DROP FUNCTION IF EXISTS cleanup_old_console_activities() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_console_activities()
 RETURNS void AS $$
 BEGIN
@@ -98,6 +105,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 8. Cleanup old webhook deliveries (keep last 30 days)
+DROP FUNCTION IF EXISTS cleanup_old_webhook_deliveries() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_webhook_deliveries()
 RETURNS void AS $$
 BEGIN
@@ -108,6 +116,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 9. Cleanup old Stripe events (keep last 90 days for reconciliation)
+DROP FUNCTION IF EXISTS cleanup_old_stripe_events() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_old_stripe_events()
 RETURNS void AS $$
 BEGIN
@@ -118,6 +127,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 10. Cleanup expired idempotency keys (already exists, but ensure it's scheduled)
+DROP FUNCTION IF EXISTS cleanup_expired_idempotency_keys() CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_expired_idempotency_keys()
 RETURNS void AS $$
 BEGIN
@@ -130,6 +140,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- MASTER CLEANUP FUNCTION (runs all cleanup tasks)
 -- ============================================================================
 
+DROP FUNCTION IF EXISTS run_data_retention_cleanup() CASCADE;
 CREATE OR REPLACE FUNCTION run_data_retention_cleanup()
 RETURNS jsonb AS $$
 DECLARE
@@ -239,6 +250,7 @@ SELECT cron.schedule(
 -- MONITORING: Track table sizes
 -- ============================================================================
 
+DROP FUNCTION IF EXISTS get_table_size_monitoring() CASCADE;
 CREATE OR REPLACE FUNCTION get_table_size_monitoring()
 RETURNS TABLE (
   table_name text,
