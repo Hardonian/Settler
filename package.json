@@ -22,6 +22,8 @@
     "verify:contracts": "tsx scripts/check-contract-compatibility.ts",
     "monitor:errors": "tsx scripts/monitor-api-errors.ts",
     "check:production": "tsx scripts/check-production-readiness.ts",
+    "repo-integrity": "tsx scripts/repo-integrity.ts",
+    "vercel:parity": "tsx scripts/vercel-parity.ts",
     "check:workspace": "tsx scripts/check-workspace-integrity.ts",
     "test:visual": "playwright test --project=visual-regression",
     "test:visual:update": "playwright test --project=visual-regression --update-snapshots",

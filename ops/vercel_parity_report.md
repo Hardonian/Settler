@@ -1,6 +1,7 @@
 # Vercel ↔ Repo Parity Report
 
 **Generated:** 2025-01-27  
+**Last Updated:** 2025-01-27  
 **Objective:** Eliminate drift between GitHub repo and Vercel deployments
 
 ## Executive Summary
@@ -38,143 +39,113 @@ All workspace packages have valid `package.json` files:
 
 ### Vercel Configuration
 
-**Current `vercel.json`:**
+**Root `vercel.json`:**
 ```json
 {
   "buildCommand": "cd packages/web && npm run build:vercel",
   "installCommand": "npm ci --prefer-offline --no-audit --omit=optional",
   "framework": "nextjs",
+  "outputDirectory": "packages/web/.next",
   "regions": ["iad1", "sfo1", "lhr1", "syd1"]
 }
 ```
 
+**Package-level `packages/web/vercel.json`:**
+```json
+{
+  "buildCommand": "cd ../.. && npx turbo run build --filter=@settler/web...",
+  "installCommand": "npm ci --prefer-offline --no-audit --omit=optional",
+  "framework": "nextjs",
+  "regions": ["iad1"]
+}
+```
+
 **Deployment Target:** `packages/web` (Next.js application)  
-**Build Script:** `build:vercel` (defined in `packages/web/package.json`)
+**Build Script:** `build:vercel` (defined in `packages/web/package.json`)  
+**Actual Build Command Used:** Root vercel.json takes precedence, uses `cd packages/web && npm run build:vercel`
 
-### Critical Issues Identified
+### Detected Deploy Path
 
-#### 🔴 CRITICAL: Committed node_modules
+**Primary Deploy Root:** Repository root  
+**Build Context:** Monorepo root (all packages available)  
+**Output Directory:** `packages/web/.next`  
+**Install Command:** `npm ci --prefer-offline --no-audit --omit=optional` (runs at root, installs all workspaces)
 
-**Issue:** `node_modules` directories are committed to the repository.
+### Mismatches Identified
 
-**Locations:**
-- `packages/web/node_modules/` - Contains production dependencies
-- `packages/api/node_modules/` - Contains production dependencies
+#### 🔴 CRITICAL: Multiple Vercel Configurations
 
-**Impact:**
-- Repository bloat (large file size)
-- Potential security vulnerabilities in committed dependencies
-- CI/CD inconsistencies (local vs CI environments)
-- Git merge conflicts on dependency updates
-- Violates npm best practices
+**Issue:** Both root `vercel.json` and `packages/web/vercel.json` exist with different configurations.
 
-**Root Cause:** `.gitignore` includes `**/node_modules` but these were committed before the rule was added.
+**Root vercel.json:**
+- Build: `cd packages/web && npm run build:vercel`
+- Output: `packages/web/.next`
+- Regions: Multiple (iad1, sfo1, lhr1, syd1)
 
-#### 🟡 WARNING: Workspace Integrity
+**packages/web/vercel.json:**
+- Build: `cd ../.. && npx turbo run build --filter=@settler/web...`
+- Output: Not specified (defaults to `.next`)
+- Regions: Single (iad1)
 
-**Status:** ✅ All workspace packages have valid `package.json` files  
-**Status:** ✅ All internal dependencies (`@settler/*`) are properly declared  
-**Status:** ✅ No phantom package references detected
+**Impact:** Vercel may use different configs depending on project setup, causing inconsistent builds.
 
-#### 🟡 WARNING: Script References
+**Resolution:** Standardize on root `vercel.json` and remove or document package-level config.
 
-**Status:** ✅ All scripts referenced in root `package.json` exist:
-- `scripts/doctor.ts` ✅
-- `scripts/check-production-readiness.ts` ✅
-- `scripts/smoke-test.ts` ✅
-- All other referenced scripts exist ✅
+#### 🟡 WARNING: Build Command Inconsistency
 
-#### 🟢 INFO: CI Configuration
+**Root vercel.json** uses: `cd packages/web && npm run build:vercel`  
+**packages/web/vercel.json** uses: `cd ../.. && npx turbo run build --filter=@settler/web...`
 
-**Current CI Workflow:** `.github/workflows/ci.yml`
+**Impact:** Different build strategies may produce different outputs.
 
-**Existing Checks:**
-- ✅ Environment validation
-- ✅ Lint and typecheck
-- ✅ Tests
-- ✅ Security scans
-- ✅ Build verification
+**Resolution:** CI must validate exact Vercel build command matches expectations.
 
-**Missing Checks:**
-- ❌ No check for committed `node_modules`
-- ❌ No workspace integrity validation
-- ❌ No explicit Vercel build parity check
-- ❌ No smoke test in CI (exists but not enforced)
+#### 🟡 WARNING: Optional Script Dependencies
 
-### Suspected Drift Causes
+**Issue:** `build:vercel` script references optional `scripts/vercel-build-optimizer.js`:
+```bash
+(test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || echo '⚠️  Build optimizer script not available')
+```
 
-1. **Committed node_modules**
-   - Local development may use committed dependencies
-   - CI may use different dependency versions
-   - Vercel may use cached dependencies
+**Impact:** Build may succeed even if optimizer script is missing, leading to inconsistent optimizations.
 
-2. **Missing CI Guardrails**
-   - No enforcement of "no node_modules" rule
-   - No workspace integrity checks
-   - No explicit Vercel build simulation
+**Resolution:** Either make script required or remove conditional execution.
 
-3. **Vercel Configuration Ambiguity**
-   - Build command uses relative paths (`cd packages/web`)
-   - No explicit root directory setting
-   - No output directory specification
+### Risks
 
-4. **Script Dependencies**
-   - Some scripts reference optional files (e.g., `vercel-build-optimizer.js`)
-   - Scripts may fail silently in CI
+1. **Workspace Drift:** If a workspace package is added without proper `package.json`, builds may fail silently or succeed with missing dependencies.
 
-## Remediation Plan
+2. **Phantom Dependencies:** Internal `@settler/*` packages referenced but not defined will cause runtime failures.
 
-### Phase 1: Remove Committed node_modules
+3. **Script Ghosts:** Scripts in `package.json` pointing to non-existent files will fail at runtime.
 
-1. Remove `packages/web/node_modules/`
-2. Remove `packages/api/node_modules/`
-3. Verify `.gitignore` rules are comprehensive
-4. Add CI check to prevent future commits
+4. **Partial Builds:** If CI doesn't validate all packages, some may be unbuilt but still referenced.
 
-### Phase 2: Lock Vercel Configuration
+5. **Vercel Config Ambiguity:** Multiple configs may cause Vercel to use unexpected settings.
 
-1. Update `vercel.json` with explicit settings:
-   - Root directory (if needed)
-   - Output directory
-   - Build command (already correct)
-   - Framework (already set)
+### Why This Problem Occurred
 
-2. Ensure build command is deterministic:
-   - Use absolute paths where possible
-   - Remove optional script dependencies
-   - Add explicit error handling
+1. **Evolutionary Growth:** Configs were added incrementally without consolidation.
+2. **Missing CI Enforcement:** No checks to prevent drift or validate parity.
+3. **Optional Dependencies:** Scripts designed to be optional create inconsistent states.
+4. **No Single Source of Truth:** Multiple configs without clear precedence.
 
-### Phase 3: Enhance CI Gate
+## Remediation Status
 
-1. Add "no node_modules" check
-2. Add workspace integrity validation
-3. Add explicit Vercel build simulation
-4. Add smoke test enforcement
-5. Make checks fail-fast (no warnings-only pass)
-
-### Phase 4: Production Hardening
-
-1. Add error boundaries to prevent 500 errors
-2. Add route-level guards
-3. Validate environment variables at runtime
-4. Ensure graceful degradation
-
-## Verification Criteria
-
-After remediation, the following must be true:
-
-- ✅ No `node_modules` directories in repository
-- ✅ CI passes all checks
-- ✅ Vercel build matches local build
-- ✅ Smoke tests pass
-- ✅ No workspace integrity issues
-- ✅ All scripts execute successfully
+✅ **Phase 0 Complete:** Forensics and evidence gathering  
+🔄 **Phase 1 In Progress:** Permanent anti-drift guardrails  
+⏳ **Phase 2 Pending:** CI as law  
+⏳ **Phase 3 Pending:** Auto-merge pipeline  
+⏳ **Phase 4 Pending:** Founder Ops Command Center  
+⏳ **Phase 5 Pending:** Support Autopilot  
+⏳ **Phase 6 Pending:** Hardening
 
 ## Next Steps
 
-1. Execute Phase 1: Remove node_modules
-2. Execute Phase 2: Lock Vercel config
-3. Execute Phase 3: Enhance CI
-4. Execute Phase 4: Production hardening
-5. Verify all checks pass
-6. Document production readiness criteria
+1. ✅ Complete Phase 0 (this report)
+2. 🔄 Implement comprehensive integrity scripts
+3. ⏳ Update CI to enforce all checks
+4. ⏳ Create deployment contract documentation
+5. ⏳ Build ops dashboard
+6. ⏳ Implement support autopilot
+7. ⏳ Add production hardening
