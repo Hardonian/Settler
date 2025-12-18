@@ -7,7 +7,6 @@
 import { Router, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
-import { AuthRequest } from "../middleware/auth";
 import { TenantRequest } from "../middleware/tenant";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
@@ -35,7 +34,6 @@ router.get(
   validateRequest(getAuditTrailSchema),
   async (req: TenantRequest, res: Response) => {
     try {
-      const userId = req.userId!;
       const tenantId = req.tenantId!;
       const queryParams = getAuditTrailSchema.parse({ query: req.query });
       const {
