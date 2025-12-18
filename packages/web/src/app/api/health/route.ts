@@ -5,12 +5,16 @@
  * - Supabase connectivity
  * - Required environment variables
  * - Database connectivity (if available)
+ * - RPC healthcheck (if authenticated)
+ * 
+ * NON-NEGOTIABLE: Never crashes, always returns JSON
  */
 
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { getTraceId } from '@/lib/observability/trace';
 import { logger } from '@/lib/observability/logger';
+import { validateSupabaseEnv } from '@/lib/env/validator';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -20,57 +24,123 @@ export async function GET(request: NextRequest) {
   const checks: Record<string, { status: 'ok' | 'error'; message?: string }> = {};
   let overallStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
 
-  // Check environment variables
-  const requiredEnvVars = [
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-  ];
-  
-  const missingEnvVars = requiredEnvVars.filter(
-    (key) => !process.env[key] && !process.env[key.replace('NEXT_PUBLIC_', '')]
-  );
-  
-  if (missingEnvVars.length > 0) {
+  // Check environment variables using validator
+  const envValidation = validateSupabaseEnv();
+  if (!envValidation.isValid) {
     checks.env = {
       status: 'error',
-      message: `Missing: ${missingEnvVars.join(', ')}`,
+      message: `Missing: ${envValidation.missing.join(', ')}`,
     };
     overallStatus = 'unhealthy';
   } else {
     checks.env = { status: 'ok' };
   }
 
-  // Check Supabase connectivity
+  // Check Supabase client initialization
+  let supabaseClientInit = false;
+  let rpcAttempted = false;
+  let rpcResult: { success: boolean; error?: string } | null = null;
+  
   try {
     const supabase = await createClient();
-    const { error } = await Promise.race([
-      supabase.from('profiles').select('id').limit(1),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Supabase query timeout')), 5000)
-      ),
-    ]) as any;
     
-    if (error && error.code !== 'PGRST116') {
-      // PGRST116 is "no rows returned" which is fine for health check
-      throw error;
+    // Verify client is initialized (not empty mock)
+    if (supabase && typeof supabase.from === 'function') {
+      supabaseClientInit = true;
+      checks.supabaseClientInit = { status: 'ok' };
+      
+      // Try a simple query to verify connectivity
+      // Use Promise.race with timeout to prevent hanging
+      try {
+        const queryResult = await Promise.race([
+          supabase.from('profiles').select('id').limit(1),
+          new Promise<never>((_, reject) => 
+            setTimeout(() => reject(new Error('Supabase query timeout')), 5000)
+          ),
+        ]);
+        
+        // Check if result has error property
+        const error = (queryResult as any)?.error;
+        if (error && error.code !== 'PGRST116') {
+          // PGRST116 is "no rows returned" which is fine for health check
+          throw error;
+        }
+        
+        checks.supabase = { status: 'ok' };
+      } catch (queryError) {
+        checks.supabase = {
+          status: 'error',
+          message: queryError instanceof Error ? queryError.message : 'Query failed',
+        };
+        overallStatus = overallStatus === 'healthy' ? 'degraded' : 'unhealthy';
+      }
+      
+      // Try RPC healthcheck (may fail for anon users due to RLS - that's OK)
+      rpcAttempted = true;
+      try {
+        const rpcResult_race = await Promise.race([
+          supabase.rpc('healthcheck'),
+          new Promise<never>((_, reject) => 
+            setTimeout(() => reject(new Error('RPC timeout')), 3000)
+          ),
+        ]);
+        
+        const rpcError = (rpcResult_race as any)?.error;
+        if (rpcError) {
+          // RPC might be blocked by RLS for anon users - this is expected
+          rpcResult = {
+            success: false,
+            error: rpcError.message || 'RPC call failed (may be RLS blocked)',
+          };
+          checks.rpc = {
+            status: 'error',
+            message: 'RPC blocked or unavailable (expected for anon users)',
+          };
+        } else {
+          rpcResult = { success: true };
+          checks.rpc = { status: 'ok' };
+        }
+      } catch (rpcError) {
+        rpcResult = {
+          success: false,
+          error: rpcError instanceof Error ? rpcError.message : 'RPC call failed',
+        };
+        checks.rpc = {
+          status: 'error',
+          message: 'RPC unavailable (may be RLS blocked for anon)',
+        };
+        // RPC failure doesn't affect overall health - it's expected for anon
+      }
+    } else {
+      checks.supabaseClientInit = {
+        status: 'error',
+        message: 'Supabase client initialization failed',
+      };
+      checks.supabase = {
+        status: 'error',
+        message: 'Client not initialized',
+      };
+      overallStatus = 'unhealthy';
     }
-    
-    checks.supabase = { status: 'ok' };
   } catch (error) {
+    checks.supabaseClientInit = {
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Initialization failed',
+    };
     checks.supabase = {
       status: 'error',
       message: error instanceof Error ? error.message : 'Connection failed',
     };
-    overallStatus = overallStatus === 'healthy' ? 'degraded' : 'unhealthy';
+    overallStatus = 'unhealthy';
   }
 
-  // Check database connectivity (Prisma) if available
+  // Check database connectivity (Prisma) if available - optional
   try {
     const { prisma } = await import('@/shared/db/prismaClient');
     if (prisma && typeof prisma.$queryRaw !== 'undefined') {
       await Promise.race([
         prisma.$queryRaw`SELECT 1`,
-        new Promise((_, reject) => 
+        new Promise<never>((_, reject) => 
           setTimeout(() => reject(new Error('Database query timeout')), 5000)
         ),
       ]);
@@ -80,7 +150,7 @@ export async function GET(request: NextRequest) {
         status: 'error',
         message: 'Prisma client not available',
       };
-      overallStatus = overallStatus === 'healthy' ? 'degraded' : 'unhealthy';
+      // Database is optional, don't mark as unhealthy
     }
   } catch (error) {
     checks.database = {
@@ -88,25 +158,37 @@ export async function GET(request: NextRequest) {
       message: error instanceof Error ? error.message : 'Connection failed',
     };
     // Database is optional, so don't mark as unhealthy if it fails
-    if (overallStatus === 'healthy') {
-      overallStatus = 'degraded';
-    }
   }
 
-  const statusCode = overallStatus === 'unhealthy' ? 503 : overallStatus === 'degraded' ? 200 : 200;
+  const statusCode = overallStatus === 'unhealthy' ? 503 : 200;
 
-  // Log health check
-  await logger.info('Health check', {
-    trace_id: traceId,
-    status: overallStatus,
-    checks: Object.keys(checks),
-  });
+  // Log health check (non-blocking)
+  try {
+    await logger.info('Health check', {
+      trace_id: traceId,
+      status: overallStatus,
+      checks: Object.keys(checks),
+    });
+  } catch (logError) {
+    // Don't fail health check if logging fails
+    console.warn('[Health] Failed to log health check:', logError);
+  }
 
   const response = NextResponse.json(
     {
+      ok: overallStatus === 'healthy',
       status: overallStatus,
       trace_id: traceId,
       timestamp: new Date().toISOString(),
+      env: {
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'set' : 'missing',
+        supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'set' : 'missing',
+      },
+      supabaseClientInit,
+      rpc: {
+        attempted: rpcAttempted,
+        result: rpcResult,
+      },
       checks,
     },
     { status: statusCode }

@@ -10,9 +10,8 @@ import { ConsolePublicOverview } from '@/components/console/ConsolePublicOvervie
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { validateSupabaseEnv } from '@/lib/env/validator';
+import { EnvErrorPanel } from '@/components/env/EnvErrorPanel';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -29,33 +28,21 @@ export default async function ConsoleRootLayout({
   };
   
   
-  // Environment safety check
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-  
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('[Console Layout] Missing Supabase configuration', logContext);
-    // In production, show a clean error page instead of crashing
-    if (process.env.NODE_ENV === 'production') {
-      return (
-        <>
-          <Navigation />
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
-              <p className="text-slate-600 dark:text-slate-400 mb-4">
-                Configuration issue: Supabase is not properly configured.
-              </p>
-              <Button asChild>
-                <Link href="/">Go Home</Link>
-              </Button>
-            </div>
-          </div>
-          <Footer />
-        </>
-      );
-    }
-    // In development, redirect to signup
-    redirect('/signup?error=config_required');
+  // Environment safety check using validator
+  const envValidation = validateSupabaseEnv();
+  if (!envValidation.isValid) {
+    console.warn('[Console Layout] Missing Supabase configuration', {
+      ...logContext,
+      missingVars: envValidation.missing,
+    });
+    // Show clean error page instead of crashing
+    return (
+      <>
+        <Navigation />
+        <EnvErrorPanel missingVars={envValidation.missing} />
+        <Footer />
+      </>
+    );
   }
 
   try {

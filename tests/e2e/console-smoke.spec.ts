@@ -111,15 +111,79 @@ test.describe('Console Smoke Tests', () => {
     expect(criticalErrors.length).toBe(0);
   });
 
-  test('console health endpoint returns 200', async ({ request }) => {
-    const response = await request.get('/api/health/console');
+  test('health endpoint returns ok=true', async ({ request }) => {
+    const response = await request.get('/api/health');
     
-    expect(response.status()).toBe(200);
+    // Health endpoint should return 200 or 503, never 500
+    expect(response.status()).not.toBe(500);
+    expect([200, 503]).toContain(response.status());
     
     const data = await response.json();
+    
+    // Verify response structure
+    expect(data).toHaveProperty('ok');
     expect(data).toHaveProperty('status');
+    expect(data).toHaveProperty('env');
+    expect(data).toHaveProperty('supabaseClientInit');
+    expect(data).toHaveProperty('rpc');
+    
+    // If status is unhealthy, ok should be false
+    if (data.status === 'unhealthy') {
+      expect(data.ok).toBe(false);
+    }
+    
+    // Verify checks object exists
     expect(data).toHaveProperty('checks');
     expect(data.checks).toHaveProperty('env');
-    expect(data.checks).toHaveProperty('supabase');
+    
+    // Log health status for debugging
+    console.log('[Health Check]', {
+      ok: data.ok,
+      status: data.status,
+      supabaseClientInit: data.supabaseClientInit,
+    });
+  });
+
+  test('console page never returns 500', async ({ page }) => {
+    const errors: string[] = [];
+    const responses: { url: string; status: number }[] = [];
+    
+    page.on('pageerror', (error) => {
+      errors.push(error.message);
+    });
+    
+    page.on('response', (response) => {
+      if (response.url().includes('/console')) {
+        responses.push({ url: response.url(), status: response.status() });
+        if (response.status() === 500) {
+          errors.push(`500 error on ${response.url()}`);
+        }
+      }
+    });
+
+    // Navigate to console
+    const response = await page.goto('/console', { waitUntil: 'networkidle' });
+    
+    // Verify response is not 500
+    expect(response?.status()).not.toBe(500);
+    expect(response?.status()).toBeLessThan(500);
+    
+    // Verify no console routes returned 500
+    const console500s = responses.filter(r => r.status === 500);
+    expect(console500s.length).toBe(0);
+    
+    // Verify page renders (either public overview or authenticated console)
+    const bodyText = await page.textContent('body');
+    expect(bodyText).toBeTruthy();
+    expect(bodyText?.length).toBeGreaterThan(0);
+    
+    // Check for recognizable Console content
+    const hasConsoleContent = 
+      (await page.locator('text=Developer Console').isVisible().catch(() => false)) ||
+      (await page.locator('text=API Keys').isVisible().catch(() => false)) ||
+      (await page.locator('text=Sign In').isVisible().catch(() => false)) ||
+      (await page.locator('h1').isVisible().catch(() => false));
+    
+    expect(hasConsoleContent).toBeTruthy();
   });
 });

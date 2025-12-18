@@ -49,14 +49,14 @@ export declare class WebhookService {
      */
     createWebhook(tenantId: string, userId: string, url: string, events: string[], secret?: string): Promise<{
         secret: string;
-        status: string;
         id: string;
-        userId: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         metadata: Prisma.JsonValue;
         deletedAt: Date | null;
         tenantId: string;
+        userId: string;
         events: Prisma.JsonValue;
         url: string;
     }>;
@@ -65,14 +65,14 @@ export declare class WebhookService {
      */
     listWebhooks(tenantId: string): Promise<{
         secret: string;
-        status: string;
         id: string;
-        userId: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         metadata: Prisma.JsonValue;
         deletedAt: Date | null;
         tenantId: string;
+        userId: string;
         events: Prisma.JsonValue;
         url: string;
     }[]>;

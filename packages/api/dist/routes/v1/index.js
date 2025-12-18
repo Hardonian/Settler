@@ -17,12 +17,15 @@ const fees_1 = __importDefault(require("./fees"));
 const exports_1 = __importDefault(require("./exports"));
 const currency_1 = __importDefault(require("./currency"));
 const receive_1 = __importDefault(require("./webhooks/receive"));
+const events_1 = __importDefault(require("./webhooks/events"));
 const ingestion_1 = __importDefault(require("./ingestion"));
 const reconciliation_1 = __importDefault(require("./reconciliation"));
 const ingestion_exports_1 = __importDefault(require("./ingestion-exports"));
+const operator_mode_1 = require("./operator-mode");
 exports.v1Router = (0, express_1.Router)();
 // Mount v1 routes
 exports.v1Router.use('/webhooks/receive', receive_1.default);
+exports.v1Router.use('/webhooks', events_1.default); // Events discovery endpoint
 exports.v1Router.use('/realtime', realtime_1.realtimeRouter);
 exports.v1Router.use('/reconciliations', reconciliation_summary_1.reconciliationSummaryRouter);
 // Canonical data model routes
@@ -35,6 +38,8 @@ exports.v1Router.use('/currency', currency_1.default);
 exports.v1Router.use('/ingestion', ingestion_1.default);
 exports.v1Router.use('/reconciliation', reconciliation_1.default);
 exports.v1Router.use('/ingestion/exports', ingestion_exports_1.default);
+// Operator mode routes
+exports.v1Router.use('/', operator_mode_1.operatorModeRouter);
 // Health check
 exports.v1Router.get('/health', (_req, res) => {
     res.json({

@@ -8,12 +8,15 @@ const express_1 = require("express");
 const logger_1 = require("../../utils/logger");
 const export_service_1 = require("../../services/ingestion/export-service");
 const db_1 = require("../../db");
+const usage_enforcement_1 = require("../../middleware/usage-enforcement");
+const usage_tracking_1 = require("../../utils/usage-tracking");
+const billing_helpers_1 = require("../../utils/billing-helpers");
 const router = (0, express_1.Router)();
 /**
  * POST /api/v1/ingestion/exports
  * Create an export
  */
-router.post("/", async (req, res) => {
+router.post("/", (0, usage_enforcement_1.checkExportLimit)(), async (req, res) => {
     try {
         const { type, format, reconciliationRunId, ingestionId } = req.body;
         const tenantId = req.tenantId;
@@ -42,6 +45,16 @@ router.post("/", async (req, res) => {
             traceId: req.traceId,
         };
         const exportId = await (0, export_service_1.createExport)(exportOptions);
+        // Track usage
+        const billingAccount = await (0, billing_helpers_1.getBillingAccount)(userId, tenantId);
+        if (billingAccount) {
+            await (0, usage_tracking_1.trackExportUsage)({
+                billingAccountId: billingAccount.id,
+                userId,
+                tenantId,
+                exportId,
+            });
+        }
         // Generate export asynchronously (in production, use a job queue)
         (0, export_service_1.generateExport)(exportId).catch((error) => {
             (0, logger_1.logError)("Failed to generate export", error, { exportId });

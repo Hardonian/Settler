@@ -15,6 +15,8 @@ import { getUsageSummary } from '@/domain/console/usage';
 import { listApiKeys } from '@/domain/console/apiKeys';
 import { listReceipts } from '@/domain/console/receipts';
 import { listFeatureFlags } from '@/domain/console/featureFlags';
+import { validateSupabaseEnv } from '@/lib/env/validator';
+import { EnvErrorPanel } from '@/components/env/EnvErrorPanel';
 import { LiveActivityFeed } from '@/components/console/LiveActivityFeed';
 import { OnboardingWizardClient } from '@/components/onboarding/OnboardingWizardClient';
 import { WelcomeBannerClient } from '@/components/onboarding/WelcomeBannerClient';
@@ -40,30 +42,14 @@ async function ConsoleOverviewContent() {
     
     console.log('[Console] Request started', logContext);
     
-    // Environment safety check
-    const requiredEnvVars = [
-      'NEXT_PUBLIC_SUPABASE_URL',
-      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    ];
-    const missingEnvVars = requiredEnvVars.filter(
-      (key) => !process.env[key]
-    );
-    
-    if (missingEnvVars.length > 0) {
+    // Environment safety check using validator
+    const envValidation = validateSupabaseEnv();
+    if (!envValidation.isValid) {
       console.warn('[Console] Missing environment variables', {
         ...logContext,
-        missingVars: missingEnvVars,
+        missingVars: envValidation.missing,
       });
-      return (
-        <div className="text-center py-12">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
-            Configuration issue: Missing environment variables. Please contact support.
-          </p>
-          <Button asChild>
-            <Link href="/">Go Home</Link>
-          </Button>
-        </div>
-      );
+      return <EnvErrorPanel missingVars={envValidation.missing} />;
     }
 
     let user;

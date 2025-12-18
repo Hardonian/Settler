@@ -15,6 +15,7 @@ const SSRFProtection_1 = require("../infrastructure/security/SSRFProtection");
 const logger_1 = require("../utils/logger");
 const error_handler_1 = require("../utils/error-handler");
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
+const event_registry_1 = require("../services/webhooks/event-registry");
 const router = (0, express_1.Router)();
 exports.webhooksRouter = router;
 // Rate limiting for webhook receive endpoint
@@ -30,7 +31,7 @@ const webhookReceiveLimiter = (0, express_rate_limit_1.default)({
 const createWebhookSchema = zod_1.z.object({
     body: zod_1.z.object({
         url: zod_1.z.string().url(),
-        events: zod_1.z.array(zod_1.z.string()),
+        events: zod_1.z.array(zod_1.z.string()).min(1),
         secret: zod_1.z.string().optional(),
     }),
 });
@@ -51,6 +52,22 @@ router.post("/", (0, authorization_1.requirePermission)(Permissions_1.Permission
                 error: "Invalid Webhook URL",
                 message: "URL must be HTTPS and cannot point to internal/private IP addresses",
             });
+        }
+        // Validate all events are valid and public
+        for (const event of events) {
+            if (!(0, event_registry_1.isValidEventType)(event)) {
+                return res.status(400).json({
+                    error: "INVALID_EVENT_TYPE",
+                    message: `Invalid event type: ${event}. Use GET /api/v1/webhooks/events to see available events.`,
+                });
+            }
+            const metadata = (0, event_registry_1.getPublicEvents)().find(e => e.type === event);
+            if (!metadata || !metadata.public) {
+                return res.status(400).json({
+                    error: "INVALID_EVENT_TYPE",
+                    message: `Event type ${event} is not available for public subscription`,
+                });
+            }
         }
         // Generate secret if not provided
         const webhookSecret = secret || `whsec_${require('crypto').randomBytes(32).toString('base64url')}`;
