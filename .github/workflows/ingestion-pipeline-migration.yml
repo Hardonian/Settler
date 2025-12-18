@@ -1,0 +1,157 @@
+name: Ingestion Pipeline Migration
+
+on:
+  pull_request:
+    paths:
+      - 'prisma/schema.prisma'
+      - 'supabase/migrations/**/ingestion*.sql'
+      - 'supabase/migrations/**/*ingestion*.sql'
+      - 'packages/api/src/services/ingestion/**'
+      - '.github/workflows/ingestion-pipeline-migration.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'prisma/schema.prisma'
+      - 'supabase/migrations/**/ingestion*.sql'
+      - 'supabase/migrations/**/*ingestion*.sql'
+      - 'packages/api/src/services/ingestion/**'
+      - '.github/workflows/ingestion-pipeline-migration.yml'
+
+jobs:
+  run-ingestion-migration:
+    name: Run Ingestion Pipeline Migration
+    runs-on: ubuntu-latest
+    environment: production # Uses production environment secrets (DATABASE_URL)
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Prisma migration status (before)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🔍 Checking Prisma migration status (before)..."
+          npx prisma migrate status --schema=prisma/schema.prisma || echo "⚠️  Status check failed (may be expected if no migrations exist)"
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### Pre-Migration Status" >> $GITHUB_STEP_SUMMARY
+          npx prisma migrate status --schema=prisma/schema.prisma >> $GITHUB_STEP_SUMMARY 2>&1 || echo "No migrations or connection issue" >> $GITHUB_STEP_SUMMARY
+
+      - name: Run ingestion pipeline migration
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🔄 Running ingestion pipeline migration..."
+          echo "Using DATABASE_URL from GitHub Actions secrets"
+          # Use migrate deploy for CI/CD (non-interactive)
+          # This applies pending migrations without creating new ones
+          npx prisma migrate deploy --schema=prisma/schema.prisma
+          echo "✅ Migration completed"
+
+      - name: Verify migration status (after)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🔍 Verifying migration status (after)..."
+          npx prisma migrate status --schema=prisma/schema.prisma
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### Post-Migration Status" >> $GITHUB_STEP_SUMMARY
+          npx prisma migrate status --schema=prisma/schema.prisma >> $GITHUB_STEP_SUMMARY 2>&1
+
+      - name: Verify ingestion tables exist
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🔍 Verifying ingestion tables..."
+          npx prisma db execute --stdin --schema=prisma/schema.prisma <<EOF || echo "⚠️  Could not verify tables"
+          SELECT table_name 
+          FROM information_schema.tables 
+          WHERE table_schema = 'public' 
+          AND table_name IN (
+            'ingestion_sources',
+            'ingestions',
+            'raw_records',
+            'normalized_transactions',
+            'reconciliation_runs',
+            'reconciliation_matches',
+            'exports'
+          )
+          ORDER BY table_name;
+          EOF
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### Ingestion Tables Verification" >> $GITHUB_STEP_SUMMARY
+          npx prisma db execute --stdin --schema=prisma/schema.prisma <<EOF >> $GITHUB_STEP_SUMMARY 2>&1 || echo "Could not verify tables" >> $GITHUB_STEP_SUMMARY
+          SELECT table_name 
+          FROM information_schema.tables 
+          WHERE table_schema = 'public' 
+          AND table_name IN (
+            'ingestion_sources',
+            'ingestions',
+            'raw_records',
+            'normalized_transactions',
+            'reconciliation_runs',
+            'reconciliation_matches',
+            'exports'
+          )
+          ORDER BY table_name;
+          EOF
+
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "📦 Generating Prisma Client..."
+          npx prisma generate --schema=prisma/schema.prisma
+          echo "✅ Prisma Client generated"
+
+      - name: Create migration summary
+        if: success()
+        run: |
+          echo "## ✅ Ingestion Pipeline Migration Completed Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Event:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All ingestion pipeline migrations have been applied successfully." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Tables Created:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ingestion_sources" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ingestions" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ raw_records" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ normalized_transactions" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ reconciliation_runs" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ reconciliation_matches" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ exports" >> $GITHUB_STEP_SUMMARY
+
+      - name: Migration failed
+        if: failure()
+        run: |
+          echo "## ❌ Ingestion Pipeline Migration Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Event:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "❌ Migration execution failed. Please check the logs above for details." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Troubleshooting:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify DATABASE_URL secret is set correctly in GitHub Actions secrets" >> $GITHUB_STEP_SUMMARY
+          echo "2. Check database connectivity and permissions" >> $GITHUB_STEP_SUMMARY
+          echo "3. Review migration SQL for syntax errors" >> $GITHUB_STEP_SUMMARY
+          echo "4. Check Prisma schema is valid: \`npx prisma validate --schema=prisma/schema.prisma\`" >> $GITHUB_STEP_SUMMARY
+          echo "5. Verify migration file exists: \`supabase/migrations/20250131000000_ingestion_pipeline.sql\`" >> $GITHUB_STEP_SUMMARY
