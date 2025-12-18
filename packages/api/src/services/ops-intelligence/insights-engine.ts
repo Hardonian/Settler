@@ -119,7 +119,7 @@ export async function generateInsights(
  */
 async function generateCostInsights(
   supabase: any,
-  timeWindow: { start: Date; end: Date }
+  _timeWindow: { start: Date; end: Date }
 ): Promise<Insight[]> {
   const insights: Insight[] = [];
   const now = new Date();
@@ -262,7 +262,7 @@ async function generateCostInsights(
  */
 async function generateSupportInsights(
   supabase: any,
-  timeWindow: { start: Date; end: Date }
+  _timeWindow: { start: Date; end: Date }
 ): Promise<Insight[]> {
   const insights: Insight[] = [];
   const now = new Date();
@@ -350,7 +350,7 @@ async function generateSupportInsights(
  */
 async function generateUsageInsights(
   supabase: any,
-  timeWindow: { start: Date; end: Date }
+  _timeWindow: { start: Date; end: Date }
 ): Promise<Insight[]> {
   const insights: Insight[] = [];
   const now = new Date();
@@ -452,7 +452,7 @@ async function generateUsageInsights(
  */
 async function generateStabilityInsights(
   supabase: any,
-  timeWindow: { start: Date; end: Date }
+  _timeWindow: { start: Date; end: Date }
 ): Promise<Insight[]> {
   const insights: Insight[] = [];
   const now = new Date();

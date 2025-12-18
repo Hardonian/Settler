@@ -33,29 +33,32 @@ router.get('/events', async (_req: AuthRequest, res: Response) => {
  * GET /api/v1/webhooks/events/:eventType
  * Get details for a specific event type
  */
-router.get('/events/:eventType', async (req: AuthRequest, res: Response) => {
+router.get('/events/:eventType', async (req: AuthRequest, res: Response): Promise<void> => {
   const { eventType } = req.params;
   
-  if (!isValidEventType(eventType)) {
-    return res.status(400).json({
+  if (!eventType || !isValidEventType(eventType)) {
+    res.status(400).json({
       error: 'INVALID_EVENT_TYPE',
-      message: `Unknown event type: ${eventType}`,
+      message: `Unknown event type: ${eventType || 'undefined'}`,
     });
+    return;
   }
   
   const metadata = getEventMetadata(eventType);
   if (!metadata) {
-    return res.status(404).json({
+    res.status(404).json({
       error: 'NOT_FOUND',
       message: `Event type not found: ${eventType}`,
     });
+    return;
   }
   
   if (!metadata.public) {
-    return res.status(403).json({
+    res.status(403).json({
       error: 'FORBIDDEN',
       message: 'This event type is not available for public subscription',
     });
+    return;
   }
   
   res.json({

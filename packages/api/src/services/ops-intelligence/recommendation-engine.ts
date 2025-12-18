@@ -5,7 +5,7 @@
  * Generates actionable, reversible recommendations.
  */
 
-import { Insight, InsightType } from './insights-engine';
+import { Insight } from './insights-engine';
 import { logInfo, logError } from '../../utils/logger';
 
 export type ActionType =
