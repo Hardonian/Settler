@@ -10,6 +10,7 @@ import { validateExternalUrl } from "../infrastructure/security/SSRFProtection";
 import { logInfo, logError, logWarn } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
 import rateLimit from "express-rate-limit";
+import { isValidEventType, getPublicEvents } from "../services/webhooks/event-registry";
 
 const router = Router();
 
@@ -27,7 +28,7 @@ const webhookReceiveLimiter = rateLimit({
 const createWebhookSchema = z.object({
   body: z.object({
     url: z.string().url(),
-    events: z.array(z.string()),
+    events: z.array(z.string()).min(1),
     secret: z.string().optional(),
   }),
 });
@@ -55,6 +56,23 @@ router.post(
           error: "Invalid Webhook URL",
           message: "URL must be HTTPS and cannot point to internal/private IP addresses",
         });
+      }
+
+      // Validate all events are valid and public
+      for (const event of events) {
+        if (!isValidEventType(event)) {
+          return res.status(400).json({
+            error: "INVALID_EVENT_TYPE",
+            message: `Invalid event type: ${event}. Use GET /api/v1/webhooks/events to see available events.`,
+          });
+        }
+        const metadata = getPublicEvents().find(e => e.type === event);
+        if (!metadata || !metadata.public) {
+          return res.status(400).json({
+            error: "INVALID_EVENT_TYPE",
+            message: `Event type ${event} is not available for public subscription`,
+          });
+        }
       }
 
       // Generate secret if not provided

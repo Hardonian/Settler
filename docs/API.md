@@ -12,7 +12,7 @@ Complete API reference for the Settler Reconciliation API.
 
 Settler API supports two authentication methods:
 
-### API Key Authentication
+### API Key Authentication (Recommended for Integrations)
 
 Include your API key in the `X-API-Key` header:
 
@@ -20,7 +20,46 @@ Include your API key in the `X-API-Key` header:
 curl -H "X-API-Key: rk_your_api_key_here" https://api.settler.io/api/v1/jobs
 ```
 
-### JWT Token Authentication
+**API Key Format:**
+- Prefix: `rk_` (read key) or `wk_` (write key)
+- Length: 32+ characters
+- Example: `rk_live_51AbCdEfGhIjKlMnOpQrStUvWxYz1234567890`
+
+**Creating API Keys:**
+
+```bash
+curl -X POST https://api.settler.io/api/v1/api-keys \
+  -H "Authorization: Bearer your_jwt_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Production API Key",
+    "scopes": ["jobs:read", "jobs:write", "reports:read"],
+    "rateLimit": 5000
+  }'
+```
+
+**API Key Scopes:**
+
+- `jobs:read` - Read jobs
+- `jobs:write` - Create/update jobs
+- `jobs:delete` - Delete jobs
+- `jobs:execute` - Run jobs
+- `reports:read` - Read reports
+- `reports:export` - Export reports
+- `webhooks:read` - Read webhooks
+- `webhooks:write` - Create/update webhooks
+- `webhooks:delete` - Delete webhooks
+- `*` - All permissions (admin only)
+
+**API Key Rotation:**
+
+```bash
+# Regenerate API key (revokes old, creates new)
+curl -X POST https://api.settler.io/api/v1/api-keys/{id}/regenerate \
+  -H "Authorization: Bearer your_jwt_token"
+```
+
+### JWT Token Authentication (For Web UI)
 
 Include your JWT token in the `Authorization` header:
 
@@ -42,8 +81,18 @@ curl -X POST https://api.settler.io/api/v1/auth/login \
 ## API Versioning
 
 The API uses URL versioning:
-- `/api/v1/` - Current stable version
+- `/api/v1/` - Current stable version (stable)
 - `/api/v2/` - Future version (currently mirrors v1)
+
+**Version Headers:**
+- `Settler-Version` - API version in use
+- `API-Version` - Alternative version header
+
+**Deprecation:**
+When an endpoint is deprecated, response headers include:
+- `Deprecation: true`
+- `Sunset: 2026-12-31T00:00:00Z` - Date when endpoint will be removed
+- `Link: </docs/migrations/v1-to-v2>; rel="deprecation"` - Migration guide
 
 ## Endpoints
 
@@ -212,8 +261,29 @@ All errors follow a standardized format:
 
 ## Rate Limiting
 
-- Default: 1000 requests per 15 minutes per API key
-- Rate limit headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+Rate limits are enforced per API key:
+
+- **Default:** 1000 requests per 15 minutes
+- **Custom limits:** Set when creating API keys (1-10,000 requests per window)
+- **Headers:** 
+  - `X-RateLimit-Limit` - Maximum requests per window
+  - `X-RateLimit-Remaining` - Remaining requests in current window
+  - `X-RateLimit-Reset` - ISO timestamp when limit resets
+
+**Rate Limit Exceeded Response (429):**
+
+```json
+{
+  "error": "RATE_LIMIT_EXCEEDED",
+  "message": "Rate limit exceeded",
+  "retryAfter": 300
+}
+```
+
+**Best Practices:**
+- Implement exponential backoff on 429 responses
+- Use `X-RateLimit-Remaining` to throttle before hitting limits
+- Consider upgrading plan for higher limits
 
 ## Pagination
 
