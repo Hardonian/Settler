@@ -6,13 +6,13 @@
 import { v4 as uuidv4 } from "uuid";
 import { query } from "../../db";
 import { retryWithBackoff } from "../../utils/retry-with-backoff";
-import { logError, logInfo, logWarn } from "../../utils/logger";
+import { logInfo, logWarn } from "../../utils/logger";
 import {
   createIngestion,
   updateIngestionStatus,
   getIngestion,
 } from "./ingestion-service";
-import { IngestionJobConfig, IngestionStatus } from "./types";
+import { IngestionJobConfig } from "./types";
 
 export interface JobRunnerOptions {
   maxRetries?: number;

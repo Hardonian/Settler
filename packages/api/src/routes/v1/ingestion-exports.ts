@@ -60,7 +60,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
 
     logInfo("Export created", { exportId, type, format, traceId: req.traceId });
 
-    res.status(201).json({
+    return res.status(201).json({
       id: exportId,
       type,
       format,
@@ -69,7 +69,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     logError("Failed to create export", error, { traceId: req.traceId });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to create export",
       traceId: req.traceId,
@@ -93,7 +93,7 @@ router.get("/:exportId", async (req: AuthRequest, res: Response) => {
         error_message, created_at, updated_at
       FROM exports
       WHERE id = $1 AND tenant_id = $2`,
-      [exportId, tenantId]
+      [exportId || "", tenantId]
     );
 
     if (results.length === 0) {
@@ -106,22 +106,22 @@ router.get("/:exportId", async (req: AuthRequest, res: Response) => {
 
     const exportRecord = results[0] as Record<string, unknown>;
 
-    res.json({
-      id: exportRecord.id,
-      type: exportRecord.type,
-      format: exportRecord.format,
-      status: exportRecord.status,
-      signedUrl: exportRecord.signed_url,
-      signedUrlExpiresAt: exportRecord.signed_url_expires_at,
-      fileSizeBytes: exportRecord.file_size_bytes,
-      rowCount: exportRecord.row_count,
-      errorMessage: exportRecord.error_message,
-      createdAt: exportRecord.created_at,
-      updatedAt: exportRecord.updated_at,
+    return res.json({
+      id: exportRecord.id as string,
+      type: exportRecord.type as string,
+      format: exportRecord.format as string,
+      status: exportRecord.status as string,
+      signedUrl: exportRecord.signed_url as string | null,
+      signedUrlExpiresAt: exportRecord.signed_url_expires_at as Date | null,
+      fileSizeBytes: exportRecord.file_size_bytes as number | null,
+      rowCount: exportRecord.row_count as number | null,
+      errorMessage: exportRecord.error_message as string | null,
+      createdAt: exportRecord.created_at as Date,
+      updatedAt: exportRecord.updated_at as Date,
     });
   } catch (error) {
     logError("Failed to get export", error, { traceId: req.traceId });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to get export",
       traceId: req.traceId,
@@ -147,7 +147,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       WHERE tenant_id = $1
       ORDER BY created_at DESC
       LIMIT $2 OFFSET $3`,
-      [tenantId, limit, offset]
+      [tenantId, limit.toString(), offset.toString()]
     );
 
     const totalResults = await query(
@@ -157,16 +157,16 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 
     const total = (totalResults[0] as { count: string }).count;
 
-    res.json({
+    return res.json({
       exports: exports.map((e: Record<string, unknown>) => ({
-        id: e.id,
-        type: e.type,
-        format: e.format,
-        status: e.status,
-        fileSizeBytes: e.file_size_bytes,
-        rowCount: e.row_count,
-        createdAt: e.created_at,
-        updatedAt: e.updated_at,
+        id: e.id as string,
+        type: e.type as string,
+        format: e.format as string,
+        status: e.status as string,
+        fileSizeBytes: e.file_size_bytes as number | null,
+        rowCount: e.row_count as number | null,
+        createdAt: e.created_at as Date,
+        updatedAt: e.updated_at as Date,
       })),
       pagination: {
         limit,
@@ -176,7 +176,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     logError("Failed to list exports", error, { traceId: req.traceId });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to list exports",
       traceId: req.traceId,

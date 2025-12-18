@@ -46,7 +46,7 @@ router.post("/run", async (req: AuthRequest, res: Response) => {
 
     logInfo("Reconciliation run started", { runId, ingestionId, traceId: req.traceId });
 
-    res.status(201).json({
+    return res.status(201).json({
       runId,
       ingestionId,
       status: "running",
@@ -55,7 +55,7 @@ router.post("/run", async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     logError("Failed to run reconciliation", error, { traceId: req.traceId });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to run reconciliation",
       traceId: req.traceId,
@@ -80,7 +80,7 @@ router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
         confidence_avg, error_message, trace_id, metadata
       FROM reconciliation_runs
       WHERE id = $1 AND tenant_id = $2`,
-      [runId, tenantId]
+      [runId || "", tenantId]
     );
 
     if (results.length === 0) {
@@ -93,20 +93,20 @@ router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
 
     const run = results[0] as Record<string, unknown>;
 
-    res.json({
-      id: run.id,
-      ingestionId: run.ingestion_id,
-      status: run.status,
-      startedAt: run.started_at,
-      completedAt: run.completed_at,
-      sourceCount: run.source_count,
-      targetCount: run.target_count,
-      matchedCount: run.matched_count,
-      unmatchedSourceCount: run.unmatched_source_count,
-      unmatchedTargetCount: run.unmatched_target_count,
-      confidenceAvg: run.confidence_avg,
-      errorMessage: run.error_message,
-      traceId: run.trace_id,
+    return res.json({
+      id: run.id as string,
+      ingestionId: run.ingestion_id as string | null,
+      status: run.status as string,
+      startedAt: run.started_at as Date,
+      completedAt: run.completed_at as Date | null,
+      sourceCount: run.source_count as number,
+      targetCount: run.target_count as number,
+      matchedCount: run.matched_count as number,
+      unmatchedSourceCount: run.unmatched_source_count as number,
+      unmatchedTargetCount: run.unmatched_target_count as number,
+      confidenceAvg: run.confidence_avg as number | null,
+      errorMessage: run.error_message as string | null,
+      traceId: run.trace_id as string | null,
       metadata:
         typeof run.metadata === "string"
           ? JSON.parse(run.metadata as string)
@@ -116,7 +116,7 @@ router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
     logError("Failed to get reconciliation run", error, {
       traceId: req.traceId,
     });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to get reconciliation run",
       traceId: req.traceId,
@@ -164,45 +164,45 @@ router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
     }
 
     queryStr += ` ORDER BY rm.confidence DESC, st.date DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-    params.push(limit, offset);
+    params.push(limit.toString(), offset.toString());
 
-    const matches = await query(queryStr, params);
+    const matches = await query(queryStr, params as (string | number | boolean | Date | null)[]);
 
     const totalResults = await query(
       `SELECT COUNT(*) as count
       FROM reconciliation_matches
       WHERE run_id = $1 AND tenant_id = $2`,
-      [runId, tenantId]
+      [runId || "", tenantId]
     );
 
     const total = (totalResults[0] as { count: string }).count;
 
-    res.json({
+    return res.json({
       matches: matches.map((m: Record<string, unknown>) => ({
-        id: m.id,
-        matchType: m.match_type,
-        confidence: m.confidence,
-        matchReason: m.match_reason,
-        amountDiff: m.amount_diff,
-        dateDiff: m.date_diff,
-        reviewed: m.reviewed,
-        reviewedAt: m.reviewed_at,
+        id: m.id as string,
+        matchType: m.match_type as string,
+        confidence: m.confidence as number,
+        matchReason: m.match_reason as string | null,
+        amountDiff: m.amount_diff as number | null,
+        dateDiff: m.date_diff as number | null,
+        reviewed: m.reviewed as boolean,
+        reviewedAt: m.reviewed_at as Date | null,
         source: {
-          id: m.source_id,
-          amount: m.source_amount,
-          currency: m.source_currency,
-          date: m.source_date,
-          description: m.source_description,
-          externalId: m.source_external_id,
+          id: m.source_id as string,
+          amount: m.source_amount as number,
+          currency: m.source_currency as string,
+          date: m.source_date as Date,
+          description: m.source_description as string | null,
+          externalId: m.source_external_id as string | null,
         },
         target: m.target_id
           ? {
-              id: m.target_id,
-              amount: m.target_amount,
-              currency: m.target_currency,
-              date: m.target_date,
-              description: m.target_description,
-              externalId: m.target_external_id,
+              id: m.target_id as string,
+              amount: m.target_amount as number,
+              currency: m.target_currency as string,
+              date: m.target_date as Date,
+              description: m.target_description as string | null,
+              externalId: m.target_external_id as string | null,
             }
           : null,
       })),
@@ -216,7 +216,7 @@ router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
     logError("Failed to get reconciliation matches", error, {
       traceId: req.traceId,
     });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to get reconciliation matches",
       traceId: req.traceId,
@@ -242,17 +242,17 @@ router.patch("/matches/:matchId", async (req: AuthRequest, res: Response) => {
         reviewed_at = NOW(),
         updated_at = NOW()
       WHERE id = $3 AND tenant_id = $4`,
-      [reviewed === true, userId, matchId, tenantId]
+      [reviewed === true, userId || "", matchId || "", tenantId]
     );
 
-    res.json({
+    return res.json({
       id: matchId,
-      reviewed,
+      reviewed: reviewed === true,
       reviewedAt: new Date().toISOString(),
     });
   } catch (error) {
     logError("Failed to update match", error, { traceId: req.traceId });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to update match",
       traceId: req.traceId,

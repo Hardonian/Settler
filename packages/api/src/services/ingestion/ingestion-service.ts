@@ -5,10 +5,9 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { query, transaction } from "../../db";
-import { logError, logInfo, logWarn } from "../../utils/logger";
+import { logError, logInfo } from "../../utils/logger";
 import {
   IngestionJobConfig,
-  IngestionStatus,
   NormalizedTransactionInput,
 } from "./types";
 
@@ -58,7 +57,7 @@ export async function createIngestion(
  */
 export async function updateIngestionStatus(
   ingestionId: string,
-  status: IngestionStatus,
+  status: string,
   updates?: {
     rawRecordCount?: number;
     normalizedCount?: number;
@@ -110,7 +109,7 @@ export async function updateIngestionStatus(
   try {
     await query(
       `UPDATE ingestions SET ${updateFields.join(", ")} WHERE id = $1`,
-      params
+      params as (string | number | boolean | Date | null)[]
     );
   } catch (error) {
     logError("Failed to update ingestion status", error, { ingestionId, status });

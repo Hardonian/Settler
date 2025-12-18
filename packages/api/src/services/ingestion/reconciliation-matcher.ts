@@ -27,25 +27,31 @@ function levenshteinDistance(str1: string, str2: string): number {
     matrix[i] = [i];
   }
   for (let j = 0; j <= len2; j++) {
-    matrix[0][j] = j;
+    const row = matrix[0];
+    if (row) {
+      row[j] = j;
+    }
   }
 
   // Fill matrix
   for (let i = 1; i <= len1; i++) {
+    const row = matrix[i];
+    const prevRow = matrix[i - 1];
+    if (!row || !prevRow) continue;
     for (let j = 1; j <= len2; j++) {
       if (str1[i - 1] === str2[j - 1]) {
-        matrix[i][j] = matrix[i - 1][j - 1];
+        row[j] = prevRow[j - 1] ?? 0;
       } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1, // deletion
-          matrix[i][j - 1] + 1, // insertion
-          matrix[i - 1][j - 1] + 1 // substitution
+        row[j] = Math.min(
+          (prevRow[j] ?? 0) + 1, // deletion
+          (row[j - 1] ?? 0) + 1, // insertion
+          (prevRow[j - 1] ?? 0) + 1 // substitution
         );
       }
     }
   }
 
-  return matrix[len1][len2];
+  return matrix[len1]?.[len2] ?? 0;
 }
 
 /**
@@ -181,9 +187,9 @@ export async function matchTransaction(
   }
 
   // Filter by currency match
-  const currencyMatches = targets.filter((t) => t.currency === source.currency);
+  const currencyMatchesFiltered = targets.filter((t) => t.currency === source.currency);
 
-  if (currencyMatches.length === 0) {
+  if (currencyMatchesFiltered.length === 0) {
     return {
       sourceTransactionId: source.id,
       matchType: "unmatched",
@@ -193,8 +199,9 @@ export async function matchTransaction(
   }
 
   // Filter by date window
-  const dateMatches = currencyMatches.filter((t) =>
-    datesWithinWindow(source.date, t.date, opts.dateWindowDays)
+  const dateWindowDays = opts.dateWindowDays ?? 7;
+  const dateMatches = currencyMatchesFiltered.filter((t) =>
+    datesWithinWindow(source.date, t.date, dateWindowDays)
   );
 
   if (dateMatches.length === 0) {
@@ -202,13 +209,14 @@ export async function matchTransaction(
       sourceTransactionId: source.id,
       matchType: "unmatched",
       confidence: 0,
-      matchReason: `No transactions within ${opts.dateWindowDays} day window`,
+      matchReason: `No transactions within ${dateWindowDays} day window`,
     };
   }
 
   // Filter by amount match
+  const amountTolerance = opts.amountTolerance ?? 0.01;
   const amountMatches = dateMatches.filter((t) =>
-    amountsMatch(source.amount, t.amount, opts.amountTolerance)
+    amountsMatch(source.amount, t.amount, amountTolerance)
   );
 
   if (amountMatches.length === 0) {
@@ -216,7 +224,7 @@ export async function matchTransaction(
       sourceTransactionId: source.id,
       matchType: "unmatched",
       confidence: 0,
-      matchReason: `No transactions with matching amount (tolerance: ${opts.amountTolerance})`,
+      matchReason: `No transactions with matching amount (tolerance: ${amountTolerance})`,
     };
   }
 
@@ -235,6 +243,8 @@ export async function matchTransaction(
   }
 
   // Score candidates by description similarity
+  const fuzzyDescriptionThreshold = opts.fuzzyDescriptionThreshold ?? 0.8;
+  const dateWindowDaysForScoring = opts.dateWindowDays ?? 7;
   const scoredCandidates = candidates.map((target) => {
     const descSimilarity =
       source.description && target.description
@@ -242,7 +252,7 @@ export async function matchTransaction(
         : 0.5; // Default similarity if no description
 
     const dateDiff = daysDifference(source.date, target.date);
-    const dateScore = 1 - Math.min(dateDiff / opts.dateWindowDays, 1);
+    const dateScore = 1 - Math.min(dateDiff / dateWindowDaysForScoring, 1);
 
     const amountDiff = Math.abs(source.amount - target.amount);
     const amountScore =
@@ -265,16 +275,24 @@ export async function matchTransaction(
   scoredCandidates.sort((a, b) => b.confidence - a.confidence);
 
   const bestMatch = scoredCandidates[0];
+  if (!bestMatch) {
+    return {
+      sourceTransactionId: source.id,
+      matchType: "unmatched",
+      confidence: 0,
+      matchReason: "No matching candidates found",
+    };
+  }
 
   // Determine match type
   let matchType: "exact" | "fuzzy" | "manual" | "unmatched" = "fuzzy";
   if (
-    bestMatch.descSimilarity >= opts.fuzzyDescriptionThreshold &&
+    bestMatch.descSimilarity >= fuzzyDescriptionThreshold &&
     bestMatch.amountDiff === 0 &&
     bestMatch.dateDiff === 0
   ) {
     matchType = "exact";
-  } else if (bestMatch.confidence >= opts.fuzzyDescriptionThreshold) {
+  } else if (bestMatch.confidence >= fuzzyDescriptionThreshold) {
     matchType = "fuzzy";
   }
 

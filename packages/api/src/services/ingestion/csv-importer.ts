@@ -4,14 +4,13 @@
  */
 
 import { parse } from "csv-parse/sync";
-import { z } from "zod";
 import {
   CSVColumnMapping,
   CSVRow,
   NormalizedTransactionInput,
   NormalizedTransactionSchema,
 } from "./types";
-import { logError, logInfo } from "../../utils/logger";
+import { logError } from "../../utils/logger";
 
 /**
  * Auto-detect column mapping from CSV headers
@@ -139,8 +138,8 @@ export function parseCSV(
       trim: true,
       cast: (value, context) => {
         // Try to cast numbers
-        if (context.column && /amount|total|value|sum|price|cost/i.test(context.column)) {
-          const num = parseFloat(value);
+        if (context.column && typeof context.column === "string" && /amount|total|value|sum|price|cost/i.test(context.column)) {
+          const num = parseFloat(String(value));
           if (!isNaN(num)) {
             return num;
           }
@@ -153,8 +152,15 @@ export function parseCSV(
       throw new Error("CSV file is empty");
     }
 
-    const headers = Object.keys(records[0]);
+    const firstRecord = records[0];
+    if (!firstRecord || typeof firstRecord !== "object") {
+      throw new Error("CSV file is empty or invalid");
+    }
+    const headers = Object.keys(firstRecord);
     const rows: CSVRow[] = records.map((record) => {
+      if (!record || typeof record !== "object") {
+        return {};
+      }
       const row: CSVRow = {};
       for (const [key, value] of Object.entries(record)) {
         row[key] = value as string | number | null | undefined;
@@ -200,7 +206,7 @@ export function normalizeCSVRow(
   }
 
   // Extract currency (default to USD)
-  if (mapping.currency && row[mapping.currency]) {
+  if (mapping.currency && row[mapping.currency] !== undefined) {
     const currencyValue = String(row[mapping.currency]).trim().toUpperCase();
     if (currencyValue.length === 3) {
       normalized.currency = currencyValue;
@@ -214,8 +220,8 @@ export function normalizeCSVRow(
   // Extract date
   if (mapping.date && row[mapping.date] !== undefined) {
     const dateValue = row[mapping.date];
-    if (dateValue instanceof Date) {
-      normalized.date = dateValue;
+    if (dateValue && typeof dateValue === "object" && "getTime" in dateValue) {
+      normalized.date = dateValue as Date;
     } else if (typeof dateValue === "string") {
       // Try multiple date formats
       const parsed = parseDate(dateValue);
@@ -284,7 +290,7 @@ function parseDate(dateString: string): Date | null {
   for (const format of formats) {
     const match = dateString.match(format);
     if (match) {
-      if (format.source.includes("YYYY")) {
+      if (format.source.includes("YYYY") && match[1] && match[2] && match[3]) {
         const year = parseInt(match[1], 10);
         const month = parseInt(match[2], 10) - 1;
         const day = parseInt(match[3], 10);
@@ -302,11 +308,16 @@ function parseDate(dateString: string): Date | null {
 /**
  * Validate CSV mapping completeness
  */
-export function validateMapping(mapping: CSVColumnMapping): {
+export function validateMapping(mapping: CSVColumnMapping | undefined): {
   valid: boolean;
   errors: string[];
 } {
   const errors: string[] = [];
+
+  if (!mapping) {
+    errors.push("Column mapping is required");
+    return { valid: false, errors };
+  }
 
   if (!mapping.amount) {
     errors.push("Amount column mapping is required");

@@ -6,7 +6,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { query } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
-import { createWriteStream } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
 

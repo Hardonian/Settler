@@ -61,7 +61,7 @@ async function getStripeClient(config: StripeConnectorConfig): Promise<any> {
     const stripeModule = await import("stripe");
     const Stripe = stripeModule.default || stripeModule;
     return new Stripe(config.apiKey, {
-      apiVersion: "2024-11-20.acacia",
+      apiVersion: "2023-10-16" as any,
     });
   } catch (error) {
     logError("Failed to load Stripe SDK", error);

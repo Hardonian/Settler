@@ -3,7 +3,7 @@
  * Handles CSV uploads, connector management, and ingestion processing
  */
 
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import multer from "multer";
 import { AuthRequest } from "../../middleware/auth";
 import { logError, logInfo } from "../../utils/logger";
@@ -20,7 +20,6 @@ import {
   createRawRecord,
   updateIngestionStatus,
 } from "../../services/ingestion/ingestion-service";
-import { runIngestionJob } from "../../services/ingestion/job-runner";
 import { query } from "../../db";
 import { CSVColumnMapping } from "../../services/ingestion/types";
 
@@ -69,7 +68,7 @@ router.post("/sources", async (req: AuthRequest, res: Response) => {
 
     logInfo("Created ingestion source", { sourceId, type, tenantId });
 
-    res.status(201).json({
+    return res.status(201).json({
       id: sourceId,
       name,
       type,
@@ -81,7 +80,7 @@ router.post("/sources", async (req: AuthRequest, res: Response) => {
     logError("Failed to create ingestion source", error, {
       traceId: req.traceId,
     });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to create ingestion source",
       traceId: req.traceId,
@@ -107,24 +106,24 @@ router.get("/sources", async (req: AuthRequest, res: Response) => {
       [tenantId]
     );
 
-    res.json({
+    return res.json({
       sources: sources.map((s: Record<string, unknown>) => ({
-        id: s.id,
-        name: s.name,
-        type: s.type,
-        connectorType: s.connector_type,
-        status: s.status,
-        lastSyncAt: s.last_sync_at,
-        lastSyncStatus: s.last_sync_status,
-        createdAt: s.created_at,
-        updatedAt: s.updated_at,
+        id: s.id as string,
+        name: s.name as string,
+        type: s.type as string,
+        connectorType: s.connector_type as string | null,
+        status: s.status as string,
+        lastSyncAt: s.last_sync_at as Date | null,
+        lastSyncStatus: s.last_sync_status as string | null,
+        createdAt: s.created_at as Date,
+        updatedAt: s.updated_at as Date,
       })),
     });
   } catch (error) {
     logError("Failed to list ingestion sources", error, {
       traceId: req.traceId,
     });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to list ingestion sources",
       traceId: req.traceId,
@@ -157,6 +156,13 @@ router.post(
 
       // Parse CSV
       const { headers, rows } = parseCSV(file.buffer);
+      if (!rows || rows.length === 0) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "CSV file is empty",
+          traceId,
+        });
+      }
 
       // Auto-detect or use provided column mapping
       let columnMapping: CSVColumnMapping;
@@ -196,7 +202,11 @@ router.post(
             "active",
           ]
         );
-        finalSourceId = sourceResult[0].id as string;
+        const firstResult = sourceResult[0];
+        if (!firstResult || !firstResult.id) {
+          throw new Error("Failed to create ingestion source");
+        }
+        finalSourceId = firstResult.id as string;
       }
 
       // Create ingestion job
@@ -217,6 +227,7 @@ router.post(
 
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
+        if (!row) continue;
         try {
           const normalized = normalizeCSVRow(row, columnMapping);
 
@@ -269,7 +280,7 @@ router.post(
         traceId,
       });
 
-      res.status(201).json({
+      return res.status(201).json({
         ingestionId,
         sourceId: finalSourceId,
         totalRows: rows.length,
@@ -282,7 +293,7 @@ router.post(
       logError("Failed to process CSV upload", error, {
         traceId: req.traceId,
       });
-      res.status(500).json({
+      return res.status(500).json({
         error: "Internal Server Error",
         message: "Failed to process CSV upload",
         traceId: req.traceId,
@@ -300,14 +311,14 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
     const { ingestionId } = req.params;
     const tenantId = req.tenantId!;
 
-    const results = await query(
-      `SELECT 
+      const results = await query(
+        `SELECT 
         id, source_id, status, raw_record_count, normalized_count,
         failed_count, retry_count, trace_id, started_at, completed_at,
         error_message, metadata
       FROM ingestions
       WHERE id = $1 AND tenant_id = $2`,
-      [ingestionId, tenantId]
+      [ingestionId || "", tenantId]
     );
 
     if (results.length === 0) {
@@ -320,25 +331,25 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
 
     const ingestion = results[0] as Record<string, unknown>;
 
-    res.json({
-      id: ingestion.id,
-      sourceId: ingestion.source_id,
-      status: ingestion.status,
-      rawRecordCount: ingestion.raw_record_count,
-      normalizedCount: ingestion.normalized_count,
-      failedCount: ingestion.failed_count,
-      retryCount: ingestion.retry_count,
-      traceId: ingestion.trace_id,
-      startedAt: ingestion.started_at,
-      completedAt: ingestion.completed_at,
-      errorMessage: ingestion.error_message,
+    return res.json({
+      id: ingestion.id as string,
+      sourceId: ingestion.source_id as string,
+      status: ingestion.status as string,
+      rawRecordCount: ingestion.raw_record_count as number,
+      normalizedCount: ingestion.normalized_count as number,
+      failedCount: ingestion.failed_count as number,
+      retryCount: ingestion.retry_count as number,
+      traceId: ingestion.trace_id as string | null,
+      startedAt: ingestion.started_at as Date,
+      completedAt: ingestion.completed_at as Date | null,
+      errorMessage: ingestion.error_message as string | null,
       metadata: typeof ingestion.metadata === "string"
         ? JSON.parse(ingestion.metadata as string)
         : ingestion.metadata,
     });
   } catch (error) {
     logError("Failed to get ingestion", error, { traceId: req.traceId });
-    res.status(500).json({
+    return res.status(500).json({
       error: "Internal Server Error",
       message: "Failed to get ingestion",
       traceId: req.traceId,
@@ -367,34 +378,38 @@ router.get(
         WHERE ingestion_id = $1 AND tenant_id = $2
         ORDER BY date DESC
         LIMIT $3 OFFSET $4`,
-        [ingestionId, tenantId, limit, offset]
+        [ingestionId || "", tenantId, limit.toString(), offset.toString()]
       );
 
       const totalResults = await query(
         `SELECT COUNT(*) as count
         FROM normalized_transactions
         WHERE ingestion_id = $1 AND tenant_id = $2`,
-        [ingestionId, tenantId]
+        [ingestionId || "", tenantId]
       );
 
-      const total = (totalResults[0] as { count: string }).count;
+      const firstTotalResult = totalResults[0];
+      if (!firstTotalResult) {
+        throw new Error("Failed to get transaction count");
+      }
+      const total = (firstTotalResult as { count: string }).count;
 
-      res.json({
+      return res.json({
         transactions: transactions.map((t: Record<string, unknown>) => ({
-          id: t.id,
-          externalId: t.external_id,
-          amount: t.amount,
-          currency: t.currency,
-          date: t.date,
-          description: t.description,
-          category: t.category,
-          paymentMethod: t.payment_method,
-          reference: t.reference,
+          id: t.id as string,
+          externalId: t.external_id as string | null,
+          amount: t.amount as number,
+          currency: t.currency as string,
+          date: t.date as Date,
+          description: t.description as string | null,
+          category: t.category as string | null,
+          paymentMethod: t.payment_method as string | null,
+          reference: t.reference as string | null,
           metadata:
             typeof t.metadata === "string"
               ? JSON.parse(t.metadata as string)
               : t.metadata,
-          createdAt: t.created_at,
+          createdAt: t.created_at as Date,
         })),
         pagination: {
           limit,
@@ -404,7 +419,7 @@ router.get(
       });
     } catch (error) {
       logError("Failed to get transactions", error, { traceId: req.traceId });
-      res.status(500).json({
+      return res.status(500).json({
         error: "Internal Server Error",
         message: "Failed to get transactions",
         traceId: req.traceId,

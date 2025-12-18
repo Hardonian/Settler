@@ -17,6 +17,9 @@ const fees_1 = __importDefault(require("./fees"));
 const exports_1 = __importDefault(require("./exports"));
 const currency_1 = __importDefault(require("./currency"));
 const receive_1 = __importDefault(require("./webhooks/receive"));
+const ingestion_1 = __importDefault(require("./ingestion"));
+const reconciliation_1 = __importDefault(require("./reconciliation"));
+const ingestion_exports_1 = __importDefault(require("./ingestion-exports"));
 exports.v1Router = (0, express_1.Router)();
 // Mount v1 routes
 exports.v1Router.use('/webhooks/receive', receive_1.default);
@@ -28,6 +31,10 @@ exports.v1Router.use('/settlements', settlements_1.default);
 exports.v1Router.use('/fees', fees_1.default);
 exports.v1Router.use('/exports', exports_1.default);
 exports.v1Router.use('/currency', currency_1.default);
+// Ingestion pipeline routes
+exports.v1Router.use('/ingestion', ingestion_1.default);
+exports.v1Router.use('/reconciliation', reconciliation_1.default);
+exports.v1Router.use('/ingestion/exports', ingestion_exports_1.default);
 // Health check
 exports.v1Router.get('/health', (_req, res) => {
     res.json({
