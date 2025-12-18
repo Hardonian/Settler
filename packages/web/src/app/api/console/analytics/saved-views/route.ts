@@ -19,10 +19,15 @@ export async function GET(request: NextRequest) {
 
   try {
     const supabase = await createClient();
+    const userId = adminCheck.user?.id;
+    if (!userId) {
+      return NextResponse.json({ views: [] }, { status: 401 });
+    }
+
     const { data, error } = await supabase
       .from('ops_saved_views')
       .select('*')
-      .or(`is_public.eq.true,created_by.eq.${adminCheck.userId}`)
+      .or(`is_public.eq.true,created_by.eq.${userId}`)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -46,6 +51,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const supabase = await createClient();
 
+    const userId = adminCheck.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
     const { data, error } = await supabase
       .from('ops_saved_views')
       .insert({
@@ -58,7 +68,7 @@ export async function POST(request: NextRequest) {
         aggregation: body.aggregation,
         filters: body.filters,
         date_range: body.dateRange,
-        created_by: adminCheck.userId,
+        created_by: userId,
         is_public: body.isPublic || false,
       })
       .select()

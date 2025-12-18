@@ -29,7 +29,8 @@ export async function POST(request: NextRequest) {
     const result = await triageTicket(ticketId);
 
     // Store result
-    await storeTriageResult(ticketId, result, adminCheck.userId);
+    const userId = adminCheck.user?.id;
+    await storeTriageResult(ticketId, result, userId);
 
     return NextResponse.json(result);
   } catch (error) {
