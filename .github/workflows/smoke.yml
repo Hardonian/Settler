@@ -29,9 +29,9 @@ jobs:
           SKIP_ENV_VALIDATION: true
       - name: Run smoke tests against deployment
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: npm run test:smoke
+        run: npm run qa:smoke
         env:
-          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL || 'https://settler.dev' }}
+          BASE_URL: ${{ secrets.E2E_BASE_URL || 'https://settler.dev' }}
         continue-on-error: true
       - name: Get Vercel Preview URL
         if: github.event_name == 'pull_request'
@@ -54,9 +54,9 @@ jobs:
       
       - name: Run smoke tests against preview
         if: github.event_name == 'pull_request' && steps.vercel-preview.outputs.preview_url != ''
-        run: npm run test:smoke
+        run: npm run qa:smoke
         env:
-          E2E_BASE_URL: ${{ steps.vercel-preview.outputs.preview_url }}
+          BASE_URL: ${{ steps.vercel-preview.outputs.preview_url }}
         continue-on-error: true
       
       - name: Skip smoke tests (no preview URL)
