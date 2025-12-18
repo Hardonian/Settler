@@ -3,7 +3,11 @@
  * 
  * Logs API requests for monitoring and debugging.
  * Respects privacy and doesn't log sensitive data.
+ * Includes trace_id in all logs.
  */
+
+import { getTraceId } from '@/lib/observability/trace';
+import { logger } from '@/lib/observability/logger';
 
 interface RequestLog {
   method: string;
@@ -11,6 +15,7 @@ interface RequestLog {
   status: number;
   duration: number;
   timestamp: string;
+  trace_id: string;
   userId?: string;
   userAgent?: string;
   ip?: string;
@@ -18,14 +23,18 @@ interface RequestLog {
 
 /**
  * Log API request (server-side only, no sensitive data)
+ * Includes trace_id for correlation
  */
-export function logRequest(
+export async function logRequest(
   request: Request,
   response: Response,
   startTime: number
-): void {
+): Promise<void> {
   const duration = Date.now() - startTime;
   const url = new URL(request.url);
+  
+  // Get trace_id
+  const traceId = await getTraceId(request);
   
   // Extract user ID from headers (if available)
   const userId = request.headers.get('x-user-id') || undefined;
@@ -38,25 +47,25 @@ export function logRequest(
   // Extract user agent (sanitized)
   const userAgent = request.headers.get('user-agent') || undefined;
 
-  const log: RequestLog = {
+  const logContext: RequestLog = {
     method: request.method,
     path: url.pathname,
     status: response.status,
     duration,
     timestamp: new Date().toISOString(),
+    trace_id: traceId,
     userId,
     userAgent: userAgent ? sanitizeUserAgent(userAgent) : undefined,
     ip: ip ? anonymizeIP(ip) : undefined,
   };
 
-  // Only log errors and slow requests in production
-  if (process.env.NODE_ENV === 'production') {
-    if (response.status >= 400 || duration > 1000) {
-      console.log('[API Request]', JSON.stringify(log));
-    }
-  } else {
-    // Log all requests in development
-    console.log('[API Request]', JSON.stringify(log));
+  // Use structured logger
+  if (response.status >= 400) {
+    await logger.error('API Request Error', logContext);
+  } else if (duration > 1000) {
+    await logger.warn('Slow API Request', logContext);
+  } else if (process.env.NODE_ENV === 'development') {
+    await logger.info('API Request', logContext);
   }
 }
 
@@ -94,7 +103,7 @@ export function withRequestLogging<T extends (...args: any[]) => Promise<Respons
     
     try {
       const response = await handler(...args);
-      logRequest(request, response, startTime);
+      await logRequest(request, response, startTime);
       return response;
     } catch (error) {
       // Create error response for logging
@@ -102,7 +111,7 @@ export function withRequestLogging<T extends (...args: any[]) => Promise<Respons
         JSON.stringify({ error: 'Internal error' }),
         { status: 200 }
       );
-      logRequest(request, errorResponse, startTime);
+      await logRequest(request, errorResponse, startTime);
       throw error;
     }
   }) as T;

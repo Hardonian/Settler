@@ -1,0 +1,60 @@
+# Gitleaks configuration for secret scanning
+# https://github.com/gitleaks/gitleaks
+
+title = "Settler Secret Scanning"
+
+[extend]
+# Use default rules
+useDefault = true
+
+[allowlist]
+description = "Allowlist for false positives"
+paths = [
+  '''\.md$''',
+  '''\.json$''',
+  '''\.lock$''',
+  '''node_modules/''',
+  '''\.next/''',
+  '''dist/''',
+  '''build/''',
+  '''\.env\.example''',
+  '''\.env\.sample''',
+  '''\.env\.template''',
+  '''\.sample''',
+  '''\.example''',
+  '''\.template''',
+  '''test/''',
+  '''tests/''',
+  '''__tests__/''',
+  '''\.test\.''',
+  '''\.spec\.''',
+  '''qa-artifacts/''',
+  '''docs/''',
+  '''archive/''',
+]
+
+commits = [
+  '''^Initial commit''',
+  '''^Merge.*''',
+]
+
+regexes = [
+  '''example.*key''',
+  '''test.*secret''',
+  '''sample.*token''',
+  '''placeholder.*password''',
+]
+
+[rules]
+# Custom rules for Settler-specific patterns
+id = "settler-api-key-example"
+description = "Settler API key examples (allowlisted)"
+regex = '''sk_test_[a-zA-Z0-9]{32,}'''
+tags = ["key", "api"]
+entropy = 3.5
+
+id = "settler-webhook-secret-example"
+description = "Stripe webhook secret examples (allowlisted)"
+regex = '''whsec_[a-zA-Z0-9]{32,}'''
+tags = ["secret", "webhook"]
+entropy = 3.5

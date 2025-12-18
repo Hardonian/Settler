@@ -16,6 +16,8 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { trackWebhookMetric } from '@/lib/monitoring/metrics';
 import { requestSizeLimits } from '@/middleware/request-size-limit';
+import { getTraceId } from '@/lib/observability/trace';
+import { logger } from '@/lib/observability/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // CRITICAL: Must be Node.js runtime for Prisma
@@ -131,10 +133,12 @@ function extractBillingAccountId(event: Stripe.Event): string | null {
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
+  const traceId = await getTraceId(request);
 
   // Check request size (max 500KB for webhooks)
   const sizeCheck = requestSizeLimits.webhook(request);
   if (sizeCheck) {
+    sizeCheck.headers.set('x-trace-id', traceId);
     return sizeCheck;
   }
 
@@ -184,11 +188,14 @@ export async function POST(request: NextRequest) {
   // Database-backed idempotency check
   const alreadyProcessed = await isEventProcessed(event.id);
   if (alreadyProcessed) {
-    console.info('[Stripe Webhook] Event already processed:', {
+    await logger.info('Stripe webhook event already processed', {
+      trace_id: traceId,
       eventId: event.id,
       type: event.type,
     });
-    return NextResponse.json({ received: true, duplicate: true });
+    const response = NextResponse.json({ received: true, duplicate: true, trace_id: traceId });
+    response.headers.set('x-trace-id', traceId);
+    return response;
   }
 
   // Record event receipt (with idempotency protection)
@@ -321,10 +328,13 @@ export async function POST(request: NextRequest) {
     const durationMs = Date.now() - startTime;
     await trackWebhookMetric(event.type, true, durationMs);
 
-    return NextResponse.json({ received: true });
+    const response = NextResponse.json({ received: true, trace_id: traceId });
+    response.headers.set('x-trace-id', traceId);
+    return response;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[Stripe Webhook] Error processing webhook:', {
+    await logger.error('Stripe webhook processing failed', {
+      trace_id: traceId,
       eventId: event.id,
       eventType: event.type,
       error: errorMessage,
@@ -335,7 +345,11 @@ export async function POST(request: NextRequest) {
     try {
       await markEventFailed(event.id, errorMessage);
     } catch (dbError) {
-      console.error('[Stripe Webhook] Failed to mark event as failed:', dbError);
+      await logger.error('Failed to mark Stripe event as failed', {
+        trace_id: traceId,
+        eventId: event.id,
+        error: dbError instanceof Error ? dbError.message : String(dbError),
+      });
     }
 
     // Track error metrics
@@ -343,9 +357,11 @@ export async function POST(request: NextRequest) {
     await trackWebhookMetric(event.type, false, durationMs);
     
     // Return 500 so Stripe retries
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
+    const response = NextResponse.json(
+      { error: 'Webhook processing failed', trace_id: traceId },
       { status: 500 }
     );
+    response.headers.set('x-trace-id', traceId);
+    return response;
   }
 }

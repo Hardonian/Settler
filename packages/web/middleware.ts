@@ -10,21 +10,41 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { addSecurityHeaders } from './src/middleware/security-headers';
+import { getTraceId, generateTraceId } from './src/lib/observability/trace';
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
+  // Generate or get trace_id
+  let traceId = request.headers.get('x-trace-id') || request.cookies.get('trace-id')?.value;
+  if (!traceId) {
+    traceId = generateTraceId();
+  }
+
   // Explicitly bypass Stripe webhook - it needs raw body and no auth
   if (request.nextUrl.pathname === '/api/stripe/webhook') {
-    return NextResponse.next({
+    const response = NextResponse.next({
       request: {
-        headers: request.headers,
+        headers: new Headers(request.headers),
       },
     });
+    response.headers.set('x-trace-id', traceId);
+    return response;
   }
 
   let response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers: new Headers(request.headers),
     },
+  });
+
+  // Add trace_id to response headers
+  response.headers.set('x-trace-id', traceId);
+  
+  // Set trace_id cookie for client-side access
+  response.cookies.set('trace-id', traceId, {
+    httpOnly: false, // Allow client-side access
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+    path: '/',
   });
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
