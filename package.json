@@ -12,6 +12,7 @@
     "test": "turbo run test",
     "test:e2e": "playwright test",
     "test:smoke": "tsx scripts/smoke-test.ts",
+    "test:csv-upload": "tsx scripts/test-csv-upload.ts",
     "test:smoke:console": "playwright test tests/e2e/console-smoke.spec.ts",
     "stripe:listen": "tsx scripts/stripe-test-harness.ts listen",
     "stripe:test": "tsx scripts/stripe-test-harness.ts test",

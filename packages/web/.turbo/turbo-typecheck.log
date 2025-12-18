@@ -6,3 +6,15 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck
 > tsc --noEmit --incremental
 
+src/components/console/IngestionDashboard.tsx(12,1): error TS6192: All imports in import declaration are unused.
+src/components/console/IngestionDashboard.tsx(15,44): error TS6133: 'FileText' is declared but its value is never read.
+src/components/console/IngestionDashboard.tsx(52,30): error TS6133: 'setReconciliationRuns' is declared but its value is never read.
+src/components/console/ReconciliationMatches.tsx(14,37): error TS6133: 'XCircle' is declared but its value is never read.
+src/components/console/ReconciliationMatches.tsx(14,46): error TS6133: 'Eye' is declared but its value is never read.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /workspace/packages/web
+npm error workspace @settler/web@1.0.0
+npm error location /workspace/packages/web
+npm error command failed
+npm error command sh -c tsc --noEmit --incremental

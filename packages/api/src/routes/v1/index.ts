@@ -12,6 +12,9 @@ import feesRouter from './fees';
 import exportsRouter from './exports';
 import currencyRouter from './currency';
 import webhookReceiveRouter from './webhooks/receive';
+import ingestionRouter from './ingestion';
+import reconciliationRouter from './reconciliation';
+import ingestionExportsRouter from './ingestion-exports';
 
 export const v1Router = Router();
 
@@ -26,6 +29,11 @@ v1Router.use('/settlements', settlementsRouter);
 v1Router.use('/fees', feesRouter);
 v1Router.use('/exports', exportsRouter);
 v1Router.use('/currency', currencyRouter);
+
+// Ingestion pipeline routes
+v1Router.use('/ingestion', ingestionRouter);
+v1Router.use('/reconciliation', reconciliationRouter);
+v1Router.use('/ingestion/exports', ingestionExportsRouter);
 
 // Health check
 v1Router.get('/health', (_req, res) => {

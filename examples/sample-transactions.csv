@@ -1,0 +1,11 @@
+Date,Description,Amount,Currency,Transaction ID,Category,Payment Method
+2024-01-15,Stripe Payment - Customer #1234,1250.50,USD,txn_abc123,payment,stripe
+2024-01-16,Shopify Order #5678,89.99,USD,ord_xyz789,sale,shopify
+2024-01-17,Refund - Order #5678,-89.99,USD,ref_xyz789,refund,shopify
+2024-01-18,Bank Transfer - Invoice #1001,5000.00,USD,bank_001,payment,bank_transfer
+2024-01-19,Stripe Fee,25.00,USD,fee_stripe_001,fee,stripe
+2024-01-20,PayPal Payment,250.75,USD,pp_123456,payment,paypal
+2024-01-21,Shopify Payout,1200.00,USD,payout_shop_001,payout,shopify
+2024-01-22,Stripe Payment - Customer #5678,750.25,USD,txn_def456,payment,stripe
+2024-01-23,Manual Entry - Cash Sale,50.00,USD,manual_001,sale,cash
+2024-01-24,Bank Fee,-5.00,USD,bank_fee_001,fee,bank_transfer

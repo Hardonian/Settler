@@ -1024,3 +1024,230 @@ model IdempotencyKey {
   @@index([expiresAt])
   @@map("idempotency_keys")
 }
+
+// ============================================================================
+// INGESTION PIPELINE MODELS
+// Universal ingestion system for connectors and imports
+// ============================================================================
+
+model IngestionSource {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  userId            String    @db.Uuid
+  name              String
+  type              String    // "csv", "stripe", "shopify", "manual", etc.
+  connectorType     String?   // "stripe", "shopify", etc. (null for CSV/manual)
+  configEncrypted   String?   @db.Text // Encrypted connector config (API keys, OAuth tokens)
+  configMetadata    Json      @default("{}") // Non-sensitive metadata (connector name, etc.)
+  status            String    @default("active") // active, paused, error
+  lastSyncAt        DateTime?
+  lastSyncStatus    String?   // success, failed, partial
+  lastSyncError     String?   @db.Text
+  syncSchedule      String?   // Cron expression for scheduled syncs
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  ingestions        Ingestion[]
+  rawRecords        RawRecord[]
+  normalizedTransactions NormalizedTransaction[]
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([type])
+  @@index([connectorType])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("ingestion_sources")
+}
+
+model Ingestion {
+  id                String    @id @default(uuid())
+  sourceId          String    @db.Uuid
+  tenantId          String    @db.Uuid
+  userId            String    @db.Uuid
+  idempotencyKey    String?   @unique // For idempotent retries
+  status            String    @default("pending") // pending, processing, completed, failed
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+  errorMessage      String?   @db.Text
+  errorStack        String?   @db.Text
+  traceId           String?   // For observability
+  rawRecordCount    Int       @default(0)
+  normalizedCount   Int       @default(0)
+  failedCount       Int       @default(0)
+  retryCount        Int       @default(0)
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  source            IngestionSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  rawRecords        RawRecord[]
+  normalizedTransactions NormalizedTransaction[]
+  reconciliationRuns ReconciliationRun[]
+
+  @@index([sourceId])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status])
+  @@index([idempotencyKey])
+  @@index([startedAt(sort: Desc)])
+  @@map("ingestions")
+}
+
+model RawRecord {
+  id                String    @id @default(uuid())
+  ingestionId       String    @db.Uuid
+  sourceId          String    @db.Uuid
+  tenantId          String    @db.Uuid
+  rawData           Json      // Original raw data from source
+  rowNumber         Int?      // For CSV imports
+  externalId        String?   // External ID from source system
+  status            String    @default("pending") // pending, normalized, failed
+  errorMessage      String?   @db.Text
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  ingestion         Ingestion @relation(fields: [ingestionId], references: [id], onDelete: Cascade)
+  source            IngestionSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  normalizedTransaction NormalizedTransaction?
+
+  @@index([ingestionId])
+  @@index([sourceId])
+  @@index([tenantId])
+  @@index([externalId])
+  @@index([status])
+  @@map("raw_records")
+}
+
+model NormalizedTransaction {
+  id                String    @id @default(uuid())
+  ingestionId       String    @db.Uuid
+  rawRecordId       String?   @db.Uuid @unique
+  tenantId          String    @db.Uuid
+  sourceId          String    @db.Uuid
+  externalId        String?   // External ID from source system
+  amount            Decimal   @db.Decimal(15, 2)
+  currency          String    @default("USD")
+  date              DateTime  @db.Date
+  description       String?   @db.Text
+  category          String?
+  paymentMethod     String?
+  reference         String?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  ingestion         Ingestion @relation(fields: [ingestionId], references: [id], onDelete: Cascade)
+  rawRecord         RawRecord? @relation(fields: [rawRecordId], references: [id], onDelete: SetNull)
+  source            IngestionSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  reconciliationMatches ReconciliationMatch[]
+
+  @@index([ingestionId])
+  @@index([rawRecordId])
+  @@index([tenantId])
+  @@index([sourceId])
+  @@index([externalId])
+  @@index([date])
+  @@index([amount])
+  @@index([currency])
+  @@index([tenantId, date, amount, currency])
+  @@map("normalized_transactions")
+}
+
+model ReconciliationRun {
+  id                String    @id @default(uuid())
+  ingestionId       String?   @db.Uuid
+  tenantId          String    @db.Uuid
+  userId            String    @db.Uuid
+  name              String?
+  status            String    @default("pending") // pending, running, completed, failed
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+  sourceCount       Int       @default(0)
+  targetCount       Int       @default(0)
+  matchedCount      Int       @default(0)
+  unmatchedSourceCount Int    @default(0)
+  unmatchedTargetCount Int    @default(0)
+  confidenceAvg     Decimal?  @db.Decimal(5, 4)
+  errorMessage      String?   @db.Text
+  traceId           String?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  ingestion         Ingestion? @relation(fields: [ingestionId], references: [id], onDelete: SetNull)
+  matches           ReconciliationMatch[]
+
+  @@index([ingestionId])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status])
+  @@index([startedAt(sort: Desc)])
+  @@map("reconciliation_runs")
+}
+
+model ReconciliationMatch {
+  id                String    @id @default(uuid())
+  runId             String    @db.Uuid
+  sourceTransactionId String  @db.Uuid
+  targetTransactionId String?  @db.Uuid
+  tenantId          String    @db.Uuid
+  matchType         String    // "exact", "fuzzy", "manual", "unmatched"
+  confidence        Decimal   @db.Decimal(5, 4) // 0.0000 to 1.0000
+  matchReason       String?   @db.Text
+  amountDiff        Decimal?  @db.Decimal(15, 2)
+  dateDiff          Int?      // Days difference
+  reviewed          Boolean   @default(false)
+  reviewedBy        String?   @db.Uuid
+  reviewedAt        DateTime?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  run               ReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  sourceTransaction NormalizedTransaction @relation(fields: [sourceTransactionId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@index([tenantId])
+  @@index([sourceTransactionId])
+  @@index([targetTransactionId])
+  @@index([matchType])
+  @@index([confidence])
+  @@index([reviewed])
+  @@map("reconciliation_matches")
+}
+
+model Export {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  userId            String    @db.Uuid
+  type              String    // "csv", "json", "excel"
+  format            String    // "matched", "unmatched", "all", "reconciliation_report"
+  reconciliationRunId String?  @db.Uuid
+  ingestionId       String?   @db.Uuid
+  status            String    @default("pending") // pending, processing, completed, failed
+  storageLocation   String?   // URL or storage key
+  signedUrl         String?   @db.Text
+  signedUrlExpiresAt DateTime?
+  fileSizeBytes     Int?
+  rowCount           Int?
+  errorMessage      String?   @db.Text
+  traceId           String?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  expiresAt         DateTime? // Auto-cleanup after expiration
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([reconciliationRunId])
+  @@index([ingestionId])
+  @@index([createdAt(sort: Desc)])
+  @@index([expiresAt])
+  @@map("exports")
+}
