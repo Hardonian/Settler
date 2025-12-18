@@ -29,6 +29,7 @@ import {
   Activity,
   Webhook,
 } from 'lucide-react';
+import { BackendHealthBadge } from './BackendHealthBadge';
 
 const consoleNavItems = [
     { href: '/console', label: 'Overview', icon: LayoutDashboard },
@@ -90,6 +91,9 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0 pt-10">
+            <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+              <BackendHealthBadge />
+            </div>
             <NavContent />
           </SheetContent>
         </Sheet>
@@ -98,6 +102,9 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
       <div className="flex">
         {/* Desktop Sidebar */}
         <aside className="hidden md:block w-64 min-h-screen bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 fixed left-0 top-0 pt-16">
+          <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+            <BackendHealthBadge />
+          </div>
           <NavContent />
         </aside>
 

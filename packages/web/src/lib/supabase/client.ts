@@ -10,6 +10,7 @@
 
 import { createBrowserClient } from '@supabase/ssr';
 import { Database } from '@/types/database.types';
+import { validateSupabaseEnv } from '@/lib/env/validator';
 
 /**
  * Get Supabase browser client for client-side operations
@@ -25,8 +26,14 @@ export function createClient(): ReturnType<typeof createBrowserClient<Database>>
       // Server-side during build - return a minimal mock
       return {} as ReturnType<typeof createBrowserClient<Database>>;
     }
-    // Client-side but missing env vars - this should not happen in production
-    console.warn('Supabase environment variables not set');
+    // Client-side but missing env vars - log error once
+    const validation = validateSupabaseEnv();
+    if (!validation.isValid && typeof window !== 'undefined') {
+      console.error(
+        '[Supabase Client] Missing environment variables:',
+        validation.missing.join(', ')
+      );
+    }
   }
 
   return createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);

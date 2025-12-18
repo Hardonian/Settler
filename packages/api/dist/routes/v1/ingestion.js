@@ -14,6 +14,11 @@ const uuid_1 = require("uuid");
 const csv_importer_1 = require("../../services/ingestion/csv-importer");
 const ingestion_service_1 = require("../../services/ingestion/ingestion-service");
 const db_1 = require("../../db");
+const usage_enforcement_1 = require("../../middleware/usage-enforcement");
+const usage_tracking_1 = require("../../utils/usage-tracking");
+const billing_helpers_1 = require("../../utils/billing-helpers");
+const kill_switches_1 = require("../../services/operator-mode/kill-switches");
+const cost_controls_1 = require("../../services/operator-mode/cost-controls");
 const router = (0, express_1.Router)();
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 /**
@@ -29,6 +34,14 @@ router.post("/sources", async (req, res) => {
             return res.status(400).json({
                 error: "Bad Request",
                 message: "name and type are required",
+                traceId: req.traceId,
+            });
+        }
+        // Check kill switch for connector
+        if (connectorType && await (0, kill_switches_1.isConnectorDisabled)(connectorType)) {
+            return res.status(503).json({
+                error: "Service Unavailable",
+                message: `Connector ${connectorType} is currently disabled`,
                 traceId: req.traceId,
             });
         }
@@ -112,7 +125,7 @@ router.get("/sources", async (req, res) => {
  * POST /api/v1/ingestion/upload
  * Upload CSV file for ingestion
  */
-router.post("/upload", upload.single("file"), async (req, res) => {
+router.post("/upload", upload.single("file"), (0, usage_enforcement_1.checkIngestionLimit)(), async (req, res) => {
     try {
         const file = req.file;
         if (!file) {
@@ -175,6 +188,23 @@ router.post("/upload", upload.single("file"), async (req, res) => {
             }
             finalSourceId = firstResult.id;
         }
+        // Check kill switches
+        if (await (0, kill_switches_1.isBackgroundJobPaused)('ingestion')) {
+            return res.status(503).json({
+                error: "Service Unavailable",
+                message: "Ingestion jobs are currently paused",
+                traceId,
+            });
+        }
+        // Check background job limits
+        const jobCheck = await (0, cost_controls_1.canRunBackgroundJob)('ingestion', tenantId);
+        if (!jobCheck.allowed) {
+            return res.status(429).json({
+                error: "Too Many Requests",
+                message: jobCheck.reason || "Background job limit exceeded",
+                traceId,
+            });
+        }
         // Create ingestion job
         const ingestionId = await (0, ingestion_service_1.createIngestion)({
             sourceId: finalSourceId,
@@ -219,6 +249,16 @@ router.post("/upload", upload.single("file"), async (req, res) => {
             failedCount,
             completedAt: new Date(),
         });
+        // Track usage
+        const billingAccount = await (0, billing_helpers_1.getBillingAccount)(userId, tenantId);
+        if (billingAccount) {
+            await (0, usage_tracking_1.trackIngestionUsage)({
+                billingAccountId: billingAccount.id,
+                userId,
+                tenantId,
+                ingestionId,
+            });
+        }
         (0, logger_1.logInfo)("CSV ingestion completed", {
             ingestionId,
             totalRows: rows.length,

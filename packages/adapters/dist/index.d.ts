@@ -1,3 +1,4 @@
+export * from "./connector-contract";
 export * from "./base";
 export * from "./enhanced-base";
 export * from "./stripe";

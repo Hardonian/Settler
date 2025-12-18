@@ -8,6 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const auth_1 = require("./middleware/auth");
+const tenant_1 = require("./middleware/tenant");
 const error_1 = require("./middleware/error");
 const idempotency_1 = require("./middleware/idempotency");
 const health_1 = require("./routes/health");
@@ -30,6 +31,7 @@ const cli_wizard_1 = require("./routes/cli-wizard");
 const export_enhanced_1 = require("./routes/export-enhanced");
 const ai_assistant_1 = require("./routes/ai-assistant");
 const audit_trail_1 = require("./routes/audit-trail");
+const tenant_data_1 = require("./routes/tenant-data");
 const webhook_management_1 = require("./routes/webhook-management");
 const notifications_1 = require("./routes/notifications");
 const usage_1 = require("./routes/usage");
@@ -244,6 +246,9 @@ app.use("/api/v2", auth_1.authMiddleware, ai_assistant_1.aiAssistantRouter);
 // Audit trail routes (requires auth)
 app.use("/api/v1", auth_1.authMiddleware, audit_trail_1.auditTrailRouter);
 app.use("/api/v2", auth_1.authMiddleware, audit_trail_1.auditTrailRouter);
+// Tenant data management routes (requires auth + tenant context)
+app.use("/api/v1/tenant", auth_1.authMiddleware, tenant_1.tenantMiddleware, tenant_data_1.tenantDataRouter);
+app.use("/api/v2/tenant", auth_1.authMiddleware, tenant_1.tenantMiddleware, tenant_data_1.tenantDataRouter);
 // Webhook management routes (requires auth)
 app.use("/api/v1/webhooks", auth_1.authMiddleware, webhook_management_1.webhookManagementRouter);
 app.use("/api/v2/webhooks", auth_1.authMiddleware, webhook_management_1.webhookManagementRouter);

@@ -14,8 +14,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Public connector contract (for external developers)
+__exportStar(require("./connector-contract"), exports);
+// Base interfaces and types
 __exportStar(require("./base"), exports);
 __exportStar(require("./enhanced-base"), exports);
+// Built-in connectors (reference implementations)
 __exportStar(require("./stripe"), exports);
 __exportStar(require("./stripe-enhanced"), exports);
 __exportStar(require("./paypal"), exports);

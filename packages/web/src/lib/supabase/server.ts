@@ -12,6 +12,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { Database } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseEnv } from "@/lib/env/validator";
 
 // Client cache to reuse connections
 let cachedClient: SupabaseClient<Database> | null = null;
@@ -25,13 +26,22 @@ const CLIENT_CACHE_TTL = 60000; // 1 minute
  * Optimized with connection reuse
  */
 export async function createClient(): Promise<SupabaseClient<Database>> {
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseAnonKey =
-    process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-  // During build, these might not be available
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn("Supabase environment variables not set - some features may not work");
+  // Use validator to get env vars with proper error handling
+  let supabaseUrl: string;
+  let supabaseAnonKey: string;
+  
+  try {
+    const env = getSupabaseEnv();
+    supabaseUrl = env.url;
+    supabaseAnonKey = env.anonKey;
+  } catch (error) {
+    // Log error but don't crash - return a safe fallback client
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Supabase] Failed to get environment variables:', errorMessage);
+    
+    // Return a minimal mock client that will fail gracefully on operations
+    // This prevents hard 500s while still allowing the page to render
+    return {} as SupabaseClient<Database>;
   }
 
   // Reuse cached client if available and fresh
@@ -114,12 +124,23 @@ let cachedAdminClient: SupabaseClient<Database> | null = null;
 let adminClientCacheTimestamp = 0;
 
 export async function createAdminClient(): Promise<SupabaseClient<Database>> {
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  // Get URL from validator
+  let supabaseUrl: string;
+  try {
+    const env = getSupabaseEnv();
+    supabaseUrl = env.url;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Supabase Admin] Failed to get Supabase URL:', errorMessage);
+    return {} as SupabaseClient<Database>;
+  }
+  
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
-  // During build, these might not be available
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
-    console.warn("Supabase admin environment variables not set - admin features may not work");
+  if (!supabaseServiceRoleKey) {
+    console.warn("Supabase SERVICE_ROLE_KEY not set - admin features may not work");
+    // Return a minimal mock client that will fail gracefully
+    return {} as SupabaseClient<Database>;
   }
 
   // Reuse cached admin client if available and fresh
