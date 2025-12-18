@@ -1,7 +1,3 @@
-[project]
-id = "your-project-ref"
-name = "your-project-name"
-
 [api]
 enabled = true
 port = 54321
