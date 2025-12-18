@@ -12,6 +12,9 @@ import {
   ExportOptions,
 } from "../../services/ingestion/export-service";
 import { query } from "../../db";
+import { checkExportLimit } from "../../middleware/usage-enforcement";
+import { trackExportUsage } from "../../utils/usage-tracking";
+import { getBillingAccount } from "../../utils/billing-helpers";
 
 const router = Router();
 
@@ -19,7 +22,7 @@ const router = Router();
  * POST /api/v1/ingestion/exports
  * Create an export
  */
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", checkExportLimit(), async (req: AuthRequest, res: Response) => {
   try {
     const { type, format, reconciliationRunId, ingestionId } = req.body;
     const tenantId = req.tenantId!;
@@ -52,6 +55,17 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     };
 
     const exportId = await createExport(exportOptions);
+
+    // Track usage
+    const billingAccount = await getBillingAccount(userId, tenantId);
+    if (billingAccount) {
+      await trackExportUsage({
+        billingAccountId: billingAccount.id,
+        userId,
+        tenantId,
+        exportId,
+      });
+    }
 
     // Generate export asynchronously (in production, use a job queue)
     generateExport(exportId).catch((error) => {

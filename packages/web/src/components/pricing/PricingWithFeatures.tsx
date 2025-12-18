@@ -10,9 +10,10 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Sparkles } from 'lucide-react';
+import { CheckCircle2, Sparkles, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface PricingTier {
   id: string;
@@ -104,6 +105,51 @@ const tiers: PricingTier[] = [
 
 export function PricingWithFeatures() {
   const [hoveredTier, setHoveredTier] = useState<string | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleUpgrade = async (planCode: string) => {
+    if (planCode === 'free' || planCode === 'enterprise') {
+      // Free plan: redirect to signup
+      // Enterprise: redirect to contact
+      if (planCode === 'enterprise') {
+        router.push('/enterprise');
+      } else {
+        router.push('/signup');
+      }
+      return;
+    }
+
+    try {
+      setLoadingPlan(planCode);
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planCode,
+          successUrl: `${window.location.origin}/console/billing?success=true`,
+          cancelUrl: `${window.location.origin}/pricing?canceled=true`,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to start checkout:', error);
+      // Fallback to signup page
+      router.push('/signup');
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   return (
     <section className="py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
@@ -222,7 +268,8 @@ export function PricingWithFeatures() {
                     </ul>
 
                     <Button
-                      asChild
+                      onClick={() => handleUpgrade(tier.id)}
+                      disabled={loadingPlan === tier.id}
                       className={`w-full ${
                         isHighlighted
                           ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
@@ -230,9 +277,18 @@ export function PricingWithFeatures() {
                       }`}
                       variant={isHighlighted ? 'default' : 'outline'}
                     >
-                      <Link href="/signup">
-                        {tier.id === 'enterprise' ? 'Contact Sales' : 'Get Started'}
-                      </Link>
+                      {loadingPlan === tier.id ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processing...
+                        </>
+                      ) : tier.id === 'enterprise' ? (
+                        'Contact Sales'
+                      ) : tier.id === 'free' ? (
+                        'Get Started'
+                      ) : (
+                        'Upgrade Now'
+                      )}
                     </Button>
                   </CardContent>
                 </Card>

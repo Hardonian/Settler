@@ -7,7 +7,7 @@
 
 export type PlanCode = 'free' | 'pro' | 'scale';
 
-export type ServiceCode = 'reconcile' | 'receipts' | 'featureFlags';
+export type ServiceCode = 'reconcile' | 'receipts' | 'featureFlags' | 'ingestions' | 'exports';
 
 export interface ServiceLimits {
   reconcile: {
@@ -21,6 +21,14 @@ export interface ServiceLimits {
   featureFlags: {
     monthlyEvaluations: number; // Monthly flag evaluations (generous for free tier)
     rateLimit?: number; // Evaluations per minute (optional)
+  };
+  ingestions: {
+    monthlyCalls: number; // Monthly ingestion jobs
+    rateLimit?: number; // Ingestions per minute (optional)
+  };
+  exports: {
+    monthlyCalls: number; // Monthly export jobs
+    rateLimit?: number; // Exports per minute (optional)
   };
 }
 
@@ -64,6 +72,12 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       featureFlags: {
         monthlyEvaluations: 100000, // 100k evaluations/month (generous free tier)
       },
+      ingestions: {
+        monthlyCalls: 100, // 100 ingestion jobs/month
+      },
+      exports: {
+        monthlyCalls: 50, // 50 export jobs/month
+      },
     },
     aiTokens: {
       included: 0, // No AI tokens on free plan
@@ -96,6 +110,14 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       featureFlags: {
         monthlyEvaluations: 1000000, // 1M evaluations/month
         rateLimit: 1000, // 1k evaluations/minute
+      },
+      ingestions: {
+        monthlyCalls: 10000, // 10k ingestion jobs/month
+        rateLimit: 50, // 50 ingestions/minute
+      },
+      exports: {
+        monthlyCalls: 5000, // 5k export jobs/month
+        rateLimit: 25, // 25 exports/minute
       },
     },
     aiTokens: {
@@ -130,6 +152,14 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       featureFlags: {
         monthlyEvaluations: 10000000, // 10M evaluations/month
         rateLimit: 5000, // 5k evaluations/minute
+      },
+      ingestions: {
+        monthlyCalls: 100000, // 100k ingestion jobs/month
+        rateLimit: 500, // 500 ingestions/minute
+      },
+      exports: {
+        monthlyCalls: 50000, // 50k export jobs/month
+        rateLimit: 250, // 250 exports/minute
       },
     },
     aiTokens: {
@@ -196,6 +226,10 @@ export function getServiceLimit(
       return plan.limits.receipts.monthlyCalls;
     case 'featureFlags':
       return plan.limits.featureFlags.monthlyEvaluations;
+    case 'ingestions':
+      return plan.limits.ingestions.monthlyCalls;
+    case 'exports':
+      return plan.limits.exports.monthlyCalls;
     default:
       return 0;
   }

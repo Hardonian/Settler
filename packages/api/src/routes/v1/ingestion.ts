@@ -22,6 +22,9 @@ import {
 } from "../../services/ingestion/ingestion-service";
 import { query } from "../../db";
 import { CSVColumnMapping } from "../../services/ingestion/types";
+import { checkIngestionLimit } from "../../middleware/usage-enforcement";
+import { trackIngestionUsage } from "../../utils/usage-tracking";
+import { getBillingAccount } from "../../utils/billing-helpers";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -138,6 +141,7 @@ router.get("/sources", async (req: AuthRequest, res: Response) => {
 router.post(
   "/upload",
   upload.single("file"),
+  checkIngestionLimit(),
   async (req: AuthRequest, res: Response) => {
     try {
       const file = req.file;
@@ -271,6 +275,17 @@ router.post(
         failedCount,
         completedAt: new Date(),
       });
+
+      // Track usage
+      const billingAccount = await getBillingAccount(userId, tenantId);
+      if (billingAccount) {
+        await trackIngestionUsage({
+          billingAccountId: billingAccount.id,
+          userId,
+          tenantId,
+          ingestionId,
+        });
+      }
 
       logInfo("CSV ingestion completed", {
         ingestionId,
