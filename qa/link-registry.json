@@ -1,0 +1,2756 @@
+{
+  "generatedAt": "2025-12-18T20:54:41.094Z",
+  "totalLinks": 342,
+  "uniquePaths": 342,
+  "links": [
+    {
+      "href": "/admin/experiments",
+      "source": "/workspace/packages/web/src/app/admin/experiments/[id]/ExperimentDashboardClient.tsx",
+      "line": 54,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/experiments",
+      "source": "/workspace/packages/web/src/app/admin/experiments/new/NewExperimentForm.tsx",
+      "line": 74,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/experiments",
+      "source": "/workspace/packages/web/src/app/admin/experiments/new/page.tsx",
+      "line": 14,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/experiments/new",
+      "source": "/workspace/packages/web/src/app/admin/experiments/page.tsx",
+      "line": 19,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin",
+      "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+      "line": 18,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/pages",
+      "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+      "line": 23,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/experiments",
+      "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+      "line": 28,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/branding",
+      "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+      "line": 33,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/flags",
+      "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+      "line": 38,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/webhooks",
+      "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+      "line": 43,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/settings",
+      "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+      "line": 48,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/pages",
+      "source": "/workspace/packages/web/src/app/admin/page.tsx",
+      "line": 41,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/branding",
+      "source": "/workspace/packages/web/src/app/admin/page.tsx",
+      "line": 44,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/pages",
+      "source": "/workspace/packages/web/src/app/admin/pages/[id]/editor/EditorClient.tsx",
+      "line": 85,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/pages",
+      "source": "/workspace/packages/web/src/app/admin/pages/new/page.tsx",
+      "line": 35,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/pages",
+      "source": "/workspace/packages/web/src/app/admin/pages/new/page.tsx",
+      "line": 68,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/admin/pages/new",
+      "source": "/workspace/packages/web/src/app/admin/pages/page.tsx",
+      "line": 32,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/app/billing/success/page.tsx",
+      "line": 87,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/app/billing/success/page.tsx",
+      "line": 91,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/app/billing/success/page.tsx",
+      "line": 116,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/app/billing/success/page.tsx",
+      "line": 119,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/changelog",
+      "source": "/workspace/packages/web/src/app/changelog/[slug]/page.tsx",
+      "line": 44,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/integrations",
+      "source": "/workspace/packages/web/src/app/community/contributors/page.tsx",
+      "line": 32,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/community/contributors/page.tsx",
+      "line": 48,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/community/contributors/page.tsx",
+      "line": 75,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/community/contributors/page.tsx",
+      "line": 82,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/community",
+      "source": "/workspace/packages/web/src/app/community/contributors/page.tsx",
+      "line": 155,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/app/console/billing/page.tsx",
+      "line": 321,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk",
+      "source": "/workspace/packages/web/src/app/console/docs/page.tsx",
+      "line": 438,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/cli",
+      "source": "/workspace/packages/web/src/app/console/docs/page.tsx",
+      "line": 509,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/api-keys",
+      "source": "/workspace/packages/web/src/app/console/docs/page.tsx",
+      "line": 532,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/console/docs/page.tsx",
+      "line": 726,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/console/docs/page.tsx",
+      "line": 733,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/cookbooks",
+      "source": "/workspace/packages/web/src/app/console/docs/page.tsx",
+      "line": 740,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/console/error.tsx",
+      "line": 48,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/app/console/not-found.tsx",
+      "line": 31,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/console/not-found.tsx",
+      "line": 34,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/app/console/onboarding/page.tsx",
+      "line": 102,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/console/onboarding/page.tsx",
+      "line": 328,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/receipts",
+      "source": "/workspace/packages/web/src/app/console/onboarding/page.tsx",
+      "line": 337,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/reconcile",
+      "source": "/workspace/packages/web/src/app/console/onboarding/page.tsx",
+      "line": 364,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/app/console/onboarding/page.tsx",
+      "line": 393,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 86,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 99,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 146,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 149,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 314,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 317,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/api-keys",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 344,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/receipts",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 358,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/feature-flags",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 372,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/api-keys",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 444,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/feature-flags",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 453,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/docs",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 462,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/setup-check",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 518,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 521,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/app/console/playground/convert/page.tsx",
+      "line": 239,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/app/console/playground/convert/page.tsx",
+      "line": 304,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/app/console/playground/flags/page.tsx",
+      "line": 287,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/cli",
+      "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
+      "line": 21,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/reconcile",
+      "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
+      "line": 30,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/receipts",
+      "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
+      "line": 38,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/flags",
+      "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
+      "line": 46,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/convert",
+      "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
+      "line": 54,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/app/console/playground/receipts/page.tsx",
+      "line": 189,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/app/console/playground/reconcile/page.tsx",
+      "line": 308,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/app/console/setup-check/page.tsx",
+      "line": 241,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/console/setup-check/page.tsx",
+      "line": 244,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/site",
+      "source": "/workspace/packages/web/src/app/console/site/branding/page.tsx",
+      "line": 139,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/site/experiments",
+      "source": "/workspace/packages/web/src/app/console/site/experiments/[id]/page.tsx",
+      "line": 104,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/site/experiments",
+      "source": "/workspace/packages/web/src/app/console/site/experiments/[id]/page.tsx",
+      "line": 116,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/console/site/navigation/page.tsx",
+      "line": 79,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/site",
+      "source": "/workspace/packages/web/src/app/console/site/navigation/page.tsx",
+      "line": 195,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/site/branding",
+      "source": "/workspace/packages/web/src/app/console/site/page.tsx",
+      "line": 222,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/site/navigation",
+      "source": "/workspace/packages/web/src/app/console/site/page.tsx",
+      "line": 237,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/site",
+      "source": "/workspace/packages/web/src/app/console/site/pages/[id]/page.tsx",
+      "line": 158,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/site",
+      "source": "/workspace/packages/web/src/app/console/site/pages/[id]/page.tsx",
+      "line": 171,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/cookbooks/page.tsx",
+      "line": 619,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/cookbooks/page.tsx",
+      "line": 626,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/cookbooks/page.tsx",
+      "line": 649,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/cookbooks/page.tsx",
+      "line": 657,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/billing",
+      "source": "/workspace/packages/web/src/app/dashboard/billing/invoices/page.tsx",
+      "line": 111,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/billing/invoices",
+      "source": "/workspace/packages/web/src/app/dashboard/billing/page.tsx",
+      "line": 156,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/billing/payment-methods",
+      "source": "/workspace/packages/web/src/app/dashboard/billing/page.tsx",
+      "line": 163,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/app/dashboard/billing/page.tsx",
+      "line": 177,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/billing",
+      "source": "/workspace/packages/web/src/app/dashboard/billing/payment-methods/page.tsx",
+      "line": 87,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/integrations",
+      "source": "/workspace/packages/web/src/app/dashboard/integrations/[integrationId]/page.tsx",
+      "line": 56,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/addons",
+      "source": "/workspace/packages/web/src/app/dashboard/integrations/page.tsx",
+      "line": 242,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/jobs",
+      "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
+      "line": 124,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/jobs",
+      "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
+      "line": 157,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/jobs",
+      "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
+      "line": 175,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/dashboard/jobs/page.tsx",
+      "line": 157,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/dashboard/jobs/page.tsx",
+      "line": 203,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/jobs",
+      "source": "/workspace/packages/web/src/app/dashboard/user/page.tsx",
+      "line": 172,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/dashboard/user/page.tsx",
+      "line": 189,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/dashboard/user/page.tsx",
+      "line": 192,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/dashboard/user/page.tsx",
+      "line": 266,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/cookbooks",
+      "source": "/workspace/packages/web/src/app/dashboard/user/page.tsx",
+      "line": 279,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/dashboard/user/page.tsx",
+      "line": 292,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/docs/cli/page.tsx",
+      "line": 182,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "line": 138,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/integrations/request",
+      "source": "/workspace/packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "line": 141,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "line": 167,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "line": 248,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "line": 251,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "line": 254,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/docs/page.tsx",
+      "line": 38,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/cookbooks",
+      "source": "/workspace/packages/web/src/app/docs/page.tsx",
+      "line": 38,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/app/docs/page.tsx",
+      "line": 60,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/community",
+      "source": "/workspace/packages/web/src/app/docs/page.tsx",
+      "line": 60,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/docs/sdk/go/page.tsx",
+      "line": 129,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk",
+      "source": "/workspace/packages/web/src/app/docs/sdk/go/page.tsx",
+      "line": 130,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/docs/sdk/go/page.tsx",
+      "line": 207,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk/nodejs",
+      "source": "/workspace/packages/web/src/app/docs/sdk/go/page.tsx",
+      "line": 212,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/docs/sdk/nodejs/page.tsx",
+      "line": 115,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk",
+      "source": "/workspace/packages/web/src/app/docs/sdk/nodejs/page.tsx",
+      "line": 116,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/docs/sdk/nodejs/page.tsx",
+      "line": 226,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk/python",
+      "source": "/workspace/packages/web/src/app/docs/sdk/nodejs/page.tsx",
+      "line": 231,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk/nodejs",
+      "source": "/workspace/packages/web/src/app/docs/sdk/page.tsx",
+      "line": 21,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk/python",
+      "source": "/workspace/packages/web/src/app/docs/sdk/page.tsx",
+      "line": 30,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk/go",
+      "source": "/workspace/packages/web/src/app/docs/sdk/page.tsx",
+      "line": 39,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk/ruby",
+      "source": "/workspace/packages/web/src/app/docs/sdk/page.tsx",
+      "line": 48,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/docs/sdk/page.tsx",
+      "line": 62,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/docs/sdk/page.tsx",
+      "line": 133,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/api",
+      "source": "/workspace/packages/web/src/app/docs/sdk/page.tsx",
+      "line": 139,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/examples",
+      "source": "/workspace/packages/web/src/app/docs/sdk/page.tsx",
+      "line": 145,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/docs/sdk/python/page.tsx",
+      "line": 122,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk",
+      "source": "/workspace/packages/web/src/app/docs/sdk/python/page.tsx",
+      "line": 123,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/docs/sdk/python/page.tsx",
+      "line": 208,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk/go",
+      "source": "/workspace/packages/web/src/app/docs/sdk/python/page.tsx",
+      "line": 213,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/docs/sdk/ruby/page.tsx",
+      "line": 89,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk",
+      "source": "/workspace/packages/web/src/app/docs/sdk/ruby/page.tsx",
+      "line": 90,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/docs/sdk/ruby/page.tsx",
+      "line": 160,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk/nodejs",
+      "source": "/workspace/packages/web/src/app/docs/sdk/ruby/page.tsx",
+      "line": 165,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes",
+      "source": "/workspace/packages/web/src/app/edge-ai/nodes/[nodeId]/page.tsx",
+      "line": 90,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes",
+      "source": "/workspace/packages/web/src/app/edge-ai/nodes/[nodeId]/page.tsx",
+      "line": 123,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes",
+      "source": "/workspace/packages/web/src/app/edge-ai/nodes/[nodeId]/page.tsx",
+      "line": 141,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes",
+      "source": "/workspace/packages/web/src/app/edge-ai/nodes/new/page.tsx",
+      "line": 71,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes",
+      "source": "/workspace/packages/web/src/app/edge-ai/nodes/new/page.tsx",
+      "line": 85,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes/new",
+      "source": "/workspace/packages/web/src/app/edge-ai/nodes/page.tsx",
+      "line": 52,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes/new",
+      "source": "/workspace/packages/web/src/app/edge-ai/nodes/page.tsx",
+      "line": 152,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes",
+      "source": "/workspace/packages/web/src/app/edge-ai/page.tsx",
+      "line": 209,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/edge-ai/page.tsx",
+      "line": 212,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes",
+      "source": "/workspace/packages/web/src/app/edge-ai/page.tsx",
+      "line": 222,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai",
+      "source": "/workspace/packages/web/src/app/edge-ai/page.tsx",
+      "line": 255,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai",
+      "source": "/workspace/packages/web/src/app/edge-ai/page.tsx",
+      "line": 266,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise",
+      "source": "/workspace/packages/web/src/app/enterprise/dashboard/page.tsx",
+      "line": 34,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/app/enterprise/page.tsx",
+      "line": 145,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise/dashboard",
+      "source": "/workspace/packages/web/src/app/enterprise/page.tsx",
+      "line": 155,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/status",
+      "source": "/workspace/packages/web/src/app/error.tsx",
+      "line": 112,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/app/error.tsx",
+      "line": 117,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/api",
+      "source": "/workspace/packages/web/src/app/feature-flags/page.tsx",
+      "line": 36,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/flags",
+      "source": "/workspace/packages/web/src/app/feature-flags/page.tsx",
+      "line": 39,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/flags",
+      "source": "/workspace/packages/web/src/app/feature-flags/page.tsx",
+      "line": 156,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
+      "line": 174,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
+      "line": 177,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
+      "line": 398,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
+      "line": 401,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
+      "line": 404,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/integrations/request/page.tsx",
+      "line": 61,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/integrations",
+      "source": "/workspace/packages/web/src/app/integrations/request/page.tsx",
+      "line": 64,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/contact",
+      "source": "/workspace/packages/web/src/app/integrations/request/page.tsx",
+      "line": 144,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/app/integrations/request/page.tsx",
+      "line": 170,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/community",
+      "source": "/workspace/packages/web/src/app/integrations/request/page.tsx",
+      "line": 174,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/app/invite/[token]/page.tsx",
+      "line": 97,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/invite/[token]/page.tsx",
+      "line": 174,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal",
+      "source": "/workspace/packages/web/src/app/legal/aup/page.tsx",
+      "line": 25,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal",
+      "source": "/workspace/packages/web/src/app/legal/cookies/page.tsx",
+      "line": 25,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal",
+      "source": "/workspace/packages/web/src/app/legal/dpa/page.tsx",
+      "line": 24,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal",
+      "source": "/workspace/packages/web/src/app/legal/license/page.tsx",
+      "line": 27,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal/terms",
+      "source": "/workspace/packages/web/src/app/legal/page.tsx",
+      "line": 19,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal/privacy",
+      "source": "/workspace/packages/web/src/app/legal/page.tsx",
+      "line": 25,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal/dpa",
+      "source": "/workspace/packages/web/src/app/legal/page.tsx",
+      "line": 31,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal/subprocessors",
+      "source": "/workspace/packages/web/src/app/legal/page.tsx",
+      "line": 37,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal/license",
+      "source": "/workspace/packages/web/src/app/legal/page.tsx",
+      "line": 43,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal",
+      "source": "/workspace/packages/web/src/app/legal/privacy/page.tsx",
+      "line": 27,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal",
+      "source": "/workspace/packages/web/src/app/legal/subprocessors/page.tsx",
+      "line": 60,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal",
+      "source": "/workspace/packages/web/src/app/legal/terms/page.tsx",
+      "line": 27,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/not-found.tsx",
+      "line": 20,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/not-found.tsx",
+      "line": 23,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/status",
+      "source": "/workspace/packages/web/src/app/not-found.tsx",
+      "line": 26,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/offline/page.tsx",
+      "line": 33,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/app/oss/page.tsx",
+      "line": 265,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/oss/page.tsx",
+      "line": 268,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/oss/page.tsx",
+      "line": 285,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/quickstart",
+      "source": "/workspace/packages/web/src/app/oss/page.tsx",
+      "line": 291,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/app/page.tsx",
+      "line": 203,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/page.tsx",
+      "line": 214,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk",
+      "source": "/workspace/packages/web/src/app/page.tsx",
+      "line": 317,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/architecture",
+      "source": "/workspace/packages/web/src/app/page.tsx",
+      "line": 350,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/why-settler",
+      "source": "/workspace/packages/web/src/app/page.tsx",
+      "line": 409,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/api",
+      "source": "/workspace/packages/web/src/app/receipts/page.tsx",
+      "line": 33,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/receipts",
+      "source": "/workspace/packages/web/src/app/receipts/page.tsx",
+      "line": 36,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground/receipts",
+      "source": "/workspace/packages/web/src/app/receipts/page.tsx",
+      "line": 139,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal/terms",
+      "source": "/workspace/packages/web/src/app/signup/page.tsx",
+      "line": 96,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal/privacy",
+      "source": "/workspace/packages/web/src/app/signup/page.tsx",
+      "line": 100,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/articles/quick-start",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 20,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/articles/first-job",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 26,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/articles/matching-rules",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 32,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/articles/stripe-setup",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 40,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/articles/shopify-setup",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 46,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/articles/troubleshooting",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 52,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/articles/billing",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 60,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/articles/upgrade",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 66,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support/articles/payment-issues",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 72,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "line": 87,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/app/support/contact/page.tsx",
+      "line": 66,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard",
+      "source": "/workspace/packages/web/src/app/support/contact/page.tsx",
+      "line": 69,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/app/support/contact/page.tsx",
+      "line": 225,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/community",
+      "source": "/workspace/packages/web/src/app/support/contact/page.tsx",
+      "line": 237,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/app/support/contact/page.tsx",
+      "line": 249,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
+      "line": 157,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
+      "line": 184,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/getting-started",
+      "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
+      "line": 187,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
+      "line": 253,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/components/CommunityHub.tsx",
+      "line": 65,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/community/contributors",
+      "source": "/workspace/packages/web/src/components/CommunityHub.tsx",
+      "line": 72,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/api",
+      "source": "/workspace/packages/web/src/components/DeveloperResources.tsx",
+      "line": 60,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/quickstart",
+      "source": "/workspace/packages/web/src/components/DeveloperResources.tsx",
+      "line": 67,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/sdk",
+      "source": "/workspace/packages/web/src/components/DeveloperResources.tsx",
+      "line": 75,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/playground",
+      "source": "/workspace/packages/web/src/components/DeveloperResources.tsx",
+      "line": 82,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/cli",
+      "source": "/workspace/packages/web/src/components/DeveloperResources.tsx",
+      "line": 89,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/examples",
+      "source": "/workspace/packages/web/src/components/DeveloperResources.tsx",
+      "line": 96,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai",
+      "source": "/workspace/packages/web/src/components/EdgeAIMarketingSection.tsx",
+      "line": 80,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes",
+      "source": "/workspace/packages/web/src/components/EdgeAIMarketingSection.tsx",
+      "line": 83,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai/nodes",
+      "source": "/workspace/packages/web/src/components/EdgeAIMarketingSection.tsx",
+      "line": 220,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/edge-ai",
+      "source": "/workspace/packages/web/src/components/EdgeAIMarketingSection.tsx",
+      "line": 226,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/FeatureLockModal.tsx",
+      "line": 81,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/components/MobileMenu.tsx",
+      "line": 57,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 12,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/cookbooks",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 13,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/receipts",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 14,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/feature-flags",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 15,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 16,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 17,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 18,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/community",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 19,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 20,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 21,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 107,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 181,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/PlanFeatureGate.tsx",
+      "line": 91,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/SuccessCelebration.tsx",
+      "line": 139,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/TrialCountdownBanner.tsx",
+      "line": 50,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/TrialCountdownBanner.tsx",
+      "line": 74,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/UpgradeButton.tsx",
+      "line": 29,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/UsageLimitIndicator.tsx",
+      "line": 71,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/UsageLimitIndicator.tsx",
+      "line": 99,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/UsageUpgradeBanner.tsx",
+      "line": 70,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/WelcomeDashboard.tsx",
+      "line": 192,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/components/billing/PaymentRecoveryFlow.tsx",
+      "line": 218,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/legal/cookies",
+      "source": "/workspace/packages/web/src/components/consent/CookieConsent.tsx",
+      "line": 253,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/insights",
+      "source": "/workspace/packages/web/src/components/console/AIInsightsPanel.tsx",
+      "line": 210,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/console/AITokensWidget.tsx",
+      "line": 86,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/components/console/AITokensWidget.tsx",
+      "line": 159,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/components/console/CLIPlayground.tsx",
+      "line": 429,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/components/console/CLIPlayground.tsx",
+      "line": 589,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 35,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/api-keys",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 36,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/usage",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 37,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/performance",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 38,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/insights",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 39,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/webhooks",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 40,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 41,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/receipts",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 42,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/feature-flags",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 43,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/site",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 44,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/docs",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 45,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/components/console/ConsolePublicOverview.tsx",
+      "line": 64,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/components/console/ConsolePublicOverview.tsx",
+      "line": 67,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/components/console/ConsolePublicOverview.tsx",
+      "line": 70,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/components/console/ConsolePublicOverview.tsx",
+      "line": 143,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/console/ConsolePublicOverview.tsx",
+      "line": 146,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/components/console/ErrorBoundary.tsx",
+      "line": 96,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/setup-check",
+      "source": "/workspace/packages/web/src/components/console/ErrorBoundary.tsx",
+      "line": 99,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/console/FeatureGate.tsx",
+      "line": 130,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/billing",
+      "source": "/workspace/packages/web/src/components/console/FeatureGate.tsx",
+      "line": 197,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/console/UsageWarningBanner.tsx",
+      "line": 105,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/console/ValueMomentUpgradePrompt.tsx",
+      "line": 138,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/components/env/EnvErrorPanel.tsx",
+      "line": 62,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/setup-check",
+      "source": "/workspace/packages/web/src/components/env/EnvErrorPanel.tsx",
+      "line": 65,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/components/landing/FeatureShowcase.tsx",
+      "line": 203,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise",
+      "source": "/workspace/packages/web/src/components/marketing/InvestorPitch.tsx",
+      "line": 114,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/marketing/UrgencyBanner.tsx",
+      "line": 104,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/components/marketing/UrgencyBanner.tsx",
+      "line": 137,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/components/marketing/ValueProposition.tsx",
+      "line": 116,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/user",
+      "source": "/workspace/packages/web/src/components/onboarding/ActivationChecklist.tsx",
+      "line": 32,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard/integrations",
+      "source": "/workspace/packages/web/src/components/onboarding/ActivationChecklist.tsx",
+      "line": 39,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/playground",
+      "source": "/workspace/packages/web/src/components/onboarding/ActivationChecklist.tsx",
+      "line": 46,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard",
+      "source": "/workspace/packages/web/src/components/onboarding/ActivationChecklist.tsx",
+      "line": 53,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/cookbooks",
+      "source": "/workspace/packages/web/src/components/onboarding/ActivationChecklist.tsx",
+      "line": 60,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/api-keys",
+      "source": "/workspace/packages/web/src/components/onboarding/WelcomeBanner.tsx",
+      "line": 78,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/components/onboarding/WelcomeBanner.tsx",
+      "line": 83,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/components/onboarding/WelcomeBanner.tsx",
+      "line": 88,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise",
+      "source": "/workspace/packages/web/src/components/pricing/PricingWithFeatures.tsx",
+      "line": 115,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/components/pricing/PricingWithFeatures.tsx",
+      "line": 117,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/components/pricing/PricingWithFeatures.tsx",
+      "line": 147,
+      "type": "router",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise#demo-form",
+      "source": "/workspace/packages/web/src/components/sales/DemoBookingWidget.tsx",
+      "line": 45,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise#demo-form",
+      "source": "/workspace/packages/web/src/components/sales/DemoBookingWidget.tsx",
+      "line": 106,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/components/support/FloatingHelpButton.tsx",
+      "line": 22,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/components/support/FloatingHelpButton.tsx",
+      "line": 28,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/cookbooks",
+      "source": "/workspace/packages/web/src/components/support/FloatingHelpButton.tsx",
+      "line": 34,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise",
+      "source": "/workspace/packages/web/src/components/support/FloatingHelpButton.tsx",
+      "line": 40,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 22,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/cookbooks",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 23,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/receipts",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 24,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/feature-flags",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 25,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 26,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 27,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 28,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/community",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 29,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 30,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/playground",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 31,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 138,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+      "line": 210,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/upgrade/SoftPaywall.tsx",
+      "line": 79,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/components/upgrade/SoftPaywall.tsx",
+      "line": 187,
+      "type": "link",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/observability-architecture.md",
+      "source": "/workspace/packages/web/src/lib/observability/README.md",
+      "line": 36,
+      "type": "markdown",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/event-catalog.md",
+      "source": "/workspace/packages/web/src/lib/observability/README.md",
+      "line": 37,
+      "type": "markdown",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs/diagnostics-playbook.md",
+      "source": "/workspace/packages/web/src/lib/observability/README.md",
+      "line": 38,
+      "type": "markdown",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 42,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup?source=paid",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 48,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup?ref=referral",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 54,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 60,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup?source=social",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 66,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/dashboard",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 72,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 93,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 103,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/playground",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 113,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/lib/personalization.ts",
+      "line": 123,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 51,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/cookbooks",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 52,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/receipts",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 53,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/feature-flags",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 54,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 55,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 56,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/enterprise",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 57,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/community",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 58,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/support",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 59,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/playground",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 60,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 105,
+      "type": "config",
+      "normalizedHref": {}
+    },
+    {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+      "line": 110,
+      "type": "config",
+      "normalizedHref": {}
+    }
+  ],
+  "paths": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+  ],
+  "linksByPath": {
+    "[object Promise]": [
+      {
+        "href": "/docs",
+        "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+        "line": 110,
+        "type": "config",
+        "normalizedHref": {}
+      }
+    ]
+  }
+}

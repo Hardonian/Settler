@@ -39,15 +39,31 @@ export function Footer() {
               </li>
               <li>
                 <Link 
-                  href="/cookbooks" 
+                  href="/cookbook" 
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Cookbooks
+                  Cookbook
                 </Link>
               </li>
               <li>
                 <Link 
-                  href="/console/playground" 
+                  href="/runbooks" 
+                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
+                >
+                  Runbooks
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/schematics" 
+                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
+                >
+                  Schematics
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/playground" 
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Playground

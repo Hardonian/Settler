@@ -188,6 +188,35 @@ const nextConfig = {
       },
     ];
   },
+  // Redirects for route consistency
+  async redirects() {
+    return [
+      // Redirect /cookbooks (plural) to /cookbook (singular)
+      {
+        source: '/cookbooks',
+        destination: '/cookbook',
+        permanent: true,
+      },
+      // Redirect /cookbooks/* to /cookbook/*
+      {
+        source: '/cookbooks/:path*',
+        destination: '/cookbook/:path*',
+        permanent: true,
+      },
+      // Redirect /console/playground to /playground
+      {
+        source: '/console/playground',
+        destination: '/playground',
+        permanent: true,
+      },
+      // Redirect /console/playground/* to /playground/*
+      {
+        source: '/console/playground/:path*',
+        destination: '/playground/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = withBundleAnalyzer(withMDX(nextConfig));
