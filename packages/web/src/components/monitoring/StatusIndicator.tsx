@@ -20,22 +20,39 @@ export function StatusIndicator() {
     const checkStatus = async () => {
       try {
         // Try to fetch status from status.settler.dev API
-        // Fallback to operational if API unavailable
-        const response = await fetch('https://status.settler.dev/api/v2/status.json', {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
-        }).catch(() => null);
+        // Fallback to operational if API unavailable or CSP blocks it
+        let response: Response | null = null;
+        try {
+          response = await fetch('https://status.settler.dev/api/v2/status.json', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            // Don't throw on network errors, let catch handle it
+          });
+        } catch (fetchError) {
+          // CSP violation or network error - silently fallback
+          console.debug('Status check failed (likely CSP or network):', fetchError);
+          setStatus('operational');
+          setIsVisible(true);
+          return;
+        }
 
         if (response?.ok) {
-          const data = await response.json();
-          // Map status page status to our status
-          const pageStatus = data?.status?.indicator || 'operational';
-          setStatus(pageStatus === 'none' ? 'operational' : pageStatus === 'minor' ? 'degraded' : 'down');
+          try {
+            const data = await response.json();
+            // Map status page status to our status
+            const pageStatus = data?.status?.indicator || 'operational';
+            setStatus(pageStatus === 'none' ? 'operational' : pageStatus === 'minor' ? 'degraded' : 'down');
+          } catch (jsonError) {
+            // Invalid JSON response - default to operational
+            setStatus('operational');
+          }
         } else {
-          // Default to operational if status page unavailable
+          // Non-200 response - default to operational
           setStatus('operational');
         }
-      } catch {
+      } catch (error) {
+        // Any other error - default to operational
+        console.debug('Status check error:', error);
         setStatus('operational');
       }
       setIsVisible(true);

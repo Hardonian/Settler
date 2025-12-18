@@ -41,6 +41,9 @@ next-env.d.ts
 artifacts/
 .mirror-out/
 
+# QA artifacts (screenshots only, reports are committed)
+qa-artifacts/screenshots/
+
 # private venture documents
 .private/
 INVESTOR-RELATIONS-PRIVATE/
