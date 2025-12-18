@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run typecheck && npm run build",
+  "buildCommand": "cd ../.. && npm ci && npm run build",
   "rewrites": [
     {
       "source": "/(.*)",
@@ -9,7 +9,11 @@
   ],
   "functions": {
     "api/index.ts": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "memory": 1024
     }
+  },
+  "env": {
+    "NODE_ENV": "production"
   }
 }

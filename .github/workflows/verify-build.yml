@@ -1,0 +1,47 @@
+name: Verify Build
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for committed node_modules
+        run: |
+          if git ls-files | grep -q node_modules; then
+            echo "❌ Error: node_modules files are committed to git"
+            git ls-files | grep node_modules | head -20
+            exit 1
+          fi
+          echo "✅ No node_modules files are tracked in git"
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test -- --passWithNoTests
+
+      - name: Validate
+        run: npm run validate
