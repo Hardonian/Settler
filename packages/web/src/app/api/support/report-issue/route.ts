@@ -85,6 +85,7 @@ export async function POST(request: NextRequest) {
       // Update ticket with triage results
       await supabase
         .from('ops_support_tickets')
+        // @ts-expect-error - Supabase type inference issue
         .update({
           priority: triageResult.suggestedPriority,
           category: triageResult.suggestedCategory || category,
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
             confidence: triageResult.confidence,
             rules: triageResult.triageRulesApplied,
           },
-        } as never)
+        })
         .eq('id', ticketData.id);
     } catch (triageError) {
       console.error('Auto-triage failed (non-fatal):', triageError);

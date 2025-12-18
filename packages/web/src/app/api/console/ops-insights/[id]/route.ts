@@ -121,7 +121,8 @@ export async function PATCH(
 
     const { data, error } = await supabase
       .from('ops_insights')
-      .update(updateData as never)
+      // @ts-expect-error - Supabase type inference issue
+      .update(updateData)
       .eq('id', insightId)
       .select()
       .single();
