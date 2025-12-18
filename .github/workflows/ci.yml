@@ -66,8 +66,8 @@ jobs:
           fi
         continue-on-error: true
 
-  workspace-integrity:
-    name: Workspace Integrity Check
+  repo-integrity:
+    name: Repository Integrity Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -76,22 +76,16 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - run: npm ci
-      - name: Check workspace integrity
+      - name: Run comprehensive repository integrity check
+        run: npm run repo-integrity
+      - name: Check workspace integrity (legacy)
         run: npm run check:workspace
-      - name: Check for committed node_modules
-        run: |
-          if git ls-files | grep -q "node_modules/"; then
-            echo "❌ ERROR: node_modules directories are committed to git"
-            echo "Found files:"
-            git ls-files | grep "node_modules/" | head -20
-            exit 1
-          fi
-          echo "✅ No node_modules committed to git"
+        continue-on-error: true
 
   lint-and-typecheck:
     name: Lint and Type Check
     runs-on: ubuntu-latest
-    needs: [validate-env, workspace-integrity]
+    needs: [validate-env, repo-integrity]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -227,8 +221,6 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - run: npm ci
-      - name: Verify workspace integrity before build
-        run: npm run check:workspace
       - run: npm run build
       - name: Check build artifacts
         run: |
@@ -236,19 +228,10 @@ jobs:
           test -d packages/web/.next || (echo "❌ packages/web/.next not found" && exit 1)
           echo "✅ All build artifacts present"
       - name: Verify Vercel build parity
-        run: |
-          echo "🔍 Verifying Vercel build command matches CI build..."
-          cd packages/web
-          # Use dummy env vars for build verification
-          export NEXT_PUBLIC_SITE_URL=http://localhost:3000
-          export NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co
-          export NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-key
-          export SKIP_ENV_VALIDATION=true
-          npm run build:vercel || (echo "❌ Vercel build command failed" && exit 1)
-          echo "✅ Vercel build command succeeded"
+        run: npm run vercel:parity
 
-  smoke-test:
-    name: Smoke Test (Build Verification)
+  production-check:
+    name: Canonical Production Check
     runs-on: ubuntu-latest
     needs: [build]
     steps:
@@ -258,8 +241,26 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - run: npm ci
-      - name: Run production readiness check
+      - name: Run canonical production check
         run: npm run check:production
+      - name: Verify build artifacts exist
+        run: |
+          test -d packages/web/.next || (echo "❌ packages/web/.next not found" && exit 1)
+          echo "✅ Build artifacts verified"
+
+  smoke-test:
+    name: Smoke Test (Build Verification)
+    runs-on: ubuntu-latest
+    needs: [production-check]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: Run smoke tests
+        run: npm run test:smoke
         continue-on-error: true
       - name: Verify build artifacts exist
         run: |

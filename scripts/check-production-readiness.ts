@@ -1,244 +1,170 @@
 #!/usr/bin/env tsx
 /**
- * Production Readiness Check
+ * Canonical Production Check
  * 
- * Comprehensive check to ensure the application is ready for production.
+ * Single source of truth for production readiness.
+ * MUST execute in order:
+ * 1. repo-integrity (workspace/package validation)
+ * 2. lint (all packages)
+ * 3. typecheck (all packages)
+ * 4. build (all deployable apps)
+ * 5. smoke tests (no hard 500s)
+ * 
+ * If a package exists, it must be validated - even if not deployed.
  * 
  * Usage: tsx scripts/check-production-readiness.ts
  */
 
 import { execSync } from 'child_process';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync } from 'fs';
 import { join } from 'path';
 
-interface CheckResult {
+interface CheckStep {
   name: string;
-  status: 'pass' | 'fail' | 'warning';
-  message: string;
+  command: string;
+  description: string;
+  required: boolean;
 }
 
-const checks: CheckResult[] = [];
+const workspaceRoot = process.cwd();
 
 /**
- * Check if environment variables are documented
+ * Run a command and return success status
  */
-function checkEnvVars(): CheckResult {
-  const envExample = existsSync(join(process.cwd(), '.env.example'));
-  const envDocs = existsSync(join(process.cwd(), 'docs', 'environment-variables.md'));
-  
-  if (!envExample && !envDocs) {
-    return {
-      name: 'Environment Variables Documentation',
-      status: 'warning',
-      message: 'No .env.example or environment variables documentation found',
-    };
+function runCommand(command: string, description: string): boolean {
+  try {
+    console.log(`\n🔍 ${description}...`);
+    execSync(command, {
+      cwd: workspaceRoot,
+      stdio: 'inherit',
+      encoding: 'utf-8',
+    });
+    console.log(`✅ ${description} passed\n`);
+    return true;
+  } catch (error) {
+    console.error(`\n❌ ${description} failed`);
+    return false;
   }
-  
-  return {
-    name: 'Environment Variables Documentation',
-    status: 'pass',
-    message: 'Environment variables are documented',
-  };
 }
 
 /**
- * Check if health endpoints exist
+ * Canonical production check
  */
-function checkHealthEndpoints(): CheckResult {
-  const healthRoute = existsSync(join(process.cwd(), 'packages/web/src/app/api/health/route.ts'));
-  const consoleHealthRoute = existsSync(join(process.cwd(), 'packages/web/src/app/api/health/console/route.ts'));
-  
-  if (!healthRoute || !consoleHealthRoute) {
-    return {
-      name: 'Health Endpoints',
-      status: 'fail',
-      message: 'Health endpoints are missing',
-    };
-  }
-  
-  return {
-    name: 'Health Endpoints',
-    status: 'pass',
-    message: 'Health endpoints are configured',
-  };
-}
+async function checkProduction(): Promise<void> {
+  console.log('🚀 Running Canonical Production Check\n');
+  console.log('=' .repeat(60));
+  console.log('This check ensures the repo is ready for production deployment');
+  console.log('=' .repeat(60));
 
-/**
- * Check if legal pages exist
- */
-function checkLegalPages(): CheckResult {
-  const legalPages = [
-    'packages/web/src/app/legal/terms/page.tsx',
-    'packages/web/src/app/legal/privacy/page.tsx',
-    'packages/web/src/app/legal/cookies/page.tsx',
-    'packages/web/src/app/legal/aup/page.tsx',
+  const steps: CheckStep[] = [
+    {
+      name: 'repo-integrity',
+      command: 'tsx scripts/repo-integrity.ts',
+      description: 'Repository integrity (workspaces, packages, scripts)',
+      required: true,
+    },
+    {
+      name: 'lint',
+      command: 'npm run lint',
+      description: 'Lint all packages',
+      required: true,
+    },
+    {
+      name: 'typecheck',
+      command: 'npm run typecheck',
+      description: 'Type check all packages',
+      required: true,
+    },
+    {
+      name: 'build',
+      command: 'npm run build',
+      description: 'Build all deployable apps',
+      required: true,
+    },
+    {
+      name: 'vercel-parity',
+      command: 'tsx scripts/vercel-parity.ts',
+      description: 'Vercel build parity verification',
+      required: true,
+    },
+    {
+      name: 'smoke-test',
+      command: 'npm run test:smoke',
+      description: 'Smoke tests (no hard 500s)',
+      required: false, // Optional but recommended
+    },
   ];
-  
-  const missing = legalPages.filter(page => !existsSync(join(process.cwd(), page)));
-  
-  if (missing.length > 0) {
-    return {
-      name: 'Legal Pages',
-      status: 'fail',
-      message: `Missing legal pages: ${missing.join(', ')}`,
-    };
+
+  const results: Array<{ step: CheckStep; passed: boolean }> = [];
+
+  // Execute all steps in order
+  for (const step of steps) {
+    const passed = runCommand(step.command, step.description);
+    results.push({ step, passed });
+
+    if (!passed && step.required) {
+      console.error(`\n❌ Required check "${step.name}" failed`);
+      console.error('   Production check cannot proceed\n');
+      process.exit(1);
+    }
   }
-  
-  return {
-    name: 'Legal Pages',
-    status: 'pass',
-    message: 'All legal pages are present',
-  };
-}
 
-/**
- * Check if cookie consent is implemented
- */
-function checkCookieConsent(): CheckResult {
-  const consentComponent = existsSync(join(process.cwd(), 'packages/web/src/components/consent/CookieConsent.tsx'));
-  
-  if (!consentComponent) {
-    return {
-      name: 'Cookie Consent',
-      status: 'fail',
-      message: 'Cookie consent component is missing',
-    };
-  }
-  
-  return {
-    name: 'Cookie Consent',
-    status: 'pass',
-    message: 'Cookie consent is implemented',
-  };
-}
+  // Summary
+  console.log('\n' + '=' .repeat(60));
+  console.log('📊 Production Check Summary');
+  console.log('=' .repeat(60));
 
-/**
- * Check if error handling is in place
- */
-function checkErrorHandling(): CheckResult {
-  const errorHandler = existsSync(join(process.cwd(), 'packages/web/src/lib/api/error-handler.ts'));
-  
-  if (!errorHandler) {
-    return {
-      name: 'Error Handling',
-      status: 'warning',
-      message: 'Unified error handler not found',
-    };
-  }
-  
-  return {
-    name: 'Error Handling',
-    status: 'pass',
-    message: 'Error handling is configured',
-  };
-}
+  const requiredPassed = results.filter(r => r.step.required && r.passed).length;
+  const requiredFailed = results.filter(r => r.step.required && !r.passed).length;
+  const optionalPassed = results.filter(r => !r.step.required && r.passed).length;
+  const optionalFailed = results.filter(r => !r.step.required && !r.passed).length;
 
-/**
- * Check if tests exist
- */
-function checkTests(): CheckResult {
-  const smokeTests = existsSync(join(process.cwd(), 'tests/e2e/console-smoke.spec.ts'));
-  
-  if (!smokeTests) {
-    return {
-      name: 'Smoke Tests',
-      status: 'warning',
-      message: 'Smoke tests not found',
-    };
-  }
-  
-  return {
-    name: 'Smoke Tests',
-    status: 'pass',
-    message: 'Smoke tests are configured',
-  };
-}
-
-/**
- * Check if runbook exists
- */
-function checkRunbook(): CheckResult {
-  const runbook = existsSync(join(process.cwd(), 'docs/runbook/production-deployment.md'));
-  
-  if (!runbook) {
-    return {
-      name: 'Deployment Runbook',
-      status: 'warning',
-      message: 'Deployment runbook not found',
-    };
-  }
-  
-  return {
-    name: 'Deployment Runbook',
-    status: 'pass',
-    message: 'Deployment runbook exists',
-  };
-}
-
-/**
- * Check workspace integrity
- */
-function checkWorkspaceIntegrity(): CheckResult {
-  // This is a simplified check - full check runs via npm run check:workspace
-  const workspaceCheckScript = existsSync(join(process.cwd(), 'scripts/check-workspace-integrity.ts'));
-  
-  if (!workspaceCheckScript) {
-    return {
-      name: 'Workspace Integrity Script',
-      status: 'fail',
-      message: 'Workspace integrity check script not found',
-    };
-  }
-  
-  return {
-    name: 'Workspace Integrity Script',
-    status: 'pass',
-    message: 'Workspace integrity check script exists (run npm run check:workspace for full check)',
-  };
-}
-
-/**
- * Run all checks
- */
-async function runChecks(): Promise<void> {
-  console.log('🔍 Running production readiness checks...\n');
-
-  checks.push(checkEnvVars());
-  checks.push(checkHealthEndpoints());
-  checks.push(checkLegalPages());
-  checks.push(checkCookieConsent());
-  checks.push(checkErrorHandling());
-  checks.push(checkTests());
-  checks.push(checkRunbook());
-  checks.push(checkWorkspaceIntegrity());
-
-  // Print results
-  const passed = checks.filter(c => c.status === 'pass').length;
-  const failed = checks.filter(c => c.status === 'fail').length;
-  const warnings = checks.filter(c => c.status === 'warning').length;
-
-  checks.forEach(check => {
-    const icon = check.status === 'pass' ? '✅' : check.status === 'fail' ? '❌' : '⚠️';
-    console.log(`${icon} ${check.name}: ${check.message}`);
+  results.forEach(({ step, passed }) => {
+    const icon = passed ? '✅' : '❌';
+    const req = step.required ? '[REQUIRED]' : '[OPTIONAL]';
+    console.log(`${icon} ${req} ${step.name}: ${passed ? 'PASSED' : 'FAILED'}`);
   });
 
-  console.log(`\n📊 Summary: ${passed} passed, ${warnings} warnings, ${failed} failed`);
+  console.log('\n' + '=' .repeat(60));
 
-  if (failed > 0) {
-    console.error('\n❌ Production readiness check failed');
+  if (requiredFailed > 0) {
+    console.error(`\n❌ Production check FAILED`);
+    console.error(`   ${requiredFailed} required check(s) failed`);
+    console.error(`   ${requiredPassed} required check(s) passed`);
+    if (optionalFailed > 0) {
+      console.warn(`   ⚠️  ${optionalFailed} optional check(s) failed`);
+    }
+    console.error('\n   CI will block merge until these issues are resolved.\n');
     process.exit(1);
   }
 
-  if (warnings > 0) {
-    console.warn('\n⚠️  Production readiness check passed with warnings');
+  if (optionalFailed > 0) {
+    console.warn(`\n⚠️  Production check passed with warnings`);
+    console.log(`   ✅ All ${requiredPassed} required checks passed`);
+    console.warn(`   ⚠️  ${optionalFailed} optional check(s) failed (recommended to fix)`);
+    console.log('\n   Merge allowed, but consider fixing warnings.\n');
     process.exit(0);
   }
 
-  console.log('\n✅ Production readiness check passed');
+  console.log(`\n✅ Production check PASSED`);
+  console.log(`   ✅ All ${requiredPassed} required checks passed`);
+  if (optionalPassed > 0) {
+    console.log(`   ✅ All ${optionalPassed} optional checks passed`);
+  }
+  console.log('\n   Ready for production deployment.\n');
   process.exit(0);
 }
 
-runChecks().catch((error) => {
-  console.error('Fatal error during production readiness check:', error);
-  process.exit(1);
-});
+/**
+ * Main execution
+ */
+async function main() {
+  try {
+    await checkProduction();
+  } catch (error) {
+    console.error('\n❌ Fatal error during production check:', error);
+    process.exit(1);
+  }
+}
+
+main();

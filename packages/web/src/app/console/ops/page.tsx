@@ -1,14 +1,15 @@
 /**
- * Admin Support Inbox
+ * Founder Ops Command Center
  * 
- * View and manage support tickets
+ * Admin-only dashboard for operational monitoring and management.
+ * Tabs: Overview, Customers, Usage, Jobs/Queues, Webhooks, Errors, Billing, Exports, Runbooks
  */
 
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getUserRole, UserRole } from '@/shared/auth/roles';
-import { SupportInbox } from '@/components/support/SupportInbox';
+import { OpsDashboard } from '@/components/ops/OpsDashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -16,7 +17,7 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-async function SupportContent() {
+async function OpsContent() {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -41,26 +42,31 @@ async function SupportContent() {
               This page is restricted to administrators only.
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              You need super admin privileges to access the Ops Command Center.
+            </p>
+          </CardContent>
         </Card>
       </div>
     );
   }
 
-  return <SupportInbox userId={user.id} />;
+  return <OpsDashboard userId={user.id} />;
 }
 
-export default function SupportPage() {
+export default function OpsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Support Inbox</h1>
+        <h1 className="text-3xl font-bold">Ops Command Center</h1>
         <p className="text-muted-foreground mt-2">
-          Manage and triage support tickets
+          Operational monitoring and management dashboard
         </p>
       </div>
-      <ErrorBoundary componentName="SupportPage">
+      <ErrorBoundary componentName="OpsPage">
         <Suspense fallback={<div>Loading...</div>}>
-          <SupportContent />
+          <OpsContent />
         </Suspense>
       </ErrorBoundary>
     </div>

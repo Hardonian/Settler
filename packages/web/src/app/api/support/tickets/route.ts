@@ -1,96 +1,73 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+/**
+ * Support Tickets API
+ * 
+ * List support tickets for admin
+ */
+
+import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/api/auth-gate';
+import { prisma } from '@/shared/db/prismaClient';
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
+export const runtime = 'nodejs';
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: Request) {
+  const adminCheck = await requireAdmin(request as any);
+  if (!adminCheck.isAdmin) {
+    return adminCheck.error!;
+  }
+
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { data, error } = await supabase
-      .from("support_tickets")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching tickets:", error);
-      return NextResponse.json({ error: "Failed to fetch tickets" }, { status: 500 });
-    }
-
-    type TicketRow = {
+    const tickets = await prisma.$queryRaw<Array<{
       id: string;
+      ticket_number: string;
       subject: string;
       status: string;
-      severity: string;
-      created_at: string;
-      updated_at: string;
-      assigned_to?: string | null;
-    };
-    
-    return NextResponse.json({
-      tickets: (data || []).map((t: TicketRow) => ({
-        id: t.id,
-        subject: t.subject,
-        status: t.status,
-        severity: t.severity,
-        createdAt: t.created_at,
-        updatedAt: t.updated_at,
-        assignedTo: t.assigned_to,
-      })),
-    });
-  } catch (error) {
-    console.error("Error in tickets GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { subject, description, category, severity } = body;
-
-    const { data, error } = await supabase
-      .from("support_tickets")
-      .insert({
-        user_id: user.id,
+      priority: string;
+      category: string | null;
+      triage_result: any;
+      created_at: Date;
+      user_id: string;
+    }>>`
+      SELECT 
+        id,
+        ticket_number,
         subject,
-        description,
+        status,
+        priority,
         category,
-        severity: severity || "medium",
-        status: "open",
-      } as any)
-      .select()
-      .single();
+        triage_result,
+        created_at,
+        user_id
+      FROM ops_support_tickets
+      ORDER BY created_at DESC
+      LIMIT 100
+    `;
 
-    if (error) {
-      console.error("Error creating ticket:", error);
-      return NextResponse.json({ error: "Failed to create ticket" }, { status: 500 });
-    }
+    // Get user emails
+    const userIds = tickets.map((t) => t.user_id);
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, email: true },
+    });
 
-    // Check for escalation rules
-    // In production, trigger escalation logic here
+    const userMap = new Map(users.map((u) => [u.id, u.email]));
 
-    return NextResponse.json({ ticket: data });
+    const ticketsWithUsers = tickets.map((ticket) => ({
+      id: ticket.id,
+      ticketNumber: ticket.ticket_number,
+      subject: ticket.subject,
+      status: ticket.status,
+      priority: ticket.priority,
+      category: ticket.category,
+      triageResult: ticket.triage_result,
+      createdAt: ticket.created_at.toISOString(),
+      userEmail: userMap.get(ticket.user_id),
+    }));
+
+    return NextResponse.json({ tickets: ticketsWithUsers });
   } catch (error) {
-    console.error("Error in tickets POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error('Failed to fetch support tickets:', error);
+    return NextResponse.json({ tickets: [] }, { status: 500 });
   }
 }
