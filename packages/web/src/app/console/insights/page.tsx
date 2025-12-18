@@ -12,6 +12,7 @@ import { InsightsView } from '@/components/ops/InsightsView';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { OpsIntelligenceErrorBoundary } from '@/components/ops/ErrorBoundary';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -64,9 +65,11 @@ export default function InsightsPage() {
         </p>
       </div>
       <ErrorBoundary componentName="InsightsPage">
-        <Suspense fallback={<div>Loading...</div>}>
-          <InsightsContent />
-        </Suspense>
+        <OpsIntelligenceErrorBoundary>
+          <Suspense fallback={<div>Loading...</div>}>
+            <InsightsContent />
+          </Suspense>
+        </OpsIntelligenceErrorBoundary>
       </ErrorBoundary>
     </div>
   );

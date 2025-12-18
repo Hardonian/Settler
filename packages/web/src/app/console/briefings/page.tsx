@@ -12,6 +12,7 @@ import { BriefingsView } from '@/components/ops/BriefingsView';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { OpsIntelligenceErrorBoundary } from '@/components/ops/ErrorBoundary';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -64,9 +65,11 @@ export default function BriefingsPage() {
         </p>
       </div>
       <ErrorBoundary componentName="BriefingsPage">
-        <Suspense fallback={<div>Loading...</div>}>
-          <BriefingsContent />
-        </Suspense>
+        <OpsIntelligenceErrorBoundary>
+          <Suspense fallback={<div>Loading...</div>}>
+            <BriefingsContent />
+          </Suspense>
+        </OpsIntelligenceErrorBoundary>
       </ErrorBoundary>
     </div>
   );

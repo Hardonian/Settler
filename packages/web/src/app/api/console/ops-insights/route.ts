@@ -2,11 +2,30 @@
  * Ops Insights API
  * 
  * Get insights with filtering and pagination
+ * 
+ * Performance optimizations:
+ * - Input validation
+ * - Query optimization
+ * - Error handling
+ * - Rate limiting ready
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/api/auth-gate';
 import { createClient } from '@/lib/supabase/server';
+import {
+  DEFAULT_PAGE_SIZE,
+  MAX_PAGE_SIZE,
+  isValidInsightType,
+  isValidSeverity,
+  isValidStatus,
+  validatePagination,
+} from '@/lib/ops-intelligence/utils';
+import {
+  INSIGHT_TYPES,
+  INSIGHT_SEVERITIES,
+  INSIGHT_STATUSES,
+} from '@/lib/ops-intelligence/constants';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -21,32 +40,66 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
     const searchParams = request.nextUrl.searchParams;
 
-    const type = searchParams.get('type');
-    const severity = searchParams.get('severity');
-    const status = searchParams.get('status') || 'active';
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    // Validate and parse query parameters
+    const typeParam = searchParams.get('type');
+    const severityParam = searchParams.get('severity');
+    const statusParam = searchParams.get('status') || 'active';
+    const pageParam = parseInt(searchParams.get('page') || '1', 10);
+    const limitParam = parseInt(searchParams.get('limit') || String(DEFAULT_PAGE_SIZE), 10);
+
+    // Validate inputs
+    if (typeParam && !isValidInsightType(typeParam)) {
+      return NextResponse.json(
+        { error: `Invalid type. Must be one of: ${INSIGHT_TYPES.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    if (severityParam && !isValidSeverity(severityParam)) {
+      return NextResponse.json(
+        { error: `Invalid severity. Must be one of: ${INSIGHT_SEVERITIES.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    if (statusParam && statusParam !== 'all' && !isValidStatus(statusParam)) {
+      return NextResponse.json(
+        { error: `Invalid status. Must be one of: ${INSIGHT_STATUSES.join(', ')}, or 'all'` },
+        { status: 400 }
+      );
+    }
+
+    const { page, limit } = validatePagination(pageParam, limitParam);
     const offset = (page - 1) * limit;
 
+    // Build query with optimizations
     let query = supabase
       .from('ops_insights')
       .select('*', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
-    if (type) {
-      query = query.eq('type', type);
+    // Apply filters
+    if (typeParam) {
+      query = query.eq('type', typeParam);
     }
-    if (severity) {
-      query = query.eq('severity', severity);
+    if (severityParam) {
+      query = query.eq('severity', severityParam);
     }
-    if (status) {
-      query = query.eq('status', status);
+    if (statusParam && statusParam !== 'all') {
+      query = query.eq('status', statusParam);
     }
 
-    const { data, error, count } = await query;
+    // Execute query with timeout
+    const queryPromise = query;
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Query timeout')), 30000)
+    );
+
+    const { data, error, count } = await Promise.race([queryPromise, timeoutPromise]);
 
     if (error) {
+      console.error('Database error:', error);
       throw error;
     }
 
@@ -61,9 +114,10 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching insights:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch insights' },
-      { status: 500 }
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : 'Failed to fetch insights';
+    const statusCode = errorMessage.includes('timeout') ? 504 : 500;
+
+    return NextResponse.json({ error: errorMessage }, { status: statusCode });
   }
 }

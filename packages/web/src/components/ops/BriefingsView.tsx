@@ -2,15 +2,32 @@
  * Ops Briefings View Component
  * 
  * Displays weekly founder briefings
+ * 
+ * Performance optimizations:
+ * - Caching with TTL
+ * - Memoized computations
+ * - Lazy loading
+ * - Error handling
  */
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { usePerformanceMonitor } from '@/hooks/use-ops-intelligence';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar } from 'lucide-react';
+import { Calendar, RefreshCw, AlertCircle } from 'lucide-react';
+import { cache } from '@/lib/ops-intelligence/cache';
+import {
+  CACHE_TTL_BRIEFINGS,
+  DEFAULT_BRIEFING_PAGE_SIZE,
+} from '@/lib/ops-intelligence/constants';
+import {
+  retryWithBackoff,
+  formatDateRange,
+  validatePagination,
+} from '@/lib/ops-intelligence/utils';
 
 interface Briefing {
   id: string;
@@ -29,50 +46,185 @@ interface BriefingsViewProps {
 }
 
 export function BriefingsView({ userId }: BriefingsViewProps) {
+  usePerformanceMonitor('BriefingsView');
   const [briefings, setBriefings] = useState<Briefing[]>([]);
   const [selectedBriefing, setSelectedBriefing] = useState<Briefing | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    loadBriefings();
-  }, [page]);
+  // Load briefings with caching and retry
+  const loadBriefings = useCallback(async () => {
+    const cacheKey = `briefings:${page}`;
+    const cached = cache.get<{ briefings: Briefing[]; pagination: any }>(cacheKey);
+    if (cached) {
+      setBriefings(cached.briefings);
+      setTotalPages(cached.pagination?.totalPages || 1);
+      if (cached.briefings.length > 0 && !selectedBriefing) {
+        setSelectedBriefing(cached.briefings[0]);
+      }
+      setLoading(false);
+      setError(null);
+      return;
+    }
 
-  const loadBriefings = async () => {
     setLoading(true);
+    setError(null);
+
     try {
+      const { page: validPage, limit: validLimit } = validatePagination(
+        page,
+        DEFAULT_BRIEFING_PAGE_SIZE
+      );
       const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '10',
+        page: validPage.toString(),
+        limit: validLimit.toString(),
       });
 
-      const response = await fetch(`/api/console/ops-briefings?${params}`);
-      const data = await response.json();
-      setBriefings(data.briefings || []);
-      setTotalPages(data.pagination?.totalPages || 1);
+      const data = await retryWithBackoff(async () => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+        try {
+          const response = await fetch(`/api/console/ops-briefings?${params}`, {
+            signal: controller.signal,
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          return await response.json();
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      });
+
+      const briefingsData = data.briefings || [];
+      const paginationData = data.pagination || { totalPages: 1 };
+
+      // Cache the result
+      cache.set(
+        cacheKey,
+        { briefings: briefingsData, pagination: paginationData },
+        CACHE_TTL_BRIEFINGS
+      );
+
+      setBriefings(briefingsData);
+      setTotalPages(paginationData.totalPages || 1);
 
       // Auto-select latest briefing
-      if (data.briefings && data.briefings.length > 0 && !selectedBriefing) {
-        setSelectedBriefing(data.briefings[0]);
+      if (briefingsData.length > 0 && !selectedBriefing) {
+        setSelectedBriefing(briefingsData[0]);
       }
-    } catch (error) {
-      console.error('Error loading briefings:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load briefings';
+      setError(errorMessage);
+      console.error('Error loading briefings:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, selectedBriefing]);
 
-  const formatDate = (dateString: string) => {
+  // Load briefing detail
+  const loadBriefingDetail = useCallback(async (briefingId: string) => {
+    const cacheKey = `briefing-detail:${briefingId}`;
+    const cached = cache.get<Briefing>(cacheKey);
+    if (cached) {
+      setSelectedBriefing(cached);
+      return;
+    }
+
+    try {
+      const data = await retryWithBackoff(async () => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+        try {
+          const response = await fetch(`/api/console/ops-briefings/${briefingId}`, {
+            signal: controller.signal,
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          return await response.json();
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      });
+
+      cache.set(cacheKey, data, CACHE_TTL_BRIEFINGS);
+      setSelectedBriefing(data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load briefing';
+      setError(errorMessage);
+      console.error('Error loading briefing detail:', err);
+    }
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    loadBriefings();
+  }, [loadBriefings]);
+
+  // Memoized date formatting
+  const formatDate = useCallback((dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
-  };
+  }, []);
+
+  // Memoized date range
+  const selectedDateRange = useMemo(() => {
+    if (!selectedBriefing) return '';
+    return formatDateRange(selectedBriefing.period_start, selectedBriefing.period_end);
+  }, [selectedBriefing]);
+
+  // Memoized summary stats
+  const summaryStats = useMemo(() => {
+    if (!selectedBriefing?.summary_json) return null;
+    const metrics = selectedBriefing.summary_json.metrics || {};
+    const insights = selectedBriefing.summary_json.insights || {};
+    const recommendations = selectedBriefing.summary_json.recommendations || {};
+    const actions = selectedBriefing.summary_json.actions || {};
+
+    return {
+      totalCost: metrics.totalCost ? Number(metrics.totalCost).toFixed(2) : 'N/A',
+      criticalIssues: insights.bySeverity?.critical || 0,
+      highPriorityRecs: recommendations.byRiskLevel?.high || 0,
+      verifiedActions: actions.verified || 0,
+    };
+  }, [selectedBriefing]);
 
   if (loading && briefings.length === 0) {
-    return <div className="text-center py-12">Loading briefings...</div>;
+    return (
+      <div className="text-center py-12">
+        <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
+        <p className="text-muted-foreground">Loading briefings...</p>
+      </div>
+    );
+  }
+
+  if (error && briefings.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-destructive">
+            <AlertCircle className="h-5 w-5" />
+            Error Loading Briefings
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button onClick={loadBriefings}>Retry</Button>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -85,6 +237,12 @@ export function BriefingsView({ userId }: BriefingsViewProps) {
             <CardDescription>Select a briefing to view details</CardDescription>
           </CardHeader>
           <CardContent>
+            {error && (
+              <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-sm text-destructive">{error}</p>
+              </div>
+            )}
+
             <div className="space-y-2">
               {briefings.map((briefing) => (
                 <Card
@@ -92,7 +250,10 @@ export function BriefingsView({ userId }: BriefingsViewProps) {
                   className={`cursor-pointer hover:shadow-md transition-shadow ${
                     selectedBriefing?.id === briefing.id ? 'ring-2 ring-primary' : ''
                   }`}
-                  onClick={() => setSelectedBriefing(briefing)}
+                  onClick={() => {
+                    setSelectedBriefing(briefing);
+                    loadBriefingDetail(briefing.id);
+                  }}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-2">
@@ -129,7 +290,7 @@ export function BriefingsView({ userId }: BriefingsViewProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => setPage(Math.max(1, page - 1))}
-                  disabled={page === 1}
+                  disabled={page === 1 || loading}
                 >
                   Previous
                 </Button>
@@ -140,7 +301,7 @@ export function BriefingsView({ userId }: BriefingsViewProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => setPage(Math.min(totalPages, page + 1))}
-                  disabled={page === totalPages}
+                  disabled={page === totalPages || loading}
                 >
                   Next
                 </Button>
@@ -158,10 +319,7 @@ export function BriefingsView({ userId }: BriefingsViewProps) {
               <div className="flex items-start justify-between">
                 <div>
                   <CardTitle>Weekly Founder Briefing</CardTitle>
-                  <CardDescription className="mt-1">
-                    {formatDate(selectedBriefing.period_start)} -{' '}
-                    {formatDate(selectedBriefing.period_end)}
-                  </CardDescription>
+                  <CardDescription className="mt-1">{selectedDateRange}</CardDescription>
                 </div>
                 <div className="flex gap-2">
                   <Badge>{selectedBriefing.insights_count} Insights</Badge>
@@ -175,39 +333,33 @@ export function BriefingsView({ userId }: BriefingsViewProps) {
               </div>
 
               {/* Summary Stats */}
-              {selectedBriefing.summary_json && (
+              {summaryStats && (
                 <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Card>
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold">
-                        {selectedBriefing.summary_json.metrics?.totalCost
-                          ? `$${Number(selectedBriefing.summary_json.metrics.totalCost).toFixed(2)}`
-                          : 'N/A'}
+                        {summaryStats.totalCost === 'N/A'
+                          ? 'N/A'
+                          : `$${summaryStats.totalCost}`}
                       </div>
                       <div className="text-sm text-muted-foreground">Total Cost</div>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4">
-                      <div className="text-2xl font-bold">
-                        {selectedBriefing.summary_json.insights?.bySeverity?.critical || 0}
-                      </div>
+                      <div className="text-2xl font-bold">{summaryStats.criticalIssues}</div>
                       <div className="text-sm text-muted-foreground">Critical Issues</div>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4">
-                      <div className="text-2xl font-bold">
-                        {selectedBriefing.summary_json.recommendations?.byRiskLevel?.high || 0}
-                      </div>
+                      <div className="text-2xl font-bold">{summaryStats.highPriorityRecs}</div>
                       <div className="text-sm text-muted-foreground">High-Priority Recs</div>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4">
-                      <div className="text-2xl font-bold">
-                        {selectedBriefing.summary_json.actions?.verified || 0}
-                      </div>
+                      <div className="text-2xl font-bold">{summaryStats.verifiedActions}</div>
                       <div className="text-sm text-muted-foreground">Verified Actions</div>
                     </CardContent>
                   </Card>
