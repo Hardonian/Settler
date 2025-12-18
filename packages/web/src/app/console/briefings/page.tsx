@@ -1,14 +1,14 @@
 /**
- * Ops Insights Page
+ * Ops Briefings Page
  * 
- * View and manage operational insights
+ * View weekly founder briefings
  */
 
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getUserRole, UserRole } from '@/shared/auth/roles';
-import { InsightsView } from '@/components/ops/InsightsView';
+import { BriefingsView } from '@/components/ops/BriefingsView';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -16,7 +16,7 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-async function InsightsContent() {
+async function BriefingsContent() {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -43,7 +43,7 @@ async function InsightsContent() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              You need super admin privileges to access Ops Insights.
+              You need super admin privileges to access Founder Briefings.
             </p>
           </CardContent>
         </Card>
@@ -51,21 +51,21 @@ async function InsightsContent() {
     );
   }
 
-  return <InsightsView userId={user.id} />;
+  return <BriefingsView userId={user.id} />;
 }
 
-export default function InsightsPage() {
+export default function BriefingsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Ops Insights</h1>
+        <h1 className="text-3xl font-bold">Founder Briefings</h1>
         <p className="text-muted-foreground mt-2">
-          Operational insights and recommendations from your system metrics
+          Weekly automated briefings summarizing operational insights and recommendations
         </p>
       </div>
-      <ErrorBoundary componentName="InsightsPage">
+      <ErrorBoundary componentName="BriefingsPage">
         <Suspense fallback={<div>Loading...</div>}>
-          <InsightsContent />
+          <BriefingsContent />
         </Suspense>
       </ErrorBoundary>
     </div>

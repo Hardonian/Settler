@@ -55,8 +55,35 @@ The **Developer Console** (`/console`) provides:
 - ✅ **Feature Flags** - Manage feature flags for your applications
 - ✅ **Live Activity Feed** - Real-time activity monitoring
 - ✅ **Billing Dashboard** - View usage and billing information
+- ✅ **Ops Intelligence** - Automated insights, recommendations, and weekly founder briefings
 
 Access the Console at `/console` after signing up. See [Console Documentation](docs/CONSOLE_COMPLETE.md) for details.
+
+### Ops Intelligence & Founder Briefings
+
+**Ops Intelligence** is a closed-loop operational intelligence system that automatically:
+
+- **Detects Insights**: Analyzes cost, support, usage, and stability metrics to surface anomalies, trends, and risks
+- **Generates Recommendations**: Provides actionable, reversible recommendations for each insight
+- **Tracks Actions**: Maintains an action ledger with verification status
+- **Generates Briefings**: Creates weekly founder briefings summarizing what matters
+
+**Key Features:**
+- **Deterministic Insights**: All insights are derived from real metrics, not ML hallucinations
+- **Evidence-Based**: Every insight links back to underlying metrics and Analytics Studio pivots
+- **Actionable**: Recommendations are specific, reversible, and include risk assessments
+- **Closed-Loop**: Actions are tracked and verified, creating feedback loops
+
+**Access:**
+- `/console/insights` - View and manage operational insights
+- `/console/briefings` - View weekly founder briefings
+
+**Scheduled Jobs:**
+- Daily insights generation (2 AM UTC)
+- Weekly briefing generation (Monday 9 AM UTC)
+- Automatic insight expiration
+
+See [Ops Intelligence Documentation](docs/OPS_INTELLIGENCE.md) for details.
 
 ## Quick Start
 
