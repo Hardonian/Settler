@@ -74,11 +74,15 @@ export async function upsertAlertThreshold(
           threshold.metric,
           threshold.threshold,
           threshold.operator,
-          JSON.stringify(threshold.channels),
-          threshold.enabled,
+          JSON.stringify(threshold.channels || []),
+          threshold.enabled ?? true,
         ]
       );
-      return result[0]?.id || '';
+      const newId = result[0]?.id;
+      if (!newId) {
+        throw new Error('Failed to create alert rule: no ID returned');
+      }
+      return newId;
     }
   } catch (error) {
     logError('Failed to upsert alert threshold', error);
@@ -109,45 +113,65 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
        WHERE enabled = true`
     );
 
+    if (!rules || rules.length === 0) {
+      return triggeredAlerts;
+    }
+
     // Generate daily intelligence to check against
-    const intelligence = await generateDailyIntelligence();
+    let intelligence;
+    try {
+      intelligence = await generateDailyIntelligence();
+    } catch (error) {
+      logError('Failed to generate daily intelligence for alert checking', error);
+      return triggeredAlerts;
+    }
 
     for (const rule of rules) {
+      if (!rule || !rule.id || !rule.metric) {
+        logWarn('Invalid alert rule skipped', { rule });
+        continue;
+      }
+
       let value: number | null = null;
       let shouldAlert = false;
 
-      // Evaluate threshold based on metric type
-      switch (rule.metric) {
-        case 'error_rate':
-          value = intelligence.errorRate.overall;
-          shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
-          break;
-
-        case 'slow_endpoint':
-          // Check if any endpoint exceeds threshold (using P95)
-          const slowestEndpoint = intelligence.slowEndpoints[0];
-          if (slowestEndpoint) {
-            value = slowestEndpoint.p95;
+      try {
+        // Evaluate threshold based on metric type
+        switch (rule.metric) {
+          case 'error_rate':
+            value = intelligence?.errorRate?.overall ?? 0;
             shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
-          }
-          break;
+            break;
 
-        case 'failed_ingestion':
-          value = intelligence.failedIngestions.length;
-          shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
-          break;
+          case 'slow_endpoint':
+            // Check if any endpoint exceeds threshold (using P95)
+            const slowestEndpoint = intelligence?.slowEndpoints?.[0];
+            if (slowestEndpoint && typeof slowestEndpoint.p95 === 'number') {
+              value = slowestEndpoint.p95;
+              shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
+            }
+            break;
 
-        case 'billing_anomaly':
-          value = intelligence.billingAnomalies.length;
-          shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
-          break;
+          case 'failed_ingestion':
+            value = intelligence?.failedIngestions?.length ?? 0;
+            shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
+            break;
 
-        default:
-          logWarn('Unknown alert metric', { metric: rule.metric });
-          continue;
+          case 'billing_anomaly':
+            value = intelligence?.billingAnomalies?.length ?? 0;
+            shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
+            break;
+
+          default:
+            logWarn('Unknown alert metric', { metric: rule.metric });
+            continue;
+        }
+      } catch (error) {
+        logError('Error evaluating alert rule', error, { ruleId: rule.id, metric: rule.metric });
+        continue;
       }
 
-      if (shouldAlert && value !== null) {
+      if (shouldAlert && value !== null && typeof value === 'number' && !isNaN(value)) {
         // Create alert record
         const alertId = await createAlert({
           thresholdId: rule.id,
@@ -221,13 +245,22 @@ function evaluateThreshold(
  * Create alert record in database
  */
 async function createAlert(alert: Omit<Alert, 'id' | 'triggeredAt'>): Promise<string> {
-  const result = await query<{ id: string }>(
-    `INSERT INTO alert_history (rule_id, metric, value, threshold, triggered_at)
-     VALUES ($1, $2, $3, $4, NOW())
-     RETURNING id`,
-    [alert.thresholdId, alert.metric, alert.value, alert.threshold]
-  );
-  return result[0]?.id || '';
+  try {
+    const result = await query<{ id: string }>(
+      `INSERT INTO alert_history (rule_id, metric, value, threshold, triggered_at)
+       VALUES ($1, $2, $3, $4, NOW())
+       RETURNING id`,
+      [alert.thresholdId, alert.metric, alert.value, alert.threshold]
+    );
+    const alertId = result[0]?.id;
+    if (!alertId) {
+      throw new Error('Failed to create alert: no ID returned');
+    }
+    return alertId;
+  } catch (error) {
+    logError('Failed to create alert record', error, { alert });
+    throw error;
+  }
 }
 
 /**

@@ -29,6 +29,19 @@ export async function setKillSwitch(
   reason?: string,
   createdBy?: string
 ): Promise<string> {
+  if (!name || typeof name !== 'string' || name.trim().length === 0) {
+    throw new Error('Invalid kill switch name');
+  }
+  if (!type || typeof type !== 'string') {
+    throw new Error('Invalid kill switch type');
+  }
+  if (!target || typeof target !== 'string' || target.trim().length === 0) {
+    throw new Error('Invalid kill switch target');
+  }
+  if (typeof enabled !== 'boolean') {
+    throw new Error('Invalid enabled value: must be boolean');
+  }
+
   try {
     const result = await query<{ id: string }>(
       `INSERT INTO kill_switches (
@@ -40,10 +53,13 @@ export async function setKillSwitch(
         reason = EXCLUDED.reason,
         updated_at = NOW()
       RETURNING id`,
-      [name, type, target, enabled, reason || null, createdBy || null]
+      [name.trim(), type, target.trim(), enabled, reason?.trim() || null, createdBy || null]
     );
 
-    const killSwitchId = result[0]?.id || '';
+    const killSwitchId = result?.[0]?.id;
+    if (!killSwitchId || typeof killSwitchId !== 'string') {
+      throw new Error('Failed to create kill switch: no ID returned');
+    }
 
     logInfo('Kill switch updated', {
       id: killSwitchId,

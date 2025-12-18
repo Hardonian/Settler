@@ -49,6 +49,10 @@ export interface DailyIntelligence {
  * Get error rate summary for the last 24 hours
  */
 export async function getErrorRateSummary(date: Date = new Date()): Promise<DailyIntelligence['errorRate']> {
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    date = new Date();
+  }
+
   const startDate = new Date(date);
   startDate.setHours(0, 0, 0, 0);
   const endDate = new Date(date);
@@ -57,10 +61,10 @@ export async function getErrorRateSummary(date: Date = new Date()): Promise<Dail
   try {
     // Get error rates from audit logs
     const errorStats = await query<{
-      method: string;
-      path: string;
-      error_count: number;
-      total_count: number;
+      method: string | null;
+      path: string | null;
+      error_count: string | number;
+      total_count: string | number;
     }>(
       `SELECT 
         method,
@@ -80,19 +84,22 @@ export async function getErrorRateSummary(date: Date = new Date()): Promise<Dail
     let totalErrors = 0;
     let totalRequests = 0;
 
-    const byEndpoint = errorStats.map(stat => {
-      totalErrors += Number(stat.error_count);
-      totalRequests += Number(stat.total_count);
+    const byEndpoint = (errorStats || []).map(stat => {
+      if (!stat || stat.method === null || stat.path === null) {
+        return null;
+      }
+      const errorCount = Number(stat.error_count) || 0;
+      const totalCount = Number(stat.total_count) || 0;
+      totalErrors += errorCount;
+      totalRequests += totalCount;
       return {
-        method: stat.method,
-        route: stat.path,
-        errorRate: Number(stat.total_count) > 0 
-          ? Number(stat.error_count) / Number(stat.total_count) 
-          : 0,
-        errorCount: Number(stat.error_count),
-        totalRequests: Number(stat.total_count),
+        method: String(stat.method),
+        route: String(stat.path),
+        errorRate: totalCount > 0 ? errorCount / totalCount : 0,
+        errorCount,
+        totalRequests: totalCount,
       };
-    });
+    }).filter((item): item is NonNullable<typeof item> => item !== null);
 
     return {
       overall: totalRequests > 0 ? totalErrors / totalRequests : 0,
@@ -108,6 +115,10 @@ export async function getErrorRateSummary(date: Date = new Date()): Promise<Dail
  * Get slow endpoints (P50, P95, P99 latencies)
  */
 export async function getSlowEndpoints(date: Date = new Date()): Promise<DailyIntelligence['slowEndpoints']> {
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    date = new Date();
+  }
+
   const startDate = new Date(date);
   startDate.setHours(0, 0, 0, 0);
   const endDate = new Date(date);
@@ -119,10 +130,10 @@ export async function getSlowEndpoints(date: Date = new Date()): Promise<DailyIn
     // In production, you'd want to track actual request durations
     
     const endpointStats = await query<{
-      method: string;
-      path: string;
-      request_count: number;
-      avg_duration_ms: number;
+      method: string | null;
+      path: string | null;
+      request_count: string | number;
+      avg_duration_ms: string | number | null;
     }>(
       `SELECT 
         method,
@@ -136,21 +147,28 @@ export async function getSlowEndpoints(date: Date = new Date()): Promise<DailyIn
         AND status_code < 400
       GROUP BY method, path
       HAVING COUNT(*) >= 10
-      ORDER BY avg_duration_ms DESC
+      ORDER BY avg_duration_ms DESC NULLS LAST
       LIMIT 20`,
       [startDate, endDate]
     );
 
     // For now, we'll estimate percentiles based on average
     // In production, you'd want to store actual histogram data
-    return endpointStats.map(stat => ({
-      method: stat.method,
-      route: stat.path,
-      p50: Number(stat.avg_duration_ms) * 0.7, // Estimate
-      p95: Number(stat.avg_duration_ms) * 1.5, // Estimate
-      p99: Number(stat.avg_duration_ms) * 2.0, // Estimate
-      requestCount: Number(stat.request_count),
-    }));
+    return (endpointStats || []).map(stat => {
+      if (!stat || stat.method === null || stat.path === null) {
+        return null;
+      }
+      const avgDuration = Number(stat.avg_duration_ms) || 0;
+      const requestCount = Number(stat.request_count) || 0;
+      return {
+        method: String(stat.method),
+        route: String(stat.path),
+        p50: Math.max(0, avgDuration * 0.7), // Estimate
+        p95: Math.max(0, avgDuration * 1.5), // Estimate
+        p99: Math.max(0, avgDuration * 2.0), // Estimate
+        requestCount,
+      };
+    }).filter((item): item is NonNullable<typeof item> => item !== null);
   } catch (error) {
     logError('Failed to get slow endpoints', error);
     return [];
@@ -161,6 +179,10 @@ export async function getSlowEndpoints(date: Date = new Date()): Promise<DailyIn
  * Get failed ingestions for the last 24 hours
  */
 export async function getFailedIngestions(date: Date = new Date()): Promise<DailyIntelligence['failedIngestions']> {
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    date = new Date();
+  }
+
   const startDate = new Date(date);
   startDate.setHours(0, 0, 0, 0);
   const endDate = new Date(date);
@@ -171,8 +193,8 @@ export async function getFailedIngestions(date: Date = new Date()): Promise<Dail
       id: string;
       source_id: string;
       tenant_id: string;
-      error_message: string;
-      updated_at: Date;
+      error_message: string | null;
+      updated_at: Date | string;
       trace_id: string | null;
     }>(
       `SELECT 
@@ -190,14 +212,22 @@ export async function getFailedIngestions(date: Date = new Date()): Promise<Dail
       [startDate, endDate]
     );
 
-    return failed.map(ingestion => ({
-      ingestionId: ingestion.id,
-      sourceId: ingestion.source_id,
-      tenantId: ingestion.tenant_id,
-      errorMessage: ingestion.error_message || 'Unknown error',
-      failedAt: ingestion.updated_at.toISOString(),
-      traceId: ingestion.trace_id || undefined,
-    }));
+    return (failed || []).map(ingestion => {
+      if (!ingestion || !ingestion.id) {
+        return null;
+      }
+      const updatedAt = ingestion.updated_at instanceof Date 
+        ? ingestion.updated_at 
+        : new Date(ingestion.updated_at);
+      return {
+        ingestionId: String(ingestion.id),
+        sourceId: String(ingestion.source_id || ''),
+        tenantId: String(ingestion.tenant_id || ''),
+        errorMessage: ingestion.error_message || 'Unknown error',
+        failedAt: updatedAt.toISOString(),
+        traceId: ingestion.trace_id || undefined,
+      };
+    }).filter((item): item is NonNullable<typeof item> => item !== null);
   } catch (error) {
     logError('Failed to get failed ingestions', error);
     return [];
@@ -208,10 +238,9 @@ export async function getFailedIngestions(date: Date = new Date()): Promise<Dail
  * Detect billing anomalies
  */
 export async function getBillingAnomalies(date: Date = new Date()): Promise<DailyIntelligence['billingAnomalies']> {
-  const startDate = new Date(date);
-  startDate.setHours(0, 0, 0, 0);
-  const endDate = new Date(date);
-  endDate.setHours(23, 59, 59, 999);
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    date = new Date();
+  }
 
   try {
     // Get usage aggregates for today
@@ -220,10 +249,10 @@ export async function getBillingAnomalies(date: Date = new Date()): Promise<Dail
       return [];
     }
     const todayUsage = await query<{
-      billing_account_id: string;
-      tenant_id: string;
-      total_quantity: number;
-      event_type: string;
+      billing_account_id: string | null;
+      tenant_id: string | null;
+      total_quantity: string | number | null;
+      event_type: string | null;
     }>(
       `SELECT 
         billing_account_id,
@@ -243,10 +272,10 @@ export async function getBillingAnomalies(date: Date = new Date()): Promise<Dail
       return [];
     }
     const historicalAvg = await query<{
-      billing_account_id: string;
-      tenant_id: string;
-      avg_quantity: number;
-      event_type: string;
+      billing_account_id: string | null;
+      tenant_id: string | null;
+      avg_quantity: string | number | null;
+      event_type: string | null;
     }>(
       `SELECT 
         billing_account_id,
@@ -261,29 +290,37 @@ export async function getBillingAnomalies(date: Date = new Date()): Promise<Dail
 
     const anomalies: DailyIntelligence['billingAnomalies'] = [];
 
-    for (const today of todayUsage) {
-      const historical = historicalAvg.find(
-        h => h.billing_account_id === today.billing_account_id &&
+    for (const today of todayUsage || []) {
+      if (!today || !today.billing_account_id || !today.tenant_id || !today.event_type) {
+        continue;
+      }
+
+      const historical = (historicalAvg || []).find(
+        h => h && h.billing_account_id === today.billing_account_id &&
              h.tenant_id === today.tenant_id &&
              h.event_type === today.event_type
       );
 
-      if (historical && Number(historical.avg_quantity) > 0) {
-        const currentValue = Number(today.total_quantity);
-        const expectedValue = Number(historical.avg_quantity);
-        const percentageChange = ((currentValue - expectedValue) / expectedValue) * 100;
+      if (historical && historical.avg_quantity) {
+        const avgQuantity = Number(historical.avg_quantity);
+        const currentValue = Number(today.total_quantity) || 0;
+        
+        if (avgQuantity > 0 && currentValue > 0) {
+          const expectedValue = avgQuantity;
+          const percentageChange = ((currentValue - expectedValue) / expectedValue) * 100;
 
-        // Flag if usage is 200% higher than average (spike)
-        if (percentageChange > 200) {
-          anomalies.push({
-            tenantId: today.tenant_id,
-            billingAccountId: today.billing_account_id,
-            anomalyType: 'usage_spike',
-            currentValue,
-            expectedValue,
-            percentageChange,
-            detectedAt: new Date().toISOString(),
-          });
+          // Flag if usage is 200% higher than average (spike)
+          if (!isNaN(percentageChange) && percentageChange > 200) {
+            anomalies.push({
+              tenantId: String(today.tenant_id),
+              billingAccountId: String(today.billing_account_id),
+              anomalyType: 'usage_spike',
+              currentValue,
+              expectedValue,
+              percentageChange,
+              detectedAt: new Date().toISOString(),
+            });
+          }
         }
       }
     }
@@ -299,25 +336,49 @@ export async function getBillingAnomalies(date: Date = new Date()): Promise<Dail
  * Generate daily intelligence report
  */
 export async function generateDailyIntelligence(date: Date = new Date()): Promise<DailyIntelligence> {
-  logInfo('Generating daily intelligence report', { date: date.toISOString() });
-
-  const [errorRate, slowEndpoints, failedIngestions, billingAnomalies] = await Promise.all([
-    getErrorRateSummary(date),
-    getSlowEndpoints(date),
-    getFailedIngestions(date),
-    getBillingAnomalies(date),
-  ]);
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    date = new Date();
+  }
 
   const dateStr = date.toISOString().split('T')[0];
   if (!dateStr) {
     throw new Error('Failed to generate date string');
   }
+
+  logInfo('Generating daily intelligence report', { date: dateStr });
+
+  let errorRate: DailyIntelligence['errorRate'];
+  let slowEndpoints: DailyIntelligence['slowEndpoints'];
+  let failedIngestions: DailyIntelligence['failedIngestions'];
+  let billingAnomalies: DailyIntelligence['billingAnomalies'];
+
+  try {
+    [errorRate, slowEndpoints, failedIngestions, billingAnomalies] = await Promise.allSettled([
+      getErrorRateSummary(date),
+      getSlowEndpoints(date),
+      getFailedIngestions(date),
+      getBillingAnomalies(date),
+    ]).then(results => [
+      results[0].status === 'fulfilled' ? results[0].value : { overall: 0, byEndpoint: [] },
+      results[1].status === 'fulfilled' ? results[1].value : [],
+      results[2].status === 'fulfilled' ? results[2].value : [],
+      results[3].status === 'fulfilled' ? results[3].value : [],
+    ]);
+  } catch (error) {
+    logError('Failed to generate daily intelligence components', error);
+    // Return safe defaults
+    errorRate = { overall: 0, byEndpoint: [] };
+    slowEndpoints = [];
+    failedIngestions = [];
+    billingAnomalies = [];
+  }
+
   const intelligence: DailyIntelligence = {
     date: dateStr,
-    errorRate,
-    slowEndpoints,
-    failedIngestions,
-    billingAnomalies,
+    errorRate: errorRate || { overall: 0, byEndpoint: [] },
+    slowEndpoints: slowEndpoints || [],
+    failedIngestions: failedIngestions || [],
+    billingAnomalies: billingAnomalies || [],
   };
 
   logInfo('Daily intelligence report generated', {

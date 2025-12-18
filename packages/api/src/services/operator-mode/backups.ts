@@ -47,20 +47,25 @@ export async function createBackup(): Promise<BackupRecord> {
       [filename]
     );
 
-    const backupId = result[0]?.id;
-    if (!backupId) {
-      throw new Error('Failed to create backup record');
+    const backupId = result?.[0]?.id;
+    if (!backupId || typeof backupId !== 'string') {
+      throw new Error('Failed to create backup record: no ID returned');
     }
 
     logInfo('Starting database backup', { backupId, filename });
 
+    // Validate config
+    if (!config.database.host || !config.database.name || !config.database.user || !config.database.password) {
+      throw new Error('Database configuration incomplete');
+    }
+
     // Create pg_dump command
     const pgDumpCmd = [
       'pg_dump',
-      `--host=${config.database.host}`,
-      `--port=${config.database.port}`,
-      `--username=${config.database.user}`,
-      `--dbname=${config.database.name}`,
+      `--host=${String(config.database.host)}`,
+      `--port=${String(config.database.port || 5432)}`,
+      `--username=${String(config.database.user)}`,
+      `--dbname=${String(config.database.name)}`,
       '--format=plain',
       '--no-owner',
       '--no-acl',
@@ -70,15 +75,33 @@ export async function createBackup(): Promise<BackupRecord> {
     // Set PGPASSWORD environment variable
     const env = {
       ...process.env,
-      PGPASSWORD: config.database.password,
+      PGPASSWORD: String(config.database.password),
     };
 
-    // Execute backup
-    await execAsync(pgDumpCmd, { env });
+    // Execute backup with timeout
+    try {
+      await Promise.race([
+        execAsync(pgDumpCmd, { env }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Backup timeout after 30 minutes')), 30 * 60 * 1000)
+        ),
+      ]);
+    } catch (execError: any) {
+      if (execError.message?.includes('timeout')) {
+        throw execError;
+      }
+      throw new Error(`pg_dump failed: ${execError.message || String(execError)}`);
+    }
 
     // Get file size
-    const stats = fs.statSync(backupPath);
-    const sizeBytes = stats.size;
+    let sizeBytes = 0;
+    try {
+      const stats = fs.statSync(backupPath);
+      sizeBytes = stats.size || 0;
+    } catch (statError) {
+      logError('Failed to get backup file size', statError, { backupPath });
+      // Continue anyway - size is optional
+    }
 
     // Update backup record
     await query(
@@ -143,11 +166,14 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
       [backupId]
     );
 
-    if (backup.length === 0 || !backup[0]) {
+    if (!backup || backup.length === 0 || !backup[0]) {
       throw new Error('Backup record not found');
     }
 
     const backupRecord = backup[0];
+    if (!backupRecord.filename || typeof backupRecord.filename !== 'string') {
+      throw new Error('Invalid backup record: missing filename');
+    }
     if (backupRecord.status !== 'completed') {
       throw new Error(`Backup status is ${backupRecord.status}, cannot verify`);
     }
@@ -167,21 +193,37 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
       await query(`CREATE DATABASE ${testDbName}`);
 
       // Restore backup to test database
+      if (!config.database.host || !config.database.user || !config.database.password) {
+        throw new Error('Database configuration incomplete for restore');
+      }
+
       const restoreCmd = [
         'psql',
-        `--host=${config.database.host}`,
-        `--port=${config.database.port}`,
-        `--username=${config.database.user}`,
+        `--host=${String(config.database.host)}`,
+        `--port=${String(config.database.port || 5432)}`,
+        `--username=${String(config.database.user)}`,
         `--dbname=${testDbName}`,
         `--file=${backupPath}`,
       ].join(' ');
 
       const env = {
         ...process.env,
-        PGPASSWORD: config.database.password,
+        PGPASSWORD: String(config.database.password),
       };
 
-      await execAsync(restoreCmd, { env });
+      try {
+        await Promise.race([
+          execAsync(restoreCmd, { env }),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Restore timeout after 30 minutes')), 30 * 60 * 1000)
+          ),
+        ]);
+      } catch (restoreError: any) {
+        if (restoreError.message?.includes('timeout')) {
+          throw restoreError;
+        }
+        throw new Error(`Restore failed: ${restoreError.message || String(restoreError)}`);
+      }
 
       // Verify restore by checking a few key tables
       const testQuery = await query(

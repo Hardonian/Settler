@@ -31,7 +31,21 @@ export async function setTenantUsageCeiling(
   usageType: TenantUsageCeiling['usageType'],
   monthlyLimit: number
 ): Promise<void> {
+  if (!tenantId || typeof tenantId !== 'string') {
+    throw new Error('Invalid tenantId');
+  }
+  if (!billingAccountId || typeof billingAccountId !== 'string') {
+    throw new Error('Invalid billingAccountId');
+  }
+  if (!usageType || typeof usageType !== 'string') {
+    throw new Error('Invalid usageType');
+  }
+  if (typeof monthlyLimit !== 'number' || monthlyLimit < 0 || isNaN(monthlyLimit)) {
+    throw new Error('Invalid monthlyLimit: must be a non-negative number');
+  }
+
   try {
+    const resetDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1);
     await query(
       `INSERT INTO tenant_usage_ceilings (
         tenant_id, billing_account_id, usage_type, monthly_limit, reset_date
@@ -45,7 +59,7 @@ export async function setTenantUsageCeiling(
         billingAccountId,
         usageType,
         monthlyLimit,
-        new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1), // First of next month
+        resetDate,
       ]
     );
 
