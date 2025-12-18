@@ -1,104 +1,103 @@
 /**
  * Report Issue API
  * 
- * Creates a support ticket with auto-captured context
+ * Create a support ticket from in-app issue reporter
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
-import { autoTriageTicket } from '@/lib/support/triage';
+import { triageTicket, storeTriageResult } from '@/lib/services/triage-engine';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { subject, description, context } = body;
+    const { subject, description, category, context } = body;
 
     if (!subject || !description) {
       return NextResponse.json(
-        { error: 'Subject and description are required' },
+        { error: 'subject and description required' },
         { status: 400 }
       );
     }
 
-    // Get user's organization if available
-    const billingAccount = await prisma.billingAccount.findFirst({
-      where: { userId: user.id },
-    });
+    // Get user's organization (if any)
+    const { data: orgMember } = await supabase
+      .from('organization_members')
+      .select('organization_id')
+      .eq('user_id', user.id)
+      .limit(1)
+      .single();
 
-    // Auto-triage the ticket
-    const triageResult = await autoTriageTicket({
-      subject,
-      description,
-      context: context || {},
-    });
-
-    // Create support ticket
-    const ticket = await prisma.$executeRaw`
-      INSERT INTO ops_support_tickets (
-        user_id,
-        organization_id,
+    // Create ticket
+    const { data: ticket, error: ticketError } = await supabase
+      .from('ops_support_tickets')
+      .insert({
+        user_id: user.id,
+        organization_id: orgMember?.organization_id || null,
         subject,
         description,
-        context,
-        triage_result,
-        status,
-        priority,
-        category
-      ) VALUES (
-        ${user.id}::uuid,
-        ${billingAccount?.id || null}::uuid,
-        ${subject},
-        ${description},
-        ${JSON.stringify(context)}::jsonb,
-        ${JSON.stringify(triageResult)}::jsonb,
-        ${triageResult.status || 'open'},
-        ${triageResult.priority || 'medium'},
-        ${triageResult.category || null}
-      )
-      RETURNING id, ticket_number
-    `;
+        category: category || null,
+        context: context || {},
+        status: 'open',
+        priority: 'medium',
+      })
+      .select()
+      .single();
 
-    // Log to audit
-    await prisma.$executeRaw`
-      INSERT INTO ops_audit_logs (
-        action,
-        resource_type,
-        resource_id,
-        user_id,
-        organization_id,
-        metadata
-      ) VALUES (
-        'support_ticket_created',
-        'support_ticket',
-        (SELECT id FROM ops_support_tickets WHERE user_id = ${user.id}::uuid ORDER BY created_at DESC LIMIT 1),
-        ${user.id}::uuid,
-        ${billingAccount?.id || null}::uuid,
-        ${JSON.stringify({ subject, triageResult })}::jsonb
-      )
-    `;
+    if (ticketError || !ticket) {
+      console.error('Failed to create ticket:', ticketError);
+      return NextResponse.json(
+        { error: 'Failed to create ticket' },
+        { status: 500 }
+      );
+    }
+
+    // Auto-triage ticket
+    try {
+      const triageResult = await triageTicket(ticket.id);
+      await storeTriageResult(ticket.id, triageResult);
+
+      // Update ticket with triage results
+      await supabase
+        .from('ops_support_tickets')
+        .update({
+          priority: triageResult.suggestedPriority,
+          category: triageResult.suggestedCategory || category,
+          triage_result: {
+            score: triageResult.triageScore,
+            confidence: triageResult.confidence,
+            rules: triageResult.triageRulesApplied,
+          },
+        })
+        .eq('id', ticket.id);
+    } catch (triageError) {
+      console.error('Auto-triage failed (non-fatal):', triageError);
+      // Continue even if triage fails
+    }
 
     return NextResponse.json({
-      success: true,
-      ticketNumber: (ticket as any)[0]?.ticket_number,
+      ticket: {
+        id: ticket.id,
+        ticketNumber: ticket.ticket_number,
+        subject: ticket.subject,
+        status: ticket.status,
+        priority: ticket.priority,
+      },
     });
   } catch (error) {
-    console.error('Failed to create support ticket:', error);
+    console.error('Report issue error:', error);
     return NextResponse.json(
-      { error: 'Failed to create support ticket' },
+      { error: error instanceof Error ? error.message : 'Failed to report issue' },
       { status: 500 }
     );
   }
