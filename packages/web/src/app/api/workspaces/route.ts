@@ -9,7 +9,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getTraceId } from '@/lib/observability/trace';
 import { prisma } from '@/shared/db/prismaClient';
-import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -55,7 +54,7 @@ export async function POST(request: NextRequest) {
     // Create workspace using Prisma (fallback to direct insert if function doesn't exist)
     let tenantId: string;
     try {
-      const { data: result, error } = await supabase.rpc('create_workspace_with_owner', {
+      const { data: result, error } = await (supabase.rpc as any)('create_workspace_with_owner', {
         p_name: validated.name,
         p_slug: validated.slug,
         p_user_id: user.id,
@@ -73,7 +72,7 @@ export async function POST(request: NextRequest) {
         tenantId = tenant.id;
 
         // Add user as owner
-        await supabase.from('tenant_users').insert({
+        await (supabase.from('tenant_users') as any).insert({
           tenant_id: tenantId,
           user_id: user.id,
           role: 'owner',
@@ -81,7 +80,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Initialize onboarding progress
-        await supabase.from('tenant_onboarding_progress').insert({
+        await (supabase.from('tenant_onboarding_progress') as any).insert({
           tenant_id: tenantId,
           user_id: user.id,
           current_step: 'create_workspace',
@@ -102,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     // Track onboarding event (with fallback)
     try {
-      await supabase.rpc('track_onboarding_event', {
+      await (supabase.rpc as any)('track_onboarding_event', {
         p_tenant_id: tenantId,
         p_user_id: user.id,
         p_event_type: 'onboarding_started',
@@ -112,7 +111,7 @@ export async function POST(request: NextRequest) {
       });
     } catch (error) {
       // Fallback: insert directly
-      await supabase.from('onboarding_events').insert({
+      await (supabase.from('onboarding_events') as any).insert({
         tenant_id: tenantId,
         user_id: user.id,
         event_type: 'onboarding_started',
@@ -124,7 +123,7 @@ export async function POST(request: NextRequest) {
 
     // Complete the create_workspace step (with fallback)
     try {
-      await supabase.rpc('complete_onboarding_step', {
+      await (supabase.rpc as any)('complete_onboarding_step', {
         p_tenant_id: tenantId,
         p_user_id: user.id,
         p_step_id: 'create_workspace',
@@ -132,7 +131,7 @@ export async function POST(request: NextRequest) {
       });
     } catch (error) {
       // Fallback: update directly
-      await supabase.from('tenant_onboarding_progress').upsert({
+      await (supabase.from('tenant_onboarding_progress') as any).upsert({
         tenant_id: tenantId,
         user_id: user.id,
         current_step: 'add_teammates',
@@ -164,7 +163,7 @@ export async function POST(request: NextRequest) {
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request', details: error.errors, trace_id: traceId },
+        { error: 'Invalid request', details: error.issues, trace_id: traceId },
         { status: 400 }
       );
     }
@@ -194,8 +193,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's tenant memberships
-    const { data: memberships, error } = await supabase
-      .from('tenant_users')
+    const { data: memberships, error } = await (supabase
+      .from('tenant_users') as any)
       .select('tenant_id, role')
       .eq('user_id', user.id);
 
@@ -214,7 +213,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const tenantIds = memberships.map(m => m.tenant_id);
+    const tenantIds = (memberships as Array<{ tenant_id: string; role: string }>).map(m => m.tenant_id);
     const workspaces = await prisma.tenant.findMany({
       where: { id: { in: tenantIds } },
       select: {
@@ -227,7 +226,7 @@ export async function GET(request: NextRequest) {
 
     // Map workspaces with user's role
     const workspacesWithRole = workspaces.map(ws => {
-      const membership = memberships.find(m => m.tenant_id === ws.id);
+      const membership = (memberships as Array<{ tenant_id: string; role: string }>).find(m => m.tenant_id === ws.id);
       return {
         ...ws,
         role: membership?.role || 'viewer',

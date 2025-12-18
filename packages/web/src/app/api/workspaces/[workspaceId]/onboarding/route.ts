@@ -39,8 +39,8 @@ export async function GET(
     }
 
     // Check user is member of workspace
-    const { data: membership } = await supabase
-      .from('tenant_users')
+    const { data: membership } = await (supabase
+      .from('tenant_users') as any)
       .select('role')
       .eq('tenant_id', params.workspaceId)
       .eq('user_id', user.id)
@@ -54,8 +54,8 @@ export async function GET(
     }
 
     // Get onboarding progress
-    const { data: progress, error } = await supabase
-      .from('tenant_onboarding_progress')
+    const { data: progress, error } = await (supabase
+      .from('tenant_onboarding_progress') as any)
       .select('*')
       .eq('tenant_id', params.workspaceId)
       .eq('user_id', user.id)
@@ -71,8 +71,8 @@ export async function GET(
 
     // If no progress, create initial
     if (!progress) {
-      const { data: newProgress, error: createError } = await supabase
-        .from('tenant_onboarding_progress')
+      const { data: newProgress, error: createError } = await (supabase
+        .from('tenant_onboarding_progress') as any)
         .insert({
           tenant_id: params.workspaceId,
           user_id: user.id,
@@ -92,32 +92,48 @@ export async function GET(
         );
       }
 
+      const progressData = newProgress as {
+        current_step: string;
+        completed_steps: string[];
+        skipped_steps: string[];
+        progress: number;
+        completed_at: string | null;
+      };
+
       return NextResponse.json({
         progress: {
-          currentStep: newProgress.current_step,
-          completedSteps: newProgress.completed_steps || [],
-          skippedSteps: newProgress.skipped_steps || [],
-          progress: newProgress.progress,
-          completedAt: newProgress.completed_at,
+          currentStep: progressData.current_step,
+          completedSteps: progressData.completed_steps || [],
+          skippedSteps: progressData.skipped_steps || [],
+          progress: progressData.progress,
+          completedAt: progressData.completed_at,
         },
         steps: getOnboardingSteps(),
         trace_id: traceId,
       });
     }
 
+    const progressData = progress as {
+      current_step: string;
+      completed_steps: string[];
+      skipped_steps: string[];
+      progress: number;
+      completed_at: string | null;
+    };
+
     const steps = getOnboardingStepsWithStatus(
-      progress.current_step,
-      progress.completed_steps || [],
-      progress.skipped_steps || []
+      progressData.current_step,
+      progressData.completed_steps || [],
+      progressData.skipped_steps || []
     );
 
     return NextResponse.json({
       progress: {
-        currentStep: progress.current_step,
-        completedSteps: progress.completed_steps || [],
-        skippedSteps: progress.skipped_steps || [],
-        progress: progress.progress,
-        completedAt: progress.completed_at,
+        currentStep: progressData.current_step,
+        completedSteps: progressData.completed_steps || [],
+        skippedSteps: progressData.skipped_steps || [],
+        progress: progressData.progress,
+        completedAt: progressData.completed_at,
       },
       steps,
       trace_id: traceId,
@@ -152,8 +168,8 @@ export async function POST(
     }
 
     // Check user is member of workspace
-    const { data: membership } = await supabase
-      .from('tenant_users')
+    const { data: membership } = await (supabase
+      .from('tenant_users') as any)
       .select('role')
       .eq('tenant_id', params.workspaceId)
       .eq('user_id', user.id)
@@ -170,7 +186,7 @@ export async function POST(
     const { stepId } = completeStepSchema.parse(body);
 
     // Complete step using Supabase function
-    const { data: result, error } = await supabase.rpc('complete_onboarding_step', {
+    const { data: result, error } = await (supabase.rpc as any)('complete_onboarding_step', {
       p_tenant_id: params.workspaceId,
       p_user_id: user.id,
       p_step_id: stepId,
@@ -194,13 +210,15 @@ export async function POST(
 
     // Check if activation is complete
     if (progress.progress >= 100) {
-      await supabase.rpc('track_onboarding_event', {
+      await (supabase.rpc as any)('track_onboarding_event', {
         p_tenant_id: params.workspaceId,
         p_user_id: user.id,
         p_event_type: 'activation_complete',
         p_step_id: null,
         p_trace_id: traceId,
         p_properties: JSON.stringify({ progress: progress.progress }),
+      }).catch(() => {
+        // Silently fail if RPC doesn't exist
       });
     }
 
@@ -225,7 +243,7 @@ export async function POST(
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request', details: error.errors, trace_id: traceId },
+        { error: 'Invalid request', details: error.issues, trace_id: traceId },
         { status: 400 }
       );
     }

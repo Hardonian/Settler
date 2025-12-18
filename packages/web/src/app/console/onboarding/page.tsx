@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, Circle, Loader2, ArrowRight, ArrowLeft, Users, Database, Play, Eye, X } from 'lucide-react';
+import { CheckCircle2, Circle, Loader2, ArrowRight, Database, Play, Eye } from 'lucide-react';
 // Note: trace_id handled server-side
 
 interface OnboardingStep {
@@ -79,7 +79,7 @@ export default function OnboardingPage() {
     }
   };
 
-  const completeStep = async (stepId: string, skip = false) => {
+  const completeStep = async (stepId: string) => {
     if (!workspaceId) return;
 
     setSubmitting(true);
@@ -405,7 +405,7 @@ export default function OnboardingPage() {
             <div className="border-t pt-6 mt-6">
               <h3 className="text-sm font-semibold mb-4">Onboarding Steps</h3>
               <div className="space-y-2">
-                {steps.map((step, index) => (
+                {steps.map((step) => (
                   <div
                     key={step.id}
                     className={`flex items-center gap-3 p-3 rounded-lg ${

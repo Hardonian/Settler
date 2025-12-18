@@ -9,7 +9,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getTraceId } from '@/lib/observability/trace';
 import { prisma } from '@/shared/db/prismaClient';
-import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import crypto from 'crypto';
 
@@ -42,14 +41,14 @@ export async function POST(
     }
 
     // Check user has admin/owner role
-    const { data: membership } = await supabase
-      .from('tenant_users')
+    const { data: membership } = await (supabase
+      .from('tenant_users') as any)
       .select('role')
       .eq('tenant_id', params.workspaceId)
       .eq('user_id', user.id)
       .single();
 
-    if (!membership || !['owner', 'admin'].includes(membership.role)) {
+    if (!membership || !['owner', 'admin'].includes((membership as { role: string }).role)) {
       return NextResponse.json(
         { error: 'Forbidden: Admin or Owner role required', trace_id: traceId },
         { status: 403 }
@@ -76,13 +75,15 @@ export async function POST(
     });
 
     // Track event
-    await supabase.rpc('track_onboarding_event', {
+    await (supabase.rpc as any)('track_onboarding_event', {
       p_tenant_id: params.workspaceId,
       p_user_id: user.id,
       p_event_type: 'invite_sent',
       p_step_id: 'add_teammates',
       p_trace_id: traceId,
       p_properties: JSON.stringify({ invite_id: invite.id, email: validated.email, role: validated.role }),
+    }).catch(() => {
+      // Silently fail if RPC doesn't exist
     });
 
     return NextResponse.json({
@@ -100,7 +101,7 @@ export async function POST(
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request', details: error.errors, trace_id: traceId },
+        { error: 'Invalid request', details: error.issues, trace_id: traceId },
         { status: 400 }
       );
     }
@@ -133,14 +134,14 @@ export async function GET(
     }
 
     // Check user has admin/owner role
-    const { data: membership } = await supabase
-      .from('tenant_users')
+    const { data: membership } = await (supabase
+      .from('tenant_users') as any)
       .select('role')
       .eq('tenant_id', params.workspaceId)
       .eq('user_id', user.id)
       .single();
 
-    if (!membership || !['owner', 'admin'].includes(membership.role)) {
+    if (!membership || !['owner', 'admin'].includes((membership as { role: string }).role)) {
       return NextResponse.json(
         { error: 'Forbidden: Admin or Owner role required', trace_id: traceId },
         { status: 403 }

@@ -25,15 +25,6 @@ export async function GET(
   try {
     const invite = await prisma.workspaceInvite.findUnique({
       where: { token: params.token },
-      include: {
-        tenant: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
-      },
     });
 
     if (!invite) {
@@ -42,6 +33,16 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    // Get tenant info separately
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: invite.tenantId },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+      },
+    });
 
     if (invite.status !== 'pending') {
       return NextResponse.json(
@@ -61,7 +62,7 @@ export async function GET(
       invite: {
         email: invite.email,
         role: invite.role,
-        workspace: invite.tenant,
+        workspace: tenant,
       },
       trace_id: traceId,
     });
@@ -126,8 +127,8 @@ export async function POST(
     }
 
     // Add user to tenant using Supabase
-    const { error: membershipError } = await supabase
-      .from('tenant_users')
+    const { error: membershipError } = await (supabase
+      .from('tenant_users') as any)
       .upsert({
         tenant_id: invite.tenantId,
         user_id: user.id,
@@ -153,13 +154,15 @@ export async function POST(
     });
 
     // Track event
-    await supabase.rpc('track_onboarding_event', {
+    await (supabase.rpc as any)('track_onboarding_event', {
       p_tenant_id: invite.tenantId,
       p_user_id: user.id,
       p_event_type: 'invite_accepted',
       p_step_id: 'add_teammates',
       p_trace_id: traceId,
       p_properties: JSON.stringify({ invite_id: invite.id }),
+    }).catch(() => {
+      // Silently fail if RPC doesn't exist
     });
 
     return NextResponse.json({
