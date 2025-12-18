@@ -43,13 +43,13 @@ export async function getEntitlements(): Promise<Entitlements> {
 
     try {
       // Try to get profile from Supabase (if using Supabase profiles table)
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (profile && 'role' in profile && profile.role === 'admin') {
+      if (!profileError && profile && typeof profile === 'object' && 'role' in profile && profile.role === 'admin') {
         role = 'admin';
       }
 
