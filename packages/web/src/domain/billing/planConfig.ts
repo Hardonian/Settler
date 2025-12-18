@@ -48,6 +48,8 @@ export interface PlanConfig {
     reconcile: boolean;
     receipts: boolean;
     featureFlags: boolean; // Always true - free dev toolkit
+    ingestions: boolean;
+    exports: boolean;
     aiInsights: boolean; // AI-powered insights and recommendations
     prioritySupport: boolean;
     customIntegrations: boolean;
@@ -86,6 +88,8 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       reconcile: true,
       receipts: true,
       featureFlags: true,
+      ingestions: true,
+      exports: true,
       aiInsights: false, // AI insights require paid plan
       prioritySupport: false,
       customIntegrations: false,
@@ -128,6 +132,8 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       reconcile: true,
       receipts: true,
       featureFlags: true,
+      ingestions: true,
+      exports: true,
       aiInsights: true, // AI-powered insights included
       prioritySupport: true,
       customIntegrations: false,
@@ -170,6 +176,8 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       reconcile: true,
       receipts: true,
       featureFlags: true,
+      ingestions: true,
+      exports: true,
       aiInsights: true, // AI-powered insights included
       prioritySupport: true,
       customIntegrations: true,

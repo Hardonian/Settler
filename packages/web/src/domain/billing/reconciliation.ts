@@ -68,6 +68,14 @@ export async function reconcileBillingAccount(
 
     // Get Stripe customer subscriptions
     const stripe = getStripeClient();
+    if (!stripe) {
+      // Demo mode: return empty subscriptions
+      return {
+        matches: [],
+        mismatches: [],
+        errors: [],
+      };
+    }
     const subscriptions = await stripe.subscriptions.list({
       customer: billingAccount.stripeCustomerId,
       status: 'all',
@@ -217,6 +225,11 @@ export async function findOutOfSyncSubscriptions(): Promise<{
     }
 
     try {
+      const stripe = getStripeClient();
+      if (!stripe) {
+        // Demo mode: skip Stripe retrieval
+        continue;
+      }
       const stripeSub = await stripe.subscriptions.retrieve(
         dbSub.stripeSubscriptionId
       );

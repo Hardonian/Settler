@@ -130,6 +130,12 @@ export function safeStripe(): SafeResult<Stripe> {
     }
 
     const stripe = getStripeClient();
+    if (!stripe) {
+      return {
+        success: false,
+        error: 'Stripe is not configured (demo mode)',
+      };
+    }
     return {
       success: true,
       data: stripe,
