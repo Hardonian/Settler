@@ -55,6 +55,9 @@ export async function safeStripeCall<T>(
   maxRetries = 3
 ): Promise<{ data: T; rateLimitInfo: RateLimitInfo | null }> {
   const stripe = getStripeClient();
+  if (!stripe) {
+    throw new Error('Stripe is not configured (demo mode)');
+  }
   let lastError: Error | null = null;
   let rateLimitInfo: RateLimitInfo | null = null;
 

@@ -74,7 +74,7 @@ export async function checkEntitlement(
     throw new Error('Invalid billing account ID');
   }
 
-  if (!['reconcile', 'receipts', 'featureFlags'].includes(service)) {
+  if (!['reconcile', 'receipts', 'featureFlags', 'ingestions', 'exports'].includes(service)) {
     throw new Error(`Invalid service code: ${service}`);
   }
 
@@ -138,6 +138,12 @@ export async function checkEntitlement(
       break;
     case 'featureFlags':
       limit = planConfig.limits.featureFlags.monthlyEvaluations;
+      break;
+    case 'ingestions':
+      limit = planConfig.limits.ingestions.monthlyCalls;
+      break;
+    case 'exports':
+      limit = planConfig.limits.exports.monthlyCalls;
       break;
     default:
       // This should never happen due to validation above

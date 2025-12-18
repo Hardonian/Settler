@@ -45,6 +45,8 @@ async function getBillingHandler(_request: NextRequest) {
           reconcile: { current: 0, limit: 0 },
           receipts: { current: 0, limit: 0 },
           featureFlags: { current: 0, limit: 0 },
+          ingestions: { current: 0, limit: 0 },
+          exports: { current: 0, limit: 0 },
         },
       });
     }
@@ -103,6 +105,8 @@ async function getBillingHandler(_request: NextRequest) {
           reconcile: 0,
           receipts: 0,
           featureFlags: 0,
+          ingestions: 0,
+          exports: 0,
         },
       };
     }
@@ -120,6 +124,14 @@ async function getBillingHandler(_request: NextRequest) {
       featureFlags: {
         current: usage.services.featureFlags,
         limit: planConfig?.limits.featureFlags.monthlyEvaluations || 0,
+      },
+      ingestions: {
+        current: usage.services.ingestions,
+        limit: planConfig?.limits.ingestions.monthlyCalls || 0,
+      },
+      exports: {
+        current: usage.services.exports,
+        limit: planConfig?.limits.exports.monthlyCalls || 0,
       },
     };
 
@@ -158,6 +170,8 @@ async function getBillingHandler(_request: NextRequest) {
           reconcile: { current: 0, limit: 0 },
           receipts: { current: 0, limit: 0 },
           featureFlags: { current: 0, limit: 0 },
+          ingestions: { current: 0, limit: 0 },
+          exports: { current: 0, limit: 0 },
         },
       },
       { status: 200 }

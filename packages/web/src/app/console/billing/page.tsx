@@ -28,6 +28,8 @@ interface BillingData {
     reconcile: { current: number; limit: number };
     receipts: { current: number; limit: number };
     featureFlags: { current: number; limit: number };
+    ingestions: { current: number; limit: number };
+    exports: { current: number; limit: number };
   };
 }
 
@@ -138,19 +140,31 @@ export default function BillingPage() {
       service: 'Reconcile',
       current: data.usage.reconcile.current,
       limit: data.usage.reconcile.limit,
-      percentage: Math.min(100, (data.usage.reconcile.current / data.usage.reconcile.limit) * 100),
+      percentage: Math.min(100, (data.usage.reconcile.current / Math.max(1, data.usage.reconcile.limit)) * 100),
     },
     {
       service: 'Receipts',
       current: data.usage.receipts.current,
       limit: data.usage.receipts.limit,
-      percentage: Math.min(100, (data.usage.receipts.current / data.usage.receipts.limit) * 100),
+      percentage: Math.min(100, (data.usage.receipts.current / Math.max(1, data.usage.receipts.limit)) * 100),
     },
     {
       service: 'Feature Flags',
       current: data.usage.featureFlags.current,
       limit: data.usage.featureFlags.limit,
-      percentage: Math.min(100, (data.usage.featureFlags.current / data.usage.featureFlags.limit) * 100),
+      percentage: Math.min(100, (data.usage.featureFlags.current / Math.max(1, data.usage.featureFlags.limit)) * 100),
+    },
+    {
+      service: 'Ingestions',
+      current: data.usage.ingestions.current,
+      limit: data.usage.ingestions.limit,
+      percentage: Math.min(100, (data.usage.ingestions.current / Math.max(1, data.usage.ingestions.limit)) * 100),
+    },
+    {
+      service: 'Exports',
+      current: data.usage.exports.current,
+      limit: data.usage.exports.limit,
+      percentage: Math.min(100, (data.usage.exports.current / Math.max(1, data.usage.exports.limit)) * 100),
     },
   ];
 
@@ -296,6 +310,8 @@ export default function BillingPage() {
                   <li>• 1,000 reconciliations/month</li>
                   <li>• 100 receipt parses/month</li>
                   <li>• 100k feature flag evaluations/month</li>
+                  <li>• 100 ingestions/month</li>
+                  <li>• 50 exports/month</li>
                 </ul>
                 {!isFree && (
                   <Button
@@ -331,6 +347,8 @@ export default function BillingPage() {
                   <li>• 100,000 reconciliations/month</li>
                   <li>• 10,000 receipt parses/month</li>
                   <li>• 1M feature flag evaluations/month</li>
+                  <li>• 10,000 ingestions/month</li>
+                  <li>• 5,000 exports/month</li>
                   <li>• 100k AI tokens/month</li>
                   <li>• AI-powered insights</li>
                   <li>• Priority support</li>
@@ -376,6 +394,8 @@ export default function BillingPage() {
                   <li>• 1M reconciliations/month</li>
                   <li>• 100k receipt parses/month</li>
                   <li>• 10M feature flag evaluations/month</li>
+                  <li>• 100k ingestions/month</li>
+                  <li>• 50k exports/month</li>
                   <li>• 1M AI tokens/month</li>
                   <li>• AI-powered insights</li>
                   <li>• Priority support</li>

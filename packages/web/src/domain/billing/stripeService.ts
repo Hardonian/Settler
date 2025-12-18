@@ -16,11 +16,14 @@ import { generateIdempotencyKey } from '@/lib/stripe/idempotency';
  */
 let stripeInstance: Stripe | null = null;
 
-function getStripe(): Stripe {
+function getStripe(): Stripe | null {
   if (!stripeInstance) {
     const secretKey = process.env.STRIPE_SECRET_KEY;
     if (!secretKey) {
-      throw new Error('STRIPE_SECRET_KEY environment variable is required');
+      // Demo mode: return null instead of throwing
+      // eslint-disable-next-line no-console
+      console.warn('[Stripe] STRIPE_SECRET_KEY not configured, running in demo mode');
+      return null;
     }
     stripeInstance = new Stripe(secretKey, {
       apiVersion: '2025-11-17.clover' as any, // Cast to any to avoid strict version check if types are outdated
@@ -31,10 +34,18 @@ function getStripe(): Stripe {
 }
 
 /**
+ * Check if Stripe is configured (not in demo mode)
+ */
+export function isStripeConfigured(): boolean {
+  return !!process.env.STRIPE_SECRET_KEY;
+}
+
+/**
  * Export stripe client getter function
  * Use this to get the Stripe instance when needed
+ * Returns null if Stripe is not configured (demo mode)
  */
-export function getStripeClient(): Stripe {
+export function getStripeClient(): Stripe | null {
   return getStripe();
 }
 
@@ -43,9 +54,17 @@ export function getStripeClient(): Stripe {
  * This allows existing code to use `stripe` as before
  * The proxy lazily initializes the Stripe client when properties are accessed
  */
+// Proxy that handles demo mode gracefully
 export const stripe = new Proxy({} as Stripe, {
   get(_target, prop) {
-    return (getStripe() as any)[prop];
+    const instance = getStripe();
+    if (!instance) {
+      // Return a no-op function for demo mode
+      return () => {
+        throw new Error('Stripe is not configured. Running in demo mode.');
+      };
+    }
+    return (instance as any)[prop];
   },
 });
 
@@ -78,6 +97,14 @@ export async function getOrCreateStripeCustomer(
   // Input validation
   if (!billingAccountId || !isValidUUID(billingAccountId)) {
     throw new Error('Invalid billing account ID');
+  }
+
+  // Check if Stripe is configured
+  if (!isStripeConfigured()) {
+    // Demo mode: return a mock customer ID
+    // eslint-disable-next-line no-console
+    console.warn('[Stripe] Demo mode: returning mock customer ID');
+    return 'cus_demo_' + billingAccountId.substring(0, 8);
   }
 
   const account = await prisma.billingAccount.findUnique({
@@ -150,6 +177,19 @@ export async function createCheckoutSession(
     throw new Error('URLs must be from the same origin');
   }
 
+  // Check if Stripe is configured
+  if (!isStripeConfigured()) {
+    // Demo mode: return a mock checkout session
+    // eslint-disable-next-line no-console
+    console.warn('[Stripe] Demo mode: returning mock checkout session');
+    return {
+      id: 'cs_demo_' + Date.now(),
+      object: 'checkout.session',
+      url: `${successUrl}?demo=true&plan=${planCode}`,
+      // Add minimal required fields
+    } as Stripe.Checkout.Session;
+  }
+
   const planConfig = getPlanConfig(planCode);
   if (!planConfig || !planConfig.stripePriceId) {
     throw new Error(`Plan ${planCode} does not have a Stripe price ID configured`);
@@ -206,6 +246,19 @@ export async function createCustomerPortalSession(
 
   if (!isValidUrl(returnUrl)) {
     throw new Error('Invalid URL format for return URL');
+  }
+
+  // Check if Stripe is configured
+  if (!isStripeConfigured()) {
+    // Demo mode: return a mock portal session
+    // eslint-disable-next-line no-console
+    console.warn('[Stripe] Demo mode: returning mock portal session');
+    return {
+      id: 'bps_demo_' + Date.now(),
+      object: 'billing_portal.session',
+      url: `${returnUrl}?demo=true`,
+      // Add minimal required fields
+    } as Stripe.BillingPortal.Session;
   }
 
   const account = await prisma.billingAccount.findUnique({

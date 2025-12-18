@@ -7,7 +7,7 @@
 
 export type PlanCode = 'free' | 'pro' | 'scale';
 
-export type ServiceCode = 'reconcile' | 'receipts' | 'featureFlags';
+export type ServiceCode = 'reconcile' | 'receipts' | 'featureFlags' | 'ingestions' | 'exports';
 
 export interface ServiceLimits {
   reconcile: {
@@ -21,6 +21,14 @@ export interface ServiceLimits {
   featureFlags: {
     monthlyEvaluations: number; // Monthly flag evaluations (generous for free tier)
     rateLimit?: number; // Evaluations per minute (optional)
+  };
+  ingestions: {
+    monthlyCalls: number; // Monthly ingestion jobs
+    rateLimit?: number; // Ingestions per minute (optional)
+  };
+  exports: {
+    monthlyCalls: number; // Monthly export jobs
+    rateLimit?: number; // Exports per minute (optional)
   };
 }
 
@@ -40,6 +48,8 @@ export interface PlanConfig {
     reconcile: boolean;
     receipts: boolean;
     featureFlags: boolean; // Always true - free dev toolkit
+    ingestions: boolean;
+    exports: boolean;
     aiInsights: boolean; // AI-powered insights and recommendations
     prioritySupport: boolean;
     customIntegrations: boolean;
@@ -64,6 +74,12 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       featureFlags: {
         monthlyEvaluations: 100000, // 100k evaluations/month (generous free tier)
       },
+      ingestions: {
+        monthlyCalls: 100, // 100 ingestion jobs/month
+      },
+      exports: {
+        monthlyCalls: 50, // 50 export jobs/month
+      },
     },
     aiTokens: {
       included: 0, // No AI tokens on free plan
@@ -72,6 +88,8 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       reconcile: true,
       receipts: true,
       featureFlags: true,
+      ingestions: true,
+      exports: true,
       aiInsights: false, // AI insights require paid plan
       prioritySupport: false,
       customIntegrations: false,
@@ -97,6 +115,14 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
         monthlyEvaluations: 1000000, // 1M evaluations/month
         rateLimit: 1000, // 1k evaluations/minute
       },
+      ingestions: {
+        monthlyCalls: 10000, // 10k ingestion jobs/month
+        rateLimit: 50, // 50 ingestions/minute
+      },
+      exports: {
+        monthlyCalls: 5000, // 5k export jobs/month
+        rateLimit: 25, // 25 exports/minute
+      },
     },
     aiTokens: {
       included: 100000, // 100k AI tokens/month (~$2.50 value)
@@ -106,6 +132,8 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       reconcile: true,
       receipts: true,
       featureFlags: true,
+      ingestions: true,
+      exports: true,
       aiInsights: true, // AI-powered insights included
       prioritySupport: true,
       customIntegrations: false,
@@ -131,6 +159,14 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
         monthlyEvaluations: 10000000, // 10M evaluations/month
         rateLimit: 5000, // 5k evaluations/minute
       },
+      ingestions: {
+        monthlyCalls: 100000, // 100k ingestion jobs/month
+        rateLimit: 500, // 500 ingestions/minute
+      },
+      exports: {
+        monthlyCalls: 50000, // 50k export jobs/month
+        rateLimit: 250, // 250 exports/minute
+      },
     },
     aiTokens: {
       included: 1000000, // 1M AI tokens/month (~$25 value)
@@ -140,6 +176,8 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
       reconcile: true,
       receipts: true,
       featureFlags: true,
+      ingestions: true,
+      exports: true,
       aiInsights: true, // AI-powered insights included
       prioritySupport: true,
       customIntegrations: true,
@@ -196,6 +234,10 @@ export function getServiceLimit(
       return plan.limits.receipts.monthlyCalls;
     case 'featureFlags':
       return plan.limits.featureFlags.monthlyEvaluations;
+    case 'ingestions':
+      return plan.limits.ingestions.monthlyCalls;
+    case 'exports':
+      return plan.limits.exports.monthlyCalls;
     default:
       return 0;
   }

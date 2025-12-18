@@ -68,6 +68,15 @@ export async function reconcileBillingAccount(
 
     // Get Stripe customer subscriptions
     const stripe = getStripeClient();
+    if (!stripe) {
+      // Demo mode: return empty result
+      return {
+        success: true,
+        billingAccountId,
+        changes: [],
+        errors: [],
+      };
+    }
     const subscriptions = await stripe.subscriptions.list({
       customer: billingAccount.stripeCustomerId,
       status: 'all',
@@ -198,7 +207,6 @@ export async function findOutOfSyncSubscriptions(): Promise<{
     issue: string;
   }[] = [];
 
-  const stripe = getStripeClient();
   const dbSubscriptions = await prisma.subscription.findMany({
     where: {
       stripeSubscriptionId: { not: null },
@@ -217,6 +225,11 @@ export async function findOutOfSyncSubscriptions(): Promise<{
     }
 
     try {
+      const stripe = getStripeClient();
+      if (!stripe) {
+        // Demo mode: skip Stripe retrieval
+        continue;
+      }
       const stripeSub = await stripe.subscriptions.retrieve(
         dbSub.stripeSubscriptionId
       );

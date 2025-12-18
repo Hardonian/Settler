@@ -23,6 +23,8 @@ export interface AccountUsage {
     reconcile: number;
     receipts: number;
     featureFlags: number;
+    ingestions: number;
+    exports: number;
   };
 }
 
@@ -94,6 +96,8 @@ export async function getServiceUsage(
     reconcile: 'settler-reconcile',
     receipts: 'settler-receipts',
     featureFlags: 'settler-feature-flags',
+    ingestions: 'settler-ingestions',
+    exports: 'settler-exports',
   };
 
   const pattern = eventTypePatterns[service];
@@ -137,10 +141,12 @@ export async function getAccountUsage(
   const period = await getCurrentBillingPeriod(billingAccountId);
 
   // Parallel queries for better performance
-  const [reconcileUsage, receiptsUsage, flagsUsage] = await Promise.all([
+  const [reconcileUsage, receiptsUsage, flagsUsage, ingestionsUsage, exportsUsage] = await Promise.all([
     getServiceUsage(billingAccountId, 'reconcile', period.start, period.end),
     getServiceUsage(billingAccountId, 'receipts', period.start, period.end),
     getServiceUsage(billingAccountId, 'featureFlags', period.start, period.end),
+    getServiceUsage(billingAccountId, 'ingestions', period.start, period.end),
+    getServiceUsage(billingAccountId, 'exports', period.start, period.end),
   ]);
 
   return {
@@ -151,6 +157,8 @@ export async function getAccountUsage(
       reconcile: reconcileUsage,
       receipts: receiptsUsage,
       featureFlags: flagsUsage,
+      ingestions: ingestionsUsage,
+      exports: exportsUsage,
     },
   };
 }
