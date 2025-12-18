@@ -27,11 +27,11 @@ export class OpsIntelligenceErrorBoundary extends React.Component<Props, State> 
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static override getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Ops Intelligence Error:', error, errorInfo);
   }
 

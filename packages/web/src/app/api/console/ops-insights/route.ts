@@ -14,18 +14,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/api/auth-gate';
 import { createClient } from '@/lib/supabase/server';
 import {
-  DEFAULT_PAGE_SIZE,
-  MAX_PAGE_SIZE,
   isValidInsightType,
   isValidSeverity,
   isValidStatus,
   validatePagination,
-} from '@/lib/ops-intelligence/utils';
-import {
+  DEFAULT_PAGE_SIZE,
   INSIGHT_TYPES,
   INSIGHT_SEVERITIES,
   INSIGHT_STATUSES,
-} from '@/lib/ops-intelligence/constants';
+} from '@/lib/ops-intelligence';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';

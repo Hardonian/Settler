@@ -27,21 +27,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { AlertCircle, Info, AlertTriangle, XCircle, RefreshCw } from 'lucide-react';
-import { cache } from '@/lib/ops-intelligence/cache';
 import {
+  cache,
   CACHE_TTL_INSIGHTS,
   DEFAULT_PAGE_SIZE,
   DEBOUNCE_DELAY_FILTERS,
-} from '@/lib/ops-intelligence/constants';
-import {
   debounce,
   retryWithBackoff,
   formatConfidence,
-  getSeverityColorClass,
   getRiskLevelColorClass,
   validatePagination,
   isValidUUID,
-} from '@/lib/ops-intelligence/utils';
+} from '@/lib/ops-intelligence';
 
 interface Insight {
   id: string;
@@ -70,7 +67,7 @@ interface InsightsViewProps {
   userId: string;
 }
 
-export function InsightsView({ userId }: InsightsViewProps) {
+export function InsightsView({ userId: _userId }: InsightsViewProps) {
   usePerformanceMonitor('InsightsView');
   const [insights, setInsights] = useState<Insight[]>([]);
   const [loading, setLoading] = useState(true);

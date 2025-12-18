@@ -13,9 +13,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/api/auth-gate';
 import { createClient } from '@/lib/supabase/server';
 import {
-  DEFAULT_BRIEFING_PAGE_SIZE,
   validatePagination,
-} from '@/lib/ops-intelligence/utils';
+  DEFAULT_BRIEFING_PAGE_SIZE,
+} from '@/lib/ops-intelligence';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';

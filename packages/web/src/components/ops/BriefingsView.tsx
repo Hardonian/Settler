@@ -18,16 +18,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, RefreshCw, AlertCircle } from 'lucide-react';
-import { cache } from '@/lib/ops-intelligence/cache';
 import {
+  cache,
   CACHE_TTL_BRIEFINGS,
   DEFAULT_BRIEFING_PAGE_SIZE,
-} from '@/lib/ops-intelligence/constants';
-import {
   retryWithBackoff,
   formatDateRange,
   validatePagination,
-} from '@/lib/ops-intelligence/utils';
+} from '@/lib/ops-intelligence';
 
 interface Briefing {
   id: string;
@@ -45,7 +43,7 @@ interface BriefingsViewProps {
   userId: string;
 }
 
-export function BriefingsView({ userId }: BriefingsViewProps) {
+export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
   usePerformanceMonitor('BriefingsView');
   const [briefings, setBriefings] = useState<Briefing[]>([]);
   const [selectedBriefing, setSelectedBriefing] = useState<Briefing | null>(null);
@@ -61,7 +59,7 @@ export function BriefingsView({ userId }: BriefingsViewProps) {
     if (cached) {
       setBriefings(cached.briefings);
       setTotalPages(cached.pagination?.totalPages || 1);
-      if (cached.briefings.length > 0 && !selectedBriefing) {
+      if (cached.briefings.length > 0 && !selectedBriefing && cached.briefings[0]) {
         setSelectedBriefing(cached.briefings[0]);
       }
       setLoading(false);
@@ -115,7 +113,7 @@ export function BriefingsView({ userId }: BriefingsViewProps) {
       setTotalPages(paginationData.totalPages || 1);
 
       // Auto-select latest briefing
-      if (briefingsData.length > 0 && !selectedBriefing) {
+      if (briefingsData.length > 0 && !selectedBriefing && briefingsData[0]) {
         setSelectedBriefing(briefingsData[0]);
       }
     } catch (err) {

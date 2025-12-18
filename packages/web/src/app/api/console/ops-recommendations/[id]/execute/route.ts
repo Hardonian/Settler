@@ -75,9 +75,10 @@ export async function POST(
       return NextResponse.json({ error: 'Recommendation not found' }, { status: 404 });
     }
 
-    if (recommendation.status !== 'suggested') {
+    const recStatus = (recommendation as any).status;
+    if (recStatus !== 'suggested') {
       return NextResponse.json(
-        { error: `Recommendation is already ${recommendation.status}` },
+        { error: `Recommendation is already ${recStatus}` },
         { status: 400 }
       );
     }
@@ -90,7 +91,7 @@ export async function POST(
         p_executed_by: user.id,
         p_action_taken: sanitizedActionTaken,
         p_outcome_notes: sanitizedOutcomeNotes,
-      }
+      } as any
     );
 
     if (executeError) {

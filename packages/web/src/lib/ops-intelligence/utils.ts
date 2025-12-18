@@ -10,6 +10,8 @@ import {
   INSIGHT_STATUSES,
   RISK_LEVELS,
   ACTION_TYPES,
+  MAX_PAGE_SIZE,
+  DEFAULT_PAGE_SIZE,
 } from './constants';
 
 /**
@@ -71,7 +73,7 @@ export function isValidUUID(uuid: string): boolean {
  */
 export function validatePagination(page: number, limit: number): { page: number; limit: number } {
   const validPage = Math.max(1, Math.floor(page) || 1);
-  const validLimit = Math.min(100, Math.max(1, Math.floor(limit) || 50));
+  const validLimit = Math.min(MAX_PAGE_SIZE, Math.max(1, Math.floor(limit) || DEFAULT_PAGE_SIZE));
   return { page: validPage, limit: validLimit };
 }
 
