@@ -1,0 +1,179 @@
+/**
+ * Workspace Invites API Routes
+ * 
+ * POST /api/workspaces/[workspaceId]/invites - Create an invite
+ * GET /api/workspaces/[workspaceId]/invites - List invites
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { getTraceId } from '@/lib/observability/trace';
+import { prisma } from '@/shared/db/prismaClient';
+import { z } from 'zod';
+import crypto from 'crypto';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+const createInviteSchema = z.object({
+  email: z.string().email(),
+  role: z.enum(['owner', 'admin', 'member', 'viewer']),
+});
+
+/**
+ * POST /api/workspaces/[workspaceId]/invites - Create an invite
+ */
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { workspaceId: string } }
+) {
+  const traceId = getTraceId(request);
+  
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized', trace_id: traceId },
+        { status: 401 }
+      );
+    }
+
+    // Check user has admin/owner role
+    const { data: membership } = await (supabase
+      .from('tenant_users') as any)
+      .select('role')
+      .eq('tenant_id', params.workspaceId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (!membership || !['owner', 'admin'].includes((membership as { role: string }).role)) {
+      return NextResponse.json(
+        { error: 'Forbidden: Admin or Owner role required', trace_id: traceId },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+    const validated = createInviteSchema.parse(body);
+
+    // Generate secure token
+    const token = crypto.randomBytes(32).toString('hex');
+
+    // Create invite
+    const invite = await prisma.workspaceInvite.create({
+      data: {
+        tenantId: params.workspaceId,
+        invitedBy: user.id,
+        email: validated.email,
+        role: validated.role,
+        token,
+        status: 'pending',
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      },
+    });
+
+    // Track event
+    await (supabase.rpc as any)('track_onboarding_event', {
+      p_tenant_id: params.workspaceId,
+      p_user_id: user.id,
+      p_event_type: 'invite_sent',
+      p_step_id: 'add_teammates',
+      p_trace_id: traceId,
+      p_properties: JSON.stringify({ invite_id: invite.id, email: validated.email, role: validated.role }),
+    }).catch(() => {
+      // Silently fail if RPC doesn't exist
+    });
+
+    return NextResponse.json({
+      invite: {
+        id: invite.id,
+        email: invite.email,
+        role: invite.role,
+        expiresAt: invite.expiresAt,
+      },
+      inviteUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${token}`,
+      trace_id: traceId,
+    });
+  } catch (error) {
+    console.error('[Invite API] Error:', error);
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: error.issues, trace_id: traceId },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: 'Failed to create invite', trace_id: traceId },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * GET /api/workspaces/[workspaceId]/invites - List invites
+ */
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { workspaceId: string } }
+) {
+  const traceId = getTraceId(request);
+  
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized', trace_id: traceId },
+        { status: 401 }
+      );
+    }
+
+    // Check user has admin/owner role
+    const { data: membership } = await (supabase
+      .from('tenant_users') as any)
+      .select('role')
+      .eq('tenant_id', params.workspaceId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (!membership || !['owner', 'admin'].includes((membership as { role: string }).role)) {
+      return NextResponse.json(
+        { error: 'Forbidden: Admin or Owner role required', trace_id: traceId },
+        { status: 403 }
+      );
+    }
+
+    const invites = await prisma.workspaceInvite.findMany({
+      where: {
+        tenantId: params.workspaceId,
+        status: { in: ['pending', 'accepted'] },
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        status: true,
+        expiresAt: true,
+        createdAt: true,
+        acceptedAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return NextResponse.json({
+      invites,
+      trace_id: traceId,
+    });
+  } catch (error) {
+    console.error('[Invite API] Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch invites', trace_id: traceId },
+      { status: 500 }
+    );
+  }
+}
