@@ -30,6 +30,21 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     return response;
   }
 
+  // Public routes that should never require auth or throw errors
+  // These routes must always render, even if Supabase/auth fails
+  const publicRoutes = [
+    '/console',
+    '/playground',
+    '/cookbook',
+    '/cookbooks',
+    '/runbooks',
+    '/schematics',
+  ];
+  
+  const isPublicRoute = publicRoutes.some(route => 
+    request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(`${route}/`)
+  );
+
   let response = NextResponse.next({
     request: {
       headers: new Headers(request.headers),
@@ -53,9 +68,73 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     // If Supabase not configured, skip auth middleware
-    return response;
+    // Public routes should still work
+    return addSecurityHeaders(response);
   }
 
+  // For public routes, skip auth checks but still refresh session if possible
+  // This allows authenticated users to see elevated features without blocking unauthenticated access
+  if (isPublicRoute) {
+    try {
+      const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value;
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            request.cookies.set({
+              name,
+              value,
+              ...options,
+            });
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            });
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+            });
+          },
+          remove(name: string, options: CookieOptions) {
+            request.cookies.set({
+              name,
+              value: "",
+              ...options,
+            });
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            });
+            response.cookies.set({
+              name,
+              value: "",
+              ...options,
+            });
+          },
+        },
+      });
+
+      // Try to refresh session silently - don't fail if it errors
+      try {
+        await supabase.auth.getUser();
+      } catch (authError) {
+        // Silent fail for public routes - auth is optional
+      }
+    } catch (error) {
+      // If Supabase client creation fails, continue anyway for public routes
+      console.warn('[Middleware] Failed to create Supabase client for public route (non-fatal):', 
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+    
+    return addSecurityHeaders(response);
+  }
+
+  // For protected routes, attempt auth refresh but never throw
   try {
     const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
@@ -127,6 +206,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // }
 
   // Add security headers to all responses
+  // CRITICAL: Always return a response, never throw
   return addSecurityHeaders(response);
 }
 
