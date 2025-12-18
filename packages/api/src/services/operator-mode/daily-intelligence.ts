@@ -5,7 +5,6 @@
 
 import { query } from '../../db';
 import { logInfo, logError } from '../../utils/logger';
-import { httpRequestDuration, httpRequestErrors, httpRequestTotal } from '../../infrastructure/observability/metrics';
 
 export interface DailyIntelligence {
   date: string;
@@ -216,6 +215,7 @@ export async function getBillingAnomalies(date: Date = new Date()): Promise<Dail
 
   try {
     // Get usage aggregates for today
+    const dateStr = date.toISOString().split('T')[0];
     const todayUsage = await query<{
       billing_account_id: string;
       tenant_id: string;
@@ -230,10 +230,12 @@ export async function getBillingAnomalies(date: Date = new Date()): Promise<Dail
       FROM usage_aggregate_daily
       WHERE date = $1
       GROUP BY billing_account_id, tenant_id, event_type`,
-      [date.toISOString().split('T')[0]]
+      [dateStr]
     );
 
     // Get average usage for the last 7 days (excluding today)
+    const startDateStr = new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const endDateStr = date.toISOString().split('T')[0];
     const historicalAvg = await query<{
       billing_account_id: string;
       tenant_id: string;
@@ -248,10 +250,7 @@ export async function getBillingAnomalies(date: Date = new Date()): Promise<Dail
       FROM usage_aggregate_daily
       WHERE date >= $1 AND date < $2
       GROUP BY billing_account_id, tenant_id, event_type`,
-      [
-        new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        date.toISOString().split('T')[0],
-      ]
+      [startDateStr, endDateStr]
     );
 
     const anomalies: DailyIntelligence['billingAnomalies'] = [];
@@ -303,8 +302,9 @@ export async function generateDailyIntelligence(date: Date = new Date()): Promis
     getBillingAnomalies(date),
   ]);
 
+  const dateStr = date.toISOString().split('T')[0];
   const intelligence: DailyIntelligence = {
-    date: date.toISOString().split('T')[0],
+    date: dateStr,
     errorRate,
     slowEndpoints,
     failedIngestions,

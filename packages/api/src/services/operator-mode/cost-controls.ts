@@ -4,7 +4,7 @@
  */
 
 import { query } from '../../db';
-import { logInfo, logError, logWarn } from '../../utils/logger';
+import { logInfo, logError } from '../../utils/logger';
 
 export interface TenantUsageCeiling {
   tenantId: string;
@@ -74,13 +74,14 @@ export async function checkUsageCeiling(
       [tenantId, usageType]
     );
 
-    if (ceiling.length === 0) {
+    if (ceiling.length === 0 || !ceiling[0]) {
       // No ceiling set, allow usage
       return { exceeded: false, currentUsage: 0, limit: Infinity };
     }
 
-    const limit = Number(ceiling[0].monthly_limit);
-    const resetDate = ceiling[0].reset_date;
+    const ceilingRecord = ceiling[0];
+    const limit = Number(ceilingRecord.monthly_limit);
+    const resetDate = ceilingRecord.reset_date;
 
     // Get current usage for this month
     const currentUsage = await getCurrentUsage(tenantId, usageType, resetDate);
@@ -196,13 +197,14 @@ export async function canRunBackgroundJob(
       [jobType]
     );
 
-    if (limit.length === 0) {
+    if (limit.length === 0 || !limit[0]) {
       // No limit set, allow
       return { allowed: true, currentRunning: 0, limit: Infinity };
     }
 
-    const maxConcurrent = Number(limit[0].max_concurrent);
-    const maxPerTenant = Number(limit[0].max_per_tenant);
+    const limitRecord = limit[0];
+    const maxConcurrent = Number(limitRecord.max_concurrent);
+    const maxPerTenant = Number(limitRecord.max_per_tenant);
 
     // Get current running jobs
     const currentRunning = await getCurrentRunningJobs(jobType, tenantId);

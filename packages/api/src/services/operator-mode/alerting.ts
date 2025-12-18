@@ -5,7 +5,7 @@
 
 import { query } from '../../db';
 import { logError, logWarn, logInfo } from '../../utils/logger';
-import { generateDailyIntelligence, DailyIntelligence } from './daily-intelligence';
+import { generateDailyIntelligence } from './daily-intelligence';
 
 export interface AlertThreshold {
   id?: string;
@@ -55,7 +55,7 @@ export async function upsertAlertThreshold(
           threshold.metric,
           threshold.threshold,
           threshold.operator,
-          threshold.channels,
+          JSON.stringify(threshold.channels),
           threshold.enabled,
           threshold.id,
           userId,
@@ -74,7 +74,7 @@ export async function upsertAlertThreshold(
           threshold.metric,
           threshold.threshold,
           threshold.operator,
-          threshold.channels,
+          JSON.stringify(threshold.channels),
           threshold.enabled,
         ]
       );

@@ -111,7 +111,7 @@ export async function createBackup(): Promise<BackupRecord> {
       [filename]
     );
 
-    if (result.length > 0) {
+    if (result.length > 0 && result[0]) {
       await query(
         `UPDATE backup_records
          SET status = 'failed', error_message = $1
@@ -143,16 +143,17 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
       [backupId]
     );
 
-    if (backup.length === 0) {
+    if (backup.length === 0 || !backup[0]) {
       throw new Error('Backup record not found');
     }
 
-    if (backup[0].status !== 'completed') {
-      throw new Error(`Backup status is ${backup[0].status}, cannot verify`);
+    const backupRecord = backup[0];
+    if (backupRecord.status !== 'completed') {
+      throw new Error(`Backup status is ${backupRecord.status}, cannot verify`);
     }
 
     const backupDir = process.env.BACKUP_DIR || '/tmp/backups';
-    const backupPath = path.join(backupDir, backup[0].filename);
+    const backupPath = path.join(backupDir, backupRecord.filename);
 
     if (!fs.existsSync(backupPath)) {
       throw new Error('Backup file not found');

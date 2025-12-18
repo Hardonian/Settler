@@ -27,12 +27,10 @@ import {
   getAllUsageCeilings,
   checkUsageCeiling,
   setBackgroundJobLimit,
-  canRunBackgroundJob,
 } from '../../services/operator-mode/cost-controls';
 import {
   setKillSwitch,
   getAllKillSwitches,
-  isKillSwitchEnabled,
   disableConnector,
   enableConnector,
   pauseBackgroundJob,
@@ -42,7 +40,6 @@ import {
   createBackup,
   verifyBackup,
   listBackups,
-  scheduleDailyBackup,
 } from '../../services/operator-mode/backups';
 
 const router = Router();
@@ -261,6 +258,13 @@ router.get(
     try {
       const { tenantId, usageType } = req.params;
 
+      if (!tenantId || !usageType) {
+        return res.status(400).json({
+          error: 'Bad Request',
+          message: 'tenantId and usageType are required',
+        });
+      }
+
       const check = await checkUsageCeiling(tenantId, usageType as any);
 
       res.json({ data: check });
@@ -338,8 +342,15 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const { name, type, target, enabled, reason } = req.body;
+      const userId = req.userId;
+      if (!userId) {
+        return res.status(401).json({
+          error: 'Unauthorized',
+          message: 'User ID not found',
+        });
+      }
 
-      const switchId = await setKillSwitch(name, type, target, enabled, reason, req.userId!);
+      const switchId = await setKillSwitch(name, type, target, enabled, reason, userId);
 
       res.status(201).json({
         data: { id: switchId },
@@ -359,9 +370,22 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const { connectorType } = req.params;
+      if (!connectorType) {
+        return res.status(400).json({
+          error: 'Bad Request',
+          message: 'connectorType is required',
+        });
+      }
       const reason = (req.body.reason as string) || 'Manually disabled';
+      const userId = req.userId;
+      if (!userId) {
+        return res.status(401).json({
+          error: 'Unauthorized',
+          message: 'User ID not found',
+        });
+      }
 
-      await disableConnector(connectorType, reason, req.userId!);
+      await disableConnector(connectorType, reason, userId);
 
       res.json({
         message: `Connector ${connectorType} disabled`,
@@ -380,6 +404,12 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const { connectorType } = req.params;
+      if (!connectorType) {
+        return res.status(400).json({
+          error: 'Bad Request',
+          message: 'connectorType is required',
+        });
+      }
 
       await enableConnector(connectorType);
 
@@ -400,9 +430,22 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const { jobType } = req.params;
+      if (!jobType) {
+        return res.status(400).json({
+          error: 'Bad Request',
+          message: 'jobType is required',
+        });
+      }
       const reason = (req.body.reason as string) || 'Manually paused';
+      const userId = req.userId;
+      if (!userId) {
+        return res.status(401).json({
+          error: 'Unauthorized',
+          message: 'User ID not found',
+        });
+      }
 
-      await pauseBackgroundJob(jobType, reason, req.userId!);
+      await pauseBackgroundJob(jobType, reason, userId);
 
       res.json({
         message: `Background job ${jobType} paused`,
@@ -421,6 +464,12 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const { jobType } = req.params;
+      if (!jobType) {
+        return res.status(400).json({
+          error: 'Bad Request',
+          message: 'jobType is required',
+        });
+      }
 
       await resumeBackgroundJob(jobType);
 
