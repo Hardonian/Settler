@@ -268,11 +268,15 @@ app.use("/api/v1/reconciliations", auth_1.authMiddleware, reconciliation_summary
 app.use((0, sentry_1.sentryErrorHandler)());
 // Error handling
 app.use(error_1.errorHandler);
-// 404 handler
-app.use((_req, res) => {
+// 404 handler - always returns JSON with trace_id
+app.use((req, res) => {
+    const authReq = req;
     res.status(404).json({
         error: "Not Found",
-        message: `Cannot ${_req.method} ${_req.path}`,
+        errorCode: "NOT_FOUND",
+        message: `Cannot ${req.method} ${req.path}`,
+        traceId: authReq.traceId,
+        timestamp: new Date().toISOString(),
     });
 });
 // Initialize database on startup

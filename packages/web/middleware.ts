@@ -1,34 +1,55 @@
 /**
  * Next.js Middleware
- * 
+ *
  * CTO Mode: Deployment Guardrails
  * - Handles Supabase auth cookie refresh
  * - Protects routes requiring authentication
  * - Must be at root of project (not in src/)
  */
 
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
-import { addSecurityHeaders } from './src/middleware/security-headers';
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+import { addSecurityHeaders } from "./src/middleware/security-headers";
+import { generateTraceId } from "./src/lib/observability/trace";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
+  // Generate or get trace_id
+  let traceId = request.headers.get("x-trace-id") || request.cookies.get("trace-id")?.value;
+  if (!traceId) {
+    traceId = generateTraceId();
+  }
+
   // Explicitly bypass Stripe webhook - it needs raw body and no auth
-  if (request.nextUrl.pathname === '/api/stripe/webhook') {
-    return NextResponse.next({
+  if (request.nextUrl.pathname === "/api/stripe/webhook") {
+    const response = NextResponse.next({
       request: {
-        headers: request.headers,
+        headers: new Headers(request.headers),
       },
     });
+    response.headers.set("x-trace-id", traceId);
+    return response;
   }
 
   let response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers: new Headers(request.headers),
     },
   });
 
+  // Add trace_id to response headers
+  response.headers.set("x-trace-id", traceId);
+
+  // Set trace_id cookie for client-side access
+  response.cookies.set("trace-id", traceId, {
+    httpOnly: false, // Allow client-side access
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+    path: "/",
+  });
+
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseAnonKey =
+    process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     // If Supabase not configured, skip auth middleware
@@ -61,7 +82,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         remove(name: string, options: CookieOptions) {
           request.cookies.set({
             name,
-            value: '',
+            value: "",
             ...options,
           });
           response = NextResponse.next({
@@ -71,7 +92,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           });
           response.cookies.set({
             name,
-            value: '',
+            value: "",
             ...options,
           });
         },
@@ -84,12 +105,18 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       await supabase.auth.getUser();
     } catch (authError) {
       // Log but don't fail - let the route handler deal with auth
-      console.warn('[Middleware] Auth refresh failed (non-fatal):', authError instanceof Error ? authError.message : 'Unknown error');
+      console.warn(
+        "[Middleware] Auth refresh failed (non-fatal):",
+        authError instanceof Error ? authError.message : "Unknown error"
+      );
     }
   } catch (error) {
     // If Supabase client creation fails, log but continue
     // Routes will handle auth errors themselves
-    console.error('[Middleware] Failed to create Supabase client (non-fatal):', error instanceof Error ? error.message : 'Unknown error');
+    console.error(
+      "[Middleware] Failed to create Supabase client (non-fatal):",
+      error instanceof Error ? error.message : "Unknown error"
+    );
   }
 
   // Add route protection logic here if needed
@@ -113,6 +140,6 @@ export const config = {
      * - public folder
      * - api/stripe/webhook (handled explicitly in middleware)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

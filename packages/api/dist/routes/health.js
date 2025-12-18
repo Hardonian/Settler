@@ -80,6 +80,28 @@ router.get("/ready", async (_req, res) => {
     const health = await healthCheckService.checkReady();
     res.status(health.status === 'ready' ? 200 : 503).json(health);
 });
+// Database health check endpoint (for monitoring/debugging)
+router.get("/db", async (_req, res) => {
+    try {
+        const dbCheck = await healthCheckService.checkDatabase();
+        const statusCode = dbCheck.status === 'healthy' ? 200 : dbCheck.status === 'degraded' ? 200 : 503;
+        res.status(statusCode).json({
+            status: dbCheck.status,
+            latency: dbCheck.latency,
+            error: dbCheck.error,
+            timestamp: dbCheck.timestamp,
+            service: 'settler-api-database',
+        });
+    }
+    catch (error) {
+        res.status(503).json({
+            status: 'unhealthy',
+            error: error instanceof Error ? error.message : 'Unknown error',
+            timestamp: new Date().toISOString(),
+            service: 'settler-api-database',
+        });
+    }
+});
 // Reference unused functions to satisfy TypeScript
 void _checkDatabase;
 void _checkConnectionPool;

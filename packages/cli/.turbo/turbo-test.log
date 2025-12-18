@@ -9,9 +9,9 @@ npm warn config       Default value does install optional deps unless otherwise 
 No tests found, exiting with code 1
 Run with `--passWithNoTests` to exit with code 0
 In /workspace/packages/cli
-  24 files checked.
+  30 files checked.
   testMatch: **/__tests__/**/*.[jt]s?(x), **/?(*.)+(spec|test).[tj]s?(x) - 0 matches
-  testPathIgnorePatterns: /node_modules/ - 24 matches
+  testPathIgnorePatterns: /node_modules/ - 30 matches
   testRegex:  - 0 matches
 Pattern:  - 0 matches
 npm error Lifecycle script `test` failed with error:

@@ -8,12 +8,15 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getTraceId } from '@/lib/observability/trace';
+import { logger } from '@/lib/observability/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const traceId = await getTraceId(request);
   const checks: Record<string, { status: 'ok' | 'error'; message?: string }> = {};
   let overallStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
 
@@ -92,12 +95,23 @@ export async function GET() {
 
   const statusCode = overallStatus === 'unhealthy' ? 503 : overallStatus === 'degraded' ? 200 : 200;
 
-  return NextResponse.json(
+  // Log health check
+  await logger.info('Health check', {
+    trace_id: traceId,
+    status: overallStatus,
+    checks: Object.keys(checks),
+  });
+
+  const response = NextResponse.json(
     {
       status: overallStatus,
+      trace_id: traceId,
       timestamp: new Date().toISOString(),
       checks,
     },
     { status: statusCode }
   );
+
+  response.headers.set('x-trace-id', traceId);
+  return response;
 }
