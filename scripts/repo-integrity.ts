@@ -97,11 +97,48 @@ function checkWorkspaceFoldersHavePackageJson(): void {
     const packageJsonPath = join(packagePath, 'package.json');
 
     // Skip non-JS packages (Go, Python, Ruby)
-    const hasGoFiles = globMatch(packagePath, '*.go');
-    const hasPythonFiles = globMatch(packagePath, '*.py');
-    const hasRubyFiles = globMatch(packagePath, '*.rb');
+    // Check for non-JS files first
+    let isNonJSPackage = false;
+    try {
+      const entries = readdirSync(packagePath);
+      const hasGoFiles = entries.some(e => e.endsWith('.go'));
+      const hasPythonFiles = entries.some(e => e.endsWith('.py'));
+      const hasRubyFiles = entries.some(e => e.endsWith('.rb') || e.endsWith('.gemspec'));
+      
+      // Also check subdirectories for Go/Python/Ruby files
+      if (!hasGoFiles && !hasPythonFiles && !hasRubyFiles) {
+        for (const entry of entries) {
+          const entryPath = join(packagePath, entry);
+          try {
+            const stat = statSync(entryPath);
+            if (stat.isDirectory()) {
+              const subEntries = readdirSync(entryPath);
+              if (subEntries.some(e => e.endsWith('.go'))) {
+                isNonJSPackage = true;
+                break;
+              }
+              if (subEntries.some(e => e.endsWith('.py'))) {
+                isNonJSPackage = true;
+                break;
+              }
+              if (subEntries.some(e => e.endsWith('.rb') || e.endsWith('.gemspec'))) {
+                isNonJSPackage = true;
+                break;
+              }
+            }
+          } catch {
+            // Skip if can't read
+          }
+        }
+      } else {
+        isNonJSPackage = true;
+      }
+    } catch {
+      // If we can't read the directory, skip it
+      continue;
+    }
 
-    if (hasGoFiles || hasPythonFiles || hasRubyFiles) {
+    if (isNonJSPackage) {
       continue; // Non-JS packages don't need package.json
     }
 
@@ -414,18 +451,6 @@ function checkNoCommittedNodeModules(): void {
   }
 }
 
-/**
- * Helper: Simple glob matching
- */
-function globMatch(dir: string, pattern: string): boolean {
-  try {
-    const entries = readdirSync(dir);
-    const ext = pattern.replace('*.', '');
-    return entries.some(entry => entry.endsWith(ext));
-  } catch {
-    return false;
-  }
-}
 
 /**
  * Main execution
