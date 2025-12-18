@@ -38,12 +38,14 @@ export async function POST(request: NextRequest) {
       .limit(1)
       .single();
 
+    const orgId = (orgMember as any)?.organization_id || null;
+
     // Create ticket
     const { data: ticket, error: ticketError } = await supabase
       .from('ops_support_tickets')
       .insert({
         user_id: user.id,
-        organization_id: orgMember?.organization_id || null,
+        organization_id: orgId,
         subject,
         description,
         category: category || null,
@@ -62,10 +64,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const ticketData = ticket as any;
+
     // Auto-triage ticket
     try {
-      const triageResult = await triageTicket(ticket.id);
-      await storeTriageResult(ticket.id, triageResult);
+      const triageResult = await triageTicket(ticketData.id);
+      await storeTriageResult(ticketData.id, triageResult);
 
       // Update ticket with triage results
       await supabase
@@ -79,13 +83,12 @@ export async function POST(request: NextRequest) {
             rules: triageResult.triageRulesApplied,
           },
         } as any)
-        .eq('id', (ticket as any).id);
+        .eq('id', ticketData.id);
     } catch (triageError) {
       console.error('Auto-triage failed (non-fatal):', triageError);
       // Continue even if triage fails
     }
 
-    const ticketData = ticket as any;
     return NextResponse.json({
       ticket: {
         id: ticketData.id,

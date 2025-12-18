@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         : 0;
     const p95ResponseTime =
       responseTimes.length > 0
-        ? responseTimes[Math.floor(responseTimes.length * 0.95)]
+        ? (responseTimes[Math.floor(responseTimes.length * 0.95)] ?? 0)
         : 0;
 
     // Store usage rollup
