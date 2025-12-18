@@ -9,9 +9,16 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertCircle, CheckCircle2, XCircle, Eye } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface Match {
   id: string;
@@ -245,7 +252,11 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
                       </TableCell>
                       <TableCell>
                         {match.amountDiff !== null ? (
-                          <span className={match.amountDiff === 0 ? "text-green-600" : "text-yellow-600"}>
+                          <span
+                            className={
+                              match.amountDiff === 0 ? "text-green-600" : "text-yellow-600"
+                            }
+                          >
                             ${Math.abs(match.amountDiff).toFixed(2)}
                           </span>
                         ) : (
@@ -254,7 +265,9 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
                       </TableCell>
                       <TableCell>
                         {match.dateDiff !== null ? (
-                          <span className={match.dateDiff === 0 ? "text-green-600" : "text-yellow-600"}>
+                          <span
+                            className={match.dateDiff === 0 ? "text-green-600" : "text-yellow-600"}
+                          >
                             {match.dateDiff} days
                           </span>
                         ) : (

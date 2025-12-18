@@ -9,10 +9,16 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { AlertCircle, CheckCircle2, Clock, FileText, Download, RefreshCw } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, Download, RefreshCw } from "lucide-react";
 
 interface Ingestion {
   id: string;
@@ -36,20 +42,9 @@ interface Transaction {
   category: string | null;
 }
 
-interface ReconciliationRun {
-  id: string;
-  status: string;
-  matchedCount: number;
-  unmatchedSourceCount: number;
-  confidenceAvg: number | null;
-  startedAt: string;
-  completedAt: string | null;
-}
-
 export function IngestionDashboard({ ingestionId }: { ingestionId: string }) {
   const [ingestion, setIngestion] = useState<Ingestion | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [reconciliationRuns, setReconciliationRuns] = useState<ReconciliationRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,7 +84,7 @@ export function IngestionDashboard({ ingestionId }: { ingestionId: string }) {
       }
 
       // Load reconciliation runs (if any)
-      // This would need a new endpoint: GET /api/v1/reconciliation/runs?ingestionId=...
+      // TODO: Implement endpoint: GET /api/v1/reconciliation/runs?ingestionId=...
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load data");
     } finally {
@@ -190,10 +185,7 @@ export function IngestionDashboard({ ingestionId }: { ingestionId: string }) {
           </div>
           {ingestion.status === "processing" && (
             <div className="mt-4">
-              <Progress
-                value={parseFloat(successRate)}
-                className="h-2"
-              />
+              <Progress value={parseFloat(successRate)} className="h-2" />
             </div>
           )}
           {ingestion.errorMessage && (
@@ -258,45 +250,6 @@ export function IngestionDashboard({ ingestionId }: { ingestionId: string }) {
           </div>
         </CardContent>
       </Card>
-
-      {/* Reconciliation Runs */}
-      {reconciliationRuns.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Reconciliation Runs</CardTitle>
-            <CardDescription>Matching results for this ingestion</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {reconciliationRuns.map((run) => (
-                <div
-                  key={run.id}
-                  className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">Run {run.id.slice(0, 8)}...</div>
-                      <div className="text-sm text-gray-500">
-                        {run.matchedCount} matched, {run.unmatchedSourceCount} unmatched
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      {run.confidenceAvg && (
-                        <div className="text-sm font-medium">
-                          {(run.confidenceAvg * 100).toFixed(1)}% confidence
-                        </div>
-                      )}
-                      <div className="text-xs text-gray-500">
-                        {new Date(run.startedAt).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
