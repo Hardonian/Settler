@@ -48,13 +48,17 @@ export async function POST(
     }
 
     // Get the created action
-    const { data: action } = await supabase
-      .from('ops_actions')
-      .select('*')
-      .eq('id', actionId)
-      .single();
+    if (actionId) {
+      const { data: action } = await supabase
+        .from('ops_actions')
+        .select('*')
+        .eq('id', actionId)
+        .single();
 
-    return NextResponse.json({ success: true, action });
+      return NextResponse.json({ success: true, action });
+    }
+
+    return NextResponse.json({ success: true, actionId });
   } catch (error) {
     console.error('Error executing recommendation:', error);
     return NextResponse.json(

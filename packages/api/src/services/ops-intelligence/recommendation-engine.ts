@@ -22,7 +22,7 @@ export type ActionType =
 export type RiskLevel = 'low' | 'med' | 'high';
 
 export interface Recommendation {
-  insightId: string;
+  insightId?: string; // Will be set when saving to database
   actionType: ActionType;
   description: string;
   riskLevel: RiskLevel;
@@ -33,6 +33,7 @@ export interface Recommendation {
 
 /**
  * Generate recommendations for an insight
+ * Note: insightId will be set when saving to database
  */
 export function generateRecommendations(insight: Insight): Recommendation[] {
   const recommendations: Recommendation[] = [];
@@ -54,7 +55,7 @@ export function generateRecommendations(insight: Insight): Recommendation[] {
     }
 
     logInfo('Generated recommendations', {
-      insightId: insight.type,
+      insightType: insight.type,
       count: recommendations.length,
     });
   } catch (error) {
@@ -73,7 +74,6 @@ function generateCostRecommendations(insight: Insight): Recommendation[] {
   // High cost WoW increase
   if (insight.title.includes('Cost increased') && insight.severity !== 'info') {
     recommendations.push({
-      insightId: '', // Will be set when saving
       actionType: 'investigate',
       description: 'Review cost breakdown by source (infrastructure, data, messaging) to identify drivers',
       riskLevel: 'low',
@@ -83,7 +83,6 @@ function generateCostRecommendations(insight: Insight): Recommendation[] {
 
     if (insight.severity === 'critical') {
       recommendations.push({
-        insightId: '',
         actionType: 'throttle',
         description: 'Consider temporary throttling for high-cost operations if cost spike continues',
         riskLevel: 'med',
@@ -96,7 +95,6 @@ function generateCostRecommendations(insight: Insight): Recommendation[] {
   // High-cost orgs with low revenue
   if (insight.title.includes('high cost and low/no revenue')) {
     recommendations.push({
-      insightId: '',
       actionType: 'outreach',
       description: 'Reach out to high-cost orgs to understand usage patterns and discuss plan upgrade',
       riskLevel: 'low',
@@ -105,7 +103,6 @@ function generateCostRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'throttle',
       description: 'Consider rate limiting for non-paying orgs exceeding cost thresholds',
       riskLevel: 'med',
@@ -117,7 +114,6 @@ function generateCostRecommendations(insight: Insight): Recommendation[] {
   // High cost per event
   if (insight.title.includes('High cost per event')) {
     recommendations.push({
-      insightId: '',
       actionType: 'investigate',
       description: 'Analyze event processing pipeline for inefficiencies or unnecessary operations',
       riskLevel: 'low',
@@ -126,7 +122,6 @@ function generateCostRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'fix',
       description: 'Optimize event processing code or caching strategy',
       riskLevel: 'med',
@@ -147,7 +142,6 @@ function generateSupportRecommendations(insight: Insight): Recommendation[] {
   // Ticket spike by category
   if (insight.title.includes('Support ticket spike')) {
     recommendations.push({
-      insightId: '',
       actionType: 'investigate',
       description: 'Analyze ticket patterns to identify root cause',
       riskLevel: 'low',
@@ -156,7 +150,6 @@ function generateSupportRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'document',
       description: 'Create or update runbook/documentation for common issues in this category',
       riskLevel: 'low',
@@ -166,7 +159,6 @@ function generateSupportRecommendations(insight: Insight): Recommendation[] {
 
     if (insight.severity === 'critical') {
       recommendations.push({
-        insightId: '',
         actionType: 'fix',
         description: 'Prioritize fixing the underlying product issue causing ticket spike',
         riskLevel: 'high',
@@ -179,7 +171,6 @@ function generateSupportRecommendations(insight: Insight): Recommendation[] {
   // Repeated tickets
   if (insight.title.includes('Repeated support issue')) {
     recommendations.push({
-      insightId: '',
       actionType: 'fix',
       description: 'Address root cause of repeated issue to prevent future tickets',
       riskLevel: 'med',
@@ -188,7 +179,6 @@ function generateSupportRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'document',
       description: 'Add in-app notice or documentation to help users avoid this issue',
       riskLevel: 'low',
@@ -200,7 +190,6 @@ function generateSupportRecommendations(insight: Insight): Recommendation[] {
   // High ticket density orgs
   if (insight.title.includes('abnormally high ticket volume')) {
     recommendations.push({
-      insightId: '',
       actionType: 'outreach',
       description: 'Proactively contact high-ticket orgs to provide support and identify issues',
       riskLevel: 'low',
@@ -209,7 +198,6 @@ function generateSupportRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'investigate',
       description: 'Review org usage patterns and configuration to identify misconfigurations',
       riskLevel: 'low',
@@ -230,7 +218,6 @@ function generateUsageRecommendations(insight: Insight): Recommendation[] {
   // Feature adoption falling
   if (insight.title.includes('adoption decreased')) {
     recommendations.push({
-      insightId: '',
       actionType: 'investigate',
       description: 'Survey users or analyze usage data to understand why adoption decreased',
       riskLevel: 'low',
@@ -239,7 +226,6 @@ function generateUsageRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'outreach',
       description: 'Send targeted communication to inactive users about feature benefits',
       riskLevel: 'low',
@@ -251,7 +237,6 @@ function generateUsageRecommendations(insight: Insight): Recommendation[] {
   // Inactive/churn-risk orgs
   if (insight.title.includes('inactive for')) {
     recommendations.push({
-      insightId: '',
       actionType: 'outreach',
       description: 'Send re-engagement email to inactive orgs with helpful resources',
       riskLevel: 'low',
@@ -260,7 +245,6 @@ function generateUsageRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'monitor',
       description: 'Track inactive orgs and flag for churn prevention if no activity after 30 days',
       riskLevel: 'low',
@@ -272,7 +256,6 @@ function generateUsageRecommendations(insight: Insight): Recommendation[] {
   // Heavy users approaching limits
   if (insight.title.includes('approaching limits')) {
     recommendations.push({
-      insightId: '',
       actionType: 'outreach',
       description: 'Proactively contact heavy users to discuss plan upgrade before hitting limits',
       riskLevel: 'low',
@@ -293,7 +276,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
   // Error rate spike
   if (insight.title.includes('Error rate increased')) {
     recommendations.push({
-      insightId: '',
       actionType: 'investigate',
       description: 'Review error logs and recent deployments to identify cause',
       riskLevel: 'low',
@@ -303,7 +285,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
 
     if (insight.severity === 'critical') {
       recommendations.push({
-        insightId: '',
         actionType: 'fix',
         description: 'Prioritize fixing critical errors immediately',
         riskLevel: 'high',
@@ -316,7 +297,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
   // Webhook failures
   if (insight.title.includes('Webhook failure rate')) {
     recommendations.push({
-      insightId: '',
       actionType: 'verify',
       description: 'Verify webhook secrets and endpoints are correct',
       riskLevel: 'low',
@@ -325,7 +305,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'retry',
       description: 'Review retry logic and consider exponential backoff for failed webhooks',
       riskLevel: 'low',
@@ -334,7 +313,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'investigate',
       description: 'Check recent deployments or infrastructure changes that might affect webhooks',
       riskLevel: 'low',
@@ -346,7 +324,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
   // Job backlog
   if (insight.title.includes('Job backlog')) {
     recommendations.push({
-      insightId: '',
       actionType: 'investigate',
       description: 'Review job queue and identify bottlenecks or slow jobs',
       riskLevel: 'low',
@@ -355,7 +332,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'monitor',
       description: 'Set up alerts for job queue depth to catch issues early',
       riskLevel: 'low',
@@ -365,7 +341,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
 
     if (insight.evidence.metrics.pendingJobs > 100) {
       recommendations.push({
-        insightId: '',
         actionType: 'fix',
         description: 'Scale job workers or optimize slow jobs to clear backlog',
         riskLevel: 'med',
@@ -378,7 +353,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
   // Route-level instability
   if (insight.title.includes('route(s) with high error rates')) {
     recommendations.push({
-      insightId: '',
       actionType: 'investigate',
       description: 'Review error logs for unstable routes to identify patterns',
       riskLevel: 'low',
@@ -387,7 +361,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'fix',
       description: 'Fix bugs or add error handling for unstable routes',
       riskLevel: 'med',
@@ -396,7 +369,6 @@ function generateStabilityRecommendations(insight: Insight): Recommendation[] {
     });
 
     recommendations.push({
-      insightId: '',
       actionType: 'monitor',
       description: 'Add route-level error rate monitoring and alerts',
       riskLevel: 'low',

@@ -18,8 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertCircle, CheckCircle2, Info, AlertTriangle, XCircle, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { AlertCircle, Info, AlertTriangle, XCircle } from 'lucide-react';
 
 interface Insight {
   id: string;
@@ -72,10 +71,10 @@ export function InsightsView({ userId }: InsightsViewProps) {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '50',
-        ...(filters.type && { type: filters.type }),
-        ...(filters.severity && { severity: filters.severity }),
-        ...(filters.status && { status: filters.status }),
       });
+      if (filters.type) params.set('type', filters.type);
+      if (filters.severity) params.set('severity', filters.severity);
+      if (filters.status) params.set('status', filters.status);
 
       const response = await fetch(`/api/console/ops-insights?${params}`);
       const data = await response.json();
@@ -346,6 +345,7 @@ export function InsightsView({ userId }: InsightsViewProps) {
                         {rec.status === 'suggested' && (
                           <Button
                             onClick={async () => {
+                              if (!selectedInsight) return;
                               const response = await fetch(
                                 `/api/console/ops-recommendations/${rec.id}/execute`,
                                 {
@@ -358,7 +358,7 @@ export function InsightsView({ userId }: InsightsViewProps) {
                                 }
                               );
                               if (response.ok) {
-                                loadInsightDetail(selectedInsight.id);
+                                await loadInsightDetail(selectedInsight.id);
                               }
                             }}
                           >

@@ -10,9 +10,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, FileText, TrendingUp, AlertTriangle } from 'lucide-react';
-// Note: If react-markdown is not available, use a simple markdown renderer or plain text
-// For now, we'll render as plain text with basic formatting
+import { Calendar } from 'lucide-react';
 
 interface Briefing {
   id: string;
@@ -183,7 +181,7 @@ export function BriefingsView({ userId }: BriefingsViewProps) {
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold">
                         {selectedBriefing.summary_json.metrics?.totalCost
-                          ? `$${selectedBriefing.summary_json.metrics.totalCost.toFixed(2)}`
+                          ? `$${Number(selectedBriefing.summary_json.metrics.totalCost).toFixed(2)}`
                           : 'N/A'}
                       </div>
                       <div className="text-sm text-muted-foreground">Total Cost</div>
