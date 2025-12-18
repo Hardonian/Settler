@@ -1,5 +1,11 @@
+// Public connector contract (for external developers)
+export * from "./connector-contract";
+
+// Base interfaces and types
 export * from "./base";
 export * from "./enhanced-base";
+
+// Built-in connectors (reference implementations)
 export * from "./stripe";
 export * from "./stripe-enhanced";
 export * from "./paypal";

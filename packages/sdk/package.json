@@ -9,6 +9,31 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/client.js",
+      "require": "./dist/client.js",
+      "types": "./dist/client.d.ts"
+    },
+    "./clients/*": {
+      "import": "./dist/clients/*.js",
+      "require": "./dist/clients/*.js",
+      "types": "./dist/clients/*.d.ts"
+    },
+    "./errors": {
+      "import": "./dist/errors.js",
+      "require": "./dist/errors.js",
+      "types": "./dist/errors.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "require": "./dist/types.js",
+      "types": "./dist/types.d.ts"
+    },
+    "./utils/*": {
+      "import": "./dist/utils/*.js",
+      "require": "./dist/utils/*.js",
+      "types": "./dist/utils/*.d.ts"
     }
   },
   "files": [

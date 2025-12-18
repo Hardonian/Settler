@@ -1,0 +1,17 @@
+{
+  "name": "settler-external-integration-example",
+  "version": "1.0.0",
+  "description": "Example external integration with Settler API",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "@settler/sdk": "workspace:*"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

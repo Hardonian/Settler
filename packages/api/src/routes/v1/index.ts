@@ -12,6 +12,7 @@ import feesRouter from './fees';
 import exportsRouter from './exports';
 import currencyRouter from './currency';
 import webhookReceiveRouter from './webhooks/receive';
+import webhookEventsRouter from './webhooks/events';
 import ingestionRouter from './ingestion';
 import reconciliationRouter from './reconciliation';
 import ingestionExportsRouter from './ingestion-exports';
@@ -20,6 +21,7 @@ export const v1Router = Router();
 
 // Mount v1 routes
 v1Router.use('/webhooks/receive', webhookReceiveRouter);
+v1Router.use('/webhooks', webhookEventsRouter); // Events discovery endpoint
 v1Router.use('/realtime', realtimeRouter);
 v1Router.use('/reconciliations', reconciliationSummaryRouter);
 
