@@ -15,6 +15,7 @@ import webhookReceiveRouter from './webhooks/receive';
 import ingestionRouter from './ingestion';
 import reconciliationRouter from './reconciliation';
 import ingestionExportsRouter from './ingestion-exports';
+import { operatorModeRouter } from './operator-mode';
 
 export const v1Router = Router();
 
@@ -34,6 +35,9 @@ v1Router.use('/currency', currencyRouter);
 v1Router.use('/ingestion', ingestionRouter);
 v1Router.use('/reconciliation', reconciliationRouter);
 v1Router.use('/ingestion/exports', ingestionExportsRouter);
+
+// Operator mode routes
+v1Router.use('/', operatorModeRouter);
 
 // Health check
 v1Router.get('/health', (_req, res) => {
