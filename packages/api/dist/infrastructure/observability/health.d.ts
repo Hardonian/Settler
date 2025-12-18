@@ -22,6 +22,7 @@ export declare class HealthCheckService {
     private getRedisClient;
     checkDatabase(): Promise<HealthCheck>;
     checkRedis(): Promise<HealthCheck>;
+    checkSupabase(): Promise<HealthCheck>;
     checkSentry(): Promise<HealthCheck>;
     checkAll(): Promise<HealthStatus>;
     checkLive(): Promise<{

@@ -8,17 +8,18 @@
  * - Edge Functions (serverless compute)
  */
 import { SupabaseClient } from '@supabase/supabase-js';
-/**
- * Supabase client for database operations
- */
 export declare const supabase: SupabaseClient;
+export declare const supabaseRealtime: SupabaseClient;
 /**
- * Supabase Realtime client for streaming
- * Use this for real-time subscriptions (reconciliation graph updates, etc.)
+ * Check Supabase connection health
  */
-export declare const supabaseRealtime: SupabaseClient<any, "public", "public", any, any>;
+export declare function checkSupabaseHealth(): Promise<{
+    healthy: boolean;
+    latency?: number;
+    error?: string;
+}>;
 /**
- * Helper function to execute SQL queries
+ * Helper function to execute SQL queries with retry logic
  */
 export declare function executeSQL<T = any>(query: string, params?: any[]): Promise<T[]>;
 /**
@@ -26,7 +27,7 @@ export declare function executeSQL<T = any>(query: string, params?: any[]): Prom
  */
 export declare function transaction<T>(callback: (client: SupabaseClient) => Promise<T>): Promise<T>;
 /**
- * Initialize Supabase extensions
+ * Initialize Supabase extensions with retry logic
  */
 export declare function initializeSupabaseExtensions(): Promise<void>;
 //# sourceMappingURL=client.d.ts.map
