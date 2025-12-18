@@ -3,6 +3,6 @@ npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
 
-> @settler/adapters@1.0.0 lint
-> eslint src --ext .ts
+> @settler/api@1.0.0 test
+> jest
 

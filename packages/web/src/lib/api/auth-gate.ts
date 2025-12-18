@@ -1,16 +1,16 @@
 /**
  * Auth Gating Utilities
- * 
+ *
  * Protects admin/diagnostic endpoints
  * Ensures unauthenticated access yields 401/403 with safe body
  * Prevents redirect loops
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { getTraceId } from '@/lib/observability/trace';
-import { logger } from '@/lib/observability/logger';
-import { ErrorCode } from '@/lib/api/error-handler';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { getTraceId } from "@/lib/observability/trace";
+import { logger } from "@/lib/observability/logger";
+import { ErrorCode } from "@/lib/api/error-handler";
 
 export interface AuthGateOptions {
   requireAuth?: boolean;
@@ -36,7 +36,7 @@ export async function requireAuth(request: NextRequest): Promise<{
     } = await supabase.auth.getUser();
 
     if (error || !user) {
-      await logger.warn('Unauthenticated access attempt', {
+      await logger.warn("Unauthenticated access attempt", {
         trace_id: traceId,
         route: request.nextUrl.pathname,
       });
@@ -45,7 +45,7 @@ export async function requireAuth(request: NextRequest): Promise<{
         authenticated: false,
         error: NextResponse.json(
           {
-            error: 'Authentication required',
+            error: "Authentication required",
             code: ErrorCode.UNAUTHORIZED,
             trace_id: traceId,
             timestamp: new Date().toISOString(),
@@ -63,7 +63,7 @@ export async function requireAuth(request: NextRequest): Promise<{
       },
     };
   } catch (error) {
-    await logger.error('Auth check failed', {
+    await logger.error("Auth check failed", {
       trace_id: traceId,
       route: request.nextUrl.pathname,
       error: error instanceof Error ? error.message : String(error),
@@ -73,7 +73,7 @@ export async function requireAuth(request: NextRequest): Promise<{
       authenticated: false,
       error: NextResponse.json(
         {
-          error: 'Authentication check failed',
+          error: "Authentication check failed",
           code: ErrorCode.INTERNAL_ERROR,
           trace_id: traceId,
           timestamp: new Date().toISOString(),
@@ -104,15 +104,16 @@ export async function requireAdmin(request: NextRequest): Promise<{
   try {
     const supabase = await createClient();
     const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', authResult.user!.id)
+      .from("profiles")
+      .select("role")
+      .eq("id", authResult.user!.id)
       .single();
 
-    const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
+    const profileRole = (profile as { role?: string } | null)?.role;
+    const isAdmin = profileRole === "admin" || profileRole === "super_admin";
 
     if (!isAdmin) {
-      await logger.warn('Non-admin access attempt to admin endpoint', {
+      await logger.warn("Non-admin access attempt to admin endpoint", {
         trace_id: traceId,
         route: request.nextUrl.pathname,
         user_id: authResult.user!.id,
@@ -122,7 +123,7 @@ export async function requireAdmin(request: NextRequest): Promise<{
         isAdmin: false,
         error: NextResponse.json(
           {
-            error: 'Admin access required',
+            error: "Admin access required",
             code: ErrorCode.FORBIDDEN,
             trace_id: traceId,
             timestamp: new Date().toISOString(),
@@ -137,7 +138,7 @@ export async function requireAdmin(request: NextRequest): Promise<{
       user: authResult.user,
     };
   } catch (error) {
-    await logger.error('Admin check failed', {
+    await logger.error("Admin check failed", {
       trace_id: traceId,
       route: request.nextUrl.pathname,
       error: error instanceof Error ? error.message : String(error),
@@ -147,7 +148,7 @@ export async function requireAdmin(request: NextRequest): Promise<{
       isAdmin: false,
       error: NextResponse.json(
         {
-          error: 'Admin check failed',
+          error: "Admin check failed",
           code: ErrorCode.INTERNAL_ERROR,
           trace_id: traceId,
           timestamp: new Date().toISOString(),

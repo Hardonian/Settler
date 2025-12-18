@@ -7,6 +7,8 @@ const reports_1 = require("./commands/reports");
 const webhooks_1 = require("./commands/webhooks");
 const adapters_1 = require("./commands/adapters");
 const debug_1 = require("./commands/debug");
+const receipts_1 = require("./commands/receipts");
+const console_1 = require("./commands/console");
 const program = new commander_1.Command();
 program
     .name("settler")
@@ -22,6 +24,8 @@ program.addCommand(reports_1.reportsCommand);
 program.addCommand(webhooks_1.webhooksCommand);
 program.addCommand(adapters_1.adaptersCommand);
 program.addCommand(debug_1.debugCommand);
+program.addCommand(receipts_1.receiptsCommand);
+program.addCommand(console_1.consoleCommand);
 // Parse arguments
 program.parse();
 // Show help if no command provided

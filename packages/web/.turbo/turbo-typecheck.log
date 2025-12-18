@@ -6,22 +6,3 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck
 > tsc --noEmit --incremental
 
-middleware.ts(13,10): error TS6133: 'getTraceId' is declared but its value is never read.
-src/app/api/metrics/route.ts(12,10): error TS6133: 'withAuthGate' is declared but its value is never read.
-src/components/error-boundary.tsx(43,3): error TS4114: This member must have an 'override' modifier because it overrides a member in the base class 'Component<Props, State, any>'.
-src/components/error-boundary.tsx(60,3): error TS4114: This member must have an 'override' modifier because it overrides a member in the base class 'Component<Props, State, any>'.
-src/lib/api/auth-gate.ts(112,30): error TS2339: Property 'role' does not exist on type 'never'.
-src/lib/api/auth-gate.ts(112,59): error TS2339: Property 'role' does not exist on type 'never'.
-src/lib/api/request-logger.ts(64,45): error TS2345: Argument of type 'RequestLog' is not assignable to parameter of type 'LogContext'.
-  Index signature for type 'string' is missing in type 'RequestLog'.
-src/lib/api/request-logger.ts(66,43): error TS2345: Argument of type 'RequestLog' is not assignable to parameter of type 'LogContext'.
-  Index signature for type 'string' is missing in type 'RequestLog'.
-src/lib/api/request-logger.ts(68,38): error TS2345: Argument of type 'RequestLog' is not assignable to parameter of type 'LogContext'.
-  Index signature for type 'string' is missing in type 'RequestLog'.
-npm error Lifecycle script `typecheck` failed with error:
-npm error code 2
-npm error path /workspace/packages/web
-npm error workspace @settler/web@1.0.0
-npm error location /workspace/packages/web
-npm error command failed
-npm error command sh -c tsc --noEmit --incremental
