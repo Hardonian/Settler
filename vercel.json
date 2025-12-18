@@ -2,6 +2,7 @@
   "buildCommand": "cd packages/web && npm run build:vercel",
   "installCommand": "npm ci --prefer-offline --no-audit --omit=optional",
   "framework": "nextjs",
+  "outputDirectory": "packages/web/.next",
   "regions": ["iad1", "sfo1", "lhr1", "syd1"],
   "build": {
     "env": {

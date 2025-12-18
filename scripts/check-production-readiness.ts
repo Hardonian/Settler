@@ -176,6 +176,28 @@ function checkRunbook(): CheckResult {
 }
 
 /**
+ * Check workspace integrity
+ */
+function checkWorkspaceIntegrity(): CheckResult {
+  // This is a simplified check - full check runs via npm run check:workspace
+  const workspaceCheckScript = existsSync(join(process.cwd(), 'scripts/check-workspace-integrity.ts'));
+  
+  if (!workspaceCheckScript) {
+    return {
+      name: 'Workspace Integrity Script',
+      status: 'fail',
+      message: 'Workspace integrity check script not found',
+    };
+  }
+  
+  return {
+    name: 'Workspace Integrity Script',
+    status: 'pass',
+    message: 'Workspace integrity check script exists (run npm run check:workspace for full check)',
+  };
+}
+
+/**
  * Run all checks
  */
 async function runChecks(): Promise<void> {
@@ -188,6 +210,7 @@ async function runChecks(): Promise<void> {
   checks.push(checkErrorHandling());
   checks.push(checkTests());
   checks.push(checkRunbook());
+  checks.push(checkWorkspaceIntegrity());
 
   // Print results
   const passed = checks.filter(c => c.status === 'pass').length;
