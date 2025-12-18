@@ -163,10 +163,10 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: saveViewName,
-          dataset: selectedDataset,
+          dataset: selectedDataset || '',
           rows: selectedRows,
           columns: selectedColumns,
-          measure: selectedMeasure,
+          measure: selectedMeasure || '',
           aggregation: selectedAggregation,
           filters: {},
           dateRange,

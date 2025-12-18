@@ -61,8 +61,8 @@ export async function GET(request: Request) {
     let healthStatus: 'healthy' | 'warning' | 'critical' = 'healthy';
     let healthMessage = 'All systems operational';
 
-    const failedWebhookCount = failedWebhooks?.[0] ? Number(failedWebhooks[0].count) : 0;
-    const pendingJobCount = pendingJobs?.[0] ? Number(pendingJobs[0].count) : 0;
+    const failedWebhookCount = failedWebhooks && failedWebhooks[0] ? Number(failedWebhooks[0].count) : 0;
+    const pendingJobCount = pendingJobs && pendingJobs[0] ? Number(pendingJobs[0].count) : 0;
 
     if (errorRate > 5 || failedWebhookCount > 10) {
       healthStatus = 'critical';

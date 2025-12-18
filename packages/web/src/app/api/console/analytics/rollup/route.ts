@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
         total_webhooks: webhooks,
         total_errors: errors,
         avg_response_time_ms: Math.round(avgResponseTime),
-        p95_response_time_ms: Math.round(p95ResponseTime),
+        p95_response_time_ms: Math.round(p95ResponseTime || 0),
       } as any,
       {
         onConflict: 'date',

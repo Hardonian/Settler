@@ -70,7 +70,7 @@ export async function GET(request: Request) {
       category: ticket.category,
       triageResult: ticket.triage_result,
       createdAt: ticket.created_at.toISOString(),
-      userEmail: userMap.get(ticket.user_id),
+      userEmail: userMap.get(ticket.user_id) || undefined,
     }));
 
     return NextResponse.json({ tickets: ticketsWithUsers });

@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         date_range: body.dateRange,
         created_by: userId,
         is_public: body.isPublic || false,
-      })
+      } as any)
       .select()
       .single();
 
@@ -102,12 +102,17 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'id required' }, { status: 400 });
     }
 
+    const userId = adminCheck.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
     const supabase = await createClient();
     const { error } = await supabase
       .from('ops_saved_views')
       .delete()
       .eq('id', viewId)
-      .or(`created_by.eq.${adminCheck.userId},is_public.eq.true`); // Only delete own or public views
+      .or(`created_by.eq.${userId},is_public.eq.true`); // Only delete own or public views
 
     if (error) {
       throw error;
