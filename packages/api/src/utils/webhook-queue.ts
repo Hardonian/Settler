@@ -128,6 +128,13 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
 
 // Process pending webhook deliveries
 export async function processPendingWebhooks(): Promise<void> {
+  // Check kill switch for webhook processing
+  const { isBackgroundJobPaused } = await import('../services/operator-mode/kill-switches');
+  if (await isBackgroundJobPaused('webhook')) {
+    logWarn('Webhook processing paused via kill switch');
+    return;
+  }
+
   const pending = await query<WebhookDelivery & { secret: string }>(
     `SELECT wd.id, wd.webhook_id as webhookId, wd.url, wd.payload, w.secret
      FROM webhook_deliveries wd

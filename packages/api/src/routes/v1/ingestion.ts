@@ -25,6 +25,8 @@ import { CSVColumnMapping } from "../../services/ingestion/types";
 import { checkIngestionLimit } from "../../middleware/usage-enforcement";
 import { trackIngestionUsage } from "../../utils/usage-tracking";
 import { getBillingAccount } from "../../utils/billing-helpers";
+import { isConnectorDisabled, isBackgroundJobPaused } from "../../services/operator-mode/kill-switches";
+import { canRunBackgroundJob } from "../../services/operator-mode/cost-controls";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -43,6 +45,15 @@ router.post("/sources", async (req: AuthRequest, res: Response) => {
       return res.status(400).json({
         error: "Bad Request",
         message: "name and type are required",
+        traceId: req.traceId,
+      });
+    }
+
+    // Check kill switch for connector
+    if (connectorType && await isConnectorDisabled(connectorType)) {
+      return res.status(503).json({
+        error: "Service Unavailable",
+        message: `Connector ${connectorType} is currently disabled`,
         traceId: req.traceId,
       });
     }
@@ -211,6 +222,25 @@ router.post(
           throw new Error("Failed to create ingestion source");
         }
         finalSourceId = firstResult.id as string;
+      }
+
+      // Check kill switches
+      if (await isBackgroundJobPaused('ingestion')) {
+        return res.status(503).json({
+          error: "Service Unavailable",
+          message: "Ingestion jobs are currently paused",
+          traceId,
+        });
+      }
+
+      // Check background job limits
+      const jobCheck = await canRunBackgroundJob('ingestion', tenantId);
+      if (!jobCheck.allowed) {
+        return res.status(429).json({
+          error: "Too Many Requests",
+          message: jobCheck.reason || "Background job limit exceeded",
+          traceId,
+        });
       }
 
       // Create ingestion job

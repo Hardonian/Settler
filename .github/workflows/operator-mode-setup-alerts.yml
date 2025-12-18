@@ -1,0 +1,87 @@
+name: Setup Operator Mode Default Alerts
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to setup alerts in'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/setup-operator-mode-alerts.ts'
+      - '.github/workflows/operator-mode-setup-alerts.yml'
+
+jobs:
+  setup-alerts:
+    name: Setup Default Alert Rules
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build API package
+        run: |
+          cd packages/api
+          npm run build
+
+      - name: Setup Default Alert Rules
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPERATOR_USER_ID: ${{ secrets.OPERATOR_USER_ID || '00000000-0000-0000-0000-000000000000' }}
+          NODE_ENV: production
+        run: |
+          echo "🔄 Setting up default alert rules..."
+          npx tsx scripts/setup-operator-mode-alerts.ts
+          echo "✅ Alert rules setup completed"
+
+      - name: Verify Alert Rules
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPERATOR_USER_ID: ${{ secrets.OPERATOR_USER_ID || '00000000-0000-0000-0000-000000000000' }}
+        run: |
+          echo "🔍 Verifying alert rules..."
+          export PGPASSWORD="$(echo $DATABASE_URL | grep -oP 'password=\K[^@]+' || echo '')"
+          psql "$DATABASE_URL" -c "
+            SELECT name, metric, threshold, operator, severity, enabled, channels
+            FROM alert_rules
+            WHERE user_id = '$OPERATOR_USER_ID'
+            ORDER BY name;
+          "
+
+      - name: Setup summary
+        if: success()
+        run: |
+          echo "## ✅ Default Alert Rules Setup Completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event.inputs.environment || 'production' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Default Rules Created:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ High Error Rate (>5%)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Critical Error Rate (>10%)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Slow Endpoints (P95 >5s)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Failed Ingestions (>10/day)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Billing Anomalies (>5/day)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Configure SLACK_WEBHOOK_URL secret for Slack notifications" >> $GITHUB_STEP_SUMMARY
+          echo "2. Verify alerts are working: Run operator mode daily job" >> $GITHUB_STEP_SUMMARY
+          echo "3. Customize thresholds as needed via API" >> $GITHUB_STEP_SUMMARY
