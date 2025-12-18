@@ -2,7 +2,7 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Shield, Lock, FileKey, Server, Eye, RefreshCcw } from 'lucide-react';
+import { Shield, Lock, FileKey, Server, Eye, RefreshCcw, Database, AlertTriangle, Users, Globe } from 'lucide-react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -125,6 +125,113 @@ export default function SecurityPage() {
                 Strict least-privilege access policies. 
                 SAML SSO and MFA enforcement available for all accounts.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Data Handling */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center text-slate-900 dark:text-white">
+            Data Handling & Privacy
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
+              <Database className="w-8 h-8 text-blue-600 mb-4" />
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Data Processing</h3>
+              <ul className="space-y-3 text-slate-600 dark:text-slate-300">
+                <li>• Customer data is processed only for the purpose of providing reconciliation services</li>
+                <li>• Data is stored in tenant-isolated databases with Row-Level Security (RLS)</li>
+                <li>• No cross-tenant data access is possible at the database or application layer</li>
+                <li>• Data residency options available (US, EU) for enterprise customers</li>
+                <li>• Customer data is never used for AI model training without explicit consent</li>
+              </ul>
+            </div>
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
+              <Users className="w-8 h-8 text-blue-600 mb-4" />
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Data Access & Export</h3>
+              <ul className="space-y-3 text-slate-600 dark:text-slate-300">
+                <li>• Full account data export available via API (`GET /api/v1/tenant/data-export`)</li>
+                <li>• GDPR/CCPA compliant data export in JSON or CSV format</li>
+                <li>• Customer data deletion with 30-day grace period and scheduled hard deletion</li>
+                <li>• Audit logs capture all data access and export operations</li>
+                <li>• Self-service data management available in the console</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sub-processors */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center text-slate-900 dark:text-white">
+            Sub-processors
+          </h2>
+          <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <p className="text-slate-600 dark:text-slate-300 mb-6">
+              Settler engages third-party sub-processors to provide our services. All sub-processors undergo security 
+              and privacy diligence before engagement. We maintain Data Processing Agreements (DPAs) with all sub-processors 
+              that handle customer data.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div>
+                <h4 className="font-semibold mb-2 text-slate-900 dark:text-white">Infrastructure</h4>
+                <ul className="text-sm text-slate-600 dark:text-slate-300 space-y-1">
+                  <li>• Amazon Web Services (AWS) - Cloud hosting</li>
+                  <li>• Vercel - Frontend hosting & edge functions</li>
+                  <li>• Supabase - Database & authentication</li>
+                  <li>• Upstash - Redis & Kafka (serverless)</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2 text-slate-900 dark:text-white">Services</h4>
+                <ul className="text-sm text-slate-600 dark:text-slate-300 space-y-1">
+                  <li>• Stripe - Payment processing</li>
+                  <li>• Resend - Transactional emails</li>
+                  <li>• OpenAI - LLM processing (opt-in features)</li>
+                </ul>
+              </div>
+            </div>
+            <a 
+              href="/legal/subprocessors"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              View complete sub-processor list →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Incident Response */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center text-slate-900 dark:text-white">
+            Incident Response
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
+              <AlertTriangle className="w-8 h-8 text-blue-600 mb-4" />
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Response Process</h3>
+              <ol className="space-y-3 text-slate-600 dark:text-slate-300 list-decimal list-inside">
+                <li>Detection and initial assessment within 1 hour</li>
+                <li>Containment and mitigation actions immediately</li>
+                <li>Root cause analysis and impact assessment</li>
+                <li>Customer notification within 72 hours for incidents affecting customer data</li>
+                <li>Post-incident review and process improvements</li>
+              </ol>
+            </div>
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
+              <Globe className="w-8 h-8 text-blue-600 mb-4" />
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Communication</h3>
+              <ul className="space-y-3 text-slate-600 dark:text-slate-300">
+                <li>• Security incidents reported to: <a href="mailto:security@settler.dev" className="text-blue-600 dark:text-blue-400 hover:underline">security@settler.dev</a></li>
+                <li>• Status page: <a href="/status" className="text-blue-600 dark:text-blue-400 hover:underline">settler.dev/status</a></li>
+                <li>• Enterprise customers receive direct notification via account contacts</li>
+                <li>• Public disclosure follows responsible disclosure principles</li>
+                <li>• Incident reports available upon request for enterprise customers</li>
+              </ul>
             </div>
           </div>
         </div>
