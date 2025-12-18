@@ -106,7 +106,7 @@ export function checkIngestionLimit() {
 
       // Get plan limits
       const planId = subscription.plan_id || "base";
-      const planLimits: PlanLimits = PLAN_LIMITS[planId] || PLAN_LIMITS.base;
+      const planLimits = (PLAN_LIMITS[planId] || PLAN_LIMITS.base) as PlanLimits;
       const limit = planLimits.ingestions;
 
       // Check if limit is exceeded
@@ -174,7 +174,7 @@ export function checkExportLimit() {
 
       // Get plan limits
       const planId = subscription.plan_id || "base";
-      const planLimits: PlanLimits = PLAN_LIMITS[planId] || PLAN_LIMITS.base;
+      const planLimits = (PLAN_LIMITS[planId] || PLAN_LIMITS.base) as PlanLimits;
       const limit = planLimits.exports;
 
       // Check if limit is exceeded
