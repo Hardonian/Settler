@@ -320,11 +320,15 @@ app.use(sentryErrorHandler());
 // Error handling
 app.use(errorHandler);
 
-// 404 handler
-app.use((_req: Request, res: Response) => {
+// 404 handler - always returns JSON with trace_id
+app.use((req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
   res.status(404).json({
     error: "Not Found",
-    message: `Cannot ${_req.method} ${_req.path}`,
+    errorCode: "NOT_FOUND",
+    message: `Cannot ${req.method} ${req.path}`,
+    traceId: authReq.traceId,
+    timestamp: new Date().toISOString(),
   });
 });
 

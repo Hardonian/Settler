@@ -77,8 +77,26 @@ export class HealthCheckService {
     }
   }
 
+  async checkSupabase(): Promise<HealthCheck> {
+    try {
+      const { checkSupabaseHealth } = await import('../../infrastructure/supabase/client');
+      const health = await checkSupabaseHealth();
+      return {
+        status: health.healthy ? 'healthy' : 'unhealthy',
+        latency: health.latency,
+        error: health.error,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error: unknown) {
+      return {
+        status: 'unhealthy',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      };
+    }
+  }
+
   async checkSentry(): Promise<HealthCheck> {
-    const start = Date.now();
     try {
       // Check if Sentry is configured
       const sentryDsn = process.env.SENTRY_DSN;
@@ -92,10 +110,8 @@ export class HealthCheckService {
 
       // Sentry SDK is initialized if DSN is set
       // We can't directly test Sentry connectivity, but we can verify it's configured
-      const latency = Date.now() - start;
       return {
         status: 'healthy',
-        latency,
         timestamp: new Date().toISOString(),
       };
     } catch (error: unknown) {
@@ -109,7 +125,7 @@ export class HealthCheckService {
 
   async checkAll(): Promise<HealthStatus> {
     const redisClient = this.getRedisClient();
-    const [database, redis, sentry] = await Promise.all([
+    const [database, redis, sentry, supabase] = await Promise.all([
       this.checkDatabase(),
       redisClient ? this.checkRedis() : Promise.resolve<HealthCheck>({
         status: 'degraded',
@@ -117,12 +133,14 @@ export class HealthCheckService {
         timestamp: new Date().toISOString(),
       }),
       this.checkSentry(),
+      this.checkSupabase(),
     ]);
 
     const checks = {
       database,
       redis,
       sentry,
+      supabase,
     };
 
     const allHealthy = Object.values(checks).every(
