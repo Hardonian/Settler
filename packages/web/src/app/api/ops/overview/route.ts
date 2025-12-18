@@ -61,10 +61,13 @@ export async function GET(request: Request) {
     let healthStatus: 'healthy' | 'warning' | 'critical' = 'healthy';
     let healthMessage = 'All systems operational';
 
-    if (errorRate > 5 || failedWebhooks[0]?.count > 10) {
+    const failedWebhookCount = failedWebhooks?.[0] ? Number(failedWebhooks[0].count) : 0;
+    const pendingJobCount = pendingJobs?.[0] ? Number(pendingJobs[0].count) : 0;
+
+    if (errorRate > 5 || failedWebhookCount > 10) {
       healthStatus = 'critical';
       healthMessage = 'High error rate or webhook failures detected';
-    } else if (errorRate > 1 || pendingJobs[0]?.count > 50) {
+    } else if (errorRate > 1 || pendingJobCount > 50) {
       healthStatus = 'warning';
       healthMessage = 'Elevated error rate or job queue backlog';
     }
@@ -78,8 +81,8 @@ export async function GET(request: Request) {
       activeCustomers,
       totalUsage,
       errorRate: Math.min(errorRate, 100), // Cap at 100%
-      pendingJobs: Number(pendingJobs[0]?.count || 0),
-      failedWebhooks: Number(failedWebhooks[0]?.count || 0),
+      pendingJobs: pendingJobCount,
+      failedWebhooks: failedWebhookCount,
     });
   } catch (error) {
     console.error('Ops overview error:', error);

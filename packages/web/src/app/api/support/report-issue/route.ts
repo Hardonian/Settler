@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         context: context || {},
         status: 'open',
         priority: 'medium',
-      })
+      } as any)
       .select()
       .single();
 
@@ -78,20 +78,21 @@ export async function POST(request: NextRequest) {
             confidence: triageResult.confidence,
             rules: triageResult.triageRulesApplied,
           },
-        })
-        .eq('id', ticket.id);
+        } as any)
+        .eq('id', (ticket as any).id);
     } catch (triageError) {
       console.error('Auto-triage failed (non-fatal):', triageError);
       // Continue even if triage fails
     }
 
+    const ticketData = ticket as any;
     return NextResponse.json({
       ticket: {
-        id: ticket.id,
-        ticketNumber: ticket.ticket_number,
-        subject: ticket.subject,
-        status: ticket.status,
-        priority: ticket.priority,
+        id: ticketData.id,
+        ticketNumber: ticketData.ticket_number,
+        subject: ticketData.subject,
+        status: ticketData.status,
+        priority: ticketData.priority,
       },
     });
   } catch (error) {

@@ -115,7 +115,7 @@ export async function executePivotQuery(query: PivotQuery): Promise<PivotResult>
   const supabase = await createClient();
 
   // Build SQL query based on dataset
-  const sql = buildPivotSQL(query);
+  buildPivotSQL(query);
   
   // Execute query (using raw SQL via Supabase RPC or direct query)
   // For now, we'll use a simplified approach with Supabase queries
@@ -127,7 +127,7 @@ export async function executePivotQuery(query: PivotQuery): Promise<PivotResult>
 /**
  * Build pivot SQL query
  */
-function buildPivotSQL(query: PivotQuery): string {
+function buildPivotSQL(_query: PivotQuery): string {
   // This is a simplified version - in production, you'd build proper SQL
   // For now, we'll use Supabase's query builder
   return '';

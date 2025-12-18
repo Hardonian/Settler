@@ -67,7 +67,7 @@ const TRIAGE_RULES: TriageRule[] = [
 
   // High: Related to failed webhooks
   {
-    condition: (ticket, context) => {
+    condition: (_ticket, context) => {
       return context.recentWebhooks.some((w) => w.status === 'failed');
     },
     priority: 'high',
@@ -78,7 +78,7 @@ const TRIAGE_RULES: TriageRule[] = [
 
   // Medium: Related to recent errors (non-critical)
   {
-    condition: (ticket, context) => {
+    condition: (_ticket, context) => {
       return context.recentErrors.length > 0;
     },
     priority: 'medium',
@@ -89,7 +89,7 @@ const TRIAGE_RULES: TriageRule[] = [
 
   // Medium: User has multiple recent tickets
   {
-    condition: (ticket, context) => {
+    condition: (_ticket, context) => {
       return context.userHistory.length >= 3;
     },
     priority: 'medium',
@@ -257,7 +257,7 @@ export async function storeTriageResult(
     triage_rules_applied: result.triageRulesApplied,
     correlation_ids: result.correlationIds,
     triaged_by: triagedBy || null,
-  });
+  } as any);
 
   if (error) {
     console.error('Failed to store triage result:', error);
@@ -274,6 +274,6 @@ export async function storeTriageResult(
       correlation_reason: `Auto-detected correlation #${index + 1}`,
     }));
 
-    await supabase.from('support_correlations').insert(correlations);
+    await supabase.from('support_correlations').insert(correlations as any);
   }
 }

@@ -60,7 +60,7 @@ interface SavedView {
   date_range?: { start: string; end: string };
 }
 
-export function AnalyticsStudio({ userId }: { userId: string }) {
+export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
   const [datasets, setDatasets] = useState<Record<string, Dataset>>({});
   const [selectedDataset, setSelectedDataset] = useState<string>('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
