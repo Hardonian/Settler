@@ -259,10 +259,11 @@ router.get(
       const { tenantId, usageType } = req.params;
 
       if (!tenantId || !usageType) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'Bad Request',
           message: 'tenantId and usageType are required',
         });
+        return;
       }
 
       const check = await checkUsageCeiling(tenantId, usageType as any);
@@ -344,10 +345,11 @@ router.post(
       const { name, type, target, enabled, reason } = req.body;
       const userId = req.userId;
       if (!userId) {
-        return res.status(401).json({
+        res.status(401).json({
           error: 'Unauthorized',
           message: 'User ID not found',
         });
+        return;
       }
 
       const switchId = await setKillSwitch(name, type, target, enabled, reason, userId);
@@ -371,18 +373,20 @@ router.post(
     try {
       const { connectorType } = req.params;
       if (!connectorType) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'Bad Request',
           message: 'connectorType is required',
         });
+        return;
       }
       const reason = (req.body.reason as string) || 'Manually disabled';
       const userId = req.userId;
       if (!userId) {
-        return res.status(401).json({
+        res.status(401).json({
           error: 'Unauthorized',
           message: 'User ID not found',
         });
+        return;
       }
 
       await disableConnector(connectorType, reason, userId);
@@ -405,10 +409,11 @@ router.post(
     try {
       const { connectorType } = req.params;
       if (!connectorType) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'Bad Request',
           message: 'connectorType is required',
         });
+        return;
       }
 
       await enableConnector(connectorType);
@@ -431,18 +436,20 @@ router.post(
     try {
       const { jobType } = req.params;
       if (!jobType) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'Bad Request',
           message: 'jobType is required',
         });
+        return;
       }
       const reason = (req.body.reason as string) || 'Manually paused';
       const userId = req.userId;
       if (!userId) {
-        return res.status(401).json({
+        res.status(401).json({
           error: 'Unauthorized',
           message: 'User ID not found',
         });
+        return;
       }
 
       await pauseBackgroundJob(jobType, reason, userId);
@@ -465,10 +472,11 @@ router.post(
     try {
       const { jobType } = req.params;
       if (!jobType) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'Bad Request',
           message: 'jobType is required',
         });
+        return;
       }
 
       await resumeBackgroundJob(jobType);
@@ -513,6 +521,13 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const { backupId } = req.params;
+      if (!backupId) {
+        res.status(400).json({
+          error: 'Bad Request',
+          message: 'backupId is required',
+        });
+        return;
+      }
 
       const verified = await verifyBackup(backupId);
 

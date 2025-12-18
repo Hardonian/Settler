@@ -216,6 +216,9 @@ export async function getBillingAnomalies(date: Date = new Date()): Promise<Dail
   try {
     // Get usage aggregates for today
     const dateStr = date.toISOString().split('T')[0];
+    if (!dateStr) {
+      return [];
+    }
     const todayUsage = await query<{
       billing_account_id: string;
       tenant_id: string;
@@ -236,6 +239,9 @@ export async function getBillingAnomalies(date: Date = new Date()): Promise<Dail
     // Get average usage for the last 7 days (excluding today)
     const startDateStr = new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const endDateStr = date.toISOString().split('T')[0];
+    if (!startDateStr || !endDateStr) {
+      return [];
+    }
     const historicalAvg = await query<{
       billing_account_id: string;
       tenant_id: string;
@@ -303,6 +309,9 @@ export async function generateDailyIntelligence(date: Date = new Date()): Promis
   ]);
 
   const dateStr = date.toISOString().split('T')[0];
+  if (!dateStr) {
+    throw new Error('Failed to generate date string');
+  }
   const intelligence: DailyIntelligence = {
     date: dateStr,
     errorRate,
