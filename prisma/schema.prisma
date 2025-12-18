@@ -708,6 +708,67 @@ model OnboardingProgress {
   @@map("onboarding_progress")
 }
 
+model TenantOnboardingProgress {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  userId            String    @db.Uuid
+  currentStep       String    @default("create_workspace")
+  completedSteps    String[]  @default([])
+  skippedSteps      String[]  @default([])
+  progress          Int       @default(0) // 0-100
+  metadata          Json      @default("{}")
+  completedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([tenantId, userId])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([progress])
+  @@map("tenant_onboarding_progress")
+}
+
+model WorkspaceInvite {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  invitedBy         String    @db.Uuid
+  email              String
+  role               String    // owner, admin, member, viewer
+  token              String    @unique
+  status             String    @default("pending") // pending, accepted, expired, revoked
+  expiresAt          DateTime
+  acceptedAt         DateTime?
+  acceptedBy         String?   @db.Uuid
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([email])
+  @@index([token])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("workspace_invites")
+}
+
+model OnboardingEvent {
+  id                String    @id @default(uuid())
+  tenantId          String?   @db.Uuid
+  userId            String    @db.Uuid
+  eventType         String    // onboarding_started, step_completed, activation_complete
+  stepId            String?
+  traceId           String?
+  properties        Json      @default("{}")
+  createdAt         DateTime  @default(now())
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([eventType])
+  @@index([traceId])
+  @@index([createdAt(sort: Desc)])
+  @@map("onboarding_events")
+}
+
 model AuditLog {
   id                String    @id @default(uuid())
   userId            String?   @db.Uuid
