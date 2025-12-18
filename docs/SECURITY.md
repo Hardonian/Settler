@@ -1,300 +1,255 @@
-# Security Documentation
+# Settler Security Posture
 
-**Last Updated:** 2025-01-20  
-**Status:** Production-Ready
+**Last Updated:** January 2025  
+**Version:** 1.0
 
 ## Overview
 
-This document outlines security measures implemented in the Settler platform, including authentication, authorization, data protection, and compliance considerations.
+This document describes Settler's security controls, architecture, and compliance posture. It is designed to help enterprise customers understand our security practices and complete security questionnaires.
 
-## Authentication & Authorization
+## Security Architecture
 
-### Authentication Methods
+### Tenant Isolation
 
-1. **Supabase Auth** (Primary)
-   - Email/password authentication
-   - OAuth providers (Google, GitHub, etc.)
-   - JWT tokens stored in HTTP-only cookies
-   - Session refresh handled by middleware
+Settler implements multi-layer tenant isolation to ensure complete data separation:
 
-2. **API Key Authentication**
-   - For programmatic API access
-   - Stored encrypted in database
-   - Scoped to billing account
-   - Rate limited per key
+#### Database Layer (Row-Level Security)
+- **PostgreSQL RLS Policies:** All tables have Row-Level Security (RLS) enabled
+- **Tenant Context:** Every query is scoped to the authenticated tenant via `tenant_id`
+- **Policy Enforcement:** RLS policies prevent cross-tenant data access at the database level
+- **Verification:** Automated tests verify tenant isolation (`packages/api/src/__tests__/multi-tenancy/tenant-isolation.test.ts`)
 
-### Authorization Levels
+#### API Layer
+- **Tenant Middleware:** All API routes use `tenantMiddleware` to extract and validate tenant context
+- **Request Scoping:** Every database query includes `tenant_id` filter
+- **Authorization:** Permission checks verify user belongs to the tenant before granting access
+- **No Cross-Tenant Routes:** No API endpoint can access data from multiple tenants
 
-- **Public**: No authentication required (marketing pages, docs)
-- **Authenticated**: Valid Supabase session required (`/console/*`, `/dashboard/*`)
-- **Admin**: Admin role in user metadata (`/admin/*`)
-- **API Key**: Valid API key with proper scopes
-
-### Route Protection
-
-Protected routes are enforced via:
-- Next.js middleware (`packages/web/middleware.ts`)
-- Server-side route handlers checking `supabase.auth.getUser()`
-- API route middleware for API key validation
-
-## Data Protection
+#### UI Layer
+- **Tenant Context:** Frontend applications receive tenant context from authentication
+- **Client-Side Filtering:** All API calls include tenant context
+- **Route Protection:** UI routes verify tenant membership before rendering
 
 ### Encryption
 
-- **At Rest**: Supabase encryption (AES-256)
-- **In Transit**: TLS/HTTPS everywhere
-- **Sensitive Fields**: Encrypted with `ENCRYPTION_KEY` (AES-256-GCM)
-  - API keys
-  - Integration credentials
-  - Webhook secrets
+#### Encryption at Rest
+- **Database:** PostgreSQL data encrypted using AES-256
+- **Storage:** AWS S3 buckets encrypted with AES-256 server-side encryption
+- **Key Management:** Encryption keys managed via environment variables (production uses AWS KMS)
+- **Backup Encryption:** All backups encrypted with separate encryption keys
+- **Credential Storage:** Integration credentials encrypted using AES-256 before storage
 
-### Row-Level Security (RLS)
+#### Encryption in Transit
+- **TLS 1.3:** All API endpoints require TLS 1.3
+- **HTTPS Only:** HTTP traffic redirected to HTTPS
+- **Certificate Management:** Automated certificate renewal via Let's Encrypt
+- **API Communication:** All API-to-API communication uses TLS
+- **Webhook Delivery:** Webhooks delivered over HTTPS with signature verification
 
-Supabase RLS policies enforce tenant isolation:
-- Users can only access their own tenant's data
-- Service role key only used server-side (bypasses RLS)
-- Anon key used client-side (with RLS enforcement)
+### Access Controls
 
-### PII Handling
+#### Role-Based Access Control (RBAC)
+Settler implements a hierarchical RBAC system:
 
-- No PII logged in production logs
-- Email addresses encrypted in audit logs
-- User IDs used instead of emails in analytics
+**Roles:**
+- **OWNER:** Full access to tenant, including billing and deletion
+- **ADMIN:** Full operational access, cannot delete tenant
+- **DEVELOPER:** Can create/manage jobs and integrations
+- **VIEWER:** Read-only access
 
-## API Security
+**Permission System:**
+- Permissions defined in `packages/api/src/infrastructure/security/Permissions.ts`
+- Role-to-permission mapping enforced at API middleware level
+- API keys can have scoped permissions independent of user role
 
-### Rate Limiting
+**Access Enforcement:**
+- All API routes protected by `requirePermission` middleware
+- Database queries filtered by tenant_id and user permissions
+- UI components check permissions before rendering actions
 
-Rate limits configured per endpoint type:
-- **Auth endpoints**: 5 requests per 15 minutes
-- **API endpoints**: 100 requests per minute
-- **Billing endpoints**: 20 requests per minute
-- **Webhook endpoints**: 10 requests per minute
-- **Public endpoints**: 200 requests per minute
+#### Authentication
+- **API Keys:** Scoped API keys with expiration and rate limits
+- **JWT Tokens:** Short-lived tokens (15 min) with refresh tokens
+- **Password Policy:** Minimum 8 characters, complexity requirements
+- **MFA:** Multi-factor authentication available for enterprise accounts
+- **SSO:** SAML 2.0 and OIDC support (enterprise)
 
-Rate limiting uses:
-- In-memory store (serverless-friendly)
-- Optional Redis for distributed rate limiting
-- Per-IP, per-user, or per-API-key tracking
+### Audit Trail
 
-### Request Size Limits
+#### Comprehensive Logging
+- **All Actions Logged:** Every sensitive operation recorded in `audit_logs` table
+- **Immutable Logs:** Audit logs are append-only and cannot be modified
+- **Tenant-Scoped:** Audit logs filtered by tenant_id for isolation
+- **Admin Visibility:** Tenant admins can view all audit logs for their tenant
 
-- **Webhook endpoints**: 500KB max
-- **API endpoints**: 10MB max (configurable)
-- **File uploads**: Per-service limits
+#### Logged Events
+- User authentication and authorization
+- Data access (reads, writes, exports)
+- Configuration changes
+- Data deletion requests
+- API key creation/revocation
+- Integration credential changes
+- Billing operations
 
-### Input Validation
+#### Audit Log Access
+- **API Endpoint:** `GET /api/v1/audit-trail` (requires ADMIN_AUDIT permission)
+- **Filters:** By resource type, date range, event type, user
+- **Export:** Audit logs can be exported in CSV or JSON format
+- **Retention:** Audit logs retained for 7 years (configurable for enterprise)
 
-- Zod schemas for all API inputs
-- Type checking via TypeScript
-- SQL injection prevention via Prisma ORM
-- XSS prevention via React's built-in escaping
+## Data Protection
 
-## Webhook Security
+### Data Handling
 
-### Stripe Webhooks
+#### Data Processing
+- Customer data processed only for reconciliation services
+- No use of customer data for AI model training without explicit consent
+- Data residency options available (US, EU) for enterprise customers
+- Tenant-isolated data storage with no cross-tenant access
 
-- **Signature Verification**: Uses raw body + Stripe signature
-- **Idempotency**: Database-backed event deduplication
-- **Node.js Runtime**: Required for raw body access
-- **Request Size Limit**: 500KB
+#### Data Retention
+- **Active Data:** Retained while customer account is active
+- **Deleted Accounts:** Soft-deleted data retained for 30 days, then hard-deleted
+- **Backups:** Backup retention of 30 days (extendable for enterprise)
+- **Audit Logs:** Retained for 7 years for compliance
 
-### Custom Webhooks
+#### Data Deletion
+- **Soft Delete:** Immediate soft deletion marks data as deleted
+- **Hard Delete:** Scheduled hard deletion after 30-day grace period
+- **Cryptographic Erasure:** Deleted data cryptographically erased from backups
+- **Verification:** Deletion operations logged and verified
 
-- HMAC signature verification
-- Secret stored encrypted
-- Retry logic with exponential backoff
-- Event log for audit trail
+### Data Export
 
-## Security Headers
+#### Full Account Export
+- **Endpoint:** `GET /api/v1/tenant/data-export`
+- **Format:** JSON or CSV
+- **Scope:** All tenant data including users, jobs, webhooks, audit logs
+- **Access:** Requires TENANT_READ permission (owner/admin only)
+- **Logging:** Export operations logged in audit trail
 
-Security headers configured in `next.config.js`:
+#### User Data Export
+- **Endpoint:** `GET /api/v1/users/:id/data-export`
+- **Scope:** All data associated with specific user
+- **Access:** Users can export their own data, admins can export any user's data
 
-- **Strict-Transport-Security**: HSTS with preload
-- **X-Frame-Options**: DENY (prevent clickjacking)
-- **X-Content-Type-Options**: nosniff
-- **X-XSS-Protection**: 1; mode=block
-- **Referrer-Policy**: strict-origin-when-cross-origin
-- **Permissions-Policy**: Restrict geolocation, microphone, camera
-- **Content-Security-Policy**: Restrict script sources, frame sources
+## Infrastructure Security
 
-## Secrets Management
+### Network Security
+- **Zero-Trust Architecture:** No implicit trust between services
+- **Firewall Rules:** Restrictive firewall rules, only necessary ports open
+- **DDoS Protection:** Cloudflare DDoS protection for public endpoints
+- **Rate Limiting:** Per-IP, per-user, and per-API-key rate limiting
+- **IP Whitelisting:** Available for enterprise customers
 
-### Environment Variables
+### Application Security
+- **Input Validation:** All inputs validated using Zod schemas
+- **SQL Injection Prevention:** Parameterized queries, no raw SQL
+- **XSS Prevention:** Content Security Policy (CSP) headers, input sanitization
+- **CSRF Protection:** CSRF tokens required for state-changing operations
+- **Security Headers:** Helmet.js configured with security headers
 
-- Secrets stored in Vercel environment variables
-- Never committed to git
-- Validated at runtime via `config/env.schema.ts`
-- Different values for dev/staging/production
+### Dependency Management
+- **Automated Scanning:** Dependabot and Snyk scan dependencies weekly
+- **Vulnerability Alerts:** Immediate alerts for critical vulnerabilities
+- **Patch Management:** Security patches applied within 48 hours
+- **License Compliance:** All dependencies checked for license compatibility
 
-### Required Secrets
-
-- `SUPABASE_SERVICE_ROLE_KEY`: Server-side only
-- `STRIPE_SECRET_KEY`: Server-side only
-- `STRIPE_WEBHOOK_SECRET`: Server-side only
-- `JWT_SECRET`: Server-side only
-- `ENCRYPTION_KEY`: Server-side only
-
-### Public Variables
-
-- `NEXT_PUBLIC_SUPABASE_URL`: Safe for client
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Safe for client (with RLS)
+### Secret Management
+- **Environment Variables:** Secrets stored in environment variables
+- **No Secrets in Code:** No secrets committed to version control
+- **Rotation:** Secrets rotated regularly (API keys, database passwords)
+- **Access Control:** Limited access to production secrets
 
 ## Compliance
 
-### SOC 2 Ready
+### Certifications & Standards
 
-- Audit logging for all sensitive operations
-- Immutable audit logs
-- Access controls and least privilege
-- Encryption at rest and in transit
+#### SOC 2 Type II (Planned Q3 2026)
+- Infrastructure and processes designed in alignment with SOC 2 Trust Service Criteria
+- Continuous monitoring of security controls
+- Regular internal audits
 
-### ISO 27001 Ready
+#### ISO 27001 Aligned (Planned)
+- Information security management system (ISMS) following ISO 27001 standards
+- Risk management processes
+- Security control documentation
 
-- Security policies documented
-- Incident response procedures
-- Regular security audits
-- Vulnerability management
+#### GDPR Compliance
+- **Data Export:** Full account data export available
+- **Data Deletion:** Right to erasure implemented with 30-day grace period
+- **Data Processing Agreements:** DPAs available for enterprise customers
+- **Privacy Policy:** Comprehensive privacy policy at `/legal/privacy`
 
-### GDPR Compliance
+#### CCPA Compliance
+- **Data Export:** California residents can export their data
+- **Data Deletion:** Right to deletion implemented
+- **Do Not Sell:** Settler does not sell customer data
 
-- Data minimization
-- Right to deletion
-- Data portability
-- Privacy by design
+### Sub-processors
 
-## Vulnerability Management
+Settler engages the following sub-processors:
 
-### Reporting
+**Infrastructure:**
+- Amazon Web Services (AWS) - Cloud hosting
+- Vercel - Frontend hosting & edge functions
+- Supabase - Database & authentication
+- Upstash - Redis & Kafka (serverless)
 
-Report security vulnerabilities to: **security@settler.io**
+**Services:**
+- Stripe - Payment processing
+- Resend - Transactional emails
+- OpenAI - LLM processing (opt-in features)
 
-### Response Process
+All sub-processors undergo security and privacy diligence. Data Processing Agreements (DPAs) maintained with all sub-processors handling customer data.
 
-1. Acknowledge receipt within 24 hours
-2. Assess severity within 48 hours
-3. Fix and deploy within SLA (based on severity)
-4. Public disclosure after fix deployed
-
-### Severity Levels
-
-- **Critical**: Remote code execution, data breach
-- **High**: Privilege escalation, authentication bypass
-- **Medium**: Information disclosure, CSRF
-- **Low**: Information leakage, minor issues
-
-## Security Best Practices
-
-### For Developers
-
-1. **Never commit secrets**
-   - Use environment variables
-   - Use `.env.example` for documentation
-   - Rotate secrets regularly
-
-2. **Validate all inputs**
-   - Use Zod schemas
-   - Sanitize user input
-   - Validate file uploads
-
-3. **Use parameterized queries**
-   - Prisma ORM prevents SQL injection
-   - Never concatenate SQL strings
-
-4. **Follow least privilege**
-   - Use anon key client-side
-   - Use service role key only server-side
-   - Scope API keys to minimum required permissions
-
-5. **Log security events**
-   - Failed authentication attempts
-   - Rate limit violations
-   - Unusual access patterns
-
-### For Operations
-
-1. **Monitor security events**
-   - Failed logins
-   - Rate limit violations
-   - Unusual API usage
-
-2. **Regular audits**
-   - Review access logs
-   - Check for unused API keys
-   - Verify RLS policies
-
-3. **Keep dependencies updated**
-   - Run `npm audit` regularly
-   - Update dependencies promptly
-   - Monitor security advisories
-
-## Security Checklist
-
-### Pre-Deployment
-
-- [ ] All secrets in environment variables
-- [ ] Security headers configured
-- [ ] Rate limiting enabled
-- [ ] Input validation in place
-- [ ] RLS policies verified
-- [ ] Audit logging enabled
-- [ ] Error messages don't leak sensitive info
-
-### Post-Deployment
-
-- [ ] Monitor security events
-- [ ] Review access logs
-- [ ] Check for failed authentications
-- [ ] Verify rate limiting working
-- [ ] Test webhook signature verification
+See `/legal/subprocessors` for complete list.
 
 ## Incident Response
 
-### Detection
+### Response Process
+1. **Detection:** Automated monitoring detects incidents within 1 hour
+2. **Containment:** Immediate containment and mitigation actions
+3. **Investigation:** Root cause analysis and impact assessment
+4. **Notification:** Customer notification within 72 hours for incidents affecting customer data
+5. **Remediation:** Fix implementation and verification
+6. **Post-Mortem:** Post-incident review and process improvements
 
-- Monitor error rates
-- Review access logs
-- Check security alerts
-- Monitor failed authentications
+### Communication
+- **Security Contact:** security@settler.dev
+- **Status Page:** https://settler.dev/status
+- **Enterprise Customers:** Direct notification via account contacts
+- **Public Disclosure:** Follows responsible disclosure principles
 
-### Response
+### Responsible Disclosure
+- Security vulnerabilities can be reported to security@settler.dev
+- Security.txt file available at `/.well-known/security.txt`
+- Bug bounty program (planned)
 
-1. **Contain**: Isolate affected systems
-2. **Assess**: Determine scope and impact
-3. **Remediate**: Fix vulnerability
-4. **Communicate**: Notify affected users
-5. **Document**: Update runbooks
+## Security Monitoring
 
-### Recovery
+### Continuous Monitoring
+- **24/7 Monitoring:** Automated monitoring of all services
+- **Alerting:** Real-time alerts for security events
+- **Log Aggregation:** Centralized logging for security events
+- **Threat Detection:** Automated threat detection and response
 
-- Restore from backups if needed
-- Rotate compromised secrets
-- Review and update security measures
-- Post-mortem and lessons learned
+### Security Testing
+- **Penetration Testing:** Annual penetration testing (planned)
+- **Vulnerability Scanning:** Weekly automated vulnerability scans
+- **Code Review:** All code changes require security review
+- **Automated Testing:** Security tests in CI/CD pipeline
 
-## Security Tools
+## Security Contacts
 
-### Static Analysis
+- **Security Issues:** security@settler.dev
+- **Enterprise Security:** enterprise@settler.dev
+- **General Inquiries:** support@settler.dev
 
-- ESLint security plugins
-- TypeScript strict mode
-- Dependency vulnerability scanning (`npm audit`)
+## Document Control
 
-### Runtime Monitoring
+This document is reviewed and updated quarterly or when significant changes occur. Enterprise customers will be notified of material changes.
 
-- Sentry for error tracking
-- Vercel Analytics for traffic patterns
-- Custom audit logging
-
-### Testing
-
-- Security-focused unit tests
-- Integration tests for auth flows
-- E2E tests for critical paths
-
-## References
-
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Supabase Security](https://supabase.com/docs/guides/auth/security)
-- [Stripe Security](https://stripe.com/docs/security)
-- [Next.js Security](https://nextjs.org/docs/app/building-your-application/configuring/security-headers)
+**Document Owner:** Security Team  
+**Review Frequency:** Quarterly  
+**Next Review:** April 2025

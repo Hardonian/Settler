@@ -8,6 +8,7 @@ import { Router, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
+import { TenantRequest } from "../middleware/tenant";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { query } from "../db";
@@ -32,9 +33,10 @@ router.get(
   "/audit-trail",
   requirePermission(Permission.ADMIN_AUDIT),
   validateRequest(getAuditTrailSchema),
-  async (req: AuthRequest, res: Response) => {
+  async (req: TenantRequest, res: Response) => {
     try {
       const userId = req.userId!;
+      const tenantId = req.tenantId!;
       const queryParams = getAuditTrailSchema.parse({ query: req.query });
       const {
         resourceType,
@@ -50,9 +52,10 @@ router.get(
       const values: (string | number | boolean | Date | null)[] = [];
       let paramCount = 1;
 
-      // Filter by user's tenant
-      conditions.push(`user_id = $${paramCount++}`);
-      values.push(userId);
+      // CRITICAL: Filter by tenant_id to ensure tenant isolation
+      // Admin users can see all audit logs for their tenant, not just their own
+      conditions.push(`tenant_id = $${paramCount++}`);
+      values.push(tenantId);
 
       if (resourceType && resourceId) {
         conditions.push(`metadata->>'resourceType' = $${paramCount++}`);
@@ -135,10 +138,10 @@ router.get(
 router.get(
   "/audit-trail/:resourceType/:resourceId",
   requirePermission(Permission.ADMIN_AUDIT),
-  async (req: AuthRequest, res: Response) => {
+  async (req: TenantRequest, res: Response) => {
     try {
       const { resourceType, resourceId } = req.params;
-      const userId = req.userId!;
+      const tenantId = req.tenantId!;
 
       if (!resourceType || !resourceId) {
         res.status(400).json({ error: 'resourceType and resourceId are required' });
@@ -154,11 +157,11 @@ router.get(
       }>(
         `SELECT id, event, user_id, metadata, timestamp
          FROM audit_logs
-         WHERE user_id = $1
+         WHERE tenant_id = $1
            AND metadata->>'resourceType' = $2
            AND metadata->>'resourceId' = $3
          ORDER BY timestamp DESC`,
-        [userId, resourceType, resourceId]
+        [tenantId, resourceType, resourceId]
       );
 
       res.json({
@@ -186,9 +189,9 @@ router.get(
 router.get(
   "/audit-trail/export",
   requirePermission(Permission.ADMIN_AUDIT),
-  async (req: AuthRequest, res: Response) => {
+  async (req: TenantRequest, res: Response) => {
     try {
-      const userId = req.userId!;
+      const tenantId = req.tenantId!;
       const { format = "csv", startDate, endDate } = req.query as {
         format?: string;
         startDate?: string;
@@ -203,20 +206,23 @@ router.get(
         timestamp: Date;
         metadata: unknown;
       }>(
-        `SELECT event, timestamp, metadata
+        `SELECT event, timestamp, metadata, user_id, ip_address, user_agent
          FROM audit_logs
-         WHERE user_id = $1 AND timestamp >= $2 AND timestamp <= $3
+         WHERE tenant_id = $1 AND timestamp >= $2 AND timestamp <= $3
          ORDER BY timestamp DESC`,
-        [userId, start, end]
+        [tenantId, start, end]
       );
 
       if (format === "csv") {
         res.setHeader("Content-Type", "text/csv");
-        res.setHeader("Content-Disposition", `attachment; filename="audit-trail-${userId}.csv"`);
+        res.setHeader("Content-Disposition", `attachment; filename="audit-trail-tenant-${tenantId}.csv"`);
 
-        let csv = "Event,Timestamp,Metadata\n";
+        let csv = "Event,Timestamp,UserId,IPAddress,UserAgent,Metadata\n";
         for (const log of auditLogs) {
-          csv += `${log.event},${log.timestamp.toISOString()},"${JSON.stringify(log.metadata).replace(/"/g, '""')}"\n`;
+          const ip = (log as any).ip_address || '';
+          const ua = (log as any).user_agent || '';
+          const userId = (log as any).user_id || '';
+          csv += `${log.event},${log.timestamp.toISOString()},${userId},${ip},${ua},"${JSON.stringify(log.metadata).replace(/"/g, '""')}"\n`;
         }
 
         res.send(csv);

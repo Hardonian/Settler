@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { authMiddleware, AuthRequest } from "./middleware/auth";
+import { tenantMiddleware } from "./middleware/tenant";
 import { errorHandler } from "./middleware/error";
 import { idempotencyMiddleware } from "./middleware/idempotency";
 import { healthRouter } from "./routes/health";
@@ -25,6 +26,7 @@ import { cliWizardRouter } from "./routes/cli-wizard";
 import { exportEnhancedRouter } from "./routes/export-enhanced";
 import { aiAssistantRouter } from "./routes/ai-assistant";
 import { auditTrailRouter } from "./routes/audit-trail";
+import { tenantDataRouter } from "./routes/tenant-data";
 import { webhookManagementRouter } from "./routes/webhook-management";
 import { notificationsRouter } from "./routes/notifications";
 import { usageRouter } from "./routes/usage";
@@ -286,6 +288,10 @@ app.use("/api/v2", authMiddleware, aiAssistantRouter);
 // Audit trail routes (requires auth)
 app.use("/api/v1", authMiddleware, auditTrailRouter);
 app.use("/api/v2", authMiddleware, auditTrailRouter);
+
+// Tenant data management routes (requires auth + tenant context)
+app.use("/api/v1/tenant", authMiddleware, tenantMiddleware, tenantDataRouter);
+app.use("/api/v2/tenant", authMiddleware, tenantMiddleware, tenantDataRouter);
 
 // Webhook management routes (requires auth)
 app.use("/api/v1/webhooks", authMiddleware, webhookManagementRouter);
