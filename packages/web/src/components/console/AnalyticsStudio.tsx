@@ -67,9 +67,13 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [selectedMeasure, setSelectedMeasure] = useState<string>('');
   const [selectedAggregation, setSelectedAggregation] = useState<'sum' | 'count' | 'avg' | 'min' | 'max' | 'p95'>('sum');
-  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
-    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] || '',
-    end: new Date().toISOString().split('T')[0] || '',
+  const [dateRange, setDateRange] = useState<{ start: string; end: string }>(() => {
+    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const endDate = new Date().toISOString().split('T')[0];
+    return {
+      start: startDate || '',
+      end: endDate || '',
+    };
   });
   const [pivotResult, setPivotResult] = useState<PivotResult | null>(null);
   const [loading, setLoading] = useState(false);

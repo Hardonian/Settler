@@ -121,7 +121,7 @@ export async function PATCH(
 
     const { data, error } = await supabase
       .from('ops_insights')
-      .update(updateData as any)
+      .update(updateData as never)
       .eq('id', insightId)
       .select()
       .single();

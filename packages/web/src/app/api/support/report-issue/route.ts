@@ -38,7 +38,11 @@ export async function POST(request: NextRequest) {
       .limit(1)
       .single();
 
-    const orgId = (orgMember as any)?.organization_id || null;
+    type OrgMemberRow = {
+      organization_id?: string | null;
+    };
+    const orgMemberData = orgMember as OrgMemberRow | null;
+    const orgId = orgMemberData?.organization_id || null;
 
     // Create ticket
     const { data: ticket, error: ticketError } = await supabase
@@ -52,7 +56,7 @@ export async function POST(request: NextRequest) {
         context: context || {},
         status: 'open',
         priority: 'medium',
-      } as any)
+      } as never)
       .select()
       .single();
 
@@ -64,7 +68,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const ticketData = ticket as any;
+    type TicketRow = {
+      id: string;
+      ticket_number: string;
+      subject: string;
+      status: string;
+      priority: string;
+    };
+    const ticketData = ticket as TicketRow;
 
     // Auto-triage ticket
     try {
@@ -82,7 +93,7 @@ export async function POST(request: NextRequest) {
             confidence: triageResult.confidence,
             rules: triageResult.triageRulesApplied,
           },
-        } as any)
+        } as never)
         .eq('id', ticketData.id);
     } catch (triageError) {
       console.error('Auto-triage failed (non-fatal):', triageError);

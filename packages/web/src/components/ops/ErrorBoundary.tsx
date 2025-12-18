@@ -27,7 +27,7 @@ export class OpsIntelligenceErrorBoundary extends React.Component<Props, State> 
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static override getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
@@ -35,7 +35,7 @@ export class OpsIntelligenceErrorBoundary extends React.Component<Props, State> 
     console.error('Ops Intelligence Error:', error, errorInfo);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
