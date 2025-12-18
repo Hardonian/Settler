@@ -13,10 +13,8 @@ import Link from "next/link";
 import { 
   AlertTriangle, 
   CheckCircle, 
-  Clock, 
   Database,
   Server,
-  Cloud,
   Activity,
   Shield
 } from "lucide-react";

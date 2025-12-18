@@ -11,7 +11,6 @@ import { AnimatedHero } from "@/components/AnimatedHero";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import Link from "next/link";
 import { 
-  Workflow,
   Shield,
   Database,
   Zap,
