@@ -73,7 +73,10 @@
     "socket.io": "^4.7.2",
     "exceljs": "^4.4.0",
     "pdfkit": "^0.14.0",
-    "csv-writer": "^1.6.0"
+    "csv-writer": "^1.6.0",
+    "csv-parse": "^5.5.6",
+    "multer": "^1.4.5-lts.1",
+    "stripe": "^14.21.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
@@ -88,6 +91,7 @@
     "@types/cookie-parser": "^1.4.6",
     "@types/xml2js": "^0.4.14",
     "@types/pdfkit": "^0.13.3",
+    "@types/multer": "^1.4.11",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^8.57.1",
