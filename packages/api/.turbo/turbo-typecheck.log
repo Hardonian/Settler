@@ -6,3 +6,91 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
+src/routes/v1/ingestion-exports.ts(22,18): error TS7030: Not all code paths return a value.
+src/routes/v1/ingestion-exports.ts(84,26): error TS7030: Not all code paths return a value.
+src/routes/v1/ingestion-exports.ts(96,8): error TS2322: Type 'string | undefined' is not assignable to type 'string | number | boolean | Date | null'.
+  Type 'undefined' is not assignable to type 'string | number | boolean | Date | null'.
+src/routes/v1/ingestion.ts(6,18): error TS6133: 'Request' is declared but its value is never read.
+src/routes/v1/ingestion.ts(23,1): error TS6133: 'runIngestionJob' is declared but its value is never read.
+src/routes/v1/ingestion.ts(34,25): error TS7030: Not all code paths return a value.
+src/routes/v1/ingestion.ts(142,3): error TS7030: Not all code paths return a value.
+src/routes/v1/ingestion.ts(199,25): error TS2532: Object is possibly 'undefined'.
+src/routes/v1/ingestion.ts(221,46): error TS2345: Argument of type 'CSVRow | undefined' is not assignable to parameter of type 'CSVRow'.
+  Type 'undefined' is not assignable to type 'CSVRow'.
+src/routes/v1/ingestion.ts(228,13): error TS2345: Argument of type 'CSVRow | undefined' is not assignable to parameter of type 'Record<string, unknown>'.
+  Type 'undefined' is not assignable to type 'Record<string, unknown>'.
+src/routes/v1/ingestion.ts(298,29): error TS7030: Not all code paths return a value.
+src/routes/v1/ingestion.ts(310,8): error TS2322: Type 'string | undefined' is not assignable to type 'string | number | boolean | Date | null'.
+  Type 'undefined' is not assignable to type 'string | number | boolean | Date | null'.
+src/routes/v1/ingestion.ts(370,10): error TS2322: Type 'string | undefined' is not assignable to type 'string | number | boolean | Date | null'.
+  Type 'undefined' is not assignable to type 'string | number | boolean | Date | null'.
+src/routes/v1/ingestion.ts(377,10): error TS2322: Type 'string | undefined' is not assignable to type 'string | number | boolean | Date | null'.
+  Type 'undefined' is not assignable to type 'string | number | boolean | Date | null'.
+src/routes/v1/reconciliation.ts(19,21): error TS7030: Not all code paths return a value.
+src/routes/v1/reconciliation.ts(70,28): error TS7030: Not all code paths return a value.
+src/routes/v1/reconciliation.ts(83,8): error TS2322: Type 'string | undefined' is not assignable to type 'string | number | boolean | Date | null'.
+  Type 'undefined' is not assignable to type 'string | number | boolean | Date | null'.
+src/routes/v1/reconciliation.ts(169,43): error TS2345: Argument of type 'unknown[]' is not assignable to parameter of type '(string | number | boolean | Date | null)[]'.
+  Type 'unknown' is not assignable to type 'string | number | boolean | Date | null'.
+src/routes/v1/reconciliation.ts(175,8): error TS2322: Type 'string | undefined' is not assignable to type 'string | number | boolean | Date | null'.
+  Type 'undefined' is not assignable to type 'string | number | boolean | Date | null'.
+src/routes/v1/reconciliation.ts(245,35): error TS2322: Type 'string | undefined' is not assignable to type 'string | number | boolean | Date | null'.
+  Type 'undefined' is not assignable to type 'string | number | boolean | Date | null'.
+src/services/ingestion/csv-importer.ts(7,1): error TS6133: 'z' is declared but its value is never read.
+src/services/ingestion/csv-importer.ts(14,20): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/ingestion/csv-importer.ts(142,73): error TS2345: Argument of type 'string | number' is not assignable to parameter of type 'string'.
+  Type 'number' is not assignable to type 'string'.
+src/services/ingestion/csv-importer.ts(156,33): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(o: {}): string[]', gave the following error.
+    Argument of type 'Record<string, unknown> | undefined' is not assignable to parameter of type '{}'.
+      Type 'undefined' is not assignable to type '{}'.
+  Overload 2 of 2, '(o: object): string[]', gave the following error.
+    Argument of type 'Record<string, unknown> | undefined' is not assignable to parameter of type 'object'.
+      Type 'undefined' is not assignable to type 'object'.
+src/services/ingestion/csv-importer.ts(217,9): error TS2358: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.
+src/services/ingestion/csv-importer.ts(288,31): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/ingestion/csv-importer.ts(289,32): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/ingestion/csv-importer.ts(290,30): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/ingestion/export-service.ts(9,1): error TS6133: 'createWriteStream' is declared but its value is never read.
+src/services/ingestion/ingestion-service.ts(8,29): error TS6133: 'logWarn' is declared but its value is never read.
+src/services/ingestion/ingestion-service.ts(113,7): error TS2345: Argument of type 'unknown[]' is not assignable to parameter of type '(string | number | boolean | Date | null)[]'.
+  Type 'unknown' is not assignable to type 'string | number | boolean | Date | null'.
+src/services/ingestion/job-runner.ts(9,10): error TS6133: 'logError' is declared but its value is never read.
+src/services/ingestion/job-runner.ts(15,30): error TS6133: 'IngestionStatus' is declared but its value is never read.
+src/services/ingestion/reconciliation-matcher.ts(30,5): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(37,9): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(37,9): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/services/ingestion/reconciliation-matcher.ts(37,24): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(39,9): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(40,11): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(40,11): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(41,11): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(41,11): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(42,11): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(42,11): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(48,3): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/services/ingestion/reconciliation-matcher.ts(48,10): error TS2532: Object is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(272,5): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(273,5): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(274,5): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(277,14): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(283,26): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(285,17): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(286,46): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(286,95): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(286,149): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(287,17): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/reconciliation-matcher.ts(288,15): error TS18048: 'bestMatch' is possibly 'undefined'.
+src/services/ingestion/stripe-connector.ts(64,7): error TS2322: Type '"2024-11-20.acacia"' is not assignable to type '"2023-10-16"'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /workspace/packages/api
+npm error workspace @settler/api@1.0.0
+npm error location /workspace/packages/api
+npm error command failed
+npm error command sh -c tsc --noEmit
