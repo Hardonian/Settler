@@ -129,8 +129,8 @@ export async function autoTriageTicket(
  * Correlate ticket with ops events
  */
 export async function correlateTicketWithOpsEvents(
-  ticketId: string,
-  context: TriageContext
+  _ticketId: string,
+  _context: TriageContext
 ): Promise<{
   relatedErrors: number;
   relatedJobs: number;

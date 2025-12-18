@@ -30,7 +30,7 @@ interface SupportInboxProps {
   userId: string;
 }
 
-export function SupportInbox({ userId }: SupportInboxProps) {
+export function SupportInbox({ userId: _userId }: SupportInboxProps) {
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
 

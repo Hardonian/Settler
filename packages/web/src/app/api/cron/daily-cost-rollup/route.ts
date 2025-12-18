@@ -62,16 +62,24 @@ export async function POST(request: NextRequest) {
       .gte('created_at', `${targetDate}T00:00:00Z`)
       .lt('created_at', `${targetDate}T23:59:59Z`);
 
-    const activeOrgs = new Set(events?.map((e) => e.organization_id).filter(Boolean) || []);
-    const activeUsers = new Set(events?.map((e) => e.user_id).filter(Boolean) || []);
-    const requests = events?.filter((e) => e.event_type === 'api_request').length || 0;
-    const jobs = events?.filter((e) => e.event_type === 'job_execution').length || 0;
-    const webhooks = events?.filter((e) => e.event_type === 'webhook_delivery').length || 0;
-    const errors = events?.filter((e) => e.event_type === 'error').length || 0;
+    type EventRow = {
+      organization_id?: string | null;
+      user_id?: string | null;
+      event_type?: string;
+      duration_ms?: number;
+    };
 
-    const responseTimes = events
-      ?.filter((e) => e.duration_ms)
-      .map((e) => e.duration_ms)
+    const eventRows = (events || []) as EventRow[];
+    const activeOrgs = new Set(eventRows.map((e) => e.organization_id).filter(Boolean) || []);
+    const activeUsers = new Set(eventRows.map((e) => e.user_id).filter(Boolean) || []);
+    const requests = eventRows.filter((e) => e.event_type === 'api_request').length || 0;
+    const jobs = eventRows.filter((e) => e.event_type === 'job_execution').length || 0;
+    const webhooks = eventRows.filter((e) => e.event_type === 'webhook_delivery').length || 0;
+    const errors = eventRows.filter((e) => e.event_type === 'error').length || 0;
+
+    const responseTimes = eventRows
+      .filter((e) => e.duration_ms)
+      .map((e) => e.duration_ms!)
       .sort((a, b) => a - b) || [];
     const avgResponseTime =
       responseTimes.length > 0
@@ -79,7 +87,7 @@ export async function POST(request: NextRequest) {
         : 0;
     const p95ResponseTime =
       responseTimes.length > 0
-        ? responseTimes[Math.floor(responseTimes.length * 0.95)]
+        ? (responseTimes[Math.floor(responseTimes.length * 0.95)] ?? 0)
         : 0;
 
     // Store usage rollup
@@ -90,12 +98,12 @@ export async function POST(request: NextRequest) {
         active_users: activeUsers.size,
         total_requests: requests,
         total_jobs: jobs,
-        total_events: events?.length || 0,
+        total_events: eventRows.length || 0,
         total_webhooks: webhooks,
         total_errors: errors,
         avg_response_time_ms: Math.round(avgResponseTime),
-        p95_response_time_ms: Math.round(p95ResponseTime),
-      },
+        p95_response_time_ms: Math.round(p95ResponseTime || 0),
+      } as any,
       {
         onConflict: 'date',
       }
@@ -116,7 +124,7 @@ export async function POST(request: NextRequest) {
         activeUsers: activeUsers.size,
         requests,
         jobs,
-        events: events?.length || 0,
+        events: eventRows.length || 0,
         webhooks,
         errors,
       },

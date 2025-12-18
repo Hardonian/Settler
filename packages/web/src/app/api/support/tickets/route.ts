@@ -7,6 +7,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/api/auth-gate';
 import { prisma } from '@/shared/db/prismaClient';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -44,14 +45,21 @@ export async function GET(request: Request) {
       LIMIT 100
     `;
 
-    // Get user emails
+    // Get user emails from Supabase auth
+    const supabase = await createClient();
     const userIds = tickets.map((t) => t.user_id);
-    const users = await prisma.user.findMany({
-      where: { id: { in: userIds } },
-      select: { id: true, email: true },
-    });
-
-    const userMap = new Map(users.map((u) => [u.id, u.email]));
+    const userMap = new Map<string, string>();
+    
+    for (const userId of userIds) {
+      try {
+        const { data: { user } } = await supabase.auth.admin.getUserById(userId);
+        if (user?.email) {
+          userMap.set(userId, user.email);
+        }
+      } catch {
+        // Skip if user not found
+      }
+    }
 
     const ticketsWithUsers = tickets.map((ticket) => ({
       id: ticket.id,
@@ -62,7 +70,7 @@ export async function GET(request: Request) {
       category: ticket.category,
       triageResult: ticket.triage_result,
       createdAt: ticket.created_at.toISOString(),
-      userEmail: userMap.get(ticket.user_id),
+      userEmail: userMap.get(ticket.user_id) || undefined,
     }));
 
     return NextResponse.json({ tickets: ticketsWithUsers });

@@ -19,18 +19,11 @@ export async function GET(request: Request) {
     const billingAccounts = await prisma.billingAccount.findMany({
       take: 100,
       orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: {
-            email: true,
-          },
-        },
-      },
     });
 
     const customers = billingAccounts.map((account) => ({
       id: account.id,
-      email: account.user?.email || 'Unknown',
+      email: account.email || 'Unknown',
       status: account.status,
       createdAt: account.createdAt.toISOString(),
       usage: 0, // TODO: Calculate from ops_usage_aggregates

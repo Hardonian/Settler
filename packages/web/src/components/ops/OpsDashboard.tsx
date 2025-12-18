@@ -22,7 +22,7 @@ interface OpsDashboardProps {
   userId: string;
 }
 
-export function OpsDashboard({ userId }: OpsDashboardProps) {
+export function OpsDashboard({ userId: _userId }: OpsDashboardProps) {
   const [activeTab, setActiveTab] = useState('overview');
 
   return (

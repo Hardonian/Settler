@@ -38,19 +38,25 @@ export async function POST(request: NextRequest) {
       .limit(1)
       .single();
 
+    type OrgMemberRow = {
+      organization_id?: string | null;
+    };
+    const orgMemberData = orgMember as OrgMemberRow | null;
+    const orgId = orgMemberData?.organization_id || null;
+
     // Create ticket
     const { data: ticket, error: ticketError } = await supabase
       .from('ops_support_tickets')
       .insert({
         user_id: user.id,
-        organization_id: orgMember?.organization_id || null,
+        organization_id: orgId,
         subject,
         description,
         category: category || null,
         context: context || {},
         status: 'open',
         priority: 'medium',
-      })
+      } as never)
       .select()
       .single();
 
@@ -62,14 +68,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    type TicketRow = {
+      id: string;
+      ticket_number: string;
+      subject: string;
+      status: string;
+      priority: string;
+    };
+    const ticketData = ticket as TicketRow;
+
     // Auto-triage ticket
     try {
-      const triageResult = await triageTicket(ticket.id);
-      await storeTriageResult(ticket.id, triageResult);
+      const triageResult = await triageTicket(ticketData.id);
+      await storeTriageResult(ticketData.id, triageResult);
 
       // Update ticket with triage results
       await supabase
         .from('ops_support_tickets')
+        // @ts-expect-error - Supabase type inference issue
         .update({
           priority: triageResult.suggestedPriority,
           category: triageResult.suggestedCategory || category,
@@ -79,7 +95,7 @@ export async function POST(request: NextRequest) {
             rules: triageResult.triageRulesApplied,
           },
         })
-        .eq('id', ticket.id);
+        .eq('id', ticketData.id);
     } catch (triageError) {
       console.error('Auto-triage failed (non-fatal):', triageError);
       // Continue even if triage fails
@@ -87,11 +103,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       ticket: {
-        id: ticket.id,
-        ticketNumber: ticket.ticket_number,
-        subject: ticket.subject,
-        status: ticket.status,
-        priority: ticket.priority,
+        id: ticketData.id,
+        ticketNumber: ticketData.ticket_number,
+        subject: ticketData.subject,
+        status: ticketData.status,
+        priority: ticketData.priority,
       },
     });
   } catch (error) {

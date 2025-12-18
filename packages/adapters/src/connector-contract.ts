@@ -79,7 +79,7 @@ export class ConnectorError extends Error {
     message: string,
     public readonly code: string,
     public readonly connector: string,
-    public readonly cause?: Error
+    public override readonly cause?: Error
   ) {
     super(message);
     this.name = 'ConnectorError';

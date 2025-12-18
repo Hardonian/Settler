@@ -60,16 +60,20 @@ interface SavedView {
   date_range?: { start: string; end: string };
 }
 
-export function AnalyticsStudio({ userId }: { userId: string }) {
+export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
   const [datasets, setDatasets] = useState<Record<string, Dataset>>({});
   const [selectedDataset, setSelectedDataset] = useState<string>('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [selectedMeasure, setSelectedMeasure] = useState<string>('');
   const [selectedAggregation, setSelectedAggregation] = useState<'sum' | 'count' | 'avg' | 'min' | 'max' | 'p95'>('sum');
-  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
-    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0],
+  const [dateRange, setDateRange] = useState<{ start: string; end: string }>(() => {
+    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const endDate = new Date().toISOString().split('T')[0];
+    return {
+      start: startDate || '',
+      end: endDate || '',
+    };
   });
   const [pivotResult, setPivotResult] = useState<PivotResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -163,10 +167,10 @@ export function AnalyticsStudio({ userId }: { userId: string }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: saveViewName,
-          dataset: selectedDataset,
+          dataset: selectedDataset || '',
           rows: selectedRows,
           columns: selectedColumns,
-          measure: selectedMeasure,
+          measure: selectedMeasure || '',
           aggregation: selectedAggregation,
           filters: {},
           dateRange,

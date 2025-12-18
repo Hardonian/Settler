@@ -19,10 +19,15 @@ export async function GET(request: NextRequest) {
 
   try {
     const supabase = await createClient();
+    const userId = adminCheck.user?.id;
+    if (!userId) {
+      return NextResponse.json({ views: [] }, { status: 401 });
+    }
+
     const { data, error } = await supabase
       .from('ops_saved_views')
       .select('*')
-      .or(`is_public.eq.true,created_by.eq.${adminCheck.userId}`)
+      .or(`is_public.eq.true,created_by.eq.${userId}`)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -46,6 +51,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const supabase = await createClient();
 
+    const userId = adminCheck.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
     const { data, error } = await supabase
       .from('ops_saved_views')
       .insert({
@@ -58,9 +68,9 @@ export async function POST(request: NextRequest) {
         aggregation: body.aggregation,
         filters: body.filters,
         date_range: body.dateRange,
-        created_by: adminCheck.userId,
+        created_by: userId,
         is_public: body.isPublic || false,
-      })
+      } as any)
       .select()
       .single();
 
@@ -92,12 +102,17 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'id required' }, { status: 400 });
     }
 
+    const userId = adminCheck.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
     const supabase = await createClient();
     const { error } = await supabase
       .from('ops_saved_views')
       .delete()
       .eq('id', viewId)
-      .or(`created_by.eq.${adminCheck.userId},is_public.eq.true`); // Only delete own or public views
+      .or(`created_by.eq.${userId},is_public.eq.true`); // Only delete own or public views
 
     if (error) {
       throw error;
