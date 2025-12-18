@@ -215,6 +215,33 @@ const nextConfig = {
         destination: '/playground/:path*',
         permanent: true,
       },
+      // Legacy dashboard routes -> console
+      {
+        source: '/dashboard',
+        destination: '/console',
+        permanent: false, // Temporary redirect for migration
+      },
+      {
+        source: '/app/console',
+        destination: '/console',
+        permanent: true,
+      },
+      {
+        source: '/console-home',
+        destination: '/console',
+        permanent: true,
+      },
+      // Legacy playground routes
+      {
+        source: '/app/playground',
+        destination: '/playground',
+        permanent: true,
+      },
+      {
+        source: '/playground-home',
+        destination: '/playground',
+        permanent: true,
+      },
     ];
   },
 };

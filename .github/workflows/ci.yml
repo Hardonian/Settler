@@ -210,10 +210,32 @@ jobs:
             p/owasp-top-ten
         continue-on-error: true
 
+  qa-links:
+    name: QA - Dead Links Check
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: Generate route registry
+        run: npm run qa:routes
+      - name: Extract links
+        run: npm run qa:links
+        continue-on-error: true
+      - name: Check for dead links
+        run: |
+          # The qa:links script runs both extract and check
+          # If it fails, we'll see the output
+          npm run qa:links || exit 1
+
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint-and-typecheck, test]
+    needs: [lint-and-typecheck, test, qa-links]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

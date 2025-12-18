@@ -11,6 +11,38 @@
 import { isBuildTime, RUNTIME_ONLY } from './env-build-helper';
 
 /**
+ * Safe environment variable getter that never throws during render
+ * Returns result object instead of throwing
+ */
+export interface EnvResult {
+  ok: boolean;
+  value: string;
+  missing?: string[];
+}
+
+/**
+ * Get environment variable safely (never throws)
+ */
+export function getEnvSafe(name: string, required = true): EnvResult {
+  const value = process.env[name];
+  const isBuild = isBuildTime();
+  const isRuntimeOnly = (RUNTIME_ONLY as readonly string[]).includes(name);
+  
+  if (required && !value) {
+    if (isBuild && isRuntimeOnly) {
+      // Runtime-only vars are optional during build
+      return { ok: true, value: '', missing: [name] };
+    }
+    
+    if (!isBuild || !isRuntimeOnly) {
+      return { ok: false, value: '', missing: [name] };
+    }
+  }
+  
+  return { ok: true, value: value || '' };
+}
+
+/**
  * Get environment variable with validation
  * Throws error if required variable is missing (skips during build for runtime-only vars)
  */
