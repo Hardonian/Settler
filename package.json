@@ -57,6 +57,8 @@
     "db:migrate:apply": "bash scripts/apply-migrations.sh",
     "db:migrate:pending": "tsx scripts/apply-migrations-with-check.ts",
     "db:migrate:all": "tsx scripts/apply-migrations-direct.ts",
+    "db:migrate:onboarding": "tsx scripts/apply-onboarding-migration.ts",
+    "db:types:regenerate": "tsx scripts/regenerate-supabase-types.ts",
     "deploy:vercel": "bash scripts/vercel-deploy.sh",
     "db:check": "tsx scripts/check-connection.ts",
     "db:sanity-check": "tsx scripts/db-sanity-check.ts",
