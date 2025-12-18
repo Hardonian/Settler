@@ -10,15 +10,17 @@ import { Menu, X } from "lucide-react";
 
 const navigationItems = [
   { href: '/docs', label: 'Docs' },
-  { href: '/cookbooks', label: 'Cookbooks' },
+  { href: '/cookbook', label: 'Cookbook' },
+  { href: '/runbooks', label: 'Runbooks' },
+  { href: '/schematics', label: 'Schematics' },
   { href: '/receipts', label: 'Receipts API' },
   { href: '/feature-flags', label: 'Feature Flags' },
   { href: '/console', label: 'Console' },
+  { href: '/playground', label: 'Playground' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/enterprise', label: 'Enterprise' },
   { href: '/community', label: 'Community' },
   { href: '/support', label: 'Support' },
-  { href: '/console/playground', label: 'Playground' },
 ];
 
 export function Navigation() {

@@ -89,15 +89,118 @@ async function ConsoleOverviewContent() {
       );
     }
 
+    // Public minimal mode - show useful content even without auth
     if (!user) {
       return (
-        <div className="text-center py-12">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
-            Please sign in to access the Developer Console.
-          </p>
-          <Button asChild>
-            <Link href="/signup">Sign In</Link>
-          </Button>
+        <div className="space-y-8">
+          {/* Public Minimal Console */}
+          <div className="text-center space-y-4 py-8">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              Settler Developer Console
+            </h1>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Manage API keys, monitor usage, and control your Settler integration. 
+              Sign in for full access, or explore our public tools below.
+            </p>
+          </div>
+
+          {/* Live Status Widget */}
+          <Card>
+            <CardHeader>
+              <CardTitle>System Status</CardTitle>
+              <CardDescription>Current service availability</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-sm text-slate-600 dark:text-slate-400">
+                  All systems operational
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Tools - Client-only safe tools */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Tools</CardTitle>
+              <CardDescription>Client-side utilities you can use right now</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
+                  <Link href="/playground">
+                    <span className="font-semibold">JSON Validator</span>
+                    <span className="text-xs text-slate-500 mt-1">
+                      Validate and format JSON
+                    </span>
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
+                  <Link href="/playground">
+                    <span className="font-semibold">CSV Previewer</span>
+                    <span className="text-xs text-slate-500 mt-1">
+                      Preview CSV data
+                    </span>
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
+                  <Link href="/playground">
+                    <span className="font-semibold">Sample Demo</span>
+                    <span className="text-xs text-slate-500 mt-1">
+                      Try reconciliation demo
+                    </span>
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Docs Shortcuts */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Documentation</CardTitle>
+              <CardDescription>Learn more about Settler</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button asChild variant="outline">
+                  <Link href="/cookbook">Cookbook</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/runbooks">Runbooks</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/schematics">Schematics</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Try Playground CTA */}
+          <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white border-0">
+            <CardHeader>
+              <CardTitle className="text-white">Try Playground</CardTitle>
+              <CardDescription className="text-blue-100">
+                Experiment with Settler APIs without signing up
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild size="lg" variant="secondary">
+                <Link href="/playground">Open Playground</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Sign In CTA */}
+          <div className="text-center py-4">
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
+              Sign in for full access to API keys, usage analytics, and saved workflows.
+            </p>
+            <Button asChild>
+              <Link href="/signup">Sign In / Sign Up</Link>
+            </Button>
+          </div>
         </div>
       );
     }
@@ -314,7 +417,7 @@ async function ConsoleOverviewContent() {
              <Link href="/docs">Documentation</Link>
            </Button>
            <Button asChild>
-             <Link href="/console/playground">Playground</Link>
+             <Link href="/playground">Playground</Link>
            </Button>
         </div>
       </div>
