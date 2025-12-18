@@ -49,8 +49,11 @@ export async function getEntitlements(): Promise<Entitlements> {
         .eq('id', user.id)
         .maybeSingle();
 
-      if (!profileError && profile && typeof profile === 'object' && 'role' in profile && profile.role === 'admin') {
-        role = 'admin';
+      if (!profileError && profile) {
+        const profileData = profile as { role?: string } | null;
+        if (profileData && profileData.role === 'admin') {
+          role = 'admin';
+        }
       }
 
       // Try to get subscription from Prisma (if available)
@@ -105,28 +108,32 @@ export async function getEntitlements(): Promise<Entitlements> {
             .limit(1)
             .maybeSingle();
 
-          if (!billingError && billingAccount && typeof billingAccount === 'object' && 'id' in billingAccount) {
-            const billingAccountId = billingAccount.id as string;
-            const { data: subscription, error: subError } = await supabase
-              .from('subscriptions')
-              .select('status, plan_name, plan_id, current_period_end')
-              .eq('billing_account_id', billingAccountId)
-              .in('status', ['active', 'trialing'])
-              .gt('current_period_end', new Date().toISOString())
-              .order('created_at', { ascending: false })
-              .limit(1)
-              .maybeSingle();
+          if (!billingError && billingAccount) {
+            const billingAccountData = billingAccount as { id?: string } | null;
+            if (billingAccountData && billingAccountData.id) {
+              const billingAccountId = billingAccountData.id;
+              const { data: subscription, error: subError } = await supabase
+                .from('subscriptions')
+                .select('status, plan_name, plan_id, current_period_end')
+                .eq('billing_account_id', billingAccountId)
+                .in('status', ['active', 'trialing'])
+                .gt('current_period_end', new Date().toISOString())
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
 
-            if (!subError && subscription && typeof subscription === 'object') {
-              const planName = ('plan_name' in subscription ? (subscription.plan_name as string | null) : null) || 
-                              ('plan_id' in subscription ? (subscription.plan_id as string | null) : null) || 
-                              '';
-              if (planName) {
-                isPaid = true;
-                if (planName.toLowerCase().includes('enterprise')) {
-                  plan = 'enterprise';
-                } else if (planName.toLowerCase().includes('pro')) {
-                  plan = 'pro';
+              if (!subError && subscription) {
+                const subscriptionData = subscription as { plan_name?: string | null; plan_id?: string | null } | null;
+                if (subscriptionData) {
+                  const planName = subscriptionData.plan_name || subscriptionData.plan_id || '';
+                  if (planName && typeof planName === 'string') {
+                    isPaid = true;
+                    if (planName.toLowerCase().includes('enterprise')) {
+                      plan = 'enterprise';
+                    } else if (planName.toLowerCase().includes('pro')) {
+                      plan = 'pro';
+                    }
+                  }
                 }
               }
             }
