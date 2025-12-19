@@ -5,8 +5,7 @@
  * Returns partial mode indicators when env vars are missing.
  */
 
-import { validateSupabaseEnv, type EnvValidationResult } from './validator';
-import { safeSync, type SafeAsyncResult } from '../safe';
+import { validateSupabaseEnv } from './validator';
 
 export interface EnvStatus {
   ok: boolean;

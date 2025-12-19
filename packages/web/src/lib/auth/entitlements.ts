@@ -43,14 +43,17 @@ export async function getEntitlements(): Promise<Entitlements> {
 
     try {
       // Try to get profile from Supabase (if using Supabase profiles table)
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (profile?.role === 'admin') {
-        role = 'admin';
+      if (!profileError && profile) {
+        const profileData = profile as { role?: string } | null;
+        if (profileData && profileData.role === 'admin') {
+          role = 'admin';
+        }
       }
 
       // Try to get subscription from Prisma (if available)
@@ -65,7 +68,7 @@ export async function getEntitlements(): Promise<Entitlements> {
                   status: {
                     in: ['active', 'trialing'],
                   },
-                  current_period_end: {
+                  currentPeriodEnd: {
                     gt: new Date(), // Not expired
                   },
                 },
@@ -81,8 +84,8 @@ export async function getEntitlements(): Promise<Entitlements> {
             const subscription = billingAccount.subscriptions[0];
             isPaid = true;
             
-            // Map subscription plan_name or plan_id to entitlement plan
-            const planName = subscription.plan_name || subscription.plan_id || '';
+            // Map subscription planName or planId to entitlement plan
+            const planName = subscription.planName || subscription.planId || '';
             if (planName.toLowerCase().includes('enterprise')) {
               plan = 'enterprise';
             } else if (planName.toLowerCase().includes('pro')) {
@@ -98,31 +101,40 @@ export async function getEntitlements(): Promise<Entitlements> {
       // Fallback: Check Supabase subscriptions table via billing_accounts if Prisma unavailable
       if (!isPaid) {
         try {
-          const { data: billingAccount } = await supabase
+          const { data: billingAccount, error: billingError } = await supabase
             .from('billing_accounts')
             .select('id')
             .eq('user_id', user.id)
             .limit(1)
-            .single();
+            .maybeSingle();
 
-          if (billingAccount) {
-            const { data: subscription } = await supabase
-              .from('subscriptions')
-              .select('status, plan_name, plan_id, current_period_end')
-              .eq('billing_account_id', billingAccount.id)
-              .in('status', ['active', 'trialing'])
-              .gt('current_period_end', new Date().toISOString())
-              .order('created_at', { ascending: false })
-              .limit(1)
-              .single();
+          if (!billingError && billingAccount) {
+            const billingAccountData = billingAccount as { id?: string } | null;
+            if (billingAccountData && billingAccountData.id) {
+              const billingAccountId = billingAccountData.id;
+              const { data: subscription, error: subError } = await supabase
+                .from('subscriptions')
+                .select('status, plan_name, plan_id, current_period_end')
+                .eq('billing_account_id', billingAccountId)
+                .in('status', ['active', 'trialing'])
+                .gt('current_period_end', new Date().toISOString())
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
 
-            if (subscription) {
-              isPaid = true;
-              const planName = subscription.plan_name || subscription.plan_id || '';
-              if (planName.toLowerCase().includes('enterprise')) {
-                plan = 'enterprise';
-              } else if (planName.toLowerCase().includes('pro')) {
-                plan = 'pro';
+              if (!subError && subscription) {
+                const subscriptionData = subscription as { plan_name?: string | null; plan_id?: string | null } | null;
+                if (subscriptionData) {
+                  const planName = subscriptionData.plan_name || subscriptionData.plan_id || '';
+                  if (planName && typeof planName === 'string') {
+                    isPaid = true;
+                    if (planName.toLowerCase().includes('enterprise')) {
+                      plan = 'enterprise';
+                    } else if (planName.toLowerCase().includes('pro')) {
+                      plan = 'pro';
+                    }
+                  }
+                }
               }
             }
           }
