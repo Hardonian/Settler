@@ -32,6 +32,7 @@ import {
   Zap,
   Shield,
   Search,
+  Database,
 } from 'lucide-react';
 import { BackendHealthBadge } from './BackendHealthBadge';
 
@@ -42,6 +43,7 @@ const consoleNavItems = [
     { href: '/console/workflows', label: 'Workflows', icon: Zap },
     { href: '/console/control-plane', label: 'Control Plane', icon: Shield },
     { href: '/console/inspector', label: 'Inspector', icon: Search },
+    { href: '/console/tables', label: 'Database Tables', icon: Database },
     { href: '/console/api-keys', label: 'API Keys', icon: Key },
     { href: '/console/usage', label: 'Usage & Metrics', icon: BarChart3 },
     { href: '/console/performance', label: 'Performance', icon: Activity },
