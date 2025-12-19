@@ -79,10 +79,13 @@ export async function GET(_request: NextRequest) {
     const metricsByCategory: Record<string, any[]> = {};
     if (metrics && Array.isArray(metrics)) {
       metrics.forEach((metric: any) => {
-        if (!metricsByCategory[metric.category]) {
-          metricsByCategory[metric.category] = [];
+        const category = metric?.category;
+        if (category) {
+          if (!metricsByCategory[category]) {
+            metricsByCategory[category] = [];
+          }
+          metricsByCategory[category].push(metric);
         }
-        metricsByCategory[metric.category].push(metric);
       });
     }
 

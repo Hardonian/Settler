@@ -46,37 +46,44 @@ export async function GET(_request: NextRequest) {
     }
 
     // Get revenue metrics
-    const { data: revenueMetrics } = await supabase
+    const { data: revenueMetricsData } = await supabase
       .from('reality_metrics')
       .select('name, value, status')
       .eq('category', 'revenue');
+    const revenueMetrics = (revenueMetricsData || []) as Array<{ name: string; value: any; status: string }>;
 
     // Get usage metrics
-    const { data: userMetrics } = await supabase
+    const { data: userMetricsData } = await supabase
       .from('reality_metrics')
       .select('name, value, status')
       .eq('category', 'user');
+    const userMetrics = (userMetricsData || []) as Array<{ name: string; value: any; status: string }>;
 
     // Get reliability metrics
-    const { data: failureMetrics } = await supabase
+    const { data: failureMetricsData } = await supabase
       .from('reality_metrics')
       .select('name, value, status')
       .eq('category', 'failure');
+    const failureMetrics = (failureMetricsData || []) as Array<{ name: string; value: any; status: string }>;
 
     // Get latest weekly snapshot for trends
-    const { data: latestSnapshot } = await supabase
+    const { data: latestSnapshotData } = await supabase
       .from('weekly_snapshots')
       .select('week_start, summary, delta_summary, risks')
       .order('week_start', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
+    const latestSnapshot = latestSnapshotData as {
+      week_start?: string;
+      summary?: any;
+      delta_summary?: Record<string, any>;
+      risks?: Array<{ severity: string }>;
+    } | null;
 
     // Calculate risk index
-    const brokenMetrics = revenueMetrics?.filter((m: any) => m.status === 'broken').length || 0;
-    const snapshotRisks = latestSnapshot && typeof latestSnapshot === 'object' && 'risks' in latestSnapshot
-      ? (latestSnapshot.risks as any[]) || []
-      : [];
-    const criticalRisks = snapshotRisks.filter((r: any) => r.severity === 'critical').length || 0;
+    const brokenMetrics = revenueMetrics.filter((m) => m.status === 'broken').length;
+    const snapshotRisks = latestSnapshot?.risks || [];
+    const criticalRisks = snapshotRisks.filter((r) => r.severity === 'critical').length;
     const riskIndex = brokenMetrics + criticalRisks;
 
     // Calculate evidence index (% proven vs assumed)
@@ -91,34 +98,31 @@ export async function GET(_request: NextRequest) {
       : '0';
 
     // Extract key metrics
-    const mrrMetric = revenueMetrics?.find((m: any) => m.name === 'mrr');
-    const mrr = mrrMetric && typeof mrrMetric === 'object' && 'value' in mrrMetric ? mrrMetric.value : 0;
+    const mrrMetric = revenueMetrics.find((m) => m.name === 'mrr');
+    const mrr = mrrMetric?.value ?? 0;
     
-    const activeSubsMetric = revenueMetrics?.find((m: any) => m.name === 'active_subscriptions');
-    const activeSubscriptions = activeSubsMetric && typeof activeSubsMetric === 'object' && 'value' in activeSubsMetric ? activeSubsMetric.value : 0;
+    const activeSubsMetric = revenueMetrics.find((m) => m.name === 'active_subscriptions');
+    const activeSubscriptions = activeSubsMetric?.value ?? 0;
     
-    const churnMetric = revenueMetrics?.find((m: any) => m.name === 'churn');
-    const churn = churnMetric && typeof churnMetric === 'object' && 'value' in churnMetric ? churnMetric.value : 0;
+    const churnMetric = revenueMetrics.find((m) => m.name === 'churn');
+    const churn = churnMetric?.value ?? 0;
     
-    const dauMetric = userMetrics?.find((m: any) => m.name === 'dau');
-    const dau = dauMetric && typeof dauMetric === 'object' && 'value' in dauMetric ? dauMetric.value : 0;
+    const dauMetric = userMetrics.find((m) => m.name === 'dau');
+    const dau = dauMetric?.value ?? 0;
     
-    const wauMetric = userMetrics?.find((m: any) => m.name === 'wau');
-    const wau = wauMetric && typeof wauMetric === 'object' && 'value' in wauMetric ? wauMetric.value : 0;
+    const wauMetric = userMetrics.find((m) => m.name === 'wau');
+    const wau = wauMetric?.value ?? 0;
     
-    const hard500Metric = failureMetrics?.find((m: any) => m.name === 'hard_500_count');
-    const hard500Count = hard500Metric && typeof hard500Metric === 'object' && 'value' in hard500Metric ? hard500Metric.value : 0;
+    const hard500Metric = failureMetrics.find((m) => m.name === 'hard_500_count');
+    const hard500Count = hard500Metric?.value ?? 0;
 
     // Calculate growth (from delta summary if available)
-    let mrrGrowth = null;
-    if (latestSnapshot && typeof latestSnapshot === 'object' && 'delta_summary' in latestSnapshot) {
-      const deltaSummary = latestSnapshot.delta_summary as Record<string, any>;
+    let mrrGrowth: string | null = null;
+    if (latestSnapshot?.delta_summary) {
+      const deltaSummary = latestSnapshot.delta_summary;
       const mrrDelta = deltaSummary['revenue:mrr'];
-      if (mrrDelta && typeof mrrDelta === 'object' && 'delta' in mrrDelta) {
-        const delta = mrrDelta.delta as { percent?: number };
-        if (typeof delta.percent === 'number') {
-          mrrGrowth = delta.percent.toFixed(1);
-        }
+      if (mrrDelta?.delta?.percent !== undefined) {
+        mrrGrowth = String(mrrDelta.delta.percent.toFixed(1));
       }
     }
 
@@ -128,18 +132,18 @@ export async function GET(_request: NextRequest) {
         mrr_growth: mrrGrowth,
         active_subscriptions: typeof activeSubscriptions === 'number' ? activeSubscriptions : 0,
         churn: typeof churn === 'number' ? churn : 0,
-        status: mrrMetric && typeof mrrMetric === 'object' && 'status' in mrrMetric ? mrrMetric.status : 'assumed',
+        status: mrrMetric?.status ?? 'assumed',
       },
       usage: {
         dau: typeof dau === 'number' ? dau : 0,
         wau: typeof wau === 'number' ? wau : 0,
         active_tenants: 0, // Would come from tenants table
-        status: dauMetric && typeof dauMetric === 'object' && 'status' in dauMetric ? dauMetric.status : 'assumed',
+        status: dauMetric?.status ?? 'assumed',
       },
       reliability: {
         uptime_proxy: hard500Count === 0 ? 99.9 : null,
         failure_events: criticalRisks,
-        status: hard500Metric && typeof hard500Metric === 'object' && 'status' in hard500Metric ? hard500Metric.status : 'assumed',
+        status: hard500Metric?.status ?? 'assumed',
       },
       risk_index: riskIndex,
       evidence_index: evidenceIndex,
@@ -148,9 +152,7 @@ export async function GET(_request: NextRequest) {
         status: 'assumed',
       },
       last_updated: new Date().toISOString(),
-      week_start: latestSnapshot && typeof latestSnapshot === 'object' && 'week_start' in latestSnapshot 
-        ? (latestSnapshot.week_start as string | null) 
-        : null,
+      week_start: latestSnapshot?.week_start ?? null,
     };
 
     logger.info('Investor metrics fetched successfully', { correlationId });

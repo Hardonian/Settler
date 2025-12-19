@@ -38,7 +38,8 @@ export async function GET(_request: NextRequest) {
     }
 
     // Extract key metrics
-    const hard500Metric = metrics?.find((m: any) => m.name === 'hard_500_count');
+    const metricsArray = (metrics || []) as Array<{ name: string; value: any; status: string }>;
+    const hard500Metric = metricsArray.find((m) => m.name === 'hard_500_count');
     const { data: lastIncidentData } = await supabase
       .from('reality_events')
       .select('created_at, event_name, severity')
@@ -48,23 +49,25 @@ export async function GET(_request: NextRequest) {
       .limit(1)
       .maybeSingle();
 
+    const lastIncident = lastIncidentData as {
+      created_at?: string;
+      event_name?: string;
+      severity?: string;
+    } | null;
+
     // Calculate uptime proxy (inverse of failure rate)
     // This is simplified - real uptime would come from monitoring
-    const hard500Value = hard500Metric && typeof hard500Metric === 'object' && 'value' in hard500Metric
-      ? hard500Metric.value
-      : null;
+    const hard500Value = hard500Metric?.value;
     const uptimeProxy = typeof hard500Value === 'number' && hard500Value === 0 ? 99.9 : null;
 
     const response = {
       uptime_proxy: uptimeProxy,
-      last_incident: lastIncidentData ? {
-        timestamp: lastIncidentData.created_at,
-        event: lastIncidentData.event_name,
+      last_incident: lastIncident && lastIncident.created_at && lastIncident.event_name ? {
+        timestamp: lastIncident.created_at,
+        event: lastIncident.event_name,
       } : null,
       hard_500_count: typeof hard500Value === 'number' ? hard500Value : 0,
-      status: hard500Metric && typeof hard500Metric === 'object' && 'status' in hard500Metric
-        ? hard500Metric.status
-        : 'assumed',
+      status: hard500Metric?.status ?? 'assumed',
       data_isolation: {
         model: 'Row Level Security (RLS)',
         enforced_at: 'database',
