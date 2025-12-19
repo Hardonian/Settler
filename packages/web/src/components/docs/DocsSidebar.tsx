@@ -7,7 +7,6 @@ import {
   BookOpen,
   Rocket,
   Code,
-  Key,
   Webhook,
   Shield,
   AlertCircle,

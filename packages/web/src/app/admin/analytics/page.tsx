@@ -4,12 +4,11 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { EmptyState } from '@/components/EmptyState';
 import { Skeleton } from '@/components/Skeleton';
 import { safeFetch } from '@/lib/safe-fetch';
 // Admin check will be done server-side via middleware
-import { BarChart3, DollarSign, Users, TrendingUp, Download, Calendar } from 'lucide-react';
+import { DollarSign, Users, Download } from 'lucide-react';
 
 interface KPIs {
   mrr: number;

@@ -10,7 +10,6 @@ import { ErrorState } from '@/components/ErrorState';
 import { Skeleton } from '@/components/Skeleton';
 import { safeFetch } from '@/lib/safe-fetch';
 import { RefreshCw, Play, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
 
 interface RunStage {
   id: string;
@@ -53,6 +52,7 @@ export default function RunPage() {
       const interval = setInterval(loadRun, 2000); // Poll every 2 seconds for running jobs
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [runId, autoRefresh, run?.status]);
 
   const loadRun = async () => {
@@ -251,7 +251,7 @@ export default function RunPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {run.stages.map((stage, index) => {
+            {run.stages.map((stage) => {
               const StageIcon = getStatusIcon(stage.status);
               return (
                 <div

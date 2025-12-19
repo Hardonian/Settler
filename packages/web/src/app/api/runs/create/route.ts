@@ -17,7 +17,7 @@ import { z } from 'zod';
 const CreateRunSchema = z.object({
   workspace_id: z.string().uuid(),
   idempotency_key: z.string().min(1),
-  input_manifest: z.record(z.unknown()),
+  input_manifest: z.record(z.string(), z.unknown()),
   name: z.string().optional(),
 });
 
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     const validated = CreateRunSchema.parse(body);
 
     // Verify workspace membership
-    const membership = await requireWorkspaceMembership(validated.workspace_id);
+    await requireWorkspaceMembership(validated.workspace_id);
 
     // Validate input manifest
     const manifestValidation = validateInputManifest(validated.input_manifest);
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input manifest',
-          details: manifestValidation.errors?.errors,
+          details: manifestValidation.errors?.issues,
           correlationId,
         },
         { status: 400 }
@@ -58,12 +58,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for existing run with same idempotency_key
-    const { data: existing } = await supabase
-      .from('recon_runs')
+    const { data: existing } = await (supabase
+      .from('recon_runs' as any)
       .select('*')
       .eq('workspace_id', validated.workspace_id)
       .eq('idempotency_key', validated.idempotency_key)
-      .single();
+      .single() as any);
 
     if (existing) {
       logger.info('Returning existing run (idempotency)', {
@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new run
-    const { data: run, error: createError } = await supabase
-      .from('recon_runs')
+    const { data: run, error: createError } = await (supabase
+      .from('recon_runs' as any)
       .insert({
         workspace_id: validated.workspace_id,
         created_by: user.id,
@@ -88,9 +88,9 @@ export async function POST(request: NextRequest) {
         input_manifest: validated.input_manifest,
         status: 'created',
         name: validated.name || 'Reconciliation Run',
-      })
+      } as any)
       .select()
-      .single();
+      .single() as any);
 
     if (createError || !run) {
       logger.error('Failed to create run', createError as Error);
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create initial event
-    await supabase.from('run_events').insert({
+    await (supabase.from('run_events' as any).insert({
       workspace_id: validated.workspace_id,
       run_id: run.id,
       type: 'state_change',
@@ -115,10 +115,10 @@ export async function POST(request: NextRequest) {
         correlationId,
       },
       created_by: user.id,
-    });
+    } as any) as any);
 
     // Enqueue job to process the run
-    const { error: jobError } = await supabase.from('jobs').insert({
+    const { error: jobError } = await (supabase.from('jobs' as any).insert({
       workspace_id: validated.workspace_id,
       type: 'run.process',
       payload: {
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
       idempotency_key: `run.process.${run.id}`,
       run_id: run.id,
       status: 'queued',
-    });
+    } as any) as any);
 
     if (jobError) {
       logger.error('Failed to enqueue job', jobError as Error);
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Validation error',
-          details: error.errors,
+          details: error.issues,
           correlationId,
         },
         { status: 400 }

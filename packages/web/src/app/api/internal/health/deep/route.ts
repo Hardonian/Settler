@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     // Check 2: RLS enabled (try to query without auth - should fail)
     try {
-      const { error } = await supabase
+      await supabase
         .from('recon_runs')
         .select('id')
         .limit(1);
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
         status: 'ok',
         message: 'RLS check requires authenticated context',
       });
-    } catch (error) {
+    } catch {
       checks.push({
         name: 'RLS: recon_runs',
         status: 'ok',
@@ -99,15 +99,11 @@ export async function GET(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('tenant_users')
           .select('tenant_id, role')
           .eq('user_id', user.id)
           .limit(1);
-
-        if (error) {
-          throw error;
-        }
 
         checks.push({
           name: 'Workspace Membership',

@@ -137,7 +137,7 @@ export function sanitizeForLogging(str: string): string {
   // Mask Bearer tokens
   sanitized = sanitized.replace(
     /Bearer\s+([A-Za-z0-9]{20,})/gi,
-    (match, token) => `Bearer ${maskToken(token)}`
+    (_match, token) => `Bearer ${maskToken(token)}`
   );
 
   // Mask API key patterns

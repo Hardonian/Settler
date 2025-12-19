@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Rocket, Code, BookOpen, Zap, Shield } from 'lucide-react';
+import { Rocket, Code, Zap, Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Documentation - Settler',

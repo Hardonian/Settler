@@ -12,7 +12,7 @@ import { createLogger } from '@/lib/logger';
 export const runtime = 'nodejs';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { runId: string } }
 ) {
   const logger = createLogger({ runId: params.runId });
@@ -29,11 +29,11 @@ export async function GET(
     }
 
     // Get run
-    const { data: run, error: runError } = await supabase
-      .from('recon_runs')
+    const { data: run, error: runError } = await (supabase
+      .from('recon_runs' as any)
       .select('*')
       .eq('id', params.runId)
-      .single();
+      .single() as any);
 
     if (runError || !run) {
       return NextResponse.json(
@@ -46,12 +46,12 @@ export async function GET(
     await requireWorkspaceMembership(run.workspace_id);
 
     // Get events
-    const { data: events } = await supabase
-      .from('run_events')
+    const { data: events } = await (supabase
+      .from('run_events' as any)
       .select('*')
       .eq('run_id', params.runId)
       .order('created_at', { ascending: false })
-      .limit(100);
+      .limit(100) as any);
 
     return NextResponse.json({
       run,

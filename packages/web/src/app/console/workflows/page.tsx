@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/EmptyState';
 import { Skeleton } from '@/components/Skeleton';
 import { safeFetch } from '@/lib/safe-fetch';
-import { Zap, Plus, Play, Pause, Settings, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { Zap, Plus, Play, Pause, Settings, CheckCircle2, XCircle } from 'lucide-react';
 import Link from 'next/link';
 
 interface Workflow {

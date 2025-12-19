@@ -14,9 +14,7 @@ import { Skeleton } from '@/components/Skeleton';
 import { safeFetch, maskToken, sanitizeForLogging } from '@/lib/safe-fetch';
 import { 
   Play, 
-  Save, 
   History, 
-  Settings, 
   Copy, 
   Check, 
   Clock, 
@@ -45,7 +43,7 @@ interface Environment {
 export default function ApiPlaygroundPage() {
   const [method, setMethod] = useState('GET');
   const [url, setUrl] = useState('/api/v1/jobs');
-  const [headers, setHeaders] = useState<Record<string, string>>({});
+  const [headers] = useState<Record<string, string>>({});
   const [body, setBody] = useState('');
   const [response, setResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);

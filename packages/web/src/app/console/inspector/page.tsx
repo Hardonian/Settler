@@ -7,8 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/EmptyState';
 import { Skeleton } from '@/components/Skeleton';
-import { safeFetch, maskToken, sanitizeForLogging } from '@/lib/safe-fetch';
-import { Search, Play, Download, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { safeFetch, sanitizeForLogging } from '@/lib/safe-fetch';
+import { Play, Download, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface WebhookAttempt {
   id: string;

@@ -43,12 +43,12 @@ export async function initGuestSession(): Promise<GuestSession> {
     } as GuestSession;
   });
   
-  if (supabaseResult.ok) {
+  if (supabaseResult) {
     // Store session
     if (typeof window !== 'undefined') {
-      localStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(supabaseResult.data));
+      localStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(supabaseResult));
     }
-    return supabaseResult.data;
+    return supabaseResult;
   }
   
   // Fallback to local session

@@ -38,12 +38,12 @@ export async function getWorkspaceMembership(
 
     // Check workspace membership via Supabase (tenant_users table)
     // workspace_id maps to tenant_id in this system
-    const { data: membership, error: membershipError } = await supabase
-      .from('tenant_users')
+    const { data: membership, error: membershipError } = await (supabase
+      .from('tenant_users' as any)
       .select('role')
       .eq('tenant_id', workspaceId)
       .eq('user_id', user.id)
-      .single();
+      .single() as any);
 
     if (membershipError || !membership) {
       return {
@@ -79,11 +79,11 @@ export async function isAdmin(workspaceId?: string): Promise<boolean> {
     }
 
     // Check system admin role
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .single() as any);
 
     if (profile?.role === 'admin') {
       return true;
