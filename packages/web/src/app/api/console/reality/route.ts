@@ -15,7 +15,7 @@ export const runtime = 'nodejs';
 /**
  * GET /api/console/reality
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/console/reality', method: 'GET' });
   
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
     // Group metrics by category
     const metricsByCategory: Record<string, any[]> = {};
-    if (metrics) {
+    if (metrics && Array.isArray(metrics)) {
       metrics.forEach((metric: any) => {
         if (!metricsByCategory[metric.category]) {
           metricsByCategory[metric.category] = [];

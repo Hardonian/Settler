@@ -16,7 +16,7 @@ export const runtime = 'nodejs';
 /**
  * GET /api/investor/reality
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/investor/reality', method: 'GET' });
   
@@ -73,7 +73,10 @@ export async function GET(request: NextRequest) {
 
     // Calculate risk index
     const brokenMetrics = revenueMetrics?.filter((m: any) => m.status === 'broken').length || 0;
-    const criticalRisks = latestSnapshot?.risks?.filter((r: any) => r.severity === 'critical').length || 0;
+    const snapshotRisks = latestSnapshot && typeof latestSnapshot === 'object' && 'risks' in latestSnapshot
+      ? (latestSnapshot.risks as any[]) || []
+      : [];
+    const criticalRisks = snapshotRisks.filter((r: any) => r.severity === 'critical').length || 0;
     const riskIndex = brokenMetrics + criticalRisks;
 
     // Calculate evidence index (% proven vs assumed)
@@ -88,19 +91,34 @@ export async function GET(request: NextRequest) {
       : '0';
 
     // Extract key metrics
-    const mrr = revenueMetrics?.find((m: any) => m.name === 'mrr')?.value || 0;
-    const activeSubscriptions = revenueMetrics?.find((m: any) => m.name === 'active_subscriptions')?.value || 0;
-    const churn = revenueMetrics?.find((m: any) => m.name === 'churn')?.value || 0;
-    const dau = userMetrics?.find((m: any) => m.name === 'dau')?.value || 0;
-    const wau = userMetrics?.find((m: any) => m.name === 'wau')?.value || 0;
-    const hard500Count = failureMetrics?.find((m: any) => m.name === 'hard_500_count')?.value || 0;
+    const mrrMetric = revenueMetrics?.find((m: any) => m.name === 'mrr');
+    const mrr = mrrMetric && typeof mrrMetric === 'object' && 'value' in mrrMetric ? mrrMetric.value : 0;
+    
+    const activeSubsMetric = revenueMetrics?.find((m: any) => m.name === 'active_subscriptions');
+    const activeSubscriptions = activeSubsMetric && typeof activeSubsMetric === 'object' && 'value' in activeSubsMetric ? activeSubsMetric.value : 0;
+    
+    const churnMetric = revenueMetrics?.find((m: any) => m.name === 'churn');
+    const churn = churnMetric && typeof churnMetric === 'object' && 'value' in churnMetric ? churnMetric.value : 0;
+    
+    const dauMetric = userMetrics?.find((m: any) => m.name === 'dau');
+    const dau = dauMetric && typeof dauMetric === 'object' && 'value' in dauMetric ? dauMetric.value : 0;
+    
+    const wauMetric = userMetrics?.find((m: any) => m.name === 'wau');
+    const wau = wauMetric && typeof wauMetric === 'object' && 'value' in wauMetric ? wauMetric.value : 0;
+    
+    const hard500Metric = failureMetrics?.find((m: any) => m.name === 'hard_500_count');
+    const hard500Count = hard500Metric && typeof hard500Metric === 'object' && 'value' in hard500Metric ? hard500Metric.value : 0;
 
     // Calculate growth (from delta summary if available)
     let mrrGrowth = null;
-    if (latestSnapshot?.delta_summary) {
-      const mrrDelta = latestSnapshot.delta_summary['revenue:mrr'];
-      if (mrrDelta?.delta?.percent) {
-        mrrGrowth = mrrDelta.delta.percent.toFixed(1);
+    if (latestSnapshot && typeof latestSnapshot === 'object' && 'delta_summary' in latestSnapshot) {
+      const deltaSummary = latestSnapshot.delta_summary as Record<string, any>;
+      const mrrDelta = deltaSummary['revenue:mrr'];
+      if (mrrDelta && typeof mrrDelta === 'object' && 'delta' in mrrDelta) {
+        const delta = mrrDelta.delta as { percent?: number };
+        if (typeof delta.percent === 'number') {
+          mrrGrowth = delta.percent.toFixed(1);
+        }
       }
     }
 
@@ -110,18 +128,18 @@ export async function GET(request: NextRequest) {
         mrr_growth: mrrGrowth,
         active_subscriptions: typeof activeSubscriptions === 'number' ? activeSubscriptions : 0,
         churn: typeof churn === 'number' ? churn : 0,
-        status: revenueMetrics?.find((m: any) => m.name === 'mrr')?.status || 'assumed',
+        status: mrrMetric && typeof mrrMetric === 'object' && 'status' in mrrMetric ? mrrMetric.status : 'assumed',
       },
       usage: {
         dau: typeof dau === 'number' ? dau : 0,
         wau: typeof wau === 'number' ? wau : 0,
         active_tenants: 0, // Would come from tenants table
-        status: userMetrics?.find((m: any) => m.name === 'dau')?.status || 'assumed',
+        status: dauMetric && typeof dauMetric === 'object' && 'status' in dauMetric ? dauMetric.status : 'assumed',
       },
       reliability: {
         uptime_proxy: hard500Count === 0 ? 99.9 : null,
         failure_events: criticalRisks,
-        status: failureMetrics?.find((m: any) => m.name === 'hard_500_count')?.status || 'assumed',
+        status: hard500Metric && typeof hard500Metric === 'object' && 'status' in hard500Metric ? hard500Metric.status : 'assumed',
       },
       risk_index: riskIndex,
       evidence_index: evidenceIndex,
@@ -130,7 +148,9 @@ export async function GET(request: NextRequest) {
         status: 'assumed',
       },
       last_updated: new Date().toISOString(),
-      week_start: latestSnapshot?.week_start || null,
+      week_start: latestSnapshot && typeof latestSnapshot === 'object' && 'week_start' in latestSnapshot 
+        ? (latestSnapshot.week_start as string | null) 
+        : null,
     };
 
     logger.info('Investor metrics fetched successfully', { correlationId });

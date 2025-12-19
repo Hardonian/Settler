@@ -14,7 +14,7 @@ export const runtime = 'nodejs';
 /**
  * GET /api/public/reality
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     
@@ -39,29 +39,32 @@ export async function GET(request: NextRequest) {
 
     // Extract key metrics
     const hard500Metric = metrics?.find((m: any) => m.name === 'hard_500_count');
-    const lastIncidentEvent = await supabase
+    const { data: lastIncidentData } = await supabase
       .from('reality_events')
       .select('created_at, event_name, severity')
       .eq('category', 'failure')
       .eq('severity', 'critical')
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     // Calculate uptime proxy (inverse of failure rate)
     // This is simplified - real uptime would come from monitoring
-    const uptimeProxy = hard500Metric && typeof hard500Metric.value === 'number' && hard500Metric.value === 0
-      ? 99.9
+    const hard500Value = hard500Metric && typeof hard500Metric === 'object' && 'value' in hard500Metric
+      ? hard500Metric.value
       : null;
+    const uptimeProxy = typeof hard500Value === 'number' && hard500Value === 0 ? 99.9 : null;
 
     const response = {
       uptime_proxy: uptimeProxy,
-      last_incident: lastIncidentEvent.data ? {
-        timestamp: lastIncidentEvent.data.created_at,
-        event: lastIncidentEvent.data.event_name,
+      last_incident: lastIncidentData ? {
+        timestamp: lastIncidentData.created_at,
+        event: lastIncidentData.event_name,
       } : null,
-      hard_500_count: hard500Metric ? hard500Metric.value : 0,
-      status: hard500Metric?.status || 'assumed',
+      hard_500_count: typeof hard500Value === 'number' ? hard500Value : 0,
+      status: hard500Metric && typeof hard500Metric === 'object' && 'status' in hard500Metric
+        ? hard500Metric.status
+        : 'assumed',
       data_isolation: {
         model: 'Row Level Security (RLS)',
         enforced_at: 'database',
