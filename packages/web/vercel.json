@@ -1,6 +1,6 @@
 {
   "buildCommand": "cd ../.. && npx turbo run build --filter=@settler/web...",
-  "installCommand": "npm ci --prefer-offline --no-audit --omit=optional",
+  "installCommand": "cd ../.. && bash scripts/vercel-install.sh",
   "framework": "nextjs",
   "regions": ["iad1"],
   "build": {

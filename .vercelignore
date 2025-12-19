@@ -42,6 +42,7 @@ scripts/
 # But include build-time scripts
 !scripts/vercel-prisma-postinstall.js
 !scripts/vercel-build-optimizer.js
+!scripts/vercel-install.sh
 
 # Other
 .DS_Store
