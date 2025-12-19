@@ -1,6 +1,6 @@
 {
   "buildCommand": "cd packages/web && npm run build:vercel",
-  "installCommand": "bash scripts/vercel-install.sh",
+  "installCommand": "ROOT=$(pwd); while [ ! -f \"$ROOT/package-lock.json\" ] && [ \"$ROOT\" != \"/\" ]; do ROOT=$(dirname \"$ROOT\"); done; cd \"$ROOT\" && npm ci --prefer-offline --no-audit --omit=optional",
   "framework": "nextjs",
   "outputDirectory": "packages/web/.next",
   "regions": ["iad1", "sfo1", "lhr1", "syd1"],
