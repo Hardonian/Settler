@@ -43,7 +43,14 @@ async function PagesListContent() {
         .order('updated_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{
+        id: string;
+        slug: string;
+        title: string;
+        status: string;
+        updated_at: string;
+        published_at: string | null;
+      }>;
     },
     [],
     'Failed to fetch pages'

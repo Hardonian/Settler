@@ -32,13 +32,14 @@ export async function resolveTenantFromRequest(): Promise<TenantResolution> {
       .from('tenants')
       .select('id, slug')
       .eq('id', headerTenantId)
-      .single();
+      .maybeSingle();
     
-    if (tenant) {
+    const tenantData = tenant as any;
+    if (tenantData?.id && tenantData?.slug) {
       const { data: { user } } = await supabase.auth.getUser();
       return {
-        tenantId: tenant.id,
-        tenantSlug: tenant.slug,
+        tenantId: String(tenantData.id),
+        tenantSlug: String(tenantData.slug),
         userId: user?.id || null,
       };
     }
@@ -66,23 +67,29 @@ export async function resolveTenantFromRequest(): Promise<TenantResolution> {
 
   // If single membership, use it
   if (memberships.length === 1) {
-    const membership = memberships[0];
-    const tenant = membership.tenant as { id: string; slug: string } | null;
+    const membership = memberships[0] as any;
+    if (membership?.tenant) {
+      const tenant = membership.tenant as { id: string; slug: string };
+      return {
+        tenantId: tenant.id || null,
+        tenantSlug: tenant.slug || null,
+        userId: user.id,
+      };
+    }
+  }
+
+  // Multiple memberships - return first one (UI should show switcher)
+  const membership = memberships[0] as any;
+  if (membership?.tenant) {
+    const tenant = membership.tenant as { id: string; slug: string };
     return {
-      tenantId: tenant?.id || null,
-      tenantSlug: tenant?.slug || null,
+      tenantId: tenant.id || null,
+      tenantSlug: tenant.slug || null,
       userId: user.id,
     };
   }
 
-  // Multiple memberships - return first one (UI should show switcher)
-  const membership = memberships[0];
-  const tenant = membership.tenant as { id: string; slug: string } | null;
-  return {
-    tenantId: tenant?.id || null,
-    tenantSlug: tenant?.slug || null,
-    userId: user.id,
-  };
+  return { tenantId: null, tenantSlug: null, userId: user.id };
 }
 
 /**
@@ -99,7 +106,9 @@ export async function getTenantFromSession(): Promise<string | null> {
   // Parse tenant_id from cookies
   const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
     const [key, value] = cookie.trim().split('=');
-    acc[key] = value;
+    if (key && value) {
+      acc[key] = value;
+    }
     return acc;
   }, {} as Record<string, string>);
 

@@ -42,10 +42,17 @@ async function PageEditorContent({ pageId }: { pageId: string }) {
         .select('id, slug, title, status, updated_at, published_at')
         .eq('id', pageId)
         .eq('tenant_id', resolution.tenantId!)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
-      return data;
+      return data as {
+        id: string;
+        slug: string;
+        title: string;
+        status: string;
+        updated_at: string;
+        published_at: string | null;
+      } | null;
     },
     null,
     'Failed to fetch page'
@@ -64,10 +71,15 @@ async function PageEditorContent({ pageId }: { pageId: string }) {
         .eq('page_id', pageId)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') throw error;
-      return data;
+      return data as {
+        id: string;
+        content_json: any;
+        created_at: string;
+        created_by: string | null;
+      } | null;
     },
     null,
     'Failed to fetch page version'

@@ -6,7 +6,6 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
-import { Database } from '@/types/database.types';
 
 export interface Entitlements {
   plan: string;
@@ -33,8 +32,7 @@ export interface Entitlements {
  * Checks subscription status and returns plan features/limits
  */
 export async function getEntitlements(
-  tenantId: string,
-  userId?: string | null
+  tenantId: string
 ): Promise<Entitlements> {
   const supabase = await createClient();
 
@@ -48,7 +46,7 @@ export async function getEntitlements(
       .gte('current_period_end', new Date().toISOString())
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (subError && subError.code !== 'PGRST116') {
       console.error('[Entitlements] Error fetching subscription:', subError);
@@ -56,18 +54,20 @@ export async function getEntitlements(
 
     // Determine plan
     let plan = 'free';
-    if (subscription?.plan) {
-      plan = subscription.plan;
+    const subData = subscription as any;
+    if (subData?.plan) {
+      plan = String(subData.plan);
     } else {
       // Check tenant plan_hint as fallback
       const { data: tenant } = await supabase
         .from('tenants')
         .select('plan_hint')
         .eq('id', tenantId)
-        .single();
+        .maybeSingle();
       
-      if (tenant?.plan_hint) {
-        plan = tenant.plan_hint;
+      const tenantData = tenant as any;
+      if (tenantData?.plan_hint) {
+        plan = String(tenantData.plan_hint);
       }
     }
 
@@ -76,7 +76,7 @@ export async function getEntitlements(
       .from('entitlements')
       .select('plan, features, limits')
       .eq('plan', plan)
-      .single();
+      .maybeSingle();
 
     if (entError || !entitlements) {
       console.error('[Entitlements] Error fetching entitlements:', entError);
@@ -99,10 +99,11 @@ export async function getEntitlements(
       };
     }
 
+    const entData = entitlements as any;
     return {
-      plan: entitlements.plan,
-      features: entitlements.features as Entitlements['features'],
-      limits: entitlements.limits as Entitlements['limits'],
+      plan: String(entData.plan || 'free'),
+      features: (entData.features || {}) as Entitlements['features'],
+      limits: (entData.limits || {}) as Entitlements['limits'],
     };
   } catch (error) {
     console.error('[Entitlements] Unexpected error:', error);

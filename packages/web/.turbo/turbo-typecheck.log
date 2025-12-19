@@ -11,13 +11,8 @@ src/__tests__/services/cost-signal-engine.test.ts(5,44): error TS6133: 'vi' is d
 src/__tests__/services/cost-signal-engine.test.ts(5,54): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
 src/__tests__/services/cost-signal-engine.test.ts(6,48): error TS2307: Cannot find module '../../../../ops/cost_baselines' or its corresponding type declarations.
 src/__tests__/services/pivot-engine.test.ts(5,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
-src/app/runbooks/page.tsx(16,3): error TS6133: 'Clock' is declared but its value is never read.
-src/app/runbooks/page.tsx(19,3): error TS6133: 'Cloud' is declared but its value is never read.
-src/app/schematics/page.tsx(14,3): error TS6133: 'Workflow' is declared but its value is never read.
-src/lib/env/safe.ts(8,36): error TS6133: 'EnvValidationResult' is declared but its value is never read.
-src/lib/env/safe.ts(9,1): error TS6192: All imports in import declaration are unused.
 npm error Lifecycle script `typecheck` failed with error:
-npm error code 2
+npm error code 1
 npm error path /workspace/packages/web
 npm error workspace @settler/web@1.0.0
 npm error location /workspace/packages/web

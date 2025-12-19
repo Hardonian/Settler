@@ -19,31 +19,30 @@ async function CMSPageContent({ slug }: { slug: string }) {
   // Try to get page from database
   const page = await safeCall(
     async () => {
+      const supabase = await createClient();
       if (!resolution.tenantId) {
         // Public tenant or no tenant - try to find by slug across tenants
-        const supabase = await createClient();
         const { data, error } = await supabase
           .from('cms_pages')
           .select('id, slug, title, tenant_id')
           .eq('slug', slug)
           .eq('status', 'published')
           .limit(1)
-          .single();
+          .maybeSingle();
         
         if (error && error.code !== 'PGRST116') throw error;
-        return data;
+        return data as { id: string; slug: string; title: string; tenant_id?: string } | null;
       } else {
-        const supabase = await createClient();
         const { data, error } = await supabase
           .from('cms_pages')
           .select('id, slug, title')
           .eq('slug', slug)
           .eq('tenant_id', resolution.tenantId)
           .eq('status', 'published')
-          .single();
+          .maybeSingle();
         
         if (error && error.code !== 'PGRST116') throw error;
-        return data;
+        return data as { id: string; slug: string; title: string } | null;
       }
     },
     null,
@@ -64,10 +63,10 @@ async function CMSPageContent({ slug }: { slug: string }) {
         .eq('page_id', page.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') throw error;
-      return data;
+      return data as { content_json: any } | null;
     },
     null,
     'Failed to fetch page version'
