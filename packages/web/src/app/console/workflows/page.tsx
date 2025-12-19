@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/Skeleton';
 import { safeFetch } from '@/lib/safe-fetch';
 import { Zap, Plus, Play, Pause, Settings, CheckCircle2, XCircle } from 'lucide-react';
 import Link from 'next/link';
+import { RBACGate, TruncateContent } from '@/lib/rbac-gate';
 
 interface Workflow {
   id: string;
@@ -102,27 +103,30 @@ export default function WorkflowsPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Workflows</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Automate actions based on events (Zapier-style). 
-            <span className="text-xs text-slate-500 ml-2">Create workflows that trigger when reconciliation completes, anomalies are detected, or receipts are parsed.</span>
-          </p>
+    <RBACGate requiredTier="subscribed_unpaid" feature="Workflows">
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Workflows</h1>
+            <p className="text-slate-600 dark:text-slate-400 mt-1">
+              Automate actions based on events (Zapier-style). 
+              <span className="text-xs text-slate-500 ml-2">Create workflows that trigger when reconciliation completes, anomalies are detected, or receipts are parsed.</span>
+            </p>
+          </div>
+          <RBACGate requiredTier="subscribed_paid" feature="Create Workflows">
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowTemplates(!showTemplates)}>
+                Templates
+              </Button>
+              <Button asChild>
+                <Link href="/console/workflows/new">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Workflow
+                </Link>
+              </Button>
+            </div>
+          </RBACGate>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowTemplates(!showTemplates)}>
-            Templates
-          </Button>
-          <Button asChild>
-            <Link href="/console/workflows/new">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Workflow
-            </Link>
-          </Button>
-        </div>
-      </div>
 
       {showTemplates && (
         <Card>
@@ -174,8 +178,9 @@ export default function WorkflowsPage() {
               }}
             />
           ) : (
-            <div className="space-y-4">
-              {workflows.map((workflow) => (
+            <TruncateContent tier="subscribed_unpaid" maxItems={10}>
+              <div className="space-y-4">
+                {workflows.map((workflow) => (
                 <div
                   key={workflow.id}
                   className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
@@ -244,11 +249,13 @@ export default function WorkflowsPage() {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </TruncateContent>
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </RBACGate>
   );
 }

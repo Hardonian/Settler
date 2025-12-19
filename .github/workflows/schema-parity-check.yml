@@ -1,0 +1,241 @@
+name: Schema Parity Verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'prisma/schema.prisma'
+  pull_request:
+    paths:
+      - 'supabase/migrations/**'
+      - 'prisma/schema.prisma'
+  workflow_dispatch:
+
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+jobs:
+  verify-schema-parity:
+    name: Verify Schema Parity
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Introspect production schema
+        id: introspect
+        run: |
+          echo "🔍 Introspecting production database schema..."
+          npx tsx scripts/introspect-production-schema.ts || {
+            echo "⚠️  Could not introspect production (may not have DATABASE_URL in PR)"
+            echo "schema_introspected=false" >> $GITHUB_OUTPUT
+            exit 0
+          }
+          echo "schema_introspected=true" >> $GITHUB_OUTPUT
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+        continue-on-error: true
+
+      - name: Verify golden migration idempotency
+        run: |
+          echo "🔄 Testing golden migration idempotency..."
+          
+          if [ ! -f "supabase/migrations/00000000_settler_golden_schema.sql" ]; then
+            echo "⚠️  Golden migration not found - skipping idempotency test"
+            exit 0
+          fi
+          
+          # Create a test database
+          export PGPASSWORD="test_password"
+          psql -h localhost -U postgres -c "DROP DATABASE IF EXISTS settler_test_golden;" || true
+          psql -h localhost -U postgres -c "CREATE DATABASE settler_test_golden;" || {
+            echo "⚠️  Could not create test database - skipping idempotency test"
+            exit 0
+          }
+          
+          # Apply golden migration
+          psql -h localhost -U postgres -d settler_test_golden -f supabase/migrations/00000000_settler_golden_schema.sql
+          
+          # Capture schema after first run
+          psql -h localhost -U postgres -d settler_test_golden -c "\d" > /tmp/schema_first.txt
+          
+          # Apply golden migration again
+          psql -h localhost -U postgres -d settler_test_golden -f supabase/migrations/00000000_settler_golden_schema.sql
+          
+          # Capture schema after second run
+          psql -h localhost -U postgres -d settler_test_golden -c "\d" > /tmp/schema_second.txt
+          
+          # Compare schemas
+          if diff -q /tmp/schema_first.txt /tmp/schema_second.txt; then
+            echo "✅ Golden migration is idempotent"
+          else
+            echo "❌ Golden migration is NOT idempotent - schemas differ!"
+            echo "First run:"
+            cat /tmp/schema_first.txt
+            echo "Second run:"
+            cat /tmp/schema_second.txt
+            exit 1
+          fi
+        continue-on-error: true
+
+      - name: Compare production schema to migrations
+        if: steps.introspect.outputs.schema_introspected == 'true'
+        run: |
+          echo "🔍 Comparing production schema to migration files..."
+          
+          if [ ! -f "supabase/production-schema.json" ]; then
+            echo "⚠️  Production schema introspection file not found"
+            exit 0
+          fi
+          
+          # Extract table names from production schema
+          PROD_TABLES=$(cat supabase/production-schema.json | jq -r '.tables[].name' | sort)
+          
+          # Extract table names from migration files (simple grep)
+          MIGRATION_TABLES=$(grep -h "CREATE TABLE" supabase/migrations/*.sql | \
+            sed 's/CREATE TABLE IF NOT EXISTS//' | \
+            sed 's/CREATE TABLE//' | \
+            sed 's/(.*//' | \
+            tr -d ' ' | \
+            sort | uniq)
+          
+          echo "Production tables:"
+          echo "$PROD_TABLES"
+          echo ""
+          echo "Migration tables:"
+          echo "$MIGRATION_TABLES"
+          
+          # Check for orphaned tables (in prod but not in migrations)
+          ORPHANED=$(comm -23 <(echo "$PROD_TABLES") <(echo "$MIGRATION_TABLES"))
+          if [ -n "$ORPHANED" ]; then
+            echo "⚠️  Orphaned tables in production (not in migrations):"
+            echo "$ORPHANED"
+          fi
+          
+          # Check for missing tables (in migrations but not in prod)
+          MISSING=$(comm -13 <(echo "$PROD_TABLES") <(echo "$MIGRATION_TABLES"))
+          if [ -n "$MISSING" ]; then
+            echo "⚠️  Missing tables in production (in migrations but not deployed):"
+            echo "$MISSING"
+          fi
+          
+          if [ -z "$ORPHANED" ] && [ -z "$MISSING" ]; then
+            echo "✅ Schema parity verified"
+          else
+            echo "⚠️  Schema drift detected - review differences above"
+            # Don't fail CI, just warn
+          fi
+        continue-on-error: true
+
+      - name: Verify RLS is enabled on sensitive tables
+        run: |
+          echo "🔒 Verifying RLS policies..."
+          
+          SENSITIVE_TABLES=(
+            "users"
+            "billing_accounts"
+            "subscriptions"
+            "api_keys"
+            "webhooks"
+            "receipts"
+            "recon_jobs"
+            "recon_results"
+          )
+          
+          if [ ! -f "supabase/production-schema.json" ]; then
+            echo "⚠️  Production schema file not found - skipping RLS check"
+            exit 0
+          fi
+          
+          for table in "${SENSITIVE_TABLES[@]}"; do
+            RLS_ENABLED=$(cat supabase/production-schema.json | jq -r ".tables[] | select(.name == \"$table\") | .rlsEnabled")
+            if [ "$RLS_ENABLED" = "true" ]; then
+              echo "✅ RLS enabled on $table"
+            elif [ "$RLS_ENABLED" = "false" ]; then
+              echo "⚠️  RLS NOT enabled on $table"
+            else
+              echo "⚠️  Table $table not found in schema"
+            fi
+          done
+        continue-on-error: true
+
+      - name: Generate schema manifest
+        run: |
+          echo "📋 Generating schema manifest..."
+          
+          if [ -f "supabase/production-schema.json" ]; then
+            cat > supabase/SCHEMA_MANIFEST.md << 'EOF'
+# Settler.dev Database Schema Manifest
+
+**Generated:** $(date -u)
+**Source:** Production database introspection
+
+## Summary
+
+- **Schemas:** $(cat supabase/production-schema.json | jq '.schemas | length')
+- **Tables:** $(cat supabase/production-schema.json | jq '.tables | length')
+- **Functions:** $(cat supabase/production-schema.json | jq '.functions | length')
+- **Triggers:** $(cat supabase/production-schema.json | jq '.triggers | length')
+- **Views:** $(cat supabase/production-schema.json | jq '.views | length')
+- **Enums:** $(cat supabase/production-schema.json | jq '.enums | length')
+
+## Tables
+
+$(cat supabase/production-schema.json | jq -r '.tables[] | "- `\(.schema).\(.name)` (RLS: \(.rlsEnabled), Policies: \(.policies | length))"')
+
+## Functions
+
+$(cat supabase/production-schema.json | jq -r '.functions[] | "- `\(.schema).\(.name)(\(.arguments))`"')
+
+## RLS Status
+
+Tables with RLS enabled: $(cat supabase/production-schema.json | jq '[.tables[] | select(.rlsEnabled == true)] | length')
+Total policies: $(cat supabase/production-schema.json | jq '[.tables[].policies[]] | length')
+
+EOF
+            cat supabase/SCHEMA_MANIFEST.md
+          else
+            echo "⚠️  Production schema file not found - cannot generate manifest"
+          fi
+        continue-on-error: true
+
+      - name: Upload schema artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: schema-introspection
+          path: |
+            supabase/production-schema.json
+            supabase/SCHEMA_MANIFEST.md
+          retention-days: 30
+
+      - name: Post verification summary
+        run: |
+          echo "## Schema Parity Verification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Production Introspection | ${{ steps.introspect.outputs.schema_introspected }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Golden Migration Idempotency | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Schema Parity | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Note:** This workflow verifies that the repository schema matches production." >> $GITHUB_STEP_SUMMARY

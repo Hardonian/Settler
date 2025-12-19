@@ -32,12 +32,15 @@ import {
   Zap,
   Shield,
   Search,
+  Database,
 } from 'lucide-react';
 import { BackendHealthBadge } from './BackendHealthBadge';
 
 const consoleNavItems = [
     { href: '/console', label: 'Overview', icon: LayoutDashboard },
+    { href: '/console/api-test', label: 'API Test Console', icon: Code },
     { href: '/console/api-playground', label: 'API Playground', icon: Code },
+    { href: '/console/tables', label: 'API Service Tables', icon: Database },
     { href: '/console/activity', label: 'Activity Feed', icon: Activity },
     { href: '/console/workflows', label: 'Workflows', icon: Zap },
     { href: '/console/control-plane', label: 'Control Plane', icon: Shield },
