@@ -35,7 +35,7 @@ export default function AdminDatabasePage() {
       try {
         const { data, error: err } = await supabase.rpc('get_tables', {
           schema_name: 'public'
-        });
+        } as any); // RPC types not fully generated
         
         if (!err && data) {
           setTables(data);

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 /**
@@ -7,22 +7,22 @@ import { createClient } from '@/lib/supabase/server';
  * Returns all tables in the database for admin browser
  */
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     
-    // Try RPC function
-    try {
-      const { data, error } = await supabase.rpc('get_tables', {
-        schema_name: 'public'
-      });
-      
-      if (!error && data) {
-        return NextResponse.json({ tables: data });
+      // Try RPC function
+      try {
+        const { data, error } = await supabase.rpc('get_tables', {
+          schema_name: 'public'
+        } as any); // RPC types not fully generated
+        
+        if (!error && data) {
+          return NextResponse.json({ tables: data });
+        }
+      } catch {
+        // Fall through
       }
-    } catch {
-      // Fall through
-    }
     
     // Fallback: return known tables
     const knownTables = [

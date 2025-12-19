@@ -67,12 +67,13 @@ export async function GET(request: NextRequest) {
         p_filters: JSON.parse(filters),
         p_order_by: orderBy,
         p_order_asc: orderAsc,
-      });
+      } as any); // RPC types not fully generated
       
-      if (!rpcError && rpcData && rpcData.length > 0) {
+      if (!rpcError && rpcData && Array.isArray(rpcData) && rpcData.length > 0) {
+        const result = rpcData[0] as { data?: unknown[]; total_count?: number | string };
         return NextResponse.json({
-          data: rpcData[0].data || [],
-          count: Number(rpcData[0].total_count) || 0,
+          data: Array.isArray(result.data) ? result.data : [],
+          count: Number(result.total_count) || 0,
           limit,
           offset,
         });
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest) {
         p_table_schema: schema,
         p_table_name: table,
         p_data: body,
-      });
+      } as any); // RPC types not fully generated
       
       if (!rpcError && rpcData) {
         return NextResponse.json({ data: rpcData }, { status: 201 });
@@ -207,7 +208,7 @@ export async function PATCH(request: NextRequest) {
         p_table_name: table,
         p_id: id,
         p_data: body,
-      });
+      } as any); // RPC types not fully generated
       
       if (!rpcError && rpcData) {
         return NextResponse.json({ data: rpcData });
@@ -258,11 +259,11 @@ export async function DELETE(request: NextRequest) {
     
     // Try RPC function first
     try {
-      const { data: rpcData, error: rpcError } = await supabase.rpc('delete_table_record', {
+      const { error: rpcError } = await supabase.rpc('delete_table_record', {
         p_table_schema: schema,
         p_table_name: table,
         p_id: id,
-      });
+      } as any); // RPC types not fully generated
       
       if (!rpcError) {
         return NextResponse.json({ success: true });

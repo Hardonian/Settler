@@ -44,21 +44,32 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
   }
 
   // Get subscription
-  let subscription = null;
-  let billingAccount = null;
+  let subscription: {
+    id?: string;
+    status?: string;
+    plan_name?: string;
+    plan_id?: string;
+    current_period_end?: Date | string;
+    billing_account_id?: string;
+    tenant_id?: string;
+  } | null = null;
+  let billingAccount: {
+    id?: string;
+    status?: string;
+  } | null = null;
 
   if (tenantId) {
     // Get subscription by tenant
     const { data: subData } = await supabase
       .from('subscriptions')
-      .select('id, status, plan_name, plan_id, current_period_end, tenant_id')
+      .select('id, status, plan_name, plan_id, current_period_end, tenant_id, billing_account_id')
       .eq('tenant_id', tenantId)
       .in('status', ['active', 'trialing', 'past_due'])
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
     
-    subscription = subData;
+    subscription = subData ?? null;
 
     // Get billing account
     if (subData?.billing_account_id) {
@@ -89,9 +100,10 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
       .select('id, status, plan_name, plan_id, current_period_end, billing_account_id')
       .in('status', ['active', 'trialing', 'past_due'])
       .order('created_at', { ascending: false })
-      .limit(1);
+      .limit(1)
+      .maybeSingle();
     
-    subscription = subData?.[0] || null;
+    subscription = subData ?? null;
 
     if (subscription?.billing_account_id) {
       const { data: billingData } = await supabase

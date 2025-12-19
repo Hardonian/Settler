@@ -19,10 +19,12 @@ export async function GET() {
       .select('role')
       .eq('user_id', user.id)
       .eq('status', 'active')
-      .single();
+      .maybeSingle();
+
+    const role = (membership as { role?: string } | null)?.role ?? 'member';
 
     return NextResponse.json({ 
-      role: membership?.role || 'member',
+      role,
       userId: user.id,
     });
   } catch (error: any) {

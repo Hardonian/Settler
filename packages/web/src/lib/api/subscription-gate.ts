@@ -46,8 +46,8 @@ export async function requireSubscriptionTier(
       enterprise: 3,
     };
 
-    const userTier = tierOrder[subscription.tier] || 0;
-    const requiredTierLevel = tierOrder[options.requiredTier] || 0;
+    const userTier = tierOrder[subscription.tier] ?? 0;
+    const requiredTierLevel = tierOrder[options.requiredTier] ?? 0;
 
     if (userTier < requiredTierLevel) {
       await logger.warn('Subscription tier insufficient', {

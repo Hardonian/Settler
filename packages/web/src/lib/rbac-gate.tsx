@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { SubscriptionGate } from '@/components/console/SubscriptionGate';
-import { SubscriptionTier } from './subscription-access';
+import { SubscriptionTier, SubscriptionStatus } from './subscription-access';
 
 interface RBACGateProps {
   /** Minimum subscription tier required */
@@ -36,7 +36,7 @@ export function RBACGate({
   truncate = false,
   maxItems = 5,
 }: RBACGateProps) {
-  const [subscription, setSubscription] = useState<any>(null);
+  const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -47,19 +47,36 @@ export function RBACGate({
   async function loadAccess() {
     try {
       const [subResponse, roleResponse] = await Promise.all([
-        fetch('/api/console/subscription-status'),
-        requiredRole ? fetch('/api/console/user-role') : Promise.resolve(null),
+        fetch('/api/console/subscription-status').catch(() => null),
+        requiredRole ? fetch('/api/console/user-role').catch(() => null) : Promise.resolve(null),
       ]);
 
-      const subData = await subResponse.json();
-      setSubscription(subData);
+      if (subResponse && subResponse.ok) {
+        const subData = await subResponse.json() as SubscriptionStatus;
+        setSubscription(subData);
+      } else {
+        // Default to unsubscribed on error
+        setSubscription({
+          tier: 'unsubscribed',
+          hasSubscription: false,
+          isPaid: false,
+          isEnterprise: false,
+        });
+      }
 
-      if (roleResponse) {
-        const roleData = await roleResponse.json();
-        setUserRole(roleData.role);
+      if (roleResponse && roleResponse.ok) {
+        const roleData = await roleResponse.json() as { role?: string };
+        setUserRole(roleData.role || null);
       }
     } catch (err) {
       console.error('Failed to load access:', err);
+      // Default to unsubscribed on error
+      setSubscription({
+        tier: 'unsubscribed',
+        hasSubscription: false,
+        isPaid: false,
+        isEnterprise: false,
+      });
     } finally {
       setLoading(false);
     }
@@ -74,15 +91,15 @@ export function RBACGate({
   }
 
   // Check subscription tier
-  const tierOrder: Record<string, number> = {
+  const tierOrder: Record<SubscriptionTier, number> = {
     unsubscribed: 0,
     subscribed_unpaid: 1,
     subscribed_paid: 2,
     enterprise: 3,
   };
 
-  const userTier = tierOrder[subscription?.tier] || 0;
-  const requiredTierLevel = tierOrder[requiredTier] || 0;
+  const userTier = subscription?.tier ? tierOrder[subscription.tier] ?? 0 : 0;
+  const requiredTierLevel = tierOrder[requiredTier] ?? 0;
   const hasTierAccess = userTier >= requiredTierLevel;
 
   // Check role if required
@@ -127,7 +144,7 @@ export function TruncateContent({
     enterprise: 1000,
   };
 
-  const limit = tierLimits[tier] || maxItems;
+  const limit = tierLimits[tier] ?? maxItems;
   const items = Array.isArray(children) ? children : [children];
   const visible = items.slice(0, Math.min(limit, maxItems));
   const hidden = items.length - visible.length;

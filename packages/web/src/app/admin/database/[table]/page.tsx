@@ -78,7 +78,7 @@ export default function AdminTablePage() {
   }
   
   const displayName = table.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-  const columns = data.length > 0 ? Object.keys(data[0]) : [];
+  const columns = data.length > 0 && data[0] ? Object.keys(data[0]) : [];
   
   return (
     <div className="container mx-auto p-6">
