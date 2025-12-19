@@ -25,8 +25,16 @@ async function applyMigrations() {
     console.log('  DATABASE_URL="postgresql://..." tsx scripts/apply-migrations-direct-pooler.ts');
     console.log('\nExample pooler URL:');
     console.log('  postgresql://postgres.[PROJECT-REF]:[PASSWORD]@[HOST].pooler.supabase.com:5432/postgres');
+    console.log('\nFor CI/CD:');
+    console.log('  Set DATABASE_URL as GitHub secret and it will be used automatically');
     process.exit(1);
   }
+  
+  // Log connection info (without exposing password)
+  const urlObj = new URL(databaseUrl);
+  console.log(`🔌 Connecting to: ${urlObj.protocol}//${urlObj.hostname}:${urlObj.port}${urlObj.pathname}`);
+  console.log(`📋 User: ${urlObj.username}`);
+  console.log(`🔒 Password: ${urlObj.password ? '***' : 'not set'}`);
 
   // Check if it's a pooler connection
   if (!databaseUrl.includes('pooler') && !databaseUrl.includes('pooler.supabase.com')) {

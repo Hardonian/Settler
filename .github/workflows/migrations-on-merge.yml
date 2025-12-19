@@ -1,0 +1,81 @@
+name: Auto-Apply Migrations on Merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  apply-migrations-on-merge:
+    name: Apply Migrations on Merge to Main
+    runs-on: ubuntu-latest
+    
+    # Only run if PR was merged (not closed)
+    if: github.event.pull_request.merged == true
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for migration files
+        id: check-migrations
+        run: |
+          if git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep -q 'supabase/migrations/.*\.sql$'; then
+            echo "has_migrations=true" >> $GITHUB_OUTPUT
+            echo "✅ Migration files detected"
+          else
+            echo "has_migrations=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  No migration files in this PR"
+          fi
+
+      - name: Apply migrations
+        if: steps.check-migrations.outputs.has_migrations == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🔌 Applying migrations via pooler connection..."
+          npm run db:migrate:pooler
+
+      - name: Verify migrations
+        if: steps.check-migrations.outputs.has_migrations == 'true' && success()
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "✅ Verifying applied migrations..."
+          npx tsx -e "
+            import { Client } from 'pg';
+            const client = new Client({ 
+              connectionString: process.env.DATABASE_URL,
+              ssl: { rejectUnauthorized: false }
+            });
+            await client.connect();
+            const result = await client.query(
+              'SELECT version, name FROM supabase_migrations.schema_migrations ORDER BY inserted_at DESC LIMIT 5'
+            );
+            console.log('📊 Recent migrations:');
+            result.rows.forEach(row => console.log(\`  ✅ \${row.version}\`));
+            await client.end();
+          "
+
+      - name: Notify on success
+        if: steps.check-migrations.outputs.has_migrations == 'true' && success()
+        run: |
+          echo "✅ Migrations applied successfully on merge to main"
+
+      - name: Notify on failure
+        if: steps.check-migrations.outputs.has_migrations == 'true' && failure()
+        run: |
+          echo "❌ Migration failed on merge to main"
+          exit 1

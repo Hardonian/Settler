@@ -1,5 +1,9 @@
 # Applying Migrations via Supabase Pooler Connection
 
+> **⚠️ Note**: Migrations are now **automatically applied via GitHub Actions**. See [CI/CD Migrations Guide](./CI_CD_MIGRATIONS.md) for automated setup.
+>
+> This manual guide is for reference or local testing only.
+
 This guide explains how to apply the enterprise multi-tenant migrations using a Supabase Pooler connection.
 
 ## Prerequisites
