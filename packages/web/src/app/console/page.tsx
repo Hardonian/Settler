@@ -104,6 +104,14 @@ async function ConsoleOverviewContent() {
               Manage API keys, monitor usage, and control your Settler integration. 
               Sign in for full access, or explore our public tools below.
             </p>
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <Button asChild>
+                <Link href="/signup">Sign In / Sign Up</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/console/playground">Try Playground</Link>
+              </Button>
+            </div>
           </div>
 
           {/* Live Status Widget */}
