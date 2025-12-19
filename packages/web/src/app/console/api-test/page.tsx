@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Code, Play, Copy, Check } from 'lucide-react';
+import { SubscriptionGate } from '@/components/console/SubscriptionGate';
 
 /**
  * API Test Console - CLI Code Editor
@@ -157,8 +158,9 @@ export default function APITestPage() {
   }
   
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">API Test Console</h1>
+    <SubscriptionGate requiredTier="subscribed_unpaid" feature="API Test Console">
+      <div className="container mx-auto p-6">
+        <h1 className="text-2xl font-bold mb-4">API Test Console</h1>
       <p className="text-gray-600 mb-6">
         Test API calls, webhooks, CLI commands, and SDK operations for Settler's core services.
       </p>
@@ -290,6 +292,7 @@ export default function APITestPage() {
           <div className="text-sm text-gray-500">View webhooks</div>
         </Link>
       </div>
-    </div>
+      </div>
+    </SubscriptionGate>
   );
 }

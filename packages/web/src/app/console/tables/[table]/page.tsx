@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { SubscriptionGate } from '@/components/console/SubscriptionGate';
 
 interface TableRecord {
   id: string;
@@ -40,6 +41,11 @@ export default function TablePage() {
   const [limit] = useState(50);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
+  const [subscription, setSubscription] = useState<any>(null);
+  
+  useEffect(() => {
+    loadSubscription();
+  }, []);
   
   useEffect(() => {
     if (table) {
@@ -73,6 +79,16 @@ export default function TablePage() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  }
+  
+  async function loadSubscription() {
+    try {
+      const response = await fetch('/api/console/subscription-status');
+      const data = await response.json();
+      setSubscription(data);
+    } catch (err) {
+      console.error('Failed to load subscription:', err);
     }
   }
   
@@ -182,14 +198,21 @@ export default function TablePage() {
   
   const displayName = table.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   const columns = data.length > 0 ? Object.keys(data[0]) : [];
+  const canEdit = subscription?.tier === 'subscribed_paid' || subscription?.tier === 'enterprise';
   
   return (
-    <div className="container mx-auto p-6">
+    <SubscriptionGate requiredTier="subscribed_unpaid" feature="Table Viewing">
+      <div className="container mx-auto p-6">
       <div className="mb-4">
         <Link href="/console/tables" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
           ← Back to API Service Tables
         </Link>
       </div>
+      {!canEdit && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+          <strong>Read-only mode:</strong> Upgrade to a paid plan to edit and delete records.
+        </div>
+      )}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold">{displayName}</h1>
@@ -199,16 +222,18 @@ export default function TablePage() {
             Use this to test API calls, webhooks, and SDK operations for this service.
           </p>
         </div>
-        <button
-          onClick={() => {
-            setEditing(true);
-            setEditForm({});
-            setSelectedRecord(null);
-          }}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          + Create New
-        </button>
+        {canEdit && (
+          <button
+            onClick={() => {
+              setEditing(true);
+              setEditForm({});
+              setSelectedRecord(null);
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            + Create New
+          </button>
+        )}
       </div>
       
       {editing && (
@@ -259,7 +284,9 @@ export default function TablePage() {
                   {key}
                 </th>
               ))}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              {canEdit && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -272,24 +299,26 @@ export default function TablePage() {
                       : String(record[key] || '').substring(0, 100)}
                   </td>
                 ))}
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <button
-                    onClick={() => {
-                      setSelectedRecord(record);
-                      setEditForm(record);
-                      setEditing(true);
-                    }}
-                    className="text-blue-600 hover:text-blue-800 mr-3"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(record.id)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    Delete
-                  </button>
-                </td>
+                {canEdit && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <button
+                      onClick={() => {
+                        setSelectedRecord(record);
+                        setEditForm(record);
+                        setEditing(true);
+                      }}
+                      className="text-blue-600 hover:text-blue-800 mr-3"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(record.id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -317,6 +346,7 @@ export default function TablePage() {
           </button>
         </div>
       )}
-    </div>
+      </div>
+    </SubscriptionGate>
   );
 }

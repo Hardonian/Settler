@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getSubscriptionStatus } from '@/lib/get-subscription-status';
+import { hasAccess } from '@/lib/subscription-access';
 
 /**
  * Generic CRUD API Route for All Tables
@@ -15,6 +17,15 @@ import { createClient } from '@/lib/supabase/server';
 
 export async function GET(request: NextRequest) {
   try {
+    // Check subscription access
+    const subscription = await getSubscriptionStatus();
+    if (!hasAccess(subscription.tier, 'canViewTables')) {
+      return NextResponse.json(
+        { error: 'Subscription required to view tables' },
+        { status: 403 }
+      );
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const pathParts = request.nextUrl.pathname.split('/');
@@ -114,6 +125,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check subscription access for editing
+    const subscription = await getSubscriptionStatus();
+    if (!hasAccess(subscription.tier, 'canEditTables')) {
+      return NextResponse.json(
+        { error: 'Paid subscription required to edit tables' },
+        { status: 403 }
+      );
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const pathParts = request.nextUrl.pathname.split('/');
@@ -159,6 +179,15 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    // Check subscription access for editing
+    const subscription = await getSubscriptionStatus();
+    if (!hasAccess(subscription.tier, 'canEditTables')) {
+      return NextResponse.json(
+        { error: 'Paid subscription required to edit tables' },
+        { status: 403 }
+      );
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const pathParts = request.nextUrl.pathname.split('/');
@@ -207,6 +236,15 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Check subscription access for editing
+    const subscription = await getSubscriptionStatus();
+    if (!hasAccess(subscription.tier, 'canEditTables')) {
+      return NextResponse.json(
+        { error: 'Paid subscription required to delete records' },
+        { status: 403 }
+      );
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const pathParts = request.nextUrl.pathname.split('/');

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { SubscriptionGate } from '@/components/console/SubscriptionGate';
 
 interface TableInfo {
   table_schema: string;
@@ -103,12 +104,13 @@ export default function TablesPage() {
   }
   
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">API Service Tables</h1>
-      <p className="text-gray-600 mb-6">
-        Browse and manage tables for Settler's core API services: Receipts, Reconciliation, Feature Flags, and Webhooks.
-        Use this to test API calls, webhooks, CLI commands, and SDK operations.
-      </p>
+    <SubscriptionGate requiredTier="subscribed_unpaid" feature="API Service Tables">
+      <div className="container mx-auto p-6">
+        <h1 className="text-2xl font-bold mb-4">API Service Tables</h1>
+        <p className="text-gray-600 mb-6">
+          Browse and manage tables for Settler's core API services: Receipts, Reconciliation, Feature Flags, and Webhooks.
+          Use this to test API calls, webhooks, CLI commands, and SDK operations.
+        </p>
       
       <div className="mb-4">
         <input
@@ -138,6 +140,7 @@ export default function TablesPage() {
           No tables found matching "{search}"
         </div>
       )}
-    </div>
+      </div>
+    </SubscriptionGate>
   );
 }
