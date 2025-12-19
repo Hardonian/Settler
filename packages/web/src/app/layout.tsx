@@ -121,13 +121,17 @@ export const dynamic = 'force-dynamic';
 // Revalidate every 60 seconds to balance freshness with performance
 export const revalidate = 60;
 
-// Validate environment on server startup (non-blocking in development)
-if (typeof window === 'undefined' && process.env.NODE_ENV === 'production') {
+// Validate environment on server startup (non-blocking)
+// CRITICAL: Never throw here - allow graceful degradation
+if (typeof window === 'undefined') {
   try {
     requireEnvironment();
   } catch (error) {
-    console.error('Environment validation failed:', error);
-    // Don't throw in production to allow graceful degradation
+    // Log but never throw - allow app to render even with missing env vars
+    console.warn('Environment validation warning (non-fatal):', 
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+    // Continue execution - pages will handle missing env vars gracefully
   }
 }
 
@@ -145,6 +149,7 @@ export default async function RootLayout({
   }
   
   // Get tenant context for theme - gracefully handles build-time and errors
+  // CRITICAL: Never throw - always return valid context
   let tenantContext;
   try {
     tenantContext = await getTenantContext();
@@ -161,8 +166,21 @@ export default async function RootLayout({
     
     // Only log errors in development to avoid build noise
     if (process.env.NODE_ENV === 'development') {
-      console.warn('Failed to get tenant context, using defaults:', error);
+      console.warn('Failed to get tenant context, using defaults:', 
+        error instanceof Error ? error.message : 'Unknown error'
+      );
     }
+  }
+  
+  // Ensure tenantContext is never null/undefined
+  if (!tenantContext) {
+    tenantContext = {
+      tenantId: '',
+      tenantSlug: 'default',
+      theme: null,
+      branding: null,
+      navigation: null,
+    };
   }
   
   return (

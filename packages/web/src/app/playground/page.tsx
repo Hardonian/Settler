@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { initGuestSession } from "@/lib/auth/guest";
+import { isSafeMode } from "@/lib/safe";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -88,8 +89,10 @@ console.log("Report:", report.data.summary);
   const playgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize guest session on mount
-    initGuestSession().catch(console.error);
+    // Initialize guest session on mount (skip in safe mode)
+    if (!isSafeMode()) {
+      initGuestSession().catch(console.error);
+    }
     
     const observer = new IntersectionObserver(
       (entries) => {

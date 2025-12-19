@@ -17,6 +17,7 @@ import { listReceipts } from '@/domain/console/receipts';
 import { listFeatureFlags } from '@/domain/console/featureFlags';
 import { validateSupabaseEnv } from '@/lib/env/validator';
 import { EnvErrorPanel } from '@/components/env/EnvErrorPanel';
+import { isSafeMode } from '@/lib/safe';
 import { LiveActivityFeed } from '@/components/console/LiveActivityFeed';
 import { OnboardingWizardClient } from '@/components/onboarding/OnboardingWizardClient';
 import { WelcomeBannerClient } from '@/components/onboarding/WelcomeBannerClient';
@@ -90,7 +91,8 @@ async function ConsoleOverviewContent() {
     }
 
     // Public minimal mode - show useful content even without auth
-    if (!user) {
+    // Also enable safe mode if SAFE_MODE env var is set
+    if (!user || isSafeMode()) {
       return (
         <div className="space-y-8">
           {/* Public Minimal Console */}

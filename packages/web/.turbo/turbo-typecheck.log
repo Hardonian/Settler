@@ -11,11 +11,18 @@ src/__tests__/services/cost-signal-engine.test.ts(5,44): error TS6133: 'vi' is d
 src/__tests__/services/cost-signal-engine.test.ts(5,54): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
 src/__tests__/services/cost-signal-engine.test.ts(6,48): error TS2307: Cannot find module '../../../../ops/cost_baselines' or its corresponding type declarations.
 src/__tests__/services/pivot-engine.test.ts(5,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
-src/app/runbooks/page.tsx(16,3): error TS6133: 'Clock' is declared but its value is never read.
-src/app/runbooks/page.tsx(19,3): error TS6133: 'Cloud' is declared but its value is never read.
-src/app/schematics/page.tsx(14,3): error TS6133: 'Workflow' is declared but its value is never read.
-src/lib/env/safe.ts(8,36): error TS6133: 'EnvValidationResult' is declared but its value is never read.
-src/lib/env/safe.ts(9,1): error TS6192: All imports in import declaration are unused.
+src/lib/auth/guest.ts(46,7): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/auth/guest.ts(46,22): error TS2339: Property 'ok' does not exist on type 'GuestSession'.
+src/lib/auth/guest.ts(49,62): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/auth/guest.ts(49,77): error TS2339: Property 'data' does not exist on type 'GuestSession'.
+src/lib/auth/guest.ts(51,12): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/auth/guest.ts(51,27): error TS2339: Property 'data' does not exist on type 'GuestSession'.
+src/lib/content-provider.ts(76,9): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/content-provider.ts(76,24): error TS2339: Property 'ok' does not exist on type 'T[]'.
+src/lib/content-provider.ts(76,30): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/content-provider.ts(76,45): error TS2339: Property 'data' does not exist on type 'T[]'.
+src/lib/content-provider.ts(77,14): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/content-provider.ts(77,29): error TS2339: Property 'data' does not exist on type 'T[]'.
 npm error Lifecycle script `typecheck` failed with error:
 npm error code 2
 npm error path /workspace/packages/web

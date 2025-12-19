@@ -13,28 +13,32 @@ import { addSecurityHeaders } from "./src/middleware/security-headers";
 import { generateTraceId } from "./src/lib/observability/trace";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
-  // Generate or get trace_id
-  let traceId = request.headers.get("x-trace-id") || request.cookies.get("trace-id")?.value;
-  if (!traceId) {
-    traceId = generateTraceId();
-  }
+  // CRITICAL: Wrap entire middleware in try-catch to prevent any 500 errors
+  try {
+    // Generate or get trace_id
+    let traceId = request.headers.get("x-trace-id") || request.cookies.get("trace-id")?.value;
+    if (!traceId) {
+      traceId = generateTraceId();
+    }
 
-  // Explicitly bypass Stripe webhook - it needs raw body and no auth
-  if (request.nextUrl.pathname === "/api/stripe/webhook") {
-    const response = NextResponse.next({
-      request: {
-        headers: new Headers(request.headers),
-      },
-    });
-    response.headers.set("x-trace-id", traceId);
-    return response;
-  }
+    // Explicitly bypass Stripe webhook - it needs raw body and no auth
+    if (request.nextUrl.pathname === "/api/stripe/webhook") {
+      const response = NextResponse.next({
+        request: {
+          headers: new Headers(request.headers),
+        },
+      });
+      response.headers.set("x-trace-id", traceId);
+      return addSecurityHeaders(response);
+    }
 
   // Public routes that should never require auth or throw errors
   // These routes must always render, even if Supabase/auth fails
   const publicRoutes = [
     '/console',
     '/playground',
+    '/pricing',
+    '/trust',
     '/cookbook',
     '/cookbooks',
     '/runbooks',
@@ -205,9 +209,29 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   //   return NextResponse.redirect(new URL('/login', request.url));
   // }
 
-  // Add security headers to all responses
-  // CRITICAL: Always return a response, never throw
-  return addSecurityHeaders(response);
+    // Add security headers to all responses
+    // CRITICAL: Always return a response, never throw
+    return addSecurityHeaders(response);
+  } catch (error) {
+    // CRITICAL: Middleware must NEVER throw - always return a valid response
+    // Log error but continue with basic response
+    console.error('[Middleware] Unexpected error (non-fatal):', 
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+    
+    // Return a basic response with security headers
+    const fallbackResponse = NextResponse.next({
+      request: {
+        headers: new Headers(request.headers),
+      },
+    });
+    
+    // Generate trace ID even on error
+    const traceId = generateTraceId();
+    fallbackResponse.headers.set("x-trace-id", traceId);
+    
+    return addSecurityHeaders(fallbackResponse);
+  }
 }
 
 export const config = {

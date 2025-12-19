@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2025-12-18T20:54:41.171Z",
-  "totalRoutes": 266,
-  "pageRoutes": 118,
+  "generatedAt": "2025-12-19T03:44:19.188Z",
+  "totalRoutes": 269,
+  "pageRoutes": 121,
   "routes": [
     {
       "path": "/",
@@ -1620,6 +1620,14 @@
       "optional": false
     },
     {
+      "path": "/cookbook",
+      "type": "page",
+      "file": "cookbook/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/cookbooks",
       "type": "page",
       "file": "cookbooks/page.tsx",
@@ -2044,6 +2052,22 @@
       "optional": false
     },
     {
+      "path": "/runbooks",
+      "type": "page",
+      "file": "runbooks/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/schematics",
+      "type": "page",
+      "file": "schematics/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/security",
       "type": "page",
       "file": "security/page.tsx",
@@ -2187,6 +2211,7 @@
     "/console/support",
     "/console/usage",
     "/console/webhooks",
+    "/cookbook",
     "/cookbooks",
     "/dashboard",
     "/dashboard/addons",
@@ -2240,6 +2265,8 @@
     "/realtime-dashboard",
     "/receipts",
     "/roadmap",
+    "/runbooks",
+    "/schematics",
     "/security",
     "/signup",
     "/slug",
