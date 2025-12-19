@@ -12,7 +12,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { glob } from 'glob';
 
 interface RouteContract {
   route: string;
@@ -31,22 +30,52 @@ interface ContractReport {
   routesWithoutBackend: RouteContract[]; // Routes with no backend dependencies
 }
 
-async function findFrontendRoutes(): Promise<string[]> {
+function findFiles(dir: string, pattern: RegExp, fileList: string[] = []): string[] {
+  if (!fs.existsSync(dir)) return fileList;
+  const files = fs.readdirSync(dir);
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    try {
+      const stat = fs.statSync(filePath);
+      if (stat.isDirectory() && !filePath.includes('node_modules') && !filePath.includes('.git')) {
+        findFiles(filePath, pattern, fileList);
+      } else if (pattern.test(file)) {
+        fileList.push(filePath);
+      }
+    } catch {
+      // Skip files we can't read
+    }
+  }
+  return fileList;
+}
+
+function findFrontendRoutes(): string[] {
   const routes: string[] = [];
+  const baseDir = path.join(__dirname, '..');
   
-  // Find Next.js pages
-  const pages = await glob('packages/web/app/**/page.tsx', { cwd: __dirname + '/..' });
-  const pages2 = await glob('packages/web/pages/**/*.tsx', { cwd: __dirname + '/..' });
-  
-  for (const page of [...pages, ...pages2]) {
-    const route = page
-      .replace('packages/web/app/', '/')
-      .replace('packages/web/pages/', '/')
-      .replace('/page.tsx', '')
-      .replace('/index.tsx', '')
-      .replace('.tsx', '')
-      .replace('.ts', '');
-    routes.push(route || '/');
+  try {
+    // Find Next.js pages
+    const appDir = path.join(baseDir, 'packages/web/app');
+    const pagesDir = path.join(baseDir, 'packages/web/pages');
+    
+    const appPages = fs.existsSync(appDir) ? findFiles(appDir, /page\.tsx$/) : [];
+    const pagesPages = fs.existsSync(pagesDir) ? findFiles(pagesDir, /\.tsx?$/) : [];
+    
+    for (const page of [...appPages, ...pagesPages]) {
+      const relativePath = path.relative(baseDir, page);
+      let route = relativePath
+        .replace(/^packages\/web\/app\//, '/')
+        .replace(/^packages\/web\/pages\//, '/')
+        .replace(/\/page\.tsx$/, '')
+        .replace(/\/index\.tsx$/, '')
+        .replace(/\.tsx$/, '')
+        .replace(/\.ts$/, '');
+      
+      if (!route || route === '') route = '/';
+      routes.push(route);
+    }
+  } catch (err) {
+    console.warn('⚠️  Error finding frontend routes:', err);
   }
   
   return [...new Set(routes)];
@@ -86,10 +115,10 @@ function extractBackendDependencies(filePath: string): {
   };
 }
 
-async function loadProductionSchema(): Promise<{
+function loadProductionSchema(): {
   tables: string[];
   functions: string[];
-}> {
+} {
   const schemaPath = path.join(__dirname, '..', 'supabase', 'production-schema.json');
   
   if (!fs.existsSync(schemaPath)) {
@@ -105,10 +134,10 @@ async function loadProductionSchema(): Promise<{
   };
 }
 
-async function main() {
+function main() {
   console.log('🔍 Mapping frontend routes to backend dependencies...');
   
-  const routes = await findFrontendRoutes();
+  const routes = findFrontendRoutes();
   console.log(`📋 Found ${routes.length} routes`);
   
   const contracts: RouteContract[] = [];
@@ -146,7 +175,7 @@ async function main() {
   }
   
   // Load production schema
-  const schema = await loadProductionSchema();
+  const schema = loadProductionSchema();
   
   // Generate report
   const report: ContractReport = {
@@ -211,7 +240,9 @@ async function main() {
   console.log(`\n✅ Contract mapping complete. Report: ${reportPath}`);
 }
 
-main().catch(err => {
+try {
+  main();
+} catch (err: any) {
   console.error('❌ Error:', err);
   process.exit(1);
-});
+}

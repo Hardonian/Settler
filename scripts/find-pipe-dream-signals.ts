@@ -14,7 +14,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { glob } from 'glob';
 
 interface PipeDreamSignal {
   type: 'feature_in_docs' | 'ui_no_backend' | 'table_no_consumer' | 'route_no_action' | 'unused_config' | 'unused_env';
@@ -23,13 +22,38 @@ interface PipeDreamSignal {
   severity: 'high' | 'medium' | 'low';
 }
 
-async function findPipeDreamSignals(): Promise<PipeDreamSignal[]> {
+function findFiles(dir: string, pattern: RegExp, fileList: string[] = []): string[] {
+  const files = fs.readdirSync(dir);
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    try {
+      const stat = fs.statSync(filePath);
+      if (stat.isDirectory() && !filePath.includes('node_modules') && !filePath.includes('.git')) {
+        findFiles(filePath, pattern, fileList);
+      } else if (pattern.test(file)) {
+        fileList.push(filePath);
+      }
+    } catch {
+      // Skip files we can't read
+    }
+  }
+  return fileList;
+}
+
+function findPipeDreamSignals(): PipeDreamSignal[] {
   const signals: PipeDreamSignal[] = [];
+  const baseDir = __dirname + '/..';
   
   // 1. Check for features in README that aren't in code
-  const readmeFiles = await glob('**/README.md', { cwd: __dirname + '/..' });
+  const readmeFiles = findFiles(baseDir, /README\.md$/);
   const readmeContent = readmeFiles
-    .map(f => fs.readFileSync(path.join(__dirname, '..', f), 'utf-8'))
+    .map(f => {
+      try {
+        return fs.readFileSync(f, 'utf-8');
+      } catch {
+        return '';
+      }
+    })
     .join('\n');
   
   // Extract feature mentions (simple heuristic)
@@ -37,7 +61,7 @@ async function findPipeDreamSignals(): Promise<PipeDreamSignal[]> {
   const mentionedFeatures = [...new Set(Array.from(featureMatches, m => m[1]))];
   
   // Check if features exist in code
-  const codeFiles = await glob('packages/**/*.{ts,tsx}', { cwd: __dirname + '/..' });
+  const codeFiles = findFiles(path.join(baseDir, 'packages'), /\.(ts|tsx)$/);
   const codeContent = codeFiles
     .slice(0, 100) // Limit to avoid memory issues
     .map(f => {
@@ -106,10 +130,10 @@ async function findPipeDreamSignals(): Promise<PipeDreamSignal[]> {
   return signals;
 }
 
-async function main() {
+function main() {
   console.log('🔍 Searching for pipe dream signals...');
   
-  const signals = await findPipeDreamSignals();
+  const signals = findPipeDreamSignals();
   
   console.log(`\n📊 Found ${signals.length} pipe dream signals\n`);
   
@@ -141,7 +165,9 @@ async function main() {
   }
 }
 
-main().catch(err => {
+try {
+  main();
+} catch (err: any) {
   console.error('❌ Error:', err);
   process.exit(1);
-});
+}

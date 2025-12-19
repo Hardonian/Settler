@@ -11,7 +11,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { glob } from 'glob';
 
 interface EdgeFunction {
   name: string;
@@ -23,16 +22,24 @@ interface EdgeFunction {
   errors: string[];
 }
 
-async function findEdgeFunctions(): Promise<string[]> {
-  const functions = await glob('supabase/functions/*/index.ts', {
-    cwd: __dirname + '/..',
-    ignore: ['**/_shared/**', '**/.gitkeep'],
-  });
+function findEdgeFunctions(): string[] {
+  const functionsDir = path.join(__dirname, '..', 'supabase', 'functions');
+  const functions: string[] = [];
   
-  return functions.map(f => {
-    const parts = f.split('/');
-    return parts[parts.length - 2]; // Get function name from directory
-  });
+  if (!fs.existsSync(functionsDir)) {
+    return functions;
+  }
+  
+  const dirs = fs.readdirSync(functionsDir);
+  for (const dir of dirs) {
+    if (dir === '_shared' || dir === '.gitkeep') continue;
+    const indexPath = path.join(functionsDir, dir, 'index.ts');
+    if (fs.existsSync(indexPath)) {
+      functions.push(dir);
+    }
+  }
+  
+  return functions;
 }
 
 function extractDependencies(filePath: string): {
@@ -58,10 +65,10 @@ function extractDependencies(filePath: string): {
   return { tables, functions, rpcCalls };
 }
 
-async function loadProductionSchema(): Promise<{
+function loadProductionSchema(): {
   tables: string[];
   functions: string[];
-}> {
+} {
   const schemaPath = path.join(__dirname, '..', 'supabase', 'production-schema.json');
   
   if (!fs.existsSync(schemaPath)) {
@@ -77,13 +84,13 @@ async function loadProductionSchema(): Promise<{
   };
 }
 
-async function main() {
+function main() {
   console.log('🔍 Verifying edge functions...');
   
-  const functionNames = await findEdgeFunctions();
+  const functionNames = findEdgeFunctions();
   console.log(`📋 Found ${functionNames.length} edge functions`);
   
-  const schema = await loadProductionSchema();
+  const schema = loadProductionSchema();
   const functions: EdgeFunction[] = [];
   
   for (const name of functionNames) {
@@ -158,7 +165,9 @@ async function main() {
   console.log(`\n✅ Edge functions verification complete. Report: ${reportPath}`);
 }
 
-main().catch(err => {
+try {
+  main();
+} catch (err: any) {
   console.error('❌ Error:', err);
   process.exit(1);
-});
+}
