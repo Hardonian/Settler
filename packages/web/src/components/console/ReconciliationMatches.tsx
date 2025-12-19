@@ -190,6 +190,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
                   <TableHead className="w-12"></TableHead>
                   <TableHead>Match Type</TableHead>
                   <TableHead>Confidence</TableHead>
+                  <TableHead>Reason</TableHead>
                   <TableHead>Source</TableHead>
                   <TableHead>Target</TableHead>
                   <TableHead>Amount Diff</TableHead>
@@ -200,7 +201,7 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
               <TableBody>
                 {matches.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center text-gray-500">
+                    <TableCell colSpan={9} className="text-center text-gray-500">
                       No matches found
                     </TableCell>
                   </TableRow>
@@ -219,6 +220,19 @@ export function ReconciliationMatches({ runId }: ReconciliationMatchesProps) {
                         <span className={getConfidenceColor(match.confidence)}>
                           {(match.confidence * 100).toFixed(1)}%
                         </span>
+                      </TableCell>
+                      <TableCell>
+                        {match.matchReason ? (
+                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                            {match.matchReason}
+                          </span>
+                        ) : match.matchType === 'unmatched' ? (
+                          <span className="text-sm text-amber-600 dark:text-amber-400">
+                            No matching transaction found. Check source data or adjust matching rules.
+                          </span>
+                        ) : (
+                          <span className="text-sm text-slate-400">-</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">

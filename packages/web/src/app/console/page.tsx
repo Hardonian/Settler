@@ -419,10 +419,15 @@ async function ConsoleOverviewContent() {
               <CardTitle className="text-3xl">{formatNumber(usageSummary.totalCalls)}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-2">
                 <Activity className="w-4 h-4" />
                 <span>Last 7 days</span>
               </div>
+              <Button asChild variant="outline" size="sm" className="w-full">
+                <Link href="/console/usage">
+                  View Details <ArrowRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
