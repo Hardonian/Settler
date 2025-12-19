@@ -11,6 +11,7 @@ src/__tests__/services/cost-signal-engine.test.ts(5,44): error TS6133: 'vi' is d
 src/__tests__/services/cost-signal-engine.test.ts(5,54): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
 src/__tests__/services/cost-signal-engine.test.ts(6,48): error TS2307: Cannot find module '../../../../ops/cost_baselines' or its corresponding type declarations.
 src/__tests__/services/pivot-engine.test.ts(5,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/app/page.tsx(56,7): error TS6133: 'TrustBadges' is declared but its value is never read.
 src/lib/auth/guest.ts(46,7): error TS18048: 'supabaseResult' is possibly 'undefined'.
 src/lib/auth/guest.ts(46,22): error TS2339: Property 'ok' does not exist on type 'GuestSession'.
 src/lib/auth/guest.ts(49,62): error TS18048: 'supabaseResult' is possibly 'undefined'.

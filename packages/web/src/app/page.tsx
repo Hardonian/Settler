@@ -154,7 +154,7 @@ if (flag.value) { /* ... */ }`;
 
         {/* Hero Section */}
         <section 
-          className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[90vh] flex items-center"
+          className="relative pt-24 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[85vh] sm:min-h-[90vh] flex items-center"
           aria-labelledby="hero-heading"
         >
           <ParallaxBackground>
@@ -197,19 +197,19 @@ if (flag.value) { /* ... */ }`;
                   <Button 
                     size="lg" 
                     asChild 
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-7 text-xl font-bold shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:scale-105"
+                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 sm:px-10 py-6 sm:py-7 text-lg sm:text-xl font-bold shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     onClick={() => trackCTA('Start Free Trial', { location: 'hero' })}
                   >
-                    <Link href="/signup" className="flex items-center gap-2">
+                    <Link href="/signup" className="flex items-center justify-center gap-2">
                       <span>Start Free Trial - No Credit Card</span>
-                      <ArrowRight className="w-5 h-5" />
+                      <ArrowRight className="w-5 h-5" aria-hidden="true" />
                     </Link>
                   </Button>
                   <Button 
                     size="lg" 
                     variant="outline" 
                     asChild 
-                    className="px-8 py-7 text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900"
+                    className="w-full sm:w-auto px-6 sm:px-8 py-6 sm:py-7 text-base sm:text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                   >
                     <Link href="/docs">
                       View Docs
@@ -234,7 +234,7 @@ if (flag.value) { /* ... */ }`;
                 </div>
                 
                 {/* Hero Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-16">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-12 sm:mb-16">
                   {heroStats.map((stat, index) => (
                     <SpotlightCard key={index} className="p-4 h-full">
                       <AnimatedStatCard
@@ -255,11 +255,11 @@ if (flag.value) { /* ... */ }`;
         {/* Features Grid */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 glass-subtle">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-slate-900 dark:text-white">
                 Core Primitives
               </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto px-4">
                 Everything you need to automate financial reconciliation, without the complexity.
               </p>
             </div>
@@ -269,18 +269,18 @@ if (flag.value) { /* ... */ }`;
                 const Icon = feature.icon;
                 return (
                   <BentoGridItem key={index} colSpan={1}>
-                    <SpotlightCard className="h-full flex flex-col p-8">
-                      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3.5 mb-6 flex items-center justify-center`}>
-                        <Icon className="w-full h-full text-white" />
+                    <SpotlightCard className="h-full flex flex-col p-6 sm:p-8">
+                      <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3 sm:p-3.5 mb-4 sm:mb-6 flex items-center justify-center`}>
+                        <Icon className="w-full h-full text-white" aria-hidden="true" />
                       </div>
-                      <h3 className="text-2xl font-bold mb-3 text-slate-900 dark:text-white">{feature.title}</h3>
-                      <p className="text-slate-600 dark:text-slate-300 text-lg mb-6 flex-grow">{feature.description}</p>
+                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-slate-900 dark:text-white">{feature.title}</h3>
+                      <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 flex-grow">{feature.description}</p>
                       <Link 
                         href="/docs" 
                         className="flex items-center text-blue-600 dark:text-blue-400 font-semibold group transition-colors hover:text-blue-700 dark:hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded"
                         aria-label={`Learn more about ${feature.title}`}
                       >
-                        Learn more <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        Learn more <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
                       </Link>
                     </SpotlightCard>
                   </BentoGridItem>
@@ -292,34 +292,34 @@ if (flag.value) { /* ... */ }`;
 
         {/* Code Example */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
-           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-             <div>
-               <h2 className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white">
+           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+             <div className="order-2 lg:order-1">
+               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white">
                  Developer Experience First
                </h2>
-               <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
+               <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 mb-6 sm:mb-8">
                  Simple APIs that work out of the box. No complex configuration, no learning curve—just reliable reconciliation.
                </p>
-               <div className="space-y-4">
+               <div className="space-y-3 sm:space-y-4">
                  {[
                    "TypeScript, Python, Go, and Ruby SDKs",
                    "OpenAPI 3.1 Specification",
                    "Interactive Developer Console",
                    "Local Development Sandbox"
                  ].map((item, i) => (
-                   <div key={i} className="flex items-center gap-3">
-                     <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">✓</div>
-                     <span className="text-slate-700 dark:text-slate-300 font-medium">{item}</span>
+                   <div key={i} className="flex items-center gap-2 sm:gap-3">
+                     <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 flex-shrink-0" aria-hidden="true">✓</div>
+                     <span className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">{item}</span>
                    </div>
                  ))}
                </div>
-               <div className="mt-8">
-                 <Link href="/docs/sdk" className="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+               <div className="mt-6 sm:mt-8">
+                 <Link href="/docs/sdk" className="text-blue-600 dark:text-blue-400 font-bold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded">
                    Explore the SDKs &rarr;
                  </Link>
                </div>
              </div>
-             <div>
+             <div className="order-1 lg:order-2">
                <SpotlightCard className="p-0 overflow-hidden shadow-2xl">
                 <AnimatedCodeBlock
                   code={codeExample}
@@ -341,20 +341,20 @@ if (flag.value) { /* ... */ }`;
         {/* Architecture Preview */}
         <section className="py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
-             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-slate-900 dark:text-white">
+             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white">
                Built on a Solid Foundation
              </h2>
-             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-12">
+             <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8 sm:mb-12 px-4">
                See how we handle double-entry accounting, event sourcing, and edge execution to guarantee correctness.
              </p>
-             <Link href="/architecture" className="relative group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl">
-               <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 flex items-end justify-center pb-8">
-                 <Button variant="secondary" className="shadow-lg">View Full Architecture</Button>
+             <Link href="/architecture" className="relative group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl max-w-4xl mx-auto">
+               <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 flex items-end justify-center pb-6 sm:pb-8">
+                 <Button variant="secondary" className="shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">View Full Architecture</Button>
                </div>
                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden opacity-50 blur-[1px] group-hover:opacity-75 group-hover:blur-0 group-focus-within:opacity-75 group-focus-within:blur-0 transition-all duration-500">
                   {/* Placeholder for architecture preview image/diagram */}
-                  <div className="bg-slate-100 dark:bg-slate-800 h-[300px] w-full flex items-center justify-center">
-                    <LayoutTemplate className="w-16 h-16 text-slate-300" />
+                  <div className="bg-slate-100 dark:bg-slate-800 h-[200px] sm:h-[300px] w-full flex items-center justify-center" role="img" aria-label="Architecture diagram placeholder">
+                    <LayoutTemplate className="w-12 h-12 sm:w-16 sm:h-16 text-slate-300" aria-hidden="true" />
                   </div>
                </div>
              </Link>
@@ -377,12 +377,15 @@ if (flag.value) { /* ... */ }`;
         <TrustSignalBanner />
 
         {/* Enhanced Trust Badges */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900 dark:text-white">
                 Trusted & Secure
               </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Enterprise-grade security and compliance certifications
+              </p>
             </div>
             <EnhancedTrustBadges />
           </div>
@@ -393,10 +396,10 @@ if (flag.value) { /* ... */ }`;
 
         {/* Why Settler */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,transparent)]" />
+          <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,transparent)]" aria-hidden="true" />
           <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Why Settler Exists</h2>
-            <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 sm:mb-6 px-4">Why Settler Exists</h2>
+            <p className="text-lg sm:text-xl text-blue-100 mb-6 sm:mb-8 leading-relaxed px-4">
               We got tired of building the same fragile financial infrastructure at every company. 
               We built Settler to solve it once and for all.
             </p>
@@ -404,7 +407,7 @@ if (flag.value) { /* ... */ }`;
               size="lg" 
               variant="secondary" 
               asChild 
-              className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-6 text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
+              className="bg-white text-blue-600 hover:bg-blue-50 px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600"
             >
               <Link href="/why-settler">Read our Manifesto</Link>
             </Button>
@@ -418,7 +421,7 @@ if (flag.value) { /* ... */ }`;
         <TestimonialCarousel />
 
         {/* Enhanced Conversion CTA */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
+        <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
           <div className="max-w-4xl mx-auto">
             <EnhancedConversionCTA
               title="Ready to Transform Your Financial Operations?"
@@ -436,11 +439,9 @@ if (flag.value) { /* ... */ }`;
         
         {/* Hidden Preload for components */}
         <div className="hidden">
-          <TrustBadges />
           <CustomerLogos />
           <NewsletterSignup />
           <ConversionCTA />
-          <IntegrationLogos />
         </div>
 
         <Footer />
