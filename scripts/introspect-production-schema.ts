@@ -279,11 +279,15 @@ async function introspectProductionSchema() {
         pg_get_function_result(p.oid) as return_type,
         pg_get_function_arguments(p.oid) as arguments,
         l.lanname as language,
-        pg_get_functiondef(p.oid) as definition
+        CASE 
+          WHEN p.prokind = 'a' THEN '-- Aggregate function, definition not available'
+          ELSE pg_get_functiondef(p.oid)
+        END as definition
       FROM pg_proc p
       JOIN pg_namespace n ON n.oid = p.pronamespace
       JOIN pg_language l ON l.oid = p.prolang
       WHERE n.nspname NOT IN ('pg_catalog', 'information_schema')
+      AND p.prokind != 'a'  -- Skip aggregate functions
       ORDER BY n.nspname, p.proname
     `);
 
