@@ -181,17 +181,53 @@ CREATE TABLE IF NOT EXISTS app_private.memberships (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE app_private.memberships ADD CONSTRAINT IF NOT EXISTS memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_fkey' AND conrelid = 'app_private.memberships'::regclass
+  ) THEN
+    ALTER TABLE app_private.memberships ADD CONSTRAINT memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE app_private.memberships ADD CONSTRAINT IF NOT EXISTS memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_fkey' AND conrelid = 'app_private.memberships'::regclass
+  ) THEN
+    ALTER TABLE app_private.memberships ADD CONSTRAINT memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE app_private.memberships ADD CONSTRAINT IF NOT EXISTS memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_user_id_fkey' AND conrelid = 'app_private.memberships'::regclass
+  ) THEN
+    ALTER TABLE app_private.memberships ADD CONSTRAINT memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE app_private.memberships ADD CONSTRAINT IF NOT EXISTS memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_user_id_fkey' AND conrelid = 'app_private.memberships'::regclass
+  ) THEN
+    ALTER TABLE app_private.memberships ADD CONSTRAINT memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE app_private.memberships ADD CONSTRAINT IF NOT EXISTS memberships_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_user_id_key' AND conrelid = 'app_private.memberships'::regclass
+  ) THEN
+    ALTER TABLE app_private.memberships ADD CONSTRAINT memberships_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+  END IF;
+END $$;
 
-ALTER TABLE app_private.memberships ADD CONSTRAINT IF NOT EXISTS memberships_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_user_id_key' AND conrelid = 'app_private.memberships'::regclass
+  ) THEN
+    ALTER TABLE app_private.memberships ADD CONSTRAINT memberships_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_memberships_status ON app_private.memberships USING btree (status);
 
@@ -212,7 +248,13 @@ CREATE TABLE IF NOT EXISTS app_private.profiles_enterprise (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE app_private.profiles_enterprise ADD CONSTRAINT IF NOT EXISTS profiles_enterprise_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'profiles_enterprise_id_fkey' AND conrelid = 'app_private.profiles_enterprise'::regclass
+  ) THEN
+    ALTER TABLE app_private.profiles_enterprise ADD CONSTRAINT profiles_enterprise_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS app_private.usage_events_enterprise (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -224,9 +266,21 @@ CREATE TABLE IF NOT EXISTS app_private.usage_events_enterprise (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE app_private.usage_events_enterprise ADD CONSTRAINT IF NOT EXISTS usage_events_enterprise_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_events_enterprise_tenant_id_fkey' AND conrelid = 'app_private.usage_events_enterprise'::regclass
+  ) THEN
+    ALTER TABLE app_private.usage_events_enterprise ADD CONSTRAINT usage_events_enterprise_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE app_private.usage_events_enterprise ADD CONSTRAINT IF NOT EXISTS usage_events_enterprise_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_events_enterprise_user_id_fkey' AND conrelid = 'app_private.usage_events_enterprise'::regclass
+  ) THEN
+    ALTER TABLE app_private.usage_events_enterprise ADD CONSTRAINT usage_events_enterprise_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_usage_events_ent_created_at ON app_private.usage_events_enterprise USING btree (created_at DESC);
 
@@ -288,9 +342,21 @@ CREATE TABLE IF NOT EXISTS auth.identities (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.identities ADD CONSTRAINT IF NOT EXISTS identities_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'identities_user_id_fkey' AND conrelid = 'auth.identities'::regclass
+  ) THEN
+    ALTER TABLE auth.identities ADD CONSTRAINT identities_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.identities ADD CONSTRAINT IF NOT EXISTS identities_provider_id_provider_unique UNIQUE (provider_id, provider);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'identities_provider_id_provider_unique' AND conrelid = 'auth.identities'::regclass
+  ) THEN
+    ALTER TABLE auth.identities ADD CONSTRAINT identities_provider_id_provider_unique UNIQUE (provider_id, provider);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS identities_email_idx ON auth.identities USING btree (email text_pattern_ops);
 
@@ -316,7 +382,13 @@ CREATE TABLE IF NOT EXISTS auth.mfa_amr_claims (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.mfa_amr_claims ADD CONSTRAINT IF NOT EXISTS mfa_amr_claims_session_id_fkey FOREIGN KEY (session_id) REFERENCES auth.sessions(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'mfa_amr_claims_session_id_fkey' AND conrelid = 'auth.mfa_amr_claims'::regclass
+  ) THEN
+    ALTER TABLE auth.mfa_amr_claims ADD CONSTRAINT mfa_amr_claims_session_id_fkey FOREIGN KEY (session_id) REFERENCES auth.sessions(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS mfa_amr_claims_session_id_authentication_method_pkey ON auth.mfa_amr_claims USING btree (session_id, authentication_method);
 
@@ -331,7 +403,13 @@ CREATE TABLE IF NOT EXISTS auth.mfa_challenges (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.mfa_challenges ADD CONSTRAINT IF NOT EXISTS mfa_challenges_auth_factor_id_fkey FOREIGN KEY (factor_id) REFERENCES auth.mfa_factors(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'mfa_challenges_auth_factor_id_fkey' AND conrelid = 'auth.mfa_challenges'::regclass
+  ) THEN
+    ALTER TABLE auth.mfa_challenges ADD CONSTRAINT mfa_challenges_auth_factor_id_fkey FOREIGN KEY (factor_id) REFERENCES auth.mfa_factors(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS mfa_challenge_created_at_idx ON auth.mfa_challenges USING btree (created_at DESC);
 
@@ -352,9 +430,21 @@ CREATE TABLE IF NOT EXISTS auth.mfa_factors (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.mfa_factors ADD CONSTRAINT IF NOT EXISTS mfa_factors_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'mfa_factors_user_id_fkey' AND conrelid = 'auth.mfa_factors'::regclass
+  ) THEN
+    ALTER TABLE auth.mfa_factors ADD CONSTRAINT mfa_factors_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.mfa_factors ADD CONSTRAINT IF NOT EXISTS mfa_factors_last_challenged_at_key UNIQUE (last_challenged_at);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'mfa_factors_last_challenged_at_key' AND conrelid = 'auth.mfa_factors'::regclass
+  ) THEN
+    ALTER TABLE auth.mfa_factors ADD CONSTRAINT mfa_factors_last_challenged_at_key UNIQUE (last_challenged_at);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS factor_id_created_at_idx ON auth.mfa_factors USING btree (user_id, created_at);
 
@@ -387,13 +477,37 @@ CREATE TABLE IF NOT EXISTS auth.oauth_authorizations (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.oauth_authorizations ADD CONSTRAINT IF NOT EXISTS oauth_authorizations_client_id_fkey FOREIGN KEY (client_id) REFERENCES auth.oauth_clients(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'oauth_authorizations_client_id_fkey' AND conrelid = 'auth.oauth_authorizations'::regclass
+  ) THEN
+    ALTER TABLE auth.oauth_authorizations ADD CONSTRAINT oauth_authorizations_client_id_fkey FOREIGN KEY (client_id) REFERENCES auth.oauth_clients(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.oauth_authorizations ADD CONSTRAINT IF NOT EXISTS oauth_authorizations_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'oauth_authorizations_user_id_fkey' AND conrelid = 'auth.oauth_authorizations'::regclass
+  ) THEN
+    ALTER TABLE auth.oauth_authorizations ADD CONSTRAINT oauth_authorizations_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.oauth_authorizations ADD CONSTRAINT IF NOT EXISTS oauth_authorizations_authorization_code_key UNIQUE (authorization_code);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'oauth_authorizations_authorization_code_key' AND conrelid = 'auth.oauth_authorizations'::regclass
+  ) THEN
+    ALTER TABLE auth.oauth_authorizations ADD CONSTRAINT oauth_authorizations_authorization_code_key UNIQUE (authorization_code);
+  END IF;
+END $$;
 
-ALTER TABLE auth.oauth_authorizations ADD CONSTRAINT IF NOT EXISTS oauth_authorizations_authorization_id_key UNIQUE (authorization_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'oauth_authorizations_authorization_id_key' AND conrelid = 'auth.oauth_authorizations'::regclass
+  ) THEN
+    ALTER TABLE auth.oauth_authorizations ADD CONSTRAINT oauth_authorizations_authorization_id_key UNIQUE (authorization_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS oauth_auth_pending_exp_idx ON auth.oauth_authorizations USING btree (expires_at) WHERE (status = 'pending'::auth.oauth_authorization_status);
 
@@ -439,11 +553,29 @@ CREATE TABLE IF NOT EXISTS auth.oauth_consents (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.oauth_consents ADD CONSTRAINT IF NOT EXISTS oauth_consents_client_id_fkey FOREIGN KEY (client_id) REFERENCES auth.oauth_clients(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'oauth_consents_client_id_fkey' AND conrelid = 'auth.oauth_consents'::regclass
+  ) THEN
+    ALTER TABLE auth.oauth_consents ADD CONSTRAINT oauth_consents_client_id_fkey FOREIGN KEY (client_id) REFERENCES auth.oauth_clients(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.oauth_consents ADD CONSTRAINT IF NOT EXISTS oauth_consents_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'oauth_consents_user_id_fkey' AND conrelid = 'auth.oauth_consents'::regclass
+  ) THEN
+    ALTER TABLE auth.oauth_consents ADD CONSTRAINT oauth_consents_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.oauth_consents ADD CONSTRAINT IF NOT EXISTS oauth_consents_user_client_unique UNIQUE (user_id, client_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'oauth_consents_user_client_unique' AND conrelid = 'auth.oauth_consents'::regclass
+  ) THEN
+    ALTER TABLE auth.oauth_consents ADD CONSTRAINT oauth_consents_user_client_unique UNIQUE (user_id, client_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS oauth_consents_active_client_idx ON auth.oauth_consents USING btree (client_id) WHERE (revoked_at IS NULL);
 
@@ -464,7 +596,13 @@ CREATE TABLE IF NOT EXISTS auth.one_time_tokens (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.one_time_tokens ADD CONSTRAINT IF NOT EXISTS one_time_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'one_time_tokens_user_id_fkey' AND conrelid = 'auth.one_time_tokens'::regclass
+  ) THEN
+    ALTER TABLE auth.one_time_tokens ADD CONSTRAINT one_time_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS one_time_tokens_relates_to_hash_idx ON auth.one_time_tokens USING hash (relates_to);
 
@@ -485,9 +623,21 @@ CREATE TABLE IF NOT EXISTS auth.refresh_tokens (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.refresh_tokens ADD CONSTRAINT IF NOT EXISTS refresh_tokens_session_id_fkey FOREIGN KEY (session_id) REFERENCES auth.sessions(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'refresh_tokens_session_id_fkey' AND conrelid = 'auth.refresh_tokens'::regclass
+  ) THEN
+    ALTER TABLE auth.refresh_tokens ADD CONSTRAINT refresh_tokens_session_id_fkey FOREIGN KEY (session_id) REFERENCES auth.sessions(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.refresh_tokens ADD CONSTRAINT IF NOT EXISTS refresh_tokens_token_unique UNIQUE (token);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'refresh_tokens_token_unique' AND conrelid = 'auth.refresh_tokens'::regclass
+  ) THEN
+    ALTER TABLE auth.refresh_tokens ADD CONSTRAINT refresh_tokens_token_unique UNIQUE (token);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS refresh_tokens_instance_id_idx ON auth.refresh_tokens USING btree (instance_id);
 
@@ -514,9 +664,21 @@ CREATE TABLE IF NOT EXISTS auth.saml_providers (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.saml_providers ADD CONSTRAINT IF NOT EXISTS saml_providers_sso_provider_id_fkey FOREIGN KEY (sso_provider_id) REFERENCES auth.sso_providers(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'saml_providers_sso_provider_id_fkey' AND conrelid = 'auth.saml_providers'::regclass
+  ) THEN
+    ALTER TABLE auth.saml_providers ADD CONSTRAINT saml_providers_sso_provider_id_fkey FOREIGN KEY (sso_provider_id) REFERENCES auth.sso_providers(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.saml_providers ADD CONSTRAINT IF NOT EXISTS saml_providers_entity_id_key UNIQUE (entity_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'saml_providers_entity_id_key' AND conrelid = 'auth.saml_providers'::regclass
+  ) THEN
+    ALTER TABLE auth.saml_providers ADD CONSTRAINT saml_providers_entity_id_key UNIQUE (entity_id);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS saml_providers_entity_id_key ON auth.saml_providers USING btree (entity_id);
 
@@ -534,9 +696,21 @@ CREATE TABLE IF NOT EXISTS auth.saml_relay_states (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.saml_relay_states ADD CONSTRAINT IF NOT EXISTS saml_relay_states_flow_state_id_fkey FOREIGN KEY (flow_state_id) REFERENCES auth.flow_state(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'saml_relay_states_flow_state_id_fkey' AND conrelid = 'auth.saml_relay_states'::regclass
+  ) THEN
+    ALTER TABLE auth.saml_relay_states ADD CONSTRAINT saml_relay_states_flow_state_id_fkey FOREIGN KEY (flow_state_id) REFERENCES auth.flow_state(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.saml_relay_states ADD CONSTRAINT IF NOT EXISTS saml_relay_states_sso_provider_id_fkey FOREIGN KEY (sso_provider_id) REFERENCES auth.sso_providers(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'saml_relay_states_sso_provider_id_fkey' AND conrelid = 'auth.saml_relay_states'::regclass
+  ) THEN
+    ALTER TABLE auth.saml_relay_states ADD CONSTRAINT saml_relay_states_sso_provider_id_fkey FOREIGN KEY (sso_provider_id) REFERENCES auth.sso_providers(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS saml_relay_states_created_at_idx ON auth.saml_relay_states USING btree (created_at DESC);
 
@@ -563,9 +737,21 @@ CREATE TABLE IF NOT EXISTS auth.sessions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.sessions ADD CONSTRAINT IF NOT EXISTS sessions_oauth_client_id_fkey FOREIGN KEY (oauth_client_id) REFERENCES auth.oauth_clients(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'sessions_oauth_client_id_fkey' AND conrelid = 'auth.sessions'::regclass
+  ) THEN
+    ALTER TABLE auth.sessions ADD CONSTRAINT sessions_oauth_client_id_fkey FOREIGN KEY (oauth_client_id) REFERENCES auth.oauth_clients(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE auth.sessions ADD CONSTRAINT IF NOT EXISTS sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'sessions_user_id_fkey' AND conrelid = 'auth.sessions'::regclass
+  ) THEN
+    ALTER TABLE auth.sessions ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS sessions_not_after_idx ON auth.sessions USING btree (not_after DESC);
 
@@ -584,7 +770,13 @@ CREATE TABLE IF NOT EXISTS auth.sso_domains (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.sso_domains ADD CONSTRAINT IF NOT EXISTS sso_domains_sso_provider_id_fkey FOREIGN KEY (sso_provider_id) REFERENCES auth.sso_providers(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'sso_domains_sso_provider_id_fkey' AND conrelid = 'auth.sso_domains'::regclass
+  ) THEN
+    ALTER TABLE auth.sso_domains ADD CONSTRAINT sso_domains_sso_provider_id_fkey FOREIGN KEY (sso_provider_id) REFERENCES auth.sso_providers(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS sso_domains_domain_idx ON auth.sso_domains USING btree (lower(domain));
 
@@ -642,7 +834,13 @@ CREATE TABLE IF NOT EXISTS auth.users (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE auth.users ADD CONSTRAINT IF NOT EXISTS users_phone_key UNIQUE (phone);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'users_phone_key' AND conrelid = 'auth.users'::regclass
+  ) THEN
+    ALTER TABLE auth.users ADD CONSTRAINT users_phone_key UNIQUE (phone);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS confirmation_token_idx ON auth.users USING btree (confirmation_token) WHERE ((confirmation_token)::text !~ '^[0-9 ]*$'::text);
 
@@ -735,7 +933,13 @@ CREATE TABLE IF NOT EXISTS public.account_balances (
   PRIMARY KEY (tenant_id, account_type, currency)
 );
 
-ALTER TABLE public.account_balances ADD CONSTRAINT IF NOT EXISTS account_balances_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'account_balances_tenant_id_fkey' AND conrelid = 'public.account_balances'::regclass
+  ) THEN
+    ALTER TABLE public.account_balances ADD CONSTRAINT account_balances_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_account_balances_tenant_id ON public.account_balances USING btree (tenant_id);
 
@@ -750,7 +954,13 @@ CREATE TABLE IF NOT EXISTS public.activation_checklist (
   PRIMARY KEY (user_id, checklist_item)
 );
 
-ALTER TABLE public.activation_checklist ADD CONSTRAINT IF NOT EXISTS activation_checklist_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'activation_checklist_user_id_fkey' AND conrelid = 'public.activation_checklist'::regclass
+  ) THEN
+    ALTER TABLE public.activation_checklist ADD CONSTRAINT activation_checklist_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_activation_checklist_created_at_desc ON public.activation_checklist USING btree (created_at DESC);
 
@@ -769,7 +979,13 @@ CREATE TABLE IF NOT EXISTS public.activity_log (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.activity_log ADD CONSTRAINT IF NOT EXISTS activity_log_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'activity_log_user_id_fkey' AND conrelid = 'public.activity_log'::regclass
+  ) THEN
+    ALTER TABLE public.activity_log ADD CONSTRAINT activity_log_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_activity_log_created_at ON public.activity_log USING btree (created_at DESC);
 
@@ -797,9 +1013,21 @@ CREATE TABLE IF NOT EXISTS public.activity_logs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.activity_logs ADD CONSTRAINT IF NOT EXISTS activity_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'activity_logs_tenant_id_fkey' AND conrelid = 'public.activity_logs'::regclass
+  ) THEN
+    ALTER TABLE public.activity_logs ADD CONSTRAINT activity_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.activity_logs ADD CONSTRAINT IF NOT EXISTS activity_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'activity_logs_user_id_fkey' AND conrelid = 'public.activity_logs'::regclass
+  ) THEN
+    ALTER TABLE public.activity_logs ADD CONSTRAINT activity_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON public.activity_logs USING btree (tenant_id, created_at DESC);
 
@@ -827,11 +1055,29 @@ CREATE TABLE IF NOT EXISTS public.add_on_purchases (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.add_on_purchases ADD CONSTRAINT IF NOT EXISTS add_on_purchases_add_on_id_fkey FOREIGN KEY (add_on_id) REFERENCES add_ons(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'add_on_purchases_add_on_id_fkey' AND conrelid = 'public.add_on_purchases'::regclass
+  ) THEN
+    ALTER TABLE public.add_on_purchases ADD CONSTRAINT add_on_purchases_add_on_id_fkey FOREIGN KEY (add_on_id) REFERENCES add_ons(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.add_on_purchases ADD CONSTRAINT IF NOT EXISTS add_on_purchases_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'add_on_purchases_billing_account_id_fkey' AND conrelid = 'public.add_on_purchases'::regclass
+  ) THEN
+    ALTER TABLE public.add_on_purchases ADD CONSTRAINT add_on_purchases_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.add_on_purchases ADD CONSTRAINT IF NOT EXISTS add_on_purchases_stripe_subscription_item_id_key UNIQUE (stripe_subscription_item_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'add_on_purchases_stripe_subscription_item_id_key' AND conrelid = 'public.add_on_purchases'::regclass
+  ) THEN
+    ALTER TABLE public.add_on_purchases ADD CONSTRAINT add_on_purchases_stripe_subscription_item_id_key UNIQUE (stripe_subscription_item_id);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS add_on_purchases_stripe_subscription_item_id_key ON public.add_on_purchases USING btree (stripe_subscription_item_id);
 
@@ -862,7 +1108,13 @@ CREATE TABLE IF NOT EXISTS public.add_ons (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.add_ons ADD CONSTRAINT IF NOT EXISTS add_ons_integration_id_key UNIQUE (integration_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'add_ons_integration_id_key' AND conrelid = 'public.add_ons'::regclass
+  ) THEN
+    ALTER TABLE public.add_ons ADD CONSTRAINT add_ons_integration_id_key UNIQUE (integration_id);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS add_ons_integration_id_key ON public.add_ons USING btree (integration_id);
 
@@ -921,9 +1173,21 @@ CREATE TABLE IF NOT EXISTS public.affiliate_conversions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.affiliate_conversions ADD CONSTRAINT IF NOT EXISTS affiliate_conversions_affiliate_id_fkey FOREIGN KEY (affiliate_id) REFERENCES affiliates(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'affiliate_conversions_affiliate_id_fkey' AND conrelid = 'public.affiliate_conversions'::regclass
+  ) THEN
+    ALTER TABLE public.affiliate_conversions ADD CONSTRAINT affiliate_conversions_affiliate_id_fkey FOREIGN KEY (affiliate_id) REFERENCES affiliates(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.affiliate_conversions ADD CONSTRAINT IF NOT EXISTS affiliate_conversions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'affiliate_conversions_user_id_fkey' AND conrelid = 'public.affiliate_conversions'::regclass
+  ) THEN
+    ALTER TABLE public.affiliate_conversions ADD CONSTRAINT affiliate_conversions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_affiliate_conversions_affiliate ON public.affiliate_conversions USING btree (affiliate_id);
 
@@ -944,7 +1208,13 @@ CREATE TABLE IF NOT EXISTS public.affiliates (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.affiliates ADD CONSTRAINT IF NOT EXISTS affiliates_affiliate_code_key UNIQUE (affiliate_code);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'affiliates_affiliate_code_key' AND conrelid = 'public.affiliates'::regclass
+  ) THEN
+    ALTER TABLE public.affiliates ADD CONSTRAINT affiliates_affiliate_code_key UNIQUE (affiliate_code);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS affiliates_affiliate_code_key ON public.affiliates USING btree (affiliate_code);
 
@@ -998,7 +1268,13 @@ CREATE TABLE IF NOT EXISTS public.ai_analyses (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ai_analyses ADD CONSTRAINT IF NOT EXISTS ai_analyses_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ai_analyses_tenant_id_fkey' AND conrelid = 'public.ai_analyses'::regclass
+  ) THEN
+    ALTER TABLE public.ai_analyses ADD CONSTRAINT ai_analyses_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_ai_analyses_created_at ON public.ai_analyses USING btree (created_at DESC);
 
@@ -1022,9 +1298,21 @@ CREATE TABLE IF NOT EXISTS public.ai_analysis_usage (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ai_analysis_usage ADD CONSTRAINT IF NOT EXISTS ai_analysis_usage_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ai_analysis_usage_tenant_id_fkey' AND conrelid = 'public.ai_analysis_usage'::regclass
+  ) THEN
+    ALTER TABLE public.ai_analysis_usage ADD CONSTRAINT ai_analysis_usage_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.ai_analysis_usage ADD CONSTRAINT IF NOT EXISTS ai_analysis_usage_tenant_id_period_start_key UNIQUE (tenant_id, period_start);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ai_analysis_usage_tenant_id_period_start_key' AND conrelid = 'public.ai_analysis_usage'::regclass
+  ) THEN
+    ALTER TABLE public.ai_analysis_usage ADD CONSTRAINT ai_analysis_usage_tenant_id_period_start_key UNIQUE (tenant_id, period_start);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS ai_analysis_usage_tenant_id_period_start_key ON public.ai_analysis_usage USING btree (tenant_id, period_start);
 
@@ -1055,9 +1343,21 @@ CREATE TABLE IF NOT EXISTS public.ai_usage_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ai_usage_events ADD CONSTRAINT IF NOT EXISTS ai_usage_events_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ai_usage_events_billing_account_id_fkey' AND conrelid = 'public.ai_usage_events'::regclass
+  ) THEN
+    ALTER TABLE public.ai_usage_events ADD CONSTRAINT ai_usage_events_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.ai_usage_events ADD CONSTRAINT IF NOT EXISTS ai_usage_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ai_usage_events_tenant_id_fkey' AND conrelid = 'public.ai_usage_events'::regclass
+  ) THEN
+    ALTER TABLE public.ai_usage_events ADD CONSTRAINT ai_usage_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_ai_usage_events_ba_id ON public.ai_usage_events USING btree (billing_account_id);
 
@@ -1116,11 +1416,29 @@ CREATE TABLE IF NOT EXISTS public.ai_usage_quotas (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ai_usage_quotas ADD CONSTRAINT IF NOT EXISTS ai_usage_quotas_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ai_usage_quotas_billing_account_id_fkey' AND conrelid = 'public.ai_usage_quotas'::regclass
+  ) THEN
+    ALTER TABLE public.ai_usage_quotas ADD CONSTRAINT ai_usage_quotas_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.ai_usage_quotas ADD CONSTRAINT IF NOT EXISTS ai_usage_quotas_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ai_usage_quotas_tenant_id_fkey' AND conrelid = 'public.ai_usage_quotas'::regclass
+  ) THEN
+    ALTER TABLE public.ai_usage_quotas ADD CONSTRAINT ai_usage_quotas_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.ai_usage_quotas ADD CONSTRAINT IF NOT EXISTS ai_usage_quotas_tenant_id_billing_account_id_key UNIQUE (tenant_id, billing_account_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ai_usage_quotas_tenant_id_billing_account_id_key' AND conrelid = 'public.ai_usage_quotas'::regclass
+  ) THEN
+    ALTER TABLE public.ai_usage_quotas ADD CONSTRAINT ai_usage_quotas_tenant_id_billing_account_id_key UNIQUE (tenant_id, billing_account_id);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS ai_usage_quotas_tenant_id_billing_account_id_key ON public.ai_usage_quotas USING btree (tenant_id, billing_account_id);
 
@@ -1172,7 +1490,13 @@ CREATE TABLE IF NOT EXISTS public.alert_notifications (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.alert_notifications ADD CONSTRAINT IF NOT EXISTS alert_notifications_alert_id_fkey FOREIGN KEY (alert_id) REFERENCES alerts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'alert_notifications_alert_id_fkey' AND conrelid = 'public.alert_notifications'::regclass
+  ) THEN
+    ALTER TABLE public.alert_notifications ADD CONSTRAINT alert_notifications_alert_id_fkey FOREIGN KEY (alert_id) REFERENCES alerts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_alert_notifications_alert_id ON public.alert_notifications USING btree (alert_id);
 
@@ -1211,7 +1535,13 @@ CREATE TABLE IF NOT EXISTS public.alert_rules (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.alert_rules ADD CONSTRAINT IF NOT EXISTS alert_rules_rule_name_key UNIQUE (rule_name);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'alert_rules_rule_name_key' AND conrelid = 'public.alert_rules'::regclass
+  ) THEN
+    ALTER TABLE public.alert_rules ADD CONSTRAINT alert_rules_rule_name_key UNIQUE (rule_name);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS alert_rules_rule_name_key ON public.alert_rules USING btree (rule_name);
 
@@ -1254,9 +1584,21 @@ CREATE TABLE IF NOT EXISTS public.alerts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.alerts ADD CONSTRAINT IF NOT EXISTS alerts_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'alerts_billing_account_id_fkey' AND conrelid = 'public.alerts'::regclass
+  ) THEN
+    ALTER TABLE public.alerts ADD CONSTRAINT alerts_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.alerts ADD CONSTRAINT IF NOT EXISTS alerts_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'alerts_tenant_id_fkey' AND conrelid = 'public.alerts'::regclass
+  ) THEN
+    ALTER TABLE public.alerts ADD CONSTRAINT alerts_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_alerts_alert_type ON public.alerts USING btree (alert_type);
 
@@ -1291,7 +1633,13 @@ CREATE TABLE IF NOT EXISTS public.analytics_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.analytics_events ADD CONSTRAINT IF NOT EXISTS analytics_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'analytics_events_user_id_fkey' AND conrelid = 'public.analytics_events'::regclass
+  ) THEN
+    ALTER TABLE public.analytics_events ADD CONSTRAINT analytics_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_analytics_events_created_at ON public.analytics_events USING btree (created_at DESC);
 
@@ -1349,15 +1697,45 @@ CREATE TABLE IF NOT EXISTS public.anomaly_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.anomaly_events ADD CONSTRAINT IF NOT EXISTS anomaly_events_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'anomaly_events_edge_node_id_fkey' AND conrelid = 'public.anomaly_events'::regclass
+  ) THEN
+    ALTER TABLE public.anomaly_events ADD CONSTRAINT anomaly_events_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.anomaly_events ADD CONSTRAINT IF NOT EXISTS anomaly_events_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'anomaly_events_execution_id_fkey' AND conrelid = 'public.anomaly_events'::regclass
+  ) THEN
+    ALTER TABLE public.anomaly_events ADD CONSTRAINT anomaly_events_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.anomaly_events ADD CONSTRAINT IF NOT EXISTS anomaly_events_model_version_id_fkey FOREIGN KEY (model_version_id) REFERENCES model_versions(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'anomaly_events_model_version_id_fkey' AND conrelid = 'public.anomaly_events'::regclass
+  ) THEN
+    ALTER TABLE public.anomaly_events ADD CONSTRAINT anomaly_events_model_version_id_fkey FOREIGN KEY (model_version_id) REFERENCES model_versions(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.anomaly_events ADD CONSTRAINT IF NOT EXISTS anomaly_events_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'anomaly_events_resolved_by_fkey' AND conrelid = 'public.anomaly_events'::regclass
+  ) THEN
+    ALTER TABLE public.anomaly_events ADD CONSTRAINT anomaly_events_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.anomaly_events ADD CONSTRAINT IF NOT EXISTS anomaly_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'anomaly_events_tenant_id_fkey' AND conrelid = 'public.anomaly_events'::regclass
+  ) THEN
+    ALTER TABLE public.anomaly_events ADD CONSTRAINT anomaly_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_anomaly_events_created_at_desc ON public.anomaly_events USING btree (created_at DESC);
 
@@ -1404,13 +1782,37 @@ CREATE TABLE IF NOT EXISTS public.api_keys (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.api_keys ADD CONSTRAINT IF NOT EXISTS api_keys_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'api_keys_tenant_id_fkey' AND conrelid = 'public.api_keys'::regclass
+  ) THEN
+    ALTER TABLE public.api_keys ADD CONSTRAINT api_keys_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.api_keys ADD CONSTRAINT IF NOT EXISTS api_keys_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'api_keys_user_id_fkey' AND conrelid = 'public.api_keys'::regclass
+  ) THEN
+    ALTER TABLE public.api_keys ADD CONSTRAINT api_keys_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.api_keys ADD CONSTRAINT IF NOT EXISTS fk_api_keys_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_api_keys_tenant' AND conrelid = 'public.api_keys'::regclass
+  ) THEN
+    ALTER TABLE public.api_keys ADD CONSTRAINT fk_api_keys_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.api_keys ADD CONSTRAINT IF NOT EXISTS api_keys_key_prefix_key UNIQUE (key_prefix);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'api_keys_key_prefix_key' AND conrelid = 'public.api_keys'::regclass
+  ) THEN
+    ALTER TABLE public.api_keys ADD CONSTRAINT api_keys_key_prefix_key UNIQUE (key_prefix);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS api_keys_key_prefix_key ON public.api_keys USING btree (key_prefix);
 
@@ -1499,15 +1901,45 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.audit_logs ADD CONSTRAINT IF NOT EXISTS audit_logs_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'audit_logs_api_key_id_fkey' AND conrelid = 'public.audit_logs'::regclass
+  ) THEN
+    ALTER TABLE public.audit_logs ADD CONSTRAINT audit_logs_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.audit_logs ADD CONSTRAINT IF NOT EXISTS audit_logs_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'audit_logs_billing_account_id_fkey' AND conrelid = 'public.audit_logs'::regclass
+  ) THEN
+    ALTER TABLE public.audit_logs ADD CONSTRAINT audit_logs_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.audit_logs ADD CONSTRAINT IF NOT EXISTS audit_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'audit_logs_tenant_id_fkey' AND conrelid = 'public.audit_logs'::regclass
+  ) THEN
+    ALTER TABLE public.audit_logs ADD CONSTRAINT audit_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.audit_logs ADD CONSTRAINT IF NOT EXISTS audit_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'audit_logs_user_id_fkey' AND conrelid = 'public.audit_logs'::regclass
+  ) THEN
+    ALTER TABLE public.audit_logs ADD CONSTRAINT audit_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.audit_logs ADD CONSTRAINT IF NOT EXISTS fk_audit_logs_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_audit_logs_tenant' AND conrelid = 'public.audit_logs'::regclass
+  ) THEN
+    ALTER TABLE public.audit_logs ADD CONSTRAINT fk_audit_logs_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS brin_audit_logs_timestamp ON public.audit_logs USING brin ("timestamp") WITH (autosummarize='on');
 
@@ -1574,11 +2006,29 @@ CREATE TABLE IF NOT EXISTS public.billing_accounts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.billing_accounts ADD CONSTRAINT IF NOT EXISTS billing_accounts_tenant_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'billing_accounts_tenant_fkey' AND conrelid = 'public.billing_accounts'::regclass
+  ) THEN
+    ALTER TABLE public.billing_accounts ADD CONSTRAINT billing_accounts_tenant_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.billing_accounts ADD CONSTRAINT IF NOT EXISTS fk_billing_accounts_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_billing_accounts_tenant' AND conrelid = 'public.billing_accounts'::regclass
+  ) THEN
+    ALTER TABLE public.billing_accounts ADD CONSTRAINT fk_billing_accounts_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.billing_accounts ADD CONSTRAINT IF NOT EXISTS billing_accounts_stripe_customer_id_key UNIQUE (stripe_customer_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'billing_accounts_stripe_customer_id_key' AND conrelid = 'public.billing_accounts'::regclass
+  ) THEN
+    ALTER TABLE public.billing_accounts ADD CONSTRAINT billing_accounts_stripe_customer_id_key UNIQUE (stripe_customer_id);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS billing_accounts_stripe_customer_id_key ON public.billing_accounts USING btree (stripe_customer_id);
 
@@ -1602,9 +2052,21 @@ CREATE TABLE IF NOT EXISTS public.billing_customers (
   PRIMARY KEY (user_id)
 );
 
-ALTER TABLE public.billing_customers ADD CONSTRAINT IF NOT EXISTS billing_customers_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'billing_customers_user_id_fkey' AND conrelid = 'public.billing_customers'::regclass
+  ) THEN
+    ALTER TABLE public.billing_customers ADD CONSTRAINT billing_customers_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.billing_customers ADD CONSTRAINT IF NOT EXISTS billing_customers_stripe_customer_id_key UNIQUE (stripe_customer_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'billing_customers_stripe_customer_id_key' AND conrelid = 'public.billing_customers'::regclass
+  ) THEN
+    ALTER TABLE public.billing_customers ADD CONSTRAINT billing_customers_stripe_customer_id_key UNIQUE (stripe_customer_id);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS billing_customers_stripe_customer_id_key ON public.billing_customers USING btree (stripe_customer_id);
 
@@ -1624,9 +2086,21 @@ CREATE TABLE IF NOT EXISTS public.billing_disputes (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.billing_disputes ADD CONSTRAINT IF NOT EXISTS billing_disputes_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'billing_disputes_resolved_by_fkey' AND conrelid = 'public.billing_disputes'::regclass
+  ) THEN
+    ALTER TABLE public.billing_disputes ADD CONSTRAINT billing_disputes_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.billing_disputes ADD CONSTRAINT IF NOT EXISTS billing_disputes_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'billing_disputes_user_id_fkey' AND conrelid = 'public.billing_disputes'::regclass
+  ) THEN
+    ALTER TABLE public.billing_disputes ADD CONSTRAINT billing_disputes_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_billing_disputes_created_at_desc ON public.billing_disputes USING btree (created_at DESC);
 
@@ -1654,7 +2128,13 @@ CREATE TABLE IF NOT EXISTS public.billing_reconciliation_log (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.billing_reconciliation_log ADD CONSTRAINT IF NOT EXISTS billing_reconciliation_log_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'billing_reconciliation_log_billing_account_id_fkey' AND conrelid = 'public.billing_reconciliation_log'::regclass
+  ) THEN
+    ALTER TABLE public.billing_reconciliation_log ADD CONSTRAINT billing_reconciliation_log_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_billing_recon_billing_account ON public.billing_reconciliation_log USING btree (billing_account_id);
 
@@ -1684,7 +2164,13 @@ CREATE TABLE IF NOT EXISTS public.billing_subscriptions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.billing_subscriptions ADD CONSTRAINT IF NOT EXISTS billing_subscriptions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'billing_subscriptions_user_id_fkey' AND conrelid = 'public.billing_subscriptions'::regclass
+  ) THEN
+    ALTER TABLE public.billing_subscriptions ADD CONSTRAINT billing_subscriptions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_billing_subscriptions_user ON public.billing_subscriptions USING btree (user_id);
 
@@ -1699,9 +2185,21 @@ CREATE TABLE IF NOT EXISTS public.blocked_ips (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.blocked_ips ADD CONSTRAINT IF NOT EXISTS blocked_ips_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'blocked_ips_tenant_id_fkey' AND conrelid = 'public.blocked_ips'::regclass
+  ) THEN
+    ALTER TABLE public.blocked_ips ADD CONSTRAINT blocked_ips_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.blocked_ips ADD CONSTRAINT IF NOT EXISTS fk_blocked_ips_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_blocked_ips_tenant' AND conrelid = 'public.blocked_ips'::regclass
+  ) THEN
+    ALTER TABLE public.blocked_ips ADD CONSTRAINT fk_blocked_ips_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_blocked_ips_created_at_desc ON public.blocked_ips USING btree (created_at DESC);
 
@@ -1744,9 +2242,21 @@ CREATE TABLE IF NOT EXISTS public.chat_message_embeddings (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.chat_message_embeddings ADD CONSTRAINT IF NOT EXISTS chat_message_embeddings_message_id_fkey FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'chat_message_embeddings_message_id_fkey' AND conrelid = 'public.chat_message_embeddings'::regclass
+  ) THEN
+    ALTER TABLE public.chat_message_embeddings ADD CONSTRAINT chat_message_embeddings_message_id_fkey FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.chat_message_embeddings ADD CONSTRAINT IF NOT EXISTS chat_message_embeddings_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'chat_message_embeddings_tenant_id_fkey' AND conrelid = 'public.chat_message_embeddings'::regclass
+  ) THEN
+    ALTER TABLE public.chat_message_embeddings ADD CONSTRAINT chat_message_embeddings_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_chat_message_embeddings_created_at_desc ON public.chat_message_embeddings USING btree (created_at DESC);
 
@@ -1768,11 +2278,29 @@ CREATE TABLE IF NOT EXISTS public.chat_messages (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.chat_messages ADD CONSTRAINT IF NOT EXISTS chat_messages_author_id_fkey FOREIGN KEY (author_id) REFERENCES auth.users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'chat_messages_author_id_fkey' AND conrelid = 'public.chat_messages'::regclass
+  ) THEN
+    ALTER TABLE public.chat_messages ADD CONSTRAINT chat_messages_author_id_fkey FOREIGN KEY (author_id) REFERENCES auth.users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.chat_messages ADD CONSTRAINT IF NOT EXISTS chat_messages_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'chat_messages_tenant_id_fkey' AND conrelid = 'public.chat_messages'::regclass
+  ) THEN
+    ALTER TABLE public.chat_messages ADD CONSTRAINT chat_messages_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.chat_messages ADD CONSTRAINT IF NOT EXISTS chat_messages_thread_id_fkey FOREIGN KEY (thread_id) REFERENCES chat_threads(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'chat_messages_thread_id_fkey' AND conrelid = 'public.chat_messages'::regclass
+  ) THEN
+    ALTER TABLE public.chat_messages ADD CONSTRAINT chat_messages_thread_id_fkey FOREIGN KEY (thread_id) REFERENCES chat_threads(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_chat_messages_author_id ON public.chat_messages USING btree (author_id);
 
@@ -1797,9 +2325,21 @@ CREATE TABLE IF NOT EXISTS public.chat_threads (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.chat_threads ADD CONSTRAINT IF NOT EXISTS chat_threads_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'chat_threads_created_by_fkey' AND conrelid = 'public.chat_threads'::regclass
+  ) THEN
+    ALTER TABLE public.chat_threads ADD CONSTRAINT chat_threads_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.chat_threads ADD CONSTRAINT IF NOT EXISTS chat_threads_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'chat_threads_tenant_id_fkey' AND conrelid = 'public.chat_threads'::regclass
+  ) THEN
+    ALTER TABLE public.chat_threads ADD CONSTRAINT chat_threads_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_chat_threads_created_at_desc ON public.chat_threads USING btree (created_at DESC);
 
@@ -1922,7 +2462,13 @@ CREATE TABLE IF NOT EXISTS public.circuit_breakers (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.circuit_breakers ADD CONSTRAINT IF NOT EXISTS circuit_breakers_service_name_key UNIQUE (service_name);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'circuit_breakers_service_name_key' AND conrelid = 'public.circuit_breakers'::regclass
+  ) THEN
+    ALTER TABLE public.circuit_breakers ADD CONSTRAINT circuit_breakers_service_name_key UNIQUE (service_name);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS circuit_breakers_service_name_key ON public.circuit_breakers USING btree (service_name);
 
@@ -1964,9 +2510,21 @@ CREATE TABLE IF NOT EXISTS public.cms_media (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.cms_media ADD CONSTRAINT IF NOT EXISTS cms_media_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'cms_media_created_by_fkey' AND conrelid = 'public.cms_media'::regclass
+  ) THEN
+    ALTER TABLE public.cms_media ADD CONSTRAINT cms_media_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.cms_media ADD CONSTRAINT IF NOT EXISTS cms_media_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'cms_media_tenant_id_fkey' AND conrelid = 'public.cms_media'::regclass
+  ) THEN
+    ALTER TABLE public.cms_media ADD CONSTRAINT cms_media_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_cms_media_created_at ON public.cms_media USING btree (created_at DESC);
 
@@ -1988,9 +2546,21 @@ CREATE TABLE IF NOT EXISTS public.cms_page_versions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.cms_page_versions ADD CONSTRAINT IF NOT EXISTS cms_page_versions_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'cms_page_versions_created_by_fkey' AND conrelid = 'public.cms_page_versions'::regclass
+  ) THEN
+    ALTER TABLE public.cms_page_versions ADD CONSTRAINT cms_page_versions_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.cms_page_versions ADD CONSTRAINT IF NOT EXISTS cms_page_versions_page_id_fkey FOREIGN KEY (page_id) REFERENCES cms_pages(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'cms_page_versions_page_id_fkey' AND conrelid = 'public.cms_page_versions'::regclass
+  ) THEN
+    ALTER TABLE public.cms_page_versions ADD CONSTRAINT cms_page_versions_page_id_fkey FOREIGN KEY (page_id) REFERENCES cms_pages(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_cms_page_versions_created_at ON public.cms_page_versions USING btree (created_at DESC);
 
@@ -2014,9 +2584,21 @@ CREATE TABLE IF NOT EXISTS public.cms_pages (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.cms_pages ADD CONSTRAINT IF NOT EXISTS cms_pages_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'cms_pages_tenant_id_fkey' AND conrelid = 'public.cms_pages'::regclass
+  ) THEN
+    ALTER TABLE public.cms_pages ADD CONSTRAINT cms_pages_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.cms_pages ADD CONSTRAINT IF NOT EXISTS cms_pages_tenant_id_slug_key UNIQUE (tenant_id, slug);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'cms_pages_tenant_id_slug_key' AND conrelid = 'public.cms_pages'::regclass
+  ) THEN
+    ALTER TABLE public.cms_pages ADD CONSTRAINT cms_pages_tenant_id_slug_key UNIQUE (tenant_id, slug);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS cms_pages_tenant_id_slug_key ON public.cms_pages USING btree (tenant_id, slug);
 
@@ -2087,9 +2669,21 @@ CREATE TABLE IF NOT EXISTS public.console_activities (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.console_activities ADD CONSTRAINT IF NOT EXISTS console_activities_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'console_activities_billing_account_id_fkey' AND conrelid = 'public.console_activities'::regclass
+  ) THEN
+    ALTER TABLE public.console_activities ADD CONSTRAINT console_activities_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.console_activities ADD CONSTRAINT IF NOT EXISTS console_activities_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'console_activities_tenant_id_fkey' AND conrelid = 'public.console_activities'::regclass
+  ) THEN
+    ALTER TABLE public.console_activities ADD CONSTRAINT console_activities_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_console_activities_ba_id ON public.console_activities USING btree (billing_account_id);
 
@@ -2123,11 +2717,29 @@ CREATE TABLE IF NOT EXISTS public.contacts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.contacts ADD CONSTRAINT IF NOT EXISTS contacts_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'contacts_assigned_to_fkey' AND conrelid = 'public.contacts'::regclass
+  ) THEN
+    ALTER TABLE public.contacts ADD CONSTRAINT contacts_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.contacts ADD CONSTRAINT IF NOT EXISTS contacts_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'contacts_tenant_id_fkey' AND conrelid = 'public.contacts'::regclass
+  ) THEN
+    ALTER TABLE public.contacts ADD CONSTRAINT contacts_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.contacts ADD CONSTRAINT IF NOT EXISTS contacts_tenant_id_email_key UNIQUE (tenant_id, email);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'contacts_tenant_id_email_key' AND conrelid = 'public.contacts'::regclass
+  ) THEN
+    ALTER TABLE public.contacts ADD CONSTRAINT contacts_tenant_id_email_key UNIQUE (tenant_id, email);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS contacts_tenant_id_email_key ON public.contacts USING btree (tenant_id, email);
 
@@ -2162,9 +2774,21 @@ CREATE TABLE IF NOT EXISTS public.contract_versions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.contract_versions ADD CONSTRAINT IF NOT EXISTS contract_versions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'contract_versions_tenant_id_fkey' AND conrelid = 'public.contract_versions'::regclass
+  ) THEN
+    ALTER TABLE public.contract_versions ADD CONSTRAINT contract_versions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.contract_versions ADD CONSTRAINT IF NOT EXISTS contract_versions_tenant_id_contract_name_version_key UNIQUE (tenant_id, contract_name, version);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'contract_versions_tenant_id_contract_name_version_key' AND conrelid = 'public.contract_versions'::regclass
+  ) THEN
+    ALTER TABLE public.contract_versions ADD CONSTRAINT contract_versions_tenant_id_contract_name_version_key UNIQUE (tenant_id, contract_name, version);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS contract_versions_tenant_id_contract_name_version_key ON public.contract_versions USING btree (tenant_id, contract_name, version);
 
@@ -2187,13 +2811,37 @@ CREATE TABLE IF NOT EXISTS public.conversation_members (
   PRIMARY KEY (conversation_id, user_id)
 );
 
-ALTER TABLE public.conversation_members ADD CONSTRAINT IF NOT EXISTS conversation_members_conversation_id_fkey FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'conversation_members_conversation_id_fkey' AND conrelid = 'public.conversation_members'::regclass
+  ) THEN
+    ALTER TABLE public.conversation_members ADD CONSTRAINT conversation_members_conversation_id_fkey FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.conversation_members ADD CONSTRAINT IF NOT EXISTS conversation_members_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'conversation_members_tenant_id_fkey' AND conrelid = 'public.conversation_members'::regclass
+  ) THEN
+    ALTER TABLE public.conversation_members ADD CONSTRAINT conversation_members_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.conversation_members ADD CONSTRAINT IF NOT EXISTS conversation_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'conversation_members_user_id_fkey' AND conrelid = 'public.conversation_members'::regclass
+  ) THEN
+    ALTER TABLE public.conversation_members ADD CONSTRAINT conversation_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.conversation_members ADD CONSTRAINT IF NOT EXISTS fk_conversation_members_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_conversation_members_tenant' AND conrelid = 'public.conversation_members'::regclass
+  ) THEN
+    ALTER TABLE public.conversation_members ADD CONSTRAINT fk_conversation_members_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_conversation_members_conv_user ON public.conversation_members USING btree (conversation_id, user_id);
 
@@ -2217,11 +2865,29 @@ CREATE TABLE IF NOT EXISTS public.conversation_summaries (
   PRIMARY KEY (conversation_id)
 );
 
-ALTER TABLE public.conversation_summaries ADD CONSTRAINT IF NOT EXISTS conversation_summaries_conversation_id_fkey FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'conversation_summaries_conversation_id_fkey' AND conrelid = 'public.conversation_summaries'::regclass
+  ) THEN
+    ALTER TABLE public.conversation_summaries ADD CONSTRAINT conversation_summaries_conversation_id_fkey FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.conversation_summaries ADD CONSTRAINT IF NOT EXISTS conversation_summaries_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'conversation_summaries_tenant_id_fkey' AND conrelid = 'public.conversation_summaries'::regclass
+  ) THEN
+    ALTER TABLE public.conversation_summaries ADD CONSTRAINT conversation_summaries_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.conversation_summaries ADD CONSTRAINT IF NOT EXISTS fk_conversation_summaries_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_conversation_summaries_tenant' AND conrelid = 'public.conversation_summaries'::regclass
+  ) THEN
+    ALTER TABLE public.conversation_summaries ADD CONSTRAINT fk_conversation_summaries_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_conversation_summaries_conversation_id ON public.conversation_summaries USING btree (conversation_id);
 
@@ -2238,11 +2904,29 @@ CREATE TABLE IF NOT EXISTS public.conversations (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.conversations ADD CONSTRAINT IF NOT EXISTS conversations_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'conversations_created_by_fkey' AND conrelid = 'public.conversations'::regclass
+  ) THEN
+    ALTER TABLE public.conversations ADD CONSTRAINT conversations_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.conversations ADD CONSTRAINT IF NOT EXISTS conversations_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'conversations_tenant_id_fkey' AND conrelid = 'public.conversations'::regclass
+  ) THEN
+    ALTER TABLE public.conversations ADD CONSTRAINT conversations_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.conversations ADD CONSTRAINT IF NOT EXISTS fk_conversations_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_conversations_tenant' AND conrelid = 'public.conversations'::regclass
+  ) THEN
+    ALTER TABLE public.conversations ADD CONSTRAINT fk_conversations_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_conversations_created_at_desc ON public.conversations USING btree (created_at DESC);
 
@@ -2266,7 +2950,13 @@ CREATE TABLE IF NOT EXISTS public.cron_targets (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.cron_targets ADD CONSTRAINT IF NOT EXISTS cron_targets_name_key UNIQUE (name);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'cron_targets_name_key' AND conrelid = 'public.cron_targets'::regclass
+  ) THEN
+    ALTER TABLE public.cron_targets ADD CONSTRAINT cron_targets_name_key UNIQUE (name);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS cron_targets_name_key ON public.cron_targets USING btree (name);
 
@@ -2282,7 +2972,13 @@ CREATE TABLE IF NOT EXISTS public.customer_segments (
   PRIMARY KEY (user_id, segment_type, segment_name)
 );
 
-ALTER TABLE public.customer_segments ADD CONSTRAINT IF NOT EXISTS customer_segments_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'customer_segments_user_id_fkey' AND conrelid = 'public.customer_segments'::regclass
+  ) THEN
+    ALTER TABLE public.customer_segments ADD CONSTRAINT customer_segments_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_customer_segments_user_id ON public.customer_segments USING btree (user_id);
 
@@ -2297,7 +2993,13 @@ CREATE TABLE IF NOT EXISTS public.data_export_items (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.data_export_items ADD CONSTRAINT IF NOT EXISTS data_export_items_export_id_fkey FOREIGN KEY (export_id) REFERENCES data_exports(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'data_export_items_export_id_fkey' AND conrelid = 'public.data_export_items'::regclass
+  ) THEN
+    ALTER TABLE public.data_export_items ADD CONSTRAINT data_export_items_export_id_fkey FOREIGN KEY (export_id) REFERENCES data_exports(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_data_export_items_created_at_desc ON public.data_export_items USING btree (created_at DESC);
 
@@ -2319,9 +3021,21 @@ CREATE TABLE IF NOT EXISTS public.data_exports (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.data_exports ADD CONSTRAINT IF NOT EXISTS data_exports_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'data_exports_created_by_fkey' AND conrelid = 'public.data_exports'::regclass
+  ) THEN
+    ALTER TABLE public.data_exports ADD CONSTRAINT data_exports_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.data_exports ADD CONSTRAINT IF NOT EXISTS data_exports_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'data_exports_tenant_id_fkey' AND conrelid = 'public.data_exports'::regclass
+  ) THEN
+    ALTER TABLE public.data_exports ADD CONSTRAINT data_exports_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_data_exports_created_at_desc ON public.data_exports USING btree (created_at DESC);
 
@@ -2342,7 +3056,13 @@ CREATE TABLE IF NOT EXISTS public.dead_letters (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.dead_letters ADD CONSTRAINT IF NOT EXISTS dead_letters_job_id_fkey FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'dead_letters_job_id_fkey' AND conrelid = 'public.dead_letters'::regclass
+  ) THEN
+    ALTER TABLE public.dead_letters ADD CONSTRAINT dead_letters_job_id_fkey FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_dead_letters_created_at ON public.dead_letters USING btree (created_at DESC);
 
@@ -2370,11 +3090,29 @@ CREATE TABLE IF NOT EXISTS public.deals (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.deals ADD CONSTRAINT IF NOT EXISTS deals_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'deals_assigned_to_fkey' AND conrelid = 'public.deals'::regclass
+  ) THEN
+    ALTER TABLE public.deals ADD CONSTRAINT deals_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.deals ADD CONSTRAINT IF NOT EXISTS deals_lead_id_fkey FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'deals_lead_id_fkey' AND conrelid = 'public.deals'::regclass
+  ) THEN
+    ALTER TABLE public.deals ADD CONSTRAINT deals_lead_id_fkey FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.deals ADD CONSTRAINT IF NOT EXISTS deals_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'deals_tenant_id_fkey' AND conrelid = 'public.deals'::regclass
+  ) THEN
+    ALTER TABLE public.deals ADD CONSTRAINT deals_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_deals_assigned_to ON public.deals USING btree (assigned_to);
 
@@ -2410,11 +3148,29 @@ CREATE TABLE IF NOT EXISTS public.device_profiles (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.device_profiles ADD CONSTRAINT IF NOT EXISTS device_profiles_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'device_profiles_edge_node_id_fkey' AND conrelid = 'public.device_profiles'::regclass
+  ) THEN
+    ALTER TABLE public.device_profiles ADD CONSTRAINT device_profiles_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.device_profiles ADD CONSTRAINT IF NOT EXISTS device_profiles_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'device_profiles_tenant_id_fkey' AND conrelid = 'public.device_profiles'::regclass
+  ) THEN
+    ALTER TABLE public.device_profiles ADD CONSTRAINT device_profiles_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.device_profiles ADD CONSTRAINT IF NOT EXISTS device_profiles_edge_node_id_profile_name_key UNIQUE (edge_node_id, profile_name);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'device_profiles_edge_node_id_profile_name_key' AND conrelid = 'public.device_profiles'::regclass
+  ) THEN
+    ALTER TABLE public.device_profiles ADD CONSTRAINT device_profiles_edge_node_id_profile_name_key UNIQUE (edge_node_id, profile_name);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS device_profiles_edge_node_id_profile_name_key ON public.device_profiles USING btree (edge_node_id, profile_name);
 
@@ -2466,13 +3222,37 @@ CREATE TABLE IF NOT EXISTS public.drift_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.drift_events ADD CONSTRAINT IF NOT EXISTS drift_events_acknowledged_by_fkey FOREIGN KEY (acknowledged_by) REFERENCES users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'drift_events_acknowledged_by_fkey' AND conrelid = 'public.drift_events'::regclass
+  ) THEN
+    ALTER TABLE public.drift_events ADD CONSTRAINT drift_events_acknowledged_by_fkey FOREIGN KEY (acknowledged_by) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.drift_events ADD CONSTRAINT IF NOT EXISTS drift_events_contract_version_id_fkey FOREIGN KEY (contract_version_id) REFERENCES contract_versions(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'drift_events_contract_version_id_fkey' AND conrelid = 'public.drift_events'::regclass
+  ) THEN
+    ALTER TABLE public.drift_events ADD CONSTRAINT drift_events_contract_version_id_fkey FOREIGN KEY (contract_version_id) REFERENCES contract_versions(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.drift_events ADD CONSTRAINT IF NOT EXISTS drift_events_recon_job_id_fkey FOREIGN KEY (recon_job_id) REFERENCES recon_jobs(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'drift_events_recon_job_id_fkey' AND conrelid = 'public.drift_events'::regclass
+  ) THEN
+    ALTER TABLE public.drift_events ADD CONSTRAINT drift_events_recon_job_id_fkey FOREIGN KEY (recon_job_id) REFERENCES recon_jobs(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.drift_events ADD CONSTRAINT IF NOT EXISTS drift_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'drift_events_tenant_id_fkey' AND conrelid = 'public.drift_events'::regclass
+  ) THEN
+    ALTER TABLE public.drift_events ADD CONSTRAINT drift_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_drift_events_acknowledged_by ON public.drift_events USING btree (acknowledged_by);
 
@@ -2510,9 +3290,21 @@ CREATE TABLE IF NOT EXISTS public.edge_jobs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.edge_jobs ADD CONSTRAINT IF NOT EXISTS edge_jobs_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'edge_jobs_edge_node_id_fkey' AND conrelid = 'public.edge_jobs'::regclass
+  ) THEN
+    ALTER TABLE public.edge_jobs ADD CONSTRAINT edge_jobs_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.edge_jobs ADD CONSTRAINT IF NOT EXISTS edge_jobs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'edge_jobs_tenant_id_fkey' AND conrelid = 'public.edge_jobs'::regclass
+  ) THEN
+    ALTER TABLE public.edge_jobs ADD CONSTRAINT edge_jobs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_edge_jobs_created_at_desc ON public.edge_jobs USING btree (created_at DESC);
 
@@ -2547,13 +3339,37 @@ CREATE TABLE IF NOT EXISTS public.edge_node_deployments (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.edge_node_deployments ADD CONSTRAINT IF NOT EXISTS edge_node_deployments_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'edge_node_deployments_edge_node_id_fkey' AND conrelid = 'public.edge_node_deployments'::regclass
+  ) THEN
+    ALTER TABLE public.edge_node_deployments ADD CONSTRAINT edge_node_deployments_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.edge_node_deployments ADD CONSTRAINT IF NOT EXISTS edge_node_deployments_model_version_id_fkey FOREIGN KEY (model_version_id) REFERENCES model_versions(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'edge_node_deployments_model_version_id_fkey' AND conrelid = 'public.edge_node_deployments'::regclass
+  ) THEN
+    ALTER TABLE public.edge_node_deployments ADD CONSTRAINT edge_node_deployments_model_version_id_fkey FOREIGN KEY (model_version_id) REFERENCES model_versions(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.edge_node_deployments ADD CONSTRAINT IF NOT EXISTS edge_node_deployments_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'edge_node_deployments_tenant_id_fkey' AND conrelid = 'public.edge_node_deployments'::regclass
+  ) THEN
+    ALTER TABLE public.edge_node_deployments ADD CONSTRAINT edge_node_deployments_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.edge_node_deployments ADD CONSTRAINT IF NOT EXISTS edge_node_deployments_edge_node_id_model_version_id_key UNIQUE (edge_node_id, model_version_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'edge_node_deployments_edge_node_id_model_version_id_key' AND conrelid = 'public.edge_node_deployments'::regclass
+  ) THEN
+    ALTER TABLE public.edge_node_deployments ADD CONSTRAINT edge_node_deployments_edge_node_id_model_version_id_key UNIQUE (edge_node_id, model_version_id);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS edge_node_deployments_edge_node_id_model_version_id_key ON public.edge_node_deployments USING btree (edge_node_id, model_version_id);
 
@@ -2593,9 +3409,21 @@ CREATE TABLE IF NOT EXISTS public.edge_nodes (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.edge_nodes ADD CONSTRAINT IF NOT EXISTS edge_nodes_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'edge_nodes_tenant_id_fkey' AND conrelid = 'public.edge_nodes'::regclass
+  ) THEN
+    ALTER TABLE public.edge_nodes ADD CONSTRAINT edge_nodes_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.edge_nodes ADD CONSTRAINT IF NOT EXISTS edge_nodes_node_key_key UNIQUE (node_key);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'edge_nodes_node_key_key' AND conrelid = 'public.edge_nodes'::regclass
+  ) THEN
+    ALTER TABLE public.edge_nodes ADD CONSTRAINT edge_nodes_node_key_key UNIQUE (node_key);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS edge_nodes_node_key_key ON public.edge_nodes USING btree (node_key);
 
@@ -2633,13 +3461,37 @@ CREATE TABLE IF NOT EXISTS public.email_invites (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.email_invites ADD CONSTRAINT IF NOT EXISTS email_invites_invited_by_fkey FOREIGN KEY (invited_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'email_invites_invited_by_fkey' AND conrelid = 'public.email_invites'::regclass
+  ) THEN
+    ALTER TABLE public.email_invites ADD CONSTRAINT email_invites_invited_by_fkey FOREIGN KEY (invited_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.email_invites ADD CONSTRAINT IF NOT EXISTS email_invites_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'email_invites_tenant_id_fkey' AND conrelid = 'public.email_invites'::regclass
+  ) THEN
+    ALTER TABLE public.email_invites ADD CONSTRAINT email_invites_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.email_invites ADD CONSTRAINT IF NOT EXISTS email_invites_tenant_id_email_key UNIQUE (tenant_id, email);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'email_invites_tenant_id_email_key' AND conrelid = 'public.email_invites'::regclass
+  ) THEN
+    ALTER TABLE public.email_invites ADD CONSTRAINT email_invites_tenant_id_email_key UNIQUE (tenant_id, email);
+  END IF;
+END $$;
 
-ALTER TABLE public.email_invites ADD CONSTRAINT IF NOT EXISTS email_invites_token_key UNIQUE (token);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'email_invites_token_key' AND conrelid = 'public.email_invites'::regclass
+  ) THEN
+    ALTER TABLE public.email_invites ADD CONSTRAINT email_invites_token_key UNIQUE (token);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS email_invites_tenant_id_email_key ON public.email_invites USING btree (tenant_id, email);
 
@@ -2666,11 +3518,29 @@ CREATE TABLE IF NOT EXISTS public.email_sends (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.email_sends ADD CONSTRAINT IF NOT EXISTS email_sends_sequence_id_fkey FOREIGN KEY (sequence_id) REFERENCES email_sequences(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'email_sends_sequence_id_fkey' AND conrelid = 'public.email_sends'::regclass
+  ) THEN
+    ALTER TABLE public.email_sends ADD CONSTRAINT email_sends_sequence_id_fkey FOREIGN KEY (sequence_id) REFERENCES email_sequences(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.email_sends ADD CONSTRAINT IF NOT EXISTS email_sends_template_id_fkey FOREIGN KEY (template_id) REFERENCES email_templates(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'email_sends_template_id_fkey' AND conrelid = 'public.email_sends'::regclass
+  ) THEN
+    ALTER TABLE public.email_sends ADD CONSTRAINT email_sends_template_id_fkey FOREIGN KEY (template_id) REFERENCES email_templates(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.email_sends ADD CONSTRAINT IF NOT EXISTS email_sends_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'email_sends_user_id_fkey' AND conrelid = 'public.email_sends'::regclass
+  ) THEN
+    ALTER TABLE public.email_sends ADD CONSTRAINT email_sends_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_email_sends_created_at ON public.email_sends USING btree (created_at DESC);
 
@@ -2713,7 +3583,13 @@ CREATE TABLE IF NOT EXISTS public.email_templates (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.email_templates ADD CONSTRAINT IF NOT EXISTS email_templates_sequence_id_fkey FOREIGN KEY (sequence_id) REFERENCES email_sequences(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'email_templates_sequence_id_fkey' AND conrelid = 'public.email_templates'::regclass
+  ) THEN
+    ALTER TABLE public.email_templates ADD CONSTRAINT email_templates_sequence_id_fkey FOREIGN KEY (sequence_id) REFERENCES email_sequences(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_email_templates_created_at_desc ON public.email_templates USING btree (created_at DESC);
 
@@ -2750,13 +3626,37 @@ CREATE TABLE IF NOT EXISTS public.error_logs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.error_logs ADD CONSTRAINT IF NOT EXISTS error_logs_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'error_logs_api_key_id_fkey' AND conrelid = 'public.error_logs'::regclass
+  ) THEN
+    ALTER TABLE public.error_logs ADD CONSTRAINT error_logs_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.error_logs ADD CONSTRAINT IF NOT EXISTS error_logs_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'error_logs_resolved_by_fkey' AND conrelid = 'public.error_logs'::regclass
+  ) THEN
+    ALTER TABLE public.error_logs ADD CONSTRAINT error_logs_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.error_logs ADD CONSTRAINT IF NOT EXISTS error_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'error_logs_tenant_id_fkey' AND conrelid = 'public.error_logs'::regclass
+  ) THEN
+    ALTER TABLE public.error_logs ADD CONSTRAINT error_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.error_logs ADD CONSTRAINT IF NOT EXISTS error_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'error_logs_user_id_fkey' AND conrelid = 'public.error_logs'::regclass
+  ) THEN
+    ALTER TABLE public.error_logs ADD CONSTRAINT error_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_error_logs_api_key_id ON public.error_logs USING btree (api_key_id);
 
@@ -2793,13 +3693,37 @@ CREATE TABLE IF NOT EXISTS public.escalation_history (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.escalation_history ADD CONSTRAINT IF NOT EXISTS escalation_history_from_user_id_fkey FOREIGN KEY (from_user_id) REFERENCES users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'escalation_history_from_user_id_fkey' AND conrelid = 'public.escalation_history'::regclass
+  ) THEN
+    ALTER TABLE public.escalation_history ADD CONSTRAINT escalation_history_from_user_id_fkey FOREIGN KEY (from_user_id) REFERENCES users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.escalation_history ADD CONSTRAINT IF NOT EXISTS escalation_history_rule_id_fkey FOREIGN KEY (rule_id) REFERENCES escalation_rules(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'escalation_history_rule_id_fkey' AND conrelid = 'public.escalation_history'::regclass
+  ) THEN
+    ALTER TABLE public.escalation_history ADD CONSTRAINT escalation_history_rule_id_fkey FOREIGN KEY (rule_id) REFERENCES escalation_rules(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.escalation_history ADD CONSTRAINT IF NOT EXISTS escalation_history_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES support_tickets(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'escalation_history_ticket_id_fkey' AND conrelid = 'public.escalation_history'::regclass
+  ) THEN
+    ALTER TABLE public.escalation_history ADD CONSTRAINT escalation_history_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES support_tickets(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.escalation_history ADD CONSTRAINT IF NOT EXISTS escalation_history_to_user_id_fkey FOREIGN KEY (to_user_id) REFERENCES users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'escalation_history_to_user_id_fkey' AND conrelid = 'public.escalation_history'::regclass
+  ) THEN
+    ALTER TABLE public.escalation_history ADD CONSTRAINT escalation_history_to_user_id_fkey FOREIGN KEY (to_user_id) REFERENCES users(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_escalation_history_created_at_desc ON public.escalation_history USING btree (created_at DESC);
 
@@ -2830,7 +3754,13 @@ CREATE TABLE IF NOT EXISTS public.escalation_rules (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.escalation_rules ADD CONSTRAINT IF NOT EXISTS escalation_rules_target_user_id_fkey FOREIGN KEY (target_user_id) REFERENCES users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'escalation_rules_target_user_id_fkey' AND conrelid = 'public.escalation_rules'::regclass
+  ) THEN
+    ALTER TABLE public.escalation_rules ADD CONSTRAINT escalation_rules_target_user_id_fkey FOREIGN KEY (target_user_id) REFERENCES users(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_escalation_rules_created_at_desc ON public.escalation_rules USING btree (created_at DESC);
 
@@ -2855,7 +3785,13 @@ CREATE TABLE IF NOT EXISTS public.event_logs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.event_logs ADD CONSTRAINT IF NOT EXISTS event_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'event_logs_tenant_id_fkey' AND conrelid = 'public.event_logs'::regclass
+  ) THEN
+    ALTER TABLE public.event_logs ADD CONSTRAINT event_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_event_logs_created_at_desc ON public.event_logs USING btree (created_at DESC);
 
@@ -2877,9 +3813,21 @@ CREATE TABLE IF NOT EXISTS public.executions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.executions ADD CONSTRAINT IF NOT EXISTS executions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'executions_tenant_id_fkey' AND conrelid = 'public.executions'::regclass
+  ) THEN
+    ALTER TABLE public.executions ADD CONSTRAINT executions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.executions ADD CONSTRAINT IF NOT EXISTS fk_executions_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_executions_tenant' AND conrelid = 'public.executions'::regclass
+  ) THEN
+    ALTER TABLE public.executions ADD CONSTRAINT fk_executions_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_executions_created_at_desc ON public.executions USING btree (created_at DESC);
 
@@ -2907,17 +3855,53 @@ CREATE TABLE IF NOT EXISTS public.experiment_assignments (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.experiment_assignments ADD CONSTRAINT IF NOT EXISTS experiment_assignments_experiment_id_fkey FOREIGN KEY (experiment_id) REFERENCES experiments(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_assignments_experiment_id_fkey' AND conrelid = 'public.experiment_assignments'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_assignments ADD CONSTRAINT experiment_assignments_experiment_id_fkey FOREIGN KEY (experiment_id) REFERENCES experiments(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_assignments ADD CONSTRAINT IF NOT EXISTS experiment_assignments_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_assignments_tenant_id_fkey' AND conrelid = 'public.experiment_assignments'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_assignments ADD CONSTRAINT experiment_assignments_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_assignments ADD CONSTRAINT IF NOT EXISTS experiment_assignments_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_assignments_user_id_fkey' AND conrelid = 'public.experiment_assignments'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_assignments ADD CONSTRAINT experiment_assignments_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_assignments ADD CONSTRAINT IF NOT EXISTS experiment_assignments_variant_id_fkey FOREIGN KEY (variant_id) REFERENCES experiment_variants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_assignments_variant_id_fkey' AND conrelid = 'public.experiment_assignments'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_assignments ADD CONSTRAINT experiment_assignments_variant_id_fkey FOREIGN KEY (variant_id) REFERENCES experiment_variants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_assignments ADD CONSTRAINT IF NOT EXISTS fk_experiment_assignments_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_experiment_assignments_tenant' AND conrelid = 'public.experiment_assignments'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_assignments ADD CONSTRAINT fk_experiment_assignments_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_assignments ADD CONSTRAINT IF NOT EXISTS experiment_assignments_experiment_id_user_id_key UNIQUE (experiment_id, user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_assignments_experiment_id_user_id_key' AND conrelid = 'public.experiment_assignments'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_assignments ADD CONSTRAINT experiment_assignments_experiment_id_user_id_key UNIQUE (experiment_id, user_id);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS experiment_assignments_experiment_id_user_id_key ON public.experiment_assignments USING btree (experiment_id, user_id);
 
@@ -2941,11 +3925,29 @@ CREATE TABLE IF NOT EXISTS public.experiment_metric_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.experiment_metric_events ADD CONSTRAINT IF NOT EXISTS experiment_metric_events_experiment_id_fkey FOREIGN KEY (experiment_id) REFERENCES experiments(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_metric_events_experiment_id_fkey' AND conrelid = 'public.experiment_metric_events'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_metric_events ADD CONSTRAINT experiment_metric_events_experiment_id_fkey FOREIGN KEY (experiment_id) REFERENCES experiments(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_metric_events ADD CONSTRAINT IF NOT EXISTS experiment_metric_events_page_id_fkey FOREIGN KEY (page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_metric_events_page_id_fkey' AND conrelid = 'public.experiment_metric_events'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_metric_events ADD CONSTRAINT experiment_metric_events_page_id_fkey FOREIGN KEY (page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_metric_events ADD CONSTRAINT IF NOT EXISTS experiment_metric_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_metric_events_tenant_id_fkey' AND conrelid = 'public.experiment_metric_events'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_metric_events ADD CONSTRAINT experiment_metric_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_experiment_metric_events_created_at ON public.experiment_metric_events USING btree (created_at);
 
@@ -2976,13 +3978,37 @@ CREATE TABLE IF NOT EXISTS public.experiment_variants (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.experiment_variants ADD CONSTRAINT IF NOT EXISTS experiment_variants_experiment_id_fkey FOREIGN KEY (experiment_id) REFERENCES experiments(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_variants_experiment_id_fkey' AND conrelid = 'public.experiment_variants'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_variants ADD CONSTRAINT experiment_variants_experiment_id_fkey FOREIGN KEY (experiment_id) REFERENCES experiments(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_variants ADD CONSTRAINT IF NOT EXISTS experiment_variants_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_variants_tenant_id_fkey' AND conrelid = 'public.experiment_variants'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_variants ADD CONSTRAINT experiment_variants_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_variants ADD CONSTRAINT IF NOT EXISTS fk_experiment_variants_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_experiment_variants_tenant' AND conrelid = 'public.experiment_variants'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_variants ADD CONSTRAINT fk_experiment_variants_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiment_variants ADD CONSTRAINT IF NOT EXISTS experiment_variants_experiment_id_key_key UNIQUE (experiment_id, key);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiment_variants_experiment_id_key_key' AND conrelid = 'public.experiment_variants'::regclass
+  ) THEN
+    ALTER TABLE public.experiment_variants ADD CONSTRAINT experiment_variants_experiment_id_key_key UNIQUE (experiment_id, key);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS experiment_variants_experiment_id_key_key ON public.experiment_variants USING btree (experiment_id, key);
 
@@ -3008,15 +4034,45 @@ CREATE TABLE IF NOT EXISTS public.experiments (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.experiments ADD CONSTRAINT IF NOT EXISTS experiments_target_page_id_fkey FOREIGN KEY (target_page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiments_target_page_id_fkey' AND conrelid = 'public.experiments'::regclass
+  ) THEN
+    ALTER TABLE public.experiments ADD CONSTRAINT experiments_target_page_id_fkey FOREIGN KEY (target_page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiments ADD CONSTRAINT IF NOT EXISTS experiments_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiments_tenant_id_fkey' AND conrelid = 'public.experiments'::regclass
+  ) THEN
+    ALTER TABLE public.experiments ADD CONSTRAINT experiments_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiments ADD CONSTRAINT IF NOT EXISTS fk_experiments_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_experiments_tenant' AND conrelid = 'public.experiments'::regclass
+  ) THEN
+    ALTER TABLE public.experiments ADD CONSTRAINT fk_experiments_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.experiments ADD CONSTRAINT IF NOT EXISTS experiments_tenant_id_key_key UNIQUE (tenant_id, key);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiments_tenant_id_key_key' AND conrelid = 'public.experiments'::regclass
+  ) THEN
+    ALTER TABLE public.experiments ADD CONSTRAINT experiments_tenant_id_key_key UNIQUE (tenant_id, key);
+  END IF;
+END $$;
 
-ALTER TABLE public.experiments ADD CONSTRAINT IF NOT EXISTS experiments_tenant_id_slug_key UNIQUE (tenant_id, slug);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'experiments_tenant_id_slug_key' AND conrelid = 'public.experiments'::regclass
+  ) THEN
+    ALTER TABLE public.experiments ADD CONSTRAINT experiments_tenant_id_slug_key UNIQUE (tenant_id, slug);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS experiments_tenant_id_key_key ON public.experiments USING btree (tenant_id, key);
 
@@ -3044,9 +4100,21 @@ CREATE TABLE IF NOT EXISTS public.feature_flag_environments (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.feature_flag_environments ADD CONSTRAINT IF NOT EXISTS feature_flag_environments_flag_id_fkey FOREIGN KEY (flag_id) REFERENCES feature_flags(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flag_environments_flag_id_fkey' AND conrelid = 'public.feature_flag_environments'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flag_environments ADD CONSTRAINT feature_flag_environments_flag_id_fkey FOREIGN KEY (flag_id) REFERENCES feature_flags(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.feature_flag_environments ADD CONSTRAINT IF NOT EXISTS feature_flag_environments_flag_id_environment_key UNIQUE (flag_id, environment);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flag_environments_flag_id_environment_key' AND conrelid = 'public.feature_flag_environments'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flag_environments ADD CONSTRAINT feature_flag_environments_flag_id_environment_key UNIQUE (flag_id, environment);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS feature_flag_environments_flag_id_environment_key ON public.feature_flag_environments USING btree (flag_id, environment);
 
@@ -3067,9 +4135,21 @@ CREATE TABLE IF NOT EXISTS public.feature_flag_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.feature_flag_events ADD CONSTRAINT IF NOT EXISTS feature_flag_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flag_events_tenant_id_fkey' AND conrelid = 'public.feature_flag_events'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flag_events ADD CONSTRAINT feature_flag_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.feature_flag_events ADD CONSTRAINT IF NOT EXISTS feature_flag_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flag_events_user_id_fkey' AND conrelid = 'public.feature_flag_events'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flag_events ADD CONSTRAINT feature_flag_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_feature_flag_events_tenant_id ON public.feature_flag_events USING btree (tenant_id);
 
@@ -3089,15 +4169,45 @@ CREATE TABLE IF NOT EXISTS public.feature_flag_overrides (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT IF NOT EXISTS feature_flag_overrides_flag_id_fkey FOREIGN KEY (flag_id) REFERENCES feature_flags(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flag_overrides_flag_id_fkey' AND conrelid = 'public.feature_flag_overrides'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT feature_flag_overrides_flag_id_fkey FOREIGN KEY (flag_id) REFERENCES feature_flags(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT IF NOT EXISTS feature_flag_overrides_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flag_overrides_tenant_id_fkey' AND conrelid = 'public.feature_flag_overrides'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT feature_flag_overrides_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT IF NOT EXISTS feature_flag_overrides_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flag_overrides_user_id_fkey' AND conrelid = 'public.feature_flag_overrides'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT feature_flag_overrides_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT IF NOT EXISTS fk_feature_flag_overrides_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_feature_flag_overrides_tenant' AND conrelid = 'public.feature_flag_overrides'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT fk_feature_flag_overrides_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT IF NOT EXISTS feature_flag_overrides_tenant_id_user_id_flag_id_key UNIQUE (tenant_id, user_id, flag_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flag_overrides_tenant_id_user_id_flag_id_key' AND conrelid = 'public.feature_flag_overrides'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flag_overrides ADD CONSTRAINT feature_flag_overrides_tenant_id_user_id_flag_id_key UNIQUE (tenant_id, user_id, flag_id);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS feature_flag_overrides_tenant_id_user_id_flag_id_key ON public.feature_flag_overrides USING btree (tenant_id, user_id, flag_id);
 
@@ -3132,13 +4242,37 @@ CREATE TABLE IF NOT EXISTS public.feature_flags (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.feature_flags ADD CONSTRAINT IF NOT EXISTS feature_flags_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flags_billing_account_id_fkey' AND conrelid = 'public.feature_flags'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flags ADD CONSTRAINT feature_flags_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.feature_flags ADD CONSTRAINT IF NOT EXISTS feature_flags_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flags_tenant_id_fkey' AND conrelid = 'public.feature_flags'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flags ADD CONSTRAINT feature_flags_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.feature_flags ADD CONSTRAINT IF NOT EXISTS fk_feature_flags_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_feature_flags_tenant' AND conrelid = 'public.feature_flags'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flags ADD CONSTRAINT fk_feature_flags_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.feature_flags ADD CONSTRAINT IF NOT EXISTS feature_flags_tenant_id_key_key UNIQUE (tenant_id, key);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feature_flags_tenant_id_key_key' AND conrelid = 'public.feature_flags'::regclass
+  ) THEN
+    ALTER TABLE public.feature_flags ADD CONSTRAINT feature_flags_tenant_id_key_key UNIQUE (tenant_id, key);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS feature_flags_tenant_id_key_key ON public.feature_flags USING btree (tenant_id, key);
 
@@ -3217,11 +4351,29 @@ CREATE TABLE IF NOT EXISTS public.financial_ledger (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.financial_ledger ADD CONSTRAINT IF NOT EXISTS financial_ledger_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'financial_ledger_created_by_fkey' AND conrelid = 'public.financial_ledger'::regclass
+  ) THEN
+    ALTER TABLE public.financial_ledger ADD CONSTRAINT financial_ledger_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.financial_ledger ADD CONSTRAINT IF NOT EXISTS financial_ledger_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'financial_ledger_tenant_id_fkey' AND conrelid = 'public.financial_ledger'::regclass
+  ) THEN
+    ALTER TABLE public.financial_ledger ADD CONSTRAINT financial_ledger_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.financial_ledger ADD CONSTRAINT IF NOT EXISTS financial_ledger_tenant_id_idempotency_key_key UNIQUE (tenant_id, idempotency_key);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'financial_ledger_tenant_id_idempotency_key_key' AND conrelid = 'public.financial_ledger'::regclass
+  ) THEN
+    ALTER TABLE public.financial_ledger ADD CONSTRAINT financial_ledger_tenant_id_idempotency_key_key UNIQUE (tenant_id, idempotency_key);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS financial_ledger_tenant_id_idempotency_key_key ON public.financial_ledger USING btree (tenant_id, idempotency_key);
 
@@ -3258,7 +4410,13 @@ CREATE TABLE IF NOT EXISTS public.fraud_signals (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.fraud_signals ADD CONSTRAINT IF NOT EXISTS fraud_signals_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fraud_signals_billing_account_id_fkey' AND conrelid = 'public.fraud_signals'::regclass
+  ) THEN
+    ALTER TABLE public.fraud_signals ADD CONSTRAINT fraud_signals_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_fraud_signals_ba_id ON public.fraud_signals USING btree (billing_account_id);
 
@@ -3300,7 +4458,13 @@ CREATE TABLE IF NOT EXISTS public.growth_content (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.growth_content ADD CONSTRAINT IF NOT EXISTS growth_content_slug_key UNIQUE (slug);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'growth_content_slug_key' AND conrelid = 'public.growth_content'::regclass
+  ) THEN
+    ALTER TABLE public.growth_content ADD CONSTRAINT growth_content_slug_key UNIQUE (slug);
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS growth_content_slug_key ON public.growth_content USING btree (slug);
 
@@ -3358,7 +4522,13 @@ CREATE TABLE IF NOT EXISTS public.http_logs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.http_logs ADD CONSTRAINT IF NOT EXISTS http_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'http_logs_tenant_id_fkey' AND conrelid = 'public.http_logs'::regclass
+  ) THEN
+    ALTER TABLE public.http_logs ADD CONSTRAINT http_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_http_logs_created_at_desc ON public.http_logs USING btree (created_at DESC);
 
@@ -3378,11 +4548,29 @@ CREATE TABLE IF NOT EXISTS public.idempotency_keys (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.idempotency_keys ADD CONSTRAINT IF NOT EXISTS fk_idempotency_keys_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_idempotency_keys_tenant' AND conrelid = 'public.idempotency_keys'::regclass
+  ) THEN
+    ALTER TABLE public.idempotency_keys ADD CONSTRAINT fk_idempotency_keys_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.idempotency_keys ADD CONSTRAINT IF NOT EXISTS idempotency_keys_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'idempotency_keys_tenant_id_fkey' AND conrelid = 'public.idempotency_keys'::regclass
+  ) THEN
+    ALTER TABLE public.idempotency_keys ADD CONSTRAINT idempotency_keys_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.idempotency_keys ADD CONSTRAINT IF NOT EXISTS idempotency_keys_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'idempotency_keys_user_id_fkey' AND conrelid = 'public.idempotency_keys'::regclass
+  ) THEN
+    ALTER TABLE public.idempotency_keys ADD CONSTRAINT idempotency_keys_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_idempo_tenant_user ON public.idempotency_keys USING btree (tenant_id, user_id);
 
@@ -3417,13 +4605,37 @@ CREATE TABLE IF NOT EXISTS public.integration_credentials (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.integration_credentials ADD CONSTRAINT IF NOT EXISTS integration_credentials_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'integration_credentials_created_by_fkey' AND conrelid = 'public.integration_credentials'::regclass
+  ) THEN
+    ALTER TABLE public.integration_credentials ADD CONSTRAINT integration_credentials_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.integration_credentials ADD CONSTRAINT IF NOT EXISTS integration_credentials_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'integration_credentials_tenant_id_fkey' AND conrelid = 'public.integration_credentials'::regclass
+  ) THEN
+    ALTER TABLE public.integration_credentials ADD CONSTRAINT integration_credentials_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.integration_credentials ADD CONSTRAINT IF NOT EXISTS integration_credentials_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'integration_credentials_user_id_fkey' AND conrelid = 'public.integration_credentials'::regclass
+  ) THEN
+    ALTER TABLE public.integration_credentials ADD CONSTRAINT integration_credentials_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.integration_credentials ADD CONSTRAINT IF NOT EXISTS integration_credentials_tenant_id_adapter_key UNIQUE (tenant_id, adapter);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'integration_credentials_tenant_id_adapter_key' AND conrelid = 'public.integration_credentials'::regclass
+  ) THEN
+    ALTER TABLE public.integration_credentials ADD CONSTRAINT integration_credentials_tenant_id_adapter_key UNIQUE (tenant_id, adapter);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_integration_credentials_created_at_desc ON public.integration_credentials USING btree (created_at DESC);
 
@@ -3451,9 +4663,21 @@ CREATE TABLE IF NOT EXISTS public.integration_health (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.integration_health ADD CONSTRAINT IF NOT EXISTS integration_health_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'integration_health_tenant_id_fkey' AND conrelid = 'public.integration_health'::regclass
+  ) THEN
+    ALTER TABLE public.integration_health ADD CONSTRAINT integration_health_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.integration_health ADD CONSTRAINT IF NOT EXISTS integration_health_tenant_id_integration_id_key UNIQUE (tenant_id, integration_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'integration_health_tenant_id_integration_id_key' AND conrelid = 'public.integration_health'::regclass
+  ) THEN
+    ALTER TABLE public.integration_health ADD CONSTRAINT integration_health_tenant_id_integration_id_key UNIQUE (tenant_id, integration_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_integration_health_auto_disabled ON public.integration_health USING btree (auto_disabled) WHERE (auto_disabled = true);
 
@@ -3507,9 +4731,21 @@ CREATE TABLE IF NOT EXISTS public.integration_quota_usage (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.integration_quota_usage ADD CONSTRAINT IF NOT EXISTS integration_quota_usage_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'integration_quota_usage_tenant_id_fkey' AND conrelid = 'public.integration_quota_usage'::regclass
+  ) THEN
+    ALTER TABLE public.integration_quota_usage ADD CONSTRAINT integration_quota_usage_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.integration_quota_usage ADD CONSTRAINT IF NOT EXISTS integration_quota_usage_tenant_id_integration_id_date_key UNIQUE (tenant_id, integration_id, date);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'integration_quota_usage_tenant_id_integration_id_date_key' AND conrelid = 'public.integration_quota_usage'::regclass
+  ) THEN
+    ALTER TABLE public.integration_quota_usage ADD CONSTRAINT integration_quota_usage_tenant_id_integration_id_date_key UNIQUE (tenant_id, integration_id, date);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_integration_quota_usage_created_at_desc ON public.integration_quota_usage USING btree (created_at DESC);
 
@@ -3558,9 +4794,21 @@ CREATE TABLE IF NOT EXISTS public.job_attempts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.job_attempts ADD CONSTRAINT IF NOT EXISTS job_attempts_job_id_fkey FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'job_attempts_job_id_fkey' AND conrelid = 'public.job_attempts'::regclass
+  ) THEN
+    ALTER TABLE public.job_attempts ADD CONSTRAINT job_attempts_job_id_fkey FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.job_attempts ADD CONSTRAINT IF NOT EXISTS job_attempts_unique UNIQUE (job_id, attempt_no);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'job_attempts_unique' AND conrelid = 'public.job_attempts'::regclass
+  ) THEN
+    ALTER TABLE public.job_attempts ADD CONSTRAINT job_attempts_unique UNIQUE (job_id, attempt_no);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_job_attempts_attempt_no ON public.job_attempts USING btree (job_id, attempt_no);
 
@@ -3612,7 +4860,13 @@ CREATE TABLE IF NOT EXISTS public.job_rule_snapshots (
   PRIMARY KEY (execution_id)
 );
 
-ALTER TABLE public.job_rule_snapshots ADD CONSTRAINT IF NOT EXISTS job_rule_snapshots_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'job_rule_snapshots_execution_id_fkey' AND conrelid = 'public.job_rule_snapshots'::regclass
+  ) THEN
+    ALTER TABLE public.job_rule_snapshots ADD CONSTRAINT job_rule_snapshots_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_job_rule_snapshots_execution_id ON public.job_rule_snapshots USING btree (execution_id);
 
@@ -3637,7 +4891,13 @@ CREATE TABLE IF NOT EXISTS public.jobs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.jobs ADD CONSTRAINT IF NOT EXISTS jobs_run_id_fkey FOREIGN KEY (run_id) REFERENCES recon_runs(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'jobs_run_id_fkey' AND conrelid = 'public.jobs'::regclass
+  ) THEN
+    ALTER TABLE public.jobs ADD CONSTRAINT jobs_run_id_fkey FOREIGN KEY (run_id) REFERENCES recon_runs(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_jobs_available_at ON public.jobs USING btree (available_at) WHERE (status = 'queued'::text);
 
@@ -3672,11 +4932,29 @@ CREATE TABLE IF NOT EXISTS public.leads (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.leads ADD CONSTRAINT IF NOT EXISTS leads_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'leads_assigned_to_fkey' AND conrelid = 'public.leads'::regclass
+  ) THEN
+    ALTER TABLE public.leads ADD CONSTRAINT leads_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.leads ADD CONSTRAINT IF NOT EXISTS leads_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'leads_tenant_id_fkey' AND conrelid = 'public.leads'::regclass
+  ) THEN
+    ALTER TABLE public.leads ADD CONSTRAINT leads_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.leads ADD CONSTRAINT IF NOT EXISTS leads_tenant_id_email_key UNIQUE (tenant_id, email);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'leads_tenant_id_email_key' AND conrelid = 'public.leads'::regclass
+  ) THEN
+    ALTER TABLE public.leads ADD CONSTRAINT leads_tenant_id_email_key UNIQUE (tenant_id, email);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_leads_assigned_to ON public.leads USING btree (assigned_to);
 
@@ -3721,7 +4999,13 @@ CREATE TABLE IF NOT EXISTS public.mapping_templates (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.mapping_templates ADD CONSTRAINT IF NOT EXISTS mapping_templates_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'mapping_templates_tenant_id_fkey' AND conrelid = 'public.mapping_templates'::regclass
+  ) THEN
+    ALTER TABLE public.mapping_templates ADD CONSTRAINT mapping_templates_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_mapping_templates_created_at_desc ON public.mapping_templates USING btree (created_at DESC);
 
@@ -3752,11 +5036,29 @@ CREATE TABLE IF NOT EXISTS public.matches (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.matches ADD CONSTRAINT IF NOT EXISTS fk_matches_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_matches_tenant' AND conrelid = 'public.matches'::regclass
+  ) THEN
+    ALTER TABLE public.matches ADD CONSTRAINT fk_matches_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.matches ADD CONSTRAINT IF NOT EXISTS matches_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'matches_execution_id_fkey' AND conrelid = 'public.matches'::regclass
+  ) THEN
+    ALTER TABLE public.matches ADD CONSTRAINT matches_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.matches ADD CONSTRAINT IF NOT EXISTS matches_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'matches_tenant_id_fkey' AND conrelid = 'public.matches'::regclass
+  ) THEN
+    ALTER TABLE public.matches ADD CONSTRAINT matches_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_matches_created_at_desc ON public.matches USING btree (created_at DESC);
 
@@ -3785,21 +5087,69 @@ CREATE TABLE IF NOT EXISTS public.memberships (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.memberships ADD CONSTRAINT IF NOT EXISTS memberships_invited_by_fkey FOREIGN KEY (invited_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_invited_by_fkey' AND conrelid = 'public.memberships'::regclass
+  ) THEN
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_invited_by_fkey FOREIGN KEY (invited_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.memberships ADD CONSTRAINT IF NOT EXISTS memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_fkey' AND conrelid = 'public.memberships'::regclass
+  ) THEN
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.memberships ADD CONSTRAINT IF NOT EXISTS memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_fkey' AND conrelid = 'public.memberships'::regclass
+  ) THEN
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.memberships ADD CONSTRAINT IF NOT EXISTS memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_user_id_fkey' AND conrelid = 'public.memberships'::regclass
+  ) THEN
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.memberships ADD CONSTRAINT IF NOT EXISTS memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_user_id_fkey' AND conrelid = 'public.memberships'::regclass
+  ) THEN
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.memberships ADD CONSTRAINT IF NOT EXISTS memberships_invite_token_key UNIQUE (invite_token);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_invite_token_key' AND conrelid = 'public.memberships'::regclass
+  ) THEN
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_invite_token_key UNIQUE (invite_token);
+  END IF;
+END $$;
 
-ALTER TABLE public.memberships ADD CONSTRAINT IF NOT EXISTS memberships_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_user_id_key' AND conrelid = 'public.memberships'::regclass
+  ) THEN
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+  END IF;
+END $$;
 
-ALTER TABLE public.memberships ADD CONSTRAINT IF NOT EXISTS memberships_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'memberships_tenant_id_user_id_key' AND conrelid = 'public.memberships'::regclass
+  ) THEN
+    ALTER TABLE public.memberships ADD CONSTRAINT memberships_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_memberships_status ON public.memberships USING btree (status);
 
@@ -3829,11 +5179,29 @@ CREATE TABLE IF NOT EXISTS public.message_summaries (
   PRIMARY KEY (message_id)
 );
 
-ALTER TABLE public.message_summaries ADD CONSTRAINT IF NOT EXISTS fk_message_summaries_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_message_summaries_tenant' AND conrelid = 'public.message_summaries'::regclass
+  ) THEN
+    ALTER TABLE public.message_summaries ADD CONSTRAINT fk_message_summaries_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.message_summaries ADD CONSTRAINT IF NOT EXISTS message_summaries_message_id_fkey FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'message_summaries_message_id_fkey' AND conrelid = 'public.message_summaries'::regclass
+  ) THEN
+    ALTER TABLE public.message_summaries ADD CONSTRAINT message_summaries_message_id_fkey FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.message_summaries ADD CONSTRAINT IF NOT EXISTS message_summaries_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'message_summaries_tenant_id_fkey' AND conrelid = 'public.message_summaries'::regclass
+  ) THEN
+    ALTER TABLE public.message_summaries ADD CONSTRAINT message_summaries_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_message_summaries_created_at_desc ON public.message_summaries USING btree (created_at DESC);
 
@@ -3858,15 +5226,45 @@ CREATE TABLE IF NOT EXISTS public.messages (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.messages ADD CONSTRAINT IF NOT EXISTS fk_messages_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_messages_tenant' AND conrelid = 'public.messages'::regclass
+  ) THEN
+    ALTER TABLE public.messages ADD CONSTRAINT fk_messages_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.messages ADD CONSTRAINT IF NOT EXISTS messages_author_id_fkey FOREIGN KEY (author_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'messages_author_id_fkey' AND conrelid = 'public.messages'::regclass
+  ) THEN
+    ALTER TABLE public.messages ADD CONSTRAINT messages_author_id_fkey FOREIGN KEY (author_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.messages ADD CONSTRAINT IF NOT EXISTS messages_conversation_id_fkey FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'messages_conversation_id_fkey' AND conrelid = 'public.messages'::regclass
+  ) THEN
+    ALTER TABLE public.messages ADD CONSTRAINT messages_conversation_id_fkey FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.messages ADD CONSTRAINT IF NOT EXISTS messages_sender_id_fkey FOREIGN KEY (sender_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'messages_sender_id_fkey' AND conrelid = 'public.messages'::regclass
+  ) THEN
+    ALTER TABLE public.messages ADD CONSTRAINT messages_sender_id_fkey FOREIGN KEY (sender_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.messages ADD CONSTRAINT IF NOT EXISTS messages_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'messages_tenant_id_fkey' AND conrelid = 'public.messages'::regclass
+  ) THEN
+    ALTER TABLE public.messages ADD CONSTRAINT messages_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS brin_messages_created_at ON public.messages USING brin (created_at) WITH (autosummarize='on');
 
@@ -3927,9 +5325,21 @@ CREATE TABLE IF NOT EXISTS public.model_versions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.model_versions ADD CONSTRAINT IF NOT EXISTS model_versions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'model_versions_tenant_id_fkey' AND conrelid = 'public.model_versions'::regclass
+  ) THEN
+    ALTER TABLE public.model_versions ADD CONSTRAINT model_versions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.model_versions ADD CONSTRAINT IF NOT EXISTS model_versions_model_name_version_key UNIQUE (model_name, version);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'model_versions_model_name_version_key' AND conrelid = 'public.model_versions'::regclass
+  ) THEN
+    ALTER TABLE public.model_versions ADD CONSTRAINT model_versions_model_name_version_key UNIQUE (model_name, version);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_model_versions_active ON public.model_versions USING btree (is_active);
 
@@ -3963,9 +5373,21 @@ CREATE TABLE IF NOT EXISTS public.monitoring_metrics (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.monitoring_metrics ADD CONSTRAINT IF NOT EXISTS monitoring_metrics_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'monitoring_metrics_billing_account_id_fkey' AND conrelid = 'public.monitoring_metrics'::regclass
+  ) THEN
+    ALTER TABLE public.monitoring_metrics ADD CONSTRAINT monitoring_metrics_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.monitoring_metrics ADD CONSTRAINT IF NOT EXISTS monitoring_metrics_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'monitoring_metrics_tenant_id_fkey' AND conrelid = 'public.monitoring_metrics'::regclass
+  ) THEN
+    ALTER TABLE public.monitoring_metrics ADD CONSTRAINT monitoring_metrics_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_monitoring_metrics_ba_id ON public.monitoring_metrics USING btree (billing_account_id);
 
@@ -4018,7 +5440,13 @@ CREATE TABLE IF NOT EXISTS public.newsletter_subscriptions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.newsletter_subscriptions ADD CONSTRAINT IF NOT EXISTS newsletter_subscriptions_email_key UNIQUE (email);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'newsletter_subscriptions_email_key' AND conrelid = 'public.newsletter_subscriptions'::regclass
+  ) THEN
+    ALTER TABLE public.newsletter_subscriptions ADD CONSTRAINT newsletter_subscriptions_email_key UNIQUE (email);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_newsletter_subscriptions_created_at_desc ON public.newsletter_subscriptions USING btree (created_at DESC);
 
@@ -4050,7 +5478,13 @@ CREATE TABLE IF NOT EXISTS public.notifications (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.notifications ADD CONSTRAINT IF NOT EXISTS notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'notifications_user_id_fkey' AND conrelid = 'public.notifications'::regclass
+  ) THEN
+    ALTER TABLE public.notifications ADD CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON public.notifications USING btree (created_at DESC);
 
@@ -4074,7 +5508,13 @@ CREATE TABLE IF NOT EXISTS public.onboarding_progress (
   PRIMARY KEY (user_id, step)
 );
 
-ALTER TABLE public.onboarding_progress ADD CONSTRAINT IF NOT EXISTS onboarding_progress_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'onboarding_progress_user_id_fkey' AND conrelid = 'public.onboarding_progress'::regclass
+  ) THEN
+    ALTER TABLE public.onboarding_progress ADD CONSTRAINT onboarding_progress_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_onboarding_progress_completed ON public.onboarding_progress USING btree (user_id, completed);
 
@@ -4103,13 +5543,37 @@ CREATE TABLE IF NOT EXISTS public.ops_actions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ops_actions ADD CONSTRAINT IF NOT EXISTS ops_actions_actor_id_fkey FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_actions_actor_id_fkey' AND conrelid = 'public.ops_actions'::regclass
+  ) THEN
+    ALTER TABLE public.ops_actions ADD CONSTRAINT ops_actions_actor_id_fkey FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.ops_actions ADD CONSTRAINT IF NOT EXISTS ops_actions_insight_id_fkey FOREIGN KEY (insight_id) REFERENCES ops_insights(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_actions_insight_id_fkey' AND conrelid = 'public.ops_actions'::regclass
+  ) THEN
+    ALTER TABLE public.ops_actions ADD CONSTRAINT ops_actions_insight_id_fkey FOREIGN KEY (insight_id) REFERENCES ops_insights(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.ops_actions ADD CONSTRAINT IF NOT EXISTS ops_actions_recommendation_id_fkey FOREIGN KEY (recommendation_id) REFERENCES ops_recommendations(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_actions_recommendation_id_fkey' AND conrelid = 'public.ops_actions'::regclass
+  ) THEN
+    ALTER TABLE public.ops_actions ADD CONSTRAINT ops_actions_recommendation_id_fkey FOREIGN KEY (recommendation_id) REFERENCES ops_recommendations(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.ops_actions ADD CONSTRAINT IF NOT EXISTS ops_actions_verified_by_fkey FOREIGN KEY (verified_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_actions_verified_by_fkey' AND conrelid = 'public.ops_actions'::regclass
+  ) THEN
+    ALTER TABLE public.ops_actions ADD CONSTRAINT ops_actions_verified_by_fkey FOREIGN KEY (verified_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_ops_actions_actor_type ON public.ops_actions USING btree (actor_type);
 
@@ -4158,7 +5622,13 @@ CREATE TABLE IF NOT EXISTS public.ops_briefings (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ops_briefings ADD CONSTRAINT IF NOT EXISTS ops_briefings_generated_by_fkey FOREIGN KEY (generated_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_briefings_generated_by_fkey' AND conrelid = 'public.ops_briefings'::regclass
+  ) THEN
+    ALTER TABLE public.ops_briefings ADD CONSTRAINT ops_briefings_generated_by_fkey FOREIGN KEY (generated_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_ops_briefings_generated_at ON public.ops_briefings USING btree (generated_at DESC);
 
@@ -4217,7 +5687,13 @@ CREATE TABLE IF NOT EXISTS public.ops_insights (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ops_insights ADD CONSTRAINT IF NOT EXISTS ops_insights_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_insights_resolved_by_fkey' AND conrelid = 'public.ops_insights'::regclass
+  ) THEN
+    ALTER TABLE public.ops_insights ADD CONSTRAINT ops_insights_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_ops_insights_active ON public.ops_insights USING btree (status, created_at DESC) WHERE ((status)::text = 'active'::text);
 
@@ -4279,11 +5755,29 @@ CREATE TABLE IF NOT EXISTS public.ops_recommendations (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ops_recommendations ADD CONSTRAINT IF NOT EXISTS ops_recommendations_accepted_by_fkey FOREIGN KEY (accepted_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_recommendations_accepted_by_fkey' AND conrelid = 'public.ops_recommendations'::regclass
+  ) THEN
+    ALTER TABLE public.ops_recommendations ADD CONSTRAINT ops_recommendations_accepted_by_fkey FOREIGN KEY (accepted_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.ops_recommendations ADD CONSTRAINT IF NOT EXISTS ops_recommendations_executed_by_fkey FOREIGN KEY (executed_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_recommendations_executed_by_fkey' AND conrelid = 'public.ops_recommendations'::regclass
+  ) THEN
+    ALTER TABLE public.ops_recommendations ADD CONSTRAINT ops_recommendations_executed_by_fkey FOREIGN KEY (executed_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.ops_recommendations ADD CONSTRAINT IF NOT EXISTS ops_recommendations_insight_id_fkey FOREIGN KEY (insight_id) REFERENCES ops_insights(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_recommendations_insight_id_fkey' AND conrelid = 'public.ops_recommendations'::regclass
+  ) THEN
+    ALTER TABLE public.ops_recommendations ADD CONSTRAINT ops_recommendations_insight_id_fkey FOREIGN KEY (insight_id) REFERENCES ops_insights(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_ops_recommendations_action_type ON public.ops_recommendations USING btree (action_type);
 
@@ -4315,7 +5809,13 @@ CREATE TABLE IF NOT EXISTS public.ops_support_tickets (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ops_support_tickets ADD CONSTRAINT IF NOT EXISTS ops_support_tickets_ticket_number_key UNIQUE (ticket_number);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_support_tickets_ticket_number_key' AND conrelid = 'public.ops_support_tickets'::regclass
+  ) THEN
+    ALTER TABLE public.ops_support_tickets ADD CONSTRAINT ops_support_tickets_ticket_number_key UNIQUE (ticket_number);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_ops_support_tickets_created_at ON public.ops_support_tickets USING btree (created_at DESC);
 
@@ -4342,7 +5842,13 @@ CREATE TABLE IF NOT EXISTS public.ops_usage_aggregates (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ops_usage_aggregates ADD CONSTRAINT IF NOT EXISTS ops_usage_aggregates_date_organization_id_user_id_endpoint_key UNIQUE (date, organization_id, user_id, endpoint);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ops_usage_aggregates_date_organization_id_user_id_endpoint_key' AND conrelid = 'public.ops_usage_aggregates'::regclass
+  ) THEN
+    ALTER TABLE public.ops_usage_aggregates ADD CONSTRAINT ops_usage_aggregates_date_organization_id_user_id_endpoint_key UNIQUE (date, organization_id, user_id, endpoint);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_ops_usage_aggregates_date ON public.ops_usage_aggregates USING btree (date DESC);
 
@@ -4384,13 +5890,37 @@ CREATE TABLE IF NOT EXISTS public.participants (
   PRIMARY KEY (conversation_id, user_id)
 );
 
-ALTER TABLE public.participants ADD CONSTRAINT IF NOT EXISTS fk_participants_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_participants_tenant' AND conrelid = 'public.participants'::regclass
+  ) THEN
+    ALTER TABLE public.participants ADD CONSTRAINT fk_participants_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.participants ADD CONSTRAINT IF NOT EXISTS participants_conversation_id_fkey FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'participants_conversation_id_fkey' AND conrelid = 'public.participants'::regclass
+  ) THEN
+    ALTER TABLE public.participants ADD CONSTRAINT participants_conversation_id_fkey FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.participants ADD CONSTRAINT IF NOT EXISTS participants_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE RESTRICT DEFERRABLE INITIALLY DEFERRED;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'participants_tenant_id_fkey' AND conrelid = 'public.participants'::regclass
+  ) THEN
+    ALTER TABLE public.participants ADD CONSTRAINT participants_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE RESTRICT DEFERRABLE INITIALLY DEFERRED;
+  END IF;
+END $$;
 
-ALTER TABLE public.participants ADD CONSTRAINT IF NOT EXISTS participants_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'participants_user_id_fkey' AND conrelid = 'public.participants'::regclass
+  ) THEN
+    ALTER TABLE public.participants ADD CONSTRAINT participants_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_participants_conv_user ON public.participants USING btree (conversation_id, user_id);
 
@@ -4419,9 +5949,21 @@ CREATE TABLE IF NOT EXISTS public.payment_recovery (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.payment_recovery ADD CONSTRAINT IF NOT EXISTS payment_recovery_subscription_id_fkey FOREIGN KEY (subscription_id) REFERENCES subscriptions(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'payment_recovery_subscription_id_fkey' AND conrelid = 'public.payment_recovery'::regclass
+  ) THEN
+    ALTER TABLE public.payment_recovery ADD CONSTRAINT payment_recovery_subscription_id_fkey FOREIGN KEY (subscription_id) REFERENCES subscriptions(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.payment_recovery ADD CONSTRAINT IF NOT EXISTS payment_recovery_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'payment_recovery_user_id_fkey' AND conrelid = 'public.payment_recovery'::regclass
+  ) THEN
+    ALTER TABLE public.payment_recovery ADD CONSTRAINT payment_recovery_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_payment_recovery_created_at_desc ON public.payment_recovery USING btree (created_at DESC);
 
@@ -4445,11 +5987,29 @@ CREATE TABLE IF NOT EXISTS public.pii_mapping_tokens (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.pii_mapping_tokens ADD CONSTRAINT IF NOT EXISTS pii_mapping_tokens_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'pii_mapping_tokens_edge_node_id_fkey' AND conrelid = 'public.pii_mapping_tokens'::regclass
+  ) THEN
+    ALTER TABLE public.pii_mapping_tokens ADD CONSTRAINT pii_mapping_tokens_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.pii_mapping_tokens ADD CONSTRAINT IF NOT EXISTS pii_mapping_tokens_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'pii_mapping_tokens_tenant_id_fkey' AND conrelid = 'public.pii_mapping_tokens'::regclass
+  ) THEN
+    ALTER TABLE public.pii_mapping_tokens ADD CONSTRAINT pii_mapping_tokens_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.pii_mapping_tokens ADD CONSTRAINT IF NOT EXISTS pii_mapping_tokens_tenant_id_original_value_hash_key UNIQUE (tenant_id, original_value_hash);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'pii_mapping_tokens_tenant_id_original_value_hash_key' AND conrelid = 'public.pii_mapping_tokens'::regclass
+  ) THEN
+    ALTER TABLE public.pii_mapping_tokens ADD CONSTRAINT pii_mapping_tokens_tenant_id_original_value_hash_key UNIQUE (tenant_id, original_value_hash);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_pii_mapping_tokens_created_at_desc ON public.pii_mapping_tokens USING btree (created_at DESC);
 
@@ -4482,7 +6042,13 @@ CREATE TABLE IF NOT EXISTS public.plans (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.plans ADD CONSTRAINT IF NOT EXISTS plans_slug_key UNIQUE (slug);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'plans_slug_key' AND conrelid = 'public.plans'::regclass
+  ) THEN
+    ALTER TABLE public.plans ADD CONSTRAINT plans_slug_key UNIQUE (slug);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_plans_created_at_desc ON public.plans USING btree (created_at DESC);
 
@@ -4551,7 +6117,13 @@ CREATE TABLE IF NOT EXISTS public.positioning_feedback (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.positioning_feedback ADD CONSTRAINT IF NOT EXISTS positioning_feedback_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'positioning_feedback_user_id_fkey' AND conrelid = 'public.positioning_feedback'::regclass
+  ) THEN
+    ALTER TABLE public.positioning_feedback ADD CONSTRAINT positioning_feedback_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_positioning_feedback_clarity_rating ON public.positioning_feedback USING btree (clarity_rating DESC);
 
@@ -4578,7 +6150,13 @@ CREATE TABLE IF NOT EXISTS public.posts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.posts ADD CONSTRAINT IF NOT EXISTS posts_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'posts_user_id_fkey' AND conrelid = 'public.posts'::regclass
+  ) THEN
+    ALTER TABLE public.posts ADD CONSTRAINT posts_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON public.posts USING btree (created_at DESC);
 
@@ -4615,9 +6193,21 @@ CREATE TABLE IF NOT EXISTS public.preemptive_support_actions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.preemptive_support_actions ADD CONSTRAINT IF NOT EXISTS preemptive_support_actions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'preemptive_support_actions_tenant_id_fkey' AND conrelid = 'public.preemptive_support_actions'::regclass
+  ) THEN
+    ALTER TABLE public.preemptive_support_actions ADD CONSTRAINT preemptive_support_actions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.preemptive_support_actions ADD CONSTRAINT IF NOT EXISTS preemptive_support_actions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'preemptive_support_actions_user_id_fkey' AND conrelid = 'public.preemptive_support_actions'::regclass
+  ) THEN
+    ALTER TABLE public.preemptive_support_actions ADD CONSTRAINT preemptive_support_actions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_preemptive_support_actions_created_at_desc ON public.preemptive_support_actions USING btree (created_at DESC);
 
@@ -4666,11 +6256,29 @@ CREATE TABLE IF NOT EXISTS public.preview_tokens (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.preview_tokens ADD CONSTRAINT IF NOT EXISTS preview_tokens_page_id_fkey FOREIGN KEY (page_id) REFERENCES cms_pages(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'preview_tokens_page_id_fkey' AND conrelid = 'public.preview_tokens'::regclass
+  ) THEN
+    ALTER TABLE public.preview_tokens ADD CONSTRAINT preview_tokens_page_id_fkey FOREIGN KEY (page_id) REFERENCES cms_pages(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.preview_tokens ADD CONSTRAINT IF NOT EXISTS preview_tokens_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'preview_tokens_tenant_id_fkey' AND conrelid = 'public.preview_tokens'::regclass
+  ) THEN
+    ALTER TABLE public.preview_tokens ADD CONSTRAINT preview_tokens_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.preview_tokens ADD CONSTRAINT IF NOT EXISTS preview_tokens_token_key UNIQUE (token);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'preview_tokens_token_key' AND conrelid = 'public.preview_tokens'::regclass
+  ) THEN
+    ALTER TABLE public.preview_tokens ADD CONSTRAINT preview_tokens_token_key UNIQUE (token);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_preview_tokens_page ON public.preview_tokens USING btree (page_id, expires_at);
 
@@ -4700,9 +6308,21 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.profiles ADD CONSTRAINT IF NOT EXISTS profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'profiles_id_fkey' AND conrelid = 'public.profiles'::regclass
+  ) THEN
+    ALTER TABLE public.profiles ADD CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.profiles ADD CONSTRAINT IF NOT EXISTS profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'profiles_user_id_fkey' AND conrelid = 'public.profiles'::regclass
+  ) THEN
+    ALTER TABLE public.profiles ADD CONSTRAINT profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_profiles_created_at ON public.profiles USING btree (created_at DESC);
 
@@ -4732,9 +6352,21 @@ CREATE TABLE IF NOT EXISTS public.project_snapshots (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.project_snapshots ADD CONSTRAINT IF NOT EXISTS project_snapshots_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'project_snapshots_created_by_fkey' AND conrelid = 'public.project_snapshots'::regclass
+  ) THEN
+    ALTER TABLE public.project_snapshots ADD CONSTRAINT project_snapshots_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.project_snapshots ADD CONSTRAINT IF NOT EXISTS project_snapshots_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'project_snapshots_user_id_fkey' AND conrelid = 'public.project_snapshots'::regclass
+  ) THEN
+    ALTER TABLE public.project_snapshots ADD CONSTRAINT project_snapshots_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_project_snapshots_created_at_desc ON public.project_snapshots USING btree (created_at DESC);
 
@@ -4768,7 +6400,13 @@ CREATE TABLE IF NOT EXISTS public.rate_limits (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.rate_limits ADD CONSTRAINT IF NOT EXISTS rate_limits_tenant_id_key_key UNIQUE (tenant_id, key);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'rate_limits_tenant_id_key_key' AND conrelid = 'public.rate_limits'::regclass
+  ) THEN
+    ALTER TABLE public.rate_limits ADD CONSTRAINT rate_limits_tenant_id_key_key UNIQUE (tenant_id, key);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_rate_limits_created_at_desc ON public.rate_limits USING btree (created_at DESC);
 
@@ -4790,9 +6428,21 @@ CREATE TABLE IF NOT EXISTS public.rate_usage (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.rate_usage ADD CONSTRAINT IF NOT EXISTS rate_usage_tenant_id_key_ts_day_key UNIQUE (tenant_id, key, ts_day);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'rate_usage_tenant_id_key_ts_day_key' AND conrelid = 'public.rate_usage'::regclass
+  ) THEN
+    ALTER TABLE public.rate_usage ADD CONSTRAINT rate_usage_tenant_id_key_ts_day_key UNIQUE (tenant_id, key, ts_day);
+  END IF;
+END $$;
 
-ALTER TABLE public.rate_usage ADD CONSTRAINT IF NOT EXISTS rate_usage_tenant_id_key_ts_minute_key UNIQUE (tenant_id, key, ts_minute);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'rate_usage_tenant_id_key_ts_minute_key' AND conrelid = 'public.rate_usage'::regclass
+  ) THEN
+    ALTER TABLE public.rate_usage ADD CONSTRAINT rate_usage_tenant_id_key_ts_minute_key UNIQUE (tenant_id, key, ts_minute);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS brin_rate_usage_ts_day ON public.rate_usage USING brin (ts_day) WITH (autosummarize='on');
 
@@ -4845,7 +6495,13 @@ CREATE TABLE IF NOT EXISTS public.reality_metrics (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.reality_metrics ADD CONSTRAINT IF NOT EXISTS reality_metrics_category_name_key UNIQUE (category, name);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reality_metrics_category_name_key' AND conrelid = 'public.reality_metrics'::regclass
+  ) THEN
+    ALTER TABLE public.reality_metrics ADD CONSTRAINT reality_metrics_category_name_key UNIQUE (category, name);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_reality_metrics_category ON public.reality_metrics USING btree (category);
 
@@ -4872,7 +6528,13 @@ CREATE TABLE IF NOT EXISTS public.receipt_audit_logs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipt_audit_logs ADD CONSTRAINT IF NOT EXISTS receipt_audit_logs_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_audit_logs_receipt_id_fkey' AND conrelid = 'public.receipt_audit_logs'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_audit_logs ADD CONSTRAINT receipt_audit_logs_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipt_audit_logs_created_at ON public.receipt_audit_logs USING btree (created_at);
 
@@ -4901,7 +6563,13 @@ CREATE TABLE IF NOT EXISTS public.receipt_conversions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipt_conversions ADD CONSTRAINT IF NOT EXISTS receipt_conversions_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_conversions_receipt_id_fkey' AND conrelid = 'public.receipt_conversions'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_conversions ADD CONSTRAINT receipt_conversions_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipt_conversions_created_at ON public.receipt_conversions USING btree (created_at);
 
@@ -4924,11 +6592,29 @@ CREATE TABLE IF NOT EXISTS public.receipt_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipt_events ADD CONSTRAINT IF NOT EXISTS receipt_events_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_events_api_key_id_fkey' AND conrelid = 'public.receipt_events'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_events ADD CONSTRAINT receipt_events_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.receipt_events ADD CONSTRAINT IF NOT EXISTS receipt_events_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_events_receipt_id_fkey' AND conrelid = 'public.receipt_events'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_events ADD CONSTRAINT receipt_events_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.receipt_events ADD CONSTRAINT IF NOT EXISTS receipt_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_events_tenant_id_fkey' AND conrelid = 'public.receipt_events'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_events ADD CONSTRAINT receipt_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipt_events_api_key_id ON public.receipt_events USING btree (api_key_id);
 
@@ -4957,11 +6643,29 @@ CREATE TABLE IF NOT EXISTS public.receipt_items (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipt_items ADD CONSTRAINT IF NOT EXISTS fk_receipt_items_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_receipt_items_tenant' AND conrelid = 'public.receipt_items'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_items ADD CONSTRAINT fk_receipt_items_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.receipt_items ADD CONSTRAINT IF NOT EXISTS receipt_items_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_items_receipt_id_fkey' AND conrelid = 'public.receipt_items'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_items ADD CONSTRAINT receipt_items_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.receipt_items ADD CONSTRAINT IF NOT EXISTS receipt_items_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_items_tenant_id_fkey' AND conrelid = 'public.receipt_items'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_items ADD CONSTRAINT receipt_items_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipt_items_category ON public.receipt_items USING btree (category);
 
@@ -4995,7 +6699,13 @@ CREATE TABLE IF NOT EXISTS public.receipt_items_extracted (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipt_items_extracted ADD CONSTRAINT IF NOT EXISTS receipt_items_extracted_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts_extracted(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_items_extracted_receipt_id_fkey' AND conrelid = 'public.receipt_items_extracted'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_items_extracted ADD CONSTRAINT receipt_items_extracted_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts_extracted(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipt_items_extracted_category ON public.receipt_items_extracted USING btree (category);
 
@@ -5016,9 +6726,21 @@ CREATE TABLE IF NOT EXISTS public.receipt_ratings (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipt_ratings ADD CONSTRAINT IF NOT EXISTS receipt_ratings_conversion_id_fkey FOREIGN KEY (conversion_id) REFERENCES receipt_conversions(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_ratings_conversion_id_fkey' AND conrelid = 'public.receipt_ratings'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_ratings ADD CONSTRAINT receipt_ratings_conversion_id_fkey FOREIGN KEY (conversion_id) REFERENCES receipt_conversions(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.receipt_ratings ADD CONSTRAINT IF NOT EXISTS receipt_ratings_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_ratings_receipt_id_fkey' AND conrelid = 'public.receipt_ratings'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_ratings ADD CONSTRAINT receipt_ratings_receipt_id_fkey FOREIGN KEY (receipt_id) REFERENCES receipts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipt_ratings_conversion_id ON public.receipt_ratings USING btree (conversion_id);
 
@@ -5047,9 +6769,21 @@ CREATE TABLE IF NOT EXISTS public.receipt_uploads (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipt_uploads ADD CONSTRAINT IF NOT EXISTS receipt_uploads_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_uploads_api_key_id_fkey' AND conrelid = 'public.receipt_uploads'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_uploads ADD CONSTRAINT receipt_uploads_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.receipt_uploads ADD CONSTRAINT IF NOT EXISTS receipt_uploads_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_uploads_billing_account_id_fkey' AND conrelid = 'public.receipt_uploads'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_uploads ADD CONSTRAINT receipt_uploads_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipt_uploads_api_key_id ON public.receipt_uploads USING btree (api_key_id);
 
@@ -5078,11 +6812,29 @@ CREATE TABLE IF NOT EXISTS public.receipt_webhook_outbox (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipt_webhook_outbox ADD CONSTRAINT IF NOT EXISTS receipt_webhook_outbox_event_id_fkey FOREIGN KEY (event_id) REFERENCES receipt_events(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_webhook_outbox_event_id_fkey' AND conrelid = 'public.receipt_webhook_outbox'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_webhook_outbox ADD CONSTRAINT receipt_webhook_outbox_event_id_fkey FOREIGN KEY (event_id) REFERENCES receipt_events(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.receipt_webhook_outbox ADD CONSTRAINT IF NOT EXISTS receipt_webhook_outbox_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_webhook_outbox_tenant_id_fkey' AND conrelid = 'public.receipt_webhook_outbox'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_webhook_outbox ADD CONSTRAINT receipt_webhook_outbox_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.receipt_webhook_outbox ADD CONSTRAINT IF NOT EXISTS receipt_webhook_outbox_webhook_id_fkey FOREIGN KEY (webhook_id) REFERENCES receipt_webhooks(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_webhook_outbox_webhook_id_fkey' AND conrelid = 'public.receipt_webhook_outbox'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_webhook_outbox ADD CONSTRAINT receipt_webhook_outbox_webhook_id_fkey FOREIGN KEY (webhook_id) REFERENCES receipt_webhooks(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipt_webhook_outbox_created_at_desc ON public.receipt_webhook_outbox USING btree (created_at DESC);
 
@@ -5106,7 +6858,13 @@ CREATE TABLE IF NOT EXISTS public.receipt_webhooks (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipt_webhooks ADD CONSTRAINT IF NOT EXISTS receipt_webhooks_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipt_webhooks_tenant_id_fkey' AND conrelid = 'public.receipt_webhooks'::regclass
+  ) THEN
+    ALTER TABLE public.receipt_webhooks ADD CONSTRAINT receipt_webhooks_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipt_webhooks_created_at_desc ON public.receipt_webhooks USING btree (created_at DESC);
 
@@ -5144,11 +6902,29 @@ CREATE TABLE IF NOT EXISTS public.receipts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipts ADD CONSTRAINT IF NOT EXISTS fk_receipts_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_receipts_tenant' AND conrelid = 'public.receipts'::regclass
+  ) THEN
+    ALTER TABLE public.receipts ADD CONSTRAINT fk_receipts_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.receipts ADD CONSTRAINT IF NOT EXISTS receipts_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipts_tenant_id_fkey' AND conrelid = 'public.receipts'::regclass
+  ) THEN
+    ALTER TABLE public.receipts ADD CONSTRAINT receipts_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.receipts ADD CONSTRAINT IF NOT EXISTS receipts_upload_id_fkey FOREIGN KEY (upload_id) REFERENCES uploads(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipts_upload_id_fkey' AND conrelid = 'public.receipts'::regclass
+  ) THEN
+    ALTER TABLE public.receipts ADD CONSTRAINT receipts_upload_id_fkey FOREIGN KEY (upload_id) REFERENCES uploads(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_receipts_canonical_json_gin ON public.receipts USING gin (canonical_json);
 
@@ -5210,13 +6986,37 @@ CREATE TABLE IF NOT EXISTS public.receipts_extracted (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.receipts_extracted ADD CONSTRAINT IF NOT EXISTS fk_receipts_extracted_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_receipts_extracted_tenant' AND conrelid = 'public.receipts_extracted'::regclass
+  ) THEN
+    ALTER TABLE public.receipts_extracted ADD CONSTRAINT fk_receipts_extracted_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.receipts_extracted ADD CONSTRAINT IF NOT EXISTS receipts_extracted_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipts_extracted_tenant_id_fkey' AND conrelid = 'public.receipts_extracted'::regclass
+  ) THEN
+    ALTER TABLE public.receipts_extracted ADD CONSTRAINT receipts_extracted_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.receipts_extracted ADD CONSTRAINT IF NOT EXISTS receipts_extracted_upload_id_fkey FOREIGN KEY (upload_id) REFERENCES receipt_uploads(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipts_extracted_upload_id_fkey' AND conrelid = 'public.receipts_extracted'::regclass
+  ) THEN
+    ALTER TABLE public.receipts_extracted ADD CONSTRAINT receipts_extracted_upload_id_fkey FOREIGN KEY (upload_id) REFERENCES receipt_uploads(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.receipts_extracted ADD CONSTRAINT IF NOT EXISTS receipts_extracted_upload_id_key UNIQUE (upload_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'receipts_extracted_upload_id_key' AND conrelid = 'public.receipts_extracted'::regclass
+  ) THEN
+    ALTER TABLE public.receipts_extracted ADD CONSTRAINT receipts_extracted_upload_id_key UNIQUE (upload_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS brin_receipts_extracted_created_at ON public.receipts_extracted USING brin (created_at) WITH (autosummarize='on');
 
@@ -5260,13 +7060,37 @@ CREATE TABLE IF NOT EXISTS public.recon_audits (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.recon_audits ADD CONSTRAINT IF NOT EXISTS recon_audits_recon_job_id_fkey FOREIGN KEY (recon_job_id) REFERENCES recon_jobs(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_audits_recon_job_id_fkey' AND conrelid = 'public.recon_audits'::regclass
+  ) THEN
+    ALTER TABLE public.recon_audits ADD CONSTRAINT recon_audits_recon_job_id_fkey FOREIGN KEY (recon_job_id) REFERENCES recon_jobs(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_audits ADD CONSTRAINT IF NOT EXISTS recon_audits_recon_result_id_fkey FOREIGN KEY (recon_result_id) REFERENCES recon_results(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_audits_recon_result_id_fkey' AND conrelid = 'public.recon_audits'::regclass
+  ) THEN
+    ALTER TABLE public.recon_audits ADD CONSTRAINT recon_audits_recon_result_id_fkey FOREIGN KEY (recon_result_id) REFERENCES recon_results(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_audits ADD CONSTRAINT IF NOT EXISTS recon_audits_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_audits_tenant_id_fkey' AND conrelid = 'public.recon_audits'::regclass
+  ) THEN
+    ALTER TABLE public.recon_audits ADD CONSTRAINT recon_audits_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_audits ADD CONSTRAINT IF NOT EXISTS recon_audits_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_audits_user_id_fkey' AND conrelid = 'public.recon_audits'::regclass
+  ) THEN
+    ALTER TABLE public.recon_audits ADD CONSTRAINT recon_audits_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_recon_audits_audit_type ON public.recon_audits USING btree (audit_type);
 
@@ -5310,15 +7134,45 @@ CREATE TABLE IF NOT EXISTS public.recon_jobs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.recon_jobs ADD CONSTRAINT IF NOT EXISTS fk_recon_jobs_mapping_template_id FOREIGN KEY (mapping_template_id) REFERENCES mapping_templates(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_recon_jobs_mapping_template_id' AND conrelid = 'public.recon_jobs'::regclass
+  ) THEN
+    ALTER TABLE public.recon_jobs ADD CONSTRAINT fk_recon_jobs_mapping_template_id FOREIGN KEY (mapping_template_id) REFERENCES mapping_templates(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_jobs ADD CONSTRAINT IF NOT EXISTS fk_recon_jobs_template_id FOREIGN KEY (template_id) REFERENCES recon_templates(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_recon_jobs_template_id' AND conrelid = 'public.recon_jobs'::regclass
+  ) THEN
+    ALTER TABLE public.recon_jobs ADD CONSTRAINT fk_recon_jobs_template_id FOREIGN KEY (template_id) REFERENCES recon_templates(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_jobs ADD CONSTRAINT IF NOT EXISTS fk_recon_jobs_transform_recipe_id FOREIGN KEY (transform_recipe_id) REFERENCES transform_recipes(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_recon_jobs_transform_recipe_id' AND conrelid = 'public.recon_jobs'::regclass
+  ) THEN
+    ALTER TABLE public.recon_jobs ADD CONSTRAINT fk_recon_jobs_transform_recipe_id FOREIGN KEY (transform_recipe_id) REFERENCES transform_recipes(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_jobs ADD CONSTRAINT IF NOT EXISTS recon_jobs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_jobs_tenant_id_fkey' AND conrelid = 'public.recon_jobs'::regclass
+  ) THEN
+    ALTER TABLE public.recon_jobs ADD CONSTRAINT recon_jobs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_jobs ADD CONSTRAINT IF NOT EXISTS recon_jobs_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_jobs_user_id_fkey' AND conrelid = 'public.recon_jobs'::regclass
+  ) THEN
+    ALTER TABLE public.recon_jobs ADD CONSTRAINT recon_jobs_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_recon_jobs_active ON public.recon_jobs USING btree (tenant_id) WHERE (((status)::text = 'active'::text) AND (deleted_at IS NULL));
 
@@ -5376,11 +7230,29 @@ CREATE TABLE IF NOT EXISTS public.recon_results (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.recon_results ADD CONSTRAINT IF NOT EXISTS recon_results_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_results_execution_id_fkey' AND conrelid = 'public.recon_results'::regclass
+  ) THEN
+    ALTER TABLE public.recon_results ADD CONSTRAINT recon_results_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_results ADD CONSTRAINT IF NOT EXISTS recon_results_recon_job_id_fkey FOREIGN KEY (recon_job_id) REFERENCES recon_jobs(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_results_recon_job_id_fkey' AND conrelid = 'public.recon_results'::regclass
+  ) THEN
+    ALTER TABLE public.recon_results ADD CONSTRAINT recon_results_recon_job_id_fkey FOREIGN KEY (recon_job_id) REFERENCES recon_jobs(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_results ADD CONSTRAINT IF NOT EXISTS recon_results_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_results_tenant_id_fkey' AND conrelid = 'public.recon_results'::regclass
+  ) THEN
+    ALTER TABLE public.recon_results ADD CONSTRAINT recon_results_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_recon_results_created_at_desc ON public.recon_results USING btree (created_at DESC);
 
@@ -5427,7 +7299,13 @@ CREATE TABLE IF NOT EXISTS public.recon_runs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.recon_runs ADD CONSTRAINT IF NOT EXISTS recon_runs_idempotency_unique UNIQUE (workspace_id, idempotency_key) DEFERRABLE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_runs_idempotency_unique' AND conrelid = 'public.recon_runs'::regclass
+  ) THEN
+    ALTER TABLE public.recon_runs ADD CONSTRAINT recon_runs_idempotency_unique UNIQUE (workspace_id, idempotency_key) DEFERRABLE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_recon_runs_created_at ON public.recon_runs USING btree (created_at DESC);
 
@@ -5459,9 +7337,21 @@ CREATE TABLE IF NOT EXISTS public.recon_templates (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.recon_templates ADD CONSTRAINT IF NOT EXISTS recon_templates_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_templates_tenant_id_fkey' AND conrelid = 'public.recon_templates'::regclass
+  ) THEN
+    ALTER TABLE public.recon_templates ADD CONSTRAINT recon_templates_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.recon_templates ADD CONSTRAINT IF NOT EXISTS recon_templates_tenant_id_name_version_key UNIQUE (tenant_id, name, version);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'recon_templates_tenant_id_name_version_key' AND conrelid = 'public.recon_templates'::regclass
+  ) THEN
+    ALTER TABLE public.recon_templates ADD CONSTRAINT recon_templates_tenant_id_name_version_key UNIQUE (tenant_id, name, version);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_recon_templates_created_at_desc ON public.recon_templates USING btree (created_at DESC);
 
@@ -5515,15 +7405,45 @@ CREATE TABLE IF NOT EXISTS public.reconciliation_candidates (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT IF NOT EXISTS reconciliation_candidates_accepted_by_fkey FOREIGN KEY (accepted_by) REFERENCES users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reconciliation_candidates_accepted_by_fkey' AND conrelid = 'public.reconciliation_candidates'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT reconciliation_candidates_accepted_by_fkey FOREIGN KEY (accepted_by) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT IF NOT EXISTS reconciliation_candidates_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reconciliation_candidates_edge_node_id_fkey' AND conrelid = 'public.reconciliation_candidates'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT reconciliation_candidates_edge_node_id_fkey FOREIGN KEY (edge_node_id) REFERENCES edge_nodes(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT IF NOT EXISTS reconciliation_candidates_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reconciliation_candidates_execution_id_fkey' AND conrelid = 'public.reconciliation_candidates'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT reconciliation_candidates_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT IF NOT EXISTS reconciliation_candidates_model_version_id_fkey FOREIGN KEY (model_version_id) REFERENCES model_versions(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reconciliation_candidates_model_version_id_fkey' AND conrelid = 'public.reconciliation_candidates'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT reconciliation_candidates_model_version_id_fkey FOREIGN KEY (model_version_id) REFERENCES model_versions(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT IF NOT EXISTS reconciliation_candidates_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reconciliation_candidates_tenant_id_fkey' AND conrelid = 'public.reconciliation_candidates'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_candidates ADD CONSTRAINT reconciliation_candidates_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_reconciliation_candidates_accepted ON public.reconciliation_candidates USING btree (is_accepted);
 
@@ -5563,13 +7483,37 @@ CREATE TABLE IF NOT EXISTS public.reconciliation_graph_edges (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.reconciliation_graph_edges ADD CONSTRAINT IF NOT EXISTS fk_reconciliation_graph_edges_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_reconciliation_graph_edges_tenant' AND conrelid = 'public.reconciliation_graph_edges'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_graph_edges ADD CONSTRAINT fk_reconciliation_graph_edges_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.reconciliation_graph_edges ADD CONSTRAINT IF NOT EXISTS reconciliation_graph_edges_source_node_id_fkey FOREIGN KEY (source_node_id) REFERENCES reconciliation_graph_nodes(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reconciliation_graph_edges_source_node_id_fkey' AND conrelid = 'public.reconciliation_graph_edges'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_graph_edges ADD CONSTRAINT reconciliation_graph_edges_source_node_id_fkey FOREIGN KEY (source_node_id) REFERENCES reconciliation_graph_nodes(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.reconciliation_graph_edges ADD CONSTRAINT IF NOT EXISTS reconciliation_graph_edges_target_node_id_fkey FOREIGN KEY (target_node_id) REFERENCES reconciliation_graph_nodes(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reconciliation_graph_edges_target_node_id_fkey' AND conrelid = 'public.reconciliation_graph_edges'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_graph_edges ADD CONSTRAINT reconciliation_graph_edges_target_node_id_fkey FOREIGN KEY (target_node_id) REFERENCES reconciliation_graph_nodes(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.reconciliation_graph_edges ADD CONSTRAINT IF NOT EXISTS reconciliation_graph_edges_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reconciliation_graph_edges_tenant_id_fkey' AND conrelid = 'public.reconciliation_graph_edges'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_graph_edges ADD CONSTRAINT reconciliation_graph_edges_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_graph_edges_confidence ON public.reconciliation_graph_edges USING btree (confidence);
 
@@ -5607,9 +7551,21 @@ CREATE TABLE IF NOT EXISTS public.reconciliation_graph_nodes (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.reconciliation_graph_nodes ADD CONSTRAINT IF NOT EXISTS fk_reconciliation_graph_nodes_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_reconciliation_graph_nodes_tenant' AND conrelid = 'public.reconciliation_graph_nodes'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_graph_nodes ADD CONSTRAINT fk_reconciliation_graph_nodes_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.reconciliation_graph_nodes ADD CONSTRAINT IF NOT EXISTS reconciliation_graph_nodes_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reconciliation_graph_nodes_tenant_id_fkey' AND conrelid = 'public.reconciliation_graph_nodes'::regclass
+  ) THEN
+    ALTER TABLE public.reconciliation_graph_nodes ADD CONSTRAINT reconciliation_graph_nodes_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_graph_nodes_data_gin ON public.reconciliation_graph_nodes USING gin (data);
 
@@ -5647,11 +7603,29 @@ CREATE TABLE IF NOT EXISTS public.referrals (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.referrals ADD CONSTRAINT IF NOT EXISTS referrals_referred_user_id_fkey FOREIGN KEY (referred_user_id) REFERENCES users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'referrals_referred_user_id_fkey' AND conrelid = 'public.referrals'::regclass
+  ) THEN
+    ALTER TABLE public.referrals ADD CONSTRAINT referrals_referred_user_id_fkey FOREIGN KEY (referred_user_id) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.referrals ADD CONSTRAINT IF NOT EXISTS referrals_referrer_user_id_fkey FOREIGN KEY (referrer_user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'referrals_referrer_user_id_fkey' AND conrelid = 'public.referrals'::regclass
+  ) THEN
+    ALTER TABLE public.referrals ADD CONSTRAINT referrals_referrer_user_id_fkey FOREIGN KEY (referrer_user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.referrals ADD CONSTRAINT IF NOT EXISTS referrals_referral_code_key UNIQUE (referral_code);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'referrals_referral_code_key' AND conrelid = 'public.referrals'::regclass
+  ) THEN
+    ALTER TABLE public.referrals ADD CONSTRAINT referrals_referral_code_key UNIQUE (referral_code);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_referrals_code ON public.referrals USING btree (referral_code);
 
@@ -5708,11 +7682,29 @@ CREATE TABLE IF NOT EXISTS public.reports (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.reports ADD CONSTRAINT IF NOT EXISTS fk_reports_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_reports_tenant' AND conrelid = 'public.reports'::regclass
+  ) THEN
+    ALTER TABLE public.reports ADD CONSTRAINT fk_reports_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.reports ADD CONSTRAINT IF NOT EXISTS reports_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reports_execution_id_fkey' AND conrelid = 'public.reports'::regclass
+  ) THEN
+    ALTER TABLE public.reports ADD CONSTRAINT reports_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.reports ADD CONSTRAINT IF NOT EXISTS reports_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'reports_tenant_id_fkey' AND conrelid = 'public.reports'::regclass
+  ) THEN
+    ALTER TABLE public.reports ADD CONSTRAINT reports_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_reports_created_at_desc ON public.reports USING btree (created_at DESC);
 
@@ -5752,7 +7744,13 @@ CREATE TABLE IF NOT EXISTS public.run_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.run_events ADD CONSTRAINT IF NOT EXISTS run_events_run_id_fkey FOREIGN KEY (run_id) REFERENCES recon_runs(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'run_events_run_id_fkey' AND conrelid = 'public.run_events'::regclass
+  ) THEN
+    ALTER TABLE public.run_events ADD CONSTRAINT run_events_run_id_fkey FOREIGN KEY (run_id) REFERENCES recon_runs(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_run_events_created_at ON public.run_events USING btree (workspace_id, run_id, created_at DESC);
 
@@ -5828,15 +7826,45 @@ CREATE TABLE IF NOT EXISTS public.security_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.security_events ADD CONSTRAINT IF NOT EXISTS fk_security_events_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_security_events_tenant' AND conrelid = 'public.security_events'::regclass
+  ) THEN
+    ALTER TABLE public.security_events ADD CONSTRAINT fk_security_events_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.security_events ADD CONSTRAINT IF NOT EXISTS security_events_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'security_events_api_key_id_fkey' AND conrelid = 'public.security_events'::regclass
+  ) THEN
+    ALTER TABLE public.security_events ADD CONSTRAINT security_events_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.security_events ADD CONSTRAINT IF NOT EXISTS security_events_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'security_events_resolved_by_fkey' AND conrelid = 'public.security_events'::regclass
+  ) THEN
+    ALTER TABLE public.security_events ADD CONSTRAINT security_events_resolved_by_fkey FOREIGN KEY (resolved_by) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.security_events ADD CONSTRAINT IF NOT EXISTS security_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'security_events_tenant_id_fkey' AND conrelid = 'public.security_events'::regclass
+  ) THEN
+    ALTER TABLE public.security_events ADD CONSTRAINT security_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.security_events ADD CONSTRAINT IF NOT EXISTS security_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'security_events_user_id_fkey' AND conrelid = 'public.security_events'::regclass
+  ) THEN
+    ALTER TABLE public.security_events ADD CONSTRAINT security_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_security_events_api_key_id ON public.security_events USING btree (api_key_id);
 
@@ -5862,9 +7890,21 @@ CREATE TABLE IF NOT EXISTS public.service_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.service_events ADD CONSTRAINT IF NOT EXISTS service_events_integration_id_fkey FOREIGN KEY (integration_id) REFERENCES service_integrations(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'service_events_integration_id_fkey' AND conrelid = 'public.service_events'::regclass
+  ) THEN
+    ALTER TABLE public.service_events ADD CONSTRAINT service_events_integration_id_fkey FOREIGN KEY (integration_id) REFERENCES service_integrations(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.service_events ADD CONSTRAINT IF NOT EXISTS service_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'service_events_tenant_id_fkey' AND conrelid = 'public.service_events'::regclass
+  ) THEN
+    ALTER TABLE public.service_events ADD CONSTRAINT service_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_service_events_integration_id ON public.service_events USING btree (integration_id);
 
@@ -5882,7 +7922,13 @@ CREATE TABLE IF NOT EXISTS public.service_integrations (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.service_integrations ADD CONSTRAINT IF NOT EXISTS service_integrations_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'service_integrations_tenant_id_fkey' AND conrelid = 'public.service_integrations'::regclass
+  ) THEN
+    ALTER TABLE public.service_integrations ADD CONSTRAINT service_integrations_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_service_integrations_created_at_desc ON public.service_integrations USING btree (created_at DESC);
 
@@ -5901,7 +7947,13 @@ CREATE TABLE IF NOT EXISTS public.shareable_artifacts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.shareable_artifacts ADD CONSTRAINT IF NOT EXISTS shareable_artifacts_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'shareable_artifacts_user_id_fkey' AND conrelid = 'public.shareable_artifacts'::regclass
+  ) THEN
+    ALTER TABLE public.shareable_artifacts ADD CONSTRAINT shareable_artifacts_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_shareable_artifacts_created_at_desc ON public.shareable_artifacts USING btree (created_at DESC);
 
@@ -5981,7 +8033,13 @@ CREATE TABLE IF NOT EXISTS public.storage_references (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.storage_references ADD CONSTRAINT IF NOT EXISTS storage_references_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'storage_references_tenant_id_fkey' AND conrelid = 'public.storage_references'::regclass
+  ) THEN
+    ALTER TABLE public.storage_references ADD CONSTRAINT storage_references_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_storage_references_created_at_desc ON public.storage_references USING btree (created_at DESC);
 
@@ -6029,7 +8087,13 @@ CREATE TABLE IF NOT EXISTS public.stripe_customers (
   PRIMARY KEY (customer_id)
 );
 
-ALTER TABLE public.stripe_customers ADD CONSTRAINT IF NOT EXISTS fk_stripe_customers_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_stripe_customers_tenant' AND conrelid = 'public.stripe_customers'::regclass
+  ) THEN
+    ALTER TABLE public.stripe_customers ADD CONSTRAINT fk_stripe_customers_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_stripe_customers_created_at_desc ON public.stripe_customers USING btree (created_at DESC);
 
@@ -6049,7 +8113,13 @@ CREATE TABLE IF NOT EXISTS public.stripe_event_log (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.stripe_event_log ADD CONSTRAINT IF NOT EXISTS stripe_event_log_stripe_event_id_key UNIQUE (stripe_event_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'stripe_event_log_stripe_event_id_key' AND conrelid = 'public.stripe_event_log'::regclass
+  ) THEN
+    ALTER TABLE public.stripe_event_log ADD CONSTRAINT stripe_event_log_stripe_event_id_key UNIQUE (stripe_event_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_stripe_event_log_created_at ON public.stripe_event_log USING btree (created_at);
 
@@ -6079,11 +8149,29 @@ CREATE TABLE IF NOT EXISTS public.stripe_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.stripe_events ADD CONSTRAINT IF NOT EXISTS fk_stripe_events_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_stripe_events_tenant' AND conrelid = 'public.stripe_events'::regclass
+  ) THEN
+    ALTER TABLE public.stripe_events ADD CONSTRAINT fk_stripe_events_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.stripe_events ADD CONSTRAINT IF NOT EXISTS stripe_events_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'stripe_events_billing_account_id_fkey' AND conrelid = 'public.stripe_events'::regclass
+  ) THEN
+    ALTER TABLE public.stripe_events ADD CONSTRAINT stripe_events_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.stripe_events ADD CONSTRAINT IF NOT EXISTS stripe_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'stripe_events_tenant_id_fkey' AND conrelid = 'public.stripe_events'::regclass
+  ) THEN
+    ALTER TABLE public.stripe_events ADD CONSTRAINT stripe_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_stripe_events_billing_account_id ON public.stripe_events USING btree (billing_account_id);
 
@@ -6121,9 +8209,21 @@ CREATE TABLE IF NOT EXISTS public.stripe_webhook_logs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.stripe_webhook_logs ADD CONSTRAINT IF NOT EXISTS fk_stripe_webhook_logs_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_stripe_webhook_logs_tenant' AND conrelid = 'public.stripe_webhook_logs'::regclass
+  ) THEN
+    ALTER TABLE public.stripe_webhook_logs ADD CONSTRAINT fk_stripe_webhook_logs_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.stripe_webhook_logs ADD CONSTRAINT IF NOT EXISTS stripe_webhook_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'stripe_webhook_logs_tenant_id_fkey' AND conrelid = 'public.stripe_webhook_logs'::regclass
+  ) THEN
+    ALTER TABLE public.stripe_webhook_logs ADD CONSTRAINT stripe_webhook_logs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS brin_stripe_webhook_logs_received_at ON public.stripe_webhook_logs USING brin (received_at) WITH (autosummarize='on');
 
@@ -6155,13 +8255,37 @@ CREATE TABLE IF NOT EXISTS public.subscriptions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.subscriptions ADD CONSTRAINT IF NOT EXISTS subscriptions_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'subscriptions_billing_account_id_fkey' AND conrelid = 'public.subscriptions'::regclass
+  ) THEN
+    ALTER TABLE public.subscriptions ADD CONSTRAINT subscriptions_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.subscriptions ADD CONSTRAINT IF NOT EXISTS subscriptions_plan_fkey FOREIGN KEY (plan) REFERENCES entitlements(plan);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'subscriptions_plan_fkey' AND conrelid = 'public.subscriptions'::regclass
+  ) THEN
+    ALTER TABLE public.subscriptions ADD CONSTRAINT subscriptions_plan_fkey FOREIGN KEY (plan) REFERENCES entitlements(plan);
+  END IF;
+END $$;
 
-ALTER TABLE public.subscriptions ADD CONSTRAINT IF NOT EXISTS subscriptions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'subscriptions_tenant_id_fkey' AND conrelid = 'public.subscriptions'::regclass
+  ) THEN
+    ALTER TABLE public.subscriptions ADD CONSTRAINT subscriptions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.subscriptions ADD CONSTRAINT IF NOT EXISTS subscriptions_stripe_subscription_id_key UNIQUE (stripe_subscription_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'subscriptions_stripe_subscription_id_key' AND conrelid = 'public.subscriptions'::regclass
+  ) THEN
+    ALTER TABLE public.subscriptions ADD CONSTRAINT subscriptions_stripe_subscription_id_key UNIQUE (stripe_subscription_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_subscriptions_billing_account_id ON public.subscriptions USING btree (billing_account_id);
 
@@ -6197,11 +8321,29 @@ CREATE TABLE IF NOT EXISTS public.support_articles (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.support_articles ADD CONSTRAINT IF NOT EXISTS support_articles_author_id_fkey FOREIGN KEY (author_id) REFERENCES users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'support_articles_author_id_fkey' AND conrelid = 'public.support_articles'::regclass
+  ) THEN
+    ALTER TABLE public.support_articles ADD CONSTRAINT support_articles_author_id_fkey FOREIGN KEY (author_id) REFERENCES users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.support_articles ADD CONSTRAINT IF NOT EXISTS support_articles_category_id_fkey FOREIGN KEY (category_id) REFERENCES support_categories(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'support_articles_category_id_fkey' AND conrelid = 'public.support_articles'::regclass
+  ) THEN
+    ALTER TABLE public.support_articles ADD CONSTRAINT support_articles_category_id_fkey FOREIGN KEY (category_id) REFERENCES support_categories(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.support_articles ADD CONSTRAINT IF NOT EXISTS support_articles_slug_key UNIQUE (slug);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'support_articles_slug_key' AND conrelid = 'public.support_articles'::regclass
+  ) THEN
+    ALTER TABLE public.support_articles ADD CONSTRAINT support_articles_slug_key UNIQUE (slug);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_support_articles_author_id ON public.support_articles USING btree (author_id);
 
@@ -6226,7 +8368,13 @@ CREATE TABLE IF NOT EXISTS public.support_categories (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.support_categories ADD CONSTRAINT IF NOT EXISTS support_categories_slug_key UNIQUE (slug);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'support_categories_slug_key' AND conrelid = 'public.support_categories'::regclass
+  ) THEN
+    ALTER TABLE public.support_categories ADD CONSTRAINT support_categories_slug_key UNIQUE (slug);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_support_categories_created_at_desc ON public.support_categories USING btree (created_at DESC);
 
@@ -6259,9 +8407,21 @@ CREATE TABLE IF NOT EXISTS public.support_tickets (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.support_tickets ADD CONSTRAINT IF NOT EXISTS support_tickets_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'support_tickets_assigned_to_fkey' AND conrelid = 'public.support_tickets'::regclass
+  ) THEN
+    ALTER TABLE public.support_tickets ADD CONSTRAINT support_tickets_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES users(id);
+  END IF;
+END $$;
 
-ALTER TABLE public.support_tickets ADD CONSTRAINT IF NOT EXISTS support_tickets_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'support_tickets_user_id_fkey' AND conrelid = 'public.support_tickets'::regclass
+  ) THEN
+    ALTER TABLE public.support_tickets ADD CONSTRAINT support_tickets_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_support_tickets_assigned ON public.support_tickets USING btree (assigned_to);
 
@@ -6289,7 +8449,13 @@ CREATE TABLE IF NOT EXISTS public.system_state_snapshots (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.system_state_snapshots ADD CONSTRAINT IF NOT EXISTS system_state_snapshots_snapshot_type_snapshot_date_key UNIQUE (snapshot_type, snapshot_date);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'system_state_snapshots_snapshot_type_snapshot_date_key' AND conrelid = 'public.system_state_snapshots'::regclass
+  ) THEN
+    ALTER TABLE public.system_state_snapshots ADD CONSTRAINT system_state_snapshots_snapshot_type_snapshot_date_key UNIQUE (snapshot_type, snapshot_date);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_snapshots_date ON public.system_state_snapshots USING btree (snapshot_date DESC);
 
@@ -6314,11 +8480,29 @@ CREATE TABLE IF NOT EXISTS public.tenant_billing_accounts (
   PRIMARY KEY (tenant_id, billing_account_id)
 );
 
-ALTER TABLE public.tenant_billing_accounts ADD CONSTRAINT IF NOT EXISTS fk_tenant_billing_accounts_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_billing_accounts_tenant' AND conrelid = 'public.tenant_billing_accounts'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_billing_accounts ADD CONSTRAINT fk_tenant_billing_accounts_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_billing_accounts ADD CONSTRAINT IF NOT EXISTS tenant_billing_accounts_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_billing_accounts_billing_account_id_fkey' AND conrelid = 'public.tenant_billing_accounts'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_billing_accounts ADD CONSTRAINT tenant_billing_accounts_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_billing_accounts ADD CONSTRAINT IF NOT EXISTS tenant_billing_accounts_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_billing_accounts_tenant_id_fkey' AND conrelid = 'public.tenant_billing_accounts'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_billing_accounts ADD CONSTRAINT tenant_billing_accounts_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tba_billing_account ON public.tenant_billing_accounts USING btree (billing_account_id);
 
@@ -6339,9 +8523,21 @@ CREATE TABLE IF NOT EXISTS public.tenant_branding (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_branding ADD CONSTRAINT IF NOT EXISTS tenant_branding_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_branding_tenant_id_fkey' AND conrelid = 'public.tenant_branding'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_branding ADD CONSTRAINT tenant_branding_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_branding ADD CONSTRAINT IF NOT EXISTS tenant_branding_tenant_id_key UNIQUE (tenant_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_branding_tenant_id_key' AND conrelid = 'public.tenant_branding'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_branding ADD CONSTRAINT tenant_branding_tenant_id_key UNIQUE (tenant_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_branding_tenant_id ON public.tenant_branding USING btree (tenant_id);
 
@@ -6356,7 +8552,13 @@ CREATE TABLE IF NOT EXISTS public.tenant_drafts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_drafts ADD CONSTRAINT IF NOT EXISTS tenant_drafts_page_id_fkey FOREIGN KEY (page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_drafts_page_id_fkey' AND conrelid = 'public.tenant_drafts'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_drafts ADD CONSTRAINT tenant_drafts_page_id_fkey FOREIGN KEY (page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_drafts_created_at_desc ON public.tenant_drafts USING btree (created_at DESC);
 
@@ -6376,9 +8578,21 @@ CREATE TABLE IF NOT EXISTS public.tenant_feature_flags (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_feature_flags ADD CONSTRAINT IF NOT EXISTS tenant_feature_flags_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_feature_flags_tenant_id_fkey' AND conrelid = 'public.tenant_feature_flags'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_feature_flags ADD CONSTRAINT tenant_feature_flags_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_feature_flags ADD CONSTRAINT IF NOT EXISTS tenant_feature_flags_tenant_id_flag_key_key UNIQUE (tenant_id, flag_key);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_feature_flags_tenant_id_flag_key_key' AND conrelid = 'public.tenant_feature_flags'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_feature_flags ADD CONSTRAINT tenant_feature_flags_tenant_id_flag_key_key UNIQUE (tenant_id, flag_key);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_feature_flags_created_at_desc ON public.tenant_feature_flags USING btree (created_at DESC);
 
@@ -6398,7 +8612,13 @@ CREATE TABLE IF NOT EXISTS public.tenant_media (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_media ADD CONSTRAINT IF NOT EXISTS tenant_media_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_media_tenant_id_fkey' AND conrelid = 'public.tenant_media'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_media ADD CONSTRAINT tenant_media_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_media_created_at_desc ON public.tenant_media USING btree (created_at DESC);
 
@@ -6413,9 +8633,21 @@ CREATE TABLE IF NOT EXISTS public.tenant_memberships (
   PRIMARY KEY (tenant_id, user_id)
 );
 
-ALTER TABLE public.tenant_memberships ADD CONSTRAINT IF NOT EXISTS tenant_memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_memberships_tenant_id_fkey' AND conrelid = 'public.tenant_memberships'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_memberships ADD CONSTRAINT tenant_memberships_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_memberships ADD CONSTRAINT IF NOT EXISTS tenant_memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_memberships_user_id_fkey' AND conrelid = 'public.tenant_memberships'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_memberships ADD CONSTRAINT tenant_memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_memberships_created_at_desc ON public.tenant_memberships USING btree (created_at DESC);
 
@@ -6448,9 +8680,21 @@ CREATE TABLE IF NOT EXISTS public.tenant_navigation (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_navigation ADD CONSTRAINT IF NOT EXISTS tenant_navigation_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_navigation_tenant_id_fkey' AND conrelid = 'public.tenant_navigation'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_navigation ADD CONSTRAINT tenant_navigation_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_navigation ADD CONSTRAINT IF NOT EXISTS tenant_navigation_tenant_id_key UNIQUE (tenant_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_navigation_tenant_id_key' AND conrelid = 'public.tenant_navigation'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_navigation ADD CONSTRAINT tenant_navigation_tenant_id_key UNIQUE (tenant_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_navigation_created_at_desc ON public.tenant_navigation USING btree (created_at DESC);
 
@@ -6470,7 +8714,13 @@ CREATE TABLE IF NOT EXISTS public.tenant_page_blocks (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_page_blocks ADD CONSTRAINT IF NOT EXISTS tenant_page_blocks_page_id_fkey FOREIGN KEY (page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_page_blocks_page_id_fkey' AND conrelid = 'public.tenant_page_blocks'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_page_blocks ADD CONSTRAINT tenant_page_blocks_page_id_fkey FOREIGN KEY (page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_blocks_page_order ON public.tenant_page_blocks USING btree (page_id, order_index);
 
@@ -6488,7 +8738,13 @@ CREATE TABLE IF NOT EXISTS public.tenant_page_revisions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_page_revisions ADD CONSTRAINT IF NOT EXISTS tenant_page_revisions_tenant_page_id_fkey FOREIGN KEY (tenant_page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_page_revisions_tenant_page_id_fkey' AND conrelid = 'public.tenant_page_revisions'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_page_revisions ADD CONSTRAINT tenant_page_revisions_tenant_page_id_fkey FOREIGN KEY (tenant_page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_page_revisions_approved_by_user_id ON public.tenant_page_revisions USING btree (approved_by_user_id);
 
@@ -6514,9 +8770,21 @@ CREATE TABLE IF NOT EXISTS public.tenant_pages (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_pages ADD CONSTRAINT IF NOT EXISTS tenant_pages_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_pages_tenant_id_fkey' AND conrelid = 'public.tenant_pages'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_pages ADD CONSTRAINT tenant_pages_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_pages ADD CONSTRAINT IF NOT EXISTS tenant_pages_tenant_id_slug_key UNIQUE (tenant_id, slug);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_pages_tenant_id_slug_key' AND conrelid = 'public.tenant_pages'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_pages ADD CONSTRAINT tenant_pages_tenant_id_slug_key UNIQUE (tenant_id, slug);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_pages_created_at_desc ON public.tenant_pages USING btree (created_at DESC);
 
@@ -6545,11 +8813,29 @@ CREATE TABLE IF NOT EXISTS public.tenant_plans (
   PRIMARY KEY (tenant_id)
 );
 
-ALTER TABLE public.tenant_plans ADD CONSTRAINT IF NOT EXISTS fk_tenant_plans_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_plans_tenant' AND conrelid = 'public.tenant_plans'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_plans ADD CONSTRAINT fk_tenant_plans_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_plans ADD CONSTRAINT IF NOT EXISTS tenant_plans_plan_id_fkey FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_plans_plan_id_fkey' AND conrelid = 'public.tenant_plans'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_plans ADD CONSTRAINT tenant_plans_plan_id_fkey FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_plans ADD CONSTRAINT IF NOT EXISTS tenant_plans_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_plans_tenant_id_fkey' AND conrelid = 'public.tenant_plans'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_plans ADD CONSTRAINT tenant_plans_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_plans_created_at_desc ON public.tenant_plans USING btree (created_at DESC);
 
@@ -6569,9 +8855,21 @@ CREATE TABLE IF NOT EXISTS public.tenant_quota_usage (
   PRIMARY KEY (tenant_id)
 );
 
-ALTER TABLE public.tenant_quota_usage ADD CONSTRAINT IF NOT EXISTS fk_tenant_quota_usage_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_quota_usage_tenant' AND conrelid = 'public.tenant_quota_usage'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_quota_usage ADD CONSTRAINT fk_tenant_quota_usage_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_quota_usage ADD CONSTRAINT IF NOT EXISTS tenant_quota_usage_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_quota_usage_tenant_id_fkey' AND conrelid = 'public.tenant_quota_usage'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_quota_usage ADD CONSTRAINT tenant_quota_usage_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_quota_usage_tenant_id ON public.tenant_quota_usage USING btree (tenant_id);
 
@@ -6586,11 +8884,29 @@ CREATE TABLE IF NOT EXISTS public.tenant_usage (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_usage ADD CONSTRAINT IF NOT EXISTS fk_tenant_usage_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_usage_tenant' AND conrelid = 'public.tenant_usage'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_usage ADD CONSTRAINT fk_tenant_usage_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_usage ADD CONSTRAINT IF NOT EXISTS tenant_usage_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_usage_tenant_id_fkey' AND conrelid = 'public.tenant_usage'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_usage ADD CONSTRAINT tenant_usage_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_usage ADD CONSTRAINT IF NOT EXISTS tenant_usage_tenant_id_metric_type_period_start_key UNIQUE (tenant_id, metric_type, period_start);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_usage_tenant_id_metric_type_period_start_key' AND conrelid = 'public.tenant_usage'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_usage ADD CONSTRAINT tenant_usage_tenant_id_metric_type_period_start_key UNIQUE (tenant_id, metric_type, period_start);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_usage_created_at_desc ON public.tenant_usage USING btree (created_at DESC);
 
@@ -6616,9 +8932,21 @@ CREATE TABLE IF NOT EXISTS public.tenant_usage_monthly (
   PRIMARY KEY (tenant_id, period_start)
 );
 
-ALTER TABLE public.tenant_usage_monthly ADD CONSTRAINT IF NOT EXISTS fk_tenant_usage_monthly_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_usage_monthly_tenant' AND conrelid = 'public.tenant_usage_monthly'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_usage_monthly ADD CONSTRAINT fk_tenant_usage_monthly_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_usage_monthly ADD CONSTRAINT IF NOT EXISTS tenant_usage_monthly_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_usage_monthly_tenant_id_fkey' AND conrelid = 'public.tenant_usage_monthly'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_usage_monthly ADD CONSTRAINT tenant_usage_monthly_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_usage_monthly_keys ON public.tenant_usage_monthly USING btree (tenant_id, period_start);
 
@@ -6633,9 +8961,21 @@ CREATE TABLE IF NOT EXISTS public.tenant_users (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_users ADD CONSTRAINT IF NOT EXISTS tenant_users_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_users_tenant_id_fkey' AND conrelid = 'public.tenant_users'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_users ADD CONSTRAINT tenant_users_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenant_users ADD CONSTRAINT IF NOT EXISTS tenant_users_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_users_tenant_id_user_id_key' AND conrelid = 'public.tenant_users'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_users ADD CONSTRAINT tenant_users_tenant_id_user_id_key UNIQUE (tenant_id, user_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_users_created_at_desc ON public.tenant_users USING btree (created_at DESC);
 
@@ -6658,7 +8998,13 @@ CREATE TABLE IF NOT EXISTS public.tenant_versions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenant_versions ADD CONSTRAINT IF NOT EXISTS tenant_versions_page_id_fkey FOREIGN KEY (page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenant_versions_page_id_fkey' AND conrelid = 'public.tenant_versions'::regclass
+  ) THEN
+    ALTER TABLE public.tenant_versions ADD CONSTRAINT tenant_versions_page_id_fkey FOREIGN KEY (page_id) REFERENCES tenant_pages(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenant_versions_page_id ON public.tenant_versions USING btree (page_id);
 
@@ -6680,13 +9026,37 @@ CREATE TABLE IF NOT EXISTS public.tenants (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.tenants ADD CONSTRAINT IF NOT EXISTS tenants_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenants_billing_account_id_fkey' AND conrelid = 'public.tenants'::regclass
+  ) THEN
+    ALTER TABLE public.tenants ADD CONSTRAINT tenants_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenants ADD CONSTRAINT IF NOT EXISTS tenants_parent_tenant_id_fkey FOREIGN KEY (parent_tenant_id) REFERENCES tenants(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenants_parent_tenant_id_fkey' AND conrelid = 'public.tenants'::regclass
+  ) THEN
+    ALTER TABLE public.tenants ADD CONSTRAINT tenants_parent_tenant_id_fkey FOREIGN KEY (parent_tenant_id) REFERENCES tenants(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.tenants ADD CONSTRAINT IF NOT EXISTS tenants_plan_hint_fkey FOREIGN KEY (plan_hint) REFERENCES entitlements(plan);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenants_plan_hint_fkey' AND conrelid = 'public.tenants'::regclass
+  ) THEN
+    ALTER TABLE public.tenants ADD CONSTRAINT tenants_plan_hint_fkey FOREIGN KEY (plan_hint) REFERENCES entitlements(plan);
+  END IF;
+END $$;
 
-ALTER TABLE public.tenants ADD CONSTRAINT IF NOT EXISTS tenants_slug_key UNIQUE (slug);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'tenants_slug_key' AND conrelid = 'public.tenants'::regclass
+  ) THEN
+    ALTER TABLE public.tenants ADD CONSTRAINT tenants_slug_key UNIQUE (slug);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_tenants_ba_id ON public.tenants USING btree (billing_account_id);
 
@@ -6710,9 +9080,21 @@ CREATE TABLE IF NOT EXISTS public.ticket_messages (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.ticket_messages ADD CONSTRAINT IF NOT EXISTS ticket_messages_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES support_tickets(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ticket_messages_ticket_id_fkey' AND conrelid = 'public.ticket_messages'::regclass
+  ) THEN
+    ALTER TABLE public.ticket_messages ADD CONSTRAINT ticket_messages_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES support_tickets(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.ticket_messages ADD CONSTRAINT IF NOT EXISTS ticket_messages_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ticket_messages_user_id_fkey' AND conrelid = 'public.ticket_messages'::regclass
+  ) THEN
+    ALTER TABLE public.ticket_messages ADD CONSTRAINT ticket_messages_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_ticket_messages_created_at_desc ON public.ticket_messages USING btree (created_at DESC);
 
@@ -6741,7 +9123,13 @@ CREATE TABLE IF NOT EXISTS public.transform_recipes (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.transform_recipes ADD CONSTRAINT IF NOT EXISTS transform_recipes_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'transform_recipes_tenant_id_fkey' AND conrelid = 'public.transform_recipes'::regclass
+  ) THEN
+    ALTER TABLE public.transform_recipes ADD CONSTRAINT transform_recipes_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_transform_recipes_created_at_desc ON public.transform_recipes USING btree (created_at DESC);
 
@@ -6773,11 +9161,29 @@ CREATE TABLE IF NOT EXISTS public.unmatched (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.unmatched ADD CONSTRAINT IF NOT EXISTS fk_unmatched_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_unmatched_tenant' AND conrelid = 'public.unmatched'::regclass
+  ) THEN
+    ALTER TABLE public.unmatched ADD CONSTRAINT fk_unmatched_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.unmatched ADD CONSTRAINT IF NOT EXISTS unmatched_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'unmatched_execution_id_fkey' AND conrelid = 'public.unmatched'::regclass
+  ) THEN
+    ALTER TABLE public.unmatched ADD CONSTRAINT unmatched_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.unmatched ADD CONSTRAINT IF NOT EXISTS unmatched_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'unmatched_tenant_id_fkey' AND conrelid = 'public.unmatched'::regclass
+  ) THEN
+    ALTER TABLE public.unmatched ADD CONSTRAINT unmatched_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_unmatched_created_at_desc ON public.unmatched USING btree (created_at DESC);
 
@@ -6804,9 +9210,21 @@ CREATE TABLE IF NOT EXISTS public.uploads (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.uploads ADD CONSTRAINT IF NOT EXISTS uploads_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'uploads_billing_account_id_fkey' AND conrelid = 'public.uploads'::regclass
+  ) THEN
+    ALTER TABLE public.uploads ADD CONSTRAINT uploads_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.uploads ADD CONSTRAINT IF NOT EXISTS uploads_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'uploads_tenant_id_fkey' AND conrelid = 'public.uploads'::regclass
+  ) THEN
+    ALTER TABLE public.uploads ADD CONSTRAINT uploads_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_uploads_ba ON public.uploads USING btree (billing_account_id);
 
@@ -6884,9 +9302,21 @@ CREATE TABLE IF NOT EXISTS public.usage_event_idempotency (
   PRIMARY KEY (idempotency_key)
 );
 
-ALTER TABLE public.usage_event_idempotency ADD CONSTRAINT IF NOT EXISTS usage_event_idempotency_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_event_idempotency_billing_account_id_fkey' AND conrelid = 'public.usage_event_idempotency'::regclass
+  ) THEN
+    ALTER TABLE public.usage_event_idempotency ADD CONSTRAINT usage_event_idempotency_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.usage_event_idempotency ADD CONSTRAINT IF NOT EXISTS usage_event_idempotency_usage_event_id_fkey FOREIGN KEY (usage_event_id) REFERENCES usage_events_billing(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_event_idempotency_usage_event_id_fkey' AND conrelid = 'public.usage_event_idempotency'::regclass
+  ) THEN
+    ALTER TABLE public.usage_event_idempotency ADD CONSTRAINT usage_event_idempotency_usage_event_id_fkey FOREIGN KEY (usage_event_id) REFERENCES usage_events_billing(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_usage_event_idempotency_ba_id ON public.usage_event_idempotency USING btree (billing_account_id);
 
@@ -6914,9 +9344,21 @@ CREATE TABLE IF NOT EXISTS public.usage_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.usage_events ADD CONSTRAINT IF NOT EXISTS usage_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_events_tenant_id_fkey' AND conrelid = 'public.usage_events'::regclass
+  ) THEN
+    ALTER TABLE public.usage_events ADD CONSTRAINT usage_events_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.usage_events ADD CONSTRAINT IF NOT EXISTS usage_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_events_user_id_fkey' AND conrelid = 'public.usage_events'::regclass
+  ) THEN
+    ALTER TABLE public.usage_events ADD CONSTRAINT usage_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_usage_events_created_at ON public.usage_events USING btree (created_at DESC);
 
@@ -6986,11 +9428,29 @@ CREATE TABLE IF NOT EXISTS public.usage_tracking (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.usage_tracking ADD CONSTRAINT IF NOT EXISTS usage_tracking_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_tracking_tenant_id_fkey' AND conrelid = 'public.usage_tracking'::regclass
+  ) THEN
+    ALTER TABLE public.usage_tracking ADD CONSTRAINT usage_tracking_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.usage_tracking ADD CONSTRAINT IF NOT EXISTS usage_tracking_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_tracking_user_id_fkey' AND conrelid = 'public.usage_tracking'::regclass
+  ) THEN
+    ALTER TABLE public.usage_tracking ADD CONSTRAINT usage_tracking_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.usage_tracking ADD CONSTRAINT IF NOT EXISTS usage_tracking_user_id_metric_type_period_start_key UNIQUE (user_id, metric_type, period_start);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_tracking_user_id_metric_type_period_start_key' AND conrelid = 'public.usage_tracking'::regclass
+  ) THEN
+    ALTER TABLE public.usage_tracking ADD CONSTRAINT usage_tracking_user_id_metric_type_period_start_key UNIQUE (user_id, metric_type, period_start);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_usage_tracking_created_at_desc ON public.usage_tracking USING btree (created_at DESC);
 
@@ -7043,7 +9503,13 @@ CREATE TABLE IF NOT EXISTS public.user_artifacts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.user_artifacts ADD CONSTRAINT IF NOT EXISTS user_artifacts_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'user_artifacts_user_id_fkey' AND conrelid = 'public.user_artifacts'::regclass
+  ) THEN
+    ALTER TABLE public.user_artifacts ADD CONSTRAINT user_artifacts_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_user_artifacts_created_at ON public.user_artifacts USING btree (created_at DESC);
 
@@ -7068,9 +9534,21 @@ CREATE TABLE IF NOT EXISTS public.user_confusion_events (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.user_confusion_events ADD CONSTRAINT IF NOT EXISTS user_confusion_events_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'user_confusion_events_billing_account_id_fkey' AND conrelid = 'public.user_confusion_events'::regclass
+  ) THEN
+    ALTER TABLE public.user_confusion_events ADD CONSTRAINT user_confusion_events_billing_account_id_fkey FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.user_confusion_events ADD CONSTRAINT IF NOT EXISTS user_confusion_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'user_confusion_events_user_id_fkey' AND conrelid = 'public.user_confusion_events'::regclass
+  ) THEN
+    ALTER TABLE public.user_confusion_events ADD CONSTRAINT user_confusion_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_user_confusion_events_ba_id ON public.user_confusion_events USING btree (billing_account_id);
 
@@ -7119,7 +9597,13 @@ CREATE TABLE IF NOT EXISTS public.user_email_preferences (
   PRIMARY KEY (user_id)
 );
 
-ALTER TABLE public.user_email_preferences ADD CONSTRAINT IF NOT EXISTS user_email_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'user_email_preferences_user_id_fkey' AND conrelid = 'public.user_email_preferences'::regclass
+  ) THEN
+    ALTER TABLE public.user_email_preferences ADD CONSTRAINT user_email_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_user_email_preferences_user_id ON public.user_email_preferences USING btree (user_id);
 
@@ -7175,7 +9659,13 @@ CREATE TABLE IF NOT EXISTS public.user_lifecycle (
   PRIMARY KEY (user_id)
 );
 
-ALTER TABLE public.user_lifecycle ADD CONSTRAINT IF NOT EXISTS user_lifecycle_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'user_lifecycle_user_id_fkey' AND conrelid = 'public.user_lifecycle'::regclass
+  ) THEN
+    ALTER TABLE public.user_lifecycle ADD CONSTRAINT user_lifecycle_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_user_lifecycle_churn_risk ON public.user_lifecycle USING btree (churn_risk_score DESC);
 
@@ -7197,7 +9687,13 @@ CREATE TABLE IF NOT EXISTS public.user_milestones (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.user_milestones ADD CONSTRAINT IF NOT EXISTS user_milestones_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'user_milestones_user_id_fkey' AND conrelid = 'public.user_milestones'::regclass
+  ) THEN
+    ALTER TABLE public.user_milestones ADD CONSTRAINT user_milestones_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_user_milestones_created_at_desc ON public.user_milestones USING btree (created_at DESC);
 
@@ -7241,7 +9737,13 @@ CREATE TABLE IF NOT EXISTS public.user_tenants (
   PRIMARY KEY (user_id, tenant_id)
 );
 
-ALTER TABLE public.user_tenants ADD CONSTRAINT IF NOT EXISTS user_tenants_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'user_tenants_tenant_id_fkey' AND conrelid = 'public.user_tenants'::regclass
+  ) THEN
+    ALTER TABLE public.user_tenants ADD CONSTRAINT user_tenants_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_user_tenants_created_at_desc ON public.user_tenants USING btree (created_at DESC);
 
@@ -7268,13 +9770,37 @@ CREATE TABLE IF NOT EXISTS public.users (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.users ADD CONSTRAINT IF NOT EXISTS fk_users_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_users_tenant' AND conrelid = 'public.users'::regclass
+  ) THEN
+    ALTER TABLE public.users ADD CONSTRAINT fk_users_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.users ADD CONSTRAINT IF NOT EXISTS users_auth_user_id_fkey FOREIGN KEY (auth_user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'users_auth_user_id_fkey' AND conrelid = 'public.users'::regclass
+  ) THEN
+    ALTER TABLE public.users ADD CONSTRAINT users_auth_user_id_fkey FOREIGN KEY (auth_user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.users ADD CONSTRAINT IF NOT EXISTS users_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'users_tenant_id_fkey' AND conrelid = 'public.users'::regclass
+  ) THEN
+    ALTER TABLE public.users ADD CONSTRAINT users_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.users ADD CONSTRAINT IF NOT EXISTS users_tenant_id_email_key UNIQUE (tenant_id, email);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'users_tenant_id_email_key' AND conrelid = 'public.users'::regclass
+  ) THEN
+    ALTER TABLE public.users ADD CONSTRAINT users_tenant_id_email_key UNIQUE (tenant_id, email);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_users_auth_user_id ON public.users USING btree (auth_user_id);
 
@@ -7309,7 +9835,13 @@ CREATE TABLE IF NOT EXISTS public.validation_rules (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.validation_rules ADD CONSTRAINT IF NOT EXISTS validation_rules_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'validation_rules_tenant_id_fkey' AND conrelid = 'public.validation_rules'::regclass
+  ) THEN
+    ALTER TABLE public.validation_rules ADD CONSTRAINT validation_rules_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_validation_rules_active ON public.validation_rules USING btree (tenant_id) WHERE ((is_active = true) AND (deleted_at IS NULL));
 
@@ -7336,7 +9868,13 @@ CREATE TABLE IF NOT EXISTS public.webhook_attempts (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.webhook_attempts ADD CONSTRAINT IF NOT EXISTS webhook_attempts_outbox_id_fkey FOREIGN KEY (outbox_id) REFERENCES receipt_webhook_outbox(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'webhook_attempts_outbox_id_fkey' AND conrelid = 'public.webhook_attempts'::regclass
+  ) THEN
+    ALTER TABLE public.webhook_attempts ADD CONSTRAINT webhook_attempts_outbox_id_fkey FOREIGN KEY (outbox_id) REFERENCES receipt_webhook_outbox(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_webhook_attempts_created_at_desc ON public.webhook_attempts USING btree (created_at DESC);
 
@@ -7365,9 +9903,21 @@ CREATE TABLE IF NOT EXISTS public.webhook_dead_letters (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.webhook_dead_letters ADD CONSTRAINT IF NOT EXISTS webhook_dead_letters_original_delivery_id_fkey FOREIGN KEY (original_delivery_id) REFERENCES webhook_deliveries(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'webhook_dead_letters_original_delivery_id_fkey' AND conrelid = 'public.webhook_dead_letters'::regclass
+  ) THEN
+    ALTER TABLE public.webhook_dead_letters ADD CONSTRAINT webhook_dead_letters_original_delivery_id_fkey FOREIGN KEY (original_delivery_id) REFERENCES webhook_deliveries(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
-ALTER TABLE public.webhook_dead_letters ADD CONSTRAINT IF NOT EXISTS webhook_dead_letters_webhook_id_fkey FOREIGN KEY (webhook_id) REFERENCES webhooks(id) ON DELETE SET NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'webhook_dead_letters_webhook_id_fkey' AND conrelid = 'public.webhook_dead_letters'::regclass
+  ) THEN
+    ALTER TABLE public.webhook_dead_letters ADD CONSTRAINT webhook_dead_letters_webhook_id_fkey FOREIGN KEY (webhook_id) REFERENCES webhooks(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_wdl_webhook_id ON public.webhook_dead_letters USING btree (webhook_id);
 
@@ -7397,9 +9947,21 @@ CREATE TABLE IF NOT EXISTS public.webhook_deliveries (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.webhook_deliveries ADD CONSTRAINT IF NOT EXISTS fk_webhook_deliveries_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_webhook_deliveries_tenant' AND conrelid = 'public.webhook_deliveries'::regclass
+  ) THEN
+    ALTER TABLE public.webhook_deliveries ADD CONSTRAINT fk_webhook_deliveries_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.webhook_deliveries ADD CONSTRAINT IF NOT EXISTS webhook_deliveries_webhook_id_fkey FOREIGN KEY (webhook_id) REFERENCES webhooks(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'webhook_deliveries_webhook_id_fkey' AND conrelid = 'public.webhook_deliveries'::regclass
+  ) THEN
+    ALTER TABLE public.webhook_deliveries ADD CONSTRAINT webhook_deliveries_webhook_id_fkey FOREIGN KEY (webhook_id) REFERENCES webhooks(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS brin_webhook_deliveries_created_at ON public.webhook_deliveries USING brin (created_at) WITH (autosummarize='on');
 
@@ -7449,9 +10011,21 @@ CREATE TABLE IF NOT EXISTS public.webhook_payloads (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.webhook_payloads ADD CONSTRAINT IF NOT EXISTS fk_webhook_payloads_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_webhook_payloads_tenant' AND conrelid = 'public.webhook_payloads'::regclass
+  ) THEN
+    ALTER TABLE public.webhook_payloads ADD CONSTRAINT fk_webhook_payloads_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.webhook_payloads ADD CONSTRAINT IF NOT EXISTS webhook_payloads_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'webhook_payloads_tenant_id_fkey' AND conrelid = 'public.webhook_payloads'::regclass
+  ) THEN
+    ALTER TABLE public.webhook_payloads ADD CONSTRAINT webhook_payloads_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_webhook_payloads_created_at_desc ON public.webhook_payloads USING btree (created_at DESC);
 
@@ -7475,13 +10049,37 @@ CREATE TABLE IF NOT EXISTS public.webhooks (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.webhooks ADD CONSTRAINT IF NOT EXISTS fk_webhooks_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_webhooks_tenant' AND conrelid = 'public.webhooks'::regclass
+  ) THEN
+    ALTER TABLE public.webhooks ADD CONSTRAINT fk_webhooks_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
-ALTER TABLE public.webhooks ADD CONSTRAINT IF NOT EXISTS webhooks_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'webhooks_tenant_id_fkey' AND conrelid = 'public.webhooks'::regclass
+  ) THEN
+    ALTER TABLE public.webhooks ADD CONSTRAINT webhooks_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.webhooks ADD CONSTRAINT IF NOT EXISTS webhooks_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'webhooks_user_id_fkey' AND conrelid = 'public.webhooks'::regclass
+  ) THEN
+    ALTER TABLE public.webhooks ADD CONSTRAINT webhooks_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE public.webhooks ADD CONSTRAINT IF NOT EXISTS webhooks_tenant_url_key UNIQUE (tenant_id, url);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'webhooks_tenant_url_key' AND conrelid = 'public.webhooks'::regclass
+  ) THEN
+    ALTER TABLE public.webhooks ADD CONSTRAINT webhooks_tenant_url_key UNIQUE (tenant_id, url);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_webhooks_created_at_desc ON public.webhooks USING btree (created_at DESC);
 
@@ -7518,7 +10116,13 @@ CREATE TABLE IF NOT EXISTS public.weekly_snapshots (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.weekly_snapshots ADD CONSTRAINT IF NOT EXISTS weekly_snapshots_week_start_key UNIQUE (week_start);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'weekly_snapshots_week_start_key' AND conrelid = 'public.weekly_snapshots'::regclass
+  ) THEN
+    ALTER TABLE public.weekly_snapshots ADD CONSTRAINT weekly_snapshots_week_start_key UNIQUE (week_start);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_weekly_snapshots_created_at ON public.weekly_snapshots USING btree (created_at DESC);
 
@@ -7548,7 +10152,13 @@ CREATE TABLE IF NOT EXISTS public.workflow_runs (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE public.workflow_runs ADD CONSTRAINT IF NOT EXISTS workflow_runs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'workflow_runs_tenant_id_fkey' AND conrelid = 'public.workflow_runs'::regclass
+  ) THEN
+    ALTER TABLE public.workflow_runs ADD CONSTRAINT workflow_runs_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_workflow_runs_created_at_desc ON public.workflow_runs USING btree (created_at DESC);
 
@@ -7589,8 +10199,7 @@ begin
 
     return true;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq._belongs_to_pgmq(table_name text)
  RETURNS boolean
@@ -7612,8 +10221,7 @@ BEGIN
   ) INTO result;
   RETURN result;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public._column_exists(p_table text, p_column text)
  RETURNS boolean
@@ -7624,8 +10232,7 @@ AS $function$
     SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = p_table AND column_name = p_column
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public._drop_policy_if_exists(in_schema text, in_table text, in_policy text)
  RETURNS void
@@ -7640,15 +10247,13 @@ BEGIN
     EXECUTE format('DROP POLICY %I ON %I.%I', in_policy, in_schema, in_table);
   END IF;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net._encode_url_with_params_array(url text, params_array text[])
  RETURNS text
  LANGUAGE c
  IMMUTABLE
-AS 'pg_net', $function$_encode_url_with_params_array$function$
-
+AS 'pg_net', $function$_encode_url_with_params_array$function$;
 
 CREATE OR REPLACE FUNCTION pgmq._ensure_pg_partman_installed()
  RETURNS void
@@ -7659,8 +10264,7 @@ BEGIN
     RAISE EXCEPTION 'pg_partman is required for partitioned queues';
   END IF;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq._extension_exists(extension_name text)
  RETURNS boolean
@@ -7671,8 +10275,7 @@ SELECT EXISTS (
     FROM pg_extension
     WHERE extname = extension_name
 )
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq._get_partition_col(partition_interval text)
  RETURNS text
@@ -7689,8 +10292,7 @@ BEGIN
             RETURN 'enqueued_at';
     END;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq._get_pg_partman_major_version()
  RETURNS integer
@@ -7699,8 +10301,7 @@ AS $function$
   SELECT split_part(extversion, '.', 1)::INT
   FROM pg_extension
   WHERE extname = 'pg_partman'
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq._get_pg_partman_schema()
  RETURNS text
@@ -7712,8 +10313,7 @@ AS $function$
     pg_extension
   WHERE
     extname = 'pg_partman';
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net._http_collect_response(request_id bigint, async boolean DEFAULT true)
  RETURNS net.http_response_result
@@ -7758,8 +10358,7 @@ begin
         )::net.http_response
     )::net.http_response_result;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private._redact_email_safe(input text)
  RETURNS text
@@ -7769,8 +10368,7 @@ CREATE OR REPLACE FUNCTION app_private._redact_email_safe(input text)
 AS $function$
   SELECT CASE WHEN input IS NULL OR input = '' THEN input
               ELSE regexp_replace(input, '(^.).*(@.*$)', '\1***\2') END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public._table_exists(p_table text)
  RETURNS boolean
@@ -7781,15 +10379,13 @@ AS $function$
     SELECT 1 FROM information_schema.tables
     WHERE table_schema = 'public' AND table_name = p_table
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net._urlencode_string(string character varying)
  RETURNS text
  LANGUAGE c
  IMMUTABLE
-AS 'pg_net', $function$_urlencode_string$function$
-
+AS 'pg_net', $function$_urlencode_string$function$;
 
 CREATE OR REPLACE FUNCTION public.accept_email_invite(p_tenant_id uuid, p_token text)
  RETURNS memberships
@@ -7827,8 +10423,7 @@ BEGIN
   WHERE tenant_id = p_tenant_id AND token = p_token;
 
   RETURN v_row;
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.accept_membership_invite(p_tenant_id uuid, p_token text)
  RETURNS memberships
@@ -7850,8 +10445,7 @@ BEGIN
     RAISE EXCEPTION 'invalid or expired invite';
   END IF;
   RETURN v_row;
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.accept_recommendation(p_recommendation_id uuid, p_accepted_by uuid)
  RETURNS void
@@ -7867,8 +10461,7 @@ BEGIN
     updated_at = NOW()
   WHERE id = p_recommendation_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.admin_recent_messages(p_limit integer DEFAULT 50)
  RETURNS SETOF messages
@@ -7876,8 +10469,7 @@ CREATE OR REPLACE FUNCTION public.admin_recent_messages(p_limit integer DEFAULT 
  SET search_path TO 'public'
 AS $function$
   SELECT * FROM public.v_admin_recent_messages LIMIT GREATEST(p_limit, 1);
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.aggregate_daily_usage(p_start_date date DEFAULT (CURRENT_DATE - '1 day'::interval), p_end_date date DEFAULT (CURRENT_DATE - '1 day'::interval))
  RETURNS integer
@@ -7957,14 +10549,12 @@ BEGIN
 
   RETURN v_aggregated_count;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION cron.alter_job(job_id bigint, schedule text DEFAULT NULL::text, command text DEFAULT NULL::text, database text DEFAULT NULL::text, username text DEFAULT NULL::text, active boolean DEFAULT NULL::boolean)
  RETURNS void
  LANGUAGE c
-AS '$libdir/pg_cron', $function$cron_alter_job$function$
-
+AS '$libdir/pg_cron', $function$cron_alter_job$function$;
 
 CREATE OR REPLACE FUNCTION public.api_create_receipt(p_tenant uuid, p_external_id text, p_currency text, p_total numeric, p_metadata jsonb DEFAULT '{}'::jsonb)
  RETURNS uuid
@@ -7982,8 +10572,7 @@ BEGIN
   VALUES (p_tenant, 'receipt.created', v_receipt_id, jsonb_build_object('external_id', p_external_id));
 
   RETURN v_receipt_id;
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION app_private.api_keys_encrypt_secret()
  RETURNS trigger
@@ -7996,8 +10585,7 @@ BEGIN
     NEW.secret := '***';
   END IF;
   RETURN NEW;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.api_keys_set_is_active()
  RETURNS trigger
@@ -8007,8 +10595,7 @@ AS $function$
 BEGIN
   NEW.is_active := (NEW.revoked_at IS NULL AND (NEW.expires_at IS NULL OR NEW.expires_at > now()));
   RETURN NEW;
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.api_list_receipts(p_tenant uuid, p_limit integer DEFAULT 50, p_offset integer DEFAULT 0)
  RETURNS SETOF receipts
@@ -8019,8 +10606,7 @@ AS $function$
   WHERE r.tenant_id = p_tenant
   ORDER BY r.created_at DESC
   LIMIT p_limit OFFSET p_offset;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.api_record_receipt_processed(p_tenant uuid, p_receipt uuid, p_payload jsonb DEFAULT '{}'::jsonb)
  RETURNS void
@@ -8029,8 +10615,7 @@ CREATE OR REPLACE FUNCTION public.api_record_receipt_processed(p_tenant uuid, p_
 AS $function$
   INSERT INTO public.receipt_events(tenant_id, type, receipt_id, payload)
   VALUES (p_tenant, 'receipt.processed', p_receipt, COALESCE(p_payload,'{}'::jsonb));
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.apply_org_rls_for_org(table_schema text, table_name text)
  RETURNS void
@@ -8051,8 +10636,7 @@ begin
   execute format('create policy "Org write" on %I.%I for insert to authenticated with check (org_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
   execute format('create policy "Org update" on %I.%I for update to authenticated using (org_id in (select app_private.get_user_org_ids())) with check (org_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
   execute format('create policy "Org delete" on %I.%I for delete to authenticated using (org_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION app_private.apply_org_rls_for_tenant(table_schema text, table_name text)
  RETURNS void
@@ -8076,8 +10660,7 @@ begin
   execute format('create policy "Org write" on %I.%I for insert to authenticated with check (tenant_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
   execute format('create policy "Org update" on %I.%I for update to authenticated using (tenant_id in (select app_private.get_user_org_ids())) with check (tenant_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
   execute format('create policy "Org delete" on %I.%I for delete to authenticated using (tenant_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION pgmq.archive(queue_name text, msg_id bigint)
  RETURNS boolean
@@ -8106,15 +10689,13 @@ BEGIN
     EXECUTE sql USING msg_id INTO result;
     RETURN NOT (result IS NULL);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq_public.archive(queue_name text, message_id bigint)
  RETURNS boolean
  LANGUAGE plpgsql
  SET search_path TO ''
-AS $function$ begin return pgmq.archive( queue_name := queue_name, msg_id := message_id ); end; $function$
-
+AS $function$ begin return pgmq.archive( queue_name := queue_name, msg_id := message_id ); end; $function$;
 
 CREATE OR REPLACE FUNCTION public.audit_billing_account_changes()
  RETURNS trigger
@@ -8158,8 +10739,7 @@ BEGIN
 
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.audit_integration_credential_changes()
  RETURNS trigger
@@ -8201,8 +10781,7 @@ BEGIN
 
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.audit_logs_sign_row()
  RETURNS trigger
@@ -8212,8 +10791,7 @@ AS $function$
 BEGIN
   NEW.row_sig := app_private.compute_audit_row_sig(to_jsonb(NEW) - 'row_sig');
   RETURN NEW;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION app_private.audit_logs_verify_row()
  RETURNS trigger
@@ -8222,8 +10800,7 @@ CREATE OR REPLACE FUNCTION app_private.audit_logs_verify_row()
 AS $function$
 DECLARE v_expected bytea; BEGIN
   v_expected := app_private.compute_audit_row_sig(to_jsonb(NEW) - 'row_sig');
-  IF NEW.row_sig IS DISTINCT FROM v_expected THEN RAISE EXCEPTION 'audit_logs row signature mismatch'; END IF; RETURN NEW; END; $function$
-
+  IF NEW.row_sig IS DISTINCT FROM v_expected THEN RAISE EXCEPTION 'audit_logs row signature mismatch'; END IF; RETURN NEW; END; $function$;
 
 CREATE OR REPLACE FUNCTION public.audit_subscription_changes()
  RETURNS trigger
@@ -8265,8 +10842,7 @@ BEGIN
 
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.audit_trigger()
  RETURNS trigger
@@ -8279,8 +10855,7 @@ BEGIN
   VALUES (COALESCE(NEW.tenant_id, OLD.tenant_id), TG_OP || ' ' || TG_TABLE_NAME, (SELECT auth.uid()), to_jsonb(COALESCE(NEW, OLD)));
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.auto_archive_stale_content()
  RETURNS jsonb
@@ -8350,8 +10925,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.auto_disable_failing_integrations()
  RETURNS TABLE(tenant_id uuid, integration_id character varying, disabled boolean)
@@ -8396,8 +10970,7 @@ BEGIN
     RETURN NEXT;
   END LOOP;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.auto_resolve_confusion(p_confusion_id uuid)
  RETURNS jsonb
@@ -8484,8 +11057,7 @@ BEGIN
     'help_provided', v_help_content
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.broadcast_message_changes()
  RETURNS trigger
@@ -8505,8 +11077,7 @@ BEGIN
   );
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.broadcast_receipt_events_changes()
  RETURNS trigger
@@ -8525,8 +11096,7 @@ BEGIN
     OLD
   );
   RETURN COALESCE(NEW, OLD);
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.broadcast_receipt_items_changes()
  RETURNS trigger
@@ -8545,8 +11115,7 @@ BEGIN
     OLD
   );
   RETURN COALESCE(NEW, OLD);
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.broadcast_receipt_outbox_changes()
  RETURNS trigger
@@ -8565,8 +11134,7 @@ BEGIN
     OLD
   );
   RETURN COALESCE(NEW, OLD);
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.broadcast_receipts_changes()
  RETURNS trigger
@@ -8585,8 +11153,7 @@ BEGIN
     OLD
   );
   RETURN COALESCE(NEW, OLD);
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.broadcast_row_change()
  RETURNS trigger
@@ -8613,8 +11180,7 @@ begin
   );
   return coalesce(new, old);
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.bump_message_count()
  RETURNS trigger
@@ -8630,8 +11196,7 @@ BEGIN
     WHERE id = OLD.conversation_id;
   END IF;
   RETURN COALESCE(NEW, OLD);
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION app_private.bump_rate_usage(p_tenant uuid, p_key text)
  RETURNS void
@@ -8650,8 +11215,7 @@ begin
   values (p_tenant, p_key, v_day, 1, v_min, 1)
   on conflict (tenant_id, key, ts_day)
   do update set count_day = public.rate_usage.count_day + 1;
-end $function$
-
+end $function$;
 
 CREATE OR REPLACE FUNCTION app_private.bump_tenant_usage_receipt_uploads()
  RETURNS trigger
@@ -8662,8 +11226,7 @@ begin
   insert into public.tenant_usage(tenant_id, created_at, metric, amount)
   values (new.tenant_id, now(), 'receipt_upload', 1);
   return new;
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION public.calculate_account_balance(p_tenant_id uuid, p_account_type character varying, p_currency character varying DEFAULT 'USD'::character varying)
  RETURNS bigint
@@ -8688,8 +11251,7 @@ BEGIN
   
   RETURN v_balance;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.calculate_lead_score(p_lead_id uuid)
  RETURNS integer
@@ -8764,8 +11326,7 @@ BEGIN
   
   RETURN v_score;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.calculate_positioning_impact_score(p_feedback_id uuid)
  RETURNS integer
@@ -8824,8 +11385,7 @@ BEGIN
   
   RETURN v_score;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION analytics.capture_index_usage()
  RETURNS void
@@ -8853,8 +11413,7 @@ BEGIN
   JOIN pg_index i ON i.indexrelid = s.indexrelid
   JOIN pg_class c ON c.oid = s.indexrelid;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_ai_quota(p_tenant_id uuid, p_billing_account_id uuid, p_estimated_cost_usd numeric DEFAULT 0.001)
  RETURNS jsonb
@@ -8960,8 +11519,7 @@ BEGIN
     'monthly_remaining_cost', v_quota.monthly_cost_limit_usd - v_quota.monthly_cost_usd
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_and_suspend_abusive_accounts()
  RETURNS TABLE(billing_account_id uuid, fraud_signal_count bigint, suspended boolean)
@@ -8998,8 +11556,7 @@ BEGIN
     RETURN NEXT;
   END LOOP;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_circuit_breaker(p_service_name character varying)
  RETURNS boolean
@@ -9047,8 +11604,7 @@ BEGIN
   
   RETURN false;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_critical_job_failures()
  RETURNS jsonb
@@ -9098,8 +11654,7 @@ BEGIN
   
   RETURN v_result;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_data_freshness()
  RETURNS jsonb
@@ -9168,8 +11723,7 @@ BEGIN
   
   RETURN v_result;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_degraded_mode()
  RETURNS jsonb
@@ -9223,8 +11777,7 @@ BEGIN
     'open_breakers', v_open_breakers
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_rate_limit(p_identifier character varying, p_identifier_type character varying, p_endpoint character varying DEFAULT NULL::character varying, p_limit_count integer DEFAULT 100, p_window_seconds integer DEFAULT 60)
  RETURNS jsonb
@@ -9303,8 +11856,7 @@ BEGIN
     END IF;
   END IF;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_rate_limit_alerts()
  RETURNS TABLE(alert_id uuid, tenant_id uuid, rate_limit_exceeded boolean)
@@ -9336,8 +11888,7 @@ BEGIN
   
   RETURN;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_tenant_quota(p_tenant_id uuid, p_quota_type text, p_requested_value bigint DEFAULT 1)
  RETURNS boolean
@@ -9381,8 +11932,7 @@ BEGIN
       RETURN false;
   END CASE;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.check_upgrade_requirement(p_billing_account_id uuid)
  RETURNS jsonb
@@ -9454,8 +12004,7 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net.check_worker_is_up()
  RETURNS void
@@ -9469,8 +12018,7 @@ begin
     , hint    = 'make sure that you didn''t modify any of pg_net internal tables';
   end if;
 end
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_expired_artifacts()
  RETURNS void
@@ -9481,8 +12029,7 @@ BEGIN
   DELETE FROM shareable_artifacts
   WHERE expires_at < NOW();
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_expired_idempotency_keys()
  RETURNS void
@@ -9494,8 +12041,7 @@ BEGIN
   DELETE FROM idempotency_keys
   WHERE expires_at < NOW();
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_expired_revoked_tokens()
  RETURNS void
@@ -9506,8 +12052,7 @@ AS $function$
 BEGIN
   DELETE FROM revoked_tokens WHERE expires_at < NOW();
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_agent_runs()
  RETURNS void
@@ -9519,8 +12064,7 @@ BEGIN
   DELETE FROM agent_runs
   WHERE started_at < NOW() - INTERVAL '90 days';
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_alerts()
  RETURNS void
@@ -9533,8 +12077,7 @@ BEGIN
   WHERE resolved_at IS NOT NULL
     AND resolved_at < NOW() - INTERVAL '30 days';
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_audit_logs()
  RETURNS void
@@ -9546,8 +12089,7 @@ BEGIN
   DELETE FROM audit_logs
   WHERE created_at < NOW() - INTERVAL '365 days';
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_console_activities()
  RETURNS void
@@ -9559,8 +12101,7 @@ BEGIN
   DELETE FROM console_activities
   WHERE created_at < NOW() - INTERVAL '90 days';
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_diagnostics()
  RETURNS void
@@ -9572,8 +12113,7 @@ BEGIN
   DELETE FROM diagnostics
   WHERE timestamp < NOW() - INTERVAL '90 days';
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_health_checks()
  RETURNS void
@@ -9599,8 +12139,7 @@ BEGIN
     )
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_rate_limits()
  RETURNS void
@@ -9612,8 +12151,7 @@ BEGIN
   DELETE FROM rate_limits
   WHERE window_start < NOW() - INTERVAL '1 hour';
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_stripe_events()
  RETURNS void
@@ -9626,8 +12164,7 @@ BEGIN
   WHERE received_at < NOW() - INTERVAL '90 days'
     AND status IN ('processed', 'failed');
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_usage_events()
  RETURNS void
@@ -9649,8 +12186,7 @@ BEGIN
   WHERE aggregated = false
     AND timestamp < NOW() - INTERVAL '7 days';
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_old_webhook_deliveries()
  RETURNS void
@@ -9663,8 +12199,7 @@ BEGIN
   WHERE created_at < NOW() - INTERVAL '30 days'
     AND status IN ('delivered', 'failed');
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_stale_presence(minutes_threshold integer)
  RETURNS void
@@ -9672,8 +12207,7 @@ CREATE OR REPLACE FUNCTION public.cleanup_stale_presence(minutes_threshold integ
  SET search_path TO 'public', 'pg_temp'
 AS $function$
   DELETE FROM public.user_presence WHERE last_seen < now() - make_interval(mins => minutes_threshold);
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cleanup_webhook_deliveries(retention_days integer DEFAULT 30)
  RETURNS integer
@@ -9687,8 +12221,7 @@ declare v_count int; begin
     and d.created_at < now() - make_interval(days => retention_days);
   get diagnostics v_count = row_count;
   return v_count;
-end $function$
-
+end $function$;
 
 CREATE OR REPLACE FUNCTION public.cms_log_page_changes()
  RETURNS trigger
@@ -9708,8 +12241,7 @@ BEGIN
     VALUES (OLD.tenant_id, 'page', OLD.id, 'delete', auth.uid(), '{}'::jsonb);
   END IF;
   RETURN COALESCE(NEW, OLD);
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.cms_pages_broadcast_trigger()
  RETURNS trigger
@@ -9732,8 +12264,7 @@ BEGIN
   );
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.cms_upsert_page(p_tenant_id uuid, p_slug text, p_title text, p_status text, p_content jsonb, p_created_by uuid, p_change_summary text)
  RETURNS uuid
@@ -9768,8 +12299,7 @@ BEGIN
 
   RETURN v_page_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.compute_audit_row_sig(p_row jsonb)
  RETURNS bytea
@@ -9779,8 +12309,7 @@ CREATE OR REPLACE FUNCTION app_private.compute_audit_row_sig(p_row jsonb)
 AS $function$
 BEGIN
   RETURN extensions.digest(p_row::text || coalesce(current_setting('app.hmac_key', true), ''), 'sha256');
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.compute_estimated_bill(p_billing_account_id uuid, p_start_date date, p_end_date date)
  RETURNS jsonb
@@ -9880,8 +12409,7 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.convert_archive_partitioned(table_name text, partition_interval text DEFAULT '10000'::text, retention_interval text DEFAULT '100000'::text, leading_partition integer DEFAULT 10)
  RETURNS void
@@ -9957,8 +12485,7 @@ BEGIN
     qualified_a_table_name
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq."create"(queue_name text)
  RETURNS void
@@ -9967,8 +12494,7 @@ AS $function$
 BEGIN
     PERFORM pgmq.create_non_partitioned(queue_name);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.create_alert_from_fraud_signal()
  RETURNS trigger
@@ -10040,8 +12566,7 @@ BEGIN
 
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.create_email_invite(p_tenant_id uuid, p_email text, p_role text DEFAULT 'viewer'::text, p_expires_in_minutes integer DEFAULT 10080)
  RETURNS email_invites
@@ -10069,8 +12594,7 @@ BEGIN
         updated_at = now()
   RETURNING * INTO v_row;
   RETURN v_row;
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.create_index_if_not_exists(p_index_name text, p_table_name text, p_index_definition text)
  RETURNS void
@@ -10087,8 +12611,7 @@ BEGIN
         EXECUTE format('CREATE INDEX %I ON %I %s', p_index_name, p_table_name, p_index_definition);
     END IF;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.create_membership_invite(p_tenant_id uuid, p_user_id uuid, p_role text DEFAULT 'viewer'::text, p_expires_in_minutes integer DEFAULT 10080)
  RETURNS memberships
@@ -10118,8 +12641,7 @@ BEGIN
         updated_at = NOW()
   RETURNING * INTO v_row;
   RETURN v_row;
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.create_non_partitioned(queue_name text)
  RETURNS void
@@ -10196,8 +12718,7 @@ BEGIN
     queue_name
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.create_partitioned(queue_name text, partition_interval text DEFAULT '10000'::text, retention_interval text DEFAULT '100000'::text)
  RETURNS void
@@ -10359,8 +12880,7 @@ BEGIN
   );
 
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.create_policy_if_not_exists(p_policy_name text, p_table_name text, p_policy_definition text)
  RETURNS void
@@ -10373,8 +12893,7 @@ BEGIN
     -- Create the policy
     EXECUTE format('CREATE POLICY %I ON %I %s', p_policy_name, p_table_name, p_policy_definition);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.create_state_change_event()
  RETURNS trigger
@@ -10398,8 +12917,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.create_system_state_snapshot(p_snapshot_type character varying DEFAULT 'daily'::character varying)
  RETURNS uuid
@@ -10560,8 +13078,7 @@ BEGIN
   
   RETURN v_snapshot_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.create_unlogged(queue_name text)
  RETURNS void
@@ -10637,8 +13154,7 @@ BEGIN
     queue_name
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.create_weekly_snapshot(week_start date)
  RETURNS TABLE(snapshot_id uuid)
@@ -10684,8 +13200,7 @@ DECLARE v_exists uuid; v_metrics jsonb; v_summary jsonb; v_events jsonb; BEGIN
   RETURNING id INTO v_exists;
 
   RETURN QUERY SELECT v_exists;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.current_auth_uid()
  RETURNS uuid
@@ -10694,8 +13209,7 @@ CREATE OR REPLACE FUNCTION public.current_auth_uid()
  SET search_path TO 'pg_catalog', 'public'
 AS $function$
   SELECT auth.uid();
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.current_billing_period_start(p_tenant uuid)
  RETURNS date
@@ -10706,8 +13220,7 @@ AS $function$
   SELECT COALESCE(tp.billing_cycle_anchor, date_trunc('month', now())::date)
   FROM public.tenant_plans tp
   WHERE tp.tenant_id = p_tenant
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.current_org_id()
  RETURNS uuid
@@ -10716,8 +13229,7 @@ CREATE OR REPLACE FUNCTION app_private.current_org_id()
  SET search_path TO 'pg_catalog', 'public'
 AS $function$
   SELECT COALESCE((auth.jwt() ->> 'org_id')::uuid, NULL);
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.current_tenant_id()
  RETURNS uuid
@@ -10728,8 +13240,7 @@ AS $function$
   SELECT u.tenant_id
   FROM public.users u
   WHERE u.auth_user_id = auth.uid();
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.current_tenant_id()
  RETURNS uuid
@@ -10748,8 +13259,7 @@ BEGIN
   END;
   RETURN v_tenant_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.current_user_id()
  RETURNS uuid
@@ -10758,8 +13268,7 @@ CREATE OR REPLACE FUNCTION app_private.current_user_id()
  SET search_path TO 'app_private', 'pg_catalog'
 AS $function$
   SELECT auth.uid();
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.current_user_id()
  RETURNS uuid
@@ -10778,8 +13287,7 @@ BEGIN
   END;
   RETURN v_user_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.current_user_org_ids()
  RETURNS SETOF uuid
@@ -10789,8 +13297,7 @@ CREATE OR REPLACE FUNCTION public.current_user_org_ids()
 AS $function$
   SELECT ((auth.jwt() ->> 'org_id'))::uuid
   WHERE (auth.jwt() ->> 'org_id') IS NOT NULL;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.current_user_tenant()
  RETURNS uuid
@@ -10799,8 +13306,7 @@ CREATE OR REPLACE FUNCTION public.current_user_tenant()
  SET search_path TO 'pg_catalog', 'public', 'auth'
 AS $function$
   SELECT get_user_tenant();
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.current_user_workspace_ids()
  RETURNS uuid[]
@@ -10809,8 +13315,7 @@ CREATE OR REPLACE FUNCTION public.current_user_workspace_ids()
  SET search_path TO 'pg_catalog', 'public'
 AS $function$
   SELECT get_user_workspace_ids();
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.decrypt_credential(p_encrypted text, p_encryption_key text DEFAULT NULL::text)
  RETURNS text
@@ -10841,8 +13346,7 @@ BEGIN
   
   RETURN v_decrypted;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.decrypt_text(p bytea)
  RETURNS text
@@ -10851,8 +13355,7 @@ CREATE OR REPLACE FUNCTION app_private.decrypt_text(p bytea)
  SET search_path TO 'pg_catalog', 'public', 'auth'
 AS $function$
   select nullif(extensions.pgp_sym_decrypt(p, current_setting('app.encryption_key', true)), '');
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.delete(queue_name text, msg_id bigint)
  RETURNS boolean
@@ -10874,15 +13377,13 @@ BEGIN
     EXECUTE sql USING msg_id INTO result;
     RETURN NOT (result IS NULL);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq_public.delete(queue_name text, message_id bigint)
  RETURNS boolean
  LANGUAGE plpgsql
  SET search_path TO ''
-AS $function$ begin return pgmq.delete( queue_name := queue_name, msg_id := message_id ); end; $function$
-
+AS $function$ begin return pgmq.delete( queue_name := queue_name, msg_id := message_id ); end; $function$;
 
 CREATE OR REPLACE FUNCTION public.delete_user_data(p_user_id uuid)
  RETURNS jsonb
@@ -10930,8 +13431,7 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.detach_archive(queue_name text)
  RETURNS void
@@ -10944,8 +13444,7 @@ BEGIN
     EXECUTE format('ALTER EXTENSION pgmq DROP TABLE pgmq.%I', atable);
   END IF;
 END
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.detect_anomalies(p_tenant_id uuid, p_metric_name character varying, p_time_window_hours integer DEFAULT 24)
  RETURNS TABLE(anomaly_score numeric, detected_at timestamp with time zone)
@@ -10993,8 +13492,7 @@ BEGIN
 
   RETURN;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.detect_assumption_drift()
  RETURNS jsonb
@@ -11063,8 +13561,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.detect_billing_discrepancies()
  RETURNS jsonb
@@ -11125,8 +13622,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.detect_low_confidence_results()
  RETURNS jsonb
@@ -11192,8 +13688,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.detect_stale_content()
  RETURNS jsonb
@@ -11335,8 +13830,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.detect_user_confusion()
  RETURNS jsonb
@@ -11434,8 +13928,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.drop_queue(queue_name text)
  RETURNS boolean
@@ -11549,8 +14042,7 @@ BEGIN
 
     RETURN TRUE;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION auth.email()
  RETURNS text
@@ -11562,8 +14054,7 @@ AS $function$
     nullif(current_setting('request.jwt.claim.email', true), ''),
     (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'email')
   )::text
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.encrypt_credential(p_credential text, p_encryption_key text DEFAULT NULL::text)
  RETURNS text
@@ -11595,8 +14086,7 @@ BEGIN
   
   RETURN v_encrypted;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.encrypt_text(p text)
  RETURNS bytea
@@ -11605,8 +14095,7 @@ CREATE OR REPLACE FUNCTION app_private.encrypt_text(p text)
  SET search_path TO 'pg_catalog', 'public'
 AS $function$
   select extensions.pgp_sym_encrypt(coalesce(p, ''), current_setting('app.encryption_key', true));
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.enforce_quota(p_tenant uuid, p_kind text)
  RETURNS void
@@ -11649,8 +14138,7 @@ BEGIN
     RAISE EXCEPTION 'Quota exceeded for % (used %, limit %)', p_kind, v_used, v_limit USING ERRCODE = 'P0001';
   END IF;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.enforce_rate_limit(p_tenant uuid, p_key text)
  RETURNS void
@@ -11661,8 +14149,7 @@ AS $function$
 begin
   perform 1; -- keep body minimal; preserves signature
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.enforce_single_default_org()
  RETURNS trigger
@@ -11681,8 +14168,7 @@ begin
   end if;
   return NEW;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.ensure_idempotency(_tenant uuid, _key text, _ttl_minutes integer DEFAULT 5)
  RETURNS boolean
@@ -11708,8 +14194,7 @@ BEGIN
 
   RETURN true;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.ensure_receipt_confidence()
  RETURNS jsonb
@@ -11763,8 +14248,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.ensure_usage_synced_to_stripe()
  RETURNS jsonb
@@ -11815,8 +14299,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION analytics.exec_sql(q text)
  RETURNS jsonb
@@ -11842,8 +14325,7 @@ BEGIN
   EXECUTE format('SELECT coalesce(jsonb_agg(t), ''[]''::jsonb) FROM (%s) t', stmt) INTO res;
   RETURN res;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.execute_recommendation(p_recommendation_id uuid, p_executed_by uuid, p_action_taken text, p_outcome_notes text DEFAULT NULL::text)
  RETURNS uuid
@@ -11868,8 +14350,7 @@ BEGIN
 
   RETURN v_action_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.expire_insights()
  RETURNS void
@@ -11882,8 +14363,7 @@ BEGIN
     AND expires_at < NOW()
     AND status = 'active';
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.export_user_data(p_user_id uuid)
  RETURNS jsonb
@@ -11975,8 +14455,7 @@ BEGIN
 
   RETURN v_result;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.fn_advisors_acknowledge(p_id uuid)
  RETURNS boolean
@@ -11990,8 +14469,7 @@ BEGIN
       acknowledged_at = now()
   WHERE id = p_id;
   RETURN FOUND;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.fn_advisors_ingest(p_category text, p_payload jsonb)
  RETURNS integer
@@ -12024,8 +14502,7 @@ BEGIN
     v_count := v_count + 1;
   END LOOP;
   RETURN v_count;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.fn_audit_change()
  RETURNS trigger
@@ -12050,8 +14527,7 @@ BEGIN
   INSERT INTO public.audit_logs(table_name, action, row_id, user_id, diff)
   VALUES (TG_TABLE_SCHEMA||'.'||TG_TABLE_NAME, TG_OP, v_row_id, auth.uid(), v_diff);
   RETURN COALESCE(NEW, OLD);
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.fn_call_advisors_collector(p_category text DEFAULT NULL::text)
  RETURNS void
@@ -12079,8 +14555,7 @@ BEGIN
   -- no-op
   PERFORM 1;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.fn_has_integration_secret(p_tenant uuid, p_adapter text)
  RETURNS boolean
@@ -12091,8 +14566,7 @@ AS $function$
     SELECT 1 FROM public.integration_credentials ic
     WHERE ic.tenant_id = p_tenant AND ic.adapter = p_adapter
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.fn_snapshot_job_rules()
  RETURNS trigger
@@ -12105,8 +14579,7 @@ BEGIN
   SELECT NEW.id, j.id, j.rules FROM public.jobs j WHERE j.id = NEW.job_id
   ON CONFLICT (execution_id) DO NOTHING;
   RETURN NEW;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.fn_store_integration_secret(p_tenant uuid, p_adapter text, p_secret text)
  RETURNS uuid
@@ -12126,8 +14599,7 @@ BEGIN
   ON CONFLICT (tenant_id, adapter) DO UPDATE SET secret_ref = EXCLUDED.secret_ref;
 
   RETURN v_secret_id;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.fn_usage_increment(p_tenant uuid, p_metric text, p_inc bigint)
  RETURNS void
@@ -12138,8 +14610,7 @@ BEGIN
   INSERT INTO public.tenant_usage(id, tenant_id, metric_type, metric_value, period_start, period_end)
   VALUES (gen_random_uuid(), p_tenant, p_metric, p_inc, now() AT TIME ZONE 'utc', now() AT TIME ZONE 'utc')
   ON CONFLICT DO NOTHING;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.fn_usage_monthly_rollup(p_tenant uuid, p_month date)
  RETURNS void
@@ -12151,8 +14622,7 @@ BEGIN
   INSERT INTO public.tenant_usage_monthly(tenant_id, period_start)
   VALUES (p_tenant, p_month)
   ON CONFLICT (tenant_id, period_start) DO NOTHING;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.fn_use_idempotency_key(p_key text)
  RETURNS boolean
@@ -12164,8 +14634,7 @@ BEGIN
   RETURN true;
 EXCEPTION WHEN unique_violation THEN
   RETURN false;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION pgmq.format_table_name(queue_name text, prefix text)
  RETURNS text
@@ -12178,8 +14647,7 @@ BEGIN
     END IF;
     RETURN lower(prefix || '_' || queue_name);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.generate_ticket_number()
  RETURNS character varying
@@ -12191,8 +14659,7 @@ BEGIN
   ticket_num := 'TICKET-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || LPAD(NEXTVAL('ticket_sequence')::text, 6, '0');
   RETURN ticket_num;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgbouncer.get_auth(p_usename text)
  RETURNS TABLE(username text, password text)
@@ -12213,8 +14680,7 @@ AS $function$
       FROM pg_authid
       WHERE rolname=$1 and rolcanlogin;
   END;
-  $function$
-
+  $function$;
 
 CREATE OR REPLACE FUNCTION public.get_change_audit_summary(p_days integer DEFAULT 90)
  RETURNS jsonb
@@ -12267,8 +14733,7 @@ BEGIN
   
   RETURN v_summary;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_current_tenant()
  RETURNS uuid
@@ -12277,8 +14742,7 @@ CREATE OR REPLACE FUNCTION public.get_current_tenant()
  SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
   select (auth.jwt() ->> 'tenant_id')::uuid;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.get_current_tenant_id()
  RETURNS uuid
@@ -12318,8 +14782,7 @@ BEGIN
 
   RETURN v_tenant;
 END
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_current_user_id()
  RETURNS uuid
@@ -12328,8 +14791,7 @@ CREATE OR REPLACE FUNCTION public.get_current_user_id()
  SET search_path TO 'pg_catalog', 'public', 'auth'
 AS $function$
   select auth.uid();
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_default_org(p_user_id uuid)
  RETURNS uuid
@@ -12341,8 +14803,7 @@ AS $function$
   from public.user_organizations
   where user_id = p_user_id and is_default = true
   limit 1;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_health_check_summary(p_hours integer DEFAULT 24)
  RETURNS TABLE(check_name text, status text, last_check timestamp with time zone, failure_count integer, success_count integer)
@@ -12371,8 +14832,7 @@ BEGIN
   FROM check_results
   GROUP BY check_name;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_inactive_users(p_days_inactive integer DEFAULT 7)
  RETURNS TABLE(id uuid, user_id uuid, email character varying, name character varying, plan_type character varying, industry character varying, company_name character varying, last_activity_at timestamp with time zone)
@@ -12402,8 +14862,7 @@ BEGIN
     ) < NOW() - (p_days_inactive || ' days')::INTERVAL
     AND (p.email_preferences->>'low_activity')::boolean IS NOT FALSE;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_jwt_tenant_id()
  RETURNS uuid
@@ -12412,8 +14871,7 @@ CREATE OR REPLACE FUNCTION public.get_jwt_tenant_id()
  SET search_path TO 'public', 'auth', 'extensions'
 AS $function$
   SELECT (auth.jwt() ->> 'tenant_id')::uuid;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_kpi_health_status()
  RETURNS TABLE(new_users_week bigint, actions_last_hour bigint, top_post_engagement bigint, all_cylinders_firing boolean)
@@ -12435,8 +14893,7 @@ BEGIN
       ELSE false
     END as all_cylinders_firing;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.get_member_tenant_ids()
  RETURNS uuid[]
@@ -12453,8 +14910,7 @@ AS $function$
       )
     ), ARRAY[]::uuid[]
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_paid_users_for_monthly_summary()
  RETURNS TABLE(id uuid, user_id uuid, email character varying, name character varying, plan_type character varying, industry character varying, company_name character varying)
@@ -12476,8 +14932,7 @@ BEGIN
   WHERE p.plan_type IN ('commercial', 'enterprise')
     AND (p.email_preferences->>'monthly_summary')::boolean IS NOT FALSE;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_plan_limit(p_tenant uuid, p_field text)
  RETURNS integer
@@ -12495,8 +14950,7 @@ BEGIN
   ) INTO v_limit USING p_tenant;
   RETURN v_limit;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_re_entry_summary(p_days integer DEFAULT 90)
  RETURNS jsonb
@@ -12546,8 +15000,7 @@ BEGIN
     'generated_at', NOW()
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_reality_metric(p_category character varying, p_name character varying)
  RETURNS jsonb
@@ -12559,8 +15012,7 @@ DECLARE v_value JSONB; BEGIN
   SELECT value INTO v_value FROM public.reality_metrics
   WHERE category = p_category AND name = p_name;
   RETURN v_value;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.get_recent_console_activities(p_billing_account_id uuid, p_limit integer DEFAULT 10)
  RETURNS TABLE(id uuid, activity_type character varying, action character varying, title character varying, status character varying, metadata jsonb, created_at timestamp with time zone)
@@ -12584,8 +15036,7 @@ BEGIN
   ORDER BY ca.created_at DESC
   LIMIT p_limit;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_table_size_monitoring()
  RETURNS TABLE(table_name text, row_count bigint, table_size text, last_vacuum timestamp without time zone, last_analyze timestamp without time zone)
@@ -12605,8 +15056,7 @@ BEGIN
   WHERE schemaname = 'public'
   ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_tenant_from_conversation(p_conversation uuid)
  RETURNS uuid
@@ -12615,8 +15065,7 @@ CREATE OR REPLACE FUNCTION public.get_tenant_from_conversation(p_conversation uu
  SET search_path TO 'pg_catalog', 'public', 'auth'
 AS $function$
   select c.tenant_id from public.conversations c where c.id = p_conversation;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_tenant_from_job(p_job uuid)
  RETURNS uuid
@@ -12625,8 +15074,7 @@ CREATE OR REPLACE FUNCTION public.get_tenant_from_job(p_job uuid)
  SET search_path TO 'pg_catalog', 'public', 'auth'
 AS $function$
   select j.tenant_id from public.jobs j where j.id = p_job;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_tenant_from_receipt(p_receipt uuid)
  RETURNS uuid
@@ -12635,8 +15083,7 @@ CREATE OR REPLACE FUNCTION public.get_tenant_from_receipt(p_receipt uuid)
  SET search_path TO 'pg_catalog', 'public', 'auth'
 AS $function$
   select r.tenant_id from public.receipts r where r.id = p_receipt;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_token_tenant()
  RETURNS uuid
@@ -12645,8 +15092,7 @@ CREATE OR REPLACE FUNCTION public.get_token_tenant()
  SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
   SELECT NULLIF(auth.jwt() ->> 'tenant_id', '')::uuid;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_trial_users_for_email(p_days_remaining integer)
  RETURNS TABLE(id uuid, user_id uuid, email character varying, name character varying, plan_type character varying, trial_start_date timestamp with time zone, trial_end_date timestamp with time zone, days_remaining integer, industry character varying, company_name character varying, last_email_type character varying, last_email_sent_at timestamp with time zone)
@@ -12682,8 +15128,7 @@ BEGIN
     )
     AND (p.email_preferences->>'lifecycle_emails')::boolean IS NOT FALSE;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_trials_expiring_soon(p_days_ahead integer DEFAULT 3)
  RETURNS TABLE(user_id uuid, email text, name text, trial_end_date timestamp with time zone, days_remaining integer)
@@ -12705,8 +15150,7 @@ BEGIN
     AND EXTRACT(DAY FROM (p.trial_end_date - NOW()))::INTEGER <= p_days_ahead
     AND p.deleted_at IS NULL;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_user_activity_metrics(user_id uuid)
  RETURNS TABLE(active_last_7_days boolean, active_days_last_30 integer, days_since_last_activity integer, total_jobs_created integer, has_upgraded boolean, using_premium_features boolean, explicitly_cancelled boolean, has_payment_issues boolean, usage_percentage numeric, integration_count integer, viewed_enterprise_features boolean)
@@ -12786,8 +15230,7 @@ BEGIN
     -- Viewed enterprise features (mock)
     FALSE AS viewed_enterprise_features;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.get_user_org_ids()
  RETURNS SETOF uuid
@@ -12809,8 +15252,7 @@ declare col_exists boolean; begin
     return query select tenant_id from public.user_organizations where user_id = (select auth.uid());
     return; end if;
   raise exception 'user_organizations must contain org_id/organization_id/tenant_id';
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION public.get_user_role()
  RETURNS text
@@ -12819,8 +15261,7 @@ CREATE OR REPLACE FUNCTION public.get_user_role()
  SET search_path TO 'pg_catalog', 'public', 'auth'
 AS $function$
   SELECT (auth.jwt() ->> 'user_role')::text;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.get_user_tenant()
  RETURNS uuid
@@ -12831,8 +15272,7 @@ AS $function$
   SELECT tenant_id
   FROM public.users
   WHERE id = auth.uid();
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_user_tenant()
  RETURNS uuid
@@ -12848,8 +15288,7 @@ BEGIN
   END IF;
   RETURN claim::uuid;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.get_user_tenant_ids()
  RETURNS SETOF uuid
@@ -12859,16 +15298,14 @@ CREATE OR REPLACE FUNCTION app_private.get_user_tenant_ids()
 AS $function$
   SELECT tenant_id FROM app_private.memberships
   WHERE user_id = (SELECT auth.uid());
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.get_user_tenant_ids()
  RETURNS SETOF uuid
  LANGUAGE sql
  STABLE SECURITY DEFINER
  SET search_path TO 'public'
-AS $function$SELECT tm.tenant_id FROM public.tenant_memberships tm WHERE tm.user_id = (SELECT auth.uid());$function$
-
+AS $function$SELECT tm.tenant_id FROM public.tenant_memberships tm WHERE tm.user_id = (SELECT auth.uid());$function$;
 
 CREATE OR REPLACE FUNCTION public.get_user_workspace_ids()
  RETURNS uuid[]
@@ -12878,8 +15315,7 @@ AS $function$
     SELECT COALESCE(ARRAY_AGG(tenant_id)::uuid[], ARRAY[]::uuid[])
     FROM tenant_users
     WHERE user_id = auth.uid();
-  $function$
-
+  $function$;
 
 CREATE OR REPLACE FUNCTION public.handle_payment_failure(p_billing_account_id uuid, p_stripe_invoice_id character varying, p_failure_reason text)
  RETURNS uuid
@@ -12953,8 +15389,7 @@ BEGIN
   
   RETURN v_recon_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.handle_trial_expiration()
  RETURNS void
@@ -12989,8 +15424,7 @@ BEGIN
     AND trial_end_date IS NOT NULL
     AND updated_at > NOW() - INTERVAL '1 minute'; -- Only log recent expirations
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
  RETURNS trigger
@@ -13002,8 +15436,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.handle_user_offboarding()
  RETURNS trigger
@@ -13047,8 +15480,7 @@ BEGIN
   
   RETURN OLD;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.has_cms_write_role()
  RETURNS boolean
@@ -13057,8 +15489,7 @@ CREATE OR REPLACE FUNCTION public.has_cms_write_role()
  SET search_path TO 'pg_catalog', 'public'
 AS $function$
   SELECT (auth.jwt() ->> 'user_role') IN ('owner','admin','editor')
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.has_tenant_role(tenant uuid, role text)
  RETURNS boolean
@@ -13070,8 +15501,7 @@ AS $function$
     SELECT 1 FROM public.tenant_memberships tm
     WHERE tm.tenant_id = tenant AND tm.user_id = auth.uid() AND tm.role = role
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.has_tenant_role(user_id uuid, tenant_id uuid, role text)
  RETURNS boolean
@@ -13087,8 +15517,7 @@ AS $function$
       AND tm.tenant_id = tenant_id
       AND tm.role = role
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net.http_collect_response(request_id bigint, async boolean DEFAULT true)
  RETURNS net.http_response_result
@@ -13098,8 +15527,7 @@ begin
   raise notice 'The net.http_collect_response function is deprecated.';
   select net._http_collect_response(request_id, async);
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net.http_delete(url text, params jsonb DEFAULT '{}'::jsonb, headers jsonb DEFAULT '{}'::jsonb, timeout_milliseconds integer DEFAULT 5000, body jsonb DEFAULT NULL::jsonb)
  RETURNS bigint
@@ -13129,8 +15557,7 @@ begin
 
     return request_id;
 end
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net.http_get(url text, params jsonb DEFAULT '{}'::jsonb, headers jsonb DEFAULT '{}'::jsonb, timeout_milliseconds integer DEFAULT 5000)
  RETURNS bigint
@@ -13159,8 +15586,7 @@ begin
 
     return request_id;
 end
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net.http_post(url text, body jsonb DEFAULT '{}'::jsonb, params jsonb DEFAULT '{}'::jsonb, headers jsonb DEFAULT '{"Content-Type": "application/json"}'::jsonb, timeout_milliseconds integer DEFAULT 5000)
  RETURNS bigint
@@ -13216,8 +15642,7 @@ begin
 
     return request_id;
 end
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.increment_tenant_quota_usage(p_tenant_id uuid, p_quota_type text, p_value bigint DEFAULT 1)
  RETURNS void
@@ -13252,8 +15677,7 @@ BEGIN
       metric_value = tenant_usage.metric_value + p_value;
   END IF;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.increment_tenant_usage(p_tenant_id uuid, p_metric_type text, p_delta bigint)
  RETURNS void
@@ -13270,8 +15694,7 @@ BEGIN
   WHERE tenant_id = p_tenant_id
     AND metric_type = p_metric_type
     AND period_start = date_trunc('month', now());
-END $function$
-
+END $function$;
 
 CREATE OR REPLACE FUNCTION public.is_admin()
  RETURNS boolean
@@ -13286,8 +15709,7 @@ AS $function$
       AND tm.user_id = auth.uid()
       AND tm.role IN ('owner','admin')
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_admin_user(user_id uuid)
  RETURNS boolean
@@ -13301,8 +15723,7 @@ BEGIN
     AND (ba.metadata->>'role')::text = 'SUPER_ADMIN'
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_conversation_participant(p_user_id uuid, p_conversation_id uuid)
  RETURNS boolean
@@ -13316,8 +15737,7 @@ AS $function$
     WHERE cm.user_id = p_user_id
       AND cm.conversation_id = p_conversation_id
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_ip_blocked(p_ip character varying, p_tenant_id uuid DEFAULT NULL::uuid)
  RETURNS boolean
@@ -13333,8 +15753,7 @@ BEGIN
       AND unblocked_at IS NULL
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_member_of_conversation(conv_id uuid)
  RETURNS boolean
@@ -13350,8 +15769,7 @@ BEGIN
       AND cm.user_id = (SELECT auth.uid())
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_metric_proven(p_category character varying, p_name character varying)
  RETURNS boolean
@@ -13363,8 +15781,7 @@ DECLARE v_status VARCHAR; BEGIN
   SELECT status INTO v_status FROM public.reality_metrics
   WHERE category = p_category AND name = p_name;
   RETURN COALESCE(v_status = 'proven', false);
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.is_paid(p_user_id uuid)
  RETURNS boolean
@@ -13385,8 +15802,7 @@ BEGIN
   ) INTO v_is_paid;
   RETURN v_is_paid;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.is_tenant_admin(p_tenant uuid)
  RETURNS boolean
@@ -13398,8 +15814,7 @@ AS $function$
     SELECT 1 FROM app_private.memberships m
     WHERE m.user_id = (SELECT auth.uid()) AND m.tenant_id = p_tenant AND m.role IN ('owner','admin')
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_tenant_admin()
  RETURNS boolean
@@ -13413,8 +15828,7 @@ AS $function$
       AND ut.tenant_id = public.jwt_tenant_id()
       AND ut.role = 'admin'
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.is_tenant_member(tenant uuid)
  RETURNS boolean
@@ -13426,8 +15840,7 @@ AS $function$
     SELECT 1 FROM public.tenant_memberships tm
     WHERE tm.tenant_id = tenant AND tm.user_id = auth.uid()
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_tenant_member(p_tenant_id uuid)
  RETURNS boolean
@@ -13456,8 +15869,7 @@ BEGIN
   
   RETURN COALESCE(v_is_member, false);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_user_tenant_member(p_tenant uuid)
  RETURNS boolean
@@ -13469,14 +15881,12 @@ AS $function$
     select 1 from public.user_organizations uo
     where uo.user_id = auth.uid() and uo.org_id = p_tenant
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION cron.job_cache_invalidate()
  RETURNS trigger
  LANGUAGE c
-AS '$libdir/pg_cron', $function$cron_job_cache_invalidate$function$
-
+AS '$libdir/pg_cron', $function$cron_job_cache_invalidate$function$;
 
 CREATE OR REPLACE FUNCTION auth.jwt()
  RETURNS jsonb
@@ -13488,8 +15898,7 @@ AS $function$
         nullif(current_setting('request.jwt.claim', true), ''),
         nullif(current_setting('request.jwt.claims', true), '')
     )::jsonb
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.jwt_custom_claims()
  RETURNS jsonb
@@ -13513,8 +15922,7 @@ AS $function$
     ),
     '{}'::jsonb
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.jwt_tenant_id()
  RETURNS uuid
@@ -13523,8 +15931,7 @@ CREATE OR REPLACE FUNCTION public.jwt_tenant_id()
  SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
   SELECT NULLIF(auth.jwt()->>'tenant_id','')::uuid;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.link_stripe_customer(p_tenant_id uuid, p_customer_id text)
  RETURNS void
@@ -13538,8 +15945,7 @@ begin
   do update set tenant_id = excluded.tenant_id
   where sc.tenant_id is distinct from excluded.tenant_id;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.list_queues()
  RETURNS SETOF pgmq.queue_record
@@ -13548,8 +15954,7 @@ AS $function$
 BEGIN
   RETURN QUERY SELECT * FROM pgmq.meta;
 END
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.load_app_secrets()
  RETURNS void
@@ -13560,8 +15965,7 @@ AS $function$
 begin
   perform set_config('app.encryption_key', current_setting('APP_ENCRYPTION_KEY', true), false);
   perform set_config('app.hmac_key', current_setting('APP_HMAC_KEY', true), false);
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION public.log_audit_change()
  RETURNS trigger
@@ -13599,8 +16003,7 @@ begin
 
   return coalesce(new, old);
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.log_audit_event(p_event character varying, p_tenant_id uuid DEFAULT NULL::uuid, p_user_id uuid DEFAULT NULL::uuid, p_api_key_id uuid DEFAULT NULL::uuid, p_action_type character varying DEFAULT NULL::character varying, p_resource_type character varying DEFAULT NULL::character varying, p_resource_id uuid DEFAULT NULL::uuid, p_billing_account_id uuid DEFAULT NULL::uuid, p_integration_id character varying DEFAULT NULL::character varying, p_ip character varying DEFAULT NULL::character varying, p_user_agent text DEFAULT NULL::text, p_method character varying DEFAULT NULL::character varying, p_path character varying DEFAULT NULL::character varying, p_status_code integer DEFAULT NULL::integer, p_metadata jsonb DEFAULT '{}'::jsonb)
  RETURNS uuid
@@ -13650,8 +16053,7 @@ BEGIN
 
   RETURN v_audit_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.log_automated_decision(p_decision_type character varying, p_decision_context jsonb, p_decision_outcome jsonb, p_reasoning text DEFAULT NULL::text)
  RETURNS uuid
@@ -13676,8 +16078,7 @@ BEGIN
   
   RETURN v_decision_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.log_confidence_event(p_source_type character varying, p_source_id uuid, p_confidence_score numeric, p_threshold numeric DEFAULT 0.7, p_result_data jsonb DEFAULT '{}'::jsonb, p_metadata jsonb DEFAULT '{}'::jsonb)
  RETURNS uuid
@@ -13726,8 +16127,7 @@ BEGIN
   
   RETURN v_event_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.log_console_activity(p_user_id uuid, p_billing_account_id uuid, p_activity_type character varying, p_action character varying, p_title character varying, p_description text DEFAULT NULL::text, p_status character varying DEFAULT 'success'::character varying, p_metadata jsonb DEFAULT '{}'::jsonb, p_resource_id uuid DEFAULT NULL::uuid, p_resource_type character varying DEFAULT NULL::character varying)
  RETURNS uuid
@@ -13773,8 +16173,7 @@ BEGIN
   
   RETURN v_activity_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.log_error(p_tenant_id uuid, p_error_type character varying, p_severity character varying, p_message text, p_stack_trace text DEFAULT NULL::text, p_context jsonb DEFAULT '{}'::jsonb, p_user_id uuid DEFAULT NULL::uuid, p_api_key_id uuid DEFAULT NULL::uuid, p_request_id character varying DEFAULT NULL::character varying, p_url text DEFAULT NULL::text, p_method character varying DEFAULT NULL::character varying, p_status_code integer DEFAULT NULL::integer)
  RETURNS uuid
@@ -13814,8 +16213,7 @@ BEGIN
   
   RETURN v_error_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.log_job_failure(p_job_type character varying, p_job_id uuid, p_error_message text, p_error_stack text DEFAULT NULL::text, p_metadata jsonb DEFAULT '{}'::jsonb)
  RETURNS uuid
@@ -13894,8 +16292,7 @@ BEGIN
     RETURN v_failure_id;
   END IF;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.log_usage_event(p_billing_account_id uuid, p_event_type character varying, p_quantity numeric DEFAULT 1, p_project_id uuid DEFAULT NULL::uuid, p_user_id uuid DEFAULT NULL::uuid, p_tenant_id uuid DEFAULT NULL::uuid, p_integration_id character varying DEFAULT NULL::character varying, p_add_on_id uuid DEFAULT NULL::uuid, p_unit character varying DEFAULT NULL::character varying, p_metadata jsonb DEFAULT '{}'::jsonb, p_idempotency_key character varying DEFAULT NULL::character varying)
  RETURNS uuid
@@ -14052,8 +16449,7 @@ BEGIN
 
   RETURN v_event_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.mark_welcome_step_on_signup()
  RETURNS trigger
@@ -14067,8 +16463,7 @@ BEGIN
   
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.member_tenant_ids()
  RETURNS SETOF uuid
@@ -14077,8 +16472,7 @@ CREATE OR REPLACE FUNCTION app_private.member_tenant_ids()
  SET search_path TO 'app_private', 'pg_catalog'
 AS $function$
   select tenant_id::uuid from user_tenants where user_id = (select auth.uid());
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.memberships_broadcast_trigger()
  RETURNS trigger
@@ -14093,8 +16487,7 @@ BEGIN
   );
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.messages_broadcast_trigger()
  RETURNS trigger
@@ -14114,8 +16507,7 @@ begin
   );
   return coalesce(new, old);
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.messages_rate_limit_trigger()
  RETURNS trigger
@@ -14127,8 +16519,7 @@ begin
   perform public.enforce_rate_limit(new.tenant_id, 'messages');
   return new;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.metrics(queue_name text)
  RETURNS pgmq.metrics_result
@@ -14171,8 +16562,7 @@ BEGIN
     EXECUTE query INTO result_row;
     RETURN result_row;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.metrics_all()
  RETURNS SETOF pgmq.metrics_result
@@ -14187,8 +16577,7 @@ BEGIN
         RETURN NEXT result_row;
     END LOOP;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.notify_impact_score_update()
  RETURNS trigger
@@ -14217,8 +16606,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.pop(queue_name text)
  RETURNS SETOF pgmq.message_record
@@ -14248,15 +16636,13 @@ BEGIN
     );
     RETURN QUERY EXECUTE sql;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq_public.pop(queue_name text)
  RETURNS SETOF pgmq.message_record
  LANGUAGE plpgsql
  SET search_path TO ''
-AS $function$ begin return query select * from pgmq.pop( queue_name := queue_name ); end; $function$
-
+AS $function$ begin return query select * from pgmq.pop( queue_name := queue_name ); end; $function$;
 
 CREATE OR REPLACE FUNCTION public.preview_token_allows(page_id uuid, token text)
  RETURNS boolean
@@ -14273,8 +16659,7 @@ AS $function$
       AND t.expires_at > now()
       AND t.can_view_unpublished = true
   );
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.process_unresolved_confusion()
  RETURNS jsonb
@@ -14324,8 +16709,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.process_webhook_outbox()
  RETURNS void
@@ -14345,8 +16729,7 @@ BEGIN
       WHERE id = r.id;
   END LOOP;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.propagate_tenant_id_to_api_keys()
  RETURNS trigger
@@ -14360,8 +16743,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.propagate_tenant_id_to_executions()
  RETURNS trigger
@@ -14375,8 +16757,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.propagate_tenant_id_to_idempotency_keys()
  RETURNS trigger
@@ -14390,8 +16771,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.propagate_tenant_id_to_jobs()
  RETURNS trigger
@@ -14405,8 +16785,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.propagate_tenant_id_to_matches()
  RETURNS trigger
@@ -14420,8 +16799,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.propagate_tenant_id_to_reports()
  RETURNS trigger
@@ -14435,8 +16813,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.propagate_tenant_id_to_unmatched()
  RETURNS trigger
@@ -14450,8 +16827,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.propagate_tenant_id_to_webhooks()
  RETURNS trigger
@@ -14465,8 +16841,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.provision_trial_for_new_user()
  RETURNS trigger
@@ -14488,8 +16863,7 @@ BEGIN
 
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.purge_audit_logs()
  RETURNS void
@@ -14500,8 +16874,7 @@ begin
   perform 1;
   delete from public.audit_logs al
   where al.timestamp < now() - interval '90 days';
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION analytics.purge_old_index_usage(p_keep_days integer DEFAULT 30)
  RETURNS integer
@@ -14516,8 +16889,7 @@ BEGIN
   GET DIAGNOSTICS v_count = ROW_COUNT;
   RETURN v_count;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.purge_old_stripe_webhook_logs()
  RETURNS integer
@@ -14537,8 +16909,7 @@ begin
   get diagnostics v_deleted = row_count;
   return v_deleted;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.purge_queue(queue_name text)
  RETURNS bigint
@@ -14557,8 +16928,7 @@ BEGIN
   -- Return the number of purged rows
   RETURN deleted_count;
 END
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.purge_security_events()
  RETURNS void
@@ -14568,8 +16938,7 @@ AS $function$
 begin
   delete from public.security_events se
   where se.created_at < now() - interval '180 days';
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION app_private.purge_stripe_events()
  RETURNS void
@@ -14579,8 +16948,7 @@ AS $function$
 begin
   delete from public.stripe_events se
   where se.received_at < now() - interval '180 days';
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION app_private.purge_stripe_webhook_logs()
  RETURNS void
@@ -14590,8 +16958,7 @@ AS $function$
 begin
   delete from public.stripe_webhook_logs swl
   where swl.received_at < now() - interval '90 days';
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION app_private.purge_webhook_deliveries()
  RETURNS void
@@ -14601,8 +16968,7 @@ AS $function$
 begin
   delete from public.webhook_deliveries wd
   where wd.delivered_at is not null and wd.delivered_at < now() - interval '30 days';
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION app_private.purge_webhook_payloads()
  RETURNS void
@@ -14612,8 +16978,7 @@ AS $function$
 begin
   delete from public.webhook_payloads wp
   where wp.processed = true and wp.received_at < now() - interval '30 days';
-end; $function$
-
+end; $function$;
 
 CREATE OR REPLACE FUNCTION public.quota_before_insert_extraction()
  RETURNS trigger
@@ -14634,8 +16999,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.quota_before_insert_upload()
  RETURNS trigger
@@ -14654,8 +17018,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.re_extracted_set_tenant_id()
  RETURNS trigger
@@ -14672,8 +17035,7 @@ BEGIN
   WHERE ru.id = NEW.upload_id;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.read(queue_name text, vt integer, qty integer, conditional jsonb DEFAULT '{}'::jsonb)
  RETURNS SETOF pgmq.message_record
@@ -14709,15 +17071,13 @@ BEGIN
     );
     RETURN QUERY EXECUTE sql USING qty;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq_public.read(queue_name text, sleep_seconds integer, n integer)
  RETURNS SETOF pgmq.message_record
  LANGUAGE plpgsql
  SET search_path TO ''
-AS $function$ begin return query select * from pgmq.read( queue_name := queue_name, vt := sleep_seconds, qty := n , conditional := '{}'::jsonb ); end; $function$
-
+AS $function$ begin return query select * from pgmq.read( queue_name := queue_name, vt := sleep_seconds, qty := n , conditional := '{}'::jsonb ); end; $function$;
 
 CREATE OR REPLACE FUNCTION pgmq.read_with_poll(queue_name text, vt integer, qty integer, max_poll_seconds integer DEFAULT 5, poll_interval_ms integer DEFAULT 100, conditional jsonb DEFAULT '{}'::jsonb)
  RETURNS SETOF pgmq.message_record
@@ -14772,8 +17132,7 @@ BEGIN
       END IF;
     END LOOP;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.realtime_topic_conversation_id(topic text)
  RETURNS uuid
@@ -14782,8 +17141,7 @@ CREATE OR REPLACE FUNCTION public.realtime_topic_conversation_id(topic text)
  SET search_path TO 'pg_catalog', 'public'
 AS $function$
   select nullif(split_part(topic, ':', 2), '')::uuid;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.receipt_events_enqueue_webhooks()
  RETURNS trigger
@@ -14798,8 +17156,7 @@ BEGIN
   WHERE w.tenant_id = NEW.tenant_id
     AND (w.events IS NULL OR array_length(w.events,1) IS NULL OR NEW.type::text = ANY(w.events));
   RETURN NEW;
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.receipts_broadcast_trigger()
  RETURNS trigger
@@ -14818,8 +17175,7 @@ BEGIN
     OLD
   );
   RETURN COALESCE(NEW, OLD);
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION public.reconcile_daily_billing(p_date date DEFAULT CURRENT_DATE)
  RETURNS jsonb
@@ -14914,8 +17270,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.record_ai_usage(p_tenant_id uuid, p_billing_account_id uuid, p_event_type character varying, p_model_name character varying, p_cost_usd numeric, p_prompt_tokens integer DEFAULT NULL::integer, p_completion_tokens integer DEFAULT NULL::integer, p_total_tokens integer DEFAULT NULL::integer, p_cost_breakdown jsonb DEFAULT NULL::jsonb, p_latency_ms integer DEFAULT NULL::integer, p_success boolean DEFAULT true, p_error_message text DEFAULT NULL::text, p_metadata jsonb DEFAULT '{}'::jsonb)
  RETURNS uuid
@@ -15012,8 +17367,7 @@ BEGIN
 
   RETURN v_event_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.record_circuit_breaker_failure(p_service_name character varying)
  RETURNS jsonb
@@ -15083,8 +17437,7 @@ BEGIN
     'failure_count', v_breaker.failure_count
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.record_circuit_breaker_success(p_service_name character varying)
  RETURNS jsonb
@@ -15135,8 +17488,7 @@ BEGIN
     'success_count', v_breaker.success_count
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.record_ledger_entry(p_tenant_id uuid, p_transaction_type character varying, p_entry_type character varying, p_amount_cents bigint, p_currency character varying, p_account_type character varying, p_reference_type character varying, p_reference_id character varying, p_idempotency_key character varying, p_description text, p_metadata jsonb, p_created_by uuid)
  RETURNS uuid
@@ -15202,8 +17554,7 @@ BEGIN
   
   RETURN v_entry_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.record_reality_event(p_category character varying, p_event_name character varying, p_severity character varying DEFAULT 'info'::character varying, p_meta jsonb DEFAULT '{}'::jsonb)
  RETURNS uuid
@@ -15215,8 +17566,7 @@ DECLARE v_id UUID; BEGIN
   VALUES (p_category, p_event_name, p_severity, p_meta)
   RETURNING id INTO v_id;
   RETURN v_id;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION app_private.redact_email(p text)
  RETURNS text
@@ -15225,8 +17575,7 @@ CREATE OR REPLACE FUNCTION app_private.redact_email(p text)
  SET search_path TO 'pg_catalog', 'public'
 AS $function$
   select case when p is null then null else regexp_replace(p, '(^.).*(@.*$)', '\1***\2') end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.redact_text(p text)
  RETURNS text
@@ -15235,8 +17584,7 @@ CREATE OR REPLACE FUNCTION app_private.redact_text(p text)
  SET search_path TO 'pg_catalog', 'public'
 AS $function$
   select case when p is null then null else left(p, 3) || '***' end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION analytics.refresh_stats()
  RETURNS void
@@ -15257,8 +17605,7 @@ begin
   left join pg_stat_all_indexes s on s.indexrelid = i.oid
   where c.relkind = 'r';
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION analytics.refresh_stats_if_admin()
  RETURNS void
@@ -15273,8 +17620,7 @@ begin
     raise exception 'forbidden';
   end if;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.refresh_usage_materialized_views()
  RETURNS void
@@ -15285,8 +17631,7 @@ AS $function$
 BEGIN
   REFRESH MATERIALIZED VIEW CONCURRENTLY public.mv_usage_daily_costs;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.refresh_users_count(p_tenant uuid)
  RETURNS void
@@ -15306,8 +17651,7 @@ BEGIN
   ON CONFLICT (tenant_id, period_start) DO UPDATE
   SET users_count = EXCLUDED.users_count;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.reset_daily_ai_quotas()
  RETURNS integer
@@ -15328,8 +17672,7 @@ BEGIN
   GET DIAGNOSTICS v_reset_count = ROW_COUNT;
   RETURN v_reset_count;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.reset_monthly_ai_quotas()
  RETURNS integer
@@ -15350,8 +17693,7 @@ BEGIN
   GET DIAGNOSTICS v_reset_count = ROW_COUNT;
   RETURN v_reset_count;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.resolve_insight(p_insight_id uuid, p_resolved_by uuid, p_resolution_notes text DEFAULT NULL::text)
  RETURNS void
@@ -15368,8 +17710,7 @@ BEGIN
     updated_at = NOW()
   WHERE id = p_insight_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.retry_failed_jobs()
  RETURNS jsonb
@@ -15447,8 +17788,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.revoke_membership_invite(p_tenant_id uuid, p_user_id uuid)
  RETURNS void
@@ -15463,8 +17803,7 @@ BEGIN
   UPDATE public.memberships m
   SET status = 'removed', invite_token = NULL, invite_expires_at = NULL, updated_at = NOW()
   WHERE m.tenant_id = p_tenant_id AND m.user_id = p_user_id;
-END;$function$
-
+END;$function$;
 
 CREATE OR REPLACE FUNCTION auth.role()
  RETURNS text
@@ -15476,8 +17815,7 @@ AS $function$
     nullif(current_setting('request.jwt.claim.role', true), ''),
     (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role')
   )::text
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.rollup_usage_5m()
  RETURNS void
@@ -15490,8 +17828,7 @@ AS $function$
   FROM public.usage_events
   WHERE timestamp >= now() - interval '10 minutes'
   GROUP BY 1,2,3,4,5,6;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.room_members_broadcast_trigger()
  RETURNS trigger
@@ -15511,8 +17848,7 @@ BEGIN
   );
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.room_messages_broadcast_trigger()
  RETURNS trigger
@@ -15532,8 +17868,7 @@ BEGIN
   );
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.run_data_retention_cleanup()
  RETURNS jsonb
@@ -15629,8 +17964,7 @@ BEGIN
   
   RETURN result;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.run_retention_cleanups()
  RETURNS void
@@ -15671,20 +18005,17 @@ begin
     delete from public.idempotency_keys where coalesce(expires_at, created_at) < cutoff;
   end if;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION cron.schedule(job_name text, schedule text, command text)
  RETURNS bigint
  LANGUAGE c
-AS '$libdir/pg_cron', $function$cron_schedule_named$function$
-
+AS '$libdir/pg_cron', $function$cron_schedule_named$function$;
 
 CREATE OR REPLACE FUNCTION cron.schedule_in_database(job_name text, schedule text, command text, database text, username text DEFAULT NULL::text, active boolean DEFAULT true)
  RETURNS bigint
  LANGUAGE c
-AS '$libdir/pg_cron', $function$cron_schedule_named$function$
-
+AS '$libdir/pg_cron', $function$cron_schedule_named$function$;
 
 CREATE OR REPLACE FUNCTION public.seed_default_org(p_user_id uuid)
  RETURNS TABLE(user_id uuid, org_id uuid, is_default boolean, created_at timestamp with time zone)
@@ -15714,8 +18045,7 @@ begin
   order by uo.created_at desc
   limit 1;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.send(queue_name text, msg jsonb, headers jsonb, delay timestamp with time zone)
  RETURNS SETOF bigint
@@ -15735,15 +18065,13 @@ BEGIN
            );
     RETURN QUERY EXECUTE sql USING msg, delay, headers;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq_public.send(queue_name text, message jsonb, sleep_seconds integer DEFAULT 0)
  RETURNS SETOF bigint
  LANGUAGE plpgsql
  SET search_path TO ''
-AS $function$ begin return query select * from pgmq.send( queue_name := queue_name, msg := message, delay := sleep_seconds ); end; $function$
-
+AS $function$ begin return query select * from pgmq.send( queue_name := queue_name, msg := message, delay := sleep_seconds ); end; $function$;
 
 CREATE OR REPLACE FUNCTION pgmq.send_batch(queue_name text, msgs jsonb[], headers jsonb[], delay timestamp with time zone)
  RETURNS SETOF bigint
@@ -15763,15 +18091,13 @@ BEGIN
            );
     RETURN QUERY EXECUTE sql USING msgs, delay, headers;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq_public.send_batch(queue_name text, messages jsonb[], sleep_seconds integer DEFAULT 0)
  RETURNS SETOF bigint
  LANGUAGE plpgsql
  SET search_path TO ''
-AS $function$ begin return query select * from pgmq.send_batch( queue_name := queue_name, msgs := messages, delay := sleep_seconds ); end; $function$
-
+AS $function$ begin return query select * from pgmq.send_batch( queue_name := queue_name, msgs := messages, delay := sleep_seconds ); end; $function$;
 
 CREATE OR REPLACE FUNCTION public.send_pending_alert_notifications()
  RETURNS TABLE(notification_id uuid, alert_id uuid, notification_type character varying, recipient text)
@@ -15806,8 +18132,7 @@ BEGIN
 
   RETURN;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.set_default_org(p_user_id uuid, p_org_id uuid)
  RETURNS TABLE(user_id uuid, org_id uuid, is_default boolean, created_at timestamp with time zone)
@@ -15842,8 +18167,7 @@ begin
   order by uo.created_at desc
   limit 1;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.set_presence_status(p_status text)
  RETURNS void
@@ -15859,8 +18183,7 @@ begin
   set status = p_status, last_seen = now()
   where user_id = auth.uid();
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.set_tenant_context(tenant_id uuid)
  RETURNS void
@@ -15872,8 +18195,7 @@ BEGIN
   -- Set session variable for RLS policies
   PERFORM set_config('app.current_tenant_id', tenant_id::text, true);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.set_ticket_number()
  RETURNS trigger
@@ -15885,8 +18207,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.set_updated_at()
  RETURNS trigger
@@ -15897,8 +18218,7 @@ begin
   new.updated_at := now();
   return new;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.set_updated_at()
  RETURNS trigger
@@ -15908,8 +18228,7 @@ AS $function$
 BEGIN
   NEW.updated_at := NOW();
   RETURN NEW;
-END$function$
-
+END$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.set_vt(queue_name text, msg_id bigint, vt integer)
  RETURNS SETOF pgmq.message_record
@@ -15931,8 +18250,7 @@ BEGIN
     );
     RETURN QUERY EXECUTE sql;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.set_webhook_deliveries_tenant()
  RETURNS trigger
@@ -15945,8 +18263,7 @@ begin
   end if;
   return new;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.tg_presence_set_updated_at()
  RETURNS trigger
@@ -15957,8 +18274,7 @@ begin
   new.updated_at := now();
   return new;
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.touch_presence(p_status text DEFAULT NULL::text)
  RETURNS void
@@ -15976,8 +18292,7 @@ begin
     set last_seen = now(),
         status = coalesce(p_status, up.status);
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.track_onboarding_step_auto()
  RETURNS trigger
@@ -16017,8 +18332,7 @@ EXCEPTION
     -- Don't fail the main operation if onboarding tracking fails
     RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.trigger_set_timestamp()
  RETURNS trigger
@@ -16029,8 +18343,7 @@ BEGIN
   NEW.updated_at = now();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION auth.uid()
  RETURNS uuid
@@ -16042,15 +18355,13 @@ AS $function$
     nullif(current_setting('request.jwt.claim.sub', true), ''),
     (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')
   )::uuid
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION cron.unschedule(job_name text)
  RETURNS boolean
  LANGUAGE c
  STRICT
-AS '$libdir/pg_cron', $function$cron_unschedule_named$function$
-
+AS '$libdir/pg_cron', $function$cron_unschedule_named$function$;
 
 CREATE OR REPLACE FUNCTION public.update_email_sent(p_user_id uuid, p_email_type character varying)
  RETURNS void
@@ -16065,8 +18376,7 @@ BEGIN
     updated_at = NOW()
   WHERE id = p_user_id;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_email_updated_at()
  RETURNS trigger
@@ -16077,8 +18387,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_lead_score()
  RETURNS trigger
@@ -16089,8 +18398,7 @@ BEGIN
   NEW.score := calculate_lead_score(NEW.id);
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_onboarding_progress_updated_at()
  RETURNS trigger
@@ -16101,8 +18409,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_positioning_impact_score()
  RETURNS trigger
@@ -16113,8 +18420,7 @@ BEGIN
   NEW.impact_score := calculate_positioning_impact_score(NEW.id);
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_profile_impact_from_feedback()
  RETURNS trigger
@@ -16130,8 +18436,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_receipts_updated_at()
  RETURNS trigger
@@ -16142,8 +18447,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_support_article_updated_at()
  RETURNS trigger
@@ -16154,8 +18458,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_updated_at()
  RETURNS trigger
@@ -16165,8 +18468,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
  RETURNS trigger
@@ -16177,8 +18479,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_usage_counters_updated_at()
  RETURNS trigger
@@ -16189,8 +18490,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.update_user_lifecycle_updated_at()
  RETURNS trigger
@@ -16201,8 +18501,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.upsert_reality_metric(p_category character varying, p_name character varying, p_value jsonb, p_status character varying DEFAULT 'assumed'::character varying, p_source character varying DEFAULT 'manual'::character varying, p_metadata jsonb DEFAULT '{}'::jsonb)
  RETURNS uuid
@@ -16220,8 +18519,7 @@ DECLARE v_id UUID; BEGIN
                 last_updated = NOW()
   RETURNING id INTO v_id;
   RETURN v_id;
-END; $function$
-
+END; $function$;
 
 CREATE OR REPLACE FUNCTION public.upsert_stripe_customer(p_customer_id text, p_tenant_id uuid)
  RETURNS void
@@ -16237,8 +18535,7 @@ begin
   values (p_tenant_id, 'stripe_customer_upsert', auth.uid(), null,
           jsonb_build_object('customer_id', p_customer_id));
 end;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION app_private.usage_events_broadcast_trigger()
  RETURNS trigger
@@ -16253,8 +18550,7 @@ BEGIN
   );
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.usage_on_extractions()
  RETURNS trigger
@@ -16280,8 +18576,7 @@ BEGIN
     extractions_count = u.extractions_count + 1;
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.usage_on_receipt_uploads()
  RETURNS trigger
@@ -16307,8 +18602,7 @@ BEGIN
     storage_bytes = u.storage_bytes + COALESCE(EXCLUDED.storage_bytes,0);
   RETURN NEW;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.validate_data_integrity()
  RETURNS jsonb
@@ -16375,8 +18669,7 @@ BEGIN
     'results', v_result
   );
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION pgmq.validate_queue_name(queue_name text)
  RETURNS void
@@ -16387,8 +18680,7 @@ BEGIN
     RAISE EXCEPTION 'queue name is too long, maximum length is 48 characters';
   END IF;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION public.validate_usage_event_server_side(p_billing_account_id uuid, p_event_type character varying, p_integration_id character varying DEFAULT NULL::character varying, p_add_on_id uuid DEFAULT NULL::uuid)
  RETURNS boolean
@@ -16456,20 +18748,17 @@ BEGIN
 
   RETURN true;
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net.wait_until_running()
  RETURNS void
  LANGUAGE c
-AS 'pg_net', $function$wait_until_running$function$
-
+AS 'pg_net', $function$wait_until_running$function$;
 
 CREATE OR REPLACE FUNCTION net.wake()
  RETURNS void
  LANGUAGE c
-AS 'pg_net', $function$wake$function$
-
+AS 'pg_net', $function$wake$function$;
 
 CREATE OR REPLACE FUNCTION public.webhook_deliveries_broadcast_trigger()
  RETURNS trigger
@@ -16491,14 +18780,12 @@ BEGIN
   );
   RETURN COALESCE(NEW, OLD);
 END;
-$function$
-
+$function$;
 
 CREATE OR REPLACE FUNCTION net.worker_restart()
  RETURNS boolean
  LANGUAGE c
-AS 'pg_net', $function$worker_restart$function$
-
+AS 'pg_net', $function$worker_restart$function$;
 
 -- ============================================================================
 -- END OF CANONICAL GOLDEN MIGRATION
