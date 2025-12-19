@@ -4,6 +4,7 @@ import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Shield, Clock, Database, GitBranch, CheckCircle, AlertCircle } from 'lucide-react';
 import { Metadata } from 'next';
+import { Badge } from '@/components/ui/badge';
 
 export const metadata: Metadata = {
   title: 'Trust & Reliability',
@@ -14,7 +15,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default function TrustPage() {
+async function getRealityData() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/public/reality`, {
+      cache: 'no-store',
+    });
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Failed to fetch reality data:', error);
+  }
+  return null;
+}
+
+export default async function TrustPage() {
+  const realityData = await getRealityData();
   return (
     <AnimatedPageWrapper aria-label="Trust page">
       <Navigation />
@@ -55,10 +72,23 @@ export default function TrustPage() {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-slate-600 dark:text-slate-300">API Availability</span>
-                    <span className="font-semibold text-slate-900 dark:text-white">99.9%</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-slate-900 dark:text-white">
+                        {realityData?.uptime_proxy ? `${realityData.uptime_proxy.toFixed(1)}%` : '99.9%'}
+                      </span>
+                      {realityData?.status === 'assumed' && (
+                        <Badge variant="outline" className="text-xs">ASSUMED</Badge>
+                      )}
+                      {realityData?.status === 'proven' && (
+                        <Badge className="bg-green-500 text-xs">PROVEN</Badge>
+                      )}
+                    </div>
                   </div>
                   <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '99.9%' }}></div>
+                    <div 
+                      className="bg-green-600 h-2 rounded-full" 
+                      style={{ width: realityData?.uptime_proxy ? `${realityData.uptime_proxy}%` : '99.9%' }}
+                    ></div>
                   </div>
                 </div>
                 <div>
@@ -79,6 +109,23 @@ export default function TrustPage() {
                     <div className="bg-green-600 h-2 rounded-full" style={{ width: '99.95%' }}></div>
                   </div>
                 </div>
+                {realityData?.hard_500_count !== undefined && (
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-slate-600 dark:text-slate-300">Hard 500 Errors</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                          {realityData.hard_500_count}
+                        </span>
+                        {realityData.hard_500_count === 0 ? (
+                          <Badge className="bg-green-500 text-xs">ZERO</Badge>
+                        ) : (
+                          <Badge variant="destructive" className="text-xs">VIOLATION</Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -118,6 +165,16 @@ export default function TrustPage() {
                   Uptime is calculated monthly, excluding scheduled maintenance windows (announced 48 hours in advance) 
                   and force majeure events. Planned maintenance typically occurs during low-traffic hours and is kept under 4 hours per month.
                 </p>
+                {realityData?.last_incident && (
+                  <p className="text-sm text-blue-800 dark:text-blue-200 mt-2">
+                    <strong>Last Incident:</strong> {new Date(realityData.last_incident.timestamp).toLocaleDateString()} - {realityData.last_incident.event}
+                  </p>
+                )}
+                {realityData?.status === 'assumed' && (
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200 mt-2">
+                    <strong>Note:</strong> Some metrics are currently ASSUMED and will be updated as we collect more data.
+                  </p>
+                )}
               </div>
             </div>
           </div>
