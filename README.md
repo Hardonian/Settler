@@ -226,6 +226,62 @@ This codebase has undergone a comprehensive hardening pass:
 - ✅ **Future-Proofing**: Cache abstraction, API versioning, performance utilities
 - ✅ **Console**: Fully integrated CLI/Console with unified auth
 
+## Production Parity Guarantees
+
+Settler.dev maintains **production parity** between code, database, and infrastructure through automated verification:
+
+### Database Schema = Source of Truth
+
+- **Golden Migration**: Single canonical, idempotent schema file (`supabase/migrations/00000000_settler_golden_schema.sql`)
+- **Schema Introspection**: Automated production database introspection
+- **CI Verification**: Every PR verifies schema parity and idempotency
+- **No Drift**: GitHub Actions blocks schema drift automatically
+
+### Frontend ↔ Backend Contracts
+
+- **Route Mapping**: All frontend routes mapped to backend dependencies
+- **Contract Verification**: CI ensures no routes reference non-existent tables/functions
+- **RLS Enforcement**: All sensitive tables have Row-Level Security enabled
+
+### Edge Functions Verification
+
+- **Deployment Check**: All edge functions verified to deploy successfully
+- **Dependency Check**: Functions verified to have required tables/functions
+- **No Theoretical Functions**: Every function is real and executable
+
+### Pipe Dream Elimination
+
+- **Feature Detection**: Automated detection of features in docs but not code
+- **Orphaned Table Detection**: Tables with no consumers are flagged
+- **Unused Config Detection**: Environment variables and config flags verified
+
+### Verification Commands
+
+```bash
+# Run all production parity checks
+npm run verify:production-parity
+
+# Individual checks
+npm run verify:schema-introspect    # Introspect production database
+npm run verify:frontend-contracts   # Map frontend routes to backend
+npm run verify:edge-functions       # Verify edge functions
+npm run verify:pipe-dreams          # Find pipe dream signals
+
+# Schema management
+npm run migrations:consolidate      # Consolidate migrations into golden migration
+```
+
+### CI/CD Integration
+
+The `.github/workflows/schema-parity-check.yml` workflow automatically:
+1. Introspects production database on every PR
+2. Verifies golden migration idempotency
+3. Compares production schema to migration files
+4. Checks RLS policies on sensitive tables
+5. Generates schema manifest
+
+**Result**: It's impossible for Settler.dev to silently drift from production reality.
+
 ## Quick Verification
 
 After deployment, verify everything works:
