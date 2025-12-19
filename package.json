@@ -64,6 +64,7 @@
     "db:migrate:apply": "bash scripts/apply-migrations.sh",
     "db:migrate:pending": "tsx scripts/apply-migrations-with-check.ts",
     "db:migrate:all": "tsx scripts/apply-migrations-direct.ts",
+    "db:migrate:pooler": "tsx scripts/apply-migrations-direct-pooler.ts",
     "db:migrate:onboarding": "npx tsx scripts/apply-onboarding-migration.ts",
     "db:types:regenerate": "npx tsx scripts/regenerate-supabase-types.ts",
     "deploy:vercel": "bash scripts/vercel-deploy.sh",
