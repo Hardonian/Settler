@@ -176,28 +176,62 @@ test.describe('Smoke Tests - No Dead Links', () => {
     }
   });
   
-  test('critical routes should load', async ({ page }) => {
+  test('critical routes should load without 500 errors', async ({ page }) => {
     const criticalRoutes = [
       '/',
       '/console',
       '/playground',
+      '/pricing',
+      '/trust',
       '/cookbook',
       '/runbooks',
       '/schematics',
       '/docs',
     ];
     
+    const failures: Array<{ route: string; status: number | null; error?: string }> = [];
+    
     for (const route of criticalRoutes) {
-      const response = await page.goto(`${BASE_URL}${route}`, { 
-        waitUntil: 'networkidle',
-        timeout: 30000 
-      });
-      
-      expect(response?.status()).toBeLessThan(500);
-      
-      // Check that page rendered (not a blank error page)
-      const bodyText = await page.textContent('body');
-      expect(bodyText?.length).toBeGreaterThan(100);
+      try {
+        const response = await page.goto(`${BASE_URL}${route}`, { 
+          waitUntil: 'networkidle',
+          timeout: 30000 
+        });
+        
+        const status = response?.status() ?? null;
+        
+        // CRITICAL: These routes must never return 500
+        if (status && status >= 500) {
+          failures.push({ route, status });
+          continue;
+        }
+        
+        // Check that page rendered (not a blank error page)
+        const bodyText = await page.textContent('body');
+        if (!bodyText || bodyText.length < 100) {
+          failures.push({ route, status, error: 'Page content too short or empty' });
+        }
+        
+        // Check for "Internal Error" text
+        if (bodyText?.includes('Internal Error') || bodyText?.includes('500')) {
+          failures.push({ route, status, error: 'Page contains "Internal Error" text' });
+        }
+      } catch (error) {
+        failures.push({ 
+          route, 
+          status: null, 
+          error: error instanceof Error ? error.message : 'Unknown error' 
+        });
+      }
     }
+    
+    if (failures.length > 0) {
+      console.error('\n❌ Critical routes failed:\n');
+      failures.forEach(({ route, status, error }) => {
+        console.error(`  ${route}: ${status ?? 'ERROR'} ${error ? `- ${error}` : ''}`);
+      });
+    }
+    
+    expect(failures.length).toBe(0);
   });
 });

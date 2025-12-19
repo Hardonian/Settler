@@ -174,7 +174,7 @@ async function scanDirectory(dir: string): Promise<LinkInfo[]> {
   return links;
 }
 
-async function normalizeHref(href: string): string {
+function normalizeHref(href: string): string {
   // Remove query params and hash for comparison
   let normalized = href.split('?')[0].split('#')[0];
   
@@ -197,10 +197,10 @@ async function generateLinkRegistry() {
   const allLinks = await scanDirectory(WEB_SRC);
   
   // Normalize and deduplicate
-  const normalizedLinks = await Promise.all(allLinks.map(async link => ({
+  const normalizedLinks = allLinks.map(link => ({
     ...link,
     normalizedHref: normalizeHref(link.href),
-  })));
+  }));
   
   // Group by normalized href
   const linksByHref = new Map<string, LinkInfo[]>();

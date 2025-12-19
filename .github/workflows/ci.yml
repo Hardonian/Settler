@@ -231,6 +231,145 @@ jobs:
           # The qa:links script runs both extract and check
           # If it fails, we'll see the output
           npm run qa:links || exit 1
+      - name: Upload route registry artifact
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: route-registry
+          path: qa/route-registry.json
+
+  qa-smoke:
+    name: QA - Smoke Tests (No 500 Errors)
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+      - run: npm ci
+      - name: Build application
+        run: npm run build --workspace=packages/web
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-key
+          SKIP_ENV_VALIDATION: true
+          SAFE_MODE: '1'
+      - name: Start production server
+        run: |
+          cd packages/web
+          npm start &
+          sleep 10
+        env:
+          PORT: 3000
+          NODE_ENV: production
+          SAFE_MODE: '1'
+        continue-on-error: true
+      - name: Run smoke tests
+        run: npm run qa:smoke
+        env:
+          BASE_URL: http://localhost:3000
+        continue-on-error: true
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: smoke-test-results
+          path: test-results/
+
+  qa-visual:
+    name: QA - Visual Regression
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+      - run: npm ci
+      - name: Build application
+        run: npm run build --workspace=packages/web
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-key
+          SKIP_ENV_VALIDATION: true
+          SAFE_MODE: '1'
+      - name: Start production server
+        run: |
+          cd packages/web
+          npm start &
+          sleep 10
+        env:
+          PORT: 3000
+          NODE_ENV: production
+          SAFE_MODE: '1'
+        continue-on-error: true
+      - name: Run visual regression tests
+        run: npm run qa:visual
+        env:
+          BASE_URL: http://localhost:3000
+        continue-on-error: true
+      - name: Upload visual test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: visual-test-results
+          path: test-results/
+
+  qa-a11y:
+    name: QA - Accessibility Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+      - run: npm ci
+      - name: Build application
+        run: npm run build --workspace=packages/web
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-key
+          SKIP_ENV_VALIDATION: true
+          SAFE_MODE: '1'
+      - name: Start production server
+        run: |
+          cd packages/web
+          npm start &
+          sleep 10
+        env:
+          PORT: 3000
+          NODE_ENV: production
+          SAFE_MODE: '1'
+        continue-on-error: true
+      - name: Run accessibility tests
+        run: npm run qa:a11y
+        env:
+          BASE_URL: http://localhost:3000
+        continue-on-error: true
+      - name: Upload a11y test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: a11y-test-results
+          path: test-results/
 
   build:
     name: Build

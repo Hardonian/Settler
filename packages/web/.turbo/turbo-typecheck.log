@@ -11,11 +11,51 @@ src/__tests__/services/cost-signal-engine.test.ts(5,44): error TS6133: 'vi' is d
 src/__tests__/services/cost-signal-engine.test.ts(5,54): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
 src/__tests__/services/cost-signal-engine.test.ts(6,48): error TS2307: Cannot find module '../../../../ops/cost_baselines' or its corresponding type declarations.
 src/__tests__/services/pivot-engine.test.ts(5,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
-src/app/runbooks/page.tsx(16,3): error TS6133: 'Clock' is declared but its value is never read.
-src/app/runbooks/page.tsx(19,3): error TS6133: 'Cloud' is declared but its value is never read.
-src/app/schematics/page.tsx(14,3): error TS6133: 'Workflow' is declared but its value is never read.
-src/lib/env/safe.ts(8,36): error TS6133: 'EnvValidationResult' is declared but its value is never read.
-src/lib/env/safe.ts(9,1): error TS6192: All imports in import declaration are unused.
+src/app/admin/analytics/page.tsx(7,1): error TS6133: 'Input' is declared but its value is never read.
+src/app/admin/analytics/page.tsx(12,10): error TS6133: 'BarChart3' is declared but its value is never read.
+src/app/admin/analytics/page.tsx(12,40): error TS6133: 'TrendingUp' is declared but its value is never read.
+src/app/admin/analytics/page.tsx(12,62): error TS6133: 'Calendar' is declared but its value is never read.
+src/app/console/activity/page.tsx(38,13): error TS7030: Not all code paths return a value.
+src/app/console/api-playground/page.tsx(17,3): error TS6133: 'Save' is declared but its value is never read.
+src/app/console/api-playground/page.tsx(19,3): error TS6133: 'Settings' is declared but its value is never read.
+src/app/console/api-playground/page.tsx(48,19): error TS6133: 'setHeaders' is declared but its value is never read.
+src/app/console/control-plane/page.tsx(6,1): error TS6133: 'Input' is declared but its value is never read.
+src/app/console/control-plane/page.tsx(7,1): error TS6133: 'Label' is declared but its value is never read.
+src/app/console/control-plane/page.tsx(14,34): error TS6133: 'Globe' is declared but its value is never read.
+src/app/console/control-plane/page.tsx(14,41): error TS6133: 'Lock' is declared but its value is never read.
+src/app/console/inspector/page.tsx(10,21): error TS6133: 'maskToken' is declared but its value is never read.
+src/app/console/inspector/page.tsx(11,10): error TS6133: 'Search' is declared but its value is never read.
+src/app/console/runs/[runId]/page.tsx(13,1): error TS6133: 'Link' is declared but its value is never read.
+src/app/console/runs/[runId]/page.tsx(49,13): error TS7030: Not all code paths return a value.
+src/app/console/runs/[runId]/page.tsx(254,37): error TS6133: 'index' is declared but its value is never read.
+src/app/console/workflows/[id]/page.tsx(5,29): error TS6133: 'CardDescription' is declared but its value is never read.
+src/app/console/workflows/[id]/page.tsx(12,27): error TS6133: 'Play' is declared but its value is never read.
+src/app/console/workflows/[id]/page.tsx(14,1): error TS6133: 'EmptyState' is declared but its value is never read.
+src/app/console/workflows/new/page.tsx(16,9): error TS6133: 'templateIndex' is declared but its value is never read.
+src/app/console/workflows/page.tsx(10,67): error TS6133: 'Clock' is declared but its value is never read.
+src/app/docs/page.tsx(6,24): error TS6133: 'BookOpen' is declared but its value is never read.
+src/app/page.tsx(56,7): error TS6133: 'TrustBadges' is declared but its value is never read.
+src/components/docs/DocsSidebar.tsx(10,3): error TS6133: 'Key' is declared but its value is never read.
+src/components/ui/HelpText.tsx(4,25): error TS1261: Already included file name '/workspace/packages/web/src/components/ui/Tooltip.tsx' differs from file name '/workspace/packages/web/src/components/ui/tooltip.tsx' only in casing.
+  The file is in the program because:
+    Imported via './Tooltip' from file '/workspace/packages/web/src/components/ui/HelpText.tsx'
+    Matched by include pattern '**/*.tsx' in '/workspace/packages/web/tsconfig.json'
+    Matched by include pattern '**/*.tsx' in '/workspace/packages/web/tsconfig.json'
+src/lib/auth/guest.ts(46,7): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/auth/guest.ts(46,22): error TS2339: Property 'ok' does not exist on type 'GuestSession'.
+src/lib/auth/guest.ts(49,62): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/auth/guest.ts(49,77): error TS2339: Property 'data' does not exist on type 'GuestSession'.
+src/lib/auth/guest.ts(51,12): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/auth/guest.ts(51,27): error TS2339: Property 'data' does not exist on type 'GuestSession'.
+src/lib/authz.ts(41,37): error TS2339: Property 'workspaceMember' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/lib/authz.ts(88,18): error TS2339: Property 'role' does not exist on type 'never'.
+src/lib/content-provider.ts(76,9): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/content-provider.ts(76,24): error TS2339: Property 'ok' does not exist on type 'T[]'.
+src/lib/content-provider.ts(76,30): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/content-provider.ts(76,45): error TS2339: Property 'data' does not exist on type 'T[]'.
+src/lib/content-provider.ts(77,14): error TS18048: 'supabaseResult' is possibly 'undefined'.
+src/lib/content-provider.ts(77,29): error TS2339: Property 'data' does not exist on type 'T[]'.
+src/lib/safe-fetch.ts(140,6): error TS6133: 'match' is declared but its value is never read.
 npm error Lifecycle script `typecheck` failed with error:
 npm error code 2
 npm error path /workspace/packages/web

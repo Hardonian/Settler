@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2025-12-18T20:54:41.173Z
+ * Generated at: 2025-12-19T03:44:19.189Z
  * 
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.
@@ -1633,6 +1633,14 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/cookbook",
+    "type": "page",
+    "file": "cookbook/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/cookbooks",
     "type": "page",
     "file": "cookbooks/page.tsx",
@@ -2057,6 +2065,22 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/runbooks",
+    "type": "page",
+    "file": "runbooks/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/schematics",
+    "type": "page",
+    "file": "schematics/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/security",
     "type": "page",
     "file": "security/page.tsx",
@@ -2201,6 +2225,7 @@ export const PAGE_ROUTES: string[] = [
   "/console/support",
   "/console/usage",
   "/console/webhooks",
+  "/cookbook",
   "/cookbooks",
   "/dashboard",
   "/dashboard/addons",
@@ -2254,6 +2279,8 @@ export const PAGE_ROUTES: string[] = [
   "/realtime-dashboard",
   "/receipts",
   "/roadmap",
+  "/runbooks",
+  "/schematics",
   "/security",
   "/signup",
   "/slug",
@@ -2470,6 +2497,7 @@ export const ALL_ROUTES: string[] = [
   "/console/support",
   "/console/usage",
   "/console/webhooks",
+  "/cookbook",
   "/cookbooks",
   "/dashboard",
   "/dashboard/addons",
@@ -2523,6 +2551,8 @@ export const ALL_ROUTES: string[] = [
   "/realtime-dashboard",
   "/receipts",
   "/roadmap",
+  "/runbooks",
+  "/schematics",
   "/security",
   "/signup",
   "/slug",

@@ -1,178 +1,100 @@
 /**
- * Safe Data Layer
+ * Safe utility functions for error handling
  * 
- * Provides safe async wrappers that never throw during render.
- * All errors are classified and returned as result objects.
+ * Provides utilities to safely execute async operations with timeouts
+ * and graceful error handling.
  */
 
-export type ErrorCode = 
-  | 'ENV_MISSING'
-  | 'AUTH_MISSING'
-  | 'NETWORK_ERROR'
-  | 'DATABASE_ERROR'
-  | 'VALIDATION_ERROR'
-  | 'UNKNOWN_ERROR';
-
-export interface SafeResult<T> {
-  ok: true;
-  data: T;
-}
-
-export interface SafeError {
-  ok: false;
-  error: string;
-  code: ErrorCode;
-  details?: unknown;
-}
-
-export type SafeAsyncResult<T> = SafeResult<T> | SafeError;
-
 /**
- * Wrap an async function to return a safe result object instead of throwing
+ * Execute an async function with a timeout
  */
 export async function safeAsync<T>(
-  fn: () => Promise<T>
-): Promise<SafeAsyncResult<T>> {
+  fn: () => Promise<T>,
+  options: {
+    timeout?: number;
+    defaultValue?: T;
+    onError?: (error: Error) => void;
+  } = {}
+): Promise<T | undefined> {
+  const { timeout = 5000, defaultValue, onError } = options;
+
   try {
-    const data = await fn();
-    return { ok: true, data };
+    if (timeout > 0) {
+      return await Promise.race([
+        fn(),
+        new Promise<T>((_, reject) =>
+          setTimeout(() => reject(new Error(`Operation timed out after ${timeout}ms`)), timeout)
+        ),
+      ]);
+    } else {
+      return await fn();
+    }
   } catch (error) {
-    return classifyError(error);
+    const err = error instanceof Error ? error : new Error(String(error));
+    if (onError) {
+      onError(err);
+    } else {
+      console.warn('[safeAsync] Operation failed:', err.message);
+    }
+    return defaultValue;
   }
 }
 
 /**
- * Wrap a sync function to return a safe result object instead of throwing
+ * Execute an async function and return a result object
  */
-export function safeSync<T>(fn: () => T): SafeResult<T> | SafeError {
+export async function safeResult<T>(
+  fn: () => Promise<T>,
+  options: {
+    timeout?: number;
+    onError?: (error: Error) => void;
+  } = {}
+): Promise<{ success: true; data: T } | { success: false; error: Error }> {
+  const { timeout = 5000, onError } = options;
+
   try {
-    const data = fn();
-    return { ok: true, data };
+    let data: T;
+    if (timeout > 0) {
+      data = await Promise.race([
+        fn(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`Operation timed out after ${timeout}ms`)), timeout)
+        ),
+      ]);
+    } else {
+      data = await fn();
+    }
+    return { success: true, data };
   } catch (error) {
-    return classifyError(error);
+    const err = error instanceof Error ? error : new Error(String(error));
+    if (onError) {
+      onError(err);
+    }
+    return { success: false, error: err };
   }
 }
 
 /**
- * Classify errors into known categories
+ * Check if SAFE_MODE is enabled
  */
-function classifyError(error: unknown): SafeError {
-  const errorMessage = error instanceof Error ? error.message : String(error);
-  
-  // Check for environment variable errors
-  if (
-    errorMessage.includes('NEXT_PUBLIC_') ||
-    errorMessage.includes('SUPABASE_') ||
-    errorMessage.includes('DATABASE_URL') ||
-    errorMessage.includes('missing environment variable')
-  ) {
-    return {
-      ok: false,
-      error: errorMessage,
-      code: 'ENV_MISSING',
-      details: error,
-    };
-  }
-  
-  // Check for auth errors
-  if (
-    errorMessage.includes('Unauthorized') ||
-    errorMessage.includes('authentication') ||
-    errorMessage.includes('not authenticated') ||
-    errorMessage.includes('session')
-  ) {
-    return {
-      ok: false,
-      error: errorMessage,
-      code: 'AUTH_MISSING',
-      details: error,
-    };
-  }
-  
-  // Check for network errors
-  if (
-    errorMessage.includes('fetch') ||
-    errorMessage.includes('network') ||
-    errorMessage.includes('ECONNREFUSED') ||
-    errorMessage.includes('timeout')
-  ) {
-    return {
-      ok: false,
-      error: errorMessage,
-      code: 'NETWORK_ERROR',
-      details: error,
-    };
-  }
-  
-  // Check for database errors
-  if (
-    errorMessage.includes('database') ||
-    errorMessage.includes('prisma') ||
-    errorMessage.includes('postgres') ||
-    errorMessage.includes('connection')
-  ) {
-    return {
-      ok: false,
-      error: errorMessage,
-      code: 'DATABASE_ERROR',
-      details: error,
-    };
-  }
-  
-  // Check for validation errors
-  if (
-    errorMessage.includes('validation') ||
-    errorMessage.includes('invalid') ||
-    errorMessage.includes('required')
-  ) {
-    return {
-      ok: false,
-      error: errorMessage,
-      code: 'VALIDATION_ERROR',
-      details: error,
-    };
-  }
-  
-  // Unknown error
-  return {
-    ok: false,
-    error: errorMessage,
-    code: 'UNKNOWN_ERROR',
-    details: error,
-  };
+export function isSafeMode(): boolean {
+  return process.env.SAFE_MODE === '1' || process.env.SAFE_MODE === 'true';
 }
 
 /**
- * Check if a result is an error
+ * Execute a function only if safe mode is disabled, otherwise return default
  */
-export function isError<T>(result: SafeAsyncResult<T>): result is SafeError {
-  return !result.ok;
-}
-
-/**
- * Check if a result is successful
- */
-export function isSuccess<T>(result: SafeAsyncResult<T>): result is SafeResult<T> {
-  return result.ok;
-}
-
-/**
- * Extract data from result, throwing if error
- * Use only when you're certain the result is successful
- */
-export function unwrap<T>(result: SafeAsyncResult<T>): T {
-  if (!result.ok) {
-    throw new Error(result.error);
+export async function safeModeGuard<T>(
+  fn: () => Promise<T>,
+  defaultValue: T
+): Promise<T> {
+  if (isSafeMode()) {
+    return defaultValue;
   }
-  return result.data;
-}
-
-/**
- * Extract data from result with fallback
- */
-export function unwrapOr<T>(result: SafeAsyncResult<T>, fallback: T): T {
-  if (!result.ok) {
-    return fallback;
+  try {
+    return await fn();
+  } catch (error) {
+    console.warn('[safeModeGuard] Operation failed, using default:', error);
+    return defaultValue;
   }
-  return result.data;
 }

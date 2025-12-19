@@ -16,9 +16,25 @@ import { AnimatedFAQ } from "@/components/AnimatedFAQ";
 import { FAQSchema } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
-const ROICalculator = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.ROICalculator })), { ssr: true });
-const ComparisonTable = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.ComparisonTable })), { ssr: true });
-const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing").then(mod => ({ default: mod.UrgencyBanner })), { ssr: true });
+// Safe dynamic imports with error handling - if components fail, page still renders
+const ROICalculator = dynamic(
+  () => import("@/components/marketing")
+    .then(mod => ({ default: mod.ROICalculator }))
+    .catch(() => ({ default: () => null })),
+  { ssr: true }
+);
+const ComparisonTable = dynamic(
+  () => import("@/components/marketing")
+    .then(mod => ({ default: mod.ComparisonTable }))
+    .catch(() => ({ default: () => null })),
+  { ssr: true }
+);
+const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(
+  () => import("@/components/marketing")
+    .then(mod => ({ default: mod.UrgencyBanner }))
+    .catch(() => ({ default: () => null })),
+  { ssr: true }
+);
 import { PricingCalculator } from '@/components/pricing/PricingCalculator';
 import { PricingWithFeatures } from '@/components/pricing/PricingWithFeatures';
 
