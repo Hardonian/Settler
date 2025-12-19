@@ -5,7 +5,6 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
 
 export interface WorkspaceMember {
   workspaceId: string;
@@ -37,15 +36,16 @@ export async function getWorkspaceMembership(
       };
     }
 
-    // Check workspace membership via Prisma
-    const membership = await prisma.workspaceMember.findFirst({
-      where: {
-        workspaceId,
-        userId: user.id,
-      },
-    });
+    // Check workspace membership via Supabase (tenant_users table)
+    // workspace_id maps to tenant_id in this system
+    const { data: membership, error: membershipError } = await supabase
+      .from('tenant_users')
+      .select('role')
+      .eq('tenant_id', workspaceId)
+      .eq('user_id', user.id)
+      .single();
 
-    if (!membership) {
+    if (membershipError || !membership) {
       return {
         authorized: false,
         error: 'Not a member of this workspace',

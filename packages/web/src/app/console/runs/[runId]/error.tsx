@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
-export default function TrustError({
+export default function RunError({
   error,
   reset,
 }: {
@@ -14,10 +14,12 @@ export default function TrustError({
   reset: () => void;
 }) {
   useEffect(() => {
+    // Log error to monitoring service in production
     if (process.env.NODE_ENV === 'production') {
-      console.error('Trust error:', {
+      console.error('Run page error:', {
         message: error.message,
         digest: error.digest,
+        stack: error.stack,
       });
     }
   }, [error]);
@@ -28,10 +30,10 @@ export default function TrustError({
         <CardHeader>
           <div className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-red-600" />
-            <CardTitle>Failed to load trust page</CardTitle>
+            <CardTitle>Failed to load run</CardTitle>
           </div>
           <CardDescription>
-            We encountered an error loading the trust page.
+            We encountered an error loading this reconciliation run.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -48,7 +50,7 @@ export default function TrustError({
               Try Again
             </Button>
             <Button asChild variant="outline">
-              <Link href="/">Go Home</Link>
+              <Link href="/console/runs">Back to Runs</Link>
             </Button>
           </div>
         </CardContent>
