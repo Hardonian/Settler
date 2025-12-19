@@ -128,10 +128,10 @@ export async function GET(request: NextRequest) {
 
     // Check 4: Job queue accessible
     try {
-      const { data, error } = await supabase
-        .from('jobs')
+      const { error } = await (supabase
+        .from('jobs' as any)
         .select('id, status')
-        .limit(1);
+        .limit(1) as any);
 
       if (error) {
         throw error;

@@ -68,14 +68,13 @@ async function transitionToQueued(runId: string, _workspaceId: string): Promise<
   const supabase = await createClient();
   const nextStatus = transitionState('created', 'queued');
 
-  await (supabase
-    .from('recon_runs' as any)
+  await (supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
       started_at: new Date().toISOString(),
     } as any)
     .eq('id', runId)
-    .eq('status', 'created') as any); // Optimistic locking
+    .eq('status', 'created'); // Optimistic locking
 }
 
 /**
@@ -96,13 +95,12 @@ async function transitionToIngesting(
   // For now, simulate with a delay
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  await (supabase
-    .from('recon_runs' as any)
+  await ((supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
     } as any)
     .eq('id', runId)
-    .eq('status', 'queued') as any);
+    .eq('status', 'queued'));
 
   // Emit progress event
   await (supabase.from('run_events' as any).insert({
@@ -129,13 +127,12 @@ async function transitionToValidating(
   // TODO: Implement actual validation logic
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  await (supabase
-    .from('recon_runs' as any)
+  await ((supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
     } as any)
     .eq('id', runId)
-    .eq('status', 'ingesting') as any);
+    .eq('status', 'ingesting'));
 
   await (supabase.from('run_events' as any).insert({
     workspace_id: workspaceId,
@@ -161,13 +158,12 @@ async function transitionToReconciling(
   // TODO: Implement actual reconciliation logic
   await new Promise(resolve => setTimeout(resolve, 2000));
 
-  await (supabase
-    .from('recon_runs' as any)
+  await ((supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
     } as any)
     .eq('id', runId)
-    .eq('status', 'validating') as any);
+    .eq('status', 'validating'));
 
   await (supabase.from('run_events' as any).insert({
     workspace_id: workspaceId,
@@ -198,15 +194,14 @@ async function transitionToCompleted(
     conflicts: 0,
   };
 
-  await (supabase
-    .from('recon_runs' as any)
+  await ((supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
       completed_at: new Date().toISOString(),
       result_summary: resultSummary,
     } as any)
     .eq('id', runId)
-    .eq('status', 'reconciling') as any);
+    .eq('status', 'reconciling'));
 
   await (supabase.from('run_events' as any).insert({
     workspace_id: workspaceId,

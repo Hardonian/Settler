@@ -53,7 +53,6 @@ const InfographicSection = dynamic(() => import("@/components/marketing").then(m
   loading: () => <div className="py-20" />
 });
 // Dynamic imports for heavy components
-const TrustBadges = dynamic(() => import("@/components/TrustBadges").then(mod => ({ default: mod.TrustBadges })), { ssr: true });
 const CustomerLogos = dynamic(() => import("@/components/CustomerLogos").then(mod => ({ default: mod.CustomerLogos })), { ssr: true });
 const SocialProof = dynamic(() => import("@/components/SocialProof").then(mod => ({ default: mod.SocialProof })), { ssr: false });
 const NewsletterSignup = dynamic(() => import("@/components/NewsletterSignup").then(mod => ({ default: mod.NewsletterSignup })), { ssr: false });

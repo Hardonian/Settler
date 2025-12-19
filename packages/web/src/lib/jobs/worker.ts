@@ -59,8 +59,7 @@ export async function claimNextJob(): Promise<Job | null> {
     const job = jobs[0];
 
     // Try to lock the job
-    const { data: updated, error: lockError } = await (supabase
-      .from('jobs' as any)
+    const { data: updated, error: lockError } = await ((supabase.from('jobs' as any) as any)
       .update({
         status: 'running',
         locked_at: new Date().toISOString(),
@@ -132,24 +131,22 @@ export async function executeJob(job: Job, handler: JobHandler): Promise<void> {
     await handler(job);
 
     // Success
-    await (supabase
-      .from('jobs' as any)
+    await ((supabase.from('jobs' as any) as any)
       .update({
         status: 'succeeded',
         locked_at: null,
         locked_by: null,
         updated_at: new Date().toISOString(),
       } as any)
-      .eq('id', job.id) as any);
+      .eq('id', job.id));
 
-    await (supabase
-      .from('job_attempts' as any)
+    await ((supabase.from('job_attempts' as any) as any)
       .update({
         finished_at: new Date().toISOString(),
         ok: true,
       } as any)
       .eq('job_id', job.id)
-      .eq('attempt_no', attemptNo) as any);
+      .eq('attempt_no', attemptNo));
 
     logger.info('Job succeeded', { jobId: job.id });
   } catch (error) {
@@ -163,15 +160,14 @@ export async function executeJob(job: Job, handler: JobHandler): Promise<void> {
     logger.error('Job failed', error as Error, { jobId: job.id, attempt: attemptNo });
 
     // Record attempt failure
-    await (supabase
-      .from('job_attempts' as any)
+    await ((supabase.from('job_attempts' as any) as any)
       .update({
         finished_at: new Date().toISOString(),
         ok: false,
         error: errorObj,
       } as any)
       .eq('job_id', job.id)
-      .eq('attempt_no', attemptNo) as any);
+      .eq('attempt_no', attemptNo));
 
     // Check if should retry
     if (shouldRetry(attemptNo, job.max_attempts)) {
@@ -201,8 +197,7 @@ export async function scheduleRetry(
     availableAt: availableAt.toISOString(),
   });
 
-  await (supabase
-    .from('jobs' as any)
+  await ((supabase.from('jobs' as any) as any)
     .update({
       status: 'queued',
       attempts: nextAttempt,
@@ -212,7 +207,7 @@ export async function scheduleRetry(
       locked_by: null,
       updated_at: new Date().toISOString(),
     } as any)
-    .eq('id', job.id) as any);
+    .eq('id', job.id));
 }
 
 /**
@@ -237,8 +232,7 @@ export async function deadLetter(
   } as any) as any);
 
   // Update job status
-  await (supabase
-    .from('jobs' as any)
+  await ((supabase.from('jobs' as any) as any)
     .update({
       status: 'dead',
       locked_at: null,
@@ -246,7 +240,7 @@ export async function deadLetter(
       last_error: error,
       updated_at: new Date().toISOString(),
     } as any)
-    .eq('id', job.id) as any);
+    .eq('id', job.id));
 }
 
 /**
