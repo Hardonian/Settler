@@ -10,11 +10,13 @@ interface TableInfo {
 }
 
 /**
- * Table Browser - Lists all available tables
- * Route: /console/tables
+ * Admin Database Browser - Full Supabase Table View
+ * Route: /admin/database
+ * 
+ * Shows ALL tables for admin access
  */
 
-export default function TablesPage() {
+export default function AdminDatabasePage() {
   const [tables, setTables] = useState<TableInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,35 +46,17 @@ export default function TablesPage() {
         // Fall through to fallback
       }
       
-      // Only show API service tables (Receipts, Reconciliation, Feature Flags, Webhooks)
-      const apiServiceTables = [
-        // Receipts API
-        'receipt_uploads', 'receipts', 'receipt_items',
-        // Reconciliation API
-        'recon_jobs', 'recon_results', 'recon_templates', 'recon_audits', 'recon_runs',
-        'mapping_templates', 'transform_recipes', 'validation_rules', 'contract_versions',
-        'drift_events', 'workflow_runs',
-        // Feature Flags API
-        'feature_flags', 'feature_flag_environments', 'feature_flag_overrides',
-        // Webhooks
-        'webhooks', 'webhook_deliveries',
-        // API Keys & Authentication
-        'api_keys', 'idempotency_keys',
-        // Usage Tracking
-        'usage_events', 'usage_aggregate_daily', 'usage_counters',
-        // Billing
-        'billing_accounts', 'subscriptions', 'add_ons', 'add_on_purchases',
-        // Ingestion Pipeline
-        'ingestion_sources', 'ingestions', 'raw_records', 'normalized_transactions',
-        'reconciliation_runs', 'reconciliation_matches', 'exports',
-      ];
-      
-      const availableTables: TableInfo[] = apiServiceTables.map(name => ({
-        table_schema: 'public',
-        table_name: name,
-      }));
-      
-      setTables(availableTables);
+      // Fallback: Load from mapping file or use known tables
+      try {
+        const response = await fetch('/api/admin/tables');
+        const result = await response.json();
+        if (result.tables) {
+          setTables(result.tables);
+        }
+      } catch {
+        // Use empty list
+        setTables([]);
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -104,11 +88,12 @@ export default function TablesPage() {
   
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">API Service Tables</h1>
-      <p className="text-gray-600 mb-6">
-        Browse and manage tables for Settler's core API services: Receipts, Reconciliation, Feature Flags, and Webhooks.
-        Use this to test API calls, webhooks, CLI commands, and SDK operations.
-      </p>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Database Tables (Admin)</h1>
+        <p className="text-gray-600 mt-2">
+          Full Supabase database browser. All tables accessible for admin operations.
+        </p>
+      </div>
       
       <div className="mb-4">
         <input
@@ -124,7 +109,7 @@ export default function TablesPage() {
         {filteredTables.map((table) => (
           <Link
             key={`${table.table_schema}.${table.table_name}`}
-            href={`/console/tables/${table.table_name}?schema=${table.table_schema}`}
+            href={`/admin/database/${table.table_name}?schema=${table.table_schema}`}
             className="p-4 border rounded hover:bg-gray-50 hover:shadow transition"
           >
             <div className="font-semibold">{table.table_name}</div>

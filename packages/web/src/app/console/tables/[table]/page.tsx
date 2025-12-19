@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
 interface TableRecord {
@@ -184,11 +185,19 @@ export default function TablePage() {
   
   return (
     <div className="container mx-auto p-6">
+      <div className="mb-4">
+        <Link href="/console/tables" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
+          ← Back to API Service Tables
+        </Link>
+      </div>
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold">{displayName}</h1>
           <p className="text-sm text-gray-500">{schema}.{table}</p>
           <p className="text-sm text-gray-500 mt-1">{count} total records</p>
+          <p className="text-xs text-gray-400 mt-2">
+            Use this to test API calls, webhooks, and SDK operations for this service.
+          </p>
         </div>
         <button
           onClick={() => {
