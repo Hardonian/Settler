@@ -37,7 +37,7 @@ const templates = [
     actions: [{ type: 'http_webhook' as const }],
   },
   {
-    name: 'Alert on Anomaly',
+    name: 'Notify on Anomaly',
     trigger: { type: 'anomaly.detected' as const },
     actions: [{ type: 'slack' as const }],
   },

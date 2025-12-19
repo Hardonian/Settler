@@ -20,7 +20,7 @@ import { isSafeMode } from '@/lib/safe';
 import { LiveActivityFeed } from '@/components/console/LiveActivityFeed';
 import { OnboardingWizardClient } from '@/components/onboarding/OnboardingWizardClient';
 import { WelcomeBannerClient } from '@/components/onboarding/WelcomeBannerClient';
-import { AIInsightsPanel } from '@/components/console/AIInsightsPanel';
+import { InsightsPanel } from '@/components/console/AIInsightsPanel';
 import { ErrorAlertsPanel } from '@/components/console/ErrorAlertsPanel';
 import { UsageWarningBanner } from '@/components/console/UsageWarningBanner';
 import { GuidedTourClient } from '@/components/console/GuidedTourClient';
@@ -102,7 +102,7 @@ async function ConsoleOverviewContent() {
               Settler Developer Console
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Manage API keys, monitor usage, and control your Settler integration. 
+              Manage API keys and explore your Settler integration. 
               Sign in for full access, or explore our public tools below.
             </p>
             <div className="flex items-center justify-center gap-4 mt-6">
@@ -397,7 +397,7 @@ async function ConsoleOverviewContent() {
             Developer Console
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
-            Manage your API keys, monitor usage, and explore your data.
+            Manage your API keys and explore your data.
           </p>
         </div>
         <div className="flex gap-2">
@@ -522,9 +522,9 @@ async function ConsoleOverviewContent() {
         </div>
 
         {/* AI Insights & Error Alerts */}
-        <RBACGate requiredTier="subscribed_paid" feature="AI Insights">
+        <RBACGate requiredTier="subscribed_paid" feature="Insights">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <AIInsightsPanel />
+            <InsightsPanel />
             <ErrorAlertsPanel />
           </div>
         </RBACGate>
@@ -559,7 +559,7 @@ async function ConsoleOverviewContent() {
                     <ToggleLeft className="w-5 h-5 mb-2 text-purple-600" />
                     <span className="font-semibold">Manage Flags</span>
                     <span className="text-xs text-slate-500 mt-1">
-                      Create and configure feature flags
+                      Create feature flags
                     </span>
                   </Link>
                 </Button>

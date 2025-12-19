@@ -1,7 +1,7 @@
 /**
- * AI Analysis Panel Component
+ * Analysis Panel Component
  * 
- * Advanced AI analysis with token management for Pro and Enterprise tiers.
+ * Advanced analysis with token management for Pro and Enterprise tiers.
  */
 
 'use client';
@@ -42,7 +42,7 @@ interface AIAnalysis {
   createdAt: Date;
 }
 
-export function AIAnalysisPanel() {
+export function AnalysisPanel() {
   const [tokenUsage, setTokenUsage] = useState<TokenUsage | null>(null);
   const [analyses, setAnalyses] = useState<AIAnalysis[]>([]);
   const [loading, setLoading] = useState(true);
