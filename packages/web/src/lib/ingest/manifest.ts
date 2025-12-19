@@ -44,7 +44,7 @@ export const InputManifestSchema = z.object({
   }).optional(),
 
   // Metadata
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type InputManifest = z.infer<typeof InputManifestSchema>;

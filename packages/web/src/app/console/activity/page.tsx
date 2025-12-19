@@ -42,6 +42,7 @@ export default function ActivityPage() {
       const interval = setInterval(loadEvents, 5000); // Poll every 5 seconds
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [autoRefresh]);
 
   const loadEvents = async () => {

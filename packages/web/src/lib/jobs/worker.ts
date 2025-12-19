@@ -5,9 +5,8 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
-import { calculateBackoffDelay, getNextAvailableAt, shouldRetry } from '@/lib/backoff';
+import { getNextAvailableAt, shouldRetry } from '@/lib/backoff';
 import { createLogger, generateCorrelationId } from '@/lib/logger';
-import { transitionState, RunStatus } from '@/lib/run-state';
 
 export interface Job {
   id: string;
@@ -39,14 +38,14 @@ export async function claimNextJob(): Promise<Job | null> {
 
   try {
     // Find next available job (not locked or lock expired)
-    const { data: jobs, error } = await supabase
-      .from('jobs')
+    const { data: jobs, error } = await (supabase
+      .from('jobs' as any)
       .select('*')
       .eq('status', 'queued')
       .lte('available_at', new Date().toISOString())
       .or(`locked_at.is.null,locked_at.lt.${new Date(Date.now() - LOCK_TIMEOUT_MS).toISOString()}`)
       .order('available_at', { ascending: true })
-      .limit(1);
+      .limit(1) as any);
 
     if (error) {
       logger.error('Failed to query jobs', error as Error);
@@ -60,17 +59,16 @@ export async function claimNextJob(): Promise<Job | null> {
     const job = jobs[0];
 
     // Try to lock the job
-    const { data: updated, error: lockError } = await supabase
-      .from('jobs')
+    const { data: updated, error: lockError } = await ((supabase.from('jobs' as any) as any)
       .update({
         status: 'running',
         locked_at: new Date().toISOString(),
         locked_by: WORKER_ID,
-      })
+      } as any)
       .eq('id', job.id)
       .eq('status', 'queued') // Optimistic locking
       .select()
-      .single();
+      .single() as any);
 
     if (lockError || !updated) {
       // Job was claimed by another worker
@@ -123,34 +121,32 @@ export async function executeJob(job: Job, handler: JobHandler): Promise<void> {
   });
 
   // Record attempt start
-  await supabase.from('job_attempts').insert({
+  await (supabase.from('job_attempts' as any).insert({
     job_id: job.id,
     attempt_no: attemptNo,
     started_at: new Date().toISOString(),
-  });
+  } as any) as any);
 
   try {
     await handler(job);
 
     // Success
-    await supabase
-      .from('jobs')
+    await ((supabase.from('jobs' as any) as any)
       .update({
         status: 'succeeded',
         locked_at: null,
         locked_by: null,
         updated_at: new Date().toISOString(),
-      })
-      .eq('id', job.id);
+      } as any)
+      .eq('id', job.id));
 
-    await supabase
-      .from('job_attempts')
+    await ((supabase.from('job_attempts' as any) as any)
       .update({
         finished_at: new Date().toISOString(),
         ok: true,
-      })
+      } as any)
       .eq('job_id', job.id)
-      .eq('attempt_no', attemptNo);
+      .eq('attempt_no', attemptNo));
 
     logger.info('Job succeeded', { jobId: job.id });
   } catch (error) {
@@ -164,15 +160,14 @@ export async function executeJob(job: Job, handler: JobHandler): Promise<void> {
     logger.error('Job failed', error as Error, { jobId: job.id, attempt: attemptNo });
 
     // Record attempt failure
-    await supabase
-      .from('job_attempts')
+    await ((supabase.from('job_attempts' as any) as any)
       .update({
         finished_at: new Date().toISOString(),
         ok: false,
         error: errorObj,
-      })
+      } as any)
       .eq('job_id', job.id)
-      .eq('attempt_no', attemptNo);
+      .eq('attempt_no', attemptNo));
 
     // Check if should retry
     if (shouldRetry(attemptNo, job.max_attempts)) {
@@ -202,8 +197,7 @@ export async function scheduleRetry(
     availableAt: availableAt.toISOString(),
   });
 
-  await supabase
-    .from('jobs')
+  await ((supabase.from('jobs' as any) as any)
     .update({
       status: 'queued',
       attempts: nextAttempt,
@@ -212,8 +206,8 @@ export async function scheduleRetry(
       locked_at: null,
       locked_by: null,
       updated_at: new Date().toISOString(),
-    })
-    .eq('id', job.id);
+    } as any)
+    .eq('id', job.id));
 }
 
 /**
@@ -229,25 +223,24 @@ export async function deadLetter(
   logger.error('Moving job to dead letter queue', undefined, { jobId: job.id });
 
   // Create dead letter entry
-  await supabase.from('dead_letters').insert({
+  await (supabase.from('dead_letters' as any).insert({
     job_id: job.id,
     workspace_id: job.workspace_id,
     type: job.type,
     payload: job.payload,
     error,
-  });
+  } as any) as any);
 
   // Update job status
-  await supabase
-    .from('jobs')
+  await ((supabase.from('jobs' as any) as any)
     .update({
       status: 'dead',
       locked_at: null,
       locked_by: null,
       last_error: error,
       updated_at: new Date().toISOString(),
-    })
-    .eq('id', job.id);
+    } as any)
+    .eq('id', job.id));
 }
 
 /**

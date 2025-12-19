@@ -25,12 +25,12 @@ export async function processRunJob(job: Job): Promise<void> {
   }
 
   // Get current run state
-  const { data: run, error: runError } = await supabase
-    .from('recon_runs')
+  const { data: run, error: runError } = await (supabase
+    .from('recon_runs' as any)
     .select('*')
     .eq('id', job.run_id)
     .eq('workspace_id', job.workspace_id)
-    .single();
+    .single() as any);
 
   if (runError || !run) {
     throw new Error(`Run not found: ${job.run_id}`);
@@ -64,16 +64,15 @@ export async function processRunJob(job: Job): Promise<void> {
 /**
  * Transition: created -> queued
  */
-async function transitionToQueued(runId: string, workspaceId: string): Promise<void> {
+async function transitionToQueued(runId: string, _workspaceId: string): Promise<void> {
   const supabase = await createClient();
   const nextStatus = transitionState('created', 'queued');
 
-  await supabase
-    .from('recon_runs')
+  await (supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
       started_at: new Date().toISOString(),
-    })
+    } as any)
     .eq('id', runId)
     .eq('status', 'created'); // Optimistic locking
 }
@@ -96,21 +95,20 @@ async function transitionToIngesting(
   // For now, simulate with a delay
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  await supabase
-    .from('recon_runs')
+  await ((supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
-    })
+    } as any)
     .eq('id', runId)
-    .eq('status', 'queued');
+    .eq('status', 'queued'));
 
   // Emit progress event
-  await supabase.from('run_events').insert({
+  await (supabase.from('run_events' as any).insert({
     workspace_id: workspaceId,
     run_id: runId,
     type: 'ingest_progress',
     payload: { stage: 'ingesting', progress: 0 },
-  });
+  } as any) as any);
 }
 
 /**
@@ -129,20 +127,19 @@ async function transitionToValidating(
   // TODO: Implement actual validation logic
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  await supabase
-    .from('recon_runs')
+  await ((supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
-    })
+    } as any)
     .eq('id', runId)
-    .eq('status', 'ingesting');
+    .eq('status', 'ingesting'));
 
-  await supabase.from('run_events').insert({
+  await (supabase.from('run_events' as any).insert({
     workspace_id: workspaceId,
     run_id: runId,
     type: 'validation_error', // or validation_progress
     payload: { stage: 'validating', progress: 0 },
-  });
+  } as any) as any);
 }
 
 /**
@@ -161,20 +158,19 @@ async function transitionToReconciling(
   // TODO: Implement actual reconciliation logic
   await new Promise(resolve => setTimeout(resolve, 2000));
 
-  await supabase
-    .from('recon_runs')
+  await ((supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
-    })
+    } as any)
     .eq('id', runId)
-    .eq('status', 'validating');
+    .eq('status', 'validating'));
 
-  await supabase.from('run_events').insert({
+  await (supabase.from('run_events' as any).insert({
     workspace_id: workspaceId,
     run_id: runId,
     type: 'reconciliation_progress',
     payload: { stage: 'reconciling', progress: 0 },
-  });
+  } as any) as any);
 }
 
 /**
@@ -198,20 +194,19 @@ async function transitionToCompleted(
     conflicts: 0,
   };
 
-  await supabase
-    .from('recon_runs')
+  await ((supabase.from('recon_runs' as any) as any)
     .update({
       status: nextStatus,
       completed_at: new Date().toISOString(),
       result_summary: resultSummary,
-    })
+    } as any)
     .eq('id', runId)
-    .eq('status', 'reconciling');
+    .eq('status', 'reconciling'));
 
-  await supabase.from('run_events').insert({
+  await (supabase.from('run_events' as any).insert({
     workspace_id: workspaceId,
     run_id: runId,
     type: 'completion',
     payload: { summary: resultSummary },
-  });
+  } as any) as any);
 }

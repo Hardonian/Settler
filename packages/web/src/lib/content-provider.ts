@@ -6,7 +6,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
-import { safeAsync } from '@/lib/safe';
+import { safeResult } from '@/lib/safe';
 
 export interface ContentItem {
   slug: string;
@@ -49,7 +49,7 @@ export class ContentProvider {
     fallback: T[] = []
   ): Promise<T[]> {
     // Try Supabase fetch with timeout
-    const supabaseResult = await safeAsync(async () => {
+    const supabaseResult = await safeResult(async () => {
       const supabase = await createClient();
       
       const query = supabase.from(table).select('*');
@@ -73,7 +73,7 @@ export class ContentProvider {
       return (result.data || []) as T[];
     });
     
-    if (supabaseResult.ok && supabaseResult.data.length > 0) {
+    if (supabaseResult.success && supabaseResult.data.length > 0) {
       return supabaseResult.data;
     }
     

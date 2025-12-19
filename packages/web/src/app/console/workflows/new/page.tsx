@@ -13,7 +13,7 @@ import Link from 'next/link';
 
 export default function NewWorkflowPage() {
   const searchParams = useSearchParams();
-  const templateIndex = searchParams?.get('template');
+  searchParams?.get('template'); // Template selection will be implemented later
   
   const [name, setName] = useState('');
   const [triggerType, setTriggerType] = useState<'reconciliation.completed' | 'anomaly.detected' | 'receipt.parsed'>('reconciliation.completed');
