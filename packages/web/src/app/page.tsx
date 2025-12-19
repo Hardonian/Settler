@@ -122,8 +122,9 @@ export default function Home() {
 
 const client = new SettlerClient({ apiKey: "sk_live_..." });
 
-// 1. Reconcile Payments
-const job = await client.jobs.create({
+// 1. Start Continuous Reconciliation
+// Reconciliation runs automatically—no manual intervention needed
+const reconciliation = await client.reconciliations.create({
   source: { adapter: "stripe" },
   target: { adapter: "database" },
   rules: { matching: [{ field: "amount", tolerance: 0.01 }] }
@@ -185,7 +186,7 @@ if (flag.value) { /* ... */ }`;
                 />
                 
                 <TextReveal
-                  text="Automatically match transactions between Stripe, Shopify, QuickBooks, and 50+ platforms. Save hours of manual work with reliable, automatic reconciliation."
+                  text="Reconciliation happens automatically across Stripe, Shopify, QuickBooks, and 50+ platforms. No configuration, no manual work—just continuous matching that never stops."
                   className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
                   delay={0.2}
                   staggerDelay={0.01}

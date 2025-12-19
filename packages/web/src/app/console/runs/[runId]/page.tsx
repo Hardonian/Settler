@@ -64,26 +64,9 @@ export default function RunPage() {
       setError(null);
     } else {
       setError(result.error?.message || 'Failed to load run');
-      // Fallback to mock data for demo
-      setRun(generateMockRun());
+      setRun(null);
     }
     setLoading(false);
-  };
-
-  const generateMockRun = (): Run => {
-    return {
-      id: runId,
-      name: 'Shopify-Stripe Reconciliation',
-      status: 'running',
-      progress: 65,
-      startedAt: new Date(Date.now() - 5 * 60 * 1000),
-      stages: [
-        { id: '1', name: 'Fetch Source Data', status: 'completed', completedAt: new Date(Date.now() - 4 * 60 * 1000) },
-        { id: '2', name: 'Fetch Target Data', status: 'completed', completedAt: new Date(Date.now() - 3 * 60 * 1000) },
-        { id: '3', name: 'Match Transactions', status: 'running', startedAt: new Date(Date.now() - 2 * 60 * 1000) },
-        { id: '4', name: 'Generate Report', status: 'pending' },
-      ],
-    };
   };
 
   const handleRetry = async () => {

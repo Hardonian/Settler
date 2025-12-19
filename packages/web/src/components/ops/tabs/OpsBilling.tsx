@@ -16,7 +16,9 @@ export function OpsBilling() {
         <CardDescription>Billing and subscription management</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">Billing management coming soon</p>
+        <p className="text-sm text-muted-foreground">
+          Billing management is available in the Console under Billing.
+        </p>
       </CardContent>
     </Card>
   );

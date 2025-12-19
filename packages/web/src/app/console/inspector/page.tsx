@@ -20,9 +20,9 @@ interface WebhookAttempt {
   response?: any;
 }
 
-interface JobAttempt {
+interface ReconciliationRunAttempt {
   id: string;
-  jobId: string;
+  runId: string;
   status: 'success' | 'failed';
   latency: number;
   timestamp: Date;
@@ -31,9 +31,9 @@ interface JobAttempt {
 
 export default function InspectorPage() {
   const [webhookAttempts, setWebhookAttempts] = useState<WebhookAttempt[]>([]);
-  const [jobAttempts, setJobAttempts] = useState<JobAttempt[]>([]);
+  const [runAttempts, setRunAttempts] = useState<ReconciliationRunAttempt[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'webhooks' | 'jobs'>('webhooks');
+  const [activeTab, setActiveTab] = useState<'webhooks' | 'runs'>('webhooks');
 
   useEffect(() => {
     loadData();
@@ -47,75 +47,32 @@ export default function InspectorPage() {
         if (result.success) {
           setWebhookAttempts(result.data?.attempts || []);
         } else {
-          // Mock data for demo
-          setWebhookAttempts(generateMockWebhooks());
+          // No mock data - show empty state if API fails
+          setWebhookAttempts([]);
         }
       } else {
-        const result = await safeFetch<{ attempts: JobAttempt[] }>('/api/jobs/attempts');
+        const result = await safeFetch<{ attempts: ReconciliationRunAttempt[] }>('/api/reconciliation-runs/attempts');
         if (result.success) {
-          setJobAttempts(result.data?.attempts || []);
+          setRunAttempts(result.data?.attempts || []);
         } else {
-          // Mock data for demo
-          setJobAttempts(generateMockJobs());
+          // No mock data - show empty state if API fails
+          setRunAttempts([]);
         }
       }
     } catch {
-      // Fallback to mock data
+      // No mock data - show empty state on error
       if (activeTab === 'webhooks') {
-        setWebhookAttempts(generateMockWebhooks());
+        setWebhookAttempts([]);
       } else {
-        setJobAttempts(generateMockJobs());
+        setRunAttempts([]);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const generateMockWebhooks = (): WebhookAttempt[] => {
-    return [
-      {
-        id: '1',
-        url: 'https://example.com/webhook',
-        status: 200,
-        latency: 145,
-        timestamp: new Date(Date.now() - 5 * 60 * 1000),
-        payload: { event: 'reconciliation.completed', data: { jobId: 'job_123' } },
-        response: { success: true },
-      },
-      {
-        id: '2',
-        url: 'https://example.com/webhook',
-        status: 500,
-        latency: 5000,
-        timestamp: new Date(Date.now() - 10 * 60 * 1000),
-        payload: { event: 'reconciliation.failed', data: { jobId: 'job_456' } },
-        response: { error: 'Internal server error' },
-      },
-    ];
-  };
-
-  const generateMockJobs = (): JobAttempt[] => {
-    return [
-      {
-        id: '1',
-        jobId: 'job_123',
-        status: 'success',
-        latency: 2340,
-        timestamp: new Date(Date.now() - 2 * 60 * 1000),
-      },
-      {
-        id: '2',
-        jobId: 'job_456',
-        status: 'failed',
-        latency: 1200,
-        timestamp: new Date(Date.now() - 5 * 60 * 1000),
-        error: 'Connection timeout',
-      },
-    ];
-  };
-
   const handleReplay = async (id: string) => {
-    const endpoint = activeTab === 'webhooks' ? `/api/webhooks/${id}/replay` : `/api/jobs/${id}/replay`;
+    const endpoint = activeTab === 'webhooks' ? `/api/webhooks/${id}/replay` : `/api/reconciliation-runs/${id}/replay`;
     const result = await safeFetch(endpoint, { method: 'POST' });
     
     if (result.success) {
@@ -127,7 +84,7 @@ export default function InspectorPage() {
   };
 
   const handleExport = () => {
-    const data = activeTab === 'webhooks' ? webhookAttempts : jobAttempts;
+    const data = activeTab === 'webhooks' ? webhookAttempts : runAttempts;
     const dataStr = JSON.stringify(data.map(item => sanitizeForLogging(JSON.stringify(item))), null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
@@ -144,7 +101,7 @@ export default function InspectorPage() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Inspector</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Inspect webhook deliveries and job executions with detailed logs. 
+            Inspect webhook deliveries and reconciliation runs with detailed logs. 
             <span className="text-xs text-slate-500 ml-2">All sensitive data is automatically redacted.</span>
           </p>
         </div>
@@ -154,10 +111,10 @@ export default function InspectorPage() {
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'webhooks' | 'jobs')}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'webhooks' | 'runs')}>
         <TabsList>
           <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
-          <TabsTrigger value="jobs">Jobs</TabsTrigger>
+          <TabsTrigger value="runs">Reconciliation Runs</TabsTrigger>
         </TabsList>
 
         <TabsContent value="webhooks" className="space-y-4">
@@ -233,11 +190,11 @@ export default function InspectorPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="jobs" className="space-y-4">
+        <TabsContent value="runs" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Job Attempts</CardTitle>
-              <CardDescription>Recent job execution attempts</CardDescription>
+              <CardTitle>Reconciliation Runs</CardTitle>
+              <CardDescription>Recent reconciliation execution attempts</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -246,14 +203,14 @@ export default function InspectorPage() {
                     <Skeleton key={i} className="h-24" />
                   ))}
                 </div>
-              ) : jobAttempts.length === 0 ? (
+              ) : runAttempts.length === 0 ? (
                 <EmptyState
-                  title="No job attempts"
-                  description="Job execution attempts will appear here"
+                  title="No reconciliation runs"
+                  description="Reconciliation runs will appear here when you start reconciling data"
                 />
               ) : (
                 <div className="space-y-4">
-                  {jobAttempts.map((attempt) => (
+                  {runAttempts.map((attempt) => (
                     <div
                       key={attempt.id}
                       className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
@@ -261,7 +218,7 @@ export default function InspectorPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <code className="text-sm bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
-                            {attempt.jobId}
+                            {attempt.runId}
                           </code>
                           <Badge variant={attempt.status === 'failed' ? 'destructive' : 'default'}>
                             {attempt.status === 'success' ? (
