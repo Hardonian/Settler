@@ -1,0 +1,67 @@
+/**
+ * Job Drain Endpoint
+ * 
+ * Protected endpoint for draining jobs from the queue.
+ * Called by Vercel Cron or worker process.
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { processJobs } from '@/lib/jobs/worker';
+import { processRunJob } from '@/lib/jobs/handlers/run-processor';
+import { createLogger } from '@/lib/logger';
+
+const DRAIN_SECRET = process.env.JOB_DRAIN_SECRET || '';
+
+export const runtime = 'nodejs';
+export const maxDuration = 300; // 5 minutes
+
+export async function POST(request: NextRequest) {
+  const logger = createLogger();
+
+  // Verify secret
+  const authHeader = request.headers.get('authorization');
+  const secret = authHeader?.replace('Bearer ', '') || request.nextUrl.searchParams.get('secret');
+
+  if (!DRAIN_SECRET || secret !== DRAIN_SECRET) {
+    logger.warn('Unauthorized job drain attempt');
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const maxJobs = parseInt(request.nextUrl.searchParams.get('max') || '10', 10);
+    
+    logger.info('Starting job drain', { maxJobs });
+
+    // Process run.process jobs
+    const processed = await processJobs(processRunJob, maxJobs);
+
+    logger.info('Job drain completed', { processed });
+
+    return NextResponse.json({
+      success: true,
+      processed,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    logger.error('Job drain failed', error as Error);
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Allow GET for health checks
+export async function GET() {
+  return NextResponse.json({
+    status: 'ok',
+    endpoint: '/api/internal/jobs/drain',
+    method: 'POST',
+  });
+}
