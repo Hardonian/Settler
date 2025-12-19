@@ -3,8 +3,8 @@ set -e
 
 echo "=== Vercel Install Script ==="
 echo "Working directory: $(pwd)"
-echo "Node version: $(node --version)"
-echo "npm version: $(npm --version)"
+echo "Node version: $(node --version 2>&1 || echo 'node not found')"
+echo "npm version: $(npm --version 2>&1 || echo 'npm not found')"
 
 # Get npm major version
 NPM_MAJOR=$(npm --version | cut -d. -f1)
