@@ -1,34 +1,27 @@
 /**
  * Plan Configuration
  * 
- * Defines subscription plans with usage limits for all Settler services.
- * Each plan includes limits for Reconcile, Receipts, and Feature Flags.
+ * Pricing Model: Volume + Exception Supervision
+ * 
+ * Core principle: Pricing scales with reliance, not curiosity.
+ * Reconciliation is a system behavior - pricing reflects volume and exception supervision.
  */
 
-export type PlanCode = 'free' | 'pro' | 'scale';
+export type PlanCode = 'starter' | 'growth' | 'scale' | 'enterprise';
 
-export type ServiceCode = 'reconcile' | 'receipts' | 'featureFlags' | 'ingestions' | 'exports';
+export type ServiceCode = 'reconcile' | 'exceptions';
 
+/**
+ * Simplified service limits - only reconciliation volume and exceptions
+ */
 export interface ServiceLimits {
   reconcile: {
-    monthlyCalls: number; // Monthly included API calls
-    rateLimit?: number; // Calls per minute (optional)
+    monthlyVolume: number; // Monthly reconciliation volume included
+    pricePerReconciliation: number; // Price per reconciliation over included volume
   };
-  receipts: {
-    monthlyCalls: number; // Monthly included receipt parses
-    rateLimit?: number; // Parses per minute (optional)
-  };
-  featureFlags: {
-    monthlyEvaluations: number; // Monthly flag evaluations (generous for free tier)
-    rateLimit?: number; // Evaluations per minute (optional)
-  };
-  ingestions: {
-    monthlyCalls: number; // Monthly ingestion jobs
-    rateLimit?: number; // Ingestions per minute (optional)
-  };
-  exports: {
-    monthlyCalls: number; // Monthly export jobs
-    rateLimit?: number; // Exports per minute (optional)
+  exceptions: {
+    includedRate: number; // Included exception rate (e.g., 0.01 = 1%)
+    pricePerException: number; // Price per exception requiring review
   };
 }
 
@@ -37,150 +30,83 @@ export interface PlanConfig {
   name: string;
   description: string;
   stripePriceId?: string; // Stripe Price ID for paid plans
-  monthlyPrice?: number; // Monthly price in USD
-  annualPrice?: number; // Annual price in USD (if different)
+  monthlyPrice: number; // Monthly price in USD (0 for starter)
   limits: ServiceLimits;
-  aiTokens?: {
-    included: number; // Monthly AI tokens included
-    overagePrice?: number; // Price per 1k tokens over limit
-  };
-  features: {
-    reconcile: boolean;
-    receipts: boolean;
-    featureFlags: boolean; // Always true - free dev toolkit
-    ingestions: boolean;
-    exports: boolean;
-    aiInsights: boolean; // AI-powered insights and recommendations
-    prioritySupport: boolean;
-    customIntegrations: boolean;
-  };
+  // All features included - no feature gating
+  // Only scale, depth, and automation intensity are gated
 }
 
 /**
  * Plan configurations
+ * 
+ * Model: Volume + Exception Supervision
+ * Pricing scales with reliance, not curiosity
  */
 export const planConfigs: Record<PlanCode, PlanConfig> = {
-  free: {
-    code: 'free',
-    name: 'Free',
-    description: 'Perfect for getting started and small projects',
+  starter: {
+    code: 'starter',
+    name: 'Starter',
+    description: 'First 10,000 reconciliations free',
+    monthlyPrice: 0,
     limits: {
       reconcile: {
-        monthlyCalls: 1000, // 1,000 reconciliation jobs/month
+        monthlyVolume: 10000, // 10k reconciliations included free
+        pricePerReconciliation: 0.01, // $0.01 per reconciliation over 10k
       },
-      receipts: {
-        monthlyCalls: 100, // 100 receipt parses/month
+      exceptions: {
+        includedRate: 0.01, // 1% exception rate included (100 exceptions auto-explained)
+        pricePerException: 0.10, // $0.10 per exception requiring review
       },
-      featureFlags: {
-        monthlyEvaluations: 100000, // 100k evaluations/month (generous free tier)
-      },
-      ingestions: {
-        monthlyCalls: 100, // 100 ingestion jobs/month
-      },
-      exports: {
-        monthlyCalls: 50, // 50 export jobs/month
-      },
-    },
-    aiTokens: {
-      included: 0, // No AI tokens on free plan
-    },
-    features: {
-      reconcile: true,
-      receipts: true,
-      featureFlags: true,
-      ingestions: true,
-      exports: true,
-      aiInsights: false, // AI insights require paid plan
-      prioritySupport: false,
-      customIntegrations: false,
     },
   },
-  pro: {
-    code: 'pro',
-    name: 'Pro',
-    description: 'For growing businesses with higher usage needs',
-    stripePriceId: process.env.STRIPE_PRICE_ID_PRO || undefined, // Set via env var
-    monthlyPrice: 99,
-    annualPrice: 990, // ~17% discount
+  growth: {
+    code: 'growth',
+    name: 'Growth',
+    description: 'For growing businesses',
+    stripePriceId: process.env.STRIPE_PRICE_ID_GROWTH || undefined,
+    monthlyPrice: 900, // 100k × $0.01 - 10k free = $900
     limits: {
       reconcile: {
-        monthlyCalls: 100000, // 100k reconciliation jobs/month
-        rateLimit: 100, // 100 calls/minute
+        monthlyVolume: 100000, // 100k reconciliations included
+        pricePerReconciliation: 0.01, // $0.01 per reconciliation over 100k
       },
-      receipts: {
-        monthlyCalls: 10000, // 10k receipt parses/month
-        rateLimit: 50, // 50 parses/minute
+      exceptions: {
+        includedRate: 0.01, // 1% exception rate included (1,000 exceptions auto-explained)
+        pricePerException: 0.10, // $0.10 per exception requiring review
       },
-      featureFlags: {
-        monthlyEvaluations: 1000000, // 1M evaluations/month
-        rateLimit: 1000, // 1k evaluations/minute
-      },
-      ingestions: {
-        monthlyCalls: 10000, // 10k ingestion jobs/month
-        rateLimit: 50, // 50 ingestions/minute
-      },
-      exports: {
-        monthlyCalls: 5000, // 5k export jobs/month
-        rateLimit: 25, // 25 exports/minute
-      },
-    },
-    aiTokens: {
-      included: 100000, // 100k AI tokens/month (~$2.50 value)
-      overagePrice: 0.025, // $0.025 per 1k tokens ($25 per 1M tokens)
-    },
-    features: {
-      reconcile: true,
-      receipts: true,
-      featureFlags: true,
-      ingestions: true,
-      exports: true,
-      aiInsights: true, // AI-powered insights included
-      prioritySupport: true,
-      customIntegrations: false,
     },
   },
   scale: {
     code: 'scale',
     name: 'Scale',
-    description: 'For large organizations with high-volume needs',
-    stripePriceId: process.env.STRIPE_PRICE_ID_SCALE || undefined, // Set via env var
-    monthlyPrice: 499,
-    annualPrice: 4990, // ~17% discount
+    description: 'For high-volume operations',
+    stripePriceId: process.env.STRIPE_PRICE_ID_SCALE || undefined,
+    monthlyPrice: 9900, // 1M × $0.01 - 10k free = $9,900
     limits: {
       reconcile: {
-        monthlyCalls: 1000000, // 1M reconciliation jobs/month
-        rateLimit: 500, // 500 calls/minute
+        monthlyVolume: 1000000, // 1M reconciliations included
+        pricePerReconciliation: 0.01, // $0.01 per reconciliation over 1M
       },
-      receipts: {
-        monthlyCalls: 100000, // 100k receipt parses/month
-        rateLimit: 200, // 200 parses/minute
-      },
-      featureFlags: {
-        monthlyEvaluations: 10000000, // 10M evaluations/month
-        rateLimit: 5000, // 5k evaluations/minute
-      },
-      ingestions: {
-        monthlyCalls: 100000, // 100k ingestion jobs/month
-        rateLimit: 500, // 500 ingestions/minute
-      },
-      exports: {
-        monthlyCalls: 50000, // 50k export jobs/month
-        rateLimit: 250, // 250 exports/minute
+      exceptions: {
+        includedRate: 0.01, // 1% exception rate included (10,000 exceptions auto-explained)
+        pricePerException: 0.10, // $0.10 per exception requiring review
       },
     },
-    aiTokens: {
-      included: 1000000, // 1M AI tokens/month (~$25 value)
-      overagePrice: 0.02, // $0.02 per 1k tokens ($20 per 1M tokens) - volume discount
-    },
-    features: {
-      reconcile: true,
-      receipts: true,
-      featureFlags: true,
-      ingestions: true,
-      exports: true,
-      aiInsights: true, // AI-powered insights included
-      prioritySupport: true,
-      customIntegrations: true,
+  },
+  enterprise: {
+    code: 'enterprise',
+    name: 'Enterprise',
+    description: 'Custom volume and exception thresholds',
+    monthlyPrice: 0, // Custom pricing
+    limits: {
+      reconcile: {
+        monthlyVolume: 0, // Custom volume
+        pricePerReconciliation: 0.008, // Volume discount
+      },
+      exceptions: {
+        includedRate: 0.015, // 1.5% exception rate included (custom threshold)
+        pricePerException: 0.08, // Volume discount on exceptions
+      },
     },
   },
 };
@@ -197,10 +123,10 @@ export function getPlanConfig(planCode: string): PlanConfig | null {
 }
 
 /**
- * Get default plan (free)
+ * Get default plan (starter)
  */
 export function getDefaultPlan(): PlanConfig {
-  return planConfigs.free;
+  return planConfigs.starter;
 }
 
 /**
@@ -208,37 +134,67 @@ export function getDefaultPlan(): PlanConfig {
  */
 export function mapLegacyPlanId(planId: string): PlanCode {
   const mapping: Record<string, PlanCode> = {
-    base: 'free',
-    pro: 'pro',
+    base: 'starter',
+    free: 'starter',
+    pro: 'growth',
+    commercial: 'growth',
     enterprise: 'scale',
+    scale: 'scale',
   };
-  return mapping[planId] || 'free';
+  return mapping[planId] || 'starter';
 }
 
 /**
- * Get service limit for a plan
+ * Get reconciliation volume limit for a plan
  */
-export function getServiceLimit(
+export function getReconciliationVolumeLimit(planCode: PlanCode): number {
+  const plan = planConfigs[planCode];
+  if (!plan) {
+    return planConfigs.starter.limits.reconcile.monthlyVolume;
+  }
+  return plan.limits.reconcile.monthlyVolume;
+}
+
+/**
+ * Get exception threshold for a plan
+ */
+export function getExceptionThreshold(planCode: PlanCode, reconciliationVolume: number): number {
+  const plan = planConfigs[planCode];
+  if (!plan) {
+    return Math.floor(reconciliationVolume * planConfigs.starter.limits.exceptions.includedRate);
+  }
+  return Math.floor(reconciliationVolume * plan.limits.exceptions.includedRate);
+}
+
+/**
+ * Calculate monthly cost for a plan
+ */
+export function calculateMonthlyCost(
   planCode: PlanCode,
-  service: ServiceCode
+  reconciliationVolume: number,
+  exceptionsRequiringReview: number
 ): number {
   const plan = planConfigs[planCode];
   if (!plan) {
     return 0;
   }
 
-  switch (service) {
-    case 'reconcile':
-      return plan.limits.reconcile.monthlyCalls;
-    case 'receipts':
-      return plan.limits.receipts.monthlyCalls;
-    case 'featureFlags':
-      return plan.limits.featureFlags.monthlyEvaluations;
-    case 'ingestions':
-      return plan.limits.ingestions.monthlyCalls;
-    case 'exports':
-      return plan.limits.exports.monthlyCalls;
-    default:
-      return 0;
+  // Base plan price
+  let cost = plan.monthlyPrice;
+
+  // Overage for reconciliations
+  const includedVolume = plan.limits.reconcile.monthlyVolume;
+  if (reconciliationVolume > includedVolume) {
+    const overage = reconciliationVolume - includedVolume;
+    cost += overage * plan.limits.reconcile.pricePerReconciliation;
   }
+
+  // Overage for exceptions
+  const includedExceptions = getExceptionThreshold(planCode, reconciliationVolume);
+  if (exceptionsRequiringReview > includedExceptions) {
+    const exceptionOverage = exceptionsRequiringReview - includedExceptions;
+    cost += exceptionOverage * plan.limits.exceptions.pricePerException;
+  }
+
+  return cost;
 }
