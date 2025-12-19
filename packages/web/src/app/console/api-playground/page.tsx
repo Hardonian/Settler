@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Skeleton } from '@/components/Skeleton';
 import { safeFetch, maskToken, sanitizeForLogging } from '@/lib/safe-fetch';
+import { RBACGate, TruncateContent } from '@/lib/rbac-gate';
 import { 
   Play, 
   History, 
@@ -174,7 +175,8 @@ export default function ApiPlaygroundPage() {
   const activeEnvironment = environments.find(e => e.id === activeEnv);
 
   return (
-    <div className="p-6 space-y-6">
+    <RBACGate requiredTier="subscribed_unpaid" feature="API Playground">
+      <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">API Playground</h1>
@@ -425,6 +427,7 @@ export default function ApiPlaygroundPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </RBACGate>
   );
 }

@@ -25,6 +25,7 @@ import { ErrorAlertsPanel } from '@/components/console/ErrorAlertsPanel';
 import { UsageWarningBanner } from '@/components/console/UsageWarningBanner';
 import { GuidedTourClient } from '@/components/console/GuidedTourClient';
 import { UsageInsightsPanel } from '@/components/console/UsageInsightsPanel';
+import { RBACGate, TruncateContent } from '@/lib/rbac-gate';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -410,156 +411,172 @@ async function ConsoleOverviewContent() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-3">
-            <CardDescription>Total API Calls</CardDescription>
-            <CardTitle className="text-3xl">{formatNumber(usageSummary.totalCalls)}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-              <Activity className="w-4 h-4" />
-              <span>Last 7 days</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-3">
-            <CardDescription>API Keys</CardDescription>
-            <CardTitle className="text-3xl">{apiKeys.length}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline" size="sm" className="w-full">
-              <Link href="/console/api-keys">
-                Manage Keys <ArrowRight className="w-4 h-4 ml-1" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-3">
-            <CardDescription>Receipts Parsed</CardDescription>
-            <CardTitle className="text-3xl">{formatNumber(receipts.length)}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline" size="sm" className="w-full">
-              <Link href="/console/receipts">
-                View Receipts <ArrowRight className="w-4 h-4 ml-1" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-3">
-            <CardDescription>Feature Flags</CardDescription>
-            <CardTitle className="text-3xl">{flags.length}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline" size="sm" className="w-full">
-              <Link href="/console/feature-flags">
-                Manage Flags <ArrowRight className="w-4 h-4 ml-1" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Service Breakdown */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Usage by Service</CardTitle>
-            <CardDescription>API calls in the last 7 days</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-blue-500" />
-                  <span className="font-medium">Reconcile API</span>
-                </div>
-                <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
-                  {formatNumber(reconcileCalls)} calls
-                </span>
+      <RBACGate requiredTier="unsubscribed" feature="Dashboard Stats">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <CardDescription>Total API Calls</CardDescription>
+              <CardTitle className="text-3xl">{formatNumber(usageSummary.totalCalls)}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                <Activity className="w-4 h-4" />
+                <span>Last 7 days</span>
               </div>
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="font-medium">Receipts API</span>
-                </div>
-                <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
-                  {formatNumber(receiptsCalls)} calls
-                </span>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-purple-500" />
-                  <span className="font-medium">Feature Flags API</span>
-                </div>
-                <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
-                  {formatNumber(flagsCalls)} calls
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Live Feed */}
-        <div className="lg:col-span-1 h-full">
-          <LiveActivityFeed />
+          <RBACGate requiredTier="subscribed_unpaid" feature="API Keys">
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-3">
+                <CardDescription>API Keys</CardDescription>
+                <CardTitle className="text-3xl">{apiKeys.length}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button asChild variant="outline" size="sm" className="w-full">
+                  <Link href="/console/api-keys">
+                    Manage Keys <ArrowRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </RBACGate>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <CardDescription>Receipts Parsed</CardDescription>
+              <CardTitle className="text-3xl">{formatNumber(receipts.length)}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button asChild variant="outline" size="sm" className="w-full">
+                <Link href="/console/receipts">
+                  View Receipts <ArrowRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <RBACGate requiredTier="subscribed_unpaid" feature="Feature Flags">
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-3">
+                <CardDescription>Feature Flags</CardDescription>
+                <CardTitle className="text-3xl">{flags.length}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button asChild variant="outline" size="sm" className="w-full">
+                  <Link href="/console/feature-flags">
+                    Manage Flags <ArrowRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </RBACGate>
         </div>
-      </div>
+      </RBACGate>
 
-      {/* AI Insights & Error Alerts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <AIInsightsPanel />
-        <ErrorAlertsPanel />
-      </div>
+      <RBACGate requiredTier="subscribed_unpaid" feature="Usage Analytics">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Service Breakdown */}
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>Usage by Service</CardTitle>
+              <CardDescription>API calls in the last 7 days</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-blue-500" />
+                    <span className="font-medium">Reconcile API</span>
+                  </div>
+                  <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
+                    {formatNumber(reconcileCalls)} calls
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <span className="font-medium">Receipts API</span>
+                  </div>
+                  <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
+                    {formatNumber(receiptsCalls)} calls
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-purple-500" />
+                    <span className="font-medium">Feature Flags API</span>
+                  </div>
+                  <span className="text-slate-600 dark:text-slate-400 font-mono text-sm">
+                    {formatNumber(flagsCalls)} calls
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Usage Insights */}
-      <UsageInsightsPanel />
+          {/* Live Feed */}
+          <div className="lg:col-span-1 h-full">
+            <LiveActivityFeed />
+          </div>
+        </div>
+
+        {/* AI Insights & Error Alerts */}
+        <RBACGate requiredTier="subscribed_paid" feature="AI Insights">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <AIInsightsPanel />
+            <ErrorAlertsPanel />
+          </div>
+        </RBACGate>
+
+        {/* Usage Insights */}
+        <UsageInsightsPanel />
+      </RBACGate>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Get started quickly</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
-              <Link href="/console/api-keys">
-                <Key className="w-5 h-5 mb-2 text-blue-600" />
-                <span className="font-semibold">Create API Key</span>
-                <span className="text-xs text-slate-500 mt-1">
-                  Generate a new API key for your application
-                </span>
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
-              <Link href="/console/feature-flags">
-                <ToggleLeft className="w-5 h-5 mb-2 text-purple-600" />
-                <span className="font-semibold">Manage Flags</span>
-                <span className="text-xs text-slate-500 mt-1">
-                  Create and configure feature flags
-                </span>
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
-              <Link href="/console/docs">
-                <Receipt className="w-5 h-5 mb-2 text-green-600" />
-                <span className="font-semibold">View API Docs</span>
-                <span className="text-xs text-slate-500 mt-1">
-                  Explore endpoints and examples
-                </span>
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <RBACGate requiredTier="unsubscribed" feature="Quick Actions">
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Get started quickly</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <RBACGate requiredTier="subscribed_unpaid" feature="API Keys">
+                <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
+                  <Link href="/console/api-keys">
+                    <Key className="w-5 h-5 mb-2 text-blue-600" />
+                    <span className="font-semibold">Create API Key</span>
+                    <span className="text-xs text-slate-500 mt-1">
+                      Generate a new API key for your application
+                    </span>
+                  </Link>
+                </Button>
+              </RBACGate>
+              <RBACGate requiredTier="subscribed_unpaid" feature="Feature Flags">
+                <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
+                  <Link href="/console/feature-flags">
+                    <ToggleLeft className="w-5 h-5 mb-2 text-purple-600" />
+                    <span className="font-semibold">Manage Flags</span>
+                    <span className="text-xs text-slate-500 mt-1">
+                      Create and configure feature flags
+                    </span>
+                  </Link>
+                </Button>
+              </RBACGate>
+              <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
+                <Link href="/console/docs">
+                  <Receipt className="w-5 h-5 mb-2 text-green-600" />
+                  <span className="font-semibold">View API Docs</span>
+                  <span className="text-xs text-slate-500 mt-1">
+                    Explore endpoints and examples
+                  </span>
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </RBACGate>
     </div>
   );
   } catch (error) {
