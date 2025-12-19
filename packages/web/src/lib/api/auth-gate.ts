@@ -11,11 +11,19 @@ import { createClient } from "@/lib/supabase/server";
 import { getTraceId } from "@/lib/observability/trace";
 import { logger } from "@/lib/observability/logger";
 import { ErrorCode } from "@/lib/api/error-handler";
+import { getSubscriptionStatus } from "@/lib/get-subscription-status";
+import { SubscriptionTier } from "@/lib/subscription-access";
+
+import { SubscriptionTier } from '@/lib/subscription-access';
 
 export interface AuthGateOptions {
   requireAuth?: boolean;
   requireAdmin?: boolean;
   allowedRoles?: string[];
+  /** Minimum subscription tier required */
+  requiredTier?: SubscriptionTier;
+  /** Feature name for subscription errors */
+  feature?: string;
 }
 
 /**
@@ -181,6 +189,42 @@ export function withAuthGate<T extends (...args: any[]) => Promise<NextResponse>
         const adminResult = await requireAdmin(request);
         if (!adminResult.isAdmin) {
           return adminResult.error!;
+        }
+      }
+
+      // Check subscription tier if required
+      if (options.requiredTier) {
+        const subscription = await getSubscriptionStatus();
+        const tierOrder: Record<SubscriptionTier, number> = {
+          unsubscribed: 0,
+          subscribed_unpaid: 1,
+          subscribed_paid: 2,
+          enterprise: 3,
+        };
+
+        const userTier = tierOrder[subscription.tier] || 0;
+        const requiredTierLevel = tierOrder[options.requiredTier] || 0;
+
+        if (userTier < requiredTierLevel) {
+          await logger.warn('Subscription tier insufficient', {
+            trace_id: await getTraceId(request),
+            route: request.nextUrl.pathname,
+            user_tier: subscription.tier,
+            required_tier: options.requiredTier,
+            feature: options.feature || 'this feature',
+          });
+
+          return NextResponse.json(
+            {
+              error: `Subscription required: ${options.feature || 'This feature'} requires ${options.requiredTier} subscription`,
+              code: ErrorCode.FORBIDDEN,
+              tier: subscription.tier,
+              required_tier: options.requiredTier,
+              upgrade_url: '/console/billing',
+              timestamp: new Date().toISOString(),
+            },
+            { status: 403 }
+          );
         }
       }
     }

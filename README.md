@@ -56,6 +56,15 @@ The **Developer Console** (`/console`) provides:
 - ✅ **Live Activity Feed** - Real-time activity monitoring
 - ✅ **Billing Dashboard** - View usage and billing information
 - ✅ **Ops Intelligence** - Automated insights, recommendations, and weekly founder briefings
+- ✅ **API Test Console** - CLI code editor for testing API calls, webhooks, and SDK operations
+- ✅ **API Service Tables** - Browse and manage tables for Receipts, Reconciliation, Feature Flags, and Webhooks
+- ✅ **Workflows** - Create automation workflows (Zapier-style) with recipe library
+
+**Access Control:**
+- **Unsubscribed**: Receipts viewing only
+- **Subscribed (Unpaid)**: Read-only access to API service tables and workflows
+- **Subscribed (Paid)**: Full CRUD access to all API services
+- **Enterprise**: Full access + higher limits + priority support
 
 Access the Console at `/console` after signing up. See [Console Documentation](docs/CONSOLE_COMPLETE.md) for details.
 
