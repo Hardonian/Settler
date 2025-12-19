@@ -325,7 +325,7 @@ export async function syncSubscription(stripeSubscription: Stripe.Subscription):
   }
 
   // Get plan code from metadata or price
-  const planCode = (stripeSubscription.metadata?.planCode || 'free') as PlanCode;
+  const planCode = (stripeSubscription.metadata?.planCode || 'starter') as PlanCode;
   const planConfig = getPlanConfig(planCode);
   if (!planConfig) {
     // eslint-disable-next-line no-console
@@ -335,9 +335,10 @@ export async function syncSubscription(stripeSubscription: Stripe.Subscription):
 
   // Map to legacy planId for compatibility
   const planIdMap: Record<PlanCode, string> = {
-    free: 'base',
-    pro: 'pro',
+    starter: 'base',
+    growth: 'pro',
     scale: 'enterprise',
+    enterprise: 'enterprise',
   };
   const planId = planIdMap[planCode] || 'base';
 

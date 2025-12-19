@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { getCorrelationId, createLogger } from '@/lib/monitoring/correlation';
 
-export type ServiceType = 'reconcile' | 'receipts' | 'featureFlags' | 'playground';
+export type ServiceType = 'reconcile' | 'exceptions';
 
 interface UsageLimitCheck {
   allowed: boolean;
@@ -62,15 +62,16 @@ export async function checkUsageLimit(
         },
       });
 
-      // Default limits based on plan (free tier)
+      // Default limits based on plan (starter tier)
       const defaultLimits: Record<ServiceType, number> = {
-        reconcile: 1000,
-        receipts: 100,
-        featureFlags: 10,
-        playground: 50,
+        reconcile: 10000, // Starter plan: 10k reconciliations included
+        exceptions: -1, // Exception limits calculated dynamically as percentage of reconciliation volume
       };
 
-      const limit = subscription?.planId === 'pro' ? -1 : defaultLimits[service]; // -1 = unlimited
+      // Get plan code to determine limit
+      const planId = subscription?.planId || 'base';
+      const isPaidPlan = planId !== 'base';
+      const limit = isPaidPlan ? -1 : defaultLimits[service]; // -1 = unlimited for paid plans
 
       counter = await prisma.usageCounter.create({
         data: {

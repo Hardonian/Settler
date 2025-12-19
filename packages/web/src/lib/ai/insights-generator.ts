@@ -37,15 +37,14 @@ async function generateCostInsights(
   const insights: Insight[] = [];
 
   try {
-    const planCode = await getAccountPlanCode(billingAccountId).catch(() => 'free');
+    const planCode = await getAccountPlanCode(billingAccountId).catch(() => 'starter');
     const planConfig = getPlanConfig(planCode);
 
-    // Check if user is on free plan but using a lot
-    if (planCode === 'free') {
-      const services: Array<'reconcile' | 'receipts' | 'featureFlags'> = [
+    // Check if user is on starter plan but using a lot
+    if (planCode === 'starter') {
+      const services: Array<'reconcile' | 'exceptions'> = [
         'reconcile',
-        'receipts',
-        'featureFlags',
+        'exceptions',
       ];
 
       let totalUsage = 0;
@@ -70,9 +69,9 @@ async function generateCostInsights(
           id: `cost-optimization-${billingAccountId}-upgrade`,
           type: 'cost_optimization',
           severity: 'warning',
-          title: 'Consider Upgrading to Pro',
-          description: `You're using ${Math.round(usagePercent)}% of your free plan limits. Upgrading to Pro would give you 100x more capacity.`,
-          impact: 'Prevent service interruptions and get priority support',
+          title: 'Consider Upgrading to Growth',
+          description: `You're using ${Math.round(usagePercent)}% of your starter plan limits. Upgrading to Growth would give you 10x more capacity.`,
+          impact: 'Prevent service interruptions and scale with your business',
           action: {
             label: 'View Plans',
             url: '/pricing',
@@ -102,7 +101,7 @@ async function generateCostInsights(
     }
 
     // If user is paying but not using much
-    if (planCode !== 'free' && Object.keys(serviceUsage).length === 0) {
+    if (planCode !== 'starter' && Object.keys(serviceUsage).length === 0) {
       insights.push({
         id: `cost-optimization-${billingAccountId}-downgrade`,
         type: 'cost_optimization',

@@ -90,7 +90,7 @@ export async function checkEntitlement(
       remainingQuota: 0,
       currentUsage: 0,
       limit: 0,
-      planCode: 'free',
+      planCode: 'starter',
     };
   }
 

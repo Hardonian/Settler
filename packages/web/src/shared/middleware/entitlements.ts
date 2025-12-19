@@ -28,11 +28,8 @@ export function getServiceFromEventType(eventType: string): ServiceCode | null {
   if (eventType.startsWith('settler-reconcile')) {
     return 'reconcile';
   }
-  if (eventType.startsWith('settler-receipts')) {
-    return 'receipts';
-  }
-  if (eventType.startsWith('settler-feature-flags')) {
-    return 'featureFlags';
+  if (eventType.startsWith('settler-exception:review')) {
+    return 'exceptions';
   }
   return null;
 }
@@ -56,13 +53,13 @@ export async function checkRequestEntitlement(
     };
   }
 
-  if (!['reconcile', 'receipts', 'featureFlags'].includes(service)) {
+  if (!['reconcile', 'exceptions'].includes(service)) {
     return {
       allowed: false,
       error: {
         error: 'Invalid Service',
         code: 'invalid_service',
-        message: `Invalid service code: ${service}`,
+        message: `Invalid service code: ${service}. Only 'reconcile' and 'exceptions' are supported.`,
       },
     };
   }
