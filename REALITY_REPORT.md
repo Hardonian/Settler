@@ -498,26 +498,95 @@ The canonical data layer consists of four tables that serve as the single source
 
 ---
 
-## 30/60/90-Day Plan
+## Next Steps - All Outlined
+
+### ✅ Setup Steps Completed
+
+1. ✅ **Database Migration Created**
+   - File: `supabase/migrations/20260203000000_reality_system_canonical_data.sql`
+   - Status: Ready to apply
+
+2. ✅ **Edge Functions Created**
+   - `collect-reality-metrics`: Ready to deploy
+   - `weekly-reality-loop`: Ready to deploy
+
+3. ✅ **Cron Jobs Migration Created**
+   - File: `supabase/migrations/20260203000001_reality_system_cron_jobs.sql`
+   - Alternative: GitHub Actions workflow (`.github/workflows/reality-system.yml`)
+
+4. ✅ **Setup Script Created**
+   - File: `scripts/setup-reality-system.sh`
+   - Automates all deployment steps
+
+5. ✅ **Validation Script Enhanced**
+   - File: `scripts/validate-reality-phases.ts`
+   - Supports all phases 5-15
+   - Generates evidence documents automatically
+
+6. ✅ **Documentation Complete**
+   - README: `/docs/reality-system/README.md`
+   - Deployment Guide: `/docs/reality-system/DEPLOYMENT.md`
+   - Quick Start: `/docs/reality-system/QUICK_START.md`
+   - Checklist: `/docs/reality-system/NEXT_STEPS_CHECKLIST.md`
+
+### 🔄 Deployment Steps (Ready to Execute)
+
+1. **Apply Database Migration**
+   ```bash
+   # Via Supabase Dashboard SQL Editor OR
+   supabase db push
+   ```
+
+2. **Deploy Edge Functions**
+   ```bash
+   supabase functions deploy collect-reality-metrics
+   supabase functions deploy weekly-reality-loop
+   # OR use setup script
+   ./scripts/setup-reality-system.sh
+   ```
+
+3. **Schedule Automated Jobs**
+   - Apply cron migration OR
+   - Configure GitHub Actions secrets OR
+   - Set up external cron service
+
+4. **Collect Initial Metrics**
+   ```bash
+   curl -X POST "${SUPABASE_URL}/functions/v1/collect-reality-metrics" \
+     -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}"
+   ```
+
+5. **Run Validation Phases**
+   ```bash
+   # Single phase
+   npx tsx scripts/validate-reality-phases.ts 5
+   
+   # All phases
+   npx tsx scripts/validate-reality-phases.ts all
+   ```
+
+### 30/60/90-Day Plan
 
 ### 30 Days
 1. ✅ Complete Phase 0-4 (DONE)
-2. ⏳ Run metric collection function hourly
-3. ⏳ Complete Phase 5 (Money Reality)
-4. ⏳ Complete Phase 6 (User Reality)
-5. ⏳ Generate first weekly snapshot
+2. ✅ All setup steps outlined (DONE)
+3. ⏳ Apply migrations and deploy functions
+4. ⏳ Run metric collection function hourly
+5. ⏳ Complete Phase 5-15 validations
+6. ⏳ Generate first weekly snapshot
 
 ### 60 Days
-1. ⏳ Complete Phase 7-10 (Isolation, Failure, Deployment, Admin)
+1. ⏳ All validation phases executed
 2. ⏳ Achieve 80%+ PROVEN metrics
 3. ⏳ Zero broken metrics
 4. ⏳ All invariants verified
+5. ⏳ All evidence documents generated
 
 ### 90 Days
-1. ⏳ Complete Phase 11-15 (Economics, Legal, GTM, Competitive, Diligence)
-2. ⏳ Achieve 95%+ PROVEN metrics
-3. ⏳ Full investor readiness
-4. ⏳ All evidence documents generated
+1. ⏳ Achieve 95%+ PROVEN metrics
+2. ⏳ Full investor readiness (score ≥ 7/10)
+3. ⏳ Weekly snapshots generating automatically
+4. ⏳ System fully operational and self-maintaining
 
 ---
 
