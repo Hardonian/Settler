@@ -38,6 +38,7 @@
     "qa:routes": "tsx scripts/qa-generate-route-registry.ts",
     "qa:links": "tsx scripts/qa-extract-links.ts && tsx scripts/qa-check-dead-links.ts",
     "qa:smoke": "playwright test tests/e2e/smoke.spec.ts",
+    "qa:reality": "playwright test tests/e2e/site-reality-audit.spec.ts",
     "qa:visual": "playwright test tests/e2e/visual.spec.ts --project=visual-regression",
     "qa:visual:update": "playwright test tests/e2e/visual.spec.ts --project=visual-regression --update-snapshots",
     "qa:a11y": "playwright test tests/e2e/a11y.spec.ts",

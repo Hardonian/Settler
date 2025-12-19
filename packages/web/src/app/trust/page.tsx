@@ -16,16 +16,36 @@ export const metadata: Metadata = {
 };
 
 async function getRealityData() {
+  // CRITICAL: Never throw - always return null on failure
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/public/reality`, {
-      cache: 'no-store',
-    });
-    if (response.ok) {
-      return await response.json();
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    
+    // Use timeout to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    
+    try {
+      const response = await fetch(`${baseUrl}/api/public/reality`, {
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      // If fetch fails (network error, timeout, etc.), return null
+      console.warn('[Trust] Failed to fetch reality data (non-fatal):', 
+        fetchError instanceof Error ? fetchError.message : 'Unknown error'
+      );
     }
   } catch (error) {
-    console.error('Failed to fetch reality data:', error);
+    // Catch any other errors
+    console.warn('[Trust] Error in getRealityData (non-fatal):', 
+      error instanceof Error ? error.message : 'Unknown error'
+    );
   }
   return null;
 }

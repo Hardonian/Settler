@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Activity, Key, Receipt, ToggleLeft, ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
 import { getUsageSummary } from '@/domain/console/usage';
 import { listApiKeys } from '@/domain/console/apiKeys';
 import { listReceipts } from '@/domain/console/receipts';
@@ -92,6 +91,7 @@ async function ConsoleOverviewContent() {
 
     // Public minimal mode - show useful content even without auth
     // Also enable safe mode if SAFE_MODE env var is set
+    // CRITICAL: In safe mode, skip all database/backend calls
     if (!user || isSafeMode()) {
       return (
         <div className="space-y-8">
@@ -216,15 +216,13 @@ async function ConsoleOverviewContent() {
     }
 
   // Get billing account with comprehensive error handling
-  let billingAccount;
+  // CRITICAL: Lazy-load Prisma to prevent import-time failures
+  let billingAccount = null;
   try {
-    // Check if Prisma is available and database is accessible
-    if (!prisma || typeof prisma.billingAccount === 'undefined') {
-      console.warn('[Console] Prisma client not available, using fallback');
-      // Continue without billing account - use user.id as fallback
-      billingAccount = null;
-    } else {
-      // Wrap Prisma call in additional try-catch to handle connection errors
+    // Lazy import Prisma - if it fails, we continue without it
+    const { prisma } = await import('@/shared/db/prismaClient').catch(() => ({ prisma: null }));
+    
+    if (prisma && typeof prisma.billingAccount !== 'undefined') {
       try {
         billingAccount = await Promise.race([
           prisma.billingAccount.findFirst({
@@ -240,55 +238,34 @@ async function ConsoleOverviewContent() {
         // Don't throw - continue with null billingAccount
         billingAccount = null;
       }
+      
+      // Create billing account automatically if missing (graceful degradation)
+      if (!billingAccount) {
+        try {
+          billingAccount = await Promise.race([
+            prisma.billingAccount.create({
+              data: {
+                userId: user.id,
+                email: user.email || '',
+                status: 'active',
+              },
+            }),
+            // Timeout after 5 seconds
+            new Promise<never>((_, reject) => 
+              setTimeout(() => reject(new Error('Database create timeout')), 5000)
+            ),
+          ]);
+        } catch (createError) {
+          console.error('[Console] Failed to create billing account:', createError);
+          // Don't crash - continue with null billingAccount
+          billingAccount = null;
+        }
+      }
     }
   } catch (error) {
-    console.error('[Console] Failed to fetch billing account:', error);
-    // Don't return early - continue with null billingAccount
+    console.error('[Console] Failed to load Prisma or fetch billing account:', error);
+    // Continue without billing account - use user.id as fallback
     billingAccount = null;
-  }
-  
-  // If Prisma completely failed, show a helpful message but don't crash
-  if (!billingAccount && (!prisma || typeof prisma.billingAccount === 'undefined')) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-slate-600 dark:text-slate-400 mb-4">
-          Database connection unavailable. Some features may be limited.
-        </p>
-        <div className="flex gap-2 justify-center">
-          <Button asChild>
-            <Link href="/pricing">View Pricing</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/">Go Home</Link>
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!billingAccount && prisma && typeof prisma.billingAccount !== 'undefined') {
-    // Create billing account automatically if missing (graceful degradation)
-    try {
-      // Wrap in timeout to prevent hanging
-      billingAccount = await Promise.race([
-        prisma.billingAccount.create({
-          data: {
-            userId: user.id,
-            email: user.email || '',
-            status: 'active',
-          },
-        }),
-        // Timeout after 5 seconds
-        new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Database create timeout')), 5000)
-        ),
-      ]);
-    } catch (createError) {
-      console.error('[Console] Failed to create billing account:', createError);
-      // Don't crash - continue with null billingAccount and handle gracefully below
-      // The domain functions will handle missing billingAccount gracefully
-      billingAccount = null;
-    }
   }
   
   // If we still don't have a billing account, use a fallback ID for queries

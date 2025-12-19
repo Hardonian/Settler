@@ -14,38 +14,38 @@ export default function PlaygroundError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to monitoring service in production
     if (process.env.NODE_ENV === 'production') {
       console.error('Playground error:', {
         message: error.message,
         digest: error.digest,
-        stack: error.stack,
       });
     }
   }, [error]);
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="flex items-center justify-center min-h-[60vh] p-6">
       <Card className="max-w-md">
         <CardHeader>
           <div className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-red-600" />
-            <CardTitle>Something went wrong</CardTitle>
+            <CardTitle>Failed to load playground</CardTitle>
           </div>
           <CardDescription>
-            We encountered an error loading the Playground.
+            We encountered an error loading the playground.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             {error.message || 'An unexpected error occurred. Please try again.'}
           </p>
+          {error.digest && (
+            <p className="text-xs text-slate-500 dark:text-slate-500 font-mono">
+              Error ID: {error.digest}
+            </p>
+          )}
           <div className="flex gap-2">
             <Button onClick={reset} variant="default">
               Try Again
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/playground">Go to Playground</Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/">Go Home</Link>

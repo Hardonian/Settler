@@ -320,6 +320,11 @@ jobs:
         env:
           BASE_URL: http://localhost:3000
         continue-on-error: true
+      - name: Run site reality audit
+        run: npm run qa:reality
+        env:
+          BASE_URL: http://localhost:3000
+          E2E_BASE_URL: http://localhost:3000
       - name: Upload test results
         uses: actions/upload-artifact@v3
         if: always()
