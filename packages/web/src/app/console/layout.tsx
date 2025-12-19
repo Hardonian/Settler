@@ -27,6 +27,21 @@ export default async function ConsoleRootLayout({
     timestamp: new Date().toISOString(),
   };
   
+  // SAFE_MODE: Force public minimal mode
+  const isSafeMode = process.env.SAFE_MODE === 'true' || process.env.SAFE_MODE === '1';
+  if (isSafeMode) {
+    return (
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <ConsolePublicOverview />
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
   
   // Environment safety check using validator
   const envValidation = validateSupabaseEnv();

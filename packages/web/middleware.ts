@@ -30,6 +30,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     return response;
   }
 
+  // SAFE_MODE: Force public minimal mode for /console and /playground
+  const isSafeMode = process.env.SAFE_MODE === 'true' || process.env.SAFE_MODE === '1';
+  const safeModeRoutes = ['/console', '/playground'];
+  const isSafeModeRoute = isSafeMode && safeModeRoutes.some(route => 
+    request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(`${route}/`)
+  );
+
   // Public routes that should never require auth or throw errors
   // These routes must always render, even if Supabase/auth fails
   const publicRoutes = [
@@ -39,11 +46,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     '/cookbooks',
     '/runbooks',
     '/schematics',
+    '/p', // CMS public pages
   ];
   
   const isPublicRoute = publicRoutes.some(route => 
     request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(`${route}/`)
-  );
+  ) || isSafeModeRoute;
 
   let response = NextResponse.next({
     request: {

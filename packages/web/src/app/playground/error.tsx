@@ -14,7 +14,6 @@ export default function PlaygroundError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to monitoring service in production
     if (process.env.NODE_ENV === 'production') {
       console.error('Playground error:', {
         message: error.message,
