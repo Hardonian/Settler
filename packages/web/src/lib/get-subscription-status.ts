@@ -1,5 +1,5 @@
 import { createClient } from './supabase/server';
-import { SubscriptionTier, SubscriptionStatus, determineSubscriptionTier, getAccessLevel } from './subscription-access';
+import { SubscriptionStatus, determineSubscriptionTier } from './subscription-access';
 
 /**
  * Get current user's subscription status
@@ -29,7 +29,7 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
     .eq('status', 'active')
     .single();
   
-  tenantId = membership?.tenant_id || null;
+  tenantId = (membership as { tenant_id?: string } | null)?.tenant_id || null;
   
   // If no membership, try to get from billing_accounts
   if (!tenantId) {
@@ -40,7 +40,7 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
       .eq('status', 'active')
       .single();
     
-    tenantId = billingAccount?.tenant_id || null;
+    tenantId = (billingAccount as { tenant_id?: string } | null)?.tenant_id || null;
   }
 
   // Get subscription
@@ -69,17 +69,18 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
       .limit(1)
       .maybeSingle();
     
-    subscription = subData ?? null;
+    subscription = (subData as typeof subscription) ?? null;
 
     // Get billing account
-    if (subData?.billing_account_id) {
+    const billingAccountId = (subData as { billing_account_id?: string } | null)?.billing_account_id;
+    if (billingAccountId) {
       const { data: billingData } = await supabase
         .from('billing_accounts')
         .select('id, status')
-        .eq('id', subData.billing_account_id)
+        .eq('id', billingAccountId)
         .single();
       
-      billingAccount = billingData;
+      billingAccount = (billingData as typeof billingAccount) ?? null;
     } else {
       // Try to get billing account by tenant
       const { data: billingData } = await supabase
@@ -91,7 +92,7 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
         .limit(1)
         .single();
       
-      billingAccount = billingData;
+      billingAccount = (billingData as typeof billingAccount) ?? null;
     }
   } else {
     // Fallback: try to get subscription by user_id
@@ -103,28 +104,28 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
       .limit(1)
       .maybeSingle();
     
-    subscription = subData ?? null;
+    subscription = (subData as typeof subscription) ?? null;
 
-    if (subscription?.billing_account_id) {
+    const subscriptionBillingAccountId = (subscription as { billing_account_id?: string } | null)?.billing_account_id;
+    if (subscriptionBillingAccountId) {
       const { data: billingData } = await supabase
         .from('billing_accounts')
         .select('id, status')
-        .eq('id', subscription.billing_account_id)
+        .eq('id', subscriptionBillingAccountId)
         .single();
       
-      billingAccount = billingData;
+      billingAccount = (billingData as typeof billingAccount) ?? null;
     }
   }
 
   const tier = determineSubscriptionTier(subscription, billingAccount);
-  const access = getAccessLevel(tier);
 
   return {
     tier,
     hasSubscription: !!subscription,
     isPaid: tier === 'subscribed_paid' || tier === 'enterprise',
     isEnterprise: tier === 'enterprise',
-    planName: subscription?.plan_name,
-    subscriptionId: subscription?.id,
+    planName: (subscription as { plan_name?: string } | null)?.plan_name,
+    subscriptionId: (subscription as { id?: string } | null)?.id,
   };
 }

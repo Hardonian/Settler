@@ -58,8 +58,8 @@ export async function getAccountPlanCode(
     return mapLegacyPlanId(subscription.planId);
   }
 
-  // Default to free plan
-  return 'free';
+  // Default to starter plan
+  return 'starter';
 }
 
 /**

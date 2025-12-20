@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Code, Play, Copy, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Play, Copy, Check } from 'lucide-react';
 import { SubscriptionGate } from '@/components/console/SubscriptionGate';
 
 /**
@@ -119,15 +120,17 @@ export default function APITestPage() {
   const example = service.examples[selectedExample];
   
   useEffect(() => {
-    setCode(example.code);
-    setSelectedExample(0);
+    if (example) {
+      setCode(example.code);
+      setSelectedExample(0);
+    }
   }, [selectedService]);
   
   useEffect(() => {
     if (example) {
       setCode(example.code);
     }
-  }, [selectedExample, selectedService]);
+  }, [selectedExample, selectedService, example]);
   
   async function executeCode() {
     setLoading(true);
@@ -212,8 +215,8 @@ export default function APITestPage() {
           <div className="bg-white rounded-lg border">
             <div className="flex justify-between items-center p-4 border-b">
               <div>
-                <h2 className="font-semibold">{example.title}</h2>
-                <p className="text-sm text-gray-500">{example.method} {example.endpoint}</p>
+                <h2 className="font-semibold">{example?.title || ''}</h2>
+                <p className="text-sm text-gray-500">{example?.method || ''} {example?.endpoint || ''}</p>
               </div>
               <div className="flex gap-2">
                 <button

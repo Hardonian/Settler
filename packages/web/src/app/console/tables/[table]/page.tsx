@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
 import { SubscriptionGate } from '@/components/console/SubscriptionGate';
 
 interface TableRecord {
@@ -197,7 +196,7 @@ export default function TablePage() {
   }
   
   const displayName = table.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-  const columns = data.length > 0 ? Object.keys(data[0]) : [];
+  const columns = data.length > 0 && data[0] ? Object.keys(data[0]) : [];
   const canEdit = subscription?.tier === 'subscribed_paid' || subscription?.tier === 'enterprise';
   
   return (

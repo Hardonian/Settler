@@ -9,7 +9,7 @@ import { getCurrentUsage } from '@/lib/usage/tracking';
 import { getAccountPlanCode } from '@/domain/billing/entitlements';
 
 export interface UsageAlert {
-  service: 'reconcile' | 'receipts' | 'featureFlags' | 'playground';
+  service: 'reconcile' | 'receipts' | 'featureFlags' | 'playground' | 'exceptions';
   current: number;
   limit: number;
   remaining: number;

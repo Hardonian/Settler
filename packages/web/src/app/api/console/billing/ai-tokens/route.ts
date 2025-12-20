@@ -11,7 +11,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
 import { getCorrelationId, addCorrelationHeaders } from '@/lib/monitoring/correlation';
 
 export const dynamic = 'force-dynamic';
@@ -57,7 +56,7 @@ export async function GET() {
  * POST - Purchase AI token add-on
  * DEPRECATED: Returns error
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   const correlationId = await getCorrelationId();
 
   try {

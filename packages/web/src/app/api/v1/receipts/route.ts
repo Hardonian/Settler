@@ -103,8 +103,8 @@ export async function POST(request: NextRequest) {
         return addCorrelationHeaders(response, correlationId);
     }
 
-    // Check entitlement
-    const entitlement = await checkRequestEntitlement(auth, 'receipts');
+    // Check entitlement (receipts uses reconcile entitlement)
+    const entitlement = await checkRequestEntitlement(auth, 'reconcile');
     if (!entitlement.allowed && entitlement.error) {
        const response = createEntitlementErrorResponse(entitlement.error);
        return addCorrelationHeaders(response, correlationId);

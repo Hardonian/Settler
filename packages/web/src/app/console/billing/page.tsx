@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { AITokensWidget } from '@/components/console/AITokensWidget';
 
 interface BillingData {
   billingAccount: {
@@ -258,7 +257,7 @@ export default function BillingPage() {
                     style={{ width: `${bar.percentage}%` }}
                   />
                 </div>
-                {bar.service === 'Exceptions Requiring Review' && bar.overage > 0 && (
+                {bar.service === 'Exceptions Requiring Review' && bar.overage && bar.overage > 0 && (
                   <p className="text-xs text-amber-600 dark:text-amber-400">
                     {bar.overage.toLocaleString()} exceptions over threshold. Overage: ${(bar.overage * 0.10).toFixed(2)}
                   </p>

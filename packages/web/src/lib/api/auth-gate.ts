@@ -14,8 +14,6 @@ import { ErrorCode } from "@/lib/api/error-handler";
 import { getSubscriptionStatus } from "@/lib/get-subscription-status";
 import { SubscriptionTier } from "@/lib/subscription-access";
 
-import { SubscriptionTier } from '@/lib/subscription-access';
-
 export interface AuthGateOptions {
   requireAuth?: boolean;
   requireAdmin?: boolean;

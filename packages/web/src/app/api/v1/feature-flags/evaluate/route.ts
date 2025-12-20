@@ -57,11 +57,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check entitlement (Feature Flags has generous limits, but still check)
-    const entitlement = await checkRequestEntitlement(auth, 'featureFlags');
-    if (!entitlement.allowed && entitlement.error) {
-      return createEntitlementErrorResponse(entitlement.error);
-    }
+    // Feature Flags doesn't require entitlement check - it's always available
+    // Skip entitlement check for feature flags
 
     // Enforce usage limits (for authenticated users)
     if (isAuthenticated && auth?.billingAccountId) {
