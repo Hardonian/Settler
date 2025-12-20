@@ -505,19 +505,19 @@ test.describe('DOM Reality Enforcement', () => {
         const hydratedNodeCount = (postHydrationDOM.match(/<[^>]+>/g) || []).length;
         const finalNodeCount = (finalDOM.match(/<[^>]+>/g) || []).length;
         
-        const visibleElements = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('*')).filter((el) => {
-            const htmlEl = el as HTMLElement;
-            const computed = window.getComputedStyle(htmlEl);
-            return (
-              computed.display !== 'none' &&
-              computed.visibility !== 'hidden' &&
-              computed.opacity !== '0' &&
-              htmlEl.offsetWidth > 0 &&
-              htmlEl.offsetHeight > 0
-            ).length;
-          }).length;
-        });
+      const visibleElements = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll('*')).filter((el) => {
+          const htmlEl = el as HTMLElement;
+          const computed = window.getComputedStyle(htmlEl);
+          return (
+            computed.display !== 'none' &&
+            computed.visibility !== 'hidden' &&
+            computed.opacity !== '0' &&
+            htmlEl.offsetWidth > 0 &&
+            htmlEl.offsetHeight > 0
+          );
+        }).length;
+      });
         
         const metrics: DOMMetrics = {
           ssrNodeCount,

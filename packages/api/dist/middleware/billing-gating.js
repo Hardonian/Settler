@@ -9,6 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.featureGate = featureGate;
 exports.checkUsageQuotaForEvent = checkUsageQuotaForEvent;
 exports.checkIntegrationAccess = checkIntegrationAccess;
+exports.checkPilotStatus = checkPilotStatus;
+exports.isPilotSubscription = isPilotSubscription;
+exports.isPilotExpired = isPilotExpired;
+exports.getPilotDaysRemaining = getPilotDaysRemaining;
 const client_1 = require("../infrastructure/supabase/client");
 const logger_1 = require("../utils/logger");
 // Plan limits configuration
@@ -113,6 +117,7 @@ async function getBillingAccount(userId, _tenantId) {
 }
 /**
  * Get active subscription for billing account
+ * Includes trialing subscriptions (pilots)
  */
 async function getActiveSubscription(billingAccountId) {
     try {
@@ -120,7 +125,7 @@ async function getActiveSubscription(billingAccountId) {
             .from("subscriptions")
             .select("*")
             .eq("billing_account_id", billingAccountId)
-            .eq("status", "active")
+            .in("status", ["active", "trialing"])
             .order("created_at", { ascending: false })
             .limit(1)
             .single();
@@ -133,6 +138,56 @@ async function getActiveSubscription(billingAccountId) {
         (0, logger_1.logError)("Error fetching subscription", error);
         return null;
     }
+}
+/**
+ * Check if subscription is in pilot/trial period
+ */
+function isPilotSubscription(subscription) {
+    if (!subscription) {
+        return false;
+    }
+    // Check if status is trialing
+    if (subscription.status === "trialing") {
+        return true;
+    }
+    // Check if trial_end exists and is in the future
+    if (subscription.trial_end) {
+        const trialEnd = new Date(subscription.trial_end);
+        const now = new Date();
+        return trialEnd > now;
+    }
+    return false;
+}
+/**
+ * Check if pilot/trial has expired
+ */
+function isPilotExpired(subscription) {
+    if (!subscription) {
+        return false;
+    }
+    // Check if trial_end exists and is in the past
+    if (subscription.trial_end) {
+        const trialEnd = new Date(subscription.trial_end);
+        const now = new Date();
+        // Add 7-day grace period
+        const gracePeriodEnd = new Date(trialEnd);
+        gracePeriodEnd.setDate(gracePeriodEnd.getDate() + 7);
+        return now > gracePeriodEnd;
+    }
+    return false;
+}
+/**
+ * Get days remaining in pilot/trial
+ */
+function getPilotDaysRemaining(subscription) {
+    if (!subscription || !subscription.trial_end) {
+        return null;
+    }
+    const trialEnd = new Date(subscription.trial_end);
+    const now = new Date();
+    const diffMs = trialEnd.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
 }
 /**
  * Check if add-on is purchased
@@ -225,6 +280,22 @@ function featureGate(featureName) {
                     upgrade_required: true,
                 });
             }
+            // Check if pilot has expired
+            if (isPilotExpired(subscription)) {
+                return res.status(403).json({
+                    error: "Pilot Expired",
+                    message: "Your pilot has expired. Please upgrade to a paid plan to continue using Settler.",
+                    upgrade_required: true,
+                    pilot_expired: true,
+                    days_expired: getPilotDaysRemaining(subscription) ? Math.abs(getPilotDaysRemaining(subscription) || 0) : null,
+                });
+            }
+            // Check if pilot is expiring soon (warn but allow)
+            const daysRemaining = getPilotDaysRemaining(subscription);
+            if (isPilotSubscription(subscription) && daysRemaining !== null && daysRemaining <= 7) {
+                // Add warning header but allow access
+                res.setHeader("X-Pilot-Warning", `Your pilot expires in ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}. Please upgrade to continue.`);
+            }
             // Get feature gate configuration
             const gate = FEATURE_GATES[featureName];
             if (!gate) {
@@ -258,24 +329,29 @@ function featureGate(featureName) {
             }
             // Check usage requirement
             if (gate.requiresUsage) {
-                const currentUsage = await getCurrentUsage(billingAccount.id, gate.requiresUsage.eventType, subscription);
-                const planLimits = PLAN_LIMITS[subscription.plan_id || "base"] || PLAN_LIMITS.base;
-                if (!planLimits) {
-                    return res.status(500).json({
-                        error: "Internal Server Error",
-                        message: "Plan limits not configured",
-                    });
+                // Pilots have unlimited usage (within reason)
+                const isPilot = isPilotSubscription(subscription);
+                if (!isPilot) {
+                    const currentUsage = await getCurrentUsage(billingAccount.id, gate.requiresUsage.eventType, subscription);
+                    const planLimits = PLAN_LIMITS[subscription.plan_id || "base"] || PLAN_LIMITS.base;
+                    if (!planLimits) {
+                        return res.status(500).json({
+                            error: "Internal Server Error",
+                            message: "Plan limits not configured",
+                        });
+                    }
+                    const limit = planLimits[gate.requiresUsage.eventType];
+                    if (limit > 0 && currentUsage >= limit) {
+                        return res.status(403).json({
+                            error: "Usage Limit Exceeded",
+                            message: `You have reached your ${gate.requiresUsage.eventType} limit for this billing period`,
+                            current_usage: currentUsage,
+                            limit: limit,
+                            upgrade_required: true,
+                        });
+                    }
                 }
-                const limit = planLimits[gate.requiresUsage.eventType];
-                if (limit > 0 && currentUsage >= limit) {
-                    return res.status(403).json({
-                        error: "Usage Limit Exceeded",
-                        message: `You have reached your ${gate.requiresUsage.eventType} limit for this billing period`,
-                        current_usage: currentUsage,
-                        limit: limit,
-                        upgrade_required: true,
-                    });
-                }
+                // For pilots, allow unlimited usage (no limit check)
             }
             // All checks passed, allow access
             next();
@@ -307,6 +383,19 @@ async function checkUsageQuotaForEvent(userId, eventType, quantity = 1) {
         if (!subscription) {
             // Allow operation if no subscription (grace period)
             return { allowed: true };
+        }
+        // Check if pilot has expired
+        if (isPilotExpired(subscription)) {
+            return {
+                allowed: false,
+                reason: "Pilot expired. Please upgrade to a paid plan.",
+                pilot_expired: true,
+            };
+        }
+        // Pilots have unlimited usage (within reason)
+        const isPilot = isPilotSubscription(subscription);
+        if (isPilot) {
+            return { allowed: true, is_pilot: true };
         }
         // Get current usage
         const currentUsage = await getCurrentUsage(billingAccount.id, eventType, subscription);
@@ -392,6 +481,48 @@ function checkIntegrationAccess(integrationId) {
                 error: "Internal Server Error",
                 message: "Failed to verify integration access",
             });
+        }
+    };
+}
+/**
+ * Middleware to check pilot status and expiration
+ * Use this to add pilot warnings/errors to responses
+ */
+function checkPilotStatus() {
+    return async (req, res, next) => {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                return next();
+            }
+            const billingAccount = await getBillingAccount(userId, req.tenantId);
+            if (!billingAccount) {
+                return next();
+            }
+            const subscription = await getActiveSubscription(billingAccount.id);
+            if (!subscription) {
+                return next();
+            }
+            // Check if pilot has expired
+            if (isPilotExpired(subscription)) {
+                // Don't block, but add warning header
+                res.setHeader("X-Pilot-Expired", "true");
+                return next();
+            }
+            // Check if pilot is expiring soon
+            const daysRemaining = getPilotDaysRemaining(subscription);
+            if (isPilotSubscription(subscription) && daysRemaining !== null) {
+                if (daysRemaining <= 7) {
+                    res.setHeader("X-Pilot-Warning", `Your pilot expires in ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}. Please upgrade to continue.`);
+                }
+                res.setHeader("X-Pilot-Days-Remaining", daysRemaining.toString());
+            }
+            next();
+        }
+        catch (error) {
+            (0, logger_1.logError)("Error checking pilot status", error);
+            // Don't block on error
+            next();
         }
     };
 }

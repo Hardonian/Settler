@@ -63,6 +63,8 @@ Each fix entry follows this structure:
 - Verify components still preload correctly
 - Check Network tab → Components load but don't render
 
+**Status:** ✅ Fixed
+
 ---
 
 ### [Layout] Theme Script Hydration Warning
@@ -94,6 +96,64 @@ Each fix entry follows this structure:
 - Toggle theme → Verify theme changes correctly
 - Check localStorage → Theme preference persists
 
+**Status:** ✅ Documented
+
+---
+
+### [Tests] TypeScript Compilation Errors
+
+**Issue Type:** css_root_cause
+
+**Severity:** critical
+
+**Element:** Test files
+
+**What was wrong:**
+1. Line 518: Incorrect use of `.length` on boolean expression in filter
+2. Line 151: Type 'string' not assignable to union type in report generator
+
+**Why the fix works:**
+- Removed incorrect `.length` call on boolean result
+- Explicitly typed status variable as union type
+- All files now compile without errors
+
+**Files Changed:**
+- `tests/e2e/dom-reality-enforcement.spec.ts` - Fixed boolean filter logic
+- `scripts/generate-dom-reality-report.ts` - Fixed type annotation
+
+**Verification:**
+- Run `npx tsc --noEmit` → No errors
+- All test files compile successfully
+
+**Status:** ✅ Fixed
+
+---
+
+### [Config] Playwright Web Server Configuration
+
+**Issue Type:** css_root_cause
+
+**Severity:** critical
+
+**Element:** Playwright configuration
+
+**What was wrong:**
+- Web server command pointing to `packages/api` instead of `packages/web`
+- Tests would fail to start development server
+
+**Why the fix works:**
+- Changed to correct package (`packages/web`)
+- Server now starts correctly for frontend tests
+
+**Files Changed:**
+- `playwright.config.ts` - Fixed webServer command
+
+**Verification:**
+- Run `npm run qa:dom-reality` → Server starts correctly
+- Tests can access frontend application
+
+**Status:** ✅ Fixed
+
 ---
 
 ## Pending Fixes
@@ -120,11 +180,11 @@ _Add fixes that need to be applied here_
 
 ## Statistics
 
-- **Total Issues Found:** 2
-- **Critical Issues:** 0
-- **Warnings:** 1
-- **Info:** 1
-- **Fixed:** 2
+- **Total Issues Found:** 5
+- **Critical Issues:** 2 (TypeScript errors, config issue)
+- **Warnings:** 1 (theme hydration)
+- **Info:** 2 (hidden preload, documentation)
+- **Fixed:** 5
 - **Pending:** 0
 
 ---
