@@ -1,228 +1,161 @@
-# Verification Commands
+# Settler Implementation Verification Guide
 
-This document lists the exact commands to run locally and in CI to verify the repository is in a "ship it" state.
+## Pre-Verification Checklist
 
-## Prerequisites
+1. ✅ Domain types created (`/lib/domain/types.ts`)
+2. ✅ Judgment layer rules engine (`/lib/judgment/rules.ts`)
+3. ✅ Service layer (`/lib/server/settler/*`)
+4. ✅ Feature flags registry (`/lib/flags/registry.ts`)
+5. ✅ Database migrations created
+6. ✅ API routes created
+7. ⏳ TypeScript compilation
+8. ⏳ Linting
+9. ⏳ Build verification
+10. ⏳ Runtime smoke tests
 
-- Node.js >= 24.0.0
-- npm >= 10.0.0
-- Clean git checkout (or `git clean -fdx` to remove untracked files)
+## Local Verification Steps
 
-## Local Verification
+### 1. TypeScript Compilation
 
-### 1. Clean Install
 ```bash
-# Remove any existing node_modules and lockfiles
-rm -rf node_modules packages/*/node_modules
-rm -f package-lock.json
-
-# Clean install
-npm ci
+cd packages/web
+pnpm typecheck
 ```
 
-**Expected:** No errors, all dependencies installed
+**Expected**: No type errors
 
-### 2. Lint Check
+### 2. Linting
+
 ```bash
-npm run lint
+cd packages/web
+pnpm lint
 ```
 
-**Expected:** No linting errors (warnings acceptable if documented)
+**Expected**: No linting errors (or only auto-fixable warnings)
 
-### 3. Type Check
+### 3. Build Verification
+
 ```bash
-npm run typecheck
+cd packages/web
+pnpm build
 ```
 
-**Expected:** No TypeScript errors
+**Expected**: Build succeeds without errors
 
-### 4. Build
+### 4. Database Migrations
+
 ```bash
-npm run build
+# Apply migrations (if using Supabase CLI)
+supabase migration up
+
+# Or verify migrations exist
+ls supabase/migrations/20260130*.sql
 ```
 
-**Expected:** All packages build successfully, no errors
+**Expected**: 
+- `20260130000000_settler_receipts_hash_chain.sql`
+- `20260130000001_settler_tenant_context_helper.sql`
+- `20260130000002_settler_rls_hardening.sql`
 
-### 5. Tests
-```bash
-npm test
-```
+## Runtime Smoke Tests
 
-**Expected:** All tests pass, or `--passWithNoTests` flag used with justification
+### Test 1: Console Homepage (No 500 Errors)
 
-### 6. Validate Scripts
-```bash
-npm run validate
-```
+1. Start dev server: `pnpm dev`
+2. Navigate to: `http://localhost:3000/console`
+3. **Expected**: Page loads without 500 error
+4. **Expected**: Shows empty state or data gracefully
 
-**Expected:** All validation scripts pass
+### Test 2: Meaningful Changes Feed
 
-### 7. Check for Committed node_modules
-```bash
-# This should return nothing
-git ls-files | grep node_modules
-```
+1. Navigate to: `http://localhost:3000/api/console/meaningful-changes`
+2. **Expected**: Returns `{ changes: [] }` (200 status)
+3. **Expected**: No 500 error even if no data
 
-**Expected:** No output (no node_modules files tracked)
+### Test 3: Reconciliation API
 
-### 8. Verify .gitignore
-```bash
-# Check that node_modules is ignored
-git check-ignore packages/api/node_modules packages/web/node_modules
-```
-
-**Expected:** Both paths are ignored
-
-## CI Verification
-
-### GitHub Actions Workflow
-
-The following workflow should run on every push and PR:
-
-```yaml
-name: Verify Build
-
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-
-jobs:
-  verify:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm run build
-      - run: npm test
-      - name: Check for committed node_modules
-        run: |
-          if git ls-files | grep -q node_modules; then
-            echo "❌ Error: node_modules files are committed to git"
-            git ls-files | grep node_modules
-            exit 1
-          fi
-```
-
-## Vercel Deployment Verification
-
-### Pre-Deployment Checks
-
-1. **Environment Variables**
-   ```bash
-   npm run validate:env:build
-   npm run validate:env:runtime
+1. POST to: `http://localhost:3000/api/console/reconciliation`
+   ```json
+   {
+     "sourceId": "test_source",
+     "targetAdapter": "test_target"
+   }
    ```
+2. **Expected**: Returns reconciliation object or error (not 500)
+3. **Expected**: Error messages are typed and helpful
 
-2. **Build Command**
-   ```bash
-   cd packages/web && npm run build:vercel
-   ```
+### Test 4: Receipts V2 API
 
-3. **API Build**
-   ```bash
-   cd packages/api && npm run build
-   ```
+1. GET: `http://localhost:3000/api/console/receipts-v2`
+2. **Expected**: Returns `{ receipts: [] }` (200 status)
+3. **Expected**: No 500 error
 
-### Post-Deployment Checks
+### Test 5: Feature Flags
 
-1. **Health Endpoint**
-   ```bash
-   curl https://your-domain.vercel.app/health
-   ```
+1. GET: `http://localhost:3000/api/console/feature-flags`
+2. **Expected**: Returns flags array (may be empty)
+3. **Expected**: No 500 error
 
-   **Expected:** JSON response with status, version, timestamp
+### Test 6: RLS Verification (Manual)
 
-2. **Database Health**
-   ```bash
-   curl https://your-domain.vercel.app/api/health/db
-   ```
+1. Create two test tenants
+2. Create user in tenant A
+3. Try to access tenant B's data via API
+4. **Expected**: Returns empty array (RLS blocks access)
+5. **Expected**: No data leakage
 
-   **Expected:** JSON response with database connectivity status
+## Vercel Preview Verification
 
-3. **API Documentation**
-   ```bash
-   curl https://your-domain.vercel.app/api/v1/openapi.json
-   ```
+### Build Check
 
-   **Expected:** Valid OpenAPI JSON schema
+1. Push to branch
+2. Wait for Vercel preview build
+3. **Expected**: Build succeeds
+4. **Expected**: No environment variable errors
 
-## Smoke Tests
+### Runtime Check
 
-### API Smoke Test
-```bash
-npm run test:smoke
-```
+1. Visit preview URL
+2. Navigate to `/console`
+3. **Expected**: Page loads
+4. **Expected**: No 500 errors in Vercel logs
 
-**Expected:** Basic API endpoints respond correctly
+### Environment Variables
 
-### Console Smoke Test (if web UI exists)
-```bash
-npm run test:smoke:console
-```
+Verify these are set in Vercel:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (if needed)
 
-**Expected:** Web UI loads and basic interactions work
+## Production Verification
 
-## Performance Checks
+### Pre-Deploy Checklist
 
-### Build Time
-- Full build should complete in < 5 minutes
-- Incremental builds should be < 1 minute (with Turbo cache)
+- [ ] All migrations applied to production database
+- [ ] RLS policies verified
+- [ ] Feature flags have safe defaults
+- [ ] Error boundaries in place
+- [ ] No hard 500 routes
 
-### Runtime Performance
-- Health endpoint should respond in < 100ms
-- API endpoints should respond in < 500ms (p95)
+### Post-Deploy Monitoring
 
-## Security Checks
+1. Check error rates in Sentry/Vercel logs
+2. Verify no 500 errors for first 24 hours
+3. Monitor API response times
+4. Check RLS is working (no cross-tenant data access)
 
-1. **No Secrets in Code**
-   ```bash
-   # Check for common secret patterns
-   grep -r "api_key\|secret\|password" --include="*.ts" --include="*.js" packages/ | grep -v "node_modules" | grep -v ".test."
-   ```
+## Known Limitations
 
-   **Expected:** No hardcoded secrets (only env var references)
+1. **Receipts table**: May need to be created if using Prisma (currently mixed approach)
+2. **Tenant resolution**: Uses `getPrimaryTenant()` which may need adjustment for multi-tenant
+3. **Reconciliation processing**: Currently returns placeholder - actual processing logic needed
+4. **Meaningful changes**: Queries `recon_results` and `drift_events` - may need unified events table
 
-2. **Dependency Audit**
-   ```bash
-   npm audit --audit-level=moderate
-   ```
+## Follow-Up Tasks
 
-   **Expected:** No moderate or high severity vulnerabilities
-
-## Troubleshooting
-
-### Build Fails
-1. Check Node version: `node --version` (should be >= 24.0.0)
-2. Clear Turbo cache: `rm -rf .turbo`
-3. Clean install: `rm -rf node_modules packages/*/node_modules && npm ci`
-
-### Type Errors
-1. Ensure all workspace packages are built: `npm run build`
-2. Check tsconfig.json references are correct
-3. Verify package.json dependencies are installed
-
-### Lint Errors
-1. Run auto-fix: `npm run lint:fix`
-2. Check ESLint config in each package
-3. Verify Prettier formatting: `npm run format:check`
-
-## Success Criteria
-
-All verification commands must pass before considering the repo "ship ready":
-
-- ✅ `npm ci` succeeds
-- ✅ `npm run lint` passes
-- ✅ `npm run typecheck` passes
-- ✅ `npm run build` succeeds
-- ✅ `npm test` passes (or documented skip)
-- ✅ No committed node_modules
-- ✅ Vercel deployment succeeds
-- ✅ Health endpoints respond correctly
-- ✅ No hard 500s on user-facing routes
+1. Create unified events table for better change detection
+2. Implement actual reconciliation processing logic
+3. Add UI components for meaningful changes feed
+4. Add receipt hash chain verification UI
+5. Add feature flags UI for business policy controls
+6. Add integration tests for RLS policies

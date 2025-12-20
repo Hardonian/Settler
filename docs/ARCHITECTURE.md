@@ -1,437 +1,470 @@
-# Settler Architecture Overview
-
-**Last Updated:** 2025-01-20  
-**Status:** Production-Ready
-
-## Executive Summary
-
-Settler is a Reconciliation-as-a-Service (RaaS) platform built as a Next.js monorepo. The system provides financial reconciliation, receipt parsing, feature flags, and deterministic computation APIs. It follows a **Hexagonal Architecture** pattern with clear separation between domain logic, infrastructure, and presentation layers.
-
-## System Architecture
-
-### High-Level Components
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Next.js Web App (packages/web)            │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │   Marketing  │  │   Console    │  │   API Routes  │     │
-│  │    Pages     │  │   Dashboard  │  │  (Next.js)    │     │
-│  └──────────────┘  └──────────────┘  └──────────────┘     │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Domain Layer (packages/web/src/domain)          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │   Billing    │  │ Reconciliation│  │   Receipts   │     │
-│  │   Service    │  │    Engine     │  │   Service    │     │
-│  └──────────────┘  └──────────────┘  └──────────────┘     │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│         Infrastructure Layer (Supabase + Prisma)             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │  PostgreSQL  │  │     Redis     │  │    Stripe     │     │
-│  │  (Supabase)  │  │   (Upstash)   │  │   (Billing)   │     │
-│  └──────────────┘  └──────────────┘  └──────────────┘     │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Entry Points
-
-### Frontend Entry Points
-
-1. **Landing Page** (`/`)
-   - Marketing homepage
-   - Hero, features, pricing CTA
-   - Route: `packages/web/src/app/page.tsx`
-
-2. **Pricing Page** (`/pricing`)
-   - Plan comparison
-   - Checkout initiation
-   - Route: `packages/web/src/app/pricing/page.tsx`
-
-3. **Signup Page** (`/signup`)
-   - User registration
-   - Supabase Auth integration
-   - Route: `packages/web/src/app/signup/page.tsx`
-
-4. **Console Dashboard** (`/console`)
-   - Authenticated user dashboard
-   - Protected route (requires auth)
-   - Route: `packages/web/src/app/console/page.tsx`
-
-5. **Billing Console** (`/console/billing`)
-   - Subscription management
-   - Usage tracking
-   - Route: `packages/web/src/app/console/billing/page.tsx`
-
-### API Entry Points
-
-#### Public APIs (v1)
-
-- `POST /api/v1/receipts` - Parse receipt (requires API key)
-- `GET /api/v1/receipts/[id]` - Get receipt by ID
-- `POST /api/v1/feature-flags/evaluate` - Evaluate feature flag
-- `GET /api/v1/feature-flags/[id]` - Get flag config
-- `POST /api/v1/convert` - Currency/unit conversion
-
-#### Authenticated APIs
-
-- `GET /api/console/billing` - Get billing status
-- `GET /api/console/usage` - Get usage metrics
-- `GET /api/console/api-keys` - List API keys
-- `POST /api/console/api-keys` - Create API key
-
-#### Billing APIs
-
-- `POST /api/stripe/checkout` - Create checkout session (authenticated)
-- `POST /api/stripe/webhook` - Stripe webhook handler (public, signature verified)
-- `POST /api/stripe/portal` - Create customer portal session (authenticated)
-
-#### Admin APIs
-
-- `GET /api/admin/audit-logs` - Audit log query
-- `POST /api/admin/impersonate` - User impersonation (admin only)
-
-## Database Schema (Prisma)
-
-### Core Tables
-
-#### Billing Tables
-- `billing_accounts` - User billing accounts (1:1 with users)
-- `subscriptions` - Active subscriptions (linked to Stripe)
-- `stripe_events` - Webhook event log (idempotency)
-- `usage_events` - Granular usage tracking
-- `usage_aggregate_daily` - Daily aggregated usage
-
-#### Reconciliation Tables
-- `recon_jobs` - Reconciliation job definitions
-- `recon_results` - Job execution results
-- `recon_templates` - Reusable job templates
-- `recon_audits` - Audit trail for recon operations
-
-#### Receipts Tables
-- `receipt_uploads` - Upload metadata
-- `receipts` - Parsed receipt data
-- `receipt_items` - Line items from receipts
-
-#### Feature Flags Tables
-- `feature_flags` - Flag definitions
-- `feature_flag_environments` - Environment-specific configs
-- `feature_flag_overrides` - User/tenant overrides
-
-#### Multi-Tenant Tables
-- `tenants` - Tenant/organization records
-- `tenant_branding` - White-label branding config
-- `tenant_pages` - Custom page content
-- `experiments` - A/B test definitions
-
-### Key Relationships
-
-```
-User (Supabase Auth)
-  └─> BillingAccount (1:1)
-      └─> Subscription (1:many)
-      └─> UsageEvent (1:many)
-      └─> UsageAggregateDaily (1:many)
-
-Tenant
-  └─> TenantBranding (1:1)
-  └─> TenantPages (1:many)
-  └─> Experiments (1:many)
-  └─> BillingAccount (1:1, optional)
-
-ReconJob
-  └─> ReconResult (1:many)
-  └─> ReconAudit (1:many)
-```
-
-## External Dependencies
-
-### Critical External Services
-
-1. **Supabase** (PostgreSQL + Auth)
-   - Database: PostgreSQL 15+
-   - Auth: Supabase Auth (JWT-based)
-   - RLS: Row-level security policies
-   - Config: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
-
-2. **Stripe** (Billing)
-   - Checkout Sessions
-   - Subscriptions
-   - Webhooks (signature verification)
-   - Config: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
-
-3. **Upstash Redis** (Caching/Queues)
-   - Rate limiting
-   - Job queues (BullMQ)
-   - Caching
-   - Config: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
-
-4. **Resend** (Email)
-   - Transactional emails
-   - Config: `RESEND_API_KEY`
-
-5. **Sentry** (Error Tracking)
-   - Error monitoring
-   - Performance tracking
-   - Config: `SENTRY_DSN` (optional)
-
-### Optional Services
-
-- **Vercel Analytics** - Web analytics
-- **OpenTelemetry** - Distributed tracing (if configured)
-
-## Authentication & Authorization
-
-### Auth Flow
-
-1. **User Registration/Login**
-   - Supabase Auth handles OAuth + email/password
-   - JWT tokens stored in HTTP-only cookies
-   - Middleware (`packages/web/middleware.ts`) refreshes session
-
-2. **API Key Authentication**
-   - API keys stored in `api_keys` table (encrypted)
-   - Used for programmatic API access
-   - Scoped to billing account
-
-3. **Route Protection**
-   - Middleware checks Supabase session
-   - Protected routes: `/console/*`, `/dashboard/*`
-   - Public routes: `/`, `/pricing`, `/docs/*`
-
-### Authorization Levels
-
-- **Public** - No auth required (marketing pages)
-- **Authenticated** - Requires valid Supabase session
-- **Admin** - Requires admin role in Supabase Auth metadata
-- **API Key** - Valid API key with proper scopes
-
-## Billing Flow
-
-### Subscription Lifecycle
-
-1. **Checkout Initiation**
-   ```
-   User clicks "Upgrade" → POST /api/stripe/checkout
-   → Creates Stripe Checkout Session
-   → Redirects to Stripe hosted checkout
-   ```
-
-2. **Payment Success**
-   ```
-   Stripe redirects → /billing/success?session_id={id}
-   → Page polls /api/console/billing
-   → Webhook processes subscription (async)
-   ```
-
-3. **Webhook Processing**
-   ```
-   Stripe → POST /api/stripe/webhook
-   → Verifies signature (raw body)
-   → Checks idempotency (stripe_events table)
-   → Creates/updates Subscription record
-   → Grants entitlements
-   ```
-
-4. **Usage Tracking**
-   ```
-   API call → UsageEvent created
-   → Daily aggregation → UsageAggregateDaily
-   → Billing page displays usage
-   ```
-
-### Plan Configuration
-
-Plans defined in `packages/web/src/domain/billing/planConfig.ts`:
-- **Free**: 1K reconciliations, 100 receipts, 100K flags/month
-- **Pro**: 100K reconciliations, 10K receipts, 1M flags/month ($99/mo)
-- **Scale**: 1M reconciliations, 100K receipts, 10M flags/month ($499/mo)
-
-## Background Jobs
-
-### Cron Jobs (Vercel Cron)
-
-- `/api/cron/email-lifecycle` - Email automation
-- `/api/cron/monthly-summary` - Monthly reports
-- `/api/cron/low-activity` - User engagement
-
-### Queue Jobs (BullMQ + Redis)
-
-- Webhook delivery retries
-- Usage aggregation
-- Receipt processing (async)
-
-## Deployment Architecture
-
-### Vercel Deployment
-
-- **Runtime**: Node.js 24+ (for Prisma binary engine)
-- **Edge Runtime**: Used sparingly (only for simple routes)
-- **Build**: Turbo monorepo build
-- **Environment**: Environment variables in Vercel dashboard
-
-### Build Process
-
-1. Install dependencies (`npm install`)
-2. Generate Prisma client (`prisma generate`)
-3. Type check (`tsc`)
-4. Lint (`eslint`)
-5. Build packages (`turbo run build`)
-6. Next.js build (`next build`)
-
-### Database Migrations
-
-- Supabase migrations in `/supabase/migrations/`
-- Prisma migrations (if used) via `prisma migrate`
-- Run on deploy via Supabase CLI or GitHub Actions
+# Settler Architecture Documentation
+
+## Overview
+
+Settler is a **Reconciliation-as-a-Service API** built with TypeScript, Express, and PostgreSQL. The architecture follows **Hexagonal Architecture** (Ports & Adapters) with **CQRS** (Command Query Responsibility Segregation) and **Event-Driven** patterns. This ensures separation of concerns, testability, and maintainability.
+
+## Architecture Layers
+
+### 1. Domain Layer (`packages/api/src/domain/`)
+
+The core business logic, independent of infrastructure.
+
+- **Entities**: Core business objects (User, Job, Execution, ApiKey, Tenant)
+- **Value Objects**: Immutable objects representing domain concepts
+- **Domain Events**: Events that represent business occurrences
+- **Repository Interfaces**: Contracts for data persistence (ports)
+
+**Key Principles:**
+- No dependencies on external frameworks
+- Pure business logic
+- Rich domain models with behavior
+- Framework-agnostic
+
+### 2. Application Layer (`packages/api/src/application/`)
+
+Orchestrates domain objects to fulfill use cases.
+
+- **Services**: Application services orchestrating domain logic
+- **Commands**: CQRS command handlers (write operations)
+- **Queries**: Read operations
+- **Sagas**: Long-running business processes
+- **Projections**: Read models for CQRS
+- **DTOs**: Data Transfer Objects for API boundaries
+
+**Key Principles:**
+- Thin layer that delegates to domain
+- Transaction boundaries
+- Use case orchestration
+
+### 3. Infrastructure Layer (`packages/api/src/infrastructure/`)
+
+Implements technical concerns and adapters.
+
+- **Repositories**: Database implementations of repository interfaces
+- **Database**: PostgreSQL connection and queries
+- **Events**: Event bus implementation
+- **Security**: Encryption, authentication, authorization, password hashing, JWT handling
+- **Observability**: Metrics, tracing, logging
+- **Resilience**: Retry, circuit breakers, dead letter queues
+- **DI Container**: Dependency injection
+
+**Key Principles:**
+- Implements interfaces defined in domain/application
+- Can be swapped without changing business logic
+- Handles technical concerns
+
+### 4. Presentation Layer (`packages/api/src/routes/`, `packages/api/src/middleware/`)
+
+HTTP adapters that expose the application to the outside world.
+
+- **Routes**: Express route handlers
+- **Middleware**: Auth, validation, error handling, request/response processing
+- **Controllers**: Thin controllers that call application services
+- **Validation**: Input validation with Zod
+
+**Key Principles:**
+- Thin adapters that translate HTTP to application calls
+- Input validation and output formatting
+- Error handling and status codes
+
+## Key Patterns
+
+### Hexagonal Architecture (Ports & Adapters)
+
+- **Ports**: Interfaces defined in domain layer (repository interfaces)
+- **Adapters**: Implementations in infrastructure layer (PostgreSQL repositories)
+- **Benefits**: Easy to swap implementations, testable, maintainable
+
+### CQRS (Command Query Responsibility Segregation)
+
+- **Commands**: Mutate state (CreateJob, UpdateJob, DeleteJob)
+- **Queries**: Read data (GetJob, ListJobs)
+- **Separate models**: Different models for read/write operations
+- **Benefits**: Enables optimization of read and write paths independently
+
+### Event-Driven Architecture
+
+- Domain events are published when state changes
+- Event handlers can react to events asynchronously
+- Enables audit trails, webhooks, and async processing
+- Events stored in event store
+- Aggregates can be rebuilt from events
+- Snapshots used for performance
+
+### Repository Pattern
+
+- Abstracts data access behind interfaces
+- Domain layer doesn't know about database implementation
+- Easy to swap implementations (PostgreSQL, MongoDB, etc.)
+- Repository interfaces in `domain/repositories/`
+- Implementations in `infrastructure/repositories/`
+
+### Dependency Injection
+
+- Services are injected via constructor
+- Enables easy testing with mocks
+- Centralized in DI container (`infrastructure/di/Container.ts`)
+
+### Saga Pattern
+
+- Long-running transactions
+- Compensating actions for rollback
+- Event-driven coordination
+
+### Multi-Tenancy
+
+- Row-level security (RLS) at database level
+- Tenant isolation enforced in all queries
+- Tenant context included in all requests
+- Schema-per-tenant option (feature flag)
+
+## Data Flow
+
+1. **Request** → Middleware (auth, validation, tenant, rate limiting)
+2. **Route Handler** → Application Service
+3. **Application Service** → Domain Logic
+4. **Domain Logic** → Repository Interface
+5. **Repository Implementation** → Database
+6. **Events** → Event Bus → Subscribers (webhooks, audit logs, etc.)
 
 ## Security Architecture
 
+### Authentication
+
+1. **API Key Authentication**
+   - Hashed storage (bcrypt)
+   - Prefix-based lookup for performance (`rk_` prefix)
+   - Scope-based permissions
+   - Rate limiting per key
+   - Stored in `api_keys` table
+
+2. **JWT Authentication**
+   - Short-lived access tokens (15min default)
+   - Refresh tokens (7 days default)
+   - RS256 signing (production)
+   - Token rotation support (see Token Rotation section)
+
+### Authorization
+
+- **RBAC**: Role-based access control (Owner, Admin, Developer, Viewer)
+- **Resource Ownership**: Users can only access their own resources
+- **Scope-based**: API keys have scoped permissions
+- **Middleware**: `requirePermission()` and `requireResourceOwnership()`
+
 ### Data Protection
 
-- **Encryption at Rest**: Supabase encryption
-- **Encryption in Transit**: TLS/HTTPS everywhere
-- **Sensitive Data**: Encrypted with `ENCRYPTION_KEY` (AES-256-GCM)
-- **API Keys**: Stored encrypted, never logged
+- **Encryption at Rest**: AES-256-GCM for sensitive fields
+- **Field-level Encryption**: API keys, adapter configs encrypted
+- **Input Validation**: Zod schemas for all inputs
+- **Output Sanitization**: XSS prevention, data redaction
+- **SSRF Protection**: Webhook URL validation
+- **CSRF Protection**: CSRF tokens for web UI (see CSRF Protection section)
 
-### Row-Level Security (RLS)
+## Observability
 
-- Supabase RLS policies enforce tenant isolation
-- Service role key only used server-side
-- Anon key used client-side (with RLS)
+### Structured Logging
 
-### Webhook Security
+- Winston with JSON output
+- Automatic PII redaction
+- Trace IDs for request correlation
+- Log levels: ERROR, WARN, INFO, DEBUG
+- Contextual logging with metadata
 
-- Stripe webhooks verify signature using raw body
-- Idempotency keys prevent duplicate processing
-- Event log in `stripe_events` table
+### Distributed Tracing
 
-## Monitoring & Observability
-
-### Error Tracking
-
-- Sentry integration (optional)
-- Error boundaries in React components
-- Structured logging
+- OpenTelemetry instrumentation
+- Trace every API request end-to-end
+- Spans for DB queries, external APIs, queue operations
+- OTLP endpoint support
+- Jaeger endpoint support
 
 ### Metrics
 
-- Vercel Analytics (web)
-- Custom usage metrics in database
-- Health check endpoint: `/api/status/health`
+- Prometheus-compatible metrics endpoint (`/metrics`)
+- HTTP metrics (latency, error rate, request count)
+- Business metrics (reconciliations, webhook deliveries)
+- System metrics (connections, queue depth, cache hit/miss)
 
-### Logging
+### Health Checks
 
-- Structured logs (JSON)
-- Log levels: `error`, `warn`, `info`, `debug`
-- PII scrubbing in logs
+- `/health`: Overall health with dependency checks
+- `/health/live`: Liveness probe (always OK if process alive)
+- `/health/ready`: Readiness probe (OK only if dependencies healthy)
+- Checks: Database, Redis, Sentry, Connection Pool
 
-## API Rate Limiting
+## Resilience Patterns
 
-- Default: 1000 requests per 15 minutes
-- Per-endpoint overrides
-- Redis-backed rate limiting
-- Config: `RATE_LIMIT_DEFAULT`, `RATE_LIMIT_WINDOW_MS`
+### Retry Logic
 
-## File Structure
+- Exponential backoff with jitter
+- Configurable retries (default: 3-5)
+- Retryable error detection
+- Prevents thundering herd
+- Used for webhook delivery, external API calls
 
+### Circuit Breaker
+
+- Opens after error threshold (default: 50%)
+- Half-open state for testing
+- Prevents cascading failures
+- Per-service circuit breakers
+- Implementation: `infrastructure/resilience/circuit-breaker.ts`
+
+### Idempotency
+
+- `Idempotency-Key` header for write operations
+- 24-hour TTL
+- Returns cached response for duplicate keys
+- Prevents duplicate operations
+- Stored in Redis
+
+### Dead Letter Queue
+
+- Failed messages moved to DLQ after max retries
+- Manual inspection and retry
+- Prevents message loss
+- Implementation: `infrastructure/resilience/DeadLetterQueue.ts`
+
+## Database Design
+
+### Connection Pooling
+
+- Max 20 connections (configurable)
+- Min 5 connections (configurable)
+- 30s idle timeout
+- Prevents connection exhaustion
+- Connection pool health checks
+
+### Indexes
+
+- Foreign keys indexed automatically
+- Composite indexes for common queries
+- Partial indexes for active records
+- Optimized for read performance
+- Migration files: `packages/api/src/db/migrations/performance-indexes.sql`
+
+### Transactions
+
+- ACID compliance for critical operations
+- Optimistic locking for concurrency control (version field)
+- Rollback on errors
+- Transaction boundaries in application services
+
+### Materialized Views
+
+- Pre-computed reconciliation summaries
+- Refreshed periodically via background job
+- Improves query performance
+- Migration: `packages/api/src/db/migrations/materialized-views.sql`
+
+## Performance Optimizations
+
+### Caching
+
+- **Redis**: Primary cache for API responses, rate limiting, idempotency
+- **Memory Cache**: Fallback if Redis unavailable
+- **Cache Invalidation**: Tag-based invalidation (`cache-invalidation.ts`)
+- **TTL**: Configurable TTL per cache key
+- **Advanced Strategies**: See Advanced Caching section
+
+### Cursor Pagination
+
+- Efficient large dataset pagination
+- Base64-encoded cursors
+- Better performance than offset pagination
+- Implementation: `utils/pagination.ts`
+
+### Query Optimization
+
+- Indexes on foreign keys and common queries
+- Query plan analysis
+- Connection pool monitoring
+- Slow query logging
+
+## Error Handling
+
+### Typed Errors
+
+- Strongly-typed error classes
+- Error codes for machine-readable errors
+- Error middleware: Centralized error handling
+- Standardized error response format
+- Trace IDs included in errors
+
+### Error Response Format
+
+```typescript
+{
+  error: "ERROR_CODE",      // Machine-readable code
+  message: "Human message",  // Human-readable message
+  details?: {...},          // Additional context
+  traceId?: "..."          // Trace ID for debugging
+}
 ```
-packages/web/
-├── src/
-│   ├── app/              # Next.js App Router pages
-│   │   ├── api/          # API routes
-│   │   ├── console/      # Console pages
-│   │   └── [slug]/       # Dynamic routes
-│   ├── components/       # React components
-│   ├── domain/           # Domain logic
-│   │   └── billing/      # Billing domain
-│   ├── lib/              # Shared utilities
-│   │   ├── supabase/     # Supabase clients
-│   │   └── env/          # Env validation
-│   └── shared/           # Shared code
-│       └── db/           # Prisma client
-├── middleware.ts         # Next.js middleware
-└── package.json
-```
 
-## Technology Stack
+## Testing Strategy
 
-- **Frontend**: Next.js 14+ (App Router), React, TypeScript
-- **Backend**: Next.js API Routes, Server Actions
-- **Database**: PostgreSQL (Supabase), Prisma ORM
-- **Cache/Queue**: Redis (Upstash)
-- **Auth**: Supabase Auth
-- **Billing**: Stripe
-- **Email**: Resend
-- **Monitoring**: Sentry (optional)
-- **Deployment**: Vercel
+### Unit Tests
+
+- Domain entities and value objects
+- Business logic in isolation
+- 70% coverage minimum (enforced in CI)
+- Jest with ts-jest
+- Location: `**/__tests__/**/*.test.ts`
+
+### Integration Tests
+
+- Full API flows
+- Database interactions
+- External service mocks
+- Supertest for HTTP testing
+- Location: `packages/api/src/__tests__/integration/`
+
+### E2E Tests
+
+- Full workflows
+- Playwright for browser testing
+- Real database and Redis
+- Location: `tests/` (Playwright)
+
+### Security Tests
+
+- SQL injection attempts
+- XSS payloads
+- Rate limit enforcement
+- Authorization boundaries
+- Location: `packages/api/src/__tests__/security/`
+
+### Load Tests
+
+- Artillery/k6 scripts
+- 100+ concurrent users
+- Measure p95 latency
+- Identify bottlenecks
+- Location: `tests/load/`
+
+## Deployment
+
+### Serverless-Ready
+
+- Vercel Functions compatible
+- AWS Lambda compatible
+- Cloudflare Workers compatible
+- Google Cloud Functions compatible
+- Stateless design
+
+### Docker
+
+- Multi-stage builds
+- Production-optimized images
+- Non-root user
+- Health checks
+- Dockerfile: `packages/api/Dockerfile`
+
+### CI/CD
+
+- GitHub Actions workflows
+- Automated tests on PR
+- Build and push Docker images
+- Deploy to staging automatically
+- Manual approval for production
+- Coverage threshold enforcement
+
+### Vercel
+
+- Serverless deployment
+- Edge functions for low latency
+- Automatic scaling
+- Environment variable management
+- Zero-downtime deployments
+
+## Environment Variables
+
+See `config/env.schema.ts` for complete documentation.
+
+**Required for production:**
+- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (or `DATABASE_URL`)
+- `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (or `REDIS_URL`)
+- `JWT_SECRET` (min 32 chars)
+- `ENCRYPTION_KEY` (exactly 32 chars)
+
+**Optional:**
+- `SENTRY_DSN` (error tracking)
+- `LOG_LEVEL` (default: `info`)
+- `OTLP_ENDPOINT` (distributed tracing)
 
 ## Development Workflow
 
-1. **Local Setup**
-   ```bash
-   npm install
-   cp .env.example .env
-   # Configure env vars
-   npm run db:migrate:local
-   npm run dev
-   ```
+### Local Development
 
-2. **Database Changes**
-   ```bash
-   # Create migration
-   npm run db:new
-   # Apply locally
-   npm run db:migrate:local
-   ```
+```bash
+# Start services
+docker-compose up -d  # PostgreSQL, Redis
 
-3. **Testing**
-   ```bash
-   npm run lint
-   npm run typecheck
-   npm run test
-   ```
+# Run migrations
+cd packages/api && npm run migrate
 
-## Production Considerations
+# Start API server
+npm run dev
+```
 
-### Environment Variables
+### Testing
 
-See `config/env.schema.ts` for complete list. Critical vars:
-- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
-- `JWT_SECRET`, `ENCRYPTION_KEY`
-- `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+```bash
+npm run test              # Unit tests
+npm run test:integration  # Integration tests
+npm run test:e2e          # E2E tests
+npm run test:coverage     # Coverage report
+```
 
-### Scaling
+### Building
 
-- **Database**: Supabase auto-scaling
-- **API**: Vercel serverless functions (auto-scale)
-- **Cache**: Upstash Redis (serverless)
-- **Bottlenecks**: Prisma connection pooling, Stripe API rate limits
+```bash
+npm run build     # TypeScript compilation
+npm run lint      # ESLint
+npm run typecheck # Type checking
+```
 
-### Disaster Recovery
+## Advanced Features
 
-- Database backups: Supabase automated backups
-- Code: Git repository (GitHub)
-- Secrets: Vercel environment variables
-- Webhook replay: Stripe webhook replay API
+### Token Rotation
 
-## Known Limitations
+Refresh tokens are rotated on each use to prevent token reuse attacks. See `infrastructure/security/token-rotation.ts`.
 
-1. **Prisma Binary Engine**: Requires Node.js runtime (not Edge)
-2. **Webhook Processing**: Must use Node.js runtime for raw body access
-3. **Tenant Isolation**: RLS policies must be maintained manually
-4. **Rate Limiting**: Redis required for distributed rate limiting
+### CSRF Protection
+
+Web UI endpoints are protected with CSRF tokens. See `middleware/csrf.ts`.
+
+### Advanced Caching
+
+- Tag-based cache invalidation
+- Cache warming strategies
+- Cache coherency checks
+- See `infrastructure/cache/` for implementations
+
+### Performance Profiling
+
+- Request duration tracking
+- Database query profiling
+- Memory usage monitoring
+- See `infrastructure/observability/profiling.ts`
+
+### OpenAPI Documentation
+
+Auto-generated from route handlers. Available at `/api/v1/docs` (Swagger UI).
 
 ## Future Enhancements
 
 - GraphQL API layer
 - WebSocket support for real-time updates
 - Multi-region deployment
-- Advanced analytics dashboard
-- Custom adapter marketplace
+- Event sourcing for audit logs
+- Advanced ML-based matching
+
+## Related Documentation
+
+- [CONTRIBUTING.md](./docs/CONTRIBUTING.md) - Contribution guidelines
+- [README.md](./README.md) - Quick start and overview
+- [SECURITY.md](./SECURITY.md) - Security practices
+- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - Deployment instructions

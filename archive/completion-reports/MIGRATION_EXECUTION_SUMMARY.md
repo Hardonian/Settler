@@ -1,101 +1,172 @@
-# Database Migration Execution Summary
+# Migration Execution Summary
 
-## ✅ Migration Files Prepared
+## ✅ Setup Complete
 
-### 1. Webhook Models Update Migration
-**File:** `supabase/migrations/20250120000009_webhook_models.sql`
+I've created the necessary scripts and GitHub Actions workflow to apply the onboarding migration and regenerate Supabase types.
 
-This migration updates existing webhook tables to match the Prisma schema requirements:
-- ✅ Adds `metadata JSONB` column to `webhooks` table
-- ✅ Adds `deleted_at TIMESTAMPTZ` column to `webhooks` table
-- ✅ Converts `events` from TEXT[] to JSONB (for Prisma compatibility)
-- ✅ Updates column types (VARCHAR → TEXT) for compatibility
-- ✅ Adds `error_message TEXT` to `webhook_deliveries` table
-- ✅ Adds `metadata JSONB` to `webhook_deliveries` table
-- ✅ Adds `updated_at TIMESTAMPTZ` to `webhook_deliveries` table
-- ✅ Updates defaults and adds missing indexes
+## 📦 Created Files
 
-**Migration is idempotent** - safe to run multiple times.
+1. **Migration Script**: `scripts/apply-onboarding-migration.ts`
+   - Applies the onboarding migration
+   - Verifies tables, functions, and RLS policies
+   - Supports multiple connection methods
 
-## 🔄 Migration Execution
+2. **Type Generation Script**: `scripts/regenerate-supabase-types.ts`
+   - Generates TypeScript types from Supabase schema
+   - Extracts project reference automatically
+   - Verifies generated types
 
-### Automatic Execution (GitHub Actions)
+3. **GitHub Actions Workflow**: `.github/workflows/apply-onboarding-migration.yml`
+   - Runs migration and type generation in CI/CD
+   - Uses GitHub Actions secrets for database credentials
+   - Verifies migration success
+   - Commits generated types back to repo
 
-The migrations will run automatically when:
-1. **Code is merged to `main` branch** - via `.github/workflows/supabase-migrate.yml`
-2. **Manual trigger** - via workflow_dispatch in GitHub Actions
-3. **Production deployment** - via `.github/workflows/production-migrations.yml`
+4. **Documentation**:
+   - `docs/MIGRATION_GUIDE.md` - Detailed migration guide
+   - `QUICK_START_MIGRATION.md` - Quick reference
 
-### Required GitHub Secrets
+## 🚀 Execution Options
 
-The workflows use these secrets (already configured):
-- `DATABASE_URL` - Direct PostgreSQL connection string (preferred)
-- `SUPABASE_URL` - Supabase project URL
-- `SUPABASE_DB_PASSWORD` - Database password
-- `SUPABASE_PROJECT_REF` - Project reference ID
-- `SUPABASE_ACCESS_TOKEN` - Supabase CLI access token
+### Option 1: GitHub Actions (Recommended)
 
-### Manual Execution
+The workflow will run automatically when:
+- You push the migration file to `main` branch
+- You manually trigger it from GitHub Actions UI
 
-If you need to run migrations manually:
+**To run manually:**
+1. Go to GitHub Actions tab
+2. Select "Apply Onboarding Migration" workflow
+3. Click "Run workflow"
+4. Select environment (production/staging)
+5. Click "Run workflow"
+
+The workflow will:
+1. ✅ Apply the migration
+2. ✅ Verify tables/functions created
+3. ✅ Regenerate Supabase types
+4. ✅ Run typecheck
+5. ✅ Commit generated types (if changed)
+
+### Option 2: Local Execution
+
+If you want to run locally with your own credentials:
 
 ```bash
-# Option 1: Using the migration script
-npm run db:migrate:auto
+# Set environment variables
+export DATABASE_URL="your-connection-string"
+export SUPABASE_PROJECT_REF="your-project-ref"
 
-# Option 2: Using Supabase CLI
-supabase db push --include-all
+# Run migration
+npm run db:migrate:onboarding
 
-# Option 3: Using the shell script
-./scripts/run-migrations.sh
+# Regenerate types
+npm run db:types:regenerate
+
+# Verify
+npm run typecheck
 ```
 
-## 📋 Migration Checklist
+## 🔐 Required GitHub Actions Secrets
 
-- [x] Migration file created (`20250120000009_webhook_models.sql`)
-- [x] Migration is idempotent (safe to re-run)
-- [x] Prisma schema updated with webhook models
-- [x] Prisma client regenerated
-- [x] GitHub Actions workflows configured
-- [x] Migration script created (`scripts/run-migrations.sh`)
+Ensure these secrets are set in your GitHub repository:
 
-## 🔍 Verification Steps
+- `DATABASE_URL` - PostgreSQL connection string
+- `SUPABASE_URL` - Supabase project URL
+- `SUPABASE_DB_PASSWORD` - Database password
+- `SUPABASE_PROJECT_REF` - Project reference
+- `SUPABASE_ACCESS_TOKEN` - Supabase access token (for type generation)
 
-After migrations run, verify with:
+## 📋 What the Migration Creates
 
-```sql
--- Check webhooks table has all required columns
-SELECT column_name, data_type, is_nullable, column_default
-FROM information_schema.columns
-WHERE table_name = 'webhooks'
-ORDER BY ordinal_position;
+### Tables
+- `workspace_invites` - Invite tokens and status
+- `tenant_onboarding_progress` - Per-user, per-tenant progress tracking
+- `onboarding_events` - Event tracking with trace_id
 
--- Check webhook_deliveries table has all required columns
-SELECT column_name, data_type, is_nullable, column_default
-FROM information_schema.columns
-WHERE table_name = 'webhook_deliveries'
-ORDER BY ordinal_position;
+### Functions
+- `create_workspace_with_owner()` - Creates workspace and adds owner
+- `complete_onboarding_step()` - Completes onboarding step
+- `track_onboarding_event()` - Tracks onboarding events
 
--- Verify indexes exist
-SELECT indexname, indexdef
-FROM pg_indexes
-WHERE tablename IN ('webhooks', 'webhook_deliveries');
-```
+### RLS Policies
+- Tenant isolation
+- Role-based access control
+- User-scoped data access
 
-## 🚀 Next Steps
+## ✅ Verification Steps
 
-1. **Push to GitHub** - The migration file will be detected
-2. **Merge to main** - Migrations will run automatically via GitHub Actions
-3. **Monitor** - Check GitHub Actions workflow runs for migration status
-4. **Verify** - Run verification queries after migration completes
+After the workflow runs, verify:
 
-## 📝 Notes
+1. **Migration Applied**:
+   ```sql
+   SELECT table_name FROM information_schema.tables 
+   WHERE table_name IN ('workspace_invites', 'tenant_onboarding_progress', 'onboarding_events');
+   ```
 
-- The migration updates existing tables (doesn't create new ones)
-- All changes are backward compatible
-- The migration handles missing columns gracefully
-- Prisma client has been regenerated with webhook models
+2. **Types Generated**:
+   - Check `packages/web/src/types/database.types.ts` exists
+   - File should contain type definitions for new tables
 
-**Status:** ✅ **READY FOR DEPLOYMENT**
+3. **TypeScript Compiles**:
+   - Run `npm run typecheck`
+   - Should pass without errors related to onboarding tables
 
-The migration will execute automatically when this code is merged to main via GitHub Actions using the connection info from GitHub secrets.
+4. **Build Succeeds**:
+   - Run `npm run build`
+   - Should complete successfully
+
+## 🎯 Next Steps
+
+1. **Trigger the workflow**:
+   - Push to main branch, OR
+   - Manually run from GitHub Actions UI
+
+2. **Monitor execution**:
+   - Watch the workflow run in GitHub Actions
+   - Check for any errors
+
+3. **Verify results**:
+   - Check database tables exist
+   - Check types file was generated
+   - Run typecheck locally
+
+4. **Update code** (after types are generated):
+   - Remove `as any` assertions from API routes
+   - Use proper types from `database.types.ts`
+
+## 📝 Workflow Details
+
+The workflow (`apply-onboarding-migration.yml`) will:
+1. Checkout code
+2. Setup Node.js and install dependencies
+3. Install PostgreSQL client
+4. Apply migration using the script (with psql fallback)
+5. Verify migration success
+6. Setup Supabase CLI
+7. Regenerate types using script (with CLI fallback)
+8. Run typecheck
+9. Commit generated types back to repo
+
+## 🐛 Troubleshooting
+
+If the workflow fails:
+
+1. **Check secrets**: Ensure all required secrets are set
+2. **Check logs**: Review workflow logs for specific errors
+3. **Database connection**: Verify DATABASE_URL is correct
+4. **Permissions**: Ensure database user has CREATE/ALTER permissions
+5. **Migration conflicts**: Check if tables already exist (should be safe with IF NOT EXISTS)
+
+## 📚 Related Documentation
+
+- `docs/MIGRATION_GUIDE.md` - Detailed migration guide
+- `QUICK_START_MIGRATION.md` - Quick reference
+- `docs/ONBOARDING.md` - Onboarding system documentation
+- `docs/DEPLOYMENT_ONBOARDING.md` - Deployment guide
+
+---
+
+**Status**: ✅ Ready for execution via GitHub Actions
+**Workflow**: `.github/workflows/apply-onboarding-migration.yml`
+**Migration File**: `supabase/migrations/20260131000000_workspace_onboarding_activation.sql`
