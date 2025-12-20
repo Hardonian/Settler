@@ -13,6 +13,10 @@
 ├── internal-notes/         # Internal development notes
 ├── setup-guides/          # Redundant or superseded setup guides
 ├── db-migrations/         # Historical/unused database migrations
+├── build-outputs/         # Build output logs and artifacts
+├── yaml-configs/         # YAML configuration files (experiments, snapshots)
+├── audit-reports/        # Audit and review reports
+├── implementation-reports/ # Implementation completion reports
 └── ARCHIVE_INDEX.md       # This file
 ```
 
@@ -188,6 +192,61 @@ If you're looking for information that was previously in the root:
 If you need to find archived content or have questions about the archive structure, check:
 - `/docs/README.md` - Documentation index
 - `/REPO_AUDIT_REPORT.md` - Repository audit report with archive rationale
+
+---
+
+## January 2026 Archive (Enterprise Polish)
+
+### Root-Level Cleanup
+
+As part of enterprise repository polish, the following categories of files were moved from root to archive:
+
+#### Completion Reports (`/archive/completion-reports/`)
+- All `*_COMPLETE*.md`, `*_SUMMARY*.md`, `*_REPORT*.md` files
+- Implementation reports, build fix reports, audit reports
+- Examples: `FINAL_COMPLETE_SUMMARY.md`, `OPERATIONAL_EXCELLENCE_SUMMARY.md`, `BUILD_OPTIMIZATION_COMPLETE.md`
+
+#### Internal Notes (`/archive/internal-notes/`)
+- Temporary notes, reminders, deployment checklists
+- Examples: `NOTES.md`, `QUICK_*.md`, `READY_TO_*.md`, `PR_READY.md`
+
+#### Setup Guides (`/archive/setup-guides/`)
+- Redundant setup guides superseded by consolidated docs
+- Migration guides, OSS setup guides
+- Examples: `APPLY_MIGRATIONS_GUIDE.md`, `OSS_REPO_SETUP_COMPLETE.md`
+
+#### Build Outputs (`/archive/build-outputs/`)
+- Build log files: `build-output*.txt`, `FINAL_SUMMARY.txt`
+
+#### YAML Configs (`/archive/yaml-configs/`)
+- Internal configuration files: `experiments.yaml`, `investor-narrative.yaml`, `pitch-assets.yaml`, `settler-context-snapshot.yaml`
+
+#### Audit Reports (`/archive/audit-reports/`)
+- Audit phase reports: `SETTLER_AUDIT_PHASE*.md`
+
+#### Implementation Reports (`/archive/implementation-reports/`)
+- Feature implementation summaries: `*_IMPLEMENTATION*.md`
+
+### Files Kept in Root
+
+The following files remain in root as they are essential for repository operation:
+- `README.md` - Main entry point
+- `LICENSE` - License file
+- `SECURITY.md` - Security policy
+- `CONTRIBUTING.md` - Contribution guidelines
+- `CHANGELOG.md` - Version history
+- `REPO_POLICY.md` - Open-core architecture policy
+
+### Files Moved to `/docs/`
+
+The following files were moved to `/docs/` for better organization:
+- `ARCHITECTURE.md` → `/docs/ARCHITECTURE.md`
+- `DEVELOPER_GUIDE.md` → `/docs/DEVELOPER_GUIDE.md`
+- `DOCUMENTATION_INDEX.md` → `/docs/DOCUMENTATION_INDEX.md`
+- `OPERATIONS_RUNBOOK.md` → `/docs/OPERATIONS_RUNBOOK.md`
+- `TROUBLESHOOTING_GUIDE.md` → `/docs/TROUBLESHOOTING_GUIDE.md`
+- `TERMINOLOGY.md` → `/docs/TERMINOLOGY.md`
+- `VERIFY.md` → `/docs/VERIFY.md`
 
 ---
 

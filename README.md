@@ -366,6 +366,10 @@ To report a security vulnerability, please see [SECURITY.md](SECURITY.md).
 
 ## License
 
-This is proprietary software. All rights reserved.
+Settler Enterprise is proprietary software. All rights reserved.
 
-See [LICENSE](LICENSE) for full license terms. For licensing details including open source components, see [Licensing Overview](docs/LICENSING_OVERVIEW.md).
+**Open Source Components:**
+- `packages/protocol` - MIT License
+- `packages/react-settler` - Dual licensed (MIT for OSS, Commercial for paid features)
+
+See [LICENSE](LICENSE) for full license terms. For detailed licensing information, see [Licensing Overview](docs/LICENSING_OVERVIEW.md).

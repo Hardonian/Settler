@@ -1,7 +1,7 @@
 # Release Readiness Checklist
 
 **Last Updated:** January 2026  
-**Purpose:** Use this checklist before every release to ensure enterprise-grade quality and investor readiness.
+**Purpose:** Ensure repository is ready for external scrutiny (customers, auditors, investors)
 
 ---
 
@@ -9,223 +9,206 @@
 
 ### Documentation
 
-- [ ] **README.md** updated with latest features and changes
-- [ ] **CHANGELOG.md** updated with all changes (following conventional commits)
-- [ ] **SECURITY.md** reviewed and updated if needed
-- [ ] **CONTRIBUTING.md** reviewed and updated if needed
-- [ ] **docs/** directory reviewed for accuracy and completeness
-- [ ] All documentation links verified (no broken links)
-- [ ] Terminology consistent across all docs (check `/TERMINOLOGY.md`)
+- [ ] **README.md** - Clear, concise, investor-grade entry point
+- [ ] **SECURITY.md** - Comprehensive security policy
+- [ ] **CONTRIBUTING.md** - Contribution guidelines
+- [ ] **CHANGELOG.md** - Up-to-date version history
+- [ ] **LICENSE** - Clear licensing posture
+- [ ] **docs/PRODUCT_OVERVIEW.md** - Product overview for external audiences
+- [ ] **docs/ARCHITECTURE_OVERVIEW.md** - Architecture summary
+- [ ] **docs/CONFIGURATION.md** - Environment variable documentation
+- [ ] **docs/FAQ.md** - Frequently asked questions
+- [ ] **docs/GLOSSARY.md** - Terminology definitions
+- [ ] **docs/LICENSING_OVERVIEW.md** - Licensing explanation
+- [ ] **docs/THREAT_MODEL.md** - Security threat model
 
 ### Legal & Licensing
 
-- [ ] **LICENSE** file present and matches README claims
-- [ ] **LEGAL/** documents reviewed for consistency
-- [ ] Terms of Service, Privacy Policy, Commercial License aligned
-- [ ] No contradictions between legal documents
-- [ ] Jurisdiction specified in legal documents (not placeholder)
-- [ ] OSS vs Platform boundary clearly documented (`/docs/LICENSING_OVERVIEW.md`)
+- [ ] **LICENSE** - Matches README claims (proprietary vs OSS)
+- [ ] **LEGAL/TERMS_OF_SERVICE.md** - Terms are current and consistent
+- [ ] **LEGAL/PRIVACY_POLICY.md** - Privacy policy is current
+- [ ] **LEGAL/COMMERCIAL_LICENSE.md** - Commercial license terms
+- [ ] **docs/LICENSING_OVERVIEW.md** - No contradictions with LICENSE
+- [ ] Code headers (if any) don't contradict license
 
 ### Security
 
-- [ ] **SECURITY.md** reviewed and up-to-date
-- [ ] Vulnerability reporting process documented
-- [ ] No secrets in repository (run secret scanning)
-- [ ] `.gitignore` covers all secret patterns
-- [ ] `.env.example` or `.env.template` comprehensive and up-to-date
-- [ ] Dependencies audited (`npm audit`)
-- [ ] Security headers configured correctly
-- [ ] RLS policies reviewed and tested
-- [ ] Webhook verification implemented (if applicable)
+- [ ] **SECURITY.md** - Comprehensive security policy
+- [ ] **.gitignore** - Excludes `.env*` files
+- [ ] **.env.example** or **.env.template** - Comprehensive with notes
+- [ ] **No secrets in code** - Verified via secret scanning
+- [ ] **docs/THREAT_MODEL.md** - Threat model documented
+- [ ] **RLS policies** - Documented and verified
+- [ ] **Dependency hygiene** - No critical vulnerabilities
 
 ### Build & CI/CD
 
-- [ ] **Clean install** works (`rm -rf node_modules && npm install`)
-- [ ] **Lint** passes (`npm run lint`)
-- [ ] **Typecheck** passes (`npm run typecheck`)
-- [ ] **Build** succeeds (`npm run build`)
-- [ ] **Tests** pass (`npm run test` if exists)
-- [ ] **CI/CD** workflows pass (GitHub Actions)
-- [ ] **Vercel** build succeeds (if applicable)
-- [ ] Node version pinned (`.nvmrc` or `package.json` engines)
-- [ ] Package manager pinned (`package.json` packageManager)
+- [ ] **package.json** - Node version declared (`engines`)
+- [ ] **.nvmrc** - Node version specified
+- [ ] **CI workflows** - Professional, well-documented
+- [ ] **Build scripts** - `lint`, `typecheck`, `test`, `build`
+- [ ] **Build passes** - Verified locally and in CI
+- [ ] **Vercel config** - Build configuration correct
+- [ ] **No build warnings** - Clean builds
+
+### Repository Structure
+
+- [ ] **Root directory** - Clean, only essential files
+- [ ] **Archive structure** - Non-essential files archived
+- [ ] **archive/ARCHIVE_INDEX.md** - Archive documented
+- [ ] **docs/** - Well-organized documentation
+- [ ] **No duplicate docs** - Consolidated duplicates
+- [ ] **No internal-only docs in public** - Moved to `/archive` or `/docs/internal`
 
 ### Code Quality
 
-- [ ] No dead code (unused imports, functions, files)
-- [ ] No commented-out code (unless explicitly marked "preserve")
-- [ ] Error handling consistent (no silent failures)
-- [ ] Error boundaries in place (React components)
-- [ ] Graceful degradation patterns implemented
-- [ ] No hard-coded configuration values
-- [ ] Environment variables properly validated
-- [ ] Logging hygiene (no PII in logs)
+- [ ] **Lint passes** - No linting errors
+- [ ] **Typecheck passes** - No type errors
+- [ ] **Tests pass** - All tests green
+- [ ] **No dead code** - Unused code removed
+- [ ] **Error handling** - Graceful degradation
+- [ ] **No hard-500 errors** - Missing env handled gracefully
 
 ### Database & Migrations
 
-- [ ] **Migrations** reviewed and tested
-- [ ] Migration order correct (no conflicts)
-- [ ] No destructive migrations without warnings
-- [ ] Rollback procedures documented (`/docs/DATABASE.md`)
-- [ ] Schema changes documented
-- [ ] RLS policies tested
-- [ ] Indexes optimized (no missing critical indexes)
-
-### Testing
-
-- [ ] **Unit tests** pass (if exists)
-- [ ] **Integration tests** pass (if exists)
-- [ ] **E2E tests** pass (if exists)
-- [ ] **Smoke tests** pass (`npm run test:smoke`)
-- [ ] Test coverage maintained (target: 70%+ for critical paths)
-- [ ] Critical user journeys tested manually
-
-### Performance
-
-- [ ] **Build time** acceptable (< 5 minutes for full build)
-- [ ] **Bundle size** optimized (no unnecessary dependencies)
-- [ ] **API response times** acceptable (< 200ms p95)
-- [ ] **Database queries** optimized (no N+1 queries)
-- [ ] **Caching** implemented where appropriate
-- [ ] **CDN** configured (if applicable)
-
-### Monitoring & Observability
-
-- [ ] **Error tracking** configured (Sentry or similar)
-- [ ] **Logging** configured (structured logs)
-- [ ] **Metrics** configured (API metrics, business metrics)
-- [ ] **Alerts** configured for critical errors
-- [ ] **Health checks** implemented (`/api/health`)
-- [ ] **Status page** updated (if applicable)
-
-### Deployment
-
-- [ ] **Environment variables** documented (`/docs/CONFIGURATION.md`)
-- [ ] **Deployment guide** updated (`/docs/DEPLOYMENT.md`)
-- [ ] **Rollback plan** documented
-- [ ] **Database migrations** tested in staging
-- [ ] **Feature flags** configured (if applicable)
-- [ ] **Backup** procedures verified
-
-### Compliance
-
-- [ ] **GDPR** compliance verified (if applicable)
-- [ ] **SOC 2** controls verified (if applicable)
-- [ ] **PCI-DSS** compliance verified (if applicable)
-- [ ] **Data retention** policies implemented
-- [ ] **Privacy policy** reviewed and updated
-- [ ] **Terms of service** reviewed and updated
+- [ ] **Migrations organized** - Active vs archived clear
+- [ ] **docs/DATABASE.md** - Database documentation
+- [ ] **Migration naming** - Professional (no `final_final`)
+- [ ] **No commented SQL** - In active migrations
+- [ ] **Production safety** - No destructive migrations without warnings
 
 ### Investor Readiness
 
-- [ ] **Investor documentation** reviewed (`/docs/investor/`)
-- [ ] **Positioning** clear (`/docs/investor/POSITIONING.md`)
-- [ ] **Business model** documented
-- [ ] **Competitive advantages** clear
-- [ ] **Risk mitigations** documented
-- [ ] **Roadmap** public-safe and up-to-date
+- [ ] **docs/INVESTOR_READY_SUMMARY.md** - Investor summary
+- [ ] **docs/POSITIONING.md** - Market positioning
+- [ ] **No confidential numbers** - Unless already public
+- [ ] **Tone is factual** - No hype, no placeholders
+
+---
+
+## Verification Steps
+
+### Build Verification
+
+```bash
+# Clean install
+rm -rf node_modules package-lock.json
+npm install
+
+# Lint
+npm run lint
+
+# Typecheck
+npm run typecheck
+
+# Tests
+npm run test
+
+# Build
+npm run build
+```
+
+**Expected:** All commands pass without errors.
+
+### Secret Scanning
+
+```bash
+# Check for common secret patterns
+grep -r "API_KEY\|SECRET\|PASSWORD\|TOKEN" --exclude-dir=node_modules --exclude-dir=.git .
+```
+
+**Expected:** Only in `.env.example`, `.env.template`, or documentation.
+
+### Documentation Links
+
+```bash
+# Check for broken internal links (if link checker available)
+npm run qa:links
+```
+
+**Expected:** No broken internal links.
+
+### Environment Variables
+
+```bash
+# Validate environment schema
+npm run validate:env
+```
+
+**Expected:** Schema validates successfully.
 
 ---
 
 ## Post-Release Checklist
 
-### Immediate (Within 24 Hours)
+### Monitoring
 
-- [ ] **Monitor** error rates and alerts
-- [ ] **Verify** critical user journeys work
-- [ ] **Check** performance metrics
-- [ ] **Review** user feedback (support tickets, GitHub issues)
-- [ ] **Update** status page (if applicable)
+- [ ] **Error tracking** - Sentry or similar configured
+- [ ] **Metrics** - Application metrics tracked
+- [ ] **Logs** - Structured logging with correlation IDs
+- [ ] **Alerts** - Critical errors alert configured
 
-### Short-Term (Within 1 Week)
+### Documentation Updates
 
-- [ ] **Review** analytics and usage metrics
-- [ ] **Gather** user feedback
-- [ ] **Document** any issues or improvements needed
-- [ ] **Plan** next release based on feedback
+- [ ] **CHANGELOG.md** - Updated with release notes
+- [ ] **Version tags** - Git tags created
+- [ ] **Release notes** - Published (if applicable)
 
-### Long-Term (Within 1 Month)
+### Communication
 
-- [ ] **Review** release metrics (adoption, errors, performance)
-- [ ] **Update** documentation based on user feedback
-- [ ] **Plan** next major release
-- [ ] **Review** and update this checklist if needed
+- [ ] **Announcement** - Release announced (if applicable)
+- [ ] **Support ready** - Support team aware of release
+- [ ] **Documentation published** - Docs updated on website
 
 ---
 
-## Release Process
+## Release Sign-Off
 
-### 1. Pre-Release (1 Week Before)
+### Technical Review
 
-- [ ] Complete pre-release checklist above
-- [ ] Create release branch (`release/vX.Y.Z`)
-- [ ] Update CHANGELOG.md
-- [ ] Update version numbers (if applicable)
-- [ ] Run full test suite
-- [ ] Deploy to staging environment
+- [ ] **Code review** - All changes reviewed
+- [ ] **Security review** - Security implications assessed
+- [ ] **Performance review** - Performance impact assessed
 
-### 2. Release Day
+### Business Review
 
-- [ ] Final review of checklist
-- [ ] Merge release branch to main
-- [ ] Tag release (`git tag vX.Y.Z`)
-- [ ] Push tags (`git push --tags`)
-- [ ] Deploy to production
-- [ ] Verify deployment (health checks, smoke tests)
-- [ ] Announce release (if applicable)
+- [ ] **Product review** - Product implications understood
+- [ ] **Legal review** - Legal implications assessed (if needed)
+- [ ] **Marketing review** - Marketing implications understood (if needed)
 
-### 3. Post-Release
+### Approval
 
-- [ ] Complete post-release checklist above
-- [ ] Monitor for issues
-- [ ] Gather feedback
-- [ ] Plan next release
+- [ ] **Technical lead approval**
+- [ ] **Product owner approval** (if applicable)
+- [ ] **Release manager approval**
 
 ---
 
-## Emergency Release Process
+## Emergency Rollback
 
-For critical security fixes or urgent bug fixes:
+### Rollback Triggers
 
-1. **Assess** severity and impact
-2. **Create** hotfix branch (`hotfix/vX.Y.Z`)
-3. **Fix** issue and add tests
-4. **Update** CHANGELOG.md
-5. **Review** with team (if time permits)
-6. **Deploy** to production
-7. **Monitor** closely
-8. **Follow up** with full release process
+- Critical security vulnerability discovered
+- Data loss or corruption
+- Service outage > 5 minutes
+- Customer data breach
 
----
+### Rollback Process
 
-## Quality Gates
-
-**Release is NOT ready if:**
-
-- ❌ Any critical security vulnerabilities exist
-- ❌ Build fails
-- ❌ Tests fail
-- ❌ Documentation is incomplete or inaccurate
-- ❌ Legal documents have contradictions
-- ❌ Secrets are exposed
-- ❌ Critical user journeys broken
-- ❌ Performance degradation > 20%
-
-**Release IS ready if:**
-
-- ✅ All checklist items completed
-- ✅ All quality gates passed
-- ✅ Team approval (if required)
-- ✅ Stakeholder sign-off (if required)
+1. **Immediate:** Revert deployment to previous version
+2. **Investigation:** Identify root cause
+3. **Fix:** Develop and test fix
+4. **Communication:** Notify affected customers
+5. **Post-mortem:** Document incident and learnings
 
 ---
 
-## Questions?
+## Notes
 
-**Release Process:** See `/docs/OPERATIONS_RUNBOOK.md`  
-**Deployment:** See `/docs/DEPLOYMENT.md`  
-**Security:** See `/SECURITY.md`
+- **Frequency:** Review this checklist before each major release
+- **Owner:** Release Manager or Technical Lead
+- **Updates:** Update checklist based on learnings from each release
 
 ---
 
-**This checklist is a living document. Update it based on lessons learned from each release.**
+**This checklist ensures consistent release quality and investor readiness.**
