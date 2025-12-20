@@ -451,8 +451,8 @@ if (flag.value) { /* ... */ }`;
           </div>
         </section>
         
-        {/* Hidden Preload for components */}
-        <div className="hidden">
+        {/* Hidden Preload for components - intentionally hidden for prefetching */}
+        <div className="hidden" aria-hidden="true">
           <CustomerLogos />
           <NewsletterSignup />
           <ConversionCTA />
