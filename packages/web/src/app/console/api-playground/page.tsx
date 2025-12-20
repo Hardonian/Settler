@@ -12,7 +12,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Skeleton } from '@/components/Skeleton';
 import { safeFetch, maskToken, sanitizeForLogging } from '@/lib/safe-fetch';
-import { RBACGate, TruncateContent } from '@/lib/rbac-gate';
+import { RBACGate } from '@/lib/rbac-gate';
 import { 
   Play, 
   History, 

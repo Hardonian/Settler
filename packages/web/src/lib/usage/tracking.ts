@@ -489,6 +489,7 @@ export async function recordUsageEvent(
     // Map service code to eventType for UsageEvent model
     const eventTypeMap: Record<ServiceCode, string> = {
       reconcile: 'settler-reconcile',
+      exceptions: 'settler-exceptions',
       receipts: 'settler-receipts',
       featureFlags: 'settler-feature-flags',
       playground: 'settler-playground',

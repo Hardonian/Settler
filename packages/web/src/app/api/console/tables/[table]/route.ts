@@ -221,7 +221,7 @@ export async function PATCH(request: NextRequest) {
     
     const { data, error } = await supabase
       .from(tableName)
-      .update(body as Record<string, unknown>)
+      .update(body as any)
       .eq('id', id)
       .select()
       .single();

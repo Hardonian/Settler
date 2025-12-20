@@ -1,5 +1,5 @@
 import { createClient } from './supabase/server';
-import { SubscriptionStatus, determineSubscriptionTier, getAccessLevel } from './subscription-access';
+import { SubscriptionStatus, determineSubscriptionTier } from './subscription-access';
 
 /**
  * Get current user's subscription status
@@ -72,11 +72,12 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
     subscription = (subData as typeof subscription) ?? null;
 
     // Get billing account
-    if ((subData as { billing_account_id?: string } | null)?.billing_account_id) {
+    const billingAccountId = (subData as { billing_account_id?: string } | null)?.billing_account_id;
+    if (billingAccountId) {
       const { data: billingData } = await supabase
         .from('billing_accounts')
         .select('id, status')
-        .eq('id', (subData as { billing_account_id: string }).billing_account_id)
+        .eq('id', billingAccountId)
         .single();
       
       billingAccount = (billingData as typeof billingAccount) ?? null;
@@ -105,11 +106,12 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
     
     subscription = (subData as typeof subscription) ?? null;
 
-    if ((subscription as { billing_account_id?: string } | null)?.billing_account_id) {
+    const subscriptionBillingAccountId = (subscription as { billing_account_id?: string } | null)?.billing_account_id;
+    if (subscriptionBillingAccountId) {
       const { data: billingData } = await supabase
         .from('billing_accounts')
         .select('id, status')
-        .eq('id', (subscription as { billing_account_id: string }).billing_account_id)
+        .eq('id', subscriptionBillingAccountId)
         .single();
       
       billingAccount = (billingData as typeof billingAccount) ?? null;
