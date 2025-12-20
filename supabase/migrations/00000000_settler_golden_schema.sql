@@ -10632,10 +10632,10 @@ begin
     execute format('drop policy if exists "Org delete" on %I.%I', table_schema, table_name);
   end if;
   execute format('grant select, insert, update, delete on %I.%I to authenticated', table_schema, table_name);
-  execute format('create policy "Org read" on %I.%I for select to authenticated using (org_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
-  execute format('create policy "Org write" on %I.%I for insert to authenticated with check (org_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
-  execute format('create policy "Org update" on %I.%I for update to authenticated using (org_id in (select app_private.get_user_org_ids())) with check (org_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
-  execute format('create policy "Org delete" on %I.%I for delete to authenticated using (org_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
+  execute format('create policy "Org read" on %I.%I for select to authenticated using (org_id in (select public.get_user_org_ids()))', table_schema, table_name);
+  execute format('create policy "Org write" on %I.%I for insert to authenticated with check (org_id in (select public.get_user_org_ids()))', table_schema, table_name);
+  execute format('create policy "Org update" on %I.%I for update to authenticated using (org_id in (select public.get_user_org_ids())) with check (org_id in (select public.get_user_org_ids()))', table_schema, table_name);
+  execute format('create policy "Org delete" on %I.%I for delete to authenticated using (org_id in (select public.get_user_org_ids()))', table_schema, table_name);
 end; $function$;
 
 CREATE OR REPLACE FUNCTION app_private.apply_org_rls_for_tenant(table_schema text, table_name text)
@@ -10656,10 +10656,10 @@ begin
   -- grants
   execute format('grant select, insert, update, delete on %I.%I to authenticated', table_schema, table_name);
   -- create org-based policies using tenant_id
-  execute format('create policy "Org read" on %I.%I for select to authenticated using (tenant_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
-  execute format('create policy "Org write" on %I.%I for insert to authenticated with check (tenant_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
-  execute format('create policy "Org update" on %I.%I for update to authenticated using (tenant_id in (select app_private.get_user_org_ids())) with check (tenant_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
-  execute format('create policy "Org delete" on %I.%I for delete to authenticated using (tenant_id in (select app_private.get_user_org_ids()))', table_schema, table_name);
+  execute format('create policy "Org read" on %I.%I for select to authenticated using (tenant_id in (select public.get_user_org_ids()))', table_schema, table_name);
+  execute format('create policy "Org write" on %I.%I for insert to authenticated with check (tenant_id in (select public.get_user_org_ids()))', table_schema, table_name);
+  execute format('create policy "Org update" on %I.%I for update to authenticated using (tenant_id in (select public.get_user_org_ids())) with check (tenant_id in (select public.get_user_org_ids()))', table_schema, table_name);
+  execute format('create policy "Org delete" on %I.%I for delete to authenticated using (tenant_id in (select public.get_user_org_ids()))', table_schema, table_name);
 end; $function$;
 
 CREATE OR REPLACE FUNCTION pgmq.archive(queue_name text, msg_id bigint)
@@ -15232,7 +15232,10 @@ BEGIN
 END;
 $function$;
 
-CREATE OR REPLACE FUNCTION app_private.get_user_org_ids()
+-- Drop old app_private function if it exists
+DROP FUNCTION IF EXISTS app_private.get_user_org_ids();
+
+CREATE OR REPLACE FUNCTION public.get_user_org_ids()
  RETURNS SETOF uuid
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
@@ -15253,6 +15256,9 @@ declare col_exists boolean; begin
     return; end if;
   raise exception 'user_organizations must contain org_id/organization_id/tenant_id';
 end; $function$;
+
+-- Grant execute to authenticated users
+GRANT EXECUTE ON FUNCTION public.get_user_org_ids() TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.get_user_role()
  RETURNS text
