@@ -9,7 +9,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getRedisClient } from '@/lib/redis/client';
 import type { SubscriptionTier } from '@/lib/console/subscription';
 
-export type ServiceCode = 'reconcile' | 'exceptions' | 'playground' | 'api' | 'reconciliation';
+export type ServiceCode = 'reconcile' | 'exceptions' | 'playground' | 'api' | 'reconciliation' | 'receipts' | 'featureFlags' | 'receipt_parsing';
 export type Period = 'daily' | 'monthly';
 
 export interface UsageCheckResult {
@@ -68,6 +68,9 @@ function getUsageLimit(tier: SubscriptionTier, service: ServiceCode, period: Per
       playground: { daily: 10, monthly: 0 },
       api: { daily: 0, monthly: 0 },
       reconciliation: { daily: 0, monthly: 0 },
+      receipts: { daily: 0, monthly: 0 },
+      featureFlags: { daily: 0, monthly: 0 },
+      receipt_parsing: { daily: 0, monthly: 0 },
     },
     free: {
       reconcile: { daily: 333, monthly: 10000 }, // Starter: 10k/month = ~333/day
@@ -75,6 +78,9 @@ function getUsageLimit(tier: SubscriptionTier, service: ServiceCode, period: Per
       playground: { daily: 50, monthly: 0 },
       api: { daily: 333, monthly: 10000 },
       reconciliation: { daily: 333, monthly: 10000 },
+      receipts: { daily: 333, monthly: 10000 },
+      featureFlags: { daily: -1, monthly: -1 }, // Unlimited for feature flags
+      receipt_parsing: { daily: 333, monthly: 10000 },
     },
     pro: {
       reconcile: { daily: 3333, monthly: 100000 }, // Growth: 100k/month = ~3333/day
@@ -82,6 +88,9 @@ function getUsageLimit(tier: SubscriptionTier, service: ServiceCode, period: Per
       playground: { daily: 500, monthly: 0 },
       api: { daily: 3333, monthly: 100000 },
       reconciliation: { daily: 3333, monthly: 100000 },
+      receipts: { daily: 3333, monthly: 100000 },
+      featureFlags: { daily: -1, monthly: -1 }, // Unlimited for feature flags
+      receipt_parsing: { daily: 3333, monthly: 100000 },
     },
     enterprise: {
       reconcile: { daily: -1, monthly: -1 }, // Unlimited
@@ -89,6 +98,9 @@ function getUsageLimit(tier: SubscriptionTier, service: ServiceCode, period: Per
       playground: { daily: -1, monthly: -1 },
       api: { daily: -1, monthly: -1 },
       reconciliation: { daily: -1, monthly: -1 },
+      receipts: { daily: -1, monthly: -1 },
+      featureFlags: { daily: -1, monthly: -1 },
+      receipt_parsing: { daily: -1, monthly: -1 },
     },
   };
 

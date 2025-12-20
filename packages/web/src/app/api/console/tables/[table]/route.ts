@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
         p_order_asc: orderAsc,
       } as any); // RPC types not fully generated
       
-      if (!rpcError && rpcData && Array.isArray(rpcData) && rpcData.length > 0) {
+      if (!rpcError && rpcData && Array.isArray(rpcData) && (rpcData as unknown[]).length > 0) {
         const result = rpcData[0] as { data?: unknown[]; total_count?: number | string };
         return NextResponse.json({
           data: Array.isArray(result.data) ? result.data : [],
@@ -221,7 +221,7 @@ export async function PATCH(request: NextRequest) {
     
     const { data, error } = await supabase
       .from(tableName)
-      .update(body)
+      .update(body as Record<string, unknown>)
       .eq('id', id)
       .select()
       .single();

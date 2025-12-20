@@ -34,7 +34,7 @@ export default function TablesPage() {
       try {
         const { data, error: err } = await supabase.rpc('get_tables', {
           schema_name: 'public'
-        });
+        } as any);
         
         if (!err && data) {
           setTables(data);

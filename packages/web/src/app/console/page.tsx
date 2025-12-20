@@ -25,7 +25,7 @@ import { ErrorAlertsPanel } from '@/components/console/ErrorAlertsPanel';
 import { UsageWarningBanner } from '@/components/console/UsageWarningBanner';
 import { GuidedTourClient } from '@/components/console/GuidedTourClient';
 import { UsageInsightsPanel } from '@/components/console/UsageInsightsPanel';
-import { RBACGate, TruncateContent } from '@/lib/rbac-gate';
+import { RBACGate } from '@/lib/rbac-gate';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine

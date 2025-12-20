@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CreditCard, Lock, Zap } from 'lucide-react';
+import { CreditCard, Lock } from 'lucide-react';
 import { SubscriptionStatus } from '@/lib/subscription-access';
 
 interface SubscriptionGateProps {

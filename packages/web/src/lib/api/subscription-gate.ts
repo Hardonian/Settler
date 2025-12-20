@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSubscriptionStatus } from '@/lib/get-subscription-status';
-import { SubscriptionTier, hasAccess } from '@/lib/subscription-access';
+import { SubscriptionTier } from '@/lib/subscription-access';
 import { getTraceId } from '@/lib/observability/trace';
 import { logger } from '@/lib/observability/logger';
 import { ErrorCode } from '@/lib/api/error-handler';

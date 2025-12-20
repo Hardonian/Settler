@@ -117,7 +117,7 @@ export function RBACGate({
         </>
       );
     }
-    return fallback || <SubscriptionGate requiredTier={requiredTier} feature={feature} />;
+    return fallback || <SubscriptionGate requiredTier={requiredTier} feature={feature}>{null}</SubscriptionGate>;
   }
 
   return <>{children}</>;
