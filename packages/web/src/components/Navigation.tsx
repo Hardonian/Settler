@@ -106,7 +106,7 @@ export function Navigation() {
               variant="default"
               size="default"
             >
-              <Link href="/console/playground" aria-label="Get started with Settler">
+              <Link href="/playground" aria-label="Get started with Settler">
                 Get Started
               </Link>
             </Button>
@@ -180,7 +180,7 @@ export function Navigation() {
                 size="default"
                 className="w-full"
               >
-                <Link href="/console/playground" aria-label="Get started with Settler">
+                <Link href="/playground" aria-label="Get started with Settler">
                   Get Started
                 </Link>
               </Button>

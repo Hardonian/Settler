@@ -125,7 +125,7 @@ export default function Pricing() {
             {plans.map((plan, index) => (
               <Card
                 key={index}
-                className={`relative ${plan.popular ? 'border-2 border-blue-500 shadow-xl scale-105' : ''}`}
+                className={`relative ${plan.popular ? 'border-2 border-blue-500 shadow-xl md:scale-105' : ''}`}
               >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">

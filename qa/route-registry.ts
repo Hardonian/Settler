@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2025-12-19T03:44:19.189Z
+ * Generated at: 2025-12-20T22:09:17.022Z
  * 
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.
@@ -33,6 +33,38 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/admin/analytics",
+    "type": "page",
+    "file": "admin/analytics/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/admin/branding",
+    "type": "page",
+    "file": "admin/branding/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/admin/database",
+    "type": "page",
+    "file": "admin/database/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/admin/database/table",
+    "type": "page",
+    "file": "admin/database/[table]/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/admin/experiments",
     "type": "page",
     "file": "admin/experiments/page.tsx",
@@ -52,6 +84,14 @@ export const ROUTES: RouteInfo[] = [
     "path": "/admin/experiments/new",
     "type": "page",
     "file": "admin/experiments/new/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/admin/flags",
+    "type": "page",
+    "file": "admin/flags/page.tsx",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -84,6 +124,14 @@ export const ROUTES: RouteInfo[] = [
     "path": "/admin/pages/new",
     "type": "page",
     "file": "admin/pages/new/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/admin/settings",
+    "type": "page",
+    "file": "admin/settings/page.tsx",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -132,6 +180,22 @@ export const ROUTES: RouteInfo[] = [
     "path": "/api/admin/impersonate/stop",
     "type": "route",
     "file": "api/admin/impersonate/stop/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/api/admin/tables",
+    "type": "route",
+    "file": "api/admin/tables/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/api/admin/tables/table",
+    "type": "route",
+    "file": "api/admin/tables/[table]/route.ts",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -481,6 +545,14 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/api/console/reality",
+    "type": "route",
+    "file": "api/console/reality/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/api/console/receipts",
     "type": "route",
     "file": "api/console/receipts/route.ts",
@@ -601,6 +673,14 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/api/console/subscription-status",
+    "type": "route",
+    "file": "api/console/subscription-status/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/api/console/support/tickets",
     "type": "route",
     "file": "api/console/support/tickets/route.ts",
@@ -612,6 +692,14 @@ export const ROUTES: RouteInfo[] = [
     "path": "/api/console/support/triage",
     "type": "route",
     "file": "api/console/support/triage/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/api/console/tables/table",
+    "type": "route",
+    "file": "api/console/tables/[table]/route.ts",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -652,6 +740,14 @@ export const ROUTES: RouteInfo[] = [
     "path": "/api/console/usage/warnings",
     "type": "route",
     "file": "api/console/usage/warnings/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/api/console/user-role",
+    "type": "route",
+    "file": "api/console/user-role/route.ts",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -849,9 +945,33 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/api/internal/health/deep",
+    "type": "route",
+    "file": "api/internal/health/deep/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/api/internal/jobs/drain",
+    "type": "route",
+    "file": "api/internal/jobs/drain/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/api/investor/metrics",
     "type": "route",
     "file": "api/investor/metrics/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/api/investor/reality",
+    "type": "route",
+    "file": "api/investor/reality/route.ts",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -1017,6 +1137,14 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/api/public/reality",
+    "type": "route",
+    "file": "api/public/reality/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/api/quota",
     "type": "route",
     "file": "api/quota/route.ts",
@@ -1044,6 +1172,22 @@ export const ROUTES: RouteInfo[] = [
     "path": "/api/referrals",
     "type": "route",
     "file": "api/referrals/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/api/runs/create",
+    "type": "route",
+    "file": "api/runs/create/route.ts",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/api/runs/runId",
+    "type": "route",
+    "file": "api/runs/[runId]/route.ts",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -1345,6 +1489,14 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/console/activity",
+    "type": "page",
+    "file": "console/activity/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/console/ai-analysis",
     "type": "page",
     "file": "console/ai-analysis/page.tsx",
@@ -1377,6 +1529,30 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/console/api-playground",
+    "type": "page",
+    "file": "console/api-playground/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/console/api-playground/collections",
+    "type": "page",
+    "file": "console/api-playground/collections/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/console/api-test",
+    "type": "page",
+    "file": "console/api-test/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/console/billing",
     "type": "page",
     "file": "console/billing/page.tsx",
@@ -1396,6 +1572,14 @@ export const ROUTES: RouteInfo[] = [
     "path": "/console/changes",
     "type": "page",
     "file": "console/changes/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/console/control-plane",
+    "type": "page",
+    "file": "console/control-plane/page.tsx",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -1444,6 +1628,14 @@ export const ROUTES: RouteInfo[] = [
     "path": "/console/insights",
     "type": "page",
     "file": "console/insights/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/console/inspector",
+    "type": "page",
+    "file": "console/inspector/page.tsx",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -1521,6 +1713,14 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/console/reality",
+    "type": "page",
+    "file": "console/reality/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/console/receipts",
     "type": "page",
     "file": "console/receipts/page.tsx",
@@ -1548,6 +1748,14 @@ export const ROUTES: RouteInfo[] = [
     "path": "/console/reconciliation/runId",
     "type": "page",
     "file": "console/reconciliation/[runId]/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/console/runs/runId",
+    "type": "page",
+    "file": "console/runs/[runId]/page.tsx",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -1617,6 +1825,22 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/console/tables",
+    "type": "page",
+    "file": "console/tables/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/console/tables/table",
+    "type": "page",
+    "file": "console/tables/[table]/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/console/usage",
     "type": "page",
     "file": "console/usage/page.tsx",
@@ -1628,6 +1852,30 @@ export const ROUTES: RouteInfo[] = [
     "path": "/console/webhooks",
     "type": "page",
     "file": "console/webhooks/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/console/workflows",
+    "type": "page",
+    "file": "console/workflows/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/console/workflows/id",
+    "type": "page",
+    "file": "console/workflows/[id]/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/console/workflows/new",
+    "type": "page",
+    "file": "console/workflows/new/page.tsx",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -1753,6 +2001,14 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/docs/auth",
+    "type": "page",
+    "file": "docs/auth/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/docs/cli",
     "type": "page",
     "file": "docs/cli/page.tsx",
@@ -1761,9 +2017,33 @@ export const ROUTES: RouteInfo[] = [
     "optional": false
   },
   {
+    "path": "/docs/errors",
+    "type": "page",
+    "file": "docs/errors/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
     "path": "/docs/examples",
     "type": "page",
     "file": "docs/examples/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/docs/getting-started",
+    "type": "page",
+    "file": "docs/getting-started/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/docs/integrations",
+    "type": "page",
+    "file": "docs/integrations/page.tsx",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -1820,6 +2100,22 @@ export const ROUTES: RouteInfo[] = [
     "path": "/docs/sdk/ruby",
     "type": "page",
     "file": "docs/sdk/ruby/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/docs/status",
+    "type": "page",
+    "file": "docs/status/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/docs/webhooks",
+    "type": "page",
+    "file": "docs/webhooks/page.tsx",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -1900,6 +2196,14 @@ export const ROUTES: RouteInfo[] = [
     "path": "/integrations/request",
     "type": "page",
     "file": "integrations/request/page.tsx",
+    "dynamic": false,
+    "catchAll": false,
+    "optional": false
+  },
+  {
+    "path": "/investor/reality",
+    "type": "page",
+    "file": "investor/reality/page.tsx",
     "dynamic": false,
     "catchAll": false,
     "optional": false
@@ -2172,13 +2476,19 @@ export const ROUTES: RouteInfo[] = [
 
 export const PAGE_ROUTES: string[] = [
   "/admin",
+  "/admin/analytics",
+  "/admin/branding",
+  "/admin/database",
+  "/admin/database/table",
   "/admin/experiments",
   "/admin/experiments/id",
   "/admin/experiments/new",
+  "/admin/flags",
   "/admin/metrics",
   "/admin/pages",
   "/admin/pages/id/editor",
   "/admin/pages/new",
+  "/admin/settings",
   "/admin/webhooks",
   "/architecture",
   "/benchmarks",
@@ -2189,19 +2499,25 @@ export const PAGE_ROUTES: string[] = [
   "/community/contributors",
   "/comparison",
   "/console",
+  "/console/activity",
   "/console/ai-analysis",
   "/console/alerts-view",
   "/console/analytics",
   "/console/api-keys",
+  "/console/api-playground",
+  "/console/api-playground/collections",
+  "/console/api-test",
   "/console/billing",
   "/console/briefings",
   "/console/changes",
+  "/console/control-plane",
   "/console/costs",
   "/console/docs",
   "/console/feature-flags",
   "/console/feature-flags-policy",
   "/console/ingestion/ingestionId",
   "/console/insights",
+  "/console/inspector",
   "/console/onboarding",
   "/console/ops",
   "/console/performance",
@@ -2211,10 +2527,12 @@ export const PAGE_ROUTES: string[] = [
   "/console/playground/flags",
   "/console/playground/receipts",
   "/console/playground/reconcile",
+  "/console/reality",
   "/console/receipts",
   "/console/receipts-hash",
   "/console/reconciliation-view",
   "/console/reconciliation/runId",
+  "/console/runs/runId",
   "/console/setup-check",
   "/console/site",
   "/console/site/branding",
@@ -2223,8 +2541,13 @@ export const PAGE_ROUTES: string[] = [
   "/console/site/navigation",
   "/console/site/pages/id",
   "/console/support",
+  "/console/tables",
+  "/console/tables/table",
   "/console/usage",
   "/console/webhooks",
+  "/console/workflows",
+  "/console/workflows/id",
+  "/console/workflows/new",
   "/cookbook",
   "/cookbooks",
   "/dashboard",
@@ -2240,8 +2563,12 @@ export const PAGE_ROUTES: string[] = [
   "/dashboard/user",
   "/docs",
   "/docs/api",
+  "/docs/auth",
   "/docs/cli",
+  "/docs/errors",
   "/docs/examples",
+  "/docs/getting-started",
+  "/docs/integrations",
   "/docs/integrations/integrationId",
   "/docs/quickstart",
   "/docs/sdk",
@@ -2249,6 +2576,8 @@ export const PAGE_ROUTES: string[] = [
   "/docs/sdk/nodejs",
   "/docs/sdk/python",
   "/docs/sdk/ruby",
+  "/docs/status",
+  "/docs/webhooks",
   "/edge-ai",
   "/edge-ai/nodes",
   "/edge-ai/nodes/new",
@@ -2259,6 +2588,7 @@ export const PAGE_ROUTES: string[] = [
   "/founder",
   "/how-it-works",
   "/integrations/request",
+  "/investor/reality",
   "/invite/token",
   "/legal",
   "/legal/aup",
@@ -2297,19 +2627,27 @@ export const PAGE_ROUTES: string[] = [
 export const ALL_ROUTES: string[] = [
   "/",
   "/admin",
+  "/admin/analytics",
+  "/admin/branding",
+  "/admin/database",
+  "/admin/database/table",
   "/admin/experiments",
   "/admin/experiments/id",
   "/admin/experiments/new",
+  "/admin/flags",
   "/admin/metrics",
   "/admin/pages",
   "/admin/pages/id/editor",
   "/admin/pages/new",
+  "/admin/settings",
   "/admin/webhooks",
   "/api/admin/audit-logs",
   "/api/admin/billing/reconcile",
   "/api/admin/cleanup",
   "/api/admin/impersonate",
   "/api/admin/impersonate/stop",
+  "/api/admin/tables",
+  "/api/admin/tables/table",
   "/api/ai/chatbot",
   "/api/ai/data-insights",
   "/api/ai/onboarding-assistant",
@@ -2353,6 +2691,7 @@ export const ALL_ROUTES: string[] = [
   "/api/console/ops-insights/id",
   "/api/console/ops-recommendations/id/execute",
   "/api/console/performance",
+  "/api/console/reality",
   "/api/console/receipts",
   "/api/console/receipts-v2",
   "/api/console/receipts/id",
@@ -2368,13 +2707,16 @@ export const ALL_ROUTES: string[] = [
   "/api/console/site/pages/id/publish",
   "/api/console/site/setup",
   "/api/console/subscription",
+  "/api/console/subscription-status",
   "/api/console/support/tickets",
   "/api/console/support/triage",
+  "/api/console/tables/table",
   "/api/console/usage",
   "/api/console/usage/alerts",
   "/api/console/usage/analytics",
   "/api/console/usage/export",
   "/api/console/usage/warnings",
+  "/api/console/user-role",
   "/api/console/webhooks",
   "/api/console/webhooks/id",
   "/api/cron/daily-cost-rollup",
@@ -2399,7 +2741,10 @@ export const ALL_ROUTES: string[] = [
   "/api/integrations/integrationId/test",
   "/api/integrations/integrationId/upgrade",
   "/api/integrations/integrationId/versions",
+  "/api/internal/health/deep",
+  "/api/internal/jobs/drain",
   "/api/investor/metrics",
+  "/api/investor/reality",
   "/api/invite/token",
   "/api/marketing/newsletter/subscribe",
   "/api/marketing/rss",
@@ -2420,10 +2765,13 @@ export const ALL_ROUTES: string[] = [
   "/api/projects/snapshots",
   "/api/projects/snapshots/snapshotId/export",
   "/api/projects/snapshots/snapshotId/rollback",
+  "/api/public/reality",
   "/api/quota",
   "/api/rbac/roles",
   "/api/rbac/users",
   "/api/referrals",
+  "/api/runs/create",
+  "/api/runs/runId",
   "/api/sales/deck",
   "/api/sales/roi-calculator",
   "/api/seo/generate-sitemap",
@@ -2461,19 +2809,25 @@ export const ALL_ROUTES: string[] = [
   "/community/contributors",
   "/comparison",
   "/console",
+  "/console/activity",
   "/console/ai-analysis",
   "/console/alerts-view",
   "/console/analytics",
   "/console/api-keys",
+  "/console/api-playground",
+  "/console/api-playground/collections",
+  "/console/api-test",
   "/console/billing",
   "/console/briefings",
   "/console/changes",
+  "/console/control-plane",
   "/console/costs",
   "/console/docs",
   "/console/feature-flags",
   "/console/feature-flags-policy",
   "/console/ingestion/ingestionId",
   "/console/insights",
+  "/console/inspector",
   "/console/onboarding",
   "/console/ops",
   "/console/performance",
@@ -2483,10 +2837,12 @@ export const ALL_ROUTES: string[] = [
   "/console/playground/flags",
   "/console/playground/receipts",
   "/console/playground/reconcile",
+  "/console/reality",
   "/console/receipts",
   "/console/receipts-hash",
   "/console/reconciliation-view",
   "/console/reconciliation/runId",
+  "/console/runs/runId",
   "/console/setup-check",
   "/console/site",
   "/console/site/branding",
@@ -2495,8 +2851,13 @@ export const ALL_ROUTES: string[] = [
   "/console/site/navigation",
   "/console/site/pages/id",
   "/console/support",
+  "/console/tables",
+  "/console/tables/table",
   "/console/usage",
   "/console/webhooks",
+  "/console/workflows",
+  "/console/workflows/id",
+  "/console/workflows/new",
   "/cookbook",
   "/cookbooks",
   "/dashboard",
@@ -2512,8 +2873,12 @@ export const ALL_ROUTES: string[] = [
   "/dashboard/user",
   "/docs",
   "/docs/api",
+  "/docs/auth",
   "/docs/cli",
+  "/docs/errors",
   "/docs/examples",
+  "/docs/getting-started",
+  "/docs/integrations",
   "/docs/integrations/integrationId",
   "/docs/quickstart",
   "/docs/sdk",
@@ -2521,6 +2886,8 @@ export const ALL_ROUTES: string[] = [
   "/docs/sdk/nodejs",
   "/docs/sdk/python",
   "/docs/sdk/ruby",
+  "/docs/status",
+  "/docs/webhooks",
   "/edge-ai",
   "/edge-ai/nodes",
   "/edge-ai/nodes/new",
@@ -2531,6 +2898,7 @@ export const ALL_ROUTES: string[] = [
   "/founder",
   "/how-it-works",
   "/integrations/request",
+  "/investor/reality",
   "/invite/token",
   "/legal",
   "/legal/aup",

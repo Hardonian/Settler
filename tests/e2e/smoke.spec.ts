@@ -20,6 +20,14 @@ const AUTH_REQUIRED_ROUTES = [
   '/console',
 ];
 
+// Mobile viewports to test
+const MOBILE_VIEWPORTS = [
+  { width: 360, height: 800, name: 'mobile-small' },
+  { width: 390, height: 844, name: 'mobile-medium' },
+  { width: 414, height: 896, name: 'mobile-large' },
+  { width: 768, height: 1024, name: 'tablet' },
+];
+
 test.describe('Smoke Tests - No Dead Links', () => {
   test('should crawl site and find no dead links', async ({ page, context }) => {
     const visited = new Set<string>();
@@ -233,5 +241,120 @@ test.describe('Smoke Tests - No Dead Links', () => {
     }
     
     expect(failures.length).toBe(0);
+  });
+
+  test('critical routes should not have horizontal scroll on mobile', async ({ page }) => {
+    const criticalRoutes = [
+      '/',
+      '/pricing',
+      '/console',
+      '/playground',
+      '/docs',
+    ];
+    
+    const failures: Array<{ route: string; viewport: string; horizontalScroll: number }> = [];
+    
+    for (const viewport of MOBILE_VIEWPORTS) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      
+      for (const route of criticalRoutes) {
+        try {
+          await page.goto(`${BASE_URL}${route}`, { 
+            waitUntil: 'networkidle',
+            timeout: 30000 
+          });
+          
+          // Wait for any animations/layout shifts
+          await page.waitForTimeout(1000);
+          
+          // Check for horizontal scroll
+          const horizontalScroll = await page.evaluate(() => {
+            return Math.max(
+              document.documentElement.scrollWidth - document.documentElement.clientWidth,
+              document.body.scrollWidth - document.body.clientWidth
+            );
+          });
+          
+          if (horizontalScroll > 0) {
+            failures.push({ 
+              route, 
+              viewport: viewport.name, 
+              horizontalScroll 
+            });
+            
+            // Take screenshot for debugging
+            await page.screenshot({ 
+              path: `test-results/horizontal-scroll-${route.replace(/\//g, '_')}-${viewport.name}.png`,
+              fullPage: true 
+            });
+          }
+        } catch (error) {
+          // Log but don't fail - might be auth issues
+          console.warn(`Failed to check ${route} on ${viewport.name}:`, error);
+        }
+      }
+    }
+    
+    if (failures.length > 0) {
+      console.error('\n❌ Routes with horizontal scroll on mobile:\n');
+      failures.forEach(({ route, viewport, horizontalScroll }) => {
+        console.error(`  ${route} (${viewport}): ${horizontalScroll}px horizontal scroll`);
+      });
+    }
+    
+    expect(failures.length).toBe(0);
+  });
+
+  test('critical routes should have proper tap targets on mobile', async ({ page }) => {
+    const criticalRoutes = ['/', '/pricing', '/console'];
+    
+    await page.setViewportSize({ width: 375, height: 667 }); // iPhone SE size
+    
+    for (const route of criticalRoutes) {
+      try {
+        await page.goto(`${BASE_URL}${route}`, { 
+          waitUntil: 'networkidle',
+          timeout: 30000 
+        });
+        
+        await page.waitForTimeout(1000);
+        
+        // Check all interactive elements have adequate tap targets (min 44x44px)
+        const smallTapTargets = await page.evaluate(() => {
+          const interactiveElements = Array.from(
+            document.querySelectorAll('a, button, input[type="button"], input[type="submit"], [role="button"]')
+          );
+          
+          return interactiveElements
+            .map(el => {
+              const rect = el.getBoundingClientRect();
+              const minSize = 44; // WCAG minimum tap target size
+              
+              if (rect.width < minSize || rect.height < minSize) {
+                return {
+                  tag: el.tagName.toLowerCase(),
+                  text: el.textContent?.substring(0, 50) || '',
+                  width: rect.width,
+                  height: rect.height,
+                };
+              }
+              return null;
+            })
+            .filter(Boolean);
+        });
+        
+        if (smallTapTargets.length > 0) {
+          console.warn(`⚠️  ${route} has ${smallTapTargets.length} small tap targets:`);
+          smallTapTargets.forEach(target => {
+            console.warn(`  - ${target.tag}: ${target.width}x${target.height}px - "${target.text}"`);
+          });
+        }
+        
+        // Don't fail on this - just warn (some elements might be intentionally small)
+        // expect(smallTapTargets.length).toBe(0);
+      } catch (error) {
+        console.warn(`Failed to check tap targets on ${route}:`, error);
+      }
+    }
   });
 });

@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2025-12-19T03:44:19.188Z",
-  "totalRoutes": 269,
-  "pageRoutes": 121,
+  "generatedAt": "2025-12-20T22:09:17.021Z",
+  "totalRoutes": 307,
+  "pageRoutes": 147,
   "routes": [
     {
       "path": "/",
@@ -15,6 +15,38 @@
       "path": "/admin",
       "type": "page",
       "file": "admin/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/admin/analytics",
+      "type": "page",
+      "file": "admin/analytics/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/admin/branding",
+      "type": "page",
+      "file": "admin/branding/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/admin/database",
+      "type": "page",
+      "file": "admin/database/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/admin/database/table",
+      "type": "page",
+      "file": "admin/database/[table]/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -39,6 +71,14 @@
       "path": "/admin/experiments/new",
       "type": "page",
       "file": "admin/experiments/new/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/admin/flags",
+      "type": "page",
+      "file": "admin/flags/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -71,6 +111,14 @@
       "path": "/admin/pages/new",
       "type": "page",
       "file": "admin/pages/new/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/admin/settings",
+      "type": "page",
+      "file": "admin/settings/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -119,6 +167,22 @@
       "path": "/api/admin/impersonate/stop",
       "type": "route",
       "file": "api/admin/impersonate/stop/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/admin/tables",
+      "type": "route",
+      "file": "api/admin/tables/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/admin/tables/table",
+      "type": "route",
+      "file": "api/admin/tables/[table]/route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -468,6 +532,14 @@
       "optional": false
     },
     {
+      "path": "/api/console/reality",
+      "type": "route",
+      "file": "api/console/reality/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/console/receipts",
       "type": "route",
       "file": "api/console/receipts/route.ts",
@@ -588,6 +660,14 @@
       "optional": false
     },
     {
+      "path": "/api/console/subscription-status",
+      "type": "route",
+      "file": "api/console/subscription-status/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/console/support/tickets",
       "type": "route",
       "file": "api/console/support/tickets/route.ts",
@@ -599,6 +679,14 @@
       "path": "/api/console/support/triage",
       "type": "route",
       "file": "api/console/support/triage/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/console/tables/table",
+      "type": "route",
+      "file": "api/console/tables/[table]/route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -639,6 +727,14 @@
       "path": "/api/console/usage/warnings",
       "type": "route",
       "file": "api/console/usage/warnings/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/console/user-role",
+      "type": "route",
+      "file": "api/console/user-role/route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -836,9 +932,33 @@
       "optional": false
     },
     {
+      "path": "/api/internal/health/deep",
+      "type": "route",
+      "file": "api/internal/health/deep/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/internal/jobs/drain",
+      "type": "route",
+      "file": "api/internal/jobs/drain/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/investor/metrics",
       "type": "route",
       "file": "api/investor/metrics/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/investor/reality",
+      "type": "route",
+      "file": "api/investor/reality/route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1004,6 +1124,14 @@
       "optional": false
     },
     {
+      "path": "/api/public/reality",
+      "type": "route",
+      "file": "api/public/reality/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/quota",
       "type": "route",
       "file": "api/quota/route.ts",
@@ -1031,6 +1159,22 @@
       "path": "/api/referrals",
       "type": "route",
       "file": "api/referrals/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/runs/create",
+      "type": "route",
+      "file": "api/runs/create/route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/runs/runId",
+      "type": "route",
+      "file": "api/runs/[runId]/route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1332,6 +1476,14 @@
       "optional": false
     },
     {
+      "path": "/console/activity",
+      "type": "page",
+      "file": "console/activity/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/console/ai-analysis",
       "type": "page",
       "file": "console/ai-analysis/page.tsx",
@@ -1364,6 +1516,30 @@
       "optional": false
     },
     {
+      "path": "/console/api-playground",
+      "type": "page",
+      "file": "console/api-playground/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/api-playground/collections",
+      "type": "page",
+      "file": "console/api-playground/collections/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/api-test",
+      "type": "page",
+      "file": "console/api-test/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/console/billing",
       "type": "page",
       "file": "console/billing/page.tsx",
@@ -1383,6 +1559,14 @@
       "path": "/console/changes",
       "type": "page",
       "file": "console/changes/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/control-plane",
+      "type": "page",
+      "file": "console/control-plane/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1431,6 +1615,14 @@
       "path": "/console/insights",
       "type": "page",
       "file": "console/insights/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/inspector",
+      "type": "page",
+      "file": "console/inspector/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1508,6 +1700,14 @@
       "optional": false
     },
     {
+      "path": "/console/reality",
+      "type": "page",
+      "file": "console/reality/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/console/receipts",
       "type": "page",
       "file": "console/receipts/page.tsx",
@@ -1535,6 +1735,14 @@
       "path": "/console/reconciliation/runId",
       "type": "page",
       "file": "console/reconciliation/[runId]/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/runs/runId",
+      "type": "page",
+      "file": "console/runs/[runId]/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1604,6 +1812,22 @@
       "optional": false
     },
     {
+      "path": "/console/tables",
+      "type": "page",
+      "file": "console/tables/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/tables/table",
+      "type": "page",
+      "file": "console/tables/[table]/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/console/usage",
       "type": "page",
       "file": "console/usage/page.tsx",
@@ -1615,6 +1839,30 @@
       "path": "/console/webhooks",
       "type": "page",
       "file": "console/webhooks/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/workflows",
+      "type": "page",
+      "file": "console/workflows/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/workflows/id",
+      "type": "page",
+      "file": "console/workflows/[id]/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/workflows/new",
+      "type": "page",
+      "file": "console/workflows/new/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1740,6 +1988,14 @@
       "optional": false
     },
     {
+      "path": "/docs/auth",
+      "type": "page",
+      "file": "docs/auth/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/docs/cli",
       "type": "page",
       "file": "docs/cli/page.tsx",
@@ -1748,9 +2004,33 @@
       "optional": false
     },
     {
+      "path": "/docs/errors",
+      "type": "page",
+      "file": "docs/errors/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/docs/examples",
       "type": "page",
       "file": "docs/examples/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/docs/getting-started",
+      "type": "page",
+      "file": "docs/getting-started/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/docs/integrations",
+      "type": "page",
+      "file": "docs/integrations/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1807,6 +2087,22 @@
       "path": "/docs/sdk/ruby",
       "type": "page",
       "file": "docs/sdk/ruby/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/docs/status",
+      "type": "page",
+      "file": "docs/status/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/docs/webhooks",
+      "type": "page",
+      "file": "docs/webhooks/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -1887,6 +2183,14 @@
       "path": "/integrations/request",
       "type": "page",
       "file": "integrations/request/page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/investor/reality",
+      "type": "page",
+      "file": "investor/reality/page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -2158,13 +2462,19 @@
   ],
   "pagePaths": [
     "/admin",
+    "/admin/analytics",
+    "/admin/branding",
+    "/admin/database",
+    "/admin/database/table",
     "/admin/experiments",
     "/admin/experiments/id",
     "/admin/experiments/new",
+    "/admin/flags",
     "/admin/metrics",
     "/admin/pages",
     "/admin/pages/id/editor",
     "/admin/pages/new",
+    "/admin/settings",
     "/admin/webhooks",
     "/architecture",
     "/benchmarks",
@@ -2175,19 +2485,25 @@
     "/community/contributors",
     "/comparison",
     "/console",
+    "/console/activity",
     "/console/ai-analysis",
     "/console/alerts-view",
     "/console/analytics",
     "/console/api-keys",
+    "/console/api-playground",
+    "/console/api-playground/collections",
+    "/console/api-test",
     "/console/billing",
     "/console/briefings",
     "/console/changes",
+    "/console/control-plane",
     "/console/costs",
     "/console/docs",
     "/console/feature-flags",
     "/console/feature-flags-policy",
     "/console/ingestion/ingestionId",
     "/console/insights",
+    "/console/inspector",
     "/console/onboarding",
     "/console/ops",
     "/console/performance",
@@ -2197,10 +2513,12 @@
     "/console/playground/flags",
     "/console/playground/receipts",
     "/console/playground/reconcile",
+    "/console/reality",
     "/console/receipts",
     "/console/receipts-hash",
     "/console/reconciliation-view",
     "/console/reconciliation/runId",
+    "/console/runs/runId",
     "/console/setup-check",
     "/console/site",
     "/console/site/branding",
@@ -2209,8 +2527,13 @@
     "/console/site/navigation",
     "/console/site/pages/id",
     "/console/support",
+    "/console/tables",
+    "/console/tables/table",
     "/console/usage",
     "/console/webhooks",
+    "/console/workflows",
+    "/console/workflows/id",
+    "/console/workflows/new",
     "/cookbook",
     "/cookbooks",
     "/dashboard",
@@ -2226,8 +2549,12 @@
     "/dashboard/user",
     "/docs",
     "/docs/api",
+    "/docs/auth",
     "/docs/cli",
+    "/docs/errors",
     "/docs/examples",
+    "/docs/getting-started",
+    "/docs/integrations",
     "/docs/integrations/integrationId",
     "/docs/quickstart",
     "/docs/sdk",
@@ -2235,6 +2562,8 @@
     "/docs/sdk/nodejs",
     "/docs/sdk/python",
     "/docs/sdk/ruby",
+    "/docs/status",
+    "/docs/webhooks",
     "/edge-ai",
     "/edge-ai/nodes",
     "/edge-ai/nodes/new",
@@ -2245,6 +2574,7 @@
     "/founder",
     "/how-it-works",
     "/integrations/request",
+    "/investor/reality",
     "/invite/token",
     "/legal",
     "/legal/aup",
