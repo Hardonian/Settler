@@ -1,0 +1,412 @@
+{
+  "generatedAt": "2025-12-20T05:15:35.475Z",
+  "summary": {
+    "prismaTables": 99,
+    "migrationTables": 490,
+    "codebaseTableReferences": 420,
+    "missingTables": 50,
+    "missingFunctions": 0
+  },
+  "missingItems": [
+    {
+      "name": "ingestion_sources",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 23,
+      "reason": "Defined in Prisma schema; Referenced in codebase; Critical business table",
+      "category": "table"
+    },
+    {
+      "name": "normalized_transactions",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 23,
+      "reason": "Defined in Prisma schema; Referenced in codebase; Critical business table",
+      "category": "table"
+    },
+    {
+      "name": "kpi_new_users_week",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 20,
+      "reason": "Referenced in codebase; Critical business table; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "tenant_onboarding_progress",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "onboarding_events",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "ingestions",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "raw_records",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "reconciliation_runs",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "reconciliation_matches",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "exports",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "subscription",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "tenant",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "experiment",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "webhook",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "ingestion",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "export",
+      "schema": "public",
+      "source": "prisma",
+      "importance": 18,
+      "reason": "Defined in Prisma schema; Referenced in codebase",
+      "category": "table"
+    },
+    {
+      "name": "QuickBooks",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "GA4",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "NetSuite",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "Square",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "TikTok",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "WhatsApp",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "Wix",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "WooCommerce",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "Xero",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "kill_switches",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "alert_history",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "being",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "running",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "accessing",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "with",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "event",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "reconciliation_summary",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "tenant_usage_view",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "error_hotspots_view",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "read",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "SET",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "fx_conversions",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "an",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "projections",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "fees",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "transactions",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "match",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "settlements",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "a",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "settlement",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "saga_state",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "Shopify",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "feature_flag_changes",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    },
+    {
+      "name": "feature",
+      "schema": "public",
+      "source": "codebase",
+      "importance": 15,
+      "reason": "Referenced in codebase; Used in code but missing from Prisma",
+      "category": "table"
+    }
+  ]
+}
