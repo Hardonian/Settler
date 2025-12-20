@@ -449,7 +449,14 @@ export async function checkUsageQuotaForEvent(
   userId: string,
   eventType: string,
   quantity: number = 1
-): Promise<{ allowed: boolean; currentUsage?: number; limit?: number; reason?: string }> {
+): Promise<{ 
+  allowed: boolean; 
+  currentUsage?: number; 
+  limit?: number; 
+  reason?: string;
+  pilot_expired?: boolean;
+  is_pilot?: boolean;
+}> {
   try {
     // Get billing account
     const billingAccount = await getBillingAccount(userId);
