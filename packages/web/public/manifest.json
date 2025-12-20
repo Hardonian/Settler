@@ -9,9 +9,9 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/assets/images/favicons/settler-favicon-512.jpg",
-      "sizes": "512x279",
-      "type": "image/jpeg",
+      "src": "/assets/images/favicons/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
