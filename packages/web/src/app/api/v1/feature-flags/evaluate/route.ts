@@ -8,7 +8,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { recordServiceUsage } from '@/shared/usage/usageEvent';
 import { evaluateFlag } from '@/domain/featureFlags/evaluator';
-import type { Environment } from '@/domain/featureFlags/types';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -71,7 +70,7 @@ export async function POST(request: NextRequest) {
     // Evaluate flag
     const result = await evaluateFlag({
       flagKey,
-      environment: environment as Environment,
+      environment: environment as 'production' | 'staging' | 'development' | string,
       billingAccountId: auth.billingAccountId,
       projectId: context?.projectId,
       context: {
