@@ -162,9 +162,17 @@ async function getActiveSubscription(billingAccountId: string) {
 }
 
 /**
+ * Subscription type for pilot checking
+ */
+interface SubscriptionForPilot {
+  status?: string;
+  trial_end?: string | Date | null;
+}
+
+/**
  * Check if subscription is in pilot/trial period
  */
-function isPilotSubscription(subscription: any): boolean {
+function isPilotSubscription(subscription: SubscriptionForPilot | null): boolean {
   if (!subscription) {
     return false;
   }
@@ -187,7 +195,7 @@ function isPilotSubscription(subscription: any): boolean {
 /**
  * Check if pilot/trial has expired
  */
-function isPilotExpired(subscription: any): boolean {
+function isPilotExpired(subscription: SubscriptionForPilot | null): boolean {
   if (!subscription) {
     return false;
   }
@@ -208,7 +216,7 @@ function isPilotExpired(subscription: any): boolean {
 /**
  * Get days remaining in pilot/trial
  */
-function getPilotDaysRemaining(subscription: any): number | null {
+function getPilotDaysRemaining(subscription: SubscriptionForPilot | null): number | null {
   if (!subscription || !subscription.trial_end) {
     return null;
   }
