@@ -16,7 +16,9 @@ export function OpsUsage() {
         <CardDescription>Usage metrics and analytics</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">Usage analytics coming soon</p>
+        <p className="text-sm text-muted-foreground">
+          Usage analytics are available in the Console under Usage & Analytics.
+        </p>
       </CardContent>
     </Card>
   );

@@ -27,13 +27,11 @@ export async function checkUsageAlerts(
   const alerts: UsageAlert[] = [];
 
   try {
-    await getAccountPlanCode(billingAccountId).catch(() => 'free');
+    await getAccountPlanCode(billingAccountId).catch(() => 'starter');
 
-    const services: Array<'reconcile' | 'receipts' | 'featureFlags' | 'playground'> = [
+    const services: Array<'reconcile' | 'exceptions'> = [
       'reconcile',
-      'receipts',
-      'featureFlags',
-      'playground',
+      'exceptions',
     ];
 
     for (const service of services) {

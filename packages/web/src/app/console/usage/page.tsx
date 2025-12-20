@@ -114,7 +114,7 @@ export default function UsagePage() {
             Usage & Metrics
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
-            Monitor your API usage across all Settler services.
+            View your API usage across all Settler services.
           </p>
         </div>
         <select
@@ -162,7 +162,7 @@ export default function UsagePage() {
               ) : (
                 <>
                   <AlertCircle className="w-4 h-4 text-amber-500" />
-                  <span className="text-amber-600 dark:text-amber-400">Monitor</span>
+                  <span className="text-amber-600 dark:text-amber-400">View</span>
                 </>
               )}
             </div>

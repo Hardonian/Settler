@@ -21,10 +21,7 @@ export interface AccountUsage {
   periodEnd: Date;
   services: {
     reconcile: number;
-    receipts: number;
-    featureFlags: number;
-    ingestions: number;
-    exports: number;
+    exceptions: number; // Exceptions requiring human review
   };
 }
 
@@ -91,13 +88,10 @@ export async function getServiceUsage(
   }
 
   // Map service codes to eventType patterns
-  // Usage events use format: "service:operation" (e.g., "settler-receipts:parse_sync")
+  // Usage events use format: "service:operation" (e.g., "settler-reconcile:run")
   const eventTypePatterns: Record<ServiceCode, string> = {
     reconcile: 'settler-reconcile',
-    receipts: 'settler-receipts',
-    featureFlags: 'settler-feature-flags',
-    ingestions: 'settler-ingestions',
-    exports: 'settler-exports',
+    exceptions: 'settler-exception:review', // Exceptions requiring human review
   };
 
   const pattern = eventTypePatterns[service];
@@ -141,12 +135,9 @@ export async function getAccountUsage(
   const period = await getCurrentBillingPeriod(billingAccountId);
 
   // Parallel queries for better performance
-  const [reconcileUsage, receiptsUsage, flagsUsage, ingestionsUsage, exportsUsage] = await Promise.all([
+  const [reconcileUsage, exceptionsUsage] = await Promise.all([
     getServiceUsage(billingAccountId, 'reconcile', period.start, period.end),
-    getServiceUsage(billingAccountId, 'receipts', period.start, period.end),
-    getServiceUsage(billingAccountId, 'featureFlags', period.start, period.end),
-    getServiceUsage(billingAccountId, 'ingestions', period.start, period.end),
-    getServiceUsage(billingAccountId, 'exports', period.start, period.end),
+    getServiceUsage(billingAccountId, 'exceptions', period.start, period.end),
   ]);
 
   return {
@@ -155,10 +146,7 @@ export async function getAccountUsage(
     periodEnd: period.end,
     services: {
       reconcile: reconcileUsage,
-      receipts: receiptsUsage,
-      featureFlags: flagsUsage,
-      ingestions: ingestionsUsage,
-      exports: exportsUsage,
+      exceptions: exceptionsUsage,
     },
   };
 }

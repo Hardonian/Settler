@@ -22,7 +22,7 @@ export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary eng
  * Validate plan code
  */
 function isValidPlanCode(planCode: unknown): planCode is PlanCode {
-  return typeof planCode === 'string' && ['free', 'pro', 'scale'].includes(planCode);
+  return typeof planCode === 'string' && ['starter', 'growth', 'scale', 'enterprise'].includes(planCode);
 }
 
 /**
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     // Input validation
     if (!isValidPlanCode(planCode)) {
       return NextResponse.json(
-        { error: 'Invalid plan code. Must be one of: free, pro, scale' },
+        { error: 'Invalid plan code. Must be one of: starter, growth, scale, enterprise' },
         { status: 400 }
       );
     }
@@ -96,11 +96,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Prevent downgrading to free (must use customer portal)
+    // Prevent downgrading to starter (must use customer portal)
     const planConfig = getPlanConfig(planCode);
-    if (planConfig && planConfig.code === 'free') {
+    if (planConfig && planConfig.code === 'starter') {
       return NextResponse.json(
-        { error: 'Cannot upgrade to free plan. Please use customer portal to cancel subscription.' },
+        { error: 'Cannot upgrade to starter plan. Please use customer portal to cancel subscription.' },
         { status: 400 }
       );
     }

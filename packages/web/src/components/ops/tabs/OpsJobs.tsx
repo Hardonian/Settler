@@ -12,11 +12,13 @@ export function OpsJobs() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Jobs & Queues</CardTitle>
-        <CardDescription>Job queue monitoring and management</CardDescription>
+        <CardTitle>Reconciliation Runs</CardTitle>
+        <CardDescription>Reconciliation run monitoring and management</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">Job queue monitoring coming soon</p>
+        <p className="text-sm text-muted-foreground">
+          Reconciliation runs are available in the Console under Runs.
+        </p>
       </CardContent>
     </Card>
   );

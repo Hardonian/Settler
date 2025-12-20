@@ -37,7 +37,7 @@ const templates = [
     actions: [{ type: 'http_webhook' as const }],
   },
   {
-    name: 'Alert on Anomaly',
+    name: 'Notify on Anomaly',
     trigger: { type: 'anomaly.detected' as const },
     actions: [{ type: 'slack' as const }],
   },
@@ -64,17 +64,8 @@ export default function WorkflowsPage() {
     if (result.success) {
       setWorkflows(result.data?.workflows || []);
     } else {
-      // Mock data for demo
-      setWorkflows([
-        {
-          id: '1',
-          name: 'Notify Team on Completion',
-          trigger: { type: 'reconciliation.completed', config: {} },
-          actions: [{ type: 'http_webhook', config: { url: 'https://example.com/webhook' } }],
-          enabled: true,
-          lastRun: { status: 'success', timestamp: new Date(Date.now() - 5 * 60 * 1000) },
-        },
-      ]);
+      // No mock data - show empty state if API fails
+      setWorkflows([]);
     }
     setLoading(false);
   };

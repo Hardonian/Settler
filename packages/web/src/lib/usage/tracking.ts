@@ -9,7 +9,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getRedisClient } from '@/lib/redis/client';
 import type { SubscriptionTier } from '@/lib/console/subscription';
 
-export type ServiceCode = 'reconcile' | 'receipts' | 'featureFlags' | 'playground' | 'api' | 'reconciliation' | 'receipt_parsing';
+export type ServiceCode = 'reconcile' | 'exceptions' | 'playground' | 'api' | 'reconciliation';
 export type Period = 'daily' | 'monthly';
 
 export interface UsageCheckResult {
@@ -60,42 +60,35 @@ function getPeriodEnd(period: Period, date: Date = new Date()): Date {
  */
 function getUsageLimit(tier: SubscriptionTier, service: ServiceCode, period: Period): number {
   // Limits from subscription.ts
+  // Updated to match new pricing model: only reconcile and exceptions are tracked
   const limits: Record<SubscriptionTier, Record<ServiceCode, { daily?: number; monthly?: number }>> = {
     unauthenticated: {
       reconcile: { daily: 0, monthly: 0 },
-      receipts: { daily: 0, monthly: 0 },
-      featureFlags: { daily: 0, monthly: 0 },
+      exceptions: { daily: 0, monthly: 0 },
       playground: { daily: 10, monthly: 0 },
       api: { daily: 0, monthly: 0 },
       reconciliation: { daily: 0, monthly: 0 },
-      receipt_parsing: { daily: 0, monthly: 0 },
     },
     free: {
-      reconcile: { daily: 50, monthly: 1000 },
-      receipts: { daily: 10, monthly: 100 },
-      featureFlags: { daily: 1000, monthly: 100000 },
+      reconcile: { daily: 333, monthly: 10000 }, // Starter: 10k/month = ~333/day
+      exceptions: { daily: -1, monthly: -1 }, // Calculated as percentage of reconciliation volume
       playground: { daily: 50, monthly: 0 },
-      api: { daily: 50, monthly: 1000 },
-      reconciliation: { daily: 50, monthly: 1000 },
-      receipt_parsing: { daily: 10, monthly: 100 },
+      api: { daily: 333, monthly: 10000 },
+      reconciliation: { daily: 333, monthly: 10000 },
     },
     pro: {
-      reconcile: { daily: 5000, monthly: 100000 },
-      receipts: { daily: 500, monthly: 10000 },
-      featureFlags: { daily: 100000, monthly: 10000000 },
+      reconcile: { daily: 3333, monthly: 100000 }, // Growth: 100k/month = ~3333/day
+      exceptions: { daily: -1, monthly: -1 }, // Calculated as percentage of reconciliation volume
       playground: { daily: 500, monthly: 0 },
-      api: { daily: 5000, monthly: 100000 },
-      reconciliation: { daily: 5000, monthly: 100000 },
-      receipt_parsing: { daily: 500, monthly: 10000 },
+      api: { daily: 3333, monthly: 100000 },
+      reconciliation: { daily: 3333, monthly: 100000 },
     },
     enterprise: {
       reconcile: { daily: -1, monthly: -1 }, // Unlimited
-      receipts: { daily: -1, monthly: -1 },
-      featureFlags: { daily: -1, monthly: -1 },
+      exceptions: { daily: -1, monthly: -1 }, // Calculated as percentage of reconciliation volume
       playground: { daily: -1, monthly: -1 },
       api: { daily: -1, monthly: -1 },
       reconciliation: { daily: -1, monthly: -1 },
-      receipt_parsing: { daily: -1, monthly: -1 },
     },
   };
 

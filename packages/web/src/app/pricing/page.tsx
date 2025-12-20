@@ -1,147 +1,83 @@
+/**
+ * Pricing Page - Model 4: Volume + Exception Supervision
+ * 
+ * Simple, transparent pricing that scales with reliance.
+ * No feature matrices. No AI tokens. Just reconciliation volume + exceptions.
+ */
+
 'use client';
 
-import { useState } from "react";
-import React from "react";
-import dynamic from "next/dynamic";
-import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { TrustBadges } from "@/components/TrustBadges";
-import { FeatureComparison } from "@/components/FeatureComparison";
-import { ConversionCTA } from "@/components/ConversionCTA";
-import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
-import { AnimatedHero } from "@/components/AnimatedHero";
-import { AnimatedPricingCard } from "@/components/AnimatedPricingCard";
-import { AnimatedFAQ } from "@/components/AnimatedFAQ";
-import { FAQSchema } from "@/components/StructuredData";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-
-// Safe dynamic imports with error handling - if components fail, page still renders
-const ROICalculator = dynamic(
-  () => import("@/components/marketing")
-    .then(mod => ({ default: mod.ROICalculator }))
-    .catch(() => ({ default: () => null })),
-  { ssr: true }
-);
-const ComparisonTable = dynamic(
-  () => import("@/components/marketing")
-    .then(mod => ({ default: mod.ComparisonTable }))
-    .catch(() => ({ default: () => null })),
-  { ssr: true }
-);
-const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(
-  () => import("@/components/marketing")
-    .then(mod => ({ default: mod.UrgencyBanner }))
-    .catch(() => ({ default: () => null })),
-  { ssr: true }
-);
-import { PricingCalculator } from '@/components/pricing/PricingCalculator';
-import { PricingWithFeatures } from '@/components/pricing/PricingWithFeatures';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function Pricing() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
-
   const plans = [
     {
-      name: 'Free',
-      tagline: 'Perfect for getting started',
+      name: 'Starter',
       price: '$0',
-      period: 'forever',
-      description: 'Open source components and basic features',
-      features: [
-        { text: '1,000 reconciliations/month' },
-        { text: '100 receipt parses/month' },
-        { text: '100k feature flag evaluations/month' },
-        { text: '2 platform adapters' },
-        { text: '7-day log retention' },
-        { text: 'Community support' },
-        { text: 'MIT License (OSS)' },
-        { text: 'Basic components' },
-        { text: 'Security basics' },
-        { text: 'Mobile & accessibility' },
-        { text: 'AI Insights: Not included' },
-      ],
+      description: 'First 10,000 reconciliations free',
+      reconciliationVolume: '10,000/month',
+      exceptionRate: '1% included',
+      example: '10k reconciliations = $0/month',
       cta: 'Get Started',
-      ctaLink: '/console/playground',
+      ctaLink: '/signup',
       popular: false,
-      badge: 'OSS',
     },
     {
-      name: 'Commercial',
-      tagline: 'For growing businesses',
-      price: billingCycle === 'monthly' ? '$99' : '$990',
-      period: billingCycle === 'monthly' ? '/month' : '/year',
-      originalPrice: billingCycle === 'annual' ? '$1,188' : null,
-      description: 'Platform integrations and advanced features',
-      features: [
-        { text: '100,000 reconciliations/month' },
-        { text: '10,000 receipt parses/month' },
-        { text: '1M feature flag evaluations/month' },
-        { text: '100k AI tokens/month included' },
-        { text: 'AI-powered insights & recommendations' },
-        { text: 'Performance monitoring & analytics' },
-        { text: 'Unlimited adapters' },
-        { text: '30-day log retention' },
-        { text: 'Email support' },
-        { text: 'Platform integrations (Shopify, Stripe, MCP)' },
-        { text: 'Virtualization' },
-        { text: 'Telemetry & analytics' },
-        { text: 'Priority updates' },
-        { text: 'Commercial License' },
-        { text: 'AI token add-ons: $25 per 1M tokens' },
-      ],
+      name: 'Growth',
+      price: '$900',
+      description: 'For growing businesses',
+      reconciliationVolume: '100,000/month',
+      exceptionRate: '1% included',
+      example: '100k reconciliations = $900/month',
       cta: 'Start Free Trial',
       ctaLink: '/signup',
       popular: true,
-      badge: 'Most Popular',
+    },
+    {
+      name: 'Scale',
+      price: '$9,900',
+      description: 'For high-volume operations',
+      reconciliationVolume: '1,000,000/month',
+      exceptionRate: '1% included',
+      example: '1M reconciliations = $9,900/month',
+      cta: 'Start Free Trial',
+      ctaLink: '/signup',
+      popular: false,
     },
     {
       name: 'Enterprise',
-      tagline: 'For large organizations',
       price: 'Custom',
-      period: '',
-      description: 'Full-featured with dedicated support',
-      features: [
-        { text: '1M+ reconciliations/month' },
-        { text: '100k+ receipt parses/month' },
-        { text: '10M+ feature flag evaluations/month' },
-        { text: '1M AI tokens/month included' },
-        { text: 'AI-powered insights & recommendations' },
-        { text: 'Advanced performance monitoring' },
-        { text: 'Unlimited adapters' },
-        { text: 'Unlimited log retention' },
-        { text: 'Dedicated support (SLA)' },
-        { text: 'SSO & SAML' },
-        { text: 'Role-based access control (RBAC)' },
-        { text: 'White-label options' },
-        { text: 'Custom integrations' },
-        { text: 'On-premise deployment' },
-        { text: 'Dedicated account manager' },
-        { text: 'Custom SLA' },
-        { text: 'AI token add-ons: $20 per 1M tokens (volume discount)' },
-      ],
+      description: 'Custom volume and exception thresholds',
+      reconciliationVolume: 'Custom',
+      exceptionRate: 'Custom',
+      example: 'Volume discounts available',
       cta: 'Contact Sales',
       ctaLink: '/enterprise',
       popular: false,
-      badge: 'Enterprise',
     },
   ];
 
   const faqs = [
     {
-      question: "What's the difference between OSS and Commercial?",
+      question: "What is a reconciliation?",
       answer:
-        'OSS (Open Source) is free forever with MIT license, includes basic components and core protocol. Commercial adds platform integrations (Shopify, Stripe, MCP), virtualization, telemetry, AI-powered insights, and requires a subscription.',
+        'A reconciliation matches transactions between two platforms (e.g., Shopify orders with Stripe payments). Reconciliation runs automatically—no manual work required.',
     },
     {
-      question: 'What are AI tokens used for?',
+      question: 'What are exceptions?',
       answer:
-        'AI tokens power our AI-powered insights feature, which provides actionable recommendations for cost optimization, performance improvements, and usage patterns. Each insight generation uses tokens. Commercial plans include 100k tokens/month, Enterprise includes 1M tokens/month.',
+        'Exceptions are mismatches that require human review. The system explains all mismatches automatically. You only pay for exceptions that require your attention ($0.10 each).',
     },
     {
-      question: 'Can I purchase additional AI tokens?',
+      question: 'How does exception pricing work?',
       answer:
-        'Yes! Commercial customers can purchase AI token add-ons at $25 per 1M tokens. Enterprise customers get volume discounts at $20 per 1M tokens. Tokens roll over month-to-month and never expire.',
+        'Each plan includes 1% exception rate (automatic explanations). If more exceptions require review, you pay $0.10 per exception. Most exceptions are handled automatically.',
     },
     {
       question: 'Can I switch plans later?',
@@ -156,218 +92,136 @@ export default function Pricing() {
     {
       question: 'Is there a free trial?',
       answer:
-        'Yes! All paid plans include a 14-day free trial. No credit card required to start.',
+        'Yes! Starter plan includes 10,000 reconciliations free forever. Paid plans include a 14-day free trial.',
     },
   ];
 
   return (
-    <AnimatedPageWrapper aria-label="Pricing page">
-      <FAQSchema faqs={faqs} />
-      <UrgencyBanner variant="minimal" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
       <Navigation />
 
-      {/* Breadcrumbs */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-24">
-        <div className="max-w-7xl mx-auto">
-          <Breadcrumbs items={[{ label: 'Pricing' }]} />
-        </div>
-      </section>
-
-      {/* Hero Section */}
-      <AnimatedHero
-        badge="Simple, Transparent Pricing"
-        title="Choose Your Plan"
-        description="Start free, scale as you grow. All plans include our core reconciliation engine."
-      />
-
-      {/* What is a Reconciliation? */}
-      <section className="px-4 sm:px-6 lg:px-8 -mt-8 mb-8" aria-label="Pricing explanation">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center">
+      {/* Hero */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
+            Simple, Transparent Pricing
+          </h1>
+          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
+            Pay per reconciliation. Exceptions requiring review cost extra. That's it.
+          </p>
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left max-w-2xl mx-auto">
             <p className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>What is a reconciliation?</strong> A reconciliation matches transactions between two platforms (e.g., matching Shopify orders with Stripe payments). Each reconciliation job processes multiple transactions and counts as one reconciliation.
+              <strong>How it works:</strong> Reconciliation runs automatically. You pay $0.01 per reconciliation. 
+              If exceptions require human review, they cost $0.10 each. The system explains mismatches automatically—you only pay for exceptions that need your attention.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Billing Toggle */}
-      <section className="px-4 sm:px-6 lg:px-8 -mt-12 mb-8" aria-label="Billing cycle selector">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center gap-4">
-            <span
-              className={`text-sm ${
-                billingCycle === 'monthly'
-                  ? 'text-slate-900 dark:text-white font-semibold'
-                  : 'text-slate-600 dark:text-slate-400'
-              }`}
-            >
-              Monthly
-            </span>
-            <button
-              onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
-              onKeyDown={(e) => {
-                if (e.key === ' ' || e.key === 'Enter') {
-                  e.preventDefault();
-                  setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly');
-                }
-              }}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-                billingCycle === 'annual' ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
-              }`}
-              aria-label={`Switch to ${billingCycle === 'monthly' ? 'annual' : 'monthly'} billing`}
-              aria-pressed={billingCycle === 'annual'}
-              role="switch"
-              type="button"
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  billingCycle === 'annual' ? 'translate-x-6' : 'translate-x-1'
-                }`}
-                aria-hidden="true"
-              />
-            </button>
-            <span
-              className={`text-sm ${
-                billingCycle === 'annual'
-                  ? 'text-slate-900 dark:text-white font-semibold'
-                  : 'text-slate-600 dark:text-slate-400'
-              }`}
-            >
-              Annual
-            </span>
-            {billingCycle === 'annual' && (
-              <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                Save 17%
-              </Badge>
-            )}
+      {/* Pricing Cards */}
+      <section className="px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {plans.map((plan, index) => (
+              <Card
+                key={index}
+                className={`relative ${plan.popular ? 'border-2 border-blue-500 shadow-xl scale-105' : ''}`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-blue-600 text-white">Most Popular</Badge>
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                  <div className="flex items-baseline gap-2 mt-2">
+                    <span className="text-4xl font-bold">{plan.price}</span>
+                    {plan.price !== 'Custom' && (
+                      <span className="text-slate-600 dark:text-slate-400">/month</span>
+                    )}
+                  </div>
+                  <CardDescription>{plan.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <div className="text-sm font-semibold mb-1">Reconciliation Volume</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">{plan.reconciliationVolume}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold mb-1">Exception Rate Included</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">{plan.exceptionRate}</div>
+                    <div className="text-xs text-slate-500 mt-1">(Automatic explanations)</div>
+                  </div>
+                  <div className="pt-2 border-t">
+                    <div className="text-xs text-slate-600 dark:text-slate-400">{plan.example}</div>
+                  </div>
+                  <Button
+                    asChild
+                    className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                    variant={plan.popular ? 'default' : 'outline'}
+                  >
+                    <Link href={plan.ctaLink}>
+                      {plan.cta} <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Enhanced Pricing with Features */}
-      <PricingWithFeatures />
+      {/* Pricing Explanation */}
+      <section className="px-4 sm:px-6 lg:px-8 py-12 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-4xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle>How Pricing Works</CardTitle>
+              <CardDescription>Simple, transparent, scales with your reliance</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="font-semibold mb-2">Base Pricing</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  $0.01 per reconciliation. Each plan includes a base volume. Over that volume, you pay $0.01 per reconciliation.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">Exception Supervision</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Reconciliation runs automatically. The system explains mismatches automatically. 
+                  If an exception requires human review, it costs $0.10. Most exceptions are handled automatically—you only pay for exceptions that need your attention.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">Example</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Growth plan: 100,000 reconciliations/month included ($900/month). 
+                  If you process 120,000 reconciliations, you pay $900 + (20,000 × $0.01) = $1,100/month.
+                  If 1,500 exceptions require review (1.25% rate), you pay $1,100 + (500 × $0.10) = $1,150/month.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
-      {/* Legacy Pricing Cards (fallback) */}
-      <section
-        className="py-20 px-4 sm:px-6 lg:px-8"
-        aria-labelledby="pricing-heading"
-      >
-        <div className="max-w-7xl mx-auto">
-          <h2
-            id="pricing-heading"
-            className="sr-only"
-          >
-            Pricing Plans
-          </h2>
-          <div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-            role="list"
-            aria-label="Pricing plans"
-          >
-            {plans.map((plan, index) => (
-              <div key={index} role="listitem">
-                <AnimatedPricingCard plan={plan} index={index} />
+      {/* FAQ */}
+      <section className="px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+          <div className="space-y-6">
+            {faqs.map((faq, index) => (
+              <div key={index}>
+                <h3 className="font-semibold mb-2">{faq.question}</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{faq.answer}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Trust Badges */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
-              Trusted & Secure
-            </h2>
-          </div>
-          <TrustBadges />
-        </div>
-      </section>
-
-      {/* ROI Calculator */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <ROICalculator />
-        </div>
-      </section>
-
-      {/* AI Features Highlight */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-              AI-Powered
-            </Badge>
-            <h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
-              AI-Powered Insights & Recommendations
-            </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Get actionable recommendations powered by AI to optimize costs, improve performance, and understand usage patterns.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">100k</div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">AI Tokens/Month</div>
-              <div className="text-sm text-slate-700 dark:text-slate-300">
-                <strong>Commercial Plan</strong><br />
-                Includes AI insights, performance monitoring, and cost optimization recommendations.
-              </div>
-            </div>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-2">1M</div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">AI Tokens/Month</div>
-              <div className="text-sm text-slate-700 dark:text-slate-300">
-                <strong>Enterprise Plan</strong><br />
-                Advanced AI insights with volume discounts and priority processing.
-              </div>
-            </div>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">$20-25</div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">Per 1M Tokens</div>
-              <div className="text-sm text-slate-700 dark:text-slate-300">
-                <strong>Add-On Pricing</strong><br />
-                Purchase additional tokens as needed. Tokens never expire.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Calculator */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
-        <div className="max-w-4xl mx-auto">
-          <PricingCalculator />
-        </div>
-      </section>
-
-      {/* Feature Comparison Table */}
-      <FeatureComparison />
-
-      {/* Comparison Table */}
-      <ComparisonTable />
-
-      {/* FAQ Section */}
-      <AnimatedFAQ faqs={faqs} />
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <ConversionCTA
-            title="Still have questions?"
-            description="Our team is here to help you choose the right plan for your needs."
-            primaryAction="Contact Support"
-            primaryLink="/support"
-            secondaryAction="Talk to Sales"
-            secondaryLink="/enterprise"
-            variant="gradient"
-          />
-        </div>
-      </section>
-
       <Footer />
-    </AnimatedPageWrapper>
+    </div>
   );
 }

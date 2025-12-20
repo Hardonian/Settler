@@ -16,7 +16,9 @@ export function OpsErrors() {
         <CardDescription>Error monitoring and triage</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">Error monitoring coming soon</p>
+        <p className="text-sm text-muted-foreground">
+          Error monitoring is available in the Console under Activity Feed.
+        </p>
       </CardContent>
     </Card>
   );

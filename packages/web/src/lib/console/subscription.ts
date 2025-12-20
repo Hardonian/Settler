@@ -119,7 +119,7 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
     
     if (planId.includes('enterprise') || planId.includes('custom')) {
       tier = 'enterprise';
-    } else if (planId.includes('pro') || planId.includes('paid')) {
+    } else if (planId.includes('pro') || planId.includes('growth') || planId.includes('paid')) {
       tier = 'pro';
     } else {
       tier = 'free';

@@ -16,7 +16,9 @@ export function OpsWebhooks() {
         <CardDescription>Webhook delivery monitoring</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">Webhook monitoring coming soon</p>
+        <p className="text-sm text-muted-foreground">
+          Webhook monitoring is available in the Console under Inspector.
+        </p>
       </CardContent>
     </Card>
   );

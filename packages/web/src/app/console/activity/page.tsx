@@ -47,61 +47,20 @@ export default function ActivityPage() {
 
   const loadEvents = async () => {
     try {
-      // Simulate API call (will be workspace-scoped)
       const result = await fetch('/api/workspace/events');
       if (result.ok) {
         const data = await result.json();
         setEvents(data.events || []);
       } else {
-        // Fallback to mock data for demo
-        setEvents(generateMockEvents());
+        // No mock data - show empty state if API fails
+        setEvents([]);
       }
     } catch {
-      // Fallback to mock data
-      setEvents(generateMockEvents());
+      // No mock data - show empty state on error
+      setEvents([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  const generateMockEvents = (): ActivityEvent[] => {
-    return [
-      {
-        id: '1',
-        type: 'reconciliation',
-        status: 'success',
-        message: 'Reconciliation job completed: Shopify-Stripe',
-        workspaceId: 'ws_123',
-        timestamp: new Date(Date.now() - 2 * 60 * 1000),
-        metadata: { jobId: 'job_123', matched: 145, total: 150 },
-      },
-      {
-        id: '2',
-        type: 'file_upload',
-        status: 'success',
-        message: 'Receipt parsed successfully',
-        workspaceId: 'ws_123',
-        timestamp: new Date(Date.now() - 5 * 60 * 1000),
-        metadata: { receiptId: 'receipt_456' },
-      },
-      {
-        id: '3',
-        type: 'webhook',
-        status: 'failed',
-        message: 'Webhook delivery failed: timeout',
-        workspaceId: 'ws_123',
-        timestamp: new Date(Date.now() - 10 * 60 * 1000),
-        metadata: { webhookId: 'wh_789', retryCount: 3 },
-      },
-      {
-        id: '4',
-        type: 'billing',
-        status: 'success',
-        message: 'Subscription updated: Commercial plan',
-        workspaceId: 'ws_123',
-        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
-      },
-    ];
   };
 
   const getEventIcon = (type: ActivityEvent['type']) => {
@@ -151,7 +110,7 @@ export default function ActivityPage() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Activity Feed</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Real-time updates on reconciliation jobs, file uploads, webhooks, and billing. 
+            Real-time updates on reconciliations, file uploads, webhooks, and billing. 
             <span className="text-xs text-slate-500 ml-2">Auto-refreshes every 5 seconds when enabled.</span>
           </p>
         </div>

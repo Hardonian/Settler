@@ -108,7 +108,7 @@ export function PricingWithFeatures() {
   const router = useRouter();
 
   const handleUpgrade = async (planCode: string) => {
-    if (planCode === 'free' || planCode === 'enterprise') {
+    if (planCode === 'starter' || planCode === 'enterprise') {
       // Free plan: redirect to signup
       // Enterprise: redirect to contact
       if (planCode === 'enterprise') {

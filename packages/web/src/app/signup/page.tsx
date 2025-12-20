@@ -143,7 +143,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
               Start Your Free Trial
             </h1>
             <p className="text-slate-600 dark:text-slate-400">
-              Create your account and start automating reconciliation in minutes. No credit card required.
+              Create your account and reconciliation starts automatically. No credit card required.
             </p>
           </div>
 

@@ -171,9 +171,9 @@ export async function GET(request: NextRequest) {
     // Calculate cost estimate with error handling
     let costEstimate = 0;
     try {
-      const planCode = await getAccountPlanCode(billingAccount.id).catch(() => 'free');
+      const planCode = await getAccountPlanCode(billingAccount.id).catch(() => 'starter');
       const planConfig = getPlanConfig(planCode);
-      costEstimate = planCode === 'free' ? 0 : (planConfig?.monthlyPrice || 0);
+      costEstimate = planCode === 'starter' ? 0 : (planConfig?.monthlyPrice || 0);
     } catch {
       costEstimate = 0;
     }

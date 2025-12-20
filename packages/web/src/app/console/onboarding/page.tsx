@@ -198,7 +198,7 @@ export default function OnboardingPage() {
             Welcome to Settler
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
-            Let's get you set up in less than 3 minutes
+            Reconciliation starts automatically - no setup needed
           </p>
         </div>
 

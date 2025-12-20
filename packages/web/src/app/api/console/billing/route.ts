@@ -43,10 +43,7 @@ async function getBillingHandler(_request: NextRequest) {
         subscription: null,
         usage: {
           reconcile: { current: 0, limit: 0 },
-          receipts: { current: 0, limit: 0 },
-          featureFlags: { current: 0, limit: 0 },
-          ingestions: { current: 0, limit: 0 },
-          exports: { current: 0, limit: 0 },
+          exceptions: { current: 0, limit: 0 },
         },
       });
     }
@@ -81,7 +78,7 @@ async function getBillingHandler(_request: NextRequest) {
         billingAccountId: billingAccount.id,
         error: error instanceof Error ? error.message : 'Unknown error',
       });
-      planCode = 'free';
+      planCode = 'starter';
     }
 
     const planConfig = getPlanConfig(planCode);
@@ -103,35 +100,26 @@ async function getBillingHandler(_request: NextRequest) {
         periodEnd: new Date(),
         services: {
           reconcile: 0,
-          receipts: 0,
-          featureFlags: 0,
-          ingestions: 0,
-          exports: 0,
+          exceptions: 0,
         },
       };
     }
 
     // Map usage to limits
+    const reconciliationVolume = usage.services.reconcile;
+    const reconciliationLimit = planConfig?.limits.reconcile.monthlyVolume || 0;
+    const exceptionThreshold = planConfig
+      ? Math.floor(reconciliationVolume * planConfig.limits.exceptions.includedRate)
+      : 0;
+
     const usageWithLimits = {
       reconcile: {
-        current: usage.services.reconcile,
-        limit: planConfig?.limits.reconcile.monthlyCalls || 0,
+        current: reconciliationVolume,
+        limit: reconciliationLimit,
       },
-      receipts: {
-        current: usage.services.receipts,
-        limit: planConfig?.limits.receipts.monthlyCalls || 0,
-      },
-      featureFlags: {
-        current: usage.services.featureFlags,
-        limit: planConfig?.limits.featureFlags.monthlyEvaluations || 0,
-      },
-      ingestions: {
-        current: usage.services.ingestions,
-        limit: planConfig?.limits.ingestions.monthlyCalls || 0,
-      },
-      exports: {
-        current: usage.services.exports,
-        limit: planConfig?.limits.exports.monthlyCalls || 0,
+      exceptions: {
+        current: usage.services.exceptions,
+        limit: exceptionThreshold,
       },
     };
 
@@ -168,10 +156,7 @@ async function getBillingHandler(_request: NextRequest) {
         subscription: null,
         usage: {
           reconcile: { current: 0, limit: 0 },
-          receipts: { current: 0, limit: 0 },
-          featureFlags: { current: 0, limit: 0 },
-          ingestions: { current: 0, limit: 0 },
-          exports: { current: 0, limit: 0 },
+          exceptions: { current: 0, limit: 0 },
         },
       },
       { status: 200 }

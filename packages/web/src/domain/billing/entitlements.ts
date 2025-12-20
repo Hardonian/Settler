@@ -74,8 +74,9 @@ export async function checkEntitlement(
     throw new Error('Invalid billing account ID');
   }
 
-  if (!['reconcile', 'receipts', 'featureFlags', 'ingestions', 'exports'].includes(service)) {
-    throw new Error(`Invalid service code: ${service}`);
+  // Only reconciliation and exceptions are tracked
+  if (!['reconcile', 'exceptions'].includes(service)) {
+    throw new Error(`Invalid service code: ${service}. Only 'reconcile' and 'exceptions' are supported.`);
   }
 
   // Get plan code
@@ -89,21 +90,12 @@ export async function checkEntitlement(
       remainingQuota: 0,
       currentUsage: 0,
       limit: 0,
-      planCode: 'free',
+      planCode: 'starter',
     };
   }
 
-  // Check if service is enabled for this plan
-  if (!planConfig.features[service]) {
-    return {
-      allowed: false,
-      reason: 'plan_not_supported',
-      remainingQuota: 0,
-      currentUsage: 0,
-      limit: 0,
-      planCode,
-    };
-  }
+  // All services are enabled - no feature gating
+  // Only scale, depth, and automation intensity are gated
 
   // Get current usage
   let usage;
@@ -131,19 +123,12 @@ export async function checkEntitlement(
   let limit = 0;
   switch (service) {
     case 'reconcile':
-      limit = planConfig.limits.reconcile.monthlyCalls;
+      limit = planConfig.limits.reconcile.monthlyVolume;
       break;
-    case 'receipts':
-      limit = planConfig.limits.receipts.monthlyCalls;
-      break;
-    case 'featureFlags':
-      limit = planConfig.limits.featureFlags.monthlyEvaluations;
-      break;
-    case 'ingestions':
-      limit = planConfig.limits.ingestions.monthlyCalls;
-      break;
-    case 'exports':
-      limit = planConfig.limits.exports.monthlyCalls;
+    case 'exceptions':
+      // Exception limit is calculated as percentage of reconciliation volume
+      const reconciliationVolume = usage.services.reconcile || 0;
+      limit = Math.floor(reconciliationVolume * planConfig.limits.exceptions.includedRate);
       break;
     default:
       // This should never happen due to validation above

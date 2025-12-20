@@ -1,5 +1,5 @@
 /**
- * AI-Powered Insights Panel
+ * Insights Panel
  * 
  * Displays actionable insights and recommendations.
  */
@@ -29,7 +29,7 @@ interface Insight {
   confidence: number;
 }
 
-export function AIInsightsPanel() {
+export function InsightsPanel() {
   const [insights, setInsights] = useState<Insight[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -106,11 +106,11 @@ export function AIInsightsPanel() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5" />
-            AI Insights
+            Insights
           </CardTitle>
-          <CardDescription>Actionable recommendations powered by AI</CardDescription>
+          <CardDescription>Actionable recommendations</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-slate-500 dark:text-slate-400">
@@ -131,7 +131,7 @@ export function AIInsightsPanel() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                AI Insights
+                Insights
               </CardTitle>
               <CardDescription>
                 {insights.length} actionable recommendation{insights.length !== 1 ? 's' : ''}

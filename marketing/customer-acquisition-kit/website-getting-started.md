@@ -36,7 +36,7 @@ npm install @settler/sdk
 
 **⚠️ Keep your API key secret.** Never commit it to git. Use environment variables.
 
-### Step 4: Create Your First Reconciliation Job
+### Step 4: Start Continuous Reconciliation
 
 ```typescript
 import Settler from "@settler/sdk";
@@ -45,8 +45,8 @@ const settler = new Settler({
   apiKey: process.env.SETTLER_API_KEY,
 });
 
-// Create a reconciliation job
-const job = await settler.jobs.create({
+// Start continuous reconciliation - it runs automatically
+const reconciliation = await settler.reconciliations.create({
   name: "Shopify-Stripe Reconciliation",
   source: {
     adapter: "shopify",
@@ -61,39 +61,33 @@ const job = await settler.jobs.create({
       apiKey: process.env.STRIPE_SECRET_KEY,
     },
   },
-  rules: {
-    matching: [
-      { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 },
-    ],
-    conflictResolution: "last-wins",
-  },
-  schedule: "0 2 * * *", // Daily at 2 AM UTC
+  // Matching happens automatically - no configuration needed
+  // System explains any mismatches automatically
 });
 
-console.log(`Job created: ${job.data.id}`);
+console.log(`Reconciliation started: ${reconciliation.data.id}`);
+// Reconciliation runs continuously - no manual intervention needed
 ```
 
-### Step 5: Get Results
+### Step 5: Review Exceptions (If Any)
 
 ```typescript
-// Fetch reconciliation report
-const report = await settler.reports.get(job.data.id, {
-  startDate: "2026-01-01",
-  endDate: "2026-01-31",
-});
+// Reconciliation runs automatically
+// Only review exceptions when system surfaces them
+const exceptions = await settler.reconciliations.exceptions(reconciliation.data.id);
 
-console.log(report.data.summary);
-// {
-//   matched: 145,
-//   unmatched: 3,
-//   errors: 1,
-//   accuracy: 98.7,
-//   totalTransactions: 149
-// }
+if (exceptions.data.length > 0) {
+  // System automatically explains why each exception occurred
+  exceptions.data.forEach(exception => {
+    console.log(`${exception.reason}: ${exception.details}`);
+    // Each exception includes automatic explanation and suggested action
+  });
+} else {
+  console.log("All transactions matched automatically - no action needed");
+}
 ```
 
-**That's it!** Your reconciliation is now running automatically.
+**That's it!** Reconciliation runs continuously. You only need to review exceptions when the system surfaces them with automatic explanations.
 
 ---
 
@@ -103,9 +97,9 @@ console.log(report.data.summary);
 
 1. Select your source platform (e.g., Shopify)
 2. Select your target platform (e.g., Stripe)
-3. Configure matching rules
-4. Run a test reconciliation
-5. View results instantly
+3. Reconciliation runs automatically
+4. View results instantly
+5. System explains any mismatches automatically
 
 [Launch Playground →](https://settler.io/playground)
 
@@ -115,21 +109,17 @@ console.log(report.data.summary);
 
 ### E-commerce Order Reconciliation
 
-**Problem:** Shopify orders don't match Stripe payments. Manual reconciliation takes hours.
+**Problem:** Shopify orders don't match Stripe payments. Manual reconciliation is structurally broken.
 
-**Solution:** Automate matching by order ID and amount. Get alerts on mismatches.
+**Solution:** Continuous automatic reconciliation. System matches automatically and explains any mismatches.
 
 ```typescript
-const job = await settler.jobs.create({
+const reconciliation = await settler.reconciliations.create({
   name: "Order Payment Reconciliation",
   source: { adapter: "shopify", config: { /* ... */ } },
   target: { adapter: "stripe", config: { /* ... */ } },
-  rules: {
-    matching: [
-      { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 },
-    ],
-  },
+  // Matching happens automatically - no rules needed
+  // System explains mismatches automatically
 });
 ```
 
@@ -137,12 +127,12 @@ const job = await settler.jobs.create({
 
 ### Multi-Platform Payment Reconciliation
 
-**Problem:** Payments come from Stripe, PayPal, and Square. Need unified reconciliation.
+**Problem:** Payments come from Stripe, PayPal, and Square. Manual reconciliation is structurally broken.
 
-**Solution:** Reconcile all payment sources against QuickBooks automatically.
+**Solution:** Continuous automatic reconciliation across all sources. System handles matching automatically.
 
 ```typescript
-const job = await settler.jobs.create({
+const reconciliation = await settler.reconciliations.create({
   name: "Multi-Payment Reconciliation",
   sources: [
     { adapter: "stripe", config: { /* ... */ } },
@@ -150,12 +140,8 @@ const job = await settler.jobs.create({
     { adapter: "square", config: { /* ... */ } },
   ],
   target: { adapter: "quickbooks", config: { /* ... */ } },
-  rules: {
-    matching: [
-      { field: "transaction_id", type: "fuzzy", threshold: 0.8 },
-      { field: "amount", type: "exact" },
-    ],
-  },
+  // Matching happens automatically across all sources
+  // System explains mismatches automatically
 });
 ```
 
@@ -163,24 +149,18 @@ const job = await settler.jobs.create({
 
 ### Accounting System Sync
 
-**Problem:** QuickBooks is out of sync with payment processors. Manual sync is error-prone.
+**Problem:** QuickBooks is out of sync with payment processors. Manual sync is structurally broken.
 
-**Solution:** Automated daily sync with exception handling.
+**Solution:** Continuous automatic sync. System reconciles continuously and explains exceptions.
 
 ```typescript
-const job = await settler.jobs.create({
+const reconciliation = await settler.reconciliations.create({
   name: "Payment to Accounting Sync",
   source: { adapter: "stripe", config: { /* ... */ } },
   target: { adapter: "quickbooks", config: { /* ... */ } },
-  rules: {
-    matching: [
-      { field: "invoice_id", type: "exact" },
-      { field: "amount", type: "exact" },
-      { field: "date", type: "range", days: 2 },
-    ],
-    conflictResolution: "manual-review",
-  },
-  schedule: "0 2 * * *", // Daily at 2 AM
+  // Sync happens continuously - no schedule needed
+  // System explains mismatches automatically
+  // Exceptions are explicit, auditable, and bounded
 });
 ```
 
@@ -209,8 +189,8 @@ const job = await settler.jobs.create({
 - ✅ NetSuite
 - ✅ Sage
 
-### More Coming Soon
-We're adding new adapters every month. [Request an adapter →](https://settler.io/adapters/request)
+### More Integrations
+We're adding new adapters regularly. [Request an adapter →](https://settler.io/adapters/request)
 
 ---
 
@@ -222,8 +202,8 @@ Connect to Stripe, Shopify, QuickBooks, PayPal, and more with one line of code.
 ### ⚡ Real-Time Processing
 Webhook-driven reconciliation as events happen—no polling required.
 
-### 🎯 Smart Matching
-Exact, fuzzy, and custom matching rules. Handle edge cases automatically.
+### 🎯 Automatic Matching
+Matching happens automatically. System handles edge cases and explains mismatches.
 
 ### 🔄 Automatic Retries
 Built-in exponential backoff and error handling. Never lose a transaction.

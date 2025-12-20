@@ -62,22 +62,10 @@ export default function ControlPlanePage() {
         setMetrics(metricsResult.data || null);
       }
     } catch {
-      // Fallback to mock data
-      setKeys([
-        { id: '1', name: 'Production Key', keyPrefix: 'sk_live_', createdAt: new Date(), lastUsedAt: new Date() },
-        { id: '2', name: 'Development Key', keyPrefix: 'sk_test_', createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-      ]);
-      setPolicies([
-        { id: '1', type: 'rate_limit', enabled: true, config: { requestsPerMinute: 60 } },
-        { id: '2', type: 'ip_allowlist', enabled: false, config: { ips: [] } },
-        { id: '3', type: 'webhook_signing', enabled: true, config: {} },
-      ]);
-      setMetrics({
-        requestCount: 1250,
-        errorRate: 0.02,
-        p95Latency: 145,
-        period: 'day',
-      });
+      // No mock data - show empty states if API fails
+      setKeys([]);
+      setPolicies([]);
+      setMetrics(null);
     } finally {
       setLoading(false);
     }
@@ -172,7 +160,7 @@ export default function ControlPlanePage() {
           <Card>
             <CardHeader>
               <CardTitle>Policies</CardTitle>
-              <CardDescription>Configure workspace policies</CardDescription>
+              <CardDescription>Workspace security policies</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (

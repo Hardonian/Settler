@@ -26,10 +26,7 @@ interface BillingData {
   } | null;
   usage: {
     reconcile: { current: number; limit: number };
-    receipts: { current: number; limit: number };
-    featureFlags: { current: number; limit: number };
-    ingestions: { current: number; limit: number };
-    exports: { current: number; limit: number };
+    exceptions: { current: number; limit: number };
   };
 }
 
@@ -130,41 +127,32 @@ export default function BillingPage() {
     );
   }
 
-  const planCode = data.subscription?.planCode || 'free';
-  const isFree = planCode === 'free';
-  const isPro = planCode === 'pro';
+  const planCode = data.subscription?.planCode || 'starter';
+  const isStarter = planCode === 'starter';
+  const isGrowth = planCode === 'growth';
   const isScale = planCode === 'scale';
+  const isEnterprise = planCode === 'enterprise';
+
+  // Calculate exception threshold based on reconciliation volume
+  const reconciliationVolume = data.usage.reconcile.current;
+  const exceptionThreshold = Math.floor(reconciliationVolume * 0.01); // 1% included rate
+  const exceptionsOverThreshold = Math.max(0, data.usage.exceptions.current - exceptionThreshold);
 
   const usageBars = [
     {
-      service: 'Reconcile',
+      service: 'Reconciliations',
       current: data.usage.reconcile.current,
       limit: data.usage.reconcile.limit,
       percentage: Math.min(100, (data.usage.reconcile.current / Math.max(1, data.usage.reconcile.limit)) * 100),
+      unit: 'reconciliations',
     },
     {
-      service: 'Receipts',
-      current: data.usage.receipts.current,
-      limit: data.usage.receipts.limit,
-      percentage: Math.min(100, (data.usage.receipts.current / Math.max(1, data.usage.receipts.limit)) * 100),
-    },
-    {
-      service: 'Feature Flags',
-      current: data.usage.featureFlags.current,
-      limit: data.usage.featureFlags.limit,
-      percentage: Math.min(100, (data.usage.featureFlags.current / Math.max(1, data.usage.featureFlags.limit)) * 100),
-    },
-    {
-      service: 'Ingestions',
-      current: data.usage.ingestions.current,
-      limit: data.usage.ingestions.limit,
-      percentage: Math.min(100, (data.usage.ingestions.current / Math.max(1, data.usage.ingestions.limit)) * 100),
-    },
-    {
-      service: 'Exports',
-      current: data.usage.exports.current,
-      limit: data.usage.exports.limit,
-      percentage: Math.min(100, (data.usage.exports.current / Math.max(1, data.usage.exports.limit)) * 100),
+      service: 'Exceptions Requiring Review',
+      current: data.usage.exceptions.current,
+      limit: exceptionThreshold,
+      percentage: Math.min(100, (data.usage.exceptions.current / Math.max(1, exceptionThreshold)) * 100),
+      unit: 'exceptions',
+      overage: exceptionsOverThreshold,
     },
   ];
 
@@ -208,13 +196,13 @@ export default function BillingPage() {
                 <CardDescription>
                   {data.subscription
                     ? `Active subscription - ${data.subscription.planName}`
-                    : 'Free plan - No active subscription'}
+                    : 'Starter plan - First 10,000 reconciliations free'}
                 </CardDescription>
               </div>
               <Badge
                 variant={data.subscription?.status === 'active' ? 'default' : 'secondary'}
               >
-                {data.subscription?.status || 'Free'}
+                {data.subscription?.status || 'Starter'}
               </Badge>
             </div>
           </CardHeader>
@@ -255,7 +243,7 @@ export default function BillingPage() {
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{bar.service}</span>
                   <span className="text-gray-600 dark:text-gray-400">
-                    {bar.current.toLocaleString()} / {bar.limit.toLocaleString()}
+                    {bar.current.toLocaleString()} / {bar.limit.toLocaleString()} {bar.unit}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -270,9 +258,14 @@ export default function BillingPage() {
                     style={{ width: `${bar.percentage}%` }}
                   />
                 </div>
-                {bar.percentage >= 90 && (
+                {bar.service === 'Exceptions Requiring Review' && bar.overage > 0 && (
                   <p className="text-xs text-amber-600 dark:text-amber-400">
-                    Approaching limit. Consider upgrading.
+                    {bar.overage.toLocaleString()} exceptions over threshold. Overage: ${(bar.overage * 0.10).toFixed(2)}
+                  </p>
+                )}
+                {bar.service === 'Reconciliations' && bar.percentage >= 90 && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    Approaching limit. Overage: ${((bar.current - bar.limit) * 0.01).toFixed(2)}/month
                   </p>
                 )}
               </div>
@@ -287,16 +280,16 @@ export default function BillingPage() {
             <CardDescription>Upgrade or change your plan</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Free Plan */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Starter Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isFree ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
+                  isStarter ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">Free</h3>
-                  {isFree && (
+                  <h3 className="font-semibold">Starter</h3>
+                  {isStarter && (
                     <Badge variant="default">
                       <CheckCircle2 className="h-3 w-3 mr-1" />
                       Current
@@ -307,13 +300,11 @@ export default function BillingPage() {
                   $0/month
                 </p>
                 <ul className="text-sm space-y-1 mb-4">
-                  <li>• 1,000 reconciliations/month</li>
-                  <li>• 100 receipt parses/month</li>
-                  <li>• 100k feature flag evaluations/month</li>
-                  <li>• 100 ingestions/month</li>
-                  <li>• 50 exports/month</li>
+                  <li>• 10,000 reconciliations/month</li>
+                  <li>• 1% exception rate included</li>
+                  <li>• Automatic explanations</li>
                 </ul>
-                {!isFree && (
+                {!isStarter && (
                   <Button
                     variant="outline"
                     size="sm"
@@ -325,15 +316,15 @@ export default function BillingPage() {
                 )}
               </div>
 
-              {/* Pro Plan */}
+              {/* Growth Plan */}
               <div
                 className={`p-4 border rounded-lg ${
-                  isPro ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
+                  isGrowth ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">Pro</h3>
-                  {isPro && (
+                  <h3 className="font-semibold">Growth</h3>
+                  {isGrowth && (
                     <Badge variant="default">
                       <CheckCircle2 className="h-3 w-3 mr-1" />
                       Current
@@ -341,32 +332,29 @@ export default function BillingPage() {
                   )}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  $99/month
+                  $900/month
                 </p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 100,000 reconciliations/month</li>
-                  <li>• 10,000 receipt parses/month</li>
-                  <li>• 1M feature flag evaluations/month</li>
-                  <li>• 10,000 ingestions/month</li>
-                  <li>• 5,000 exports/month</li>
-                  <li>• 100k AI tokens/month</li>
-                  <li>• AI-powered insights</li>
-                  <li>• Priority support</li>
+                  <li>• 1% exception rate included</li>
+                  <li>• Automatic explanations</li>
+                  <li>• Overage: $0.01/reconciliation</li>
+                  <li>• Exception review: $0.10/exception</li>
                 </ul>
-                {!isPro && (
+                {!isGrowth && (
                   <Button
                     size="sm"
                     className="w-full"
-                    onClick={() => handleUpgrade('pro')}
-                    disabled={isCreatingCheckout === 'pro'}
+                    onClick={() => handleUpgrade('growth')}
+                    disabled={isCreatingCheckout === 'growth'}
                   >
-                    {isCreatingCheckout === 'pro' ? (
+                    {isCreatingCheckout === 'growth' ? (
                       <>
                         <Loader2 className="mr-2 h-3 w-3 animate-spin" />
                         Processing...
                       </>
                     ) : (
-                      'Upgrade to Pro'
+                      'Upgrade to Growth'
                     )}
                   </Button>
                 )}
@@ -388,18 +376,14 @@ export default function BillingPage() {
                   )}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  $499/month
+                  $9,900/month
                 </p>
                 <ul className="text-sm space-y-1 mb-4">
-                  <li>• 1M reconciliations/month</li>
-                  <li>• 100k receipt parses/month</li>
-                  <li>• 10M feature flag evaluations/month</li>
-                  <li>• 100k ingestions/month</li>
-                  <li>• 50k exports/month</li>
-                  <li>• 1M AI tokens/month</li>
-                  <li>• AI-powered insights</li>
-                  <li>• Priority support</li>
-                  <li>• Custom integrations</li>
+                  <li>• 1,000,000 reconciliations/month</li>
+                  <li>• 1% exception rate included</li>
+                  <li>• Automatic explanations</li>
+                  <li>• Overage: $0.01/reconciliation</li>
+                  <li>• Exception review: $0.10/exception</li>
                 </ul>
                 {!isScale && (
                   <Button
@@ -419,12 +403,46 @@ export default function BillingPage() {
                   </Button>
                 )}
               </div>
+
+              {/* Enterprise Plan */}
+              <div
+                className={`p-4 border rounded-lg ${
+                  isEnterprise ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold">Enterprise</h3>
+                  {isEnterprise && (
+                    <Badge variant="default">
+                      <CheckCircle2 className="h-3 w-3 mr-1" />
+                      Current
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Custom
+                </p>
+                <ul className="text-sm space-y-1 mb-4">
+                  <li>• Custom volume</li>
+                  <li>• Custom exception thresholds</li>
+                  <li>• Volume discounts</li>
+                  <li>• Dedicated support</li>
+                </ul>
+                {!isEnterprise && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => router.push('/enterprise')}
+                  >
+                    Contact Sales
+                  </Button>
+                )}
+              </div>
             </div>
             </CardContent>
         </Card>
 
-        {/* AI Tokens Widget */}
-        <AITokensWidget />
       </div>
     </ConsoleLayout>
   );
