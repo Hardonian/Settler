@@ -1,0 +1,13 @@
+<svg width="800" height="300" viewBox="0 0 800 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="800" height="300" fill="white"/>
+<path d="M100 150 H700" stroke="#E2E8F0" stroke-width="4"/>
+<circle cx="100" cy="150" r="20" fill="#2563EB"/>
+<circle cx="300" cy="150" r="20" fill="#2563EB"/>
+<circle cx="500" cy="150" r="20" fill="#2563EB"/>
+<circle cx="700" cy="150" r="20" fill="#2563EB"/>
+
+<text x="100" y="200" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="#0F172A">Event</text>
+<text x="300" y="200" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="#0F172A">Normalize</text>
+<text x="500" y="200" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="#0F172A">Match</text>
+<text x="700" y="200" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="#0F172A">Settle</text>
+</svg>

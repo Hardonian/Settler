@@ -1,0 +1,5 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="400" height="300" fill="#F8FAFC" rx="12"/>
+<circle cx="200" cy="150" r="80" stroke="#2563EB" stroke-width="10" stroke-dasharray="100 100" transform="rotate(-90 200 150)"/>
+<text x="200" y="155" text-anchor="middle" font-family="sans-serif" font-size="30" font-weight="bold" fill="#0F172A">99%</text>
+</svg>

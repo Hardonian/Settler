@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -231,6 +232,19 @@ if (flag.value) { /* ... */ }`;
                     <CheckCircle2 className="w-4 h-4 text-green-600" />
                     <span>Cancel anytime</span>
                   </div>
+                </div>
+
+                {/* Hero Illustration */}
+                <div className="relative w-full max-w-4xl mx-auto mb-16 px-4">
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 bottom-0 h-20"></div>
+                  <Image
+                    src="/assets/marketing/hero-illustration.svg"
+                    alt="Settler Platform Overview - Automating Financial Reconciliation"
+                    width={800}
+                    height={600}
+                    className="w-full h-auto drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                    priority
+                  />
                 </div>
                 
                 {/* Hero Stats */}
