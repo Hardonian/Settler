@@ -221,8 +221,10 @@ export async function PATCH(request: NextRequest) {
     
     // Type assertion needed because table name is dynamic and TypeScript can't infer the schema
     // This is safe because we're updating arbitrary tables via the console API
-    const query = supabase.from(tableName as any) as any;
-    const { data, error } = await query
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tableQuery = supabase.from(tableName as any) as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await tableQuery
       .update(body as Record<string, unknown>)
       .eq('id', id)
       .select()
