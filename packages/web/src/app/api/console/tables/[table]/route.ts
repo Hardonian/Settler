@@ -219,9 +219,9 @@ export async function PATCH(request: NextRequest) {
     
     const tableName = `${schema}.${table}`;
     
-    const { data, error } = await supabase
-      .from(tableName)
-      .update(body as any)
+    const { data, error } = await (supabase
+      .from(tableName) as any)
+      .update(body)
       .eq('id', id)
       .select()
       .single();

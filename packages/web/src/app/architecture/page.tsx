@@ -3,6 +3,7 @@ import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 
 const InfographicSection = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InfographicSection })), { 
   ssr: true,
@@ -12,65 +13,14 @@ const InfographicSection = dynamic(() => import("@/components/marketing").then(m
 function ArchitectureDiagram() {
   return (
     <figure className="w-full overflow-hidden bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8">
-      <svg 
-        viewBox="0 0 800 400" 
-        className="w-full h-auto" 
-        style={{ maxHeight: '500px' }}
-        role="img"
-        aria-labelledby="architecture-diagram-title"
-        aria-describedby="architecture-diagram-desc"
-      >
-        <defs>
-          <marker id="head" orient="auto" markerWidth="6" markerHeight="6" refX="6" refY="3">
-            <path d="M0,0 L6,3 L0,6" fill="currentColor" className="text-slate-400" />
-          </marker>
-        </defs>
-        
-        {/* API Gateway */}
-        <g transform="translate(300, 50)">
-          <rect width="200" height="60" rx="8" className="fill-blue-100 dark:fill-blue-900/40 stroke-blue-500 stroke-2" />
-          <text x="100" y="35" textAnchor="middle" className="fill-slate-900 dark:fill-white font-bold text-sm">API Gateway (Edge)</text>
-        </g>
-
-        {/* Services Layer */}
-        <g transform="translate(100, 200)">
-          <rect width="140" height="80" rx="8" className="fill-white dark:fill-slate-800 stroke-slate-300 dark:stroke-slate-600 stroke-2" />
-          <text x="70" y="35" textAnchor="middle" className="fill-slate-900 dark:fill-white font-semibold text-sm">Reconciliation</text>
-          <text x="70" y="55" textAnchor="middle" className="fill-slate-500 text-xs">Matching Engine</text>
-        </g>
-
-        <g transform="translate(330, 200)">
-          <rect width="140" height="80" rx="8" className="fill-white dark:fill-slate-800 stroke-slate-300 dark:stroke-slate-600 stroke-2" />
-          <text x="70" y="35" textAnchor="middle" className="fill-slate-900 dark:fill-white font-semibold text-sm">Receipts</text>
-          <text x="70" y="55" textAnchor="middle" className="fill-slate-500 text-xs">OCR & Parsing</text>
-        </g>
-
-        <g transform="translate(560, 200)">
-          <rect width="140" height="80" rx="8" className="fill-white dark:fill-slate-800 stroke-slate-300 dark:stroke-slate-600 stroke-2" />
-          <text x="70" y="35" textAnchor="middle" className="fill-slate-900 dark:fill-white font-semibold text-sm">Feature Flags</text>
-          <text x="70" y="55" textAnchor="middle" className="fill-slate-500 text-xs">Edge Evaluation</text>
-        </g>
-
-        {/* Data Layer */}
-        <g transform="translate(200, 350)">
-          <rect width="400" height="40" rx="8" className="fill-indigo-50 dark:fill-indigo-900/20 stroke-indigo-400 stroke-2" />
-          <text x="200" y="25" textAnchor="middle" className="fill-slate-900 dark:fill-white font-bold text-sm">Distributed Data Store & Event Log</text>
-        </g>
-
-        {/* Connections */}
-        <path d="M400,110 L400,180" className="stroke-slate-400 stroke-2" markerEnd="url(#head)" />
-        <path d="M400,180 L170,180 L170,200" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-        <path d="M400,180 L400,200" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-        <path d="M400,180 L630,180 L630,200" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-
-        <path d="M170,280 L170,330 L300,330 L300,350" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-        <path d="M400,280 L400,350" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-        <path d="M630,280 L630,330 L500,330 L500,350" className="stroke-slate-400 stroke-2 fill-none" markerEnd="url(#head)" />
-        <title id="architecture-diagram-title">Settler Architecture Diagram</title>
-        <desc id="architecture-diagram-desc">
-          Architecture showing API Gateway at the top connecting to three services: Reconciliation Matching Engine, Receipts OCR & Parsing, and Feature Flags Edge Evaluation. All services connect to a Distributed Data Store & Event Log at the bottom.
-        </desc>
-      </svg>
+      <Image
+        src="/assets/diagrams/system-architecture.svg"
+        alt="Settler Architecture Diagram"
+        width={800}
+        height={400}
+        className="w-full h-auto"
+        priority
+      />
       <figcaption id="architecture-diagram-caption" className="mt-4 text-sm text-slate-600 dark:text-slate-400 text-center">
         Settler architecture: API Gateway routes requests to core services (Reconciliation, Receipts, Feature Flags), all backed by a distributed event-sourced data store.
       </figcaption>

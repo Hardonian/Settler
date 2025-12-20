@@ -1,0 +1,53 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="800" height="400" fill="white"/>
+<!-- Background Grid -->
+<defs>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<path d="M 20 0 L 0 0 0 20" fill="none" stroke="#E2E8F0" stroke-width="1"/>
+</pattern>
+</defs>
+<rect width="800" height="400" fill="url(#grid)" opacity="0.3"/>
+
+<!-- Sources -->
+<g transform="translate(50, 100)">
+    <rect width="120" height="200" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+    <text x="60" y="30" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="#64748B">Sources</text>
+    <rect x="20" y="50" width="80" height="30" rx="4" fill="white" stroke="#E2E8F0"/>
+    <text x="60" y="70" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#0F172A">Stripe</text>
+    <rect x="20" y="90" width="80" height="30" rx="4" fill="white" stroke="#E2E8F0"/>
+    <text x="60" y="110" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#0F172A">Shopify</text>
+    <rect x="20" y="130" width="80" height="30" rx="4" fill="white" stroke="#E2E8F0"/>
+    <text x="60" y="150" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#0F172A">Banks</text>
+</g>
+
+<!-- Ingestion -->
+<g transform="translate(250, 150)">
+    <path d="M0 50L50 50" stroke="#2563EB" stroke-width="2" stroke-dasharray="4 4"/>
+    <rect x="50" y="0" width="100" height="100" rx="8" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-width="2"/>
+    <text x="100" y="55" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="#2563EB">Ingestion</text>
+</g>
+
+<!-- Reconciliation Engine -->
+<g transform="translate(450, 100)">
+    <path d="M-50 100L0 100" stroke="#2563EB" stroke-width="2"/>
+    <rect width="140" height="200" rx="8" fill="#0F172A" stroke="#0F172A" stroke-width="2"/>
+    <text x="70" y="30" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="white">Settler Core</text>
+    <circle cx="70" cy="80" r="30" stroke="white" stroke-width="2" stroke-dasharray="4 4"/>
+    <text x="70" y="85" text-anchor="middle" font-family="sans-serif" font-size="10" fill="white">Matching</text>
+    <rect x="20" y="130" width="100" height="40" rx="4" fill="#06B6D4"/>
+    <text x="70" y="155" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="#0F172A">Ledger</text>
+</g>
+
+<!-- Outputs -->
+<g transform="translate(650, 100)">
+    <path d="M-60 100L0 100" stroke="#2563EB" stroke-width="2"/>
+    <rect width="100" height="200" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+    <text x="50" y="30" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="#64748B">Outputs</text>
+    <rect x="10" y="50" width="80" height="30" rx="4" fill="white" stroke="#E2E8F0"/>
+    <text x="50" y="70" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#0F172A">Dashboard</text>
+    <rect x="10" y="90" width="80" height="30" rx="4" fill="white" stroke="#E2E8F0"/>
+    <text x="50" y="110" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#0F172A">API</text>
+    <rect x="10" y="130" width="80" height="30" rx="4" fill="white" stroke="#E2E8F0"/>
+    <text x="50" y="150" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#0F172A">Webhooks</text>
+</g>
+</svg>
