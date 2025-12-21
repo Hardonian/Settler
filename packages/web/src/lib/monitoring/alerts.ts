@@ -1,133 +1,221 @@
 /**
- * Monitoring and Alerting System
+ * Alerting System
  * 
- * Centralized alerting for production monitoring.
- * Integrates with Sentry, email, and other alerting channels.
+ * Provides alerting for critical system events and anomalies.
  */
 
-import { logger } from '@/lib/logging/logger';
+import { performHealthCheck, SystemHealth } from './health-check';
+import { getApiCallStats } from '@/domain/console/api-logs';
 
-export type AlertSeverity = 'critical' | 'error' | 'warning' | 'info';
-
-interface AlertOptions {
-  severity: AlertSeverity;
+export interface Alert {
+  id: string;
+  severity: 'critical' | 'warning' | 'info';
   title: string;
   message: string;
-  context?: Record<string, unknown>;
-  tags?: Record<string, string>;
-  notify?: boolean;
+  timestamp: Date;
+  resolved?: boolean;
+  metadata?: Record<string, unknown>;
 }
 
-class AlertManager {
-  private enabled: boolean;
+const alerts: Map<string, Alert> = new Map();
 
-  constructor() {
-    this.enabled = process.env.NODE_ENV === 'production' && 
-                   process.env.NEXT_PUBLIC_ENABLE_ALERTS !== 'false';
-  }
-
-  async sendAlert(options: AlertOptions): Promise<void> {
-    if (!this.enabled) {
-      logger.warn(`Alert (disabled): ${options.title}`);
-      return;
-    }
-
-    // Log alert
-    logger.error(`[ALERT:${options.severity.toUpperCase()}] ${options.title}`, 
-      new Error(options.message), 
-      options.context
-    );
-
-    // Send to Sentry if configured
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
-      try {
-        const Sentry = await import('@sentry/nextjs').catch(() => null);
+/**
+ * Check for system health alerts
+ */
+export async function checkHealthAlerts(): Promise<Alert[]> {
+  const health = await performHealthCheck();
+  const newAlerts: Alert[] = [];
+  
+  for (const check of health.checks) {
+    if (check.status === 'unhealthy') {
+      const alertId = `health-${check.service}`;
+      
+      if (!alerts.has(alertId)) {
+        const alert: Alert = {
+          id: alertId,
+          severity: 'critical',
+          title: `${check.service} is unhealthy`,
+          message: check.error || 'Service is not responding',
+          timestamp: new Date(),
+          metadata: {
+            service: check.service,
+            latency: check.latency,
+            error: check.error,
+          },
+        };
         
-        if (Sentry) {
-          Sentry.setTag('alert_severity', options.severity);
-          if (options.tags) {
-            Object.entries(options.tags).forEach(([key, value]) => {
-              Sentry.setTag(key, value);
-            });
-          }
-          
-          if (options.context) {
-            Sentry.setContext('alert_context', options.context);
-          }
-
-          Sentry.captureException(new Error(options.message), {
-            level: options.severity === 'critical' ? 'fatal' : options.severity,
-            tags: {
-              alert: true,
-              alert_title: options.title,
-              ...options.tags,
-            },
-          });
-        }
-      } catch (error) {
-        console.error('Failed to send alert to Sentry:', error);
+        alerts.set(alertId, alert);
+        newAlerts.push(alert);
+      }
+    } else if (check.status === 'degraded') {
+      const alertId = `health-${check.service}`;
+      
+      if (!alerts.has(alertId)) {
+        const alert: Alert = {
+          id: alertId,
+          severity: 'warning',
+          title: `${check.service} is degraded`,
+          message: `Service is responding slowly (${check.latency}ms)`,
+          timestamp: new Date(),
+          metadata: {
+            service: check.service,
+            latency: check.latency,
+          },
+        };
+        
+        alerts.set(alertId, alert);
+        newAlerts.push(alert);
+      }
+    } else {
+      // Service is healthy, resolve any existing alerts
+      const alertId = `health-${check.service}`;
+      const existingAlert = alerts.get(alertId);
+      if (existingAlert && !existingAlert.resolved) {
+        existingAlert.resolved = true;
       }
     }
-
-    // Send email for critical alerts
-    if (options.severity === 'critical' && options.notify !== false) {
-      await this.sendEmailAlert(options);
-    }
   }
-
-  private async sendEmailAlert(options: AlertOptions): Promise<void> {
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.RESEND_FROM_EMAIL;
-    if (!adminEmail || !process.env.RESEND_API_KEY) {
-      return;
-    }
-
-    try {
-      const { Resend } = await import('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
-
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'alerts@settler.dev',
-        to: adminEmail,
-        subject: `[${options.severity.toUpperCase()}] ${options.title}`,
-        html: `
-          <h2>Alert: ${options.title}</h2>
-          <p><strong>Severity:</strong> ${options.severity}</p>
-          <p><strong>Message:</strong> ${options.message}</p>
-          ${options.context ? `
-            <h3>Context:</h3>
-            <pre>${JSON.stringify(options.context, null, 2)}</pre>
-          ` : ''}
-          <p><small>Timestamp: ${new Date().toISOString()}</small></p>
-        `,
-      });
-    } catch (error) {
-      console.error('Failed to send email alert:', error);
-    }
-  }
-}
-
-export const alertManager = new AlertManager();
-
-/**
- * Send an alert
- */
-export async function sendAlert(options: AlertOptions): Promise<void> {
-  return alertManager.sendAlert(options);
+  
+  return newAlerts;
 }
 
 /**
- * Pre-configured alert helpers
+ * Check for high error rate alerts
  */
-export const alerts = {
-  critical: (title: string, message: string, context?: Record<string, unknown>) =>
-    sendAlert({ severity: 'critical', title, message, context }),
+export async function checkErrorRateAlerts(tenantId?: string): Promise<Alert[]> {
+  try {
+    const stats = await getApiCallStats({ tenantId });
+    const newAlerts: Alert[] = [];
+    
+    // Alert if error rate is above 10%
+    if (stats.errorRate > 0.1) {
+      const alertId = `error-rate-${tenantId || 'global'}`;
+      
+      if (!alerts.has(alertId)) {
+        const alert: Alert = {
+          id: alertId,
+          severity: stats.errorRate > 0.25 ? 'critical' : 'warning',
+          title: `High error rate detected`,
+          message: `Error rate is ${(stats.errorRate * 100).toFixed(1)}% (threshold: 10%)`,
+          timestamp: new Date(),
+          metadata: {
+            tenantId,
+            errorRate: stats.errorRate,
+            totalCalls: stats.totalCalls,
+          },
+        };
+        
+        alerts.set(alertId, alert);
+        newAlerts.push(alert);
+      }
+    } else {
+      // Error rate is normal, resolve any existing alerts
+      const alertId = `error-rate-${tenantId || 'global'}`;
+      const existingAlert = alerts.get(alertId);
+      if (existingAlert && !existingAlert.resolved) {
+        existingAlert.resolved = true;
+      }
+    }
+    
+    return newAlerts;
+  } catch (error) {
+    console.error('[alerts] Failed to check error rate:', error);
+    return [];
+  }
+}
+
+/**
+ * Check for slow response time alerts
+ */
+export async function checkPerformanceAlerts(tenantId?: string): Promise<Alert[]> {
+  try {
+    const stats = await getApiCallStats({ tenantId });
+    const newAlerts: Alert[] = [];
+    
+    // Alert if average response time is above 1 second
+    if (stats.averageResponseTime > 1000) {
+      const alertId = `performance-${tenantId || 'global'}`;
+      
+      if (!alerts.has(alertId)) {
+        const alert: Alert = {
+          id: alertId,
+          severity: stats.averageResponseTime > 2000 ? 'critical' : 'warning',
+          title: `Slow response times detected`,
+          message: `Average response time is ${Math.round(stats.averageResponseTime)}ms (threshold: 1000ms)`,
+          timestamp: new Date(),
+          metadata: {
+            tenantId,
+            averageResponseTime: stats.averageResponseTime,
+            totalCalls: stats.totalCalls,
+          },
+        };
+        
+        alerts.set(alertId, alert);
+        newAlerts.push(alert);
+      }
+    } else {
+      // Performance is normal, resolve any existing alerts
+      const alertId = `performance-${tenantId || 'global'}`;
+      const existingAlert = alerts.get(alertId);
+      if (existingAlert && !existingAlert.resolved) {
+        existingAlert.resolved = true;
+      }
+    }
+    
+    return newAlerts;
+  } catch (error) {
+    console.error('[alerts] Failed to check performance:', error);
+    return [];
+  }
+}
+
+/**
+ * Run all alert checks
+ */
+export async function runAllAlertChecks(tenantId?: string): Promise<Alert[]> {
+  const allAlerts: Alert[] = [];
   
-  error: (title: string, message: string, context?: Record<string, unknown>) =>
-    sendAlert({ severity: 'error', title, message, context }),
+  // Check health
+  const healthAlerts = await checkHealthAlerts();
+  allAlerts.push(...healthAlerts);
   
-  warning: (title: string, message: string, context?: Record<string, unknown>) =>
-    sendAlert({ severity: 'warning', title, message, context }),
+  // Check error rates
+  const errorAlerts = await checkErrorRateAlerts(tenantId);
+  allAlerts.push(...errorAlerts);
   
-  info: (title: string, message: string, context?: Record<string, unknown>) =>
-    sendAlert({ severity: 'info', title, message, context }),
-};
+  // Check performance
+  const performanceAlerts = await checkPerformanceAlerts(tenantId);
+  allAlerts.push(...performanceAlerts);
+  
+  return allAlerts;
+}
+
+/**
+ * Get active alerts
+ */
+export function getActiveAlerts(): Alert[] {
+  return Array.from(alerts.values()).filter(alert => !alert.resolved);
+}
+
+/**
+ * Resolve alert
+ */
+export function resolveAlert(alertId: string): void {
+  const alert = alerts.get(alertId);
+  if (alert) {
+    alert.resolved = true;
+  }
+}
+
+/**
+ * Clear resolved alerts older than 24 hours
+ */
+export function clearOldAlerts(): void {
+  const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  
+  for (const [id, alert] of alerts.entries()) {
+    if (alert.resolved && alert.timestamp.getTime() < oneDayAgo) {
+      alerts.delete(id);
+    }
+  }
+}

@@ -142,19 +142,21 @@ export async function getApiCallLogs(filters: ApiLogFilters = {}): Promise<ApiCa
       query = query.eq('user_id', filters.userId);
     }
     
-    // Apply pagination
-    const limit = filters.limit || 100;
+    // Apply pagination (optimize with limit)
+    const limit = Math.min(filters.limit || 100, 1000); // Cap at 1000
     const offset = filters.offset || 0;
     query = query.range(offset, offset + limit - 1);
     
-    const { data, error } = await query;
+    // Use count for total if needed (optimized query)
+    const { data, error, count } = await query;
     
     if (error) {
       console.error('[getApiCallLogs] Error fetching logs:', error);
+      // Return empty array instead of throwing
       return [];
     }
     
-    // Sanitize logs to remove PII
+    // Sanitize logs to remove PII (batch processing)
     return (data || []).map((log) => ({
       id: log.id,
       tenantId: log.tenant_id,

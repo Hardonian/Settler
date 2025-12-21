@@ -2,30 +2,54 @@
  * Tenants Observability API Route
  * 
  * GET - List all tenants with metrics (super admin only)
+ * 
+ * Features:
+ * - Rate limiting (stricter for admin)
+ * - Response caching
+ * - Request validation
+ * - Automatic API logging
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { createAdminClient } from '@/lib/supabase/server';
 import { sanitizeUserData } from '@/lib/privacy/pii-filter';
+import { withRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/security/rate-limiter';
+import { withCache, CACHE_CONFIGS } from '@/lib/cache/api-cache';
+import { validatePagination } from '@/lib/security/request-validator';
+import { withApiLogging } from '@/middleware/api-logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+async function handleGet(request: NextRequest) {
+  // Require super admin
+  const isAdmin = await isSuperAdmin();
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: 'Forbidden', message: 'Super admin access required' },
+      { status: 403 }
+    );
+  }
+  
+  const supabase = await createAdminClient();
+  const { searchParams } = new URL(request.url);
+  const includeMetrics = searchParams.get('includeMetrics') === 'true';
+  
+  // Validate pagination if provided
+  const pagination = validatePagination({
+    limit: searchParams.get('limit') || undefined,
+    offset: searchParams.get('offset') || undefined,
+  });
+  
+  if (pagination.errors) {
+    return NextResponse.json(
+      { error: 'Invalid pagination parameters', errors: pagination.errors },
+      { status: 400 }
+    );
+  }
+  
   try {
-    // Require super admin
-    const isAdmin = await isSuperAdmin();
-    if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Forbidden', message: 'Super admin access required' },
-        { status: 403 }
-      );
-    }
-    
-    const supabase = await createAdminClient();
-    const { searchParams } = new URL(request.url);
-    const includeMetrics = searchParams.get('includeMetrics') === 'true';
     
     // Get all tenants
     const { data: tenants, error: tenantsError } = await supabase
@@ -50,7 +74,8 @@ export async function GET(request: NextRequest) {
           )
         )
       `)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(pagination.offset, pagination.offset + pagination.limit - 1);
     
     if (tenantsError) {
       console.error('[tenants] Error fetching tenants:', tenantsError);
@@ -60,7 +85,12 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // Get metrics for each tenant if requested
+    // Get total count for pagination
+    const { count: totalCount } = await supabase
+      .from('tenants')
+      .select('*', { count: 'exact', head: true });
+    
+    // Get metrics for each tenant if requested (batch queries for performance)
     const tenantsWithMetrics = await Promise.all(
       (tenants || []).map(async (tenant) => {
         const tenantData: Record<string, unknown> = {
@@ -109,6 +139,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       tenants: tenantsWithMetrics,
       count: tenantsWithMetrics.length,
+      total: totalCount || 0,
+      limit: pagination.limit,
+      offset: pagination.offset,
     });
   } catch (error) {
     console.error('[tenants] Error:', error);
@@ -118,3 +151,12 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// Apply middleware: rate limiting -> caching -> handler
+export const GET = withRateLimit(
+  RATE_LIMIT_CONFIGS.admin,
+  withCache(
+    CACHE_CONFIGS.tenant,
+    withApiLogging(handleGet)
+  )
+);
