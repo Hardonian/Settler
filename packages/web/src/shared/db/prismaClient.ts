@@ -58,10 +58,8 @@ try {
     } as any);
   } else {
     // No optimized URL found (likely no env var set yet), use default constructor
-    // Passing just log config might be safer than full empty if valid options required
-    prismaInstance = globalForPrisma.prisma ?? new PrismaClient({
-      log: logConfig,
-    } as any);
+    // Passing NO arguments is often safer than partial options for defaults
+    prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
   }
 } catch (error) {
   console.warn('Failed to initialize PrismaClient with config, retrying with defaults:', error);
