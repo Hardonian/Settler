@@ -8,7 +8,7 @@ import { Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Activity, Key, Receipt, ToggleLeft, ArrowRight } from 'lucide-react';
+import { Activity, Key, Receipt, ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getUsageSummary } from '@/domain/console/usage';
 import { listApiKeys } from '@/domain/console/apiKeys';
@@ -410,26 +410,27 @@ async function ConsoleOverviewContent() {
         </div>
       </div>
 
-      {/* Quick Stats */}
+      {/* Quick Stats - Only show if data exists */}
       <RBACGate requiredTier="unsubscribed" feature="Dashboard Stats">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <CardDescription>Total API Calls</CardDescription>
-              <CardTitle className="text-3xl">{formatNumber(usageSummary.totalCalls)}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-2">
-                <Activity className="w-4 h-4" />
-                <span>Last 7 days</span>
-              </div>
-              <Button asChild variant="outline" size="sm" className="w-full">
-                <Link href="/console/usage">
-                  View Details <ArrowRight className="w-4 h-4 ml-1" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+        {usageSummary.totalCalls > 0 || apiKeys.length > 0 || receipts.length > 0 || flags.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-3">
+                <CardDescription>Total API Calls</CardDescription>
+                <CardTitle className="text-3xl">{formatNumber(usageSummary.totalCalls)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-2">
+                  <Activity className="w-4 h-4" />
+                  <span>Last 7 days</span>
+                </div>
+                <Button asChild variant="outline" size="sm" className="w-full">
+                  <Link href="/console/usage">
+                    View Details <ArrowRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
 
           <RBACGate requiredTier="subscribed_unpaid" feature="API Keys">
             <Card className="hover:shadow-lg transition-shadow">
@@ -476,7 +477,32 @@ async function ConsoleOverviewContent() {
               </CardContent>
             </Card>
           </RBACGate>
-        </div>
+          </div>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Stats</CardTitle>
+              <CardDescription>Start using Settler to see your stats here</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                Once you create an API key and start making API calls, your usage statistics will appear here.
+              </p>
+              <div className="flex gap-2">
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/console/api-keys">
+                    Get API Key <ArrowRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/console/playground">
+                    Try Playground <ArrowRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </RBACGate>
 
       <RBACGate requiredTier="subscribed_unpaid" feature="Usage Analytics">
@@ -538,7 +564,7 @@ async function ConsoleOverviewContent() {
         <UsageInsightsPanel />
       </RBACGate>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Show only first 2 actions initially */}
       <RBACGate requiredTier="unsubscribed" feature="Quick Actions">
         <Card>
           <CardHeader>
@@ -546,35 +572,24 @@ async function ConsoleOverviewContent() {
             <CardDescription>Get started quickly</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4">
               <RBACGate requiredTier="subscribed_unpaid" feature="API Keys">
                 <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
                   <Link href="/console/api-keys">
                     <Key className="w-5 h-5 mb-2 text-blue-600" />
-                    <span className="font-semibold">Create API Key</span>
+                    <span className="font-semibold">Get API Key</span>
                     <span className="text-xs text-slate-500 mt-1">
                       Generate a new API key for your application
                     </span>
                   </Link>
                 </Button>
               </RBACGate>
-              <RBACGate requiredTier="subscribed_unpaid" feature="Feature Flags">
-                <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
-                  <Link href="/console/feature-flags">
-                    <ToggleLeft className="w-5 h-5 mb-2 text-purple-600" />
-                    <span className="font-semibold">Manage Flags</span>
-                    <span className="text-xs text-slate-500 mt-1">
-                      Create feature flags
-                    </span>
-                  </Link>
-                </Button>
-              </RBACGate>
               <Button asChild variant="outline" className="h-auto py-4 flex-col items-start hover:bg-slate-50 dark:hover:bg-slate-900">
-                <Link href="/console/docs">
+                <Link href="/console/playground">
                   <Receipt className="w-5 h-5 mb-2 text-green-600" />
-                  <span className="font-semibold">View API Docs</span>
+                  <span className="font-semibold">Try Playground</span>
                   <span className="text-xs text-slate-500 mt-1">
-                    Explore endpoints and examples
+                    Test APIs without writing code
                   </span>
                 </Link>
               </Button>

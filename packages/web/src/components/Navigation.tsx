@@ -8,20 +8,28 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 
-const navigationItems = [
+// Primary navigation items (always visible)
+const primaryNavigationItems = [
+  { href: '/console', label: 'Console' },
+  { href: '/playground', label: 'Playground' },
   { href: '/docs', label: 'Docs' },
+  { href: '/pricing', label: 'Pricing' },
+];
+
+// Secondary navigation items (in "More" menu on mobile)
+const secondaryNavigationItems = [
   { href: '/cookbook', label: 'Cookbook' },
   { href: '/runbooks', label: 'Runbooks' },
   { href: '/schematics', label: 'Schematics' },
   { href: '/receipts', label: 'Receipts API' },
   { href: '/feature-flags', label: 'Feature Flags' },
-  { href: '/console', label: 'Console' },
-  { href: '/playground', label: 'Playground' },
-  { href: '/pricing', label: 'Pricing' },
   { href: '/enterprise', label: 'Enterprise' },
   { href: '/community', label: 'Community' },
   { href: '/support', label: 'Support' },
 ];
+
+// Combined for desktop (all items visible)
+const navigationItems = [...primaryNavigationItems, ...secondaryNavigationItems];
 
 export function Navigation() {
   const pathname = usePathname();
@@ -139,7 +147,7 @@ export function Navigation() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+          {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div
             id="mobile-menu"
@@ -152,33 +160,69 @@ export function Navigation() {
             aria-label="Mobile navigation menu"
           >
             <nav className="flex flex-col space-y-4" aria-label="Mobile navigation">
-              {navigationItems.map((item) => {
-                const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      'text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
-                      isActive && 'text-primary-600 dark:text-primary-400 font-medium',
-                      'transition-colors duration-200 ease-out',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                      'focus-visible:ring-offset-background',
-                      'rounded px-2 py-1',
-                      'motion-reduce:transition-none'
-                    )}
-                    onClick={() => setMobileMenuOpen(false)}
-                    aria-current={isActive ? 'page' : undefined}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
+              {/* Primary Navigation */}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
+                  Main
+                </p>
+                {primaryNavigationItems.map((item) => {
+                  const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
+                        isActive && 'text-primary-600 dark:text-primary-400 font-medium',
+                        'transition-colors duration-200 ease-out',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                        'focus-visible:ring-offset-background',
+                        'rounded px-2 py-1',
+                        'motion-reduce:transition-none'
+                      )}
+                      onClick={() => setMobileMenuOpen(false)}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+              
+              {/* Secondary Navigation */}
+              <div className="space-y-2 pt-4 border-t border-border">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
+                  More
+                </p>
+                {secondaryNavigationItems.map((item) => {
+                  const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
+                        isActive && 'text-primary-600 dark:text-primary-400 font-medium',
+                        'transition-colors duration-200 ease-out',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                        'focus-visible:ring-offset-background',
+                        'rounded px-2 py-1',
+                        'motion-reduce:transition-none'
+                      )}
+                      onClick={() => setMobileMenuOpen(false)}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+              
               <Button
                 asChild
                 variant="default"
                 size="default"
-                className="w-full"
+                className="w-full mt-4"
               >
                 <Link href="/console/playground" aria-label="Get started with Settler">
                   Get Started

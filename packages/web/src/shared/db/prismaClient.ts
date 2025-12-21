@@ -52,7 +52,13 @@ if (typeof process !== 'undefined' && process.env) {
     // During build phase, set a dummy DATABASE_URL to help Prisma detect binary engine
     // This is safe because we're not actually connecting during build
     // Prisma will not actually connect during build - it only needs the URL for engine detection
-    env['DATABASE_URL'] = 'postgresql://dummy:dummy@localhost:5432/dummy?schema=public';
+    // Use a valid PostgreSQL connection string format to avoid parsing errors
+    env['DATABASE_URL'] = 'postgresql://dummy:dummy@localhost:5432/dummy?schema=public&connection_limit=1';
+    
+    // Also set PRISMA_CLIENT_ENGINE_TYPE explicitly during build
+    if (!env['PRISMA_CLIENT_ENGINE_TYPE']) {
+      env['PRISMA_CLIENT_ENGINE_TYPE'] = 'binary';
+    }
   }
   
   // Store isBuildPhase for use after import
@@ -178,21 +184,25 @@ try {
       ? (process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL)
       : undefined;
   
-  if (isMissingConfig && !actualDbUrl) {
-    console.warn(
-      '[Prisma] DATABASE_URL not found in environment variables. ' +
-      'Please ensure DATABASE_URL, SUPABASE_DATABASE_URL, or DIRECT_URL is set in your .env file. ' +
-      'Using stub client that returns empty results.'
-    );
-  } else if (isMissingConfig && actualDbUrl) {
-    console.warn(
-      '[Prisma] DATABASE_URL found but Prisma initialization failed. ' +
-      'This may be due to Prisma Client engine type mismatch. ' +
-      'Check that PRISMA_CLIENT_ENGINE_TYPE=binary is set or provide accelerateUrl. ' +
-      'Using stub client that returns empty results.'
-    );
-  } else {
-    console.error('[Prisma] Failed to initialize Prisma client:', error);
+  // During build phase, suppress warnings about missing DATABASE_URL
+  // as we intentionally use a dummy URL for engine detection
+  if (!isBuildPhase) {
+    if (isMissingConfig && !actualDbUrl) {
+      console.warn(
+        '[Prisma] DATABASE_URL not found in environment variables. ' +
+        'Please ensure DATABASE_URL, SUPABASE_DATABASE_URL, or DIRECT_URL is set in your .env file. ' +
+        'Using stub client that returns empty results.'
+      );
+    } else if (isMissingConfig && actualDbUrl) {
+      console.warn(
+        '[Prisma] DATABASE_URL found but Prisma initialization failed. ' +
+        'This may be due to Prisma Client engine type mismatch. ' +
+        'Check that PRISMA_CLIENT_ENGINE_TYPE=binary is set or provide accelerateUrl. ' +
+        'Using stub client that returns empty results.'
+      );
+    } else {
+      console.error('[Prisma] Failed to initialize Prisma client:', error);
+    }
   }
   
   // Create a stub client that returns null/empty arrays for queries
