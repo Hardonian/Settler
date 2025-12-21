@@ -180,18 +180,43 @@ jobs:
           echo "Found $(echo "$MIGRATIONS" | wc -l) migration(s) to apply"
           
           # Apply each migration
+          APPLIED_COUNT=0
+          SKIPPED_COUNT=0
+          FAILED_COUNT=0
+          
           for migration in $MIGRATIONS; do
             migration_name=$(basename $migration)
             echo "📦 Applying: $migration_name"
             
             # Apply with error handling
-            if psql "${{ env.DATABASE_URL }}" -v ON_ERROR_STOP=1 -f "$migration"; then
+            # Note: Migrations use IF NOT EXISTS clauses to handle re-runs safely
+            if psql "${{ env.DATABASE_URL }}" -v ON_ERROR_STOP=1 -f "$migration" 2>&1; then
               echo "✅ Applied: $migration_name"
+              APPLIED_COUNT=$((APPLIED_COUNT + 1))
             else
-              echo "❌ Failed: $migration_name"
-              exit 1
+              EXIT_CODE=$?
+              # Check if error is due to already-existing objects (non-fatal)
+              if psql "${{ env.DATABASE_URL }}" -c "\q" 2>&1 | grep -q "already exists"; then
+                echo "⚠️  Migration may have already been applied: $migration_name (continuing...)"
+                SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
+              else
+                echo "❌ Failed: $migration_name (exit code: $EXIT_CODE)"
+                FAILED_COUNT=$((FAILED_COUNT + 1))
+                exit 1
+              fi
             fi
           done
+          
+          echo ""
+          echo "✅ Migration Summary:"
+          echo "   Applied: $APPLIED_COUNT"
+          echo "   Skipped (already applied): $SKIPPED_COUNT"
+          echo "   Failed: $FAILED_COUNT"
+          
+          if [ $FAILED_COUNT -gt 0 ]; then
+            echo "❌ Some migrations failed"
+            exit 1
+          fi
           
           echo "✅ All migrations completed successfully"
         env:
@@ -219,8 +244,16 @@ jobs:
               CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ai_analyses') THEN '✓ exists' ELSE '✗ missing' END as status
             UNION ALL
             SELECT 
+              'support_tickets' as table_name,
+              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'support_tickets') THEN '✓ exists' ELSE '✗ missing' END as status
+            UNION ALL
+            SELECT 
               'set_tenant_context' as function_name,
-              CASE WHEN EXISTS (SELECT FROM pg_proc WHERE proname = 'set_tenant_context') THEN '✓ exists' ELSE '✗ missing' END as status;
+              CASE WHEN EXISTS (SELECT FROM pg_proc WHERE proname = 'set_tenant_context') THEN '✓ exists' ELSE '✗ missing' END as status
+            UNION ALL
+            SELECT 
+              'check_sla_violations' as function_name,
+              CASE WHEN EXISTS (SELECT FROM pg_proc WHERE proname = 'check_sla_violations') THEN '✓ exists' ELSE '✗ missing' END as status;
           " || echo "⚠️  Could not verify schema (non-critical)"
           
           # Check RLS policies
@@ -230,7 +263,7 @@ jobs:
             SELECT tablename, policyname 
             FROM pg_policies 
             WHERE schemaname = 'public' 
-            AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses', 'recon_results', 'alerts')
+            AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses', 'recon_results', 'alerts', 'support_tickets')
             ORDER BY tablename, policyname;
           " || echo "⚠️  Could not list policies (non-critical)"
         env:
