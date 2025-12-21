@@ -48,16 +48,19 @@ CREATE POLICY "Service role can insert API logs"
   WITH CHECK (true); -- Service role bypasses RLS
 
 -- Policy: Super admins can view all logs
+-- Check for super admin via auth.users table (metadata column doesn't exist in billing_accounts)
 CREATE POLICY "Super admins can view all API logs"
   ON api_call_logs
   FOR SELECT
   USING (
     EXISTS (
-      SELECT 1 FROM billing_accounts
-      WHERE user_id = auth.uid()
-      AND (metadata->>'role')::text = 'SUPER_ADMIN'
+      SELECT 1 FROM auth.users
+      WHERE id = auth.uid()
+      AND (
+        (raw_user_meta_data IS NOT NULL AND (raw_user_meta_data->>'role')::text = 'SUPER_ADMIN')
+        OR email LIKE '%@settler.dev'
+      )
     )
-    OR auth.jwt()->>'email' LIKE '%@settler.dev'
   );
 
 -- Add comment

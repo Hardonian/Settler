@@ -19,9 +19,10 @@ CREATE INDEX IF NOT EXISTS idx_api_call_logs_response_time
 ON api_call_logs(tenant_id, response_time, created_at DESC);
 
 -- Add partial index for recent logs (most queries are for recent data)
+-- Note: Partial indexes with NOW() require periodic REINDEX, so we'll use a simpler approach
+-- Instead, create a regular index and rely on query planner to use it efficiently
 CREATE INDEX IF NOT EXISTS idx_api_call_logs_recent 
-ON api_call_logs(tenant_id, created_at DESC) 
-WHERE created_at > NOW() - INTERVAL '7 days';
+ON api_call_logs(tenant_id, created_at DESC);
 
 -- Optimize table statistics
 ANALYZE api_call_logs;
