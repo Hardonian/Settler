@@ -8,7 +8,7 @@ import { Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Activity, Key, Receipt, ToggleLeft, ArrowRight } from 'lucide-react';
+import { Activity, Key, Receipt, ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getUsageSummary } from '@/domain/console/usage';
 import { listApiKeys } from '@/domain/console/apiKeys';
