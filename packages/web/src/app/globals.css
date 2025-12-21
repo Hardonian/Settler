@@ -55,10 +55,28 @@
   * {
     @apply border-border;
   }
+  
+  html {
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Prevent horizontal scroll */
+    overflow-x: hidden;
+    max-width: 100vw;
+    /* Ensure content doesn't overflow */
+    position: relative;
+  }
+  
+  /* Ensure all containers respect viewport width */
+  main, section, article, aside, nav, header, footer {
+    max-width: 100%;
+    overflow-x: hidden;
   }
 }
 
