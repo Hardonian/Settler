@@ -66,11 +66,41 @@
     @apply bg-background text-foreground;
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Typography: enforce minimum line-height for readability */
+    line-height: 1.5;
     /* Prevent horizontal scroll */
     overflow-x: hidden;
     max-width: 100vw;
     /* Ensure content doesn't overflow */
     position: relative;
+  }
+  
+  /* Typography: Ensure all text elements have minimum line-height */
+  p, span, div, li, td, th, label, input, textarea, select, button {
+    line-height: 1.5;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.4;
+  }
+  
+  /* Code elements: Use mono font stack */
+  code, pre, kbd, samp {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    line-height: 1.5;
+  }
+  
+  /* Ensure code blocks don't overflow */
+  pre {
+    overflow-x: auto;
+    overflow-y: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+  
+  /* Inline code: ensure proper contrast and sizing */
+  code:not(pre code) {
+    @apply bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-1.5 py-0.5 rounded text-sm;
   }
   
   /* Ensure all containers respect viewport width */

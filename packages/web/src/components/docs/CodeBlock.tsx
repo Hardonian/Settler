@@ -38,7 +38,7 @@ export function CodeBlock({ code, language, className }: CodeBlockProps) {
         </Button>
       </div>
       <pre className="bg-slate-900 dark:bg-slate-950 rounded-lg p-4 overflow-x-auto">
-        <code className={language ? `language-${language}` : ''}>{code}</code>
+        <code className={cn('text-slate-100 dark:text-slate-200 font-mono text-sm leading-[1.5]', language ? `language-${language}` : '')}>{code}</code>
       </pre>
     </div>
   );

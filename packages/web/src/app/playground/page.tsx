@@ -150,7 +150,7 @@ console.log("Report:", report.data.summary);
             aria-labelledby="api-config-heading"
           >
             <CardHeader>
-              <CardTitle id="api-config-heading" className="text-slate-900 dark:text-white">
+              <CardTitle id="api-config-heading" className="text-slate-900 dark:text-slate-100">
                 API Configuration
               </CardTitle>
               <CardDescription className="text-slate-600 dark:text-slate-300">
@@ -167,7 +167,7 @@ console.log("Report:", report.data.summary);
                     setCode(code.replace(/sk_your_api_key/g, e.target.value || "sk_your_api_key"));
                   }}
                   placeholder="sk_your_api_key"
-                  className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                  className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent font-mono text-sm leading-[1.5]"
                   aria-label="API key input"
                 />
                 <Button
@@ -202,7 +202,7 @@ console.log("Report:", report.data.summary);
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle id="editor-heading" className="text-slate-900 dark:text-white">
+                  <CardTitle id="editor-heading" className="text-slate-900 dark:text-slate-100">
                     Code Editor
                   </CardTitle>
                   <Badge className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
@@ -217,7 +217,8 @@ console.log("Report:", report.data.summary);
                 <textarea
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  className="w-full h-[500px] p-4 font-mono text-sm border border-slate-300 dark:border-slate-700 rounded-md bg-slate-900 dark:bg-slate-950 text-green-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="w-full min-h-[500px] p-4 font-mono text-sm border border-slate-300 dark:border-slate-700 rounded-md bg-slate-900 dark:bg-slate-950 text-green-300 dark:text-green-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none leading-[1.5]"
+                  style={{ lineHeight: '1.5' }}
                   spellCheck={false}
                   aria-label="Code editor"
                 />
@@ -233,7 +234,7 @@ console.log("Report:", report.data.summary);
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle id="output-heading" className="text-slate-900 dark:text-white">
+                  <CardTitle id="output-heading" className="text-slate-900 dark:text-slate-100">
                     Output
                   </CardTitle>
                   <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
@@ -246,11 +247,11 @@ console.log("Report:", report.data.summary);
               </CardHeader>
               <CardContent>
                 <div
-                  className="w-full h-[500px] p-4 bg-slate-900 dark:bg-slate-950 text-green-400 font-mono text-sm rounded-md overflow-auto border border-slate-300 dark:border-slate-700"
+                  className="w-full min-h-[500px] p-4 bg-slate-900 dark:bg-slate-950 text-green-300 dark:text-green-400 font-mono text-sm rounded-md overflow-auto border border-slate-300 dark:border-slate-700"
                   role="log"
                   aria-label="Code execution output"
                 >
-                  <pre className="whitespace-pre-wrap">{output}</pre>
+                  <pre className="whitespace-pre-wrap leading-[1.5]" style={{ lineHeight: '1.5' }}>{output}</pre>
                 </div>
               </CardContent>
             </Card>
@@ -274,7 +275,7 @@ console.log("Report:", report.data.summary);
               aria-labelledby="examples-heading"
             >
               <CardHeader>
-                <CardTitle id="examples-heading" className="text-slate-900 dark:text-white">
+                <CardTitle id="examples-heading" className="text-slate-900 dark:text-slate-100">
                   Quick Examples
                 </CardTitle>
                 <CardDescription className="text-slate-600 dark:text-slate-300">
@@ -317,8 +318,8 @@ console.log(report.data.summary);`);
                     aria-label="Load QuickBooks to Stripe example"
                   >
                     <div>
-                      <div className="font-semibold mb-1">QuickBooks → Stripe</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                      <div className="font-semibold mb-1 leading-[1.4]">QuickBooks → Stripe</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 leading-[1.5]">
                         Accounting to payments
                       </div>
                     </div>
@@ -354,8 +355,8 @@ console.log(report.data.summary);`);
                     aria-label="Load PayPal to Shopify example"
                   >
                     <div>
-                      <div className="font-semibold mb-1">PayPal → Shopify</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                      <div className="font-semibold mb-1 leading-[1.4]">PayPal → Shopify</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 leading-[1.5]">
                         Payment to e-commerce
                       </div>
                     </div>
@@ -390,8 +391,8 @@ client.webhooks.on("reconciliation.complete", (event) => {
                     aria-label="Load real-time webhooks example"
                   >
                     <div>
-                      <div className="font-semibold mb-1">Real-time Webhooks</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                      <div className="font-semibold mb-1 leading-[1.4]">Real-time Webhooks</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 leading-[1.5]">
                         Live event reconciliation
                       </div>
                     </div>
@@ -407,7 +408,7 @@ client.webhooks.on("reconciliation.complete", (event) => {
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-slate-100 leading-[1.4]">
               Secure & Reliable
             </h2>
           </div>

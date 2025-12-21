@@ -312,11 +312,11 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 leading-[1.4]">
             <Terminal className="w-6 h-6" />
             CLI Playground
           </h2>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-slate-600 dark:text-slate-300 leading-[1.5]">
             Build and test API requests with an interactive code editor and response viewer.
           </p>
         </div>
@@ -464,7 +464,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
               </CardHeader>
               <CardContent>
                 {history.length === 0 ? (
-                  <div className="text-center py-8 text-slate-500 text-sm">
+                  <div className="text-center py-8 text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
                     No requests yet
                   </div>
                 ) : (
@@ -485,10 +485,10 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                                 {item.name}
                               </span>
                             </div>
-                            <code className="text-xs text-slate-500 dark:text-slate-400 truncate block">
+                            <code className="text-xs text-slate-500 dark:text-slate-300 truncate block leading-[1.5]">
                               {item.url}
                             </code>
-                            <span className="text-xs text-slate-400 mt-1 block">
+                            <span className="text-xs text-slate-400 dark:text-slate-500 mt-1 block leading-[1.5]">
                               {item.timestamp.toLocaleTimeString()}
                             </span>
                           </div>
@@ -567,7 +567,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300 leading-[1.5]">
                   <li className="flex items-center gap-2">
                     <span className="text-green-600">✓</span>
                     Unlimited playground requests
