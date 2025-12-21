@@ -54,25 +54,33 @@ export function ApiLogsViewer() {
   async function loadLogs() {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filters.method) params.set('method', filters.method);
-      if (filters.path) params.set('path', filters.path);
-      if (filters.statusCode) params.set('statusCode', filters.statusCode);
-      params.set('limit', filters.limit);
-      params.set('stats', 'true');
+      // Fetch logs and stats in parallel
+      const logParams = new URLSearchParams();
+      if (filters.method) logParams.set('method', filters.method);
+      if (filters.path) logParams.set('path', filters.path);
+      if (filters.statusCode) logParams.set('statusCode', filters.statusCode);
+      logParams.set('limit', filters.limit);
       
-      const response = await fetch(`/api/console/api-logs?${params}`);
-      const data = await response.json();
+      const statsParams = new URLSearchParams(logParams);
+      statsParams.set('stats', 'true');
       
-      if (data.logs) {
-        setLogs(data.logs.map((log: any) => ({
+      const [logsResponse, statsResponse] = await Promise.all([
+        fetch(`/api/console/api-logs?${logParams}`),
+        fetch(`/api/console/api-logs?${statsParams}`),
+      ]);
+      
+      const logsData = await logsResponse.json();
+      const statsData = await statsResponse.json();
+      
+      if (logsData.logs) {
+        setLogs(logsData.logs.map((log: any) => ({
           ...log,
           timestamp: new Date(log.timestamp),
         })));
       }
       
-      if (data.stats) {
-        setStats(data.stats);
+      if (statsData.stats) {
+        setStats(statsData.stats);
       }
     } catch (error) {
       console.error('Failed to load API logs:', error);

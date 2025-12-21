@@ -185,9 +185,10 @@ export async function logApiRequest(
 
 /**
  * Create API logging middleware wrapper
+ * Compatible with Next.js route handlers
  */
 export function withApiLogging(
-  handler: (request: NextRequest, context?: ApiLogContext) => Promise<NextResponse>
+  handler: (request: NextRequest) => Promise<NextResponse>
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
     const startTime = Date.now();
@@ -207,7 +208,7 @@ export function withApiLogging(
     // Execute handler
     let response: NextResponse;
     try {
-      response = await handler(request, context);
+      response = await handler(request);
     } catch (error) {
       // Create error response
       response = NextResponse.json(
