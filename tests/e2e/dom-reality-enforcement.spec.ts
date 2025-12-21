@@ -11,9 +11,15 @@
  * - Accessibility and semantic DOM
  * 
  * Operating Principle: If the browser does not paint it, it does not exist.
+ * 
+ * Environment Variables:
+ * - Automatically loaded from .env files (same priority as Next.js)
+ * - CI/CD uses GitHub secrets (passed as environment variables)
+ * - See docs/DOM_REALITY_ENV_SETUP.md for details
  */
 
 import { test, expect, Page } from '@playwright/test';
+// Environment variables are loaded by playwright.config.ts
 import { writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 

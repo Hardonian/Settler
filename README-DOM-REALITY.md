@@ -55,7 +55,23 @@ Reports are generated in:
 - `npm run qa:dom-reality:report` - Generate reports
 - `npm run qa:dom-reality:inspect` - Deep inspection
 - `npm run qa:dom-reality:ci` - CI integration helper
+- `npm run qa:dom-reality:check-env` - Verify environment variables
 - `npm run qa:all` - Includes DOM reality tests
+
+## 🔐 Environment Variables
+
+Tests automatically load environment variables from `.env` files (same priority as Next.js):
+
+```bash
+# Check if env vars are loaded
+npm run qa:dom-reality:check-env
+```
+
+**Local:** Create `.env.local` file (gitignored)  
+**CI/CD:** Uses GitHub secrets automatically  
+**Preview/Production:** Uses Vercel environment variables
+
+See [Environment Setup Guide](docs/DOM_REALITY_ENV_SETUP.md) for details.
 
 ## ✅ Success Criteria
 

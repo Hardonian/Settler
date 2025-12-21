@@ -4,9 +4,26 @@
  * Generates comprehensive HTML and markdown reports from DOM reality inspection results.
  */
 
-import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join, resolve } from 'path';
+import { config } from 'dotenv';
 import type { DOMRealityReport, DOMIssue, DOMMetrics } from './dom-reality-types';
+
+// Load environment variables from .env files
+const envFiles = [
+  resolve(__dirname, '..', '.env.local'),
+  resolve(__dirname, '..', '.env.development'),
+  resolve(__dirname, '..', '.env'),
+  resolve(__dirname, '..', 'packages/web/.env.local'),
+  resolve(__dirname, '..', 'packages/web/.env.development'),
+  resolve(__dirname, '..', 'packages/web/.env'),
+];
+
+envFiles.forEach((file) => {
+  if (existsSync(file)) {
+    config({ path: file, override: false });
+  }
+});
 
 /**
  * Generate markdown report

@@ -10,13 +10,31 @@
 
 import { chromium, Browser, Page } from 'playwright';
 import { writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
+import { config } from 'dotenv';
+import { existsSync } from 'fs';
 import type { 
   DOMRealityReport, 
   DOMIssue, 
   DOMMetrics, 
   InspectionConfig 
 } from './dom-reality-types';
+
+// Load environment variables from .env files (same as Playwright config)
+const envFiles = [
+  resolve(__dirname, '..', '.env.local'),
+  resolve(__dirname, '..', '.env.development'),
+  resolve(__dirname, '..', '.env'),
+  resolve(__dirname, '..', 'packages/web/.env.local'),
+  resolve(__dirname, '..', 'packages/web/.env.development'),
+  resolve(__dirname, '..', 'packages/web/.env'),
+];
+
+envFiles.forEach((file) => {
+  if (existsSync(file)) {
+    config({ path: file, override: false });
+  }
+});
 
 /**
  * Capture SSR HTML (before any client-side hydration)

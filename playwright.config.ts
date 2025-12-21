@@ -1,4 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
+import { loadEnvFiles } from "./scripts/load-env-for-tests";
+
+// Load environment variables from .env files (same priority as Next.js)
+// This ensures tests have access to the same environment variables
+// as the application in preview/production environments
+loadEnvFiles();
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -51,6 +57,12 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    env: {
+      // Pass through environment variables to dev server
+      ...process.env,
+      // Ensure Next.js loads .env files
+      NODE_ENV: process.env.NODE_ENV || "development",
+    },
   },
   // Visual regression configuration
   expect: {

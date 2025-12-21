@@ -122,7 +122,33 @@ These should be reviewed:
 - **[Summary](DOM_REALITY_SUMMARY.md)** - System overview
 - **[Implementation](DOM_REALITY_IMPLEMENTATION_COMPLETE.md)** - Technical details
 
+## Environment Variables
+
+Tests automatically load environment variables from `.env` files (same as Next.js):
+
+```bash
+# Check if env vars are loaded
+npm run qa:dom-reality:check-env
+```
+
+**Local Development:**
+- Create `.env.local` file (copy from `.env.example`)
+- Fill in your values
+- Tests will automatically use them
+
+**CI/CD:**
+- Uses GitHub secrets automatically
+- No `.env` files needed
+- Same as preview/production
+
+See [Environment Setup Guide](DOM_REALITY_ENV_SETUP.md) for details.
+
 ## Troubleshooting
+
+### Tests Fail: "Missing environment variables"
+- **Local:** Create `.env.local` file with required variables
+- **CI/CD:** Verify GitHub secrets are configured
+- **Verify:** Run `npm run qa:dom-reality:check-env`
 
 ### Tests Fail to Start
 - Ensure dev server is running: `npm run dev --workspace=packages/web`

@@ -122,6 +122,9 @@ docs/
 ├── DOM_REALITY_SUMMARY.md              # System overview
 ├── DOM_REALITY_IMPLEMENTATION_COMPLETE.md # Technical details
 ├── DOM_REALITY_INTEGRATION_GUIDE.md    # Integration instructions
+├── DOM_REALITY_ENV_SETUP.md            # Environment variables setup
+├── DOM_REALITY_ENV_VERIFICATION.md      # Environment verification
+├── DOM_REALITY_ENV_COMPLETE.md         # Environment setup complete
 └── DOM_REALITY_COMPLETE.md             # This file
 ```
 
