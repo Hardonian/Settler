@@ -60,20 +60,23 @@ export function OnboardingWizard({
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg mb-2">Getting Started</CardTitle>
+            <CardTitle className="text-lg mb-2">Complete Setup (2 minutes)</CardTitle>
             <CardDescription>
               Complete these steps to get the most out of Settler
             </CardDescription>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsDismissed(true)}
-            className="h-8 w-8"
-            aria-label="Dismiss onboarding"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          {/* Only allow dismissing after Step 1 is complete */}
+          {currentStepIndex > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsDismissed(true)}
+              className="h-8 w-8"
+              aria-label="Dismiss onboarding"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
         <div className="mt-4">
           <div className="flex items-center justify-between text-sm mb-2">

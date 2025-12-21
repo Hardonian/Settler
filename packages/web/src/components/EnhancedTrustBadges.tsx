@@ -44,8 +44,8 @@ export function EnhancedTrustBadges() {
       name: "SOC 2 Type II",
       icon: "/assets/icons/soc2-badge.svg",
       status: "in-progress",
-      note: "Q2 2026",
-      description: "Enterprise-grade security certification",
+      note: "Planned Q3 2026",
+      description: "Currently GDPR/CCPA compliant with PCI-DSS ready infrastructure",
       gradient: "from-blue-500 to-blue-600",
     },
     {

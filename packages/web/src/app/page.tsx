@@ -82,7 +82,7 @@ export default function Home() {
   const features = [
     {
       icon: RefreshCw,
-      title: "Reconcile Anything",
+      title: "Match Transactions Automatically",
       description: "Match transactions across Stripe, Shopify, databases, and more using precise matching algorithms. Process high-volume transactions efficiently and reliably.",
       gradient: "from-blue-500 to-indigo-500",
     },
@@ -94,7 +94,7 @@ export default function Home() {
     },
     {
       icon: Calculator,
-      title: "Deterministic Convert",
+      title: "Accurate Currency Conversion",
       description: "Precise unit and currency conversion without floating point errors. Handle FX rates and unit conversions with confidence.",
       gradient: "from-indigo-500 to-purple-500",
     },
@@ -106,7 +106,7 @@ export default function Home() {
     },
     {
       icon: Flag,
-      title: "Developer-First Flags",
+      title: "Feature Flags for Developers",
       description: "Edge-evaluated feature flags with typed payloads and instant rollouts. Manage entitlements and phased releases programmatically.",
       gradient: "from-amber-500 to-orange-500",
     },
@@ -179,7 +179,7 @@ if (flag.value) { /* ... */ }`;
                 <TextRevealHeading
                   as="h1"
                   id="hero-heading"
-                  text="Automate Financial Reconciliation in Minutes, Not Hours"
+                  text="Stop Manually Matching Payments to Orders"
                   className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent"
                   delay={0}
                   staggerDelay={0.02}
@@ -187,7 +187,7 @@ if (flag.value) { /* ... */ }`;
                 />
                 
                 <TextReveal
-                  text="Reconciliation happens automatically across Stripe, Shopify, QuickBooks, and 50+ platforms. No configuration, no manual work—just continuous matching that runs continuously."
+                  text="Settler automatically matches your Stripe payments with Shopify orders, QuickBooks entries, and 50+ other platforms. No more spreadsheets, no more errors—just accurate financial records."
                   className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
                   delay={0.2}
                   staggerDelay={0.01}
@@ -301,6 +301,39 @@ if (flag.value) { /* ... */ }`;
                 );
               })}
             </BentoGrid>
+          </div>
+        </section>
+
+        {/* Try Playground Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
+          <div className="max-w-7xl mx-auto text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white">
+              Try Settler Without Writing Code
+            </h2>
+            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 mb-8 sm:mb-12 max-w-2xl mx-auto">
+              Use our interactive playground to test Settler's APIs, see how reconciliation works, and explore features—all without signing up or writing a single line of code.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button 
+                size="lg" 
+                asChild 
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
+              >
+                <Link href="/console/playground">
+                  Open Playground <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                asChild 
+                className="px-8 py-6 text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+              >
+                <Link href="/docs">
+                  View Documentation
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
 

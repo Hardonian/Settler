@@ -116,18 +116,45 @@ export default function Pricing() {
       <section className="px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
-            Simple, Transparent Pricing
+            Simple Pricing: Pay Per Transaction Match
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
-            Simple pricing that scales with your business. Each plan includes a base volume of reconciliations per month.
+            Settler matches your payments to orders automatically. You pay per match. If a match needs your review, it costs extra. That's it.
           </p>
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left max-w-2xl mx-auto">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>How it works:</strong> Each plan includes a base volume of reconciliations per month. 
-              Reconciliation runs automatically. If you exceed your plan's volume, you can upgrade to a higher plan. 
-              Exceptions are handled automatically—you only pay for exceptions that require your review ($0.10 each).
-            </p>
-          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="max-w-4xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle>How It Works</CardTitle>
+              <CardDescription>Understanding reconciliation and exceptions</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h3 className="font-semibold mb-2 text-lg">What is a reconciliation?</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  A reconciliation is when Settler matches one transaction (like a Stripe payment) to another (like a Shopify order). 
+                  Each match counts as one reconciliation. Reconciliation runs automatically—no manual work required.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2 text-lg">What are exceptions?</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Exceptions are transactions that Settler can't match automatically. Settler explains why they don't match, 
+                  so you can review them quickly. Most exceptions are handled automatically—you only pay for ones that need your attention ($0.10 each).
+                </p>
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>Example:</strong> If you process 50,000 transactions per month, Settler will match them automatically. 
+                  If 500 transactions (1%) require your review, you pay $99 (Starter plan) + (500 × $0.10) = $149/month.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 

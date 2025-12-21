@@ -70,8 +70,11 @@ export function WelcomeBanner({ userName, onDismiss }: WelcomeBannerProps) {
                 Welcome to Settler{userName ? `, ${userName}` : ''}!
               </h3>
             </div>
-            <p className="text-green-800 dark:text-green-200 mb-4">
-              Your account has been created successfully. You're all set to start automating your financial reconciliation.
+            <p className="text-green-800 dark:text-green-200 mb-2">
+              Welcome! Your first step: Get your API key
+            </p>
+            <p className="text-sm text-green-700 dark:text-green-300 mb-4">
+              Create your API key to start using Settler. It takes just 30 seconds.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="sm" className="bg-green-600 hover:bg-green-700 text-white">

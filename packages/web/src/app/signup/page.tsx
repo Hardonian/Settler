@@ -142,9 +142,17 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
               Start Your Free Trial
             </h1>
-            <p className="text-slate-600 dark:text-slate-400">
-              Create your account and reconciliation starts automatically. No credit card required.
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
+              Create your account and get instant access to Settler. You'll start with 1,000 free reconciliations per month—perfect for testing.
             </p>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left mt-4">
+              <p className="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-2">What happens next:</p>
+              <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
+                <li>Get your API key (takes 30 seconds)</li>
+                <li>Try the playground (no code required)</li>
+                <li>Connect your first integration (Stripe, Shopify, etc.)</li>
+              </ul>
+            </div>
           </div>
 
           {errorInfo && (
