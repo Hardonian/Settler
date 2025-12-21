@@ -75,6 +75,12 @@ const globalForPrisma = globalThis as unknown as {
 // it as a safety measure during build time.
 const isBuildPhase = (globalThis as any).__PRISMA_BUILD_PHASE__ ?? false;
 
+// Check if DATABASE_URL is available
+const hasDatabaseUrl = 
+  typeof process !== 'undefined' && 
+  process.env && 
+  (process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL);
+
 // Use bracket notation to prevent webpack from optimizing process.env access
 const nodeEnv = typeof process !== 'undefined' && process.env ? process.env['NODE_ENV'] : 'production';
 
@@ -119,13 +125,13 @@ function getOptimizedDatabaseUrl(): string | undefined {
 const optimizedDbUrl = getOptimizedDatabaseUrl();
 const prismaConfig: ConstructorParameters<typeof PrismaClient>[0] = {
   log: nodeEnv === 'development' ? ['error', 'warn'] : ['error'], // Reduced logging in production
-  // During Vercel build, provide accelerateUrl to satisfy Prisma Client constructor
-  // if it was generated with client engine type. This won't be used during build.
-  ...(isBuildPhase ? {
+  // Always provide accelerateUrl if DATABASE_URL is missing or during build
+  // This satisfies Prisma Client constructor when generated with client engine type
+  ...((isBuildPhase || !hasDatabaseUrl) ? {
     accelerateUrl: 'https://dummy.prisma-accelerate.com',
   } : {}),
   // Add datasource override with optimized connection string
-  ...(optimizedDbUrl && !isBuildPhase ? {
+  ...(optimizedDbUrl && !isBuildPhase && hasDatabaseUrl ? {
     datasources: {
       db: {
         url: optimizedDbUrl,
@@ -134,11 +140,72 @@ const prismaConfig: ConstructorParameters<typeof PrismaClient>[0] = {
   } : {}),
 };
 
-// Create Prisma client instance
+// Create Prisma client instance with error handling
 // Note: Prisma 7 may detect client engine type during build even if generated with binary engine.
 // We ensure PRISMA_CLIENT_ENGINE_TYPE=binary is set above to prevent this.
 // If Prisma still uses client engine, we provide accelerateUrl above as a fallback.
-const prismaInstance = globalForPrisma.prisma ?? new PrismaClient(prismaConfig);
+let prismaInstance: PrismaClient;
+
+try {
+  prismaInstance = globalForPrisma.prisma ?? new PrismaClient(prismaConfig);
+} catch (error) {
+  // If Prisma initialization fails (e.g., missing DATABASE_URL or engine type mismatch),
+  // create a stub client that returns null/empty results gracefully
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  
+  // Check if it's a missing DATABASE_URL or engine type issue
+  const isMissingConfig = 
+    errorMessage.includes('adapter') || 
+    errorMessage.includes('accelerateUrl') ||
+    errorMessage.includes('DATABASE_URL') ||
+    !hasDatabaseUrl;
+  
+  if (isMissingConfig) {
+    console.warn('[Prisma] DATABASE_URL not found or Prisma not configured. Using stub client.');
+  } else {
+    console.error('[Prisma] Failed to initialize Prisma client:', error);
+  }
+  
+  // Create a stub client that returns null/empty arrays for queries
+  prismaInstance = new Proxy({} as PrismaClient, {
+    get(_target, prop) {
+      if (prop === '$connect' || prop === '$disconnect') {
+        return async () => {};
+      }
+      if (prop === '$queryRaw') {
+        return async () => [];
+      }
+      // Return a proxy for model access that returns null/empty arrays
+      return new Proxy({}, {
+        get(_modelTarget, modelProp) {
+          if (modelProp === 'findFirst' || modelProp === 'findUnique') {
+            return async () => null;
+          }
+          if (modelProp === 'findMany') {
+            return async () => [];
+          }
+          if (modelProp === 'create' || modelProp === 'update' || modelProp === 'delete' || modelProp === 'upsert') {
+            return async () => {
+              throw new Error(
+                'Prisma client not initialized. DATABASE_URL or Prisma configuration is missing. ' +
+                'Set SAFE_MODE=1 to disable database features.'
+              );
+            };
+          }
+          // Return another proxy for nested access (e.g., prisma.tenant.findFirst)
+          return new Proxy({}, {
+            get() {
+              return async () => null;
+            },
+          });
+        },
+      });
+    },
+  }) as PrismaClient;
+  
+  // Store the error for debugging
+  (prismaInstance as any).__prismaInitError = error;
+}
 
 // Add connection health check
 let lastHealthCheck = 0;

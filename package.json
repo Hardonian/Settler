@@ -11,6 +11,7 @@
     "dev": "turbo run dev",
     "test": "turbo run test",
     "test:e2e": "playwright test",
+    "test:e2e:reality": "playwright test tests/e2e/frontend-reality-gates.spec.ts",
     "test:smoke": "tsx scripts/smoke-test.ts",
     "test:csv-upload": "tsx scripts/test-csv-upload.ts",
     "test:smoke:console": "playwright test tests/e2e/console-smoke.spec.ts",

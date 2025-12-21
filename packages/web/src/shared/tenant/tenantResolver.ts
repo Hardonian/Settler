@@ -7,7 +7,22 @@
  * - Default to main Settler tenant if no match
  */
 
-import { prisma } from '../db/prismaClient';
+// Lazy-load Prisma to prevent initialization errors when DATABASE_URL is missing
+async function getPrisma() {
+  try {
+    const { prisma } = await import('../db/prismaClient');
+    return prisma;
+  } catch (error) {
+    console.error('[TenantResolver] Failed to load Prisma:', error);
+    // Return a stub that always returns null
+    return {
+      tenant: {
+        findFirst: async () => null,
+        findUnique: async () => null,
+      },
+    } as any;
+  }
+}
 
 export interface TenantResolutionResult {
   tenantId: string;
@@ -47,6 +62,7 @@ type TenantSelect = {
  */
 async function findTenantByDomain(host: string): Promise<TenantSelect | null> {
   try {
+    const prisma = await getPrisma();
     const tenant = await prisma.tenant.findFirst({
       where: {
         OR: [
@@ -76,6 +92,7 @@ async function findTenantByDomain(host: string): Promise<TenantSelect | null> {
  */
 async function findTenantBySlug(slug: string): Promise<TenantSelect | null> {
   try {
+    const prisma = await getPrisma();
     const tenant = await prisma.tenant.findUnique({
       where: { slug },
       select: {
@@ -99,6 +116,7 @@ async function findTenantBySlug(slug: string): Promise<TenantSelect | null> {
  */
 async function getDefaultTenant(): Promise<TenantSelect | null> {
   try {
+    const prisma = await getPrisma();
     const tenant = await prisma.tenant.findUnique({
       where: { slug: 'default' },
       select: {
@@ -129,6 +147,7 @@ async function canAccessTenant(
   try {
     // TODO: Implement role-based access check
     // For now, allow if user has billing account linked to tenant
+    const prisma = await getPrisma();
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
       include: {
@@ -231,6 +250,7 @@ export async function resolveTenant(
  */
 export async function getTenantById(tenantId: string) {
   try {
+    const prisma = await getPrisma();
     return await prisma.tenant.findUnique({
       where: { id: tenantId },
       include: {
@@ -250,6 +270,7 @@ export async function getTenantById(tenantId: string) {
  */
 export async function getTenantBySlug(slug: string) {
   try {
+    const prisma = await getPrisma();
     return await prisma.tenant.findUnique({
       where: { slug },
       include: {
