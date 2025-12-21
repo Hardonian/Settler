@@ -48,25 +48,27 @@ export async function logApiCall(log: Omit<ApiCallLog, 'id' | 'timestamp'>): Pro
     const supabase = await createAdminClient();
     
     // Insert into api_call_logs table
+    const insertData = {
+      tenant_id: log.tenantId,
+      user_id: log.userId,
+      api_key_id: log.apiKeyId,
+      method: log.method,
+      path: log.path,
+      status_code: log.statusCode,
+      response_time: log.responseTime,
+      headers: log.headers,
+      query: log.query,
+      body: log.body,
+      response_body: log.responseBody,
+      error: log.error,
+      user_agent: log.userAgent,
+      ip_address: log.ipAddress,
+      created_at: new Date().toISOString(),
+    };
+    
     const { error } = await supabase
       .from('api_call_logs')
-      .insert({
-        tenant_id: log.tenantId,
-        user_id: log.userId,
-        api_key_id: log.apiKeyId,
-        method: log.method,
-        path: log.path,
-        status_code: log.statusCode,
-        response_time: log.responseTime,
-        headers: log.headers,
-        query: log.query,
-        body: log.body,
-        response_body: log.responseBody,
-        error: log.error,
-        user_agent: log.userAgent,
-        ip_address: log.ipAddress,
-        created_at: new Date().toISOString(),
-      });
+      .insert(insertData as never);
     
     if (error) {
       console.error('[logApiCall] Failed to log API call:', error);

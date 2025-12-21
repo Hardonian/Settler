@@ -13,7 +13,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { createAdminClient } from '@/lib/supabase/server';
-import { sanitizeUserData } from '@/lib/privacy/pii-filter';
 import { withRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/security/rate-limiter';
 import { withCache, CACHE_CONFIGS } from '@/lib/cache/api-cache';
 import { validatePagination } from '@/lib/security/request-validator';
@@ -66,12 +65,7 @@ async function handleGet(request: NextRequest) {
           id,
           user_id,
           status,
-          email,
-          users:user_id (
-            id,
-            email,
-            user_metadata
-          )
+          email
         )
       `)
       .order('created_at', { ascending: false })
@@ -90,9 +84,26 @@ async function handleGet(request: NextRequest) {
       .from('tenants')
       .select('*', { count: 'exact', head: true });
     
+    // Type guard for tenant data
+    type TenantWithBilling = {
+      id: string;
+      name: string;
+      slug: string;
+      status: string;
+      created_at: string;
+      updated_at: string;
+      metadata?: unknown;
+      billing_accounts?: Array<{
+        id: string;
+        user_id: string;
+        status: string;
+        email?: string;
+      }>;
+    };
+    
     // Get metrics for each tenant if requested (batch queries for performance)
     const tenantsWithMetrics = await Promise.all(
-      (tenants || []).map(async (tenant) => {
+      (tenants || []).map(async (tenant: TenantWithBilling) => {
         const tenantData: Record<string, unknown> = {
           id: tenant.id,
           name: tenant.name,
@@ -104,7 +115,7 @@ async function handleGet(request: NextRequest) {
         
         // Sanitize billing account data
         if (tenant.billing_accounts && Array.isArray(tenant.billing_accounts)) {
-          tenantData.billingAccounts = tenant.billing_accounts.map((ba: any) => ({
+          tenantData.billingAccounts = tenant.billing_accounts.map((ba) => ({
             id: ba.id,
             status: ba.status,
             email: ba.email ? `***@${ba.email.split('@')[1]}` : undefined,

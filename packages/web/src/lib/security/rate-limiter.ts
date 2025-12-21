@@ -95,31 +95,33 @@ export function generateRateLimitKey(request: Request, prefix: string = 'api'): 
   return `${prefix}:${url.pathname}:${userId}:${ip}`;
 }
 
+import type { NextRequest, NextResponse } from 'next/server';
+
 /**
- * Rate limit middleware
+ * Rate limit middleware for Next.js route handlers
  */
 export function withRateLimit(
   config: RateLimitConfig,
-  handler: (request: Request) => Promise<Response>
+  handler: (request: NextRequest) => Promise<NextResponse>
 ) {
-  return async (request: Request): Promise<Response> => {
+  return async (request: NextRequest): Promise<NextResponse> => {
+    const { NextResponse: NextResponseClass } = await import('next/server');
     const key = config.keyGenerator 
-      ? config.keyGenerator(request)
-      : generateRateLimitKey(request);
+      ? config.keyGenerator(request as Request)
+      : generateRateLimitKey(request as Request);
     
     const result = checkRateLimit(key, config);
     
     if (!result.allowed) {
-      return new Response(
-        JSON.stringify({
+      return NextResponseClass.json(
+        {
           error: 'Rate Limit Exceeded',
           message: `Too many requests. Please try again after ${result.retryAfter} seconds.`,
           retryAfter: result.retryAfter,
-        }),
+        },
         {
           status: 429,
           headers: {
-            'Content-Type': 'application/json',
             'X-RateLimit-Limit': config.maxRequests.toString(),
             'X-RateLimit-Remaining': result.remaining.toString(),
             'X-RateLimit-Reset': new Date(result.resetAt).toISOString(),
@@ -131,11 +133,16 @@ export function withRateLimit(
     
     // Add rate limit headers to response
     const response = await handler(request);
-    response.headers.set('X-RateLimit-Limit', config.maxRequests.toString());
-    response.headers.set('X-RateLimit-Remaining', result.remaining.toString());
-    response.headers.set('X-RateLimit-Reset', new Date(result.resetAt).toISOString());
+    const headers = new Headers(response.headers);
+    headers.set('X-RateLimit-Limit', config.maxRequests.toString());
+    headers.set('X-RateLimit-Remaining', result.remaining.toString());
+    headers.set('X-RateLimit-Reset', new Date(result.resetAt).toISOString());
     
-    return response;
+    return new NextResponseClass(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
   };
 }
 

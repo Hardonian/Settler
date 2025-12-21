@@ -88,29 +88,31 @@ export function clearAllCache(): void {
   cache.clear();
 }
 
+import type { NextRequest, NextResponse } from 'next/server';
+
 /**
- * Cache middleware
+ * Cache middleware for Next.js route handlers
  */
 export function withCache<T>(
   config: CacheConfig,
-  handler: (request: Request) => Promise<Response>
+  handler: (request: NextRequest) => Promise<NextResponse>
 ) {
-  return async (request: Request): Promise<Response> => {
+  return async (request: NextRequest): Promise<NextResponse> => {
+    const { NextResponse: NextResponseClass } = await import('next/server');
     // Only cache GET requests
     if (request.method !== 'GET') {
       return handler(request);
     }
     
     const key = config.keyGenerator 
-      ? config.keyGenerator(request)
-      : generateCacheKey(request);
+      ? config.keyGenerator(request as Request)
+      : generateCacheKey(request as Request);
     
     // Check cache
     const cached = getCached<{ body: unknown; headers: HeadersInit }>(key);
     if (cached) {
-      return new Response(JSON.stringify(cached.body), {
+      return NextResponseClass.json(cached.body, {
         headers: {
-          'Content-Type': 'application/json',
           'X-Cache': 'HIT',
           ...cached.headers,
         },
@@ -151,7 +153,7 @@ export function withCache<T>(
     const newHeaders = new Headers(response.headers);
     newHeaders.set('X-Cache', 'MISS');
     
-    return new Response(response.body, {
+    return new NextResponseClass(response.body, {
       status: response.status,
       statusText: response.statusText,
       headers: newHeaders,
