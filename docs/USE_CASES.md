@@ -134,7 +134,7 @@ Each use case defines:
 ### Concrete Outcome
 - **Time Saved:** 15-20 hours/month → <30 minutes/month (95%+ reduction)
 - **Accuracy:** 5-10% error rate → <1% error rate (90%+ improvement)
-- **Currency Errors Eliminated:** Deterministic conversion prevents floating-point errors
+- **Currency Errors Reduced:** Deterministic conversion prevents floating-point errors
 - **Cost Savings:** $1.5K-$3K/month in labor costs
 
 ### Time-to-Value
@@ -342,8 +342,8 @@ Each use case defines:
   5. Submit for regulatory audit (compliance-ready)
 
 ### Concrete Outcome
-- **Audit Trail Completeness:** 100% (every transaction documented)
-- **Deterministic Matching:** 100% (reproducible, auditable)
+- **Audit Trail Completeness:** Complete (every transaction documented)
+- **Deterministic Matching:** Deterministic (reproducible, auditable)
 - **Compliance Readiness:** Meets regulatory requirements
 - **Time Saved:** 10-15 hours/month → <1 hour/month (90%+ reduction)
 
@@ -360,7 +360,7 @@ Each use case defines:
     - Every decision (why matched/unmatched)
     - Complete timeline (timestamp, source, action)
   - Compliance dashboard showing:
-    - Audit trail completeness (100%)
+    - Audit trail completeness (complete)
     - Deterministic matching (reproducible)
     - Compliance status (meets requirements)
 - **Exportable Proof:**

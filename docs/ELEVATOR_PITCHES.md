@@ -41,10 +41,10 @@ Each persona has three pitch versions:
 ## Persona #2: SaaS Operations Lead
 
 ### 10-Second Version
-**"Eliminate currency conversion errors. Reconcile multi-currency transactions automatically."**
+**"Reduce currency conversion errors. Reconcile multi-currency transactions automatically."**
 
 ### 30-Second Version
-**"SaaS companies manually reconcile multi-currency transactions between Stripe, PayPal, and QuickBooks. They use Excel spreadsheets, manual currency conversion, exchange rate lookups—it's error-prone, time-consuming, and creates compliance risk. Settler automates this with deterministic currency conversion—completes in <30 minutes, 99%+ accuracy, complete audit trail. Saves 15-20 hours/month, eliminates currency errors, improves compliance."**
+**"SaaS companies manually reconcile multi-currency transactions between Stripe, PayPal, and QuickBooks. They use Excel spreadsheets, manual currency conversion, exchange rate lookups—it's error-prone, time-consuming, and creates compliance risk. Settler automates this with deterministic currency conversion—completes in <30 minutes, 99%+ accuracy, complete audit trail. Saves 15-20 hours/month, reduces currency errors, improves compliance."**
 
 ### 90-Second Version
 **"SaaS companies manually reconcile multi-currency transactions between Stripe, PayPal, and QuickBooks. They export transactions in multiple currencies, manually convert currencies using exchange rates from different sources, match transactions accounting for conversion differences, investigate discrepancies, and create reconciliation reports. It's error-prone, time-consuming, and creates compliance risk.**
@@ -89,7 +89,7 @@ Each persona has three pitch versions:
 
 **Settler generates complete audit trails automatically with deterministic matching. You run reconciliation (automated, <10 minutes), and Settler generates a complete audit trail showing every transaction, every match, every decision, and a complete timeline—all automatically. The audit trail is deterministic (reproducible, auditable) and meets regulatory requirements.**
 
-**The results: 100% audit trail completeness (every transaction documented), 100% deterministic matching (reproducible, auditable), compliance-ready (meets regulatory requirements), 90%+ time savings (10-15 hours/month → <1 hour/month), and reduced compliance risk. You can export the audit trail in PDF/CSV/JSON format for regulatory submission.**
+**The results: Complete audit trail (every transaction documented), deterministic matching (reproducible, auditable), compliance-ready (meets regulatory requirements), 90%+ time savings (10-15 hours/month → <1 hour/month), and reduced compliance risk. You can export the audit trail in PDF/CSV/JSON format for regulatory submission.**
 
 **You can try it free for 14 days, no credit card required. First audit trail takes <1 hour after reconciliation."**
 
@@ -108,7 +108,7 @@ Each persona has three pitch versions:
 
 **Settler provides API-based reconciliation. You integrate Settler's REST API (standard integration, <1 hour), call the reconciliation endpoint with your transaction data, and get reconciliation results—all via API. No maintenance, reliable (99%+ uptime), handles 10K-1M+ transactions/month automatically.**
 
-**The results: 90%+ time savings (10+ hours/month → <1 hour/month), 99%+ reliability (no maintenance burden), bug elimination (no custom reconciliation bugs), and the ability to focus on product, not infrastructure. It handles scaling automatically—no need to optimize reconciliation logic.**
+**The results: 90%+ time savings (10+ hours/month → <1 hour/month), 99%+ reliability (no maintenance burden), reduced bugs (no custom reconciliation bugs), and the ability to focus on product, not infrastructure. It handles scaling automatically—no need to optimize reconciliation logic.**
 
 **You can try it free for 14 days, no credit card required. First API integration takes <1 hour."**
 
@@ -142,7 +142,7 @@ Each persona has three pitch versions:
 ### Don'ts
 - ❌ **Avoid buzzwords:** "AI-powered," "revolutionary," "transformative"
 - ❌ **Avoid vague claims:** "improves efficiency" (be specific)
-- ❌ **Avoid overpromising:** "eliminates all errors" (be realistic)
+- ❌ **Avoid overpromising:** "reduces errors significantly" (be realistic)
 - ❌ **Avoid technical jargon:** "deterministic matching" (explain in plain language)
 - ❌ **Avoid hypotheticals:** "could save time" (show proof)
 
