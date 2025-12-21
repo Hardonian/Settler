@@ -1,27 +1,28 @@
 /**
  * Plan Configuration
  * 
- * Pricing Model: Volume + Exception Supervision
+ * Pricing Model: Simple Subscription + Usage-Based Overage
  * 
- * Core principle: Pricing scales with reliance, not curiosity.
- * Reconciliation is a system behavior - pricing reflects volume and exception supervision.
+ * Core principle: Simple, transparent pricing with predictable base costs.
+ * Overage pricing applies for usage beyond included limits.
+ * Exception supervision model: 1% exception rate included, $0.10 per exception requiring review.
  */
 
-export type PlanCode = 'starter' | 'growth' | 'scale' | 'enterprise';
+export type PlanCode = 'free' | 'starter' | 'growth' | 'scale' | 'enterprise';
 
 export type ServiceCode = 'reconcile' | 'exceptions';
 
 /**
- * Simplified service limits - only reconciliation volume and exceptions
+ * Service limits - reconciliation volume and exception supervision
  */
 export interface ServiceLimits {
   reconcile: {
     monthlyVolume: number; // Monthly reconciliation volume included
-    pricePerReconciliation: number; // Price per reconciliation over included volume
+    pricePerReconciliation: number; // Price per reconciliation over included volume ($0.01)
   };
   exceptions: {
     includedRate: number; // Included exception rate (e.g., 0.01 = 1%)
-    pricePerException: number; // Price per exception requiring review
+    pricePerException: number; // Price per exception requiring review ($0.10)
   };
 }
 
@@ -30,7 +31,7 @@ export interface PlanConfig {
   name: string;
   description: string;
   stripePriceId?: string; // Stripe Price ID for paid plans
-  monthlyPrice: number; // Monthly price in USD (0 for starter)
+  monthlyPrice: number; // Monthly price in USD (0 for free/starter)
   limits: ServiceLimits;
   // All features included - no feature gating
   // Only scale, depth, and automation intensity are gated
@@ -39,18 +40,42 @@ export interface PlanConfig {
 /**
  * Plan configurations
  * 
- * Model: Volume + Exception Supervision
- * Pricing scales with reliance, not curiosity
+ * Pricing aligned with public documentation:
+ * - Free: $0/month - 1,000 reconciliations/month
+ * - Starter: $29/month - 10,000 reconciliations/month
+ * - Growth: $99/month - 100,000 reconciliations/month
+ * - Scale: $299/month - 1,000,000 reconciliations/month
+ * - Enterprise: Custom pricing - Unlimited
+ * 
+ * Overage: $0.01 per reconciliation beyond included volume
+ * Exception Supervision: 1% exception rate included, $0.10 per exception requiring review
  */
 export const planConfigs: Record<PlanCode, PlanConfig> = {
-  starter: {
-    code: 'starter',
-    name: 'Starter',
-    description: 'First 10,000 reconciliations free',
+  free: {
+    code: 'free',
+    name: 'Free',
+    description: 'Perfect for testing and small projects',
     monthlyPrice: 0,
     limits: {
       reconcile: {
-        monthlyVolume: 10000, // 10k reconciliations included free
+        monthlyVolume: 1000, // 1k reconciliations included free
+        pricePerReconciliation: 0.01, // $0.01 per reconciliation over 1k
+      },
+      exceptions: {
+        includedRate: 0.01, // 1% exception rate included (10 exceptions auto-explained)
+        pricePerException: 0.10, // $0.10 per exception requiring review
+      },
+    },
+  },
+  starter: {
+    code: 'starter',
+    name: 'Starter',
+    description: 'Perfect for small e-commerce stores, early-stage SaaS',
+    stripePriceId: process.env.STRIPE_PRICE_ID_STARTER || undefined,
+    monthlyPrice: 29, // $29/month as documented
+    limits: {
+      reconcile: {
+        monthlyVolume: 10000, // 10k reconciliations included
         pricePerReconciliation: 0.01, // $0.01 per reconciliation over 10k
       },
       exceptions: {
@@ -62,9 +87,9 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
   growth: {
     code: 'growth',
     name: 'Growth',
-    description: 'For growing businesses',
+    description: 'Perfect for mid-market SaaS, growing e-commerce',
     stripePriceId: process.env.STRIPE_PRICE_ID_GROWTH || undefined,
-    monthlyPrice: 900, // 100k × $0.01 - 10k free = $900
+    monthlyPrice: 99, // $99/month as documented
     limits: {
       reconcile: {
         monthlyVolume: 100000, // 100k reconciliations included
@@ -79,9 +104,9 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
   scale: {
     code: 'scale',
     name: 'Scale',
-    description: 'For high-volume operations',
+    description: 'Perfect for large e-commerce, enterprise SaaS',
     stripePriceId: process.env.STRIPE_PRICE_ID_SCALE || undefined,
-    monthlyPrice: 9900, // 1M × $0.01 - 10k free = $9,900
+    monthlyPrice: 299, // $299/month as documented
     limits: {
       reconcile: {
         monthlyVolume: 1000000, // 1M reconciliations included
@@ -100,7 +125,7 @@ export const planConfigs: Record<PlanCode, PlanConfig> = {
     monthlyPrice: 0, // Custom pricing
     limits: {
       reconcile: {
-        monthlyVolume: 0, // Custom volume
+        monthlyVolume: 0, // Custom volume (unlimited)
         pricePerReconciliation: 0.008, // Volume discount
       },
       exceptions: {
@@ -123,10 +148,10 @@ export function getPlanConfig(planCode: string): PlanConfig | null {
 }
 
 /**
- * Get default plan (starter)
+ * Get default plan (free)
  */
 export function getDefaultPlan(): PlanConfig {
-  return planConfigs.starter;
+  return planConfigs.free;
 }
 
 /**
@@ -135,13 +160,13 @@ export function getDefaultPlan(): PlanConfig {
 export function mapLegacyPlanId(planId: string): PlanCode {
   const mapping: Record<string, PlanCode> = {
     base: 'starter',
-    free: 'starter',
+    free: 'free',
     pro: 'growth',
     commercial: 'growth',
-    enterprise: 'scale',
+    enterprise: 'enterprise',
     scale: 'scale',
   };
-  return mapping[planId] || 'starter';
+  return mapping[planId] || 'free';
 }
 
 /**
@@ -150,7 +175,7 @@ export function mapLegacyPlanId(planId: string): PlanCode {
 export function getReconciliationVolumeLimit(planCode: PlanCode): number {
   const plan = planConfigs[planCode];
   if (!plan) {
-    return planConfigs.starter.limits.reconcile.monthlyVolume;
+    return planConfigs.free.limits.reconcile.monthlyVolume;
   }
   return plan.limits.reconcile.monthlyVolume;
 }
@@ -161,7 +186,7 @@ export function getReconciliationVolumeLimit(planCode: PlanCode): number {
 export function getExceptionThreshold(planCode: PlanCode, reconciliationVolume: number): number {
   const plan = planConfigs[planCode];
   if (!plan) {
-    return Math.floor(reconciliationVolume * planConfigs.starter.limits.exceptions.includedRate);
+    return Math.floor(reconciliationVolume * planConfigs.free.limits.exceptions.includedRate);
   }
   return Math.floor(reconciliationVolume * plan.limits.exceptions.includedRate);
 }
