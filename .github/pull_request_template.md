@@ -2,74 +2,33 @@
 
 ## Description
 
-<!-- Describe your changes in detail -->
+<!-- Describe your changes -->
 
-## Type of Change
+## Classification Check
 
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-- [ ] Refactoring
-- [ ] Performance improvement
-- [ ] Security fix
-
-## CI Verification Checklist
-
-**⚠️ CI MUST PASS BEFORE MERGE**
-
-- [ ] CI link: [View CI run](https://github.com/YOUR_REPO/actions/runs/YOUR_RUN_ID)
-- [ ] ✅ Repository integrity check passed (`repo-integrity`)
-- [ ] ✅ Lint and typecheck passed
-- [ ] ✅ Tests passed
-- [ ] ✅ Build succeeded
-- [ ] ✅ Vercel parity check passed (`vercel:parity`)
-- [ ] ✅ Canonical production check passed (`check:production`)
-- [ ] ✅ No workspace drift detected
-- [ ] ✅ No phantom package references
-- [ ] ✅ All scripts reference valid files
+- [ ] I've reviewed the classification report (will be auto-generated)
+- [ ] No SECRET_RISK files added
+- [ ] No INTERNAL_BUSINESS files in OSS_PUBLIC paths
+- [ ] OSS packages don't import proprietary code
 
 ## Testing
 
-<!-- Describe how you tested your changes -->
-
-- [ ] Local testing completed
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated
-- [ ] E2E tests added/updated (if applicable)
-- [ ] Manual testing completed
-
-## Deployment Notes
-
-<!-- Any special considerations for deployment? -->
-
-- [ ] Environment variables documented (if new ones added)
-- [ ] Database migrations included (if applicable)
-- [ ] Breaking changes documented
-- [ ] Rollback plan considered
+- [ ] Tests pass locally
+- [ ] Build succeeds locally
+- [ ] Classification check passes (`pnpm classify:strict`)
+- [ ] Smoke tests pass (if applicable)
 
 ## Checklist
 
-- [ ] Code follows project style guidelines
-- [ ] Self-review completed
-- [ ] Comments added for complex logic
-- [ ] Documentation updated (if applicable)
-- [ ] No console.logs or debug code left behind
-- [ ] No secrets or sensitive data committed
+- [ ] Code follows repository style guidelines
+- [ ] Documentation updated (if needed)
+- [ ] No breaking changes (or documented)
+- [ ] Environment variables documented (if new)
 
-## Related Issues
+## Related
 
-<!-- Link related issues -->
-
-Closes #
-
-## Screenshots (if applicable)
-
-<!-- Add screenshots for UI changes -->
+<!-- Link to related issues/PRs -->
 
 ---
 
-**Remember:** 
-- CI green = merge allowed ✅
-- CI red = merge impossible ❌
-- Never merge with failing CI checks
+**Note**: Classification check will run automatically. Review the PR comment for results.

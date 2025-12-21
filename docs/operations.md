@@ -1,275 +1,424 @@
-# Operations Guide
+# Operations
 
-This guide covers operational aspects of running Settler in production.
+**Last Updated:** 2025-01-20  
+**Status:** Production Runbook  
+**Purpose:** Operator experience and operational procedures
 
-## Monitoring
+## Overview
 
-### Health Checks
+This document defines **operational procedures** and **operator experience** for Settler. It is designed to help operators understand how to run and maintain the system.
 
-Settler provides several health check endpoints:
+**Philosophy:** If only the founder can debug it, it is not ready. Operations must be operable by humans under stress.
 
-- **Basic Health**: `GET /health` - Returns overall system health
-- **Liveness Probe**: `GET /health/live` - Always returns OK if process is alive
-- **Readiness Probe**: `GET /health/ready` - Returns OK only if dependencies are healthy
+---
 
-**Kubernetes Example:**
+## Operator Capabilities
 
-```yaml
-livenessProbe:
-  httpGet:
-    path: /health/live
-    port: 3000
-  initialDelaySeconds: 30
-  periodSeconds: 10
+### Health Monitoring
 
-readinessProbe:
-  httpGet:
-    path: /health/ready
-    port: 3000
-  initialDelaySeconds: 5
-  periodSeconds: 5
+**Endpoints:**
+- `/api/health` - Overall health with dependency checks
+- `/api/health/live` - Liveness probe (always OK if process alive)
+- `/api/health/ready` - Readiness probe (OK only if dependencies healthy)
+
+**Checks:**
+- Database connectivity
+- Redis connectivity
+- External API availability
+- Connection pool status
+
+**Usage:**
+```bash
+curl https://api.settler.io/api/health
 ```
 
-### Metrics
+---
 
-Settler exposes Prometheus-compatible metrics at `/metrics`:
+### Metrics & Observability
 
-- **HTTP Metrics**: Request count, latency, error rate by endpoint
-- **Business Metrics**: Reconciliation jobs, webhook deliveries, API usage
-- **System Metrics**: Database connections, Redis cache hit/miss, queue depth
+**Endpoints:**
+- `/api/metrics` - Prometheus-compatible metrics
+- `/api/observability` - Observability dashboard (internal)
 
-**Example Prometheus Scrape Config:**
+**Metrics:**
+- HTTP metrics (latency, error rate, request count)
+- Business metrics (reconciliations, webhook deliveries)
+- System metrics (connections, queue depth, cache hit/miss)
 
-```yaml
-scrape_configs:
-  - job_name: 'settler-api'
-    metrics_path: '/metrics'
-    static_configs:
-      - targets: ['api.settler.io:3000']
+**Usage:**
+```bash
+curl https://api.settler.io/api/metrics
 ```
+
+---
 
 ### Logging
 
-- **Format**: Structured JSON logs
-- **Levels**: ERROR, WARN, INFO, DEBUG
-- **Trace IDs**: Included in all log entries for request correlation
-- **PII Redaction**: Automatic redaction of sensitive data
+**Structured Logging:**
+- Winston with JSON output
+- Automatic PII redaction
+- Trace IDs for request correlation
+- Log levels: ERROR, WARN, INFO, DEBUG
 
-**Log Aggregation:**
+**Log Sources:**
+- Application logs (Vercel logs)
+- Error logs (Sentry)
+- Access logs (Vercel Analytics)
 
-Logs should be shipped to a centralized logging system (e.g., Datadog, Splunk, ELK stack) for analysis and alerting.
+**Access:**
+- Vercel dashboard (application logs)
+- Sentry dashboard (error logs)
+- Vercel Analytics (access logs)
+
+---
 
 ### Alerting
 
-Recommended alerts:
+**Alert Sources:**
+- Sentry (error alerts)
+- Vercel (deployment alerts)
+- Custom monitoring (health check failures)
 
-- **High Error Rate**: Error rate > 5% for 5 minutes
-- **High Latency**: P95 latency > 1s for 5 minutes
-- **Database Connection Pool Exhaustion**: Available connections < 2
-- **Redis Unavailable**: Redis health check fails
-- **High Memory Usage**: Memory usage > 80%
-- **High CPU Usage**: CPU usage > 80% for 10 minutes
+**Alert Channels:**
+- Email (critical alerts)
+- Slack (team alerts)
+- PagerDuty (on-call alerts, enterprise)
 
-## Scaling
+**Alert Thresholds:**
+- Critical: Immediate escalation
+- High: < 15 minutes
+- Medium: < 1 hour
+- Low: < 4 hours
 
-### Horizontal Scaling
+---
 
-Settler is stateless and can be horizontally scaled:
+## Operational Procedures
 
-- **API Servers**: Scale based on request rate and CPU usage
-- **Background Workers**: Scale based on queue depth
-- **Database**: Use read replicas for read-heavy workloads
+### Daily Operations
 
-### Vertical Scaling
+**Morning Checklist:**
+1. Check health endpoints
+2. Review error logs
+3. Check metrics dashboard
+4. Review alert notifications
+5. Check deployment status
 
-- **API Servers**: Increase CPU/memory for compute-intensive operations
-- **Database**: Increase CPU/memory/IOPS for larger datasets
-- **Redis**: Increase memory for larger cache
+**Evening Checklist:**
+1. Review daily metrics
+2. Check for unresolved alerts
+3. Review deployment logs
+4. Check backup status
+5. Document any issues
 
-### Auto-Scaling
+---
 
-**Kubernetes HPA Example:**
+### Weekly Operations
 
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: settler-api
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: settler-api
-  minReplicas: 2
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
-```
+**Weekly Tasks:**
+1. Review weekly metrics
+2. Review error trends
+3. Review performance trends
+4. Review security events
+5. Update runbooks if needed
 
-## Database Management
+**Weekly Reports:**
+- Error rate trends
+- Performance trends
+- Usage trends
+- Security events
 
-### Migrations
+---
 
-- **Local Development**: `npm run db:migrate:local`
-- **Production**: `npm run db:migrate:prod`
-- **Verification**: `npm run db:verify`
+### Monthly Operations
 
-**Migration Best Practices:**
+**Monthly Tasks:**
+1. Review monthly metrics
+2. Review cost trends
+3. Review capacity planning
+4. Review security posture
+5. Update documentation
 
-- Always test migrations in staging first
-- Run migrations during low-traffic periods
-- Have a rollback plan
-- Monitor migration execution time
+**Monthly Reports:**
+- Cost analysis
+- Capacity analysis
+- Security analysis
+- Performance analysis
 
-### Backups
+---
 
-- **Frequency**: Daily full backups, hourly incremental backups
-- **Retention**: 30 days for full backups, 7 days for incremental
-- **Testing**: Restore backups monthly to verify integrity
+## Deployment Procedures
 
-### Connection Pooling
+### Deployment Process
 
-- **Max Connections**: 20 per instance (configurable)
-- **Min Connections**: 5 per instance (configurable)
-- **Idle Timeout**: 30 seconds
-- **Monitor**: Track connection pool usage and adjust as needed
+**Pre-Deployment:**
+1. Run tests (unit, integration, e2e)
+2. Review changes
+3. Check for breaking changes
+4. Update documentation
 
-## Redis Management
+**Deployment:**
+1. Deploy to staging
+2. Verify staging deployment
+3. Run smoke tests
+4. Deploy to production
+5. Verify production deployment
 
-### Configuration
+**Post-Deployment:**
+1. Monitor health endpoints
+2. Monitor error logs
+3. Monitor metrics
+4. Verify functionality
+5. Document deployment
 
-- **TTL**: Default TTL for cache entries (configurable)
-- **Memory Limit**: Set appropriate memory limits
-- **Eviction Policy**: Use `allkeys-lru` for cache eviction
+---
 
-### Monitoring
+### Rollback Procedures
 
-- **Memory Usage**: Monitor Redis memory usage
-- **Hit Rate**: Track cache hit/miss ratio
-- **Connection Count**: Monitor active connections
-- **Latency**: Track Redis operation latency
+**Automatic Rollback:**
+- Health check failures trigger automatic rollback
+- Deployment failures trigger automatic rollback
 
-## Deployment
+**Manual Rollback:**
+1. Identify deployment to rollback
+2. Revert to previous version
+3. Verify rollback
+4. Monitor health endpoints
+5. Document rollback
 
-### Zero-Downtime Deployments
+---
 
-1. **Blue-Green Deployment**: Deploy new version alongside old version, then switch traffic
-2. **Rolling Updates**: Gradually replace old instances with new ones
-3. **Canary Releases**: Deploy to small percentage of traffic first
+## Monitoring & Alerting
 
-### Deployment Checklist
+### Key Metrics
 
-- [ ] Run database migrations (if any)
-- [ ] Verify environment variables are set
-- [ ] Run health checks
-- [ ] Monitor error rates
-- [ ] Verify metrics are being collected
-- [ ] Check logs for errors
+**Infrastructure:**
+- Database connection pool usage
+- Redis connection status
+- API response times (p50, p95, p99)
+- Error rates by endpoint
 
-### Rollback Procedure
+**Application:**
+- Authentication success rate
+- Webhook delivery success rate
+- Payment processing success rate
+- Feature flag evaluation rate
 
-1. Identify the issue
-2. Revert to previous deployment
-3. Verify system health
-4. Investigate root cause
-5. Document incident
+**Business:**
+- Active users
+- API usage
+- Revenue
+- Churn rate
 
-## Incident Response
+---
 
-### On-Call Rotation
+### Alert Thresholds
 
-- **Primary On-Call**: Handles incidents during business hours
-- **Secondary On-Call**: Handles incidents outside business hours
-- **Escalation**: Escalate to engineering lead if issue persists > 30 minutes
+**Critical Alerts (P0):**
+- Database unavailable: Immediate
+- Authentication system down: Immediate
+- Error rate > 10%: Immediate
 
-### Incident Runbook
+**High Alerts (P1):**
+- Error rate > 5%: < 15 minutes
+- API response time > 5 seconds: < 15 minutes
+- Webhook delivery failure rate > 10%: < 15 minutes
 
-See [SRE Runbook](../sre/SRE_RUNBOOK.md) for detailed incident response procedures.
+**Medium Alerts (P2):**
+- Error rate > 2%: < 1 hour
+- API response time > 2 seconds: < 1 hour
+- Feature flag update delay > 5 minutes: < 1 hour
 
-### Post-Incident Review
+---
 
-After resolving an incident:
+## Troubleshooting
 
-1. Document the incident (what happened, root cause, resolution)
-2. Identify improvements (prevention, detection, response)
-3. Update runbooks and documentation
-4. Share learnings with team
+### Common Issues
 
-## Performance Tuning
+**Database Connection Issues:**
+- Check Supabase status
+- Verify connection string
+- Check connection pool usage
+- Restart application if needed
 
-### Database Optimization
+**Redis Connection Issues:**
+- Check Upstash status
+- Verify connection string
+- Check Redis quota
+- System continues operating (graceful degradation)
 
-- **Indexes**: Ensure proper indexes on frequently queried columns
-- **Query Analysis**: Use `EXPLAIN ANALYZE` to identify slow queries
-- **Connection Pooling**: Adjust pool size based on load
-- **Vacuum**: Run `VACUUM ANALYZE` regularly
+**High Error Rates:**
+- Check error logs for patterns
+- Identify affected endpoints
+- Check for recent deployments
+- Rollback if needed
 
-### Caching Strategy
+**Performance Issues:**
+- Check response times
+- Check database query performance
+- Check cache hit rates
+- Check external API response times
 
-- **Cache Frequently Accessed Data**: User sessions, API keys, adapter configs
-- **Cache Invalidation**: Use tag-based invalidation for related data
-- **Cache Warming**: Pre-warm cache for predictable access patterns
+---
 
-### API Optimization
+### Debugging Procedures
 
-- **Response Compression**: Enable gzip compression
-- **Pagination**: Use cursor-based pagination for large datasets
-- **Field Selection**: Allow clients to select specific fields
-- **Rate Limiting**: Prevent abuse and ensure fair usage
+**Debugging Steps:**
+1. Reproduce issue
+2. Check logs for errors
+3. Check metrics for anomalies
+4. Test in staging if possible
+5. Fix issue
+6. Verify fix
+7. Deploy fix
+8. Monitor for recurrence
 
-## Security Operations
+**Debugging Tools:**
+- Logs (Vercel, Sentry)
+- Metrics (Prometheus)
+- Tracing (OpenTelemetry)
+- Health checks (endpoints)
 
-### Secret Management
+---
 
-- **Storage**: Use secret management service (AWS Secrets Manager, HashiCorp Vault)
-- **Rotation**: Rotate secrets regularly (every 90 days)
-- **Access Control**: Limit access to secrets based on role
-- **Audit**: Log all secret access
+## Capacity Planning
 
-### Security Monitoring
+### Resource Monitoring
 
-- **Failed Login Attempts**: Alert on multiple failed login attempts
-- **Unusual API Usage**: Detect unusual patterns in API usage
-- **Security Events**: Monitor security-related events (key rotation, permission changes)
+**Database:**
+- Connection pool usage
+- Query performance
+- Storage usage
+- Backup status
 
-### Compliance
+**Redis:**
+- Connection status
+- Cache hit rates
+- Memory usage
+- Quota usage
 
-- **Audit Logs**: Maintain audit logs for compliance requirements
-- **Data Retention**: Comply with data retention policies
-- **Access Reviews**: Regular reviews of user access and permissions
+**Application:**
+- CPU usage
+- Memory usage
+- Request rate
+- Error rate
 
-## Disaster Recovery
+---
 
-### Backup Strategy
+### Scaling Procedures
 
-- **Database**: Daily full backups, hourly incremental backups
-- **Configuration**: Version control for all configuration
-- **Secrets**: Secure backup of encryption keys
+**Horizontal Scaling:**
+- Serverless functions scale automatically
+- No manual scaling required
+- Scaling based on request rate
+
+**Vertical Scaling:**
+- Database scaling (Supabase)
+- Redis scaling (Upstash)
+- Application scaling (Vercel)
+
+**Scaling Triggers:**
+- High request rate
+- High error rate
+- High latency
+- Resource exhaustion
+
+---
+
+## Backup & Recovery
+
+### Backup Procedures
+
+**Database Backups:**
+- Daily backups (automated)
+- Weekly backups (automated)
+- Monthly backups (automated)
+- Point-in-time recovery (available)
+
+**Backup Retention:**
+- Daily backups: 30 days
+- Weekly backups: 12 weeks
+- Monthly backups: 12 months
+
+**Backup Verification:**
+- Backup success monitored
+- Backup restoration tested regularly
+- Backup integrity verified
+
+---
 
 ### Recovery Procedures
 
-1. **Database Recovery**: Restore from latest backup
-2. **Service Recovery**: Redeploy from version control
-3. **Data Recovery**: Restore from backup and replay events
+**Data Recovery:**
+1. Identify data to recover
+2. Select backup to restore
+3. Restore backup
+4. Verify restoration
+5. Notify users if needed
 
-### RTO/RPO Targets
+**Disaster Recovery:**
+1. Assess disaster scope
+2. Activate disaster recovery plan
+3. Restore from backups
+4. Verify system functionality
+5. Document disaster recovery
 
-- **RTO (Recovery Time Objective)**: 4 hours
-- **RPO (Recovery Point Objective)**: 1 hour
+---
 
-## Support
+## Security Operations
 
-- **Documentation**: [docs.settler.io](https://docs.settler.io)
-- **Issues**: [GitHub Issues](https://github.com/shardie-github/Settler-API/issues)
-- **Email**: support@settler.io
+### Security Monitoring
+
+**Security Events:**
+- Failed authentication attempts
+- Authorization failures
+- Unauthorized access attempts
+- Suspicious activity
+
+**Security Alerts:**
+- Critical security events: Immediate
+- High security events: < 15 minutes
+- Medium security events: < 1 hour
+
+---
+
+### Security Procedures
+
+**Incident Response:**
+1. Detect security incident
+2. Assess severity and scope
+3. Contain incident
+4. Investigate root cause
+5. Remediate
+6. Post-mortem
+
+**Vulnerability Management:**
+1. Monitor vulnerability alerts
+2. Assess severity and impact
+3. Test patches in staging
+4. Deploy patches to production
+5. Verify patch effectiveness
+
+---
+
+## Summary
+
+Settler's operations:
+- ✅ **Health Monitoring:** Health endpoints and dependency checks
+- ✅ **Metrics & Observability:** Prometheus-compatible metrics and observability dashboard
+- ✅ **Logging:** Structured logging with PII redaction
+- ✅ **Alerting:** Multi-channel alerting with thresholds
+- ✅ **Operational Procedures:** Daily, weekly, monthly checklists
+- ✅ **Deployment Procedures:** Automated deployment with rollback
+- ✅ **Monitoring & Alerting:** Key metrics and alert thresholds
+- ✅ **Troubleshooting:** Common issues and debugging procedures
+- ✅ **Capacity Planning:** Resource monitoring and scaling procedures
+- ✅ **Backup & Recovery:** Automated backups and recovery procedures
+- ✅ **Security Operations:** Security monitoring and incident response
+
+**Key Principles:**
+- Operations must be operable by humans under stress
+- Automation reduces human error
+- Monitoring enables proactive response
+- Documentation enables knowledge transfer
+
+**When in doubt, check health endpoints, review logs, and follow runbooks.**

@@ -1,4 +1,4 @@
-# Settler Architecture
+# Settler Architecture Documentation
 
 ## Overview
 
@@ -106,6 +106,12 @@ HTTP adapters that expose the application to the outside world.
 - Enables easy testing with mocks
 - Centralized in DI container (`infrastructure/di/Container.ts`)
 
+### Saga Pattern
+
+- Long-running transactions
+- Compensating actions for rollback
+- Event-driven coordination
+
 ### Multi-Tenancy
 
 - Row-level security (RLS) at database level
@@ -128,7 +134,7 @@ HTTP adapters that expose the application to the outside world.
 
 1. **API Key Authentication**
    - Hashed storage (bcrypt)
-   - Prefix-based lookup for performance (`sk_` prefix)
+   - Prefix-based lookup for performance (`rk_` prefix)
    - Scope-based permissions
    - Rate limiting per key
    - Stored in `api_keys` table
@@ -137,7 +143,7 @@ HTTP adapters that expose the application to the outside world.
    - Short-lived access tokens (15min default)
    - Refresh tokens (7 days default)
    - RS256 signing (production)
-   - Token rotation support
+   - Token rotation support (see Token Rotation section)
 
 ### Authorization
 
@@ -153,7 +159,7 @@ HTTP adapters that expose the application to the outside world.
 - **Input Validation**: Zod schemas for all inputs
 - **Output Sanitization**: XSS prevention, data redaction
 - **SSRF Protection**: Webhook URL validation
-- **CSRF Protection**: CSRF tokens for web UI
+- **CSRF Protection**: CSRF tokens for web UI (see CSRF Protection section)
 
 ## Observability
 
@@ -203,6 +209,7 @@ HTTP adapters that expose the application to the outside world.
 - Half-open state for testing
 - Prevents cascading failures
 - Per-service circuit breakers
+- Implementation: `infrastructure/resilience/circuit-breaker.ts`
 
 ### Idempotency
 
@@ -217,6 +224,7 @@ HTTP adapters that expose the application to the outside world.
 - Failed messages moved to DLQ after max retries
 - Manual inspection and retry
 - Prevents message loss
+- Implementation: `infrastructure/resilience/DeadLetterQueue.ts`
 
 ## Database Design
 
@@ -234,6 +242,7 @@ HTTP adapters that expose the application to the outside world.
 - Composite indexes for common queries
 - Partial indexes for active records
 - Optimized for read performance
+- Migration files: `packages/api/src/db/migrations/performance-indexes.sql`
 
 ### Transactions
 
@@ -242,20 +251,29 @@ HTTP adapters that expose the application to the outside world.
 - Rollback on errors
 - Transaction boundaries in application services
 
+### Materialized Views
+
+- Pre-computed reconciliation summaries
+- Refreshed periodically via background job
+- Improves query performance
+- Migration: `packages/api/src/db/migrations/materialized-views.sql`
+
 ## Performance Optimizations
 
 ### Caching
 
 - **Redis**: Primary cache for API responses, rate limiting, idempotency
 - **Memory Cache**: Fallback if Redis unavailable
-- **Cache Invalidation**: Tag-based invalidation
+- **Cache Invalidation**: Tag-based invalidation (`cache-invalidation.ts`)
 - **TTL**: Configurable TTL per cache key
+- **Advanced Strategies**: See Advanced Caching section
 
 ### Cursor Pagination
 
 - Efficient large dataset pagination
 - Base64-encoded cursors
 - Better performance than offset pagination
+- Implementation: `utils/pagination.ts`
 
 ### Query Optimization
 
@@ -310,6 +328,22 @@ HTTP adapters that expose the application to the outside world.
 - Real database and Redis
 - Location: `tests/` (Playwright)
 
+### Security Tests
+
+- SQL injection attempts
+- XSS payloads
+- Rate limit enforcement
+- Authorization boundaries
+- Location: `packages/api/src/__tests__/security/`
+
+### Load Tests
+
+- Artillery/k6 scripts
+- 100+ concurrent users
+- Measure p95 latency
+- Identify bottlenecks
+- Location: `tests/load/`
+
 ## Deployment
 
 ### Serverless-Ready
@@ -337,6 +371,14 @@ HTTP adapters that expose the application to the outside world.
 - Manual approval for production
 - Coverage threshold enforcement
 
+### Vercel
+
+- Serverless deployment
+- Edge functions for low latency
+- Automatic scaling
+- Environment variable management
+- Zero-downtime deployments
+
 ## Environment Variables
 
 See `config/env.schema.ts` for complete documentation.
@@ -352,9 +394,77 @@ See `config/env.schema.ts` for complete documentation.
 - `LOG_LEVEL` (default: `info`)
 - `OTLP_ENDPOINT` (distributed tracing)
 
+## Development Workflow
+
+### Local Development
+
+```bash
+# Start services
+docker-compose up -d  # PostgreSQL, Redis
+
+# Run migrations
+cd packages/api && npm run migrate
+
+# Start API server
+npm run dev
+```
+
+### Testing
+
+```bash
+npm run test              # Unit tests
+npm run test:integration  # Integration tests
+npm run test:e2e          # E2E tests
+npm run test:coverage     # Coverage report
+```
+
+### Building
+
+```bash
+npm run build     # TypeScript compilation
+npm run lint      # ESLint
+npm run typecheck # Type checking
+```
+
+## Advanced Features
+
+### Token Rotation
+
+Refresh tokens are rotated on each use to prevent token reuse attacks. See `infrastructure/security/token-rotation.ts`.
+
+### CSRF Protection
+
+Web UI endpoints are protected with CSRF tokens. See `middleware/csrf.ts`.
+
+### Advanced Caching
+
+- Tag-based cache invalidation
+- Cache warming strategies
+- Cache coherency checks
+- See `infrastructure/cache/` for implementations
+
+### Performance Profiling
+
+- Request duration tracking
+- Database query profiling
+- Memory usage monitoring
+- See `infrastructure/observability/profiling.ts`
+
+### OpenAPI Documentation
+
+Auto-generated from route handlers. Available at `/api/v1/docs` (Swagger UI).
+
+## Future Enhancements
+
+- GraphQL API layer
+- WebSocket support for real-time updates
+- Multi-region deployment
+- Event sourcing for audit logs
+- Advanced ML-based matching
+
 ## Related Documentation
 
-- [API Reference](./api.md) - Complete API documentation
-- [Getting Started](./getting-started.md) - Developer onboarding
-- [Security](../SECURITY.md) - Security practices
-- [Contributing](../CONTRIBUTING.md) - Contribution guidelines
+- [CONTRIBUTING.md](./docs/CONTRIBUTING.md) - Contribution guidelines
+- [README.md](./README.md) - Quick start and overview
+- [SECURITY.md](./SECURITY.md) - Security practices
+- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - Deployment instructions

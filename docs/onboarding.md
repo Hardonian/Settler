@@ -1,186 +1,273 @@
-# Settler Onboarding Guide
+# Customer Onboarding & Activation Engine
 
-Welcome to Settler! This guide will help you get started with reconciliation in minutes.
+Complete onboarding and activation system for Settler that guides new users through workspace creation, team invites, data connection, and first success in under 3 minutes.
 
-## Quick Start (5 Minutes)
+## Overview
 
-### Step 1: Sign Up and Get Your API Key
+The onboarding system provides:
+- **Multi-step wizard** at `/console/onboarding`
+- **Workspace creation** with slug validation
+- **Team invites** with role-based access control
+- **Activation checklist** showing progress
+- **Event tracking** with `trace_id` and `tenant_id`
+- **Demo mode** support without requiring secrets
+- **Production-ready** with proper error handling
 
-1. Visit [app.settler.io](https://app.settler.io)
-2. Sign up for a free account
-3. Navigate to Settings → API Keys
-4. Create a new API key
-5. Copy and securely store your API key
+## User Journey
 
-### Step 2: Install the SDK
+### 1. Sign Up → Create/Join Workspace
 
-**TypeScript/JavaScript:**
+New users sign up via Supabase Auth and land in the console. If they don't have a workspace, they're guided to create one:
 
-```bash
-npm install @settler/sdk
+```
+POST /api/workspaces
+{
+  "name": "My Company",
+  "slug": "my-company"
+}
 ```
 
-**Python:**
+The system:
+- Creates a `Tenant` record
+- Adds user as `owner` in `tenant_users`
+- Initializes `tenant_onboarding_progress`
+- Tracks `onboarding_started` event
 
-```bash
-pip install settler-sdk
+### 2. Add Teammates (Optional)
+
+Users can invite team members:
+
+```
+POST /api/workspaces/{workspaceId}/invites
+{
+  "email": "teammate@example.com",
+  "role": "member" // owner, admin, member, viewer
+}
 ```
 
-**Ruby:**
+Invites:
+- Generate secure token
+- Expire after 7 days
+- Can be accepted via `/invite/{token}`
+- Track `invite_sent` and `invite_accepted` events
 
-```bash
-gem install settler-sdk
-```
+### 3. Connect Data Source OR Upload Sample
 
-**Go:**
+Users can either:
+- **Connect data source**: Stripe, Shopify, etc. via playground
+- **Upload sample file**: CSV, JSON via receipts API
+- **Skip (Demo Mode)**: Continue without real data
 
-```bash
-go get github.com/settler/settler-go
-```
+### 4. Run First Reconciliation
 
-### Step 3: Create Your First Reconciliation Job
+Users execute their first reconciliation job via the playground. This completes the "First Success" path.
 
-**TypeScript Example:**
+### 5. View Results Dashboard
 
-```typescript
-import Settler from "@settler/sdk";
+Users land in the console dashboard with their results, completing activation.
 
-const client = new Settler({
-  apiKey: "sk_your_api_key",
-});
+## Onboarding Steps
 
-const job = await client.jobs.create({
-  name: "Shopify-Stripe Reconciliation",
-  source: {
-    adapter: "shopify",
-    config: {
-      apiKey: process.env.SHOPIFY_API_KEY,
-      shop: "your-shop",
-    },
-  },
-  target: {
-    adapter: "stripe",
-    config: {
-      apiKey: process.env.STRIPE_SECRET_KEY,
-    },
-  },
-  rules: {
-    matching: [
-      { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 },
-    ],
-  },
-});
-```
+The system tracks 5 steps:
 
-### Step 4: Run Reconciliation
+1. **create_workspace** (required)
+2. **add_teammates** (optional - can skip)
+3. **connect_data_source** (required - can skip for demo)
+4. **run_first_reconciliation** (required - can skip for demo)
+5. **view_results** (required)
 
-```typescript
-// Run the job
-await client.jobs.run(job.data.id);
+Progress is calculated as: `(completed_steps / 5) * 100`
 
-// Get results
-const report = await client.reports.get(job.data.id);
-console.log(`Matched: ${report.data.summary.matched}`);
-console.log(`Unmatched: ${report.data.summary.unmatched}`);
-```
+## API Endpoints
 
-### Step 5: Set Up Webhooks (Optional)
+### Workspaces
 
-```typescript
-await client.webhooks.create({
-  url: "https://your-app.com/webhooks/settler",
-  events: ["reconciliation.completed", "reconciliation.failed"],
-});
-```
+- `POST /api/workspaces` - Create workspace
+- `GET /api/workspaces` - List user's workspaces
 
-## Common Use Cases
+### Invites
 
-### E-commerce Order Reconciliation
+- `POST /api/workspaces/{workspaceId}/invites` - Create invite
+- `GET /api/workspaces/{workspaceId}/invites` - List invites
+- `GET /api/invite/{token}` - Get invite details
+- `POST /api/invite/{token}` - Accept invite
 
-Reconcile Shopify orders with Stripe payments:
+### Onboarding Progress
 
-```typescript
-const job = await client.jobs.create({
-  name: "Daily Order Reconciliation",
-  source: {
-    adapter: "shopify",
-    config: { apiKey: "...", shop: "..." },
-  },
-  target: {
-    adapter: "stripe",
-    config: { apiKey: "..." },
-  },
-  rules: {
-    matching: [
-      { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 },
-      { field: "date", type: "range", days: 1 },
-    ],
-  },
-  schedule: "0 2 * * *", // Daily at 2 AM
-});
-```
+- `GET /api/workspaces/{workspaceId}/onboarding` - Get progress
+- `POST /api/workspaces/{workspaceId}/onboarding/complete` - Complete step
 
-### SaaS Subscription Reconciliation
+## Database Schema
 
-Reconcile Stripe subscriptions with QuickBooks invoices:
+### Tables
 
-```typescript
-const job = await client.jobs.create({
-  name: "Monthly Subscription Reconciliation",
-  source: {
-    adapter: "stripe",
-    config: { apiKey: "..." },
-  },
-  target: {
-    adapter: "quickbooks",
-    config: { apiKey: "...", companyId: "..." },
-  },
-  rules: {
-    matching: [
-      { field: "subscription_id", type: "exact" },
-      { field: "amount", type: "exact" },
-      { field: "customer_email", type: "exact" },
-    ],
-  },
-  schedule: "0 0 1 * *", // First day of month
-});
-```
+- `tenants` - Workspace/tenant records
+- `tenant_users` - Membership with roles (owner, admin, member, viewer)
+- `workspace_invites` - Invite tokens and status
+- `tenant_onboarding_progress` - Per-user, per-tenant progress
+- `onboarding_events` - Event tracking with trace_id
 
-## Next Steps
+### Functions
 
-1. **Explore Adapters**: See [Adapter Guide](./adapters.md) for all available adapters
-2. **Custom Matching Rules**: Learn about advanced matching in [API Documentation](./api.md)
-3. **Set Up Monitoring**: Configure webhooks and alerts for reconciliation events
-4. **Review Reports**: Use the dashboard to analyze reconciliation results
+- `create_workspace_with_owner()` - Creates workspace and adds creator as owner
+- `complete_onboarding_step()` - Completes a step and updates progress
+- `track_onboarding_event()` - Records onboarding events
 
-## Getting Help
+## Event Tracking
 
-- **Documentation**: [docs.settler.io](https://docs.settler.io)
-- **Support**: support@settler.io
-- **Community**: [Discord](https://discord.gg/settler)
-- **GitHub**: [github.com/settler/settler](https://github.com/settler/settler)
+All onboarding actions are tracked with:
+
+- `tenant_id` - Workspace identifier
+- `user_id` - User identifier
+- `event_type` - Event name (onboarding_started, step_completed, activation_complete, etc.)
+- `step_id` - Step identifier
+- `trace_id` - Request correlation ID
+- `properties` - Additional JSON metadata
+
+### Event Types
+
+- `onboarding_started` - User starts onboarding
+- `step_completed` - User completes a step
+- `invite_sent` - User sends an invite
+- `invite_accepted` - User accepts an invite
+- `activation_complete` - User completes all required steps
+
+## Role-Based Access Control
+
+### Roles
+
+- **Owner** - Full access, can delete workspace
+- **Admin** - Can manage members, invites, settings
+- **Member** - Can create/edit resources
+- **Viewer** - Read-only access
+
+### Permissions
+
+- Workspace creation: Any authenticated user
+- Invite creation: Owner, Admin
+- Invite acceptance: User with matching email or Admin/Owner
+- Onboarding progress: User can view/update their own
+
+## RLS Policies
+
+Row Level Security policies ensure:
+- Users can only view workspaces they're members of
+- Users can only update their own onboarding progress
+- Admins/Owners can manage invites
+- Events are scoped to user's tenants
+
+## Demo Mode
+
+The system supports demo mode without requiring:
+- Real API keys
+- Data source connections
+- Actual reconciliation runs
+
+Users can skip optional steps and still complete onboarding.
+
+## Error Handling
+
+All errors include:
+- Clear error messages
+- `trace_id` for correlation
+- Graceful fallbacks
+- No dead ends
+
+## Environment Variables
+
+Required:
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon key
+- `SUPABASE_SERVICE_ROLE_KEY` - Service role key (server-only)
+- `DATABASE_URL` - PostgreSQL connection string
+
+Optional:
+- `NEXT_PUBLIC_APP_URL` - App URL for invite links
 
 ## Troubleshooting
 
-### Common Issues
+### Workspace Creation Fails
 
-**Issue: "Invalid API key"**
+1. Check database connection
+2. Verify slug is unique (check `tenants` table)
+3. Check RLS policies allow insert
+4. Review server logs with `trace_id`
 
-- Verify your API key is correct
-- Check that you're using the correct environment (production vs. development)
+### Invite Not Working
 
-**Issue: "Adapter connection failed"**
+1. Verify invite token is valid and not expired
+2. Check user email matches invite email
+3. Verify RLS policies allow invite acceptance
+4. Check `workspace_invites` table status
 
-- Verify your adapter credentials are correct
-- Check network connectivity to the adapter's API
-- Review adapter-specific requirements in [Adapter Guide](./adapters.md)
+### Onboarding Progress Not Updating
 
-**Issue: "No matches found"**
+1. Verify user is member of workspace
+2. Check `tenant_onboarding_progress` table
+3. Verify Supabase functions are deployed
+4. Check event tracking in `onboarding_events`
 
-- Review your matching rules
-- Check that source and target data formats match
-- Verify date ranges and filters
+### Events Not Tracking
 
-For more troubleshooting help, see [Troubleshooting Guide](./troubleshooting.md).
+1. Verify `onboarding_events` table exists
+2. Check RLS policies allow insert
+3. Verify `trace_id` is being passed
+4. Review Supabase function logs
+
+## Testing
+
+Run Playwright tests:
+
+```bash
+npm run test:e2e -- tests/e2e/onboarding-flow.spec.ts
+```
+
+Tests cover:
+- Complete onboarding flow
+- Workspace creation
+- Error handling
+- Event tracking
+- Invite flow
+
+## Migration
+
+Apply database migration:
+
+```bash
+supabase migration up
+# or
+npm run db:migrate:local
+```
+
+The migration creates:
+- `workspace_invites` table
+- `tenant_onboarding_progress` table
+- `onboarding_events` table
+- RLS policies
+- Helper functions
+
+## First Success Path
+
+The "First Success" path (<3 minutes) requires:
+1. Create workspace (~30s)
+2. Skip teammates (~5s)
+3. Connect data OR upload sample (~60s)
+4. Run reconciliation (~60s)
+5. View results (~5s)
+
+Total: ~2.5 minutes
+
+## Next Steps
+
+After onboarding:
+- Users land in console dashboard
+- Activation checklist shows remaining steps
+- Guided tour highlights key features
+- Support widget available for help
+
+## Related Documentation
+
+- [Console Overview](/docs/CONSOLE.md)
+- [Multi-Tenancy](/docs/MULTI_TENANCY.md)
+- [Event Tracking](/docs/EVENT_TRACKING.md)
+- [RBAC](/docs/RBAC.md)
