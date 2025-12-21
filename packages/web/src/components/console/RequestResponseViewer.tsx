@@ -108,7 +108,7 @@ export function RequestResponseViewer({
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline">{request.method}</Badge>
-                      <code className="text-sm font-mono text-slate-700 dark:text-slate-300">
+                      <code className="text-sm font-mono text-slate-700 dark:text-slate-200 leading-[1.5]">
                         {request.url}
                       </code>
                     </div>
@@ -118,8 +118,8 @@ export function RequestResponseViewer({
                   <div>
                     <p className="text-sm font-medium mb-2">Headers:</p>
                     <div className="relative">
-                      <pre className="p-3 bg-slate-900 text-slate-100 rounded text-xs overflow-x-auto">
-                        <code>{formatJSON(request.headers)}</code>
+                      <pre className="p-3 bg-slate-900 dark:bg-slate-950 text-slate-100 dark:text-slate-200 rounded text-xs overflow-x-auto leading-[1.5]">
+                        <code className="font-mono">{formatJSON(request.headers)}</code>
                       </pre>
                       <CopyButton
                         text={formatJSON(request.headers)}
@@ -134,11 +134,11 @@ export function RequestResponseViewer({
                     <p className="text-sm font-medium mb-2">Body:</p>
                     <div className="relative">
                       <pre 
-                        className="p-3 bg-slate-900 text-slate-100 rounded text-xs overflow-x-auto max-h-96 overflow-y-auto"
+                        className="p-3 bg-slate-900 dark:bg-slate-950 text-slate-100 dark:text-slate-200 rounded text-xs overflow-x-auto max-h-96 overflow-y-auto leading-[1.5]"
                         role="log"
                         aria-label="Request body"
                       >
-                        <code>{String(formatJSON(request.body))}</code>
+                        <code className="font-mono">{String(formatJSON(request.body))}</code>
                       </pre>
                       <CopyButton
                         text={formatJSON(request.body)}
@@ -148,7 +148,7 @@ export function RequestResponseViewer({
                       />
                     </div>
                     {formatJSON(request.body).length > 10000 && (
-                      <p className="text-xs text-slate-500 mt-2">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-[1.5]">
                         Large request ({formatJSON(request.body).length.toLocaleString()} characters)
                       </p>
                     )}
@@ -156,7 +156,7 @@ export function RequestResponseViewer({
                 )}
               </div>
             ) : (
-              <div className="text-center py-8 text-slate-500 text-sm">
+              <div className="text-center py-8 text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
                 No request data available
               </div>
             )}
@@ -171,7 +171,7 @@ export function RequestResponseViewer({
                       <Badge className={cn('text-white', getStatusColor(response.status))}>
                         {response.status}
                       </Badge>
-                      <span className="text-slate-600 dark:text-slate-400">
+                      <span className="text-slate-600 dark:text-slate-300 leading-[1.5]">
                         {response.statusText}
                       </span>
                     </div>
@@ -187,8 +187,8 @@ export function RequestResponseViewer({
                   <div>
                     <p className="text-sm font-medium mb-2">Headers:</p>
                     <div className="relative">
-                      <pre className="p-3 bg-slate-900 text-slate-100 rounded text-xs overflow-x-auto">
-                        <code>{formatJSON(response.headers)}</code>
+                      <pre className="p-3 bg-slate-900 dark:bg-slate-950 text-slate-100 dark:text-slate-200 rounded text-xs overflow-x-auto leading-[1.5]">
+                        <code className="font-mono">{formatJSON(response.headers)}</code>
                       </pre>
                       <CopyButton
                         text={formatJSON(response.headers)}
@@ -203,11 +203,11 @@ export function RequestResponseViewer({
                     <p className="text-sm font-medium mb-2">Body:</p>
                     <div className="relative">
                       <pre 
-                        className="p-3 bg-slate-900 text-slate-100 rounded text-xs overflow-x-auto max-h-96 overflow-y-auto"
+                        className="p-3 bg-slate-900 dark:bg-slate-950 text-slate-100 dark:text-slate-200 rounded text-xs overflow-x-auto max-h-96 overflow-y-auto leading-[1.5]"
                         role="log"
                         aria-label="Response body"
                       >
-                        <code>{String(formatJSON(response.body))}</code>
+                        <code className="font-mono">{String(formatJSON(response.body))}</code>
                       </pre>
                       <CopyButton
                         text={formatJSON(response.body)}
@@ -217,7 +217,7 @@ export function RequestResponseViewer({
                       />
                     </div>
                     {formatJSON(response.body).length > 10000 && (
-                      <p className="text-xs text-slate-500 mt-2">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-[1.5]">
                         Large response ({formatJSON(response.body).length.toLocaleString()} characters)
                       </p>
                     )}
@@ -225,7 +225,7 @@ export function RequestResponseViewer({
                 )}
               </div>
             ) : (
-              <div className="text-center py-8 text-slate-500 text-sm">
+              <div className="text-center py-8 text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
                 No response data available
               </div>
             )}
@@ -237,11 +237,11 @@ export function RequestResponseViewer({
                 <div className="flex items-start gap-3">
                   <XCircle className="w-5 h-5 text-red-600 mt-0.5" />
                   <div className="flex-1">
-                    <p className="font-medium text-red-900 dark:text-red-300 mb-1">
+                    <p className="font-medium text-red-900 dark:text-red-200 mb-1 leading-[1.5]">
                       {error.message}
                     </p>
                     {error.code && (
-                      <p className="text-sm text-red-700 dark:text-red-400 font-mono">
+                      <p className="text-sm text-red-700 dark:text-red-300 font-mono leading-[1.5]">
                         Code: {error.code}
                       </p>
                     )}

@@ -48,6 +48,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             "disabled:cursor-not-allowed disabled:opacity-50",
             "transition-[border-color,background-color,color,box-shadow] duration-200 ease-out",
             "motion-reduce:transition-none",
+            "leading-[1.5] resize-y",
             error && "border-destructive focus-visible:ring-destructive",
             !error && "border-input",
             className
@@ -60,7 +61,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         {error && errorMessage && (
           <p
             id={errorId}
-            className="mt-1.5 text-sm text-destructive font-medium"
+            className="mt-1.5 text-sm text-destructive font-medium leading-[1.5]"
             role="alert"
             aria-live="polite"
           >
@@ -68,7 +69,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           </p>
         )}
         {helperText && !error && (
-          <p id={helperId} className="mt-1.5 text-sm text-muted-foreground">
+          <p id={helperId} className="mt-1.5 text-sm text-muted-foreground leading-[1.5]">
             {helperText}
           </p>
         )}

@@ -54,6 +54,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       'inline-flex items-center justify-center gap-2',
       'rounded-md text-sm font-medium',
       'ring-offset-background',
+      // Typography: ensure minimum line-height for readability
+      'leading-[1.4]',
+      // Text wrapping for long button labels
+      'whitespace-normal break-words',
       // Enhanced transitions for all interactive properties
       'transition-[background-color,color,transform,box-shadow,border-color] duration-100 ease-out',
       // Focus styles - visible and accessible
@@ -106,9 +110,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const sizes = {
-      sm: 'h-9 rounded-md px-3 text-sm',
-      default: 'h-10 px-4 py-2',
-      lg: 'h-11 rounded-md px-8 text-base',
+      sm: 'min-h-9 rounded-md px-3 text-sm py-2',
+      default: 'min-h-10 px-4 py-2',
+      lg: 'min-h-11 rounded-md px-8 text-base py-3',
       icon: 'h-10 w-10',
     };
 

@@ -70,8 +70,8 @@ export default function PlaygroundOverview() {
     <div className="space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Developer Playground</h2>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-[1.4]">Developer Playground</h2>
+          <p className="text-slate-600 dark:text-slate-300 mt-2 leading-[1.5]">
             Interactive tools to explore and test the Settler API capabilities.
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function PlaygroundOverview() {
                 <CardDescription className="mb-4 text-base">
                   {item.description}
                 </CardDescription>
-                <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center text-sm text-slate-600 dark:text-slate-300 leading-[1.5]">
                   Try it now
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </div>

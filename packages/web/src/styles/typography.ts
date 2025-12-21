@@ -49,14 +49,13 @@ export const textAlign = {
 
 /**
  * Line height utilities
+ * Enforced minimum: 1.4 for accessibility and readability
  */
 export const lineHeights = {
-  none: 'leading-none',
-  tight: 'leading-tight',
-  snug: 'leading-snug',
-  normal: 'leading-normal',
-  relaxed: 'leading-relaxed',
-  loose: 'leading-loose',
+  tight: 'leading-[1.4]', // Minimum safe line-height (was 1.25)
+  normal: 'leading-normal', // 1.5
+  relaxed: 'leading-relaxed', // 1.75
+  loose: 'leading-loose', // 2.0
 } as const;
 
 /**
@@ -73,14 +72,15 @@ export const letterSpacing = {
 
 /**
  * Heading component styles
+ * All headings use minimum line-height of 1.4 for accessibility
  */
 export const headingStyles = {
-  h1: cn('text-4xl font-bold leading-tight tracking-tight'),
-  h2: cn('text-3xl font-bold leading-tight tracking-tight'),
-  h3: cn('text-2xl font-semibold leading-tight tracking-tight'),
-  h4: cn('text-xl font-semibold leading-tight tracking-tight'),
-  h5: cn('text-lg font-semibold leading-tight tracking-tight'),
-  h6: cn('text-base font-semibold leading-tight tracking-tight'),
+  h1: cn('text-4xl font-bold leading-[1.4] tracking-tight'),
+  h2: cn('text-3xl font-bold leading-[1.4] tracking-tight'),
+  h3: cn('text-2xl font-semibold leading-[1.4] tracking-tight'),
+  h4: cn('text-xl font-semibold leading-[1.4] tracking-tight'),
+  h5: cn('text-lg font-semibold leading-[1.4] tracking-tight'),
+  h6: cn('text-base font-semibold leading-[1.4] tracking-tight'),
 } as const;
 
 /**
