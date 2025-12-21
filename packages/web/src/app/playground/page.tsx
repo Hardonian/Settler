@@ -217,7 +217,7 @@ console.log("Report:", report.data.summary);
                 <textarea
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  className="w-full min-h-[500px] p-4 font-mono text-sm border border-slate-300 dark:border-slate-700 rounded-md bg-slate-900 dark:bg-slate-950 text-green-300 dark:text-green-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none leading-[1.5]"
+                  className="w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] p-4 font-mono text-sm border border-slate-300 dark:border-slate-700 rounded-md bg-slate-900 dark:bg-slate-950 text-green-300 dark:text-green-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-y leading-[1.5]"
                   style={{ lineHeight: '1.5' }}
                   spellCheck={false}
                   aria-label="Code editor"
@@ -247,7 +247,7 @@ console.log("Report:", report.data.summary);
               </CardHeader>
               <CardContent>
                 <div
-                  className="w-full min-h-[500px] p-4 bg-slate-900 dark:bg-slate-950 text-green-300 dark:text-green-400 font-mono text-sm rounded-md overflow-auto border border-slate-300 dark:border-slate-700"
+                  className="w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] p-4 bg-slate-900 dark:bg-slate-950 text-green-300 dark:text-green-400 font-mono text-sm rounded-md overflow-auto border border-slate-300 dark:border-slate-700"
                   role="log"
                   aria-label="Code execution output"
                 >
