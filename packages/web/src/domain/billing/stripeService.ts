@@ -334,7 +334,7 @@ export async function syncSubscription(stripeSubscription: Stripe.Subscription):
   }
 
   // Map to legacy planId for compatibility
-  const planIdMap: Record<PlanCode, string> = {
+  const planIdMap: Partial<Record<PlanCode, string>> = {
     starter: 'base',
     growth: 'pro',
     scale: 'enterprise',
