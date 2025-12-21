@@ -67,7 +67,10 @@ export function getRetentionPolicy(tierId: string): RetentionPolicy {
   
   const mappedTier = tierMap[tierId] || tierId;
   const policy = RETENTION_POLICIES[mappedTier];
-  return policy ?? RETENTION_POLICIES.free;
+  if (policy) {
+    return policy;
+  }
+  return RETENTION_POLICIES.free;
 }
 
 /**
