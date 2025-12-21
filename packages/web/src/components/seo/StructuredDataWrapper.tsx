@@ -3,7 +3,7 @@
  * Wraps structured data schemas for SEO
  */
 
-import { StructuredData } from '@/components/StructuredData';
+import { StructuredData as StructuredDataComponent } from '@/components/StructuredData';
 import {
   generateProductSchema,
   generateBreadcrumbSchema,
@@ -48,5 +48,5 @@ export function StructuredDataWrapper({ type, data }: StructuredDataWrapperProps
       return null;
   }
 
-  return <StructuredData data={schema} />;
+  return <StructuredDataComponent data={schema} />;
 }

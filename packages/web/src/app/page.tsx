@@ -13,7 +13,7 @@ import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
-import { RefreshCw, FileText, Flag, Calculator, ArrowRight, LayoutTemplate, CheckCircle2, Sparkles } from "lucide-react";
+import { RefreshCw, FileText, Flag, Calculator, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 // Dynamic imports for new landing components (code splitting)
 const FeatureShowcase = dynamic(() => import("@/components/landing/FeatureShowcase").then(mod => ({ default: mod.FeatureShowcase })), { 
   ssr: true,
@@ -368,7 +368,7 @@ if (flag.value) { /* ... */ }`;
                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden opacity-50 blur-[1px] group-hover:opacity-75 group-hover:blur-0 group-focus-within:opacity-75 group-focus-within:blur-0 transition-all duration-500">
                   {/* Placeholder for architecture preview image/diagram */}
                   <div className="bg-slate-100 dark:bg-slate-800 h-[200px] sm:h-[300px] w-full flex items-center justify-center" role="img" aria-label="Architecture diagram placeholder">
-                    <LayoutTemplate className="w-12 h-12 sm:w-16 sm:h-16 text-slate-300" aria-hidden="true" />
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 text-slate-300" aria-hidden="true" />
                   </div>
                </div>
              </Link>

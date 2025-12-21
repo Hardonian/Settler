@@ -10,5 +10,5 @@ export function OnboardingProgressClient() {
     return null; // Or show loading skeleton
   }
 
-  return <OnboardingProgress progress={progress || undefined} nextStep={nextStep || undefined} />;
+  return <OnboardingProgress progress={progress ?? undefined} nextStep={nextStep ?? undefined} />;
 }
