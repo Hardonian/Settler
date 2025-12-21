@@ -123,14 +123,16 @@ function generateComprehensiveReport(reports: DOMRealityReport[]): Comprehensive
       }
     });
 
+    const status: 'pass' | 'fail' | 'warning' =
+      routeCriticalIssues > 0
+        ? 'fail'
+        : routeWarnings > 0
+        ? 'warning'
+        : 'pass';
+    
     return {
       route: report.route,
-      status:
-        routeCriticalIssues > 0
-          ? 'fail'
-          : routeWarnings > 0
-          ? 'warning'
-          : 'pass',
+      status,
       issues: routeIssues.length,
       criticalIssues: routeCriticalIssues,
       metrics: report.metrics,
