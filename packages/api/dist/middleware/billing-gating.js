@@ -15,25 +15,43 @@ exports.isPilotExpired = isPilotExpired;
 exports.getPilotDaysRemaining = getPilotDaysRemaining;
 const client_1 = require("../infrastructure/supabase/client");
 const logger_1 = require("../utils/logger");
-// Plan limits configuration
+// Plan limits configuration (aligned with pricing page)
 const PLAN_LIMITS = {
-    base: {
-        reconciliation_jobs: 10000,
-        api_requests: 100000,
-        webhook_events: 50000,
-        db_queries: 500000,
-        ai_requests: 1000,
-        auth_users: 1000,
-        storage_gb: 10,
+    free: {
+        reconciliation_jobs: 1000,
+        api_requests: 10000,
+        webhook_events: 5000,
+        db_queries: 50000,
+        ai_requests: 100,
+        auth_users: 100,
+        storage_gb: 1,
     },
-    pro: {
+    starter: {
         reconciliation_jobs: 50000,
         api_requests: 500000,
         webhook_events: 250000,
         db_queries: 2500000,
         ai_requests: 5000,
         auth_users: 5000,
+        storage_gb: 10,
+    },
+    growth: {
+        reconciliation_jobs: 500000,
+        api_requests: 5000000,
+        webhook_events: 2500000,
+        db_queries: 25000000,
+        ai_requests: 50000,
+        auth_users: 50000,
         storage_gb: 50,
+    },
+    scale: {
+        reconciliation_jobs: 5000000,
+        api_requests: 50000000,
+        webhook_events: 25000000,
+        db_queries: 250000000,
+        ai_requests: 500000,
+        auth_users: 500000,
+        storage_gb: 100,
     },
     enterprise: {
         reconciliation_jobs: -1, // unlimited
@@ -42,7 +60,26 @@ const PLAN_LIMITS = {
         db_queries: -1,
         ai_requests: -1,
         auth_users: -1,
-        storage_gb: 100,
+        storage_gb: 1000,
+    },
+    // Legacy plan names (for backward compatibility)
+    base: {
+        reconciliation_jobs: 50000, // Maps to starter
+        api_requests: 500000,
+        webhook_events: 250000,
+        db_queries: 2500000,
+        ai_requests: 5000,
+        auth_users: 5000,
+        storage_gb: 10,
+    },
+    pro: {
+        reconciliation_jobs: 500000, // Maps to growth
+        api_requests: 5000000,
+        webhook_events: 2500000,
+        db_queries: 25000000,
+        ai_requests: 50000,
+        auth_users: 50000,
+        storage_gb: 50,
     },
 };
 // Feature gates configuration
@@ -240,9 +277,14 @@ function planMeetsRequirement(userPlan, requiredPlan) {
         return true;
     }
     const planHierarchy = {
-        base: 1,
-        pro: 2,
-        enterprise: 3,
+        free: 0,
+        starter: 1,
+        growth: 2,
+        scale: 3,
+        enterprise: 4,
+        // Legacy plan names (for backward compatibility)
+        base: 1, // Maps to starter
+        pro: 2, // Maps to growth
     };
     const userPlanLevel = planHierarchy[userPlan] || 0;
     const requiredPlanLevel = planHierarchy[requiredPlan] || 0;
@@ -333,7 +375,8 @@ function featureGate(featureName) {
                 const isPilot = isPilotSubscription(subscription);
                 if (!isPilot) {
                     const currentUsage = await getCurrentUsage(billingAccount.id, gate.requiresUsage.eventType, subscription);
-                    const planLimits = PLAN_LIMITS[subscription.plan_id || "base"] || PLAN_LIMITS.base;
+                    const planId = subscription.plan_id || "free";
+                    const planLimits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
                     if (!planLimits) {
                         return res.status(500).json({
                             error: "Internal Server Error",
@@ -399,8 +442,9 @@ async function checkUsageQuotaForEvent(userId, eventType, quantity = 1) {
         }
         // Get current usage
         const currentUsage = await getCurrentUsage(billingAccount.id, eventType, subscription);
-        // Get plan limits
-        const planLimits = PLAN_LIMITS[subscription.plan_id || "base"] || PLAN_LIMITS.base;
+        // Get plan limits (map legacy plan names)
+        const planId = subscription.plan_id || "free";
+        const planLimits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
         if (!planLimits) {
             (0, logger_1.logError)("Plan limits not found", new Error(`Plan limits not configured for plan: ${subscription.plan_id || "base"}`));
             return { allowed: true }; // Fail open

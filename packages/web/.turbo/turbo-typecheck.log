@@ -6,16 +6,3 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck
 > tsc --noEmit --incremental
 
-src/__tests__/services/cost-signal-engine.test.ts(5,32): error TS6133: 'beforeEach' is declared but its value is never read.
-src/__tests__/services/cost-signal-engine.test.ts(5,44): error TS6133: 'vi' is declared but its value is never read.
-src/__tests__/services/cost-signal-engine.test.ts(5,54): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
-src/__tests__/services/cost-signal-engine.test.ts(6,48): error TS2307: Cannot find module '../../../../ops/cost_baselines' or its corresponding type declarations.
-src/__tests__/services/pivot-engine.test.ts(5,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
-src/shared/db/prismaClient.ts(82,7): error TS6133: 'hasDatabaseUrl' is declared but its value is never read.
-npm error Lifecycle script `typecheck` failed with error:
-npm error code 1
-npm error path /workspace/packages/web
-npm error workspace @settler/web@1.0.0
-npm error location /workspace/packages/web
-npm error command failed
-npm error command sh -c tsc --noEmit --incremental
