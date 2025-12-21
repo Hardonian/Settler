@@ -39,14 +39,15 @@ export async function GET(request: NextRequest) {
           .eq('billing_account_id', account.id)
           .gte('created_at', startDate.toISOString())
           .lte('created_at', endDate.toISOString())
-          .not('responded_at', 'is', null)
-          .catch(() => ({ data: null }));
+          .not('responded_at', 'is', null);
 
         const totalTickets = tickets?.length || 0;
         const slaMet = tickets?.filter(t => t.sla_met === true).length || 0;
         const slaMissed = tickets?.filter(t => t.sla_met === false).length || 0;
         const slaPercentage = totalTickets > 0 ? (slaMet / totalTickets) * 100 : 0;
-        const avgResponseTime = tickets?.reduce((sum, t) => sum + (t.response_time_hours || 0), 0) / totalTickets || 0;
+        const avgResponseTime = totalTickets > 0 
+          ? (tickets?.reduce((sum, t) => sum + (t.response_time_hours || 0), 0) || 0) / totalTickets 
+          : 0;
 
         slaMetrics.push({
           billing_account_id: account.id,
@@ -63,12 +64,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Get current violations
-    const { data: violations } = await supabase
-      .from('support_tickets')
-      .select('id')
-      .eq('status', 'open')
-      .eq('sla_violated', true)
-      .catch(() => ({ data: null }));
+    let violations = null;
+    try {
+      const result = await supabase
+        .from('support_tickets')
+        .select('id')
+        .eq('status', 'open')
+        .eq('sla_violated', true);
+      violations = result.data;
+    } catch {
+      // Table doesn't exist yet, ignore
+      violations = null;
+    }
 
     return NextResponse.json({
       period: {

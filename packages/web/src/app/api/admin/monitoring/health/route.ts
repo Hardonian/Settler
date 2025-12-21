@@ -21,22 +21,29 @@ export async function GET(request: NextRequest) {
     }
 
     // Get basic system metrics
-    const { data: customers, error: customersError } = await supabase
+    const { data: customers } = await supabase
       .from('billing_accounts')
       .select('id, status')
       .eq('status', 'active')
       .is('deleted_at', null);
 
-    const { data: subscriptions, error: subscriptionsError } = await supabase
+    const { data: subscriptions } = await supabase
       .from('subscriptions')
       .select('id, status')
       .in('status', ['active', 'trialing']);
 
-    const { data: tickets, error: ticketsError } = await supabase
-      .from('support_tickets')
-      .select('id, status, sla_violated')
-      .eq('status', 'open')
-      .catch(() => ({ data: null, error: null })); // Table might not exist yet
+    // Table might not exist yet, so handle gracefully
+    let tickets = null;
+    try {
+      const result = await supabase
+        .from('support_tickets')
+        .select('id, status, sla_violated')
+        .eq('status', 'open');
+      tickets = result.data;
+    } catch {
+      // Table doesn't exist yet, ignore
+      tickets = null;
+    }
 
     const activeCustomers = customers?.length || 0;
     const activeSubscriptions = subscriptions?.length || 0;

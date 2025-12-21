@@ -20,11 +20,17 @@ export async function GET(request: NextRequest) {
     }
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const { data: tickets } = await supabase
-      .from('support_tickets')
-      .select('status, priority, sla_met, created_at')
-      .gte('created_at', thirtyDaysAgo.toISOString())
-      .catch(() => ({ data: null }));
+    let tickets = null;
+    try {
+      const result = await supabase
+        .from('support_tickets')
+        .select('status, priority, sla_met, created_at')
+        .gte('created_at', thirtyDaysAgo.toISOString());
+      tickets = result.data;
+    } catch {
+      // Table doesn't exist yet, ignore
+      tickets = null;
+    }
 
     const ticketMetrics = {
       total: tickets?.length || 0,

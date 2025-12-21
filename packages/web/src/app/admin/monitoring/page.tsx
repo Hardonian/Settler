@@ -163,8 +163,8 @@ export default function MonitoringDashboard() {
     );
   }
 
-  const overallSlaPercentage = sla && sla.accounts.length > 0
-    ? sla.accounts.reduce((sum, a) => sum + a.sla_percentage, 0) / sla.accounts.length
+  const overallSlaPercentage = sla && sla.accounts && sla.accounts.length > 0
+    ? sla.accounts.reduce((sum, a) => sum + (a.sla_percentage || 0), 0) / sla.accounts.length
     : 0;
 
   return (
@@ -266,7 +266,7 @@ export default function MonitoringDashboard() {
               ${(unitEconomics?.mrr || 0).toLocaleString()}
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              ARPU: ${(unitEconomics?.calculated_metrics.arpu || 0).toFixed(2)}
+              ARPU: ${((unitEconomics?.calculated_metrics?.arpu) || 0).toFixed(2)}
             </p>
           </CardContent>
         </Card>
@@ -297,7 +297,7 @@ export default function MonitoringDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(unitEconomics?.usage.total_reconciliations_30d || 0).toLocaleString()}
+              {((unitEconomics?.usage?.total_reconciliations_30d) || 0).toLocaleString()}
             </div>
             <p className="text-xs text-slate-500 mt-1">Reconciliations</p>
           </CardContent>
@@ -395,8 +395,8 @@ export default function MonitoringDashboard() {
                         {account.total_tickets} tickets
                       </div>
                     </div>
-                    <Badge variant={account.sla_percentage >= 95 ? 'default' : 'destructive'}>
-                      {account.sla_percentage.toFixed(1)}%
+                    <Badge variant={(account.sla_percentage || 0) >= 95 ? 'default' : 'destructive'}>
+                      {(account.sla_percentage || 0).toFixed(1)}%
                     </Badge>
                   </div>
                   <div className="grid grid-cols-3 gap-4 mt-2 text-sm">
@@ -410,7 +410,7 @@ export default function MonitoringDashboard() {
                     </div>
                     <div>
                       <div className="text-slate-500">Avg Response</div>
-                      <div className="font-semibold">{account.avg_response_time_hours.toFixed(1)}h</div>
+                      <div className="font-semibold">{(account.avg_response_time_hours || 0).toFixed(1)}h</div>
                     </div>
                   </div>
                 </div>

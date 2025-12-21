@@ -4,7 +4,7 @@
  * Checks marketing materials for prohibited language and overly strong claims.
  */
 
-import { readFileSync, readdirSync, statSync } from 'fs';
+import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
 import { join } from 'path';
 
 interface Violation {

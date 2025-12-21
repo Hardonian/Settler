@@ -41,14 +41,20 @@ export async function GET(request: NextRequest) {
     }
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const { data: usage } = await supabase
-      .from('usage_aggregate_daily')
-      .select('event_type, total_quantity')
-      .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
-      .catch(() => ({ data: null }));
+    let usage = null;
+    try {
+      const result = await supabase
+        .from('usage_aggregate_daily')
+        .select('event_type, total_quantity')
+        .gte('date', thirtyDaysAgo.toISOString().split('T')[0]);
+      usage = result.data;
+    } catch {
+      // Table might not exist, ignore
+      usage = null;
+    }
 
     const totalReconciliations = usage?.reduce((sum, u) => {
-      if (u.event_type === 'reconciliation_job' || u.event_type === 'reconciliation_job') {
+      if (u.event_type === 'reconciliation_job') {
         return sum + Number(u.total_quantity || 0);
       }
       return sum;

@@ -6,7 +6,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 interface SOC2Control {
@@ -69,7 +69,7 @@ async function checkRLSPolicies(): Promise<{ status: 'pass' | 'fail' | 'warning'
     // Check if RLS is enabled (would need database access)
     // For now, check if RLS policies file exists
     const rlsFile = join(process.cwd(), 'supabase/migrations/00000004_rls_consolidation.sql');
-    const rlsExists = require('fs').existsSync(rlsFile);
+    const rlsExists = existsSync(rlsFile);
     
     if (rlsExists) {
       return {
@@ -95,7 +95,7 @@ async function checkEncryption(): Promise<{ status: 'pass' | 'fail' | 'warning';
     // Check encryption configuration
     // For now, check if encryption is documented
     const securityDoc = join(process.cwd(), 'docs/SECURITY_ARCHITECTURE.md');
-    const docExists = require('fs').existsSync(securityDoc);
+    const docExists = existsSync(securityDoc);
     
     if (docExists) {
       return {
@@ -127,7 +127,7 @@ async function checkMonitoring(): Promise<{ status: 'pass' | 'fail' | 'warning';
     
     const allExist = monitoringFiles.every(file => {
       const path = join(process.cwd(), file);
-      return require('fs').existsSync(path);
+      return existsSync(path);
     });
     
     if (allExist) {
@@ -153,7 +153,7 @@ async function checkIncidentResponse(): Promise<{ status: 'pass' | 'fail' | 'war
   try {
     // Check if incident response process exists
     const incidentDoc = join(process.cwd(), 'docs/internal/business/BUSINESS_READINESS_ASSESSMENT.md');
-    const docExists = require('fs').existsSync(incidentDoc);
+    const docExists = existsSync(incidentDoc);
     
     if (docExists) {
       return {
@@ -278,7 +278,7 @@ async function runSOC2ReadinessCheck(): Promise<void> {
 }
 
 // Run if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   runSOC2ReadinessCheck().catch(console.error);
 }
 

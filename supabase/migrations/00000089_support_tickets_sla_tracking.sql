@@ -1,6 +1,9 @@
 -- Support Tickets SLA Tracking
 -- Creates table for tracking support tickets and SLA compliance
 
+-- Ensure billing_accounts table exists (created in 00000000_settler_golden_schema.sql)
+-- This migration depends on billing_accounts table
+
 CREATE TABLE IF NOT EXISTS support_tickets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   billing_account_id UUID NOT NULL REFERENCES billing_accounts(id) ON DELETE CASCADE,

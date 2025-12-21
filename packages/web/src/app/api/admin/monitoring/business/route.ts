@@ -28,12 +28,18 @@ export async function GET(request: NextRequest) {
     const activeCustomers = customers?.filter(c => c.status === 'active').length || 0;
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const { data: churnedCustomers } = await supabase
-      .from('billing_accounts')
-      .select('id')
-      .not('deleted_at', 'is', null)
-      .gte('deleted_at', thirtyDaysAgo.toISOString())
-      .catch(() => ({ data: null }));
+    let churnedCustomers = null;
+    try {
+      const result = await supabase
+        .from('billing_accounts')
+        .select('id')
+        .not('deleted_at', 'is', null)
+        .gte('deleted_at', thirtyDaysAgo.toISOString());
+      churnedCustomers = result.data;
+    } catch {
+      // Ignore errors
+      churnedCustomers = null;
+    }
 
     const churnRate = totalCustomers > 0
       ? ((churnedCustomers?.length || 0) / totalCustomers) * 100

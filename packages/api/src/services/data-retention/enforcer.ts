@@ -193,7 +193,7 @@ export async function enforceAllRetentionPolicies(): Promise<{
         totalErrors += result.errors;
         accountsProcessed++;
       } catch (error) {
-        logError('Error processing account retention', error, { accountId: account.id });
+        logError('Error processing account retention', error);
         totalErrors++;
       }
     }

@@ -21,7 +21,7 @@ export default function Pricing() {
     {
       name: 'Free',
       price: '$0',
-      description: 'Perfect for testing and small projects',
+      description: 'Great for testing and small projects',
       reconciliationVolume: '1,000/month',
       exceptionRate: '1% included',
       example: '1k reconciliations = $0/month',
@@ -212,7 +212,7 @@ export default function Pricing() {
                 <h3 className="font-semibold mb-2">Example</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
                   Starter plan: 50,000 reconciliations/month included ($99/month). 
-                  If you process 60,000 reconciliations, you'll be prompted to upgrade to Growth plan ($299/month for 500,000/month).
+                  If you process 60,000 reconciliations, you'll be prompted to upgrade to Growth plan ($599/month for 500,000/month).
                   If 500 exceptions require review (1% rate), you pay $99 + (500 × $0.10) = $149/month.
                 </p>
               </div>
