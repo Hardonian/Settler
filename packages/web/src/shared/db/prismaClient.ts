@@ -18,7 +18,7 @@ const nodeEnv = typeof process !== 'undefined' && process.env ? process.env['NOD
 function getOptimizedDatabaseUrl(): string | undefined {
   const dbUrl = process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL;
   if (!dbUrl) {
-    return dbUrl;
+    return undefined;
   }
 
   // Parse URL to add connection pool parameters
@@ -40,35 +40,37 @@ function getOptimizedDatabaseUrl(): string | undefined {
 const optimizedDbUrl = getOptimizedDatabaseUrl();
 
 // PrismaClient configuration
-const prismaConfig: any = {
-  log: nodeEnv === 'development' ? ['error', 'warn'] : ['error'],
-};
-
-if (optimizedDbUrl) {
-  prismaConfig.datasources = {
-    db: {
-      url: optimizedDbUrl,
-    },
-  };
-}
+const logConfig = nodeEnv === 'development' ? ['error', 'warn'] : ['error'];
 
 // Create Prisma client instance
 let prismaInstance: PrismaClient;
 
 try {
-  prismaInstance = globalForPrisma.prisma ?? new PrismaClient(prismaConfig);
+  // If we have an optimized URL, use it. Otherwise, let Prisma find the env var.
+  if (optimizedDbUrl) {
+    prismaInstance = globalForPrisma.prisma ?? new PrismaClient({
+      log: logConfig,
+      datasources: {
+        db: {
+          url: optimizedDbUrl,
+        },
+      },
+    } as any);
+  } else {
+    // No optimized URL found (likely no env var set yet), use default constructor
+    // Passing just log config might be safer than full empty if valid options required
+    prismaInstance = globalForPrisma.prisma ?? new PrismaClient({
+      log: logConfig,
+    } as any);
+  }
 } catch (error) {
   console.warn('Failed to initialize PrismaClient with config, retrying with defaults:', error);
   try {
-    // Fallback attempt
-    prismaInstance = globalForPrisma.prisma ?? new PrismaClient({
-      ...prismaConfig,
-      // Provide explicit engine type hint if supported by constructor in this version
-      // or standard fallback params
-    } as any);
+    // Fallback: try empty constructor
+    prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
   } catch (secondError) {
     console.error('Critical: Failed to initialize PrismaClient:', secondError);
-    // Last resort: empty constructor
+    // Last resort: cast to any to allow instantiation if types are wrong
     prismaInstance = globalForPrisma.prisma ?? new PrismaClient() as any;
   }
 }
