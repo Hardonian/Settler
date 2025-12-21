@@ -8,11 +8,11 @@
 
 ## What is Settler?
 
-**Settler** is reconciliation-as-a-service for modern businesses. We eliminate the expensive pain of manually matching transactions across fragmented SaaS platforms—reducing reconciliation time from hours to minutes, preventing revenue leakage, and ensuring compliance—all through a single API.
+**Settler** is reconciliation-as-a-service for modern businesses. We reduce the expensive pain of manually matching transactions across fragmented SaaS platforms—reducing reconciliation time from hours to minutes, preventing revenue leakage, and ensuring compliance—all through a single API.
 
 ### One-Liner
 
-**Settler automates financial reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms—eliminating hours of manual work with a 5-minute API integration.**
+**Settler automates financial reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms—reducing hours of manual work with a 5-minute API integration.**
 
 ---
 
@@ -84,7 +84,7 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 
 **Security & Compliance**
 
-- SOC 2 Type II certified (Q3 2026)
+- SOC 2 Type II planned (Q3 2026) — working toward certification
 - GDPR, CCPA, PIPEDA compliant
 - PCI-DSS ready
 - Data encryption at rest and in transit

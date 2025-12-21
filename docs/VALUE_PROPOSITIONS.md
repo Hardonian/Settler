@@ -51,12 +51,12 @@ Value propositions are **plain, boring, and demonstrable**. No buzzwords. No "AI
 ## Value Proposition #2: SaaS Operations Lead
 
 ### Headline
-**"Eliminate currency conversion errors. Reconcile multi-currency transactions automatically."**
+**"Reduce currency conversion errors. Reconcile multi-currency transactions automatically."**
 
 ### Core Message
 - **Problem:** Manual multi-currency reconciliation is error-prone, time-consuming, and creates compliance risk
 - **Solution:** Automated multi-currency reconciliation with deterministic currency conversion
-- **Outcome:** Eliminate currency errors, save 15-20 hours/month, improve accuracy
+- **Outcome:** Reduce currency errors, save 15-20 hours/month, improve accuracy
 - **Constraint:** Requires API access to Stripe, PayPal, QuickBooks (standard integrations)
 
 ### Key Points
@@ -73,7 +73,7 @@ Value propositions are **plain, boring, and demonstrable**. No buzzwords. No "AI
 
 ### Messaging Tone
 - **Plain:** "Automate multi-currency reconciliation" (not "AI-powered currency intelligence")
-- **Boring:** "Eliminate currency errors" (not "revolutionize your currency operations")
+- **Boring:** "Reduce currency errors" (not "revolutionize your currency operations")
 - **Specific:** "Deterministic currency conversion" (not "advanced currency handling")
 - **Outcome-focused:** "Reduce errors" (not "leverage machine learning")
 
@@ -132,11 +132,11 @@ Value propositions are **plain, boring, and demonstrable**. No buzzwords. No "AI
 - **Constraint:** Requires API access to systems (standard integrations)
 
 ### Key Points
-1. **Audit Trail Completeness:** 100% (every transaction documented)
-2. **Deterministic Matching:** 100% (reproducible, auditable)
+1. **Audit Trail Completeness:** Complete (every transaction documented)
+2. **Deterministic Matching:** Deterministic (reproducible, auditable)
 3. **Compliance Readiness:** Meets regulatory requirements
 4. **Time Savings:** 10-15 hours/month → <1 hour/month (90%+ reduction)
-5. **Risk Reduction:** Eliminates compliance risk
+5. **Risk Reduction:** Reduces compliance risk
 
 ### Proof Points
 - **Demonstrable:** Complete audit trail report showing every transaction, every match, every decision
@@ -146,7 +146,7 @@ Value propositions are **plain, boring, and demonstrable**. No buzzwords. No "AI
 ### Messaging Tone
 - **Plain:** "Generate audit trails automatically" (not "AI-powered compliance intelligence")
 - **Boring:** "Meet regulatory requirements" (not "revolutionize your compliance operations")
-- **Specific:** "100% audit trail completeness" (not "comprehensive audit trails")
+- **Specific:** "Complete audit trail" (not "comprehensive audit trails")
 - **Outcome-focused:** "Reduce compliance risk" (not "leverage advanced compliance technology")
 
 ### Objection Handling
@@ -170,7 +170,7 @@ Value propositions are **plain, boring, and demonstrable**. No buzzwords. No "AI
 ### Key Points
 1. **Development Time:** 10+ hours/month → <1 hour/month (90%+ reduction)
 2. **Reliability:** 99%+ uptime, no maintenance burden
-3. **Bugs:** Eliminate custom reconciliation bugs
+3. **Bugs:** Reduce custom reconciliation bugs
 4. **Focus:** Focus on product, not infrastructure
 5. **Scalability:** Handles 10K-1M+ transactions/month automatically
 
