@@ -39,7 +39,8 @@ export async function GET(_request: NextRequest) {
       sla_percentage: number;
       avg_response_time_hours: number;
     }> = [];
-    for (const account of accounts || []) {
+    const accountsList: Array<{ id: string; plan_id: string | null }> = accounts || [];
+    for (const account of accountsList) {
       try {
         const { data: tickets } = await supabase
           .from('support_tickets')
