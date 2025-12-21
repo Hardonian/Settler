@@ -1,4 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
+import { loadEnvFiles } from "./scripts/load-env-for-tests";
+
+// Load environment variables from .env files (same priority as Next.js)
+// This ensures tests have access to the same environment variables
+// as the application in preview/production environments
+loadEnvFiles();
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -12,7 +18,8 @@ export default defineConfig({
     ["junit", { outputFile: "test-results/junit.xml" }],
   ],
   use: {
-    baseURL: process.env.E2E_BASE_URL || "http://localhost:3000",
+    baseURL:
+      process.env.E2E_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -33,12 +40,32 @@ export default defineConfig({
         reducedMotion: "reduce",
       },
     },
+    {
+      name: "dom-reality",
+      testMatch: /.*dom-reality.*\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1280, height: 720 },
+        // Capture screenshots for DOM reality tests
+        screenshot: "only-on-failure",
+        video: "retain-on-failure",
+        trace: "on-first-retry",
+      },
+    },
   ],
   webServer: {
     command: "npm run dev --workspace=packages/web",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    // Try alternative ports if 3000 is busy
+    reuseExistingServer: true,
+    env: {
+      // Pass through environment variables to dev server
+      ...process.env,
+      // Ensure Next.js loads .env files
+      NODE_ENV: process.env.NODE_ENV || "development",
+    },
   },
   // Visual regression configuration
   expect: {

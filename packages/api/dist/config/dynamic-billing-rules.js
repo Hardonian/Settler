@@ -17,25 +17,25 @@ exports.updateBillingTier = updateBillingTier;
  * Default billing tiers
  */
 exports.BILLING_TIERS = {
-    base: {
-        id: "base",
-        name: "Settler Core",
-        base_price_monthly: 49.95,
+    free: {
+        id: "free",
+        name: "Free",
+        base_price_monthly: 0,
         limits: {
-            reconciliation_jobs: 10000,
-            api_requests: 100000,
-            webhook_events: 50000,
-            db_queries: 500000,
-            ai_requests: 1000,
-            auth_users: 1000,
-            storage_gb: 10,
+            reconciliation_jobs: 1000,
+            api_requests: 10000,
+            webhook_events: 5000,
+            db_queries: 50000,
+            ai_requests: 100,
+            auth_users: 100,
+            storage_gb: 1,
         },
-        features: ["core_reconciliation", "standard_integrations", "basic_analytics", "email_support"],
+        features: ["core_reconciliation", "standard_integrations", "community_support"],
     },
-    pro: {
-        id: "pro",
-        name: "Settler Pro",
-        base_price_monthly: 149.95,
+    starter: {
+        id: "starter",
+        name: "Starter",
+        base_price_monthly: 99,
         limits: {
             reconciliation_jobs: 50000,
             api_requests: 500000,
@@ -43,6 +43,21 @@ exports.BILLING_TIERS = {
             db_queries: 2500000,
             ai_requests: 5000,
             auth_users: 5000,
+            storage_gb: 10,
+        },
+        features: ["core_reconciliation", "standard_integrations", "basic_analytics", "email_support_sla"],
+    },
+    growth: {
+        id: "growth",
+        name: "Growth",
+        base_price_monthly: 599,
+        limits: {
+            reconciliation_jobs: 500000,
+            api_requests: 5000000,
+            webhook_events: 2500000,
+            db_queries: 25000000,
+            ai_requests: 50000,
+            auth_users: 50000,
             storage_gb: 50,
         },
         features: [
@@ -52,13 +67,37 @@ exports.BILLING_TIERS = {
             "sql_editor",
             "realtime_dashboards",
             "high_volume_api",
-            "priority_support",
+            "priority_support_sla",
+        ],
+    },
+    scale: {
+        id: "scale",
+        name: "Scale",
+        base_price_monthly: 4999,
+        limits: {
+            reconciliation_jobs: 5000000,
+            api_requests: 50000000,
+            webhook_events: 25000000,
+            db_queries: 250000000,
+            ai_requests: 500000,
+            auth_users: 500000,
+            storage_gb: 100,
+        },
+        features: [
+            "core_reconciliation",
+            "standard_integrations",
+            "advanced_analytics",
+            "sql_editor",
+            "realtime_dashboards",
+            "high_volume_api",
+            "priority_support_sla",
+            "custom_integrations",
         ],
     },
     enterprise: {
         id: "enterprise",
-        name: "Settler Enterprise",
-        base_price_monthly: 499.95,
+        name: "Enterprise",
+        base_price_monthly: 0, // Custom pricing
         limits: {
             reconciliation_jobs: -1, // unlimited
             api_requests: -1,
@@ -66,7 +105,7 @@ exports.BILLING_TIERS = {
             db_queries: -1,
             ai_requests: -1,
             auth_users: -1,
-            storage_gb: 100,
+            storage_gb: 1000,
         },
         features: [
             "core_reconciliation",
