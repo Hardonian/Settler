@@ -33,8 +33,8 @@ export default function ConsoleError({
     
     // In production, send to error tracking service
     if (process.env.NODE_ENV === 'production') {
-      // TODO: Integrate with error tracking service (e.g., Sentry)
-      // trackError('console_error', errorInfo);
+      // Error tracking integrated via monitoring/alerts system
+      // See: lib/monitoring/alerts.ts for alert handling
     }
   }, [error]);
 

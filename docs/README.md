@@ -1,34 +1,53 @@
 # Settler Documentation
 
-Welcome to the Settler documentation. This directory contains comprehensive guides for developers, operators, and users of the Settler platform.
+## Overview
 
-## Getting Started
+This directory contains comprehensive documentation for Settler Enterprise.
 
-- **[Getting Started Guide](./getting-started.md)** - Start here for a quick introduction to Settler
-- **[API Reference](./api.md)** - Complete API documentation
-- **[Architecture](./architecture.md)** - System architecture and design patterns
+## Documentation Structure
 
-## Core Documentation
+### Getting Started
+- [Quick Start](QUICK_START.md) - Get up and running quickly
+- [Environment Setup](../ENV_SETUP_GUIDE.md) - Configure your environment
+- [Remote Database Setup](../REMOTE_SETUP_GUIDE.md) - Set up remote database
 
-- **[API Reference](./api.md)** - Complete API documentation with examples
-- **[Architecture](./architecture.md)** - System architecture, patterns, and design decisions
-- **[Billing](./billing.md)** - Pricing, usage tracking, and billing information
-- **[Operations](./operations.md)** - Production operations, monitoring, and scaling
+### Developer Console
+- [Console Guide](CONSOLE.md) - Complete console documentation
+- [API Reference](API.md) - API endpoint documentation
+- [Authentication](AUTH.md) - Auth and authorization guide
 
-## Developer Resources
+### Architecture
+- [Architecture Overview](architecture.md) - System architecture
+- [Database Schema](database-schema.md) - Database structure
+- [API Design](api-design.md) - API design principles
 
-- **[API Quick Start](./api-quick-start.md)** - Quick start guide for API integration
-- **[Webhook Setup](./webhook-setup.md)** - Webhook configuration and verification
-- **[Integration Recipes](./INTEGRATION_RECIPES.md)** - Common integration patterns and examples
+### Operations
+- [Deployment](../DEPLOYMENT_CHECKLIST.md) - Deployment guide
+- [Monitoring](monitoring.md) - Monitoring and alerting
+- [Troubleshooting](troubleshooting.md) - Common issues and solutions
 
-## Additional Resources
+### Reference
+- [API Reference](API_REFERENCE.md) - Complete API reference
+- [SDK Documentation](sdk.md) - SDK usage guide
+- [Examples](examples.md) - Code examples
 
-- **[Contributing](../CONTRIBUTING.md)** - Contribution guidelines
-- **[Security](../SECURITY.md)** - Security practices and vulnerability reporting
-- **[Changelog](../CHANGELOG.md)** - Release notes and version history
+## Quick Links
 
-## Need Help?
+- [Main README](../README.md)
+- [Changelog](../CHANGELOG.md)
+- [Release Notes](../RELEASE_NOTES.md)
+- [Contributing](../CONTRIBUTING.md)
 
-- **Documentation**: [docs.settler.io](https://docs.settler.io)
-- **Issues**: [GitHub Issues](https://github.com/shardie-github/Settler-API/issues)
-- **Email**: support@settler.io
+## Documentation Standards
+
+- All documentation uses Markdown
+- Code examples include language tags
+- API examples use curl format
+- Screenshots stored in `docs/images/`
+
+## Contributing to Documentation
+
+1. Follow Markdown best practices
+2. Include code examples
+3. Keep documentation up to date
+4. Test all examples

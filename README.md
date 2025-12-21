@@ -1,29 +1,83 @@
 # Settler Enterprise
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-Settler Enterprise is a commercial SaaS platform for financial reconciliation, receipt parsing, and deterministic compliance. It provides enterprise teams with a complete, managed solution for automating financial data reconciliation across multiple systems.
+**Settler Enterprise** is a commercial SaaS platform for financial reconciliation, receipt parsing, and deterministic compliance. It provides enterprise teams with a complete, managed solution for automating financial data reconciliation across multiple systems.
 
-## What is Settler Enterprise?
+## 🚀 Quick Start
 
-Settler Enterprise is a Reconciliation-as-a-Service platform that helps enterprise teams automate financial data reconciliation across multiple systems. It provides:
+### Prerequisites
 
-- **Reconciliation Engine**: Event-sourced matching engine for high-volume transaction processing
-- **Receipts API**: AI-powered OCR to extract structured JSON from PDFs and images
-- **Feature Flags**: Edge-compatible flags designed for financial rollouts
-- **Deterministic Math**: Unit and currency conversion libraries that avoid floating-point errors
-- **Developer Console**: Real-time visibility into your financial data flows
-- **Enterprise Support**: Dedicated support, SLA guarantees, and custom integrations
+- Node.js >= 24.0.0
+- PostgreSQL (via Supabase)
+- Redis (via Upstash, optional)
 
-## Core Use Cases
+### Installation
 
-- **Payment Reconciliation**: Match payments between payment processors (Stripe, PayPal) and accounting systems (QuickBooks, Xero)
-- **E-commerce Reconciliation**: Reconcile orders from Shopify, WooCommerce with payment processors and fulfillment systems
-- **Receipt Processing**: Extract structured data from receipts and invoices for expense management
-- **Multi-Currency Reconciliation**: Handle currency conversion and reconciliation across international transactions
-- **Compliance Auditing**: Maintain audit trails and deterministic compliance reporting
+```bash
+# Clone repository
+git clone https://github.com/your-org/settler-enterprise.git
+cd settler-enterprise
 
-## Architecture
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your configuration
+
+# Run database migrations
+export DATABASE_URL="your-connection-string"
+npx tsx scripts/run-migrations-remote.ts
+
+# Start development server
+cd packages/web
+pnpm dev
+```
+
+## 📖 Documentation
+
+### Getting Started
+- [Quick Start Guide](docs/QUICK_START.md)
+- [Environment Setup](ENV_SETUP_GUIDE.md)
+- [Remote Database Setup](REMOTE_SETUP_GUIDE.md)
+
+### Developer Console
+- [Console Documentation](docs/CONSOLE.md)
+- [API Documentation](docs/API.md)
+- [Authentication Guide](docs/AUTH.md)
+
+### Architecture
+- [Architecture Overview](docs/architecture.md)
+- [Database Schema](docs/database-schema.md)
+- [API Reference](docs/API_REFERENCE.md)
+
+### Operations
+- [Deployment Guide](DEPLOYMENT_CHECKLIST.md)
+- [Monitoring & Alerts](docs/monitoring.md)
+- [Troubleshooting](docs/troubleshooting.md)
+
+## 🎯 Core Features
+
+### Reconciliation Engine
+Event-sourced matching engine for high-volume transaction processing with deterministic math.
+
+### Receipts API
+AI-powered OCR to extract structured JSON from PDFs and images.
+
+### Feature Flags
+Edge-compatible flags designed for financial rollouts.
+
+### Developer Console
+Real-time visibility into your financial data flows with:
+- API call logging and analytics
+- Usage monitoring and metrics
+- Receipt browser and management
+- Feature flag management
+- Tenant observability (super admin)
+
+## 🏗️ Architecture
 
 Settler Enterprise follows a **Hexagonal Architecture** (Ports & Adapters) pattern with **CQRS** and **Event-Driven** principles:
 
@@ -32,344 +86,76 @@ Settler Enterprise follows a **Hexagonal Architecture** (Ports & Adapters) patte
 - **Infrastructure Layer**: Database, caching, external service adapters
 - **Presentation Layer**: HTTP API routes and middleware
 
-The system is built with TypeScript, Express, PostgreSQL (via Supabase), and Redis (via Upstash). It's designed to be serverless-ready and deployed on Vercel with enterprise-grade infrastructure.
+Built with TypeScript, Next.js, PostgreSQL (via Supabase), and Redis (via Upstash).
 
-For detailed architecture documentation, see [docs/architecture.md](docs/architecture.md).
+## 📦 Platform Components
 
-## Platform Components
+This monorepo contains:
 
-This monorepo contains the following enterprise platform components:
+- **`packages/web`**: Next.js web application and Developer Console
+- **`packages/api`**: Core Node.js API server
+- **`packages/cli`**: Command-line tool
+- **`packages/react-settler`**: React components
+- **`packages/adapters`**: Service adapter implementations
 
-- `packages/api`: Core Node.js API server (Express/PostgreSQL/Redis)
-- `packages/web`: Next.js web application, documentation, and **Developer Console**
-- `packages/cli`: Command-line tool with Console management commands
-- `packages/react-settler`: React components for integration
-- `packages/adapters`: Adapter implementations for various services
+## 🔐 Security
 
-### Developer Console
+- **Authentication**: Required for all console routes
+- **Authorization**: Subscription-based access control
+- **Tenant Isolation**: RLS policies enforce boundaries
+- **PII Protection**: Automatic data sanitization
+- **Rate Limiting**: Protection against abuse
 
-The **Developer Console** (`/console`) provides:
-- ✅ **API Key Management** - Create, list, and revoke API keys
-- ✅ **Usage Analytics** - Monitor API usage across all services
-- ✅ **Receipt Browser** - View parsed receipts and details
-- ✅ **Feature Flags** - Manage feature flags for your applications
-- ✅ **Live Activity Feed** - Real-time activity monitoring
-- ✅ **Billing Dashboard** - View usage and billing information
-- ✅ **Ops Intelligence** - Automated insights, recommendations, and weekly founder briefings
-- ✅ **API Test Console** - CLI code editor for testing API calls, webhooks, and SDK operations
-- ✅ **API Service Tables** - Browse and manage tables for Receipts, Reconciliation, Feature Flags, and Webhooks
-- ✅ **Workflows** - Create automation workflows (Zapier-style) with recipe library
+## 📊 Monitoring
 
-**Access Control:**
-- **Unsubscribed**: Receipts viewing only
-- **Subscribed (Unpaid)**: Read-only access to API service tables and workflows
-- **Subscribed (Paid)**: Full CRUD access to all API services
-- **Enterprise**: Full access + higher limits + priority support
+- **Health Checks**: `/api/console/health`
+- **API Logging**: Automatic logging with PII sanitization
+- **Alerting**: Automated alerts for anomalies
+- **Performance Tracking**: Response time and error rate monitoring
 
-Access the Console at `/console` after signing up. See [Console Documentation](docs/CONSOLE_COMPLETE.md) for details.
-
-### Ops Intelligence & Founder Briefings
-
-**Ops Intelligence** is a closed-loop operational intelligence system that automatically:
-
-- **Detects Insights**: Analyzes cost, support, usage, and stability metrics to surface anomalies, trends, and risks
-- **Generates Recommendations**: Provides actionable, reversible recommendations for each insight
-- **Tracks Actions**: Maintains an action ledger with verification status
-- **Generates Briefings**: Creates weekly founder briefings summarizing what matters
-
-**Key Features:**
-- **Deterministic Insights**: All insights are derived from real metrics, not ML hallucinations
-- **Evidence-Based**: Every insight links back to underlying metrics and Analytics Studio pivots
-- **Actionable**: Recommendations are specific, reversible, and include risk assessments
-- **Closed-Loop**: Actions are tracked and verified, creating feedback loops
-
-**Access:**
-- `/console/insights` - View and manage operational insights
-- `/console/briefings` - View weekly founder briefings
-
-**Scheduled Jobs:**
-- Daily insights generation (2 AM UTC)
-- Weekly briefing generation (Monday 9 AM UTC)
-- Automatic insight expiration
-
-See [Ops Intelligence Documentation](docs/OPS_INTELLIGENCE.md) for details.
-
-## Quick Start
-
-### Prerequisites
-
-- Node.js 20.0.0 or higher
-- npm 10.0.0 or higher
-- PostgreSQL 15+ (or Supabase account)
-- Redis (or Upstash account)
-- Docker & Docker Compose (optional, for local services)
-
-### Local Development
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/shardie-github/Settler-API.git
-   cd Settler-API
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**:
-   
-   Copy `.env.example` to `.env` and configure:
-   
-   **Required:**
-   - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
-   - `DATABASE_URL` - PostgreSQL connection string
-   - `JWT_SECRET` - JWT signing secret (32+ characters)
-   - `ENCRYPTION_KEY` - Encryption key (exactly 32 characters)
-   
-   **Optional:**
-   - `SUPABASE_SERVICE_ROLE_KEY` - For admin operations
-   - `UPSTASH_REDIS_REST_URL` - Redis REST URL
-   - `UPSTASH_REDIS_REST_TOKEN` - Redis REST token
-   
-   See [Getting Started Guide](docs/GETTING_STARTED.md) for complete configuration.
-
-4. **Start local services** (optional):
-   ```bash
-   docker-compose up -d
-   ```
-   
-   Or use Supabase and Upstash cloud services.
-
-5. **Run database migrations**:
-   
-   **Automatic (Recommended)**: Migrations run automatically on PR push/merge.
-   
-   **Manual (Local)**:
-   ```bash
-   supabase db push
-   ```
-   
-   See [Automatic Migrations Guide](docs/AUTOMATIC_MIGRATIONS.md).
-
-6. **Start development server**:
-   ```bash
-   npm run dev
-   ```
-   
-   Access:
-   - Web app: `http://localhost:3000`
-   - Console: `http://localhost:3000/console` (after signup)
-
-### Access Developer Console
-
-1. Navigate to `http://localhost:3000`
-2. Sign up at `/signup`
-3. Access Console at `/console`
-4. Create API keys, monitor usage, manage resources
-
-See [Getting Started Guide](docs/GETTING_STARTED.md) for detailed instructions.
-
-### Enterprise Deployment
-
-For production enterprise deployment, see the [Enterprise Deployment Guide](enterprise/SELF_HOSTING.md).
-
-## Billing Model
-
-Settler Enterprise uses usage-based billing with metered usage tracking:
-
-- **Starter**: $99/month - 100,000 reconciliations/month, 10,000 receipt parses/month, 1M feature flag evaluations/month
-- **Professional**: $499/month - 1M reconciliations/month, 100,000 receipt parses/month, 10M feature flag evaluations/month
-- **Enterprise**: Custom pricing with unlimited usage, SLA guarantees, dedicated support, and custom integrations
-
-Usage is tracked for reconciliation operations, receipt parsing, and feature flag evaluations. See [docs/billing.md](docs/billing.md) for detailed pricing information.
-
-## Documentation
-
-### Core Documentation
-- **[Architecture](docs/ARCHITECTURE.md)**: Complete system architecture and design patterns
-- **[Critical Paths](docs/CRITICAL_PATHS.md)**: User journey documentation and failure modes
-- **[Security](docs/SECURITY.md)**: Security practices, compliance, and vulnerability reporting
-- **[API Reference](docs/api.md)**: Complete API documentation
-- **[Getting Started](docs/getting-started.md)**: Developer onboarding guide
-- **[Billing](docs/billing.md)**: Pricing and usage information
-
-### Developer Console
-- **[Console Complete Guide](docs/CONSOLE_COMPLETE.md)**: Full Console documentation
-- **[Console Integration](docs/SDK_CLI_CONSOLE_INTEGRATION.md)**: Console integration guide
-- **[Console Setup](docs/CONSOLE_COMPLETE.md)**: Console setup and configuration
-
-### Setup & Deployment
-- **[Getting Started](docs/GETTING_STARTED.md)**: Quick setup instructions
-- **[Automatic Migrations](docs/AUTOMATIC_MIGRATIONS.md)**: Database migration automation
-- **[GitHub Secrets Setup](docs/GITHUB_SECRETS_SETUP.md)**: CI/CD configuration
-- **[Deployment Guide](docs/DEPLOYMENT.md)**: Production deployment instructions
-
-Full documentation is also available at [settler.dev/docs](https://settler.dev/docs).
-
-## Developer Console
-
-The **Developer Console** (`/console`) provides a unified interface for managing your Settler Enterprise account:
-
-- ✅ **Unified Authentication** - Session auth (UI) + API key auth (CLI)
-- ✅ **Shared Types** - Consistent types across CLI and Console
-- ✅ **Same APIs** - All interfaces use the same backend APIs
-- ✅ **Activity Logging** - All operations logged for audit trail
-- ✅ **Real-time Feed** - Live activity monitoring
-- ✅ **Never Returns 500** - Graceful error handling
-
-See [Console Documentation](docs/CONSOLE_COMPLETE.md) and [Console Integration](docs/SDK_CLI_CONSOLE_INTEGRATION.md).
-
-## Production Readiness
-
-This codebase has undergone a comprehensive hardening pass:
-
-- ✅ **Error Handling**: Graceful degradation, safe helpers, error boundaries, retry components
-- ✅ **Security**: Redis-backed rate limiting, security headers, webhook verification, RLS policies, request size limits
-- ✅ **Billing**: Reconciliation service, webhook hardening, admin tools, Stripe rate limit handling
-- ✅ **Database**: Integrity checks, RLS verification, sanity scripts, **automatic migrations**
-- ✅ **Monitoring**: Metrics tracking, audit logging, performance utilities
-- ✅ **Testing**: Smoke tests, CI/CD, build verification
-- ✅ **Documentation**: Architecture docs, critical paths, security guide, Console docs
-- ✅ **Future-Proofing**: Cache abstraction, API versioning, performance utilities
-- ✅ **Console**: Fully integrated CLI/Console with unified auth
-
-## Production Parity Guarantees
-
-Settler.dev maintains **production parity** between code, database, and infrastructure through automated verification:
-
-### Database Schema = Source of Truth
-
-- **Golden Migration**: Single canonical, idempotent schema file (`supabase/migrations/00000000_settler_golden_schema.sql`)
-- **Schema Introspection**: Automated production database introspection
-- **CI Verification**: Every PR verifies schema parity and idempotency
-- **No Drift**: GitHub Actions blocks schema drift automatically
-
-### Frontend ↔ Backend Contracts
-
-- **Route Mapping**: All frontend routes mapped to backend dependencies
-- **Contract Verification**: CI ensures no routes reference non-existent tables/functions
-- **RLS Enforcement**: All sensitive tables have Row-Level Security enabled
-
-### Edge Functions Verification
-
-- **Deployment Check**: All edge functions verified to deploy successfully
-- **Dependency Check**: Functions verified to have required tables/functions
-- **No Theoretical Functions**: Every function is real and executable
-
-### Pipe Dream Elimination
-
-- **Feature Detection**: Automated detection of features in docs but not code
-- **Orphaned Table Detection**: Tables with no consumers are flagged
-- **Unused Config Detection**: Environment variables and config flags verified
-
-### Verification Commands
+## 🧪 Testing
 
 ```bash
-# Run all production parity checks
-npm run verify:production-parity
+# Run all tests
+export DATABASE_URL="your-connection-string"
+./scripts/run-all-tests.sh
 
-# Individual checks
-npm run verify:schema-introspect    # Introspect production database
-npm run verify:frontend-contracts   # Map frontend routes to backend
-npm run verify:edge-functions       # Verify edge functions
-npm run verify:pipe-dreams          # Find pipe dream signals
-
-# Schema management
-npm run migrations:consolidate      # Consolidate migrations into golden migration
+# Run specific tests
+npx tsx scripts/test-setup.ts
+npx tsx scripts/integration-test.ts
 ```
 
-### CI/CD Integration
+## 📝 Changelog
 
-The `.github/workflows/schema-parity-check.yml` workflow automatically:
-1. Introspects production database on every PR
-2. Verifies golden migration idempotency
-3. Compares production schema to migration files
-4. Checks RLS policies on sensitive tables
-5. Generates schema manifest
+See [CHANGELOG.md](CHANGELOG.md) for detailed changelog.
 
-**Result**: It's impossible for Settler.dev to silently drift from production reality.
+## 🤝 Contributing
 
-## Quick Verification
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
-After deployment, verify everything works:
+## 📄 License
 
-```bash
-# Health checks
-curl https://your-domain.com/api/health/console
-curl https://your-domain.com/api/status/health
+Proprietary - See [LICENSE](LICENSE) for details.
 
-# Run database sanity checks
-npm run db:sanity-check
+## 🆘 Support
 
-# Run smoke tests (requires running server)
-npm run test:smoke
+- **Documentation**: [docs/](docs/)
+- **Console**: [Developer Console](/console)
+- **Issues**: Contact support via console
 
-# Check build
-npm run build
-npm run typecheck
-npm run lint
+## 🎉 Release v1.0.0
 
-# Test Console access
-# Navigate to https://your-domain.com/console
-# Should load without 500 errors
-```
+**First Official Release** - December 21, 2024
 
-## Developer Console Quick Test
+### What's New
+- ✅ API call logging system
+- ✅ Tenant observability dashboard
+- ✅ Enhanced security and performance
+- ✅ Comprehensive monitoring
+- ✅ Production-ready infrastructure
 
-```bash
-# 1. Access Console
-open https://your-domain.com/console
+See [RELEASE_NOTES.md](RELEASE_NOTES.md) for complete release notes.
 
-# 2. Create API key via CLI
-export SETTLER_API_KEY=your_session_key_or_create_one
-settler console api-keys create --name "Test Key"
+---
 
-# 3. Use API key to access Console APIs
-curl -H "X-API-Key: rk_..." https://your-domain.com/api/console/api-keys
-```
-
-## Optional Enhancements
-
-For enhanced features, install optional dependencies:
-
-```bash
-# Redis-backed rate limiting (falls back to in-memory if not installed)
-npm install @upstash/redis
-```
-
-Then configure environment variables:
-```bash
-UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
-UPSTASH_REDIS_REST_TOKEN=your-token
-```
-
-## Security
-
-Settler Enterprise is designed for SOC 2 and ISO 27001 compliance:
-
-- All data at rest is encrypted (AES-256)
-- Audit logs are immutable
-- Row-level security (RLS) for multi-tenant isolation
-- Input validation with Zod schemas
-- Rate limiting and DDoS protection
-
-To report a security vulnerability, please see [SECURITY.md](SECURITY.md).
-
-## Enterprise Support
-
-- **Documentation**: [settler.dev/docs](https://settler.dev/docs)
-- **Support**: support@settler.io
-- **Enterprise Sales**: enterprise@settler.io
-- **Security**: security@settler.io
-
-## License
-
-Settler Enterprise is proprietary software. All rights reserved.
-
-**Open Source Components:**
-- `packages/protocol` - MIT License
-- `packages/react-settler` - Dual licensed (MIT for OSS, Commercial for paid features)
-
-See [LICENSE](LICENSE) for full license terms. For detailed licensing information, see [Licensing Overview](docs/LICENSING_OVERVIEW.md).
+**Settler Enterprise** - Financial Reconciliation as a Service
