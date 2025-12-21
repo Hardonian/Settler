@@ -34,8 +34,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // Public routes that should never require auth or throw errors
   // These routes must always render, even if Supabase/auth fails
+  // NOTE: /console is NOT public - it requires authentication and subscription
   const publicRoutes = [
-    '/console',
     '/playground',
     '/pricing',
     '/trust',
