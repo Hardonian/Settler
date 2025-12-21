@@ -75,15 +75,6 @@ const globalForPrisma = globalThis as unknown as {
 // it as a safety measure during build time.
 const isBuildPhase = (globalThis as any).__PRISMA_BUILD_PHASE__ ?? false;
 
-// Check if DATABASE_URL is available at module load time
-// Note: Next.js loads .env files automatically, but this check happens at module initialization
-// Prisma will read DATABASE_URL from process.env automatically when PrismaClient is instantiated
-// This check is mainly for logging/debugging purposes
-const hasDatabaseUrl = 
-  typeof process !== 'undefined' && 
-  process.env && 
-  (process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL);
-
 // Use bracket notation to prevent webpack from optimizing process.env access
 const nodeEnv = typeof process !== 'undefined' && process.env ? process.env['NODE_ENV'] : 'production';
 
@@ -182,7 +173,10 @@ try {
     errorMessage.includes('connection string');
   
   // Check actual env vars at error time (Next.js may have loaded them by now)
-  const actualDbUrl = process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL;
+  const actualDbUrl = 
+    typeof process !== 'undefined' && process.env
+      ? (process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL)
+      : undefined;
   
   if (isMissingConfig && !actualDbUrl) {
     console.warn(
