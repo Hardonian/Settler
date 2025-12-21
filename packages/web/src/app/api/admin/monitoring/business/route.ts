@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       .is('deleted_at', null);
 
     const totalCustomers = customers?.length || 0;
-    const activeCustomers = customers?.filter(c => c.status === 'active').length || 0;
+    const activeCustomers = customers?.filter((c: { status: string }) => c.status === 'active').length || 0;
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     let churnedCustomers = null;

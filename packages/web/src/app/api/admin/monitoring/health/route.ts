@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       .in('status', ['active', 'trialing']);
 
     // Table might not exist yet, so handle gracefully
-    let tickets = null;
+    let tickets: Array<{ id: string; status: string; sla_violated: boolean }> | null = null;
     try {
       const result = await supabase
         .from('support_tickets')
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     const activeCustomers = customers?.length || 0;
     const activeSubscriptions = subscriptions?.length || 0;
     const openTickets = tickets?.length || 0;
-    const slaViolations = tickets?.filter(t => t.sla_violated).length || 0;
+    const slaViolations = tickets?.filter((t: { sla_violated: boolean }) => t.sla_violated).length || 0;
 
     return NextResponse.json({
       status: 'healthy',

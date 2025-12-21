@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -30,8 +30,17 @@ export async function GET(request: NextRequest) {
       .is('deleted_at', null);
 
     // Get SLA metrics from support_tickets table
-    const slaMetrics = [];
-    for (const account of accounts || []) {
+    const slaMetrics: Array<{
+      billing_account_id: string;
+      tier: string;
+      total_tickets: number;
+      sla_met: number;
+      sla_missed: number;
+      sla_percentage: number;
+      avg_response_time_hours: number;
+    }> = [];
+    const accountsList: Array<{ id: string; plan_id: string | null }> = accounts || [];
+    for (const account of accountsList) {
       try {
         const { data: tickets } = await supabase
           .from('support_tickets')
@@ -42,11 +51,11 @@ export async function GET(request: NextRequest) {
           .not('responded_at', 'is', null);
 
         const totalTickets = tickets?.length || 0;
-        const slaMet = tickets?.filter(t => t.sla_met === true).length || 0;
-        const slaMissed = tickets?.filter(t => t.sla_met === false).length || 0;
+        const slaMet = tickets?.filter((t: { sla_met: boolean }) => t.sla_met === true).length || 0;
+        const slaMissed = tickets?.filter((t: { sla_met: boolean }) => t.sla_met === false).length || 0;
         const slaPercentage = totalTickets > 0 ? (slaMet / totalTickets) * 100 : 0;
         const avgResponseTime = totalTickets > 0 
-          ? (tickets?.reduce((sum, t) => sum + (t.response_time_hours || 0), 0) || 0) / totalTickets 
+          ? (tickets?.reduce((sum: number, t: { response_time_hours: number | null }) => sum + (t.response_time_hours || 0), 0) || 0) / totalTickets 
           : 0;
 
         slaMetrics.push({
@@ -64,7 +73,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get current violations
-    let violations = null;
+    let violations: Array<{ id: string }> | null = null;
     try {
       const result = await supabase
         .from('support_tickets')

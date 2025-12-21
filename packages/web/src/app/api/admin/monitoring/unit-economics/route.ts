@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -35,13 +35,13 @@ export async function GET(request: NextRequest) {
 
     const planCounts: Record<string, number> = {};
     for (const sub of subscriptions || []) {
-      const planId = sub.plan_id || 'free';
+      const planId = (sub as { plan_id: string | null }).plan_id || 'free';
       planCounts[planId] = (planCounts[planId] || 0) + 1;
       totalMRR += planPricing[planId] || 0;
     }
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    let usage = null;
+    let usage: Array<{ event_type: string; total_quantity: number | null }> | null = null;
     try {
       const result = await supabase
         .from('usage_aggregate_daily')
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       usage = null;
     }
 
-    const totalReconciliations = usage?.reduce((sum, u) => {
+    const totalReconciliations = usage?.reduce((sum: number, u: { event_type: string; total_quantity: number | null }) => {
       if (u.event_type === 'reconciliation_job') {
         return sum + Number(u.total_quantity || 0);
       }
