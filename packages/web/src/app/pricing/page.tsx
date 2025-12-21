@@ -14,38 +14,50 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { PricingCalculator } from "@/components/pricing/PricingCalculator";
 
 export default function Pricing() {
   const plans = [
     {
-      name: 'Starter',
+      name: 'Free',
       price: '$0',
-      description: 'First 10,000 reconciliations free',
-      reconciliationVolume: '10,000/month',
+      description: 'Great for testing and small projects',
+      reconciliationVolume: '1,000/month',
       exceptionRate: '1% included',
-      example: '10k reconciliations = $0/month',
+      example: '1k reconciliations = $0/month',
       cta: 'Get Started',
       ctaLink: '/signup',
       popular: false,
     },
     {
-      name: 'Growth',
-      price: '$900',
-      description: 'For growing businesses',
-      reconciliationVolume: '100,000/month',
+      name: 'Starter',
+      price: '$99',
+      description: 'For small businesses',
+      reconciliationVolume: '50,000/month',
       exceptionRate: '1% included',
-      example: '100k reconciliations = $900/month',
+      example: '50k reconciliations = $99/month',
       cta: 'Start Free Trial',
       ctaLink: '/signup',
       popular: true,
     },
     {
-      name: 'Scale',
-      price: '$9,900',
-      description: 'For high-volume operations',
-      reconciliationVolume: '1,000,000/month',
+      name: 'Growth',
+      price: '$599',
+      description: 'For growing businesses',
+      reconciliationVolume: '500,000/month',
       exceptionRate: '1% included',
-      example: '1M reconciliations = $9,900/month',
+      example: '500k reconciliations = $599/month',
+      cta: 'Start Free Trial',
+      ctaLink: '/signup',
+      popular: false,
+    },
+    {
+      name: 'Scale',
+      price: '$4,999',
+      description: 'For high-volume operations',
+      reconciliationVolume: '5,000,000/month',
+      exceptionRate: '1% included',
+      example: '5M reconciliations = $4,999/month',
       cta: 'Start Free Trial',
       ctaLink: '/signup',
       popular: false,
@@ -54,7 +66,7 @@ export default function Pricing() {
       name: 'Enterprise',
       price: 'Custom',
       description: 'Custom volume and exception thresholds',
-      reconciliationVolume: 'Custom',
+      reconciliationVolume: 'Unlimited',
       exceptionRate: 'Custom',
       example: 'Volume discounts available',
       cta: 'Contact Sales',
@@ -90,9 +102,9 @@ export default function Pricing() {
         'We accept all major credit cards, ACH transfers, and wire transfers for Enterprise plans.',
     },
     {
-      question: 'Is there a free trial?',
+      question: 'Is there a free tier?',
       answer:
-        'Yes! Starter plan includes 10,000 reconciliations free forever. Paid plans include a 14-day free trial.',
+        'Yes! Free plan includes 1,000 reconciliations per month forever. Paid plans include a 14-day free trial.',
     },
   ];
 
@@ -107,12 +119,13 @@ export default function Pricing() {
             Simple, Transparent Pricing
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
-            Pay per reconciliation. Exceptions requiring review cost extra. That's it.
+            Simple pricing that scales with your business. Each plan includes a base volume of reconciliations per month.
           </p>
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left max-w-2xl mx-auto">
             <p className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>How it works:</strong> Reconciliation runs automatically. You pay $0.01 per reconciliation. 
-              If exceptions require human review, they cost $0.10 each. The system explains mismatches automatically—you only pay for exceptions that need your attention.
+              <strong>How it works:</strong> Each plan includes a base volume of reconciliations per month. 
+              Reconciliation runs automatically. If you exceed your plan's volume, you can upgrade to a higher plan. 
+              Exceptions are handled automatically—you only pay for exceptions that require your review ($0.10 each).
             </p>
           </div>
         </div>
@@ -121,7 +134,7 @@ export default function Pricing() {
       {/* Pricing Cards */}
       <section className="px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {plans.map((plan, index) => (
               <Card
                 key={index}
@@ -183,26 +196,36 @@ export default function Pricing() {
               <div>
                 <h3 className="font-semibold mb-2">Base Pricing</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  $0.01 per reconciliation. Each plan includes a base volume. Over that volume, you pay $0.01 per reconciliation.
+                  Each plan includes a base volume of reconciliations per month. If you exceed your plan's volume, 
+                  you'll be prompted to upgrade to a higher plan. This ensures you always have the capacity you need.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Exception Supervision</h3>
+                <h3 className="font-semibold mb-2">Exception Handling</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
                   Reconciliation runs automatically. The system explains mismatches automatically. 
-                  If an exception requires human review, it costs $0.10. Most exceptions are handled automatically—you only pay for exceptions that need your attention.
+                  Most exceptions are handled automatically—you only pay for exceptions that require your review ($0.10 each). 
+                  Each plan includes 1% exception rate (automatic explanations).
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Example</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Growth plan: 100,000 reconciliations/month included ($900/month). 
-                  If you process 120,000 reconciliations, you pay $900 + (20,000 × $0.01) = $1,100/month.
-                  If 1,500 exceptions require review (1.25% rate), you pay $1,100 + (500 × $0.10) = $1,150/month.
+                  Starter plan: 50,000 reconciliations/month included ($99/month). 
+                  If you process 60,000 reconciliations, you'll be prompted to upgrade to Growth plan ($599/month for 500,000/month).
+                  If 500 exceptions require review (1% rate), you pay $99 + (500 × $0.10) = $149/month.
                 </p>
               </div>
             </CardContent>
           </Card>
+        </div>
+      </section>
+
+      {/* Pricing Calculator */}
+      <section className="px-4 sm:px-6 lg:px-8 py-12 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-8">Calculate Your Cost</h2>
+          <PricingCalculator />
         </div>
       </section>
 

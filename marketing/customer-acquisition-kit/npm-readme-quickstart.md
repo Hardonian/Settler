@@ -277,7 +277,7 @@ const settler = new Settler({
 
 ## 💰 Pricing
 
-- **Free Tier**: 1,000 reconciliations/month — Perfect for testing
+- **Free Tier**: 1,000 reconciliations/month — Great for testing
 - **Starter**: $29/month — 10,000 reconciliations
 - **Growth**: $99/month — 100,000 reconciliations
 - **Scale**: $299/month — 1,000,000 reconciliations

@@ -1,0 +1,247 @@
+name: Auto-Migrate on Main
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'supabase/migrations/**'
+      - '.github/workflows/auto-migrate-on-main.yml'
+  workflow_dispatch:
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+  SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+  SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  DIRECT_URL: ${{ secrets.DIRECT_URL }}
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+jobs:
+  auto-migrate:
+    name: Auto-Migrate Database
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Detect migration files
+        id: detect-migrations
+        run: |
+          echo "🔍 Detecting migration files..."
+          MIGRATIONS=$(ls -1 supabase/migrations/*.sql 2>/dev/null | sort || echo "")
+          if [ -z "$MIGRATIONS" ]; then
+            echo "⚠️  No migration files found"
+            echo "has_migrations=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          MIGRATION_COUNT=$(echo "$MIGRATIONS" | wc -l)
+          echo "Found $MIGRATION_COUNT migration file(s)"
+          echo "has_migrations=true" >> $GITHUB_OUTPUT
+          echo "migration_count=$MIGRATION_COUNT" >> $GITHUB_OUTPUT
+          
+          echo ""
+          echo "Migration files to apply:"
+          echo "$MIGRATIONS" | while read -r file; do
+            echo "  - $(basename $file)"
+          done
+
+      - name: Install PostgreSQL client
+        if: steps.detect-migrations.outputs.has_migrations == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          psql --version
+
+      - name: Apply all migrations
+        if: steps.detect-migrations.outputs.has_migrations == 'true'
+        run: |
+          echo "🔄 Applying migrations to production database..."
+          echo "⚠️  This will apply ALL pending migrations automatically"
+          
+          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
+          
+          # Get list of migration files sorted by name
+          MIGRATIONS=$(ls -1 supabase/migrations/*.sql 2>/dev/null | sort)
+          
+          if [ -z "$MIGRATIONS" ]; then
+            echo "⚠️  No migration files found"
+            exit 0
+          fi
+          
+          echo ""
+          echo "Applying migrations in order:"
+          echo "$MIGRATIONS" | while read -r file; do
+            echo "  - $(basename $file)"
+          done
+          echo ""
+          
+          # Track applied migrations
+          APPLIED_COUNT=0
+          FAILED_COUNT=0
+          
+          # Apply each migration
+          for migration in $MIGRATIONS; do
+            migration_name=$(basename $migration)
+            echo ""
+            echo "📦 Applying: $migration_name"
+            
+            # Check if migration has already been applied (optional check)
+            # This assumes you have a migrations tracking table
+            # For now, we'll apply all migrations and let PostgreSQL handle duplicates
+            
+            # Apply migration with error handling
+            if psql "${{ env.DATABASE_URL }}" -v ON_ERROR_STOP=1 -f "$migration" 2>&1; then
+              echo "✅ Successfully applied: $migration_name"
+              APPLIED_COUNT=$((APPLIED_COUNT + 1))
+            else
+              EXIT_CODE=$?
+              if [ $EXIT_CODE -eq 0 ]; then
+                # Migration may have already been applied (non-fatal)
+                echo "⚠️  Migration may have already been applied: $migration_name"
+                APPLIED_COUNT=$((APPLIED_COUNT + 1))
+              else
+                echo "❌ Failed to apply: $migration_name"
+                FAILED_COUNT=$((FAILED_COUNT + 1))
+                echo "Migration failed with exit code: $EXIT_CODE"
+                exit 1
+              fi
+            fi
+          done
+          
+          echo ""
+          echo "✅ Migration Summary:"
+          echo "   Applied: $APPLIED_COUNT"
+          echo "   Failed: $FAILED_COUNT"
+          
+          if [ $FAILED_COUNT -gt 0 ]; then
+            echo "❌ Some migrations failed"
+            exit 1
+          fi
+          
+          echo "✅ All migrations completed successfully"
+
+      - name: Verify migrations
+        if: steps.detect-migrations.outputs.has_migrations == 'true'
+        run: |
+          echo "🔍 Verifying migrations..."
+          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
+          
+          # Verify key tables exist
+          psql "${{ env.DATABASE_URL }}" -c "
+            SELECT 
+              table_name,
+              CASE 
+                WHEN EXISTS (
+                  SELECT FROM information_schema.tables 
+                  WHERE table_schema = 'public' 
+                  AND table_name = t.table_name
+                ) THEN '✓ exists'
+                ELSE '✗ missing'
+              END as status
+            FROM (
+              VALUES 
+                ('receipts'),
+                ('ai_analysis_usage'),
+                ('ai_analyses'),
+                ('support_tickets'),
+                ('billing_accounts'),
+                ('subscriptions')
+            ) AS t(table_name)
+            ORDER BY table_name;
+          " || echo "⚠️  Could not verify tables (non-critical)"
+          
+          # Verify functions exist
+          echo ""
+          echo "Verifying functions..."
+          psql "${{ env.DATABASE_URL }}" -c "
+            SELECT 
+              proname as function_name,
+              CASE 
+                WHEN EXISTS (
+                  SELECT FROM pg_proc 
+                  WHERE proname = f.function_name
+                ) THEN '✓ exists'
+                ELSE '✗ missing'
+              END as status
+            FROM (
+              VALUES 
+                ('set_tenant_context'),
+                ('check_sla_violations')
+            ) AS f(function_name)
+            ORDER BY function_name;
+          " || echo "⚠️  Could not verify functions (non-critical)"
+          
+          # Check RLS policies
+          echo ""
+          echo "Checking RLS policies for support_tickets..."
+          psql "${{ env.DATABASE_URL }}" -c "
+            SELECT tablename, policyname, permissive, roles, cmd
+            FROM pg_policies 
+            WHERE schemaname = 'public' 
+            AND tablename = 'support_tickets'
+            ORDER BY policyname;
+          " || echo "⚠️  Could not list policies (non-critical)"
+
+      - name: Migration Summary
+        if: always()
+        run: |
+          echo "## 🗄️ Auto-Migration Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** Push to main branch" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** Production" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Migrations Found:** ${{ steps.detect-migrations.outputs.migration_count || 0 }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Completed At:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ All migrations applied successfully!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Migration failed. Check logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `🚨 Auto-Migration Failed: ${context.sha.substring(0, 7)}`
+            const body = `
+            ## Auto-Migration Failure Report
+            
+            **Commit:** ${context.sha}
+            **Branch:** ${context.ref}
+            **Workflow:** ${context.workflow}
+            **Run ID:** ${context.runId}
+            
+            ### Details
+            The automatic migration workflow failed when merging to main.
+            
+            **Action Required:**
+            1. Check the workflow logs for error details
+            2. Verify migration files are valid SQL
+            3. Check database connection and permissions
+            4. Manually apply migrations if needed
+            
+            [View Workflow Run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+            `
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['bug', 'migration-failure', 'urgent', 'production']
+            })

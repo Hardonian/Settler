@@ -114,7 +114,7 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 
 ### 🆓 Free
 
-**Perfect for:** Testing, small projects, developers learning the platform
+**Great for:** Testing, small projects, developers learning the platform
 
 **$0/month**
 
@@ -134,17 +134,16 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 
 ### 💼 Starter
 
-**Perfect for:** Small e-commerce stores, early-stage SaaS
+**Great for:** Small e-commerce stores, early-stage SaaS
 
-**$29/month**  
-_$290/year (save $58, ~17% discount)_
+**$99/month**
 
 | Feature         | Limit                    |
 | --------------- | ------------------------ |
-| Reconciliations | 10,000/month             |
+| Reconciliations | 50,000/month             |
 | Adapters        | 5                        |
 | Log Retention   | 30 days                  |
-| Support         | Email (24-hour response) |
+| Support         | Email (24-hour response SLA) |
 | API Rate Limit  | 500 requests/15 min      |
 | Webhooks        | ✅ Included              |
 | Reports         | JSON + CSV export        |
@@ -158,17 +157,16 @@ _$290/year (save $58, ~17% discount)_
 
 ### 🚀 Growth
 
-**Perfect for:** Mid-market SaaS, growing e-commerce
+**Great for:** Mid-market SaaS, growing e-commerce
 
-**$99/month**  
-_$990/year (save $198, ~17% discount)_
+**$599/month**
 
 | Feature                 | Limit                            |
 | ----------------------- | -------------------------------- |
-| Reconciliations         | 100,000/month                    |
+| Reconciliations         | 500,000/month                    |
 | Adapters                | 15                               |
 | Log Retention           | 90 days                          |
-| Support                 | Priority email (4-hour response) |
+| Support                 | Priority email (24-hour response SLA) |
 | API Rate Limit          | 2,000 requests/15 min            |
 | Webhooks                | ✅ Included                      |
 | Reports                 | JSON + CSV + PDF export          |
@@ -185,17 +183,16 @@ _$990/year (save $198, ~17% discount)_
 
 ### 📈 Scale
 
-**Perfect for:** Large e-commerce, enterprise SaaS
+**Great for:** Large e-commerce, enterprise SaaS
 
-**$299/month**  
-_$2,990/year (save $598, ~17% discount)_
+**$4,999/month**
 
 | Feature                  | Limit                         |
 | ------------------------ | ----------------------------- |
-| Reconciliations          | 1,000,000/month               |
+| Reconciliations          | 5,000,000/month               |
 | Adapters                 | Unlimited                     |
 | Log Retention            | 1 year                        |
-| Support                  | Priority support (1-hour SLA) |
+| Support                  | Priority support (4-hour response SLA) |
 | API Rate Limit           | 10,000 requests/15 min        |
 | Webhooks                 | ✅ Included                   |
 | Reports                  | All formats + White-label     |
@@ -215,7 +212,7 @@ _$2,990/year (save $598, ~17% discount)_
 
 ### 🏢 Enterprise
 
-**Perfect for:** Large enterprises, regulated industries
+**Great for:** Large enterprises, regulated industries
 
 **Custom Pricing**  
 _Typically $1,000-$10,000+/month_
@@ -424,7 +421,7 @@ Match transactions across Stripe, PayPal, Square, Apple Pay.
 
 Sync Stripe/Shopify data with QuickBooks/NetSuite automatically.
 
-**Example:** E-commerce business using Stripe for payments and QuickBooks for accounting. Automated sync eliminates manual data entry.
+**Example:** E-commerce business using Stripe for payments and QuickBooks for accounting. Automated sync reduces manual data entry significantly.
 
 ### Compliance Auditing
 

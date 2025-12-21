@@ -392,7 +392,7 @@ export default function Enterprise() {
               { value: '99.99%', label: 'Uptime SLA', description: 'Guaranteed availability' },
               { value: '<4hr', label: 'Support Response', description: 'Critical issues' },
               { value: '24/7', label: 'Support Coverage', description: 'Always available' },
-              { value: '100%', label: 'Compliance', description: 'SOC 2, GDPR, PCI-DSS' },
+              { value: 'Full', label: 'Compliance', description: 'SOC 2, GDPR, PCI-DSS' },
             ].map((stat, index) => (
               <div key={index} role="listitem">
                 <AnimatedStatCard

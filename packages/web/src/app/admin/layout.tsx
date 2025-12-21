@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, FileText, Settings, Flag, Palette, FlaskConical, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, Flag, Palette, FlaskConical, BarChart3, Activity } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -43,6 +43,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/webhooks">
             <Button variant="ghost" className="w-full justify-start gap-2">
               <FlaskConical size={18} /> Webhooks
+            </Button>
+          </Link>
+          <Link href="/admin/monitoring">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <Activity size={18} /> Monitoring
             </Button>
           </Link>
           <Link href="/admin/analytics">

@@ -44,7 +44,7 @@ Data is stored in PostgreSQL databases hosted on Supabase. Data residency option
 
 ### Do you store credit card information?
 
-No. We use Stripe for payment processing. Stripe handles all credit card data. We never store full credit card numbers.
+No. We use Stripe for payment processing. Stripe handles all credit card data. We are designed to minimize credit card data storage.
 
 ### How do I report a security vulnerability?
 

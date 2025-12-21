@@ -66,7 +66,7 @@ export function EnhancedTrustBadges() {
       name: "99.9% Uptime SLA",
       icon: "/assets/icons/uptime-badge.svg",
       status: "active",
-      description: "Guaranteed service availability",
+      description: "SLA-backed availability (Enterprise)",
       gradient: "from-amber-500 to-amber-600",
     },
     {

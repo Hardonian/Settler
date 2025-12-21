@@ -45,7 +45,7 @@
 **Name:** Settler - Reconciliation-as-a-Service
 
 **Description:**
-Settler automates payment reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms. Finance teams spend 2-3 hours daily manually reconciling transactions—Settler eliminates this with a 5-minute API integration.
+Settler automates payment reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms. Finance teams spend 2-3 hours daily manually reconciling transactions—Settler reduces this significantly with a 5-minute API integration.
 
 **Key Features:**
 - Real-time reconciliation via webhooks

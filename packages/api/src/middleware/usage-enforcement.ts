@@ -16,19 +16,36 @@ interface PlanLimits {
   exports: number;
 }
 
-// Plan limits configuration (matching planConfig.ts)
+// Plan limits configuration (aligned with pricing page)
 const PLAN_LIMITS: Record<string, PlanLimits> = {
-  base: {
-    ingestions: 100,
-    exports: 50,
+  free: {
+    ingestions: 10,
+    exports: 5,
   },
-  pro: {
-    ingestions: 10000,
-    exports: 5000,
+  starter: {
+    ingestions: 500,
+    exports: 250,
+  },
+  growth: {
+    ingestions: 5000,
+    exports: 2500,
+  },
+  scale: {
+    ingestions: 50000,
+    exports: 25000,
   },
   enterprise: {
-    ingestions: 100000,
-    exports: 50000,
+    ingestions: -1, // unlimited
+    exports: -1,
+  },
+  // Legacy plan names (for backward compatibility)
+  base: {
+    ingestions: 500, // Maps to starter
+    exports: 250,
+  },
+  pro: {
+    ingestions: 5000, // Maps to growth
+    exports: 2500,
   },
 };
 

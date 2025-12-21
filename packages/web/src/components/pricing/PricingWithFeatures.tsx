@@ -35,7 +35,7 @@ const tiers: PricingTier[] = [
     id: 'free',
     name: 'Free',
     price: '$0',
-    description: 'Perfect for getting started',
+    description: 'Great for getting started',
     features: [
       'Meaningful Changes Feed',
       'Basic Reconciliation',
@@ -88,7 +88,7 @@ const tiers: PricingTier[] = [
       'Custom AI Token Packages',
       'Advanced Judgment Layer',
       'Dedicated Support',
-      'SLA Guarantee',
+      'SLA-backed (Enterprise)',
       'Custom Integrations',
       'On-Premise Options',
     ],

@@ -31,9 +31,9 @@ const valueProps: ValueProp[] = [
   },
   {
     icon: Shield,
-    title: '99.99% Accuracy Guarantee',
-    description: 'Deterministic algorithms eliminate errors',
-    benefit: 'Reduce financial discrepancies to zero',
+    title: 'High Accuracy',
+    description: 'Deterministic algorithms reduce errors',
+    benefit: 'Significantly reduce financial discrepancies',
     gradient: 'from-green-500 to-emerald-500',
   },
   {
