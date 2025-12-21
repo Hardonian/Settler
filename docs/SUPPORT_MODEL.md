@@ -14,7 +14,7 @@ This document defines **support tiers**, **response times**, and **support expec
 
 ## Support Tiers
 
-### Starter Plan: Community Support
+### Free Plan: Community Support
 
 **Included:**
 - ✅ Documentation (comprehensive guides)
@@ -37,12 +37,12 @@ This document defines **support tiers**, **response times**, and **support expec
 
 ---
 
-### Professional Plan: Email Support
+### Starter Plan: Email Support (Best-Effort)
 
 **Included:**
-- ✅ Everything in Starter plan
+- ✅ Everything in Free plan
 - ✅ Email support (support@settler.io)
-- ✅ 24-48 hour response time (best-effort)
+- ✅ 24-48 hour response time (best-effort, no SLA)
 - ✅ Priority bug fixes
 - ✅ Feature request consideration
 
@@ -55,9 +55,32 @@ This document defines **support tiers**, **response times**, and **support expec
 
 **Limitations:**
 - No phone support
-- No guaranteed response time (best-effort)
+- No guaranteed response time (best-effort only)
 - No dedicated support engineer
 - No SLA-backed support
+
+---
+
+### Growth Plan: Priority Email Support
+
+**Included:**
+- ✅ Everything in Starter plan
+- ✅ Priority email support (support@settler.io)
+- ✅ 4-hour response time (SLA-backed)
+- ✅ Priority bug fixes
+- ✅ Feature request consideration
+
+**Response Time:** 4 hours (SLA-backed)
+
+**Support Channels:**
+- Email: support@settler.io
+- Documentation: https://settler.dev/docs
+- GitHub Issues: https://github.com/shardie-github/Settler-API/issues
+
+**Limitations:**
+- No phone support
+- No dedicated support engineer
+- SLA applies to response time, not resolution time
 
 ---
 
