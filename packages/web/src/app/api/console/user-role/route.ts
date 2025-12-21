@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getUserRole } from '@/shared/auth/roles';
+import { isSuperAdmin } from '@/lib/auth/super-admin';
 
 /**
- * Get current user's role in their tenant
+ * Get current user's role in their tenant and super admin status
  */
 export async function GET() {
   try {
@@ -10,27 +12,22 @@ export async function GET() {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
-      return NextResponse.json({ role: null }, { status: 401 });
+      return NextResponse.json({ role: null, isSuperAdmin: false }, { status: 401 });
     }
 
-    // Get user's role from memberships
-    const { data: membership } = await supabase
-      .from('memberships')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .maybeSingle();
-
-    const role = (membership as { role?: string } | null)?.role ?? 'member';
+    // Get user's role from getUserRole (includes SUPER_ADMIN check)
+    const role = await getUserRole(user.id);
+    const isAdmin = await isSuperAdmin();
 
     return NextResponse.json({ 
       role,
+      isSuperAdmin: isAdmin,
       userId: user.id,
     });
   } catch (error: any) {
     console.error('Error getting user role:', error);
     return NextResponse.json(
-      { role: null, error: error.message },
+      { role: null, isSuperAdmin: false, error: error.message },
       { status: 500 }
     );
   }
