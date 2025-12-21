@@ -110,7 +110,17 @@ export async function GET(request: NextRequest) {
     
     const { data, error, count } = await query;
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching table data:', error);
+      return NextResponse.json(
+        { 
+          error: 'Failed to fetch table data',
+          message: error.message || 'Unknown error',
+          actionable: 'Please check your connection and try again. If the problem persists, contact support.'
+        },
+        { status: 500 }
+      );
+    }
     
     return NextResponse.json({ 
       data: data || [], 
@@ -120,7 +130,14 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Error fetching table data:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { 
+        error: 'Failed to fetch table data',
+        message: error?.message || 'Unknown error',
+        actionable: 'Please check your connection and try again. If the problem persists, contact support.'
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -169,7 +186,17 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Direct insert error:', error);
+      return NextResponse.json(
+        { 
+          error: 'Failed to insert data',
+          message: error.message || 'Unknown error',
+          actionable: 'Please check your data format and try again. If the problem persists, contact support.'
+        },
+        { status: 500 }
+      );
+    }
     
     return NextResponse.json({ data }, { status: 201 });
   } catch (error: any) {
@@ -229,12 +256,29 @@ export async function PATCH(request: NextRequest) {
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Update error:', error);
+      return NextResponse.json(
+        { 
+          error: 'Failed to update data',
+          message: error.message || 'Unknown error',
+          actionable: 'Please check your data format and try again. If the problem persists, contact support.'
+        },
+        { status: 500 }
+      );
+    }
     
     return NextResponse.json({ data });
   } catch (error: any) {
     console.error('Error updating record:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { 
+        error: 'Failed to update data',
+        message: error?.message || 'Unknown error',
+        actionable: 'Please check your connection and try again. If the problem persists, contact support.'
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -282,11 +326,28 @@ export async function DELETE(request: NextRequest) {
       .delete()
       .eq('id', id);
     
-    if (error) throw error;
+    if (error) {
+      console.error('Delete error:', error);
+      return NextResponse.json(
+        { 
+          error: 'Failed to delete data',
+          message: error.message || 'Unknown error',
+          actionable: 'Please check the record ID and try again. If the problem persists, contact support.'
+        },
+        { status: 500 }
+      );
+    }
     
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Error deleting record:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { 
+        error: 'Failed to delete data',
+        message: error?.message || 'Unknown error',
+        actionable: 'Please check your connection and try again. If the problem persists, contact support.'
+      },
+      { status: 500 }
+    );
   }
 }
