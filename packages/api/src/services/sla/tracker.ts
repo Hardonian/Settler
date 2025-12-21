@@ -54,10 +54,8 @@ export function getSLAPolicy(tierId: string): SLAPolicy {
   
   const mappedTier = tierMap[tierId] || tierId;
   const policy = SLA_POLICIES[mappedTier];
-  if (policy) {
-    return policy;
-  }
-  return SLA_POLICIES.free;
+  // Return policy if found, otherwise return free policy (guaranteed to exist)
+  return policy ?? SLA_POLICIES['free']!;
 }
 
 /**
