@@ -23,16 +23,8 @@
       "layer": {
         "app/signup/page": "rsc"
       }
-    },
-    "9622973c4adccaa316f958df10e4901a2491f070": {
-      "workers": {
-        "app/community/page": "(action-browser)/../../node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fworkspace%2Fpackages%2Fweb%2Fsrc%2Fapp%2Factions%2Fpositioning.ts%22%2C%5B%22submitPositioningFeedback%22%5D%5D%5D&__client_imported__=true!"
-      },
-      "layer": {
-        "app/community/page": "action-browser"
-      }
     }
   },
   "edge": {},
-  "encryptionKey": "Ztzcw6njc0fKZQzndXrHasDNRuBNJ6jjhw8i4QiTx8A="
+  "encryptionKey": "dCkboEul7CUk/RPqs3/ExiHDs50aKmXCJmOLBw26AOk="
 }
