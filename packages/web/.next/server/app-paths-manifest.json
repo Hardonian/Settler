@@ -1,3 +1,17 @@
 {
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/api/analytics/conversion/route": "app/api/analytics/conversion/route.js",
+  "/playground/page": "app/playground/page.js",
+  "/runbooks/page": "app/runbooks/page.js",
+  "/schematics/page": "app/schematics/page.js",
+  "/receipts/page": "app/receipts/page.js",
+  "/feature-flags/page": "app/feature-flags/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/console/page": "app/console/page.js",
+  "/docs/page": "app/docs/page.js",
+  "/pricing/page": "app/pricing/page.js",
+  "/cookbook/page": "app/cookbook/page.js",
+  "/enterprise/page": "app/enterprise/page.js",
+  "/community/page": "app/community/page.js",
+  "/support/page": "app/support/page.js"
 }

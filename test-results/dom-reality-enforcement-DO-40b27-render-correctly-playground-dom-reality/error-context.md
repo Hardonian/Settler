@@ -1,0 +1,268 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+    - link "Skip to main content" [ref=e2] [cursor=pointer]:
+        - /url: "#main-content"
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+        - /url: "#main-content"
+    - main "Interactive playground" [ref=e4]:
+        - navigation "Main navigation" [ref=e5]:
+            - generic [ref=e7]:
+                - link "Settler homepage" [ref=e8] [cursor=pointer]:
+                    - /url: /
+                    - generic [ref=e10]: S
+                    - generic [ref=e11]: Settler
+                - navigation "Desktop navigation" [ref=e12]:
+                    - link "Console" [ref=e13] [cursor=pointer]:
+                        - /url: /console
+                    - link "Playground" [ref=e14] [cursor=pointer]:
+                        - /url: /playground
+                    - link "Docs" [ref=e15] [cursor=pointer]:
+                        - /url: /docs
+                    - link "Pricing" [ref=e16] [cursor=pointer]:
+                        - /url: /pricing
+                    - link "Cookbook" [ref=e17] [cursor=pointer]:
+                        - /url: /cookbook
+                    - link "Runbooks" [ref=e18] [cursor=pointer]:
+                        - /url: /runbooks
+                    - link "Schematics" [ref=e19] [cursor=pointer]:
+                        - /url: /schematics
+                    - link "Receipts API" [ref=e20] [cursor=pointer]:
+                        - /url: /receipts
+                    - link "Feature Flags" [ref=e21] [cursor=pointer]:
+                        - /url: /feature-flags
+                    - link "Enterprise" [ref=e22] [cursor=pointer]:
+                        - /url: /enterprise
+                    - link "Community" [ref=e23] [cursor=pointer]:
+                        - /url: /community
+                    - link "Support" [ref=e24] [cursor=pointer]:
+                        - /url: /support
+                    - button "Toggle dark mode" [ref=e25] [cursor=pointer]:
+                        - generic [ref=e26]: 🌙
+                    - link "Get started with Settler" [ref=e27] [cursor=pointer]:
+                        - /url: /console/playground
+                        - text: Get Started
+        - region "Try Settler API" [ref=e28]:
+            - generic [ref=e30]:
+                - generic "Page category badge" [ref=e31]: Interactive Playground
+                - heading "Try Settler API" [level=1] [ref=e32]
+                - paragraph [ref=e33]: Test the API, see examples, and experiment with reconciliation jobs
+        - region "Interactive Playground" [ref=e34]:
+            - generic [ref=e35]:
+                - heading "Interactive Playground" [level=2] [ref=e36]
+                - region "API Configuration" [ref=e37]:
+                    - generic [ref=e38]:
+                        - heading "API Configuration" [level=3] [ref=e39]
+                        - paragraph [ref=e40]: Enter your API key to test with real credentials, or leave empty for demo mode
+                    - generic [ref=e42]:
+                        - textbox "API key input" [ref=e43]:
+                            - /placeholder: sk_your_api_key
+                        - button "Run code" [ref=e44] [cursor=pointer]: Run Code
+                - generic [ref=e45]:
+                    - region "Code Editor" [ref=e46]:
+                        - generic [ref=e47]:
+                            - generic [ref=e48]:
+                                - heading "Code Editor" [level=3] [ref=e49]
+                                - generic [ref=e50]: TypeScript
+                            - paragraph [ref=e51]: Edit the code below to experiment with the Settler API
+                        - textbox "Code editor" [ref=e53]: 'import { Settler } from "@settler/sdk"; const client = new Settler({ apiKey: "sk_your_api_key", }); // Create a reconciliation job const job = await client.jobs.create({ name: "Shopify-Stripe Reconciliation", source: { adapter: "shopify", config: { apiKey: process.env.NEXT_PUBLIC_SHOPIFY_API_KEY || "", }, }, target: { adapter: "stripe", config: { // SECURITY: Never expose secret keys client-side! // Use server-side API routes to handle Stripe operations apiKey: "sk_test_...", // Placeholder - use server-side API in production }, }, rules: { matching: [ { field: "order_id", type: "exact" }, { field: "amount", type: "exact", tolerance: 0.01 }, ], conflictResolution: "last-wins", }, }); console.log("Job created:", job.data.id); // Run the job and get report const report = await client.jobs.run(job.data.id); console.log("Report:", report.data.summary); // { // total: 150, // matched: 145, // unmatched: 3, // conflicts: 2, // accuracy: 0.987 // }'
+                    - region "Output" [ref=e54]:
+                        - generic [ref=e55]:
+                            - generic [ref=e56]:
+                                - heading "Output" [level=3] [ref=e57]
+                                - generic [ref=e58]: Console
+                            - paragraph [ref=e59]: Results and logs from your code execution
+                        - log "Code execution output" [ref=e61]:
+                            - generic [ref=e62]: // Click 'Run Code' to execute and see results here
+                - region "Quick Examples" [ref=e64]:
+                    - generic [ref=e65]:
+                        - heading "Quick Examples" [level=3] [ref=e66]
+                        - paragraph [ref=e67]: Try these pre-configured examples
+                    - list "Quick example templates" [ref=e69]:
+                        - listitem "Load QuickBooks to Stripe example" [ref=e70] [cursor=pointer]:
+                            - generic [ref=e71]:
+                                - generic [ref=e72]: QuickBooks → Stripe
+                                - generic [ref=e73]: Accounting to payments
+                        - listitem "Load PayPal to Shopify example" [ref=e74] [cursor=pointer]:
+                            - generic [ref=e75]:
+                                - generic [ref=e76]: PayPal → Shopify
+                                - generic [ref=e77]: Payment to e-commerce
+                        - listitem "Load real-time webhooks example" [ref=e78] [cursor=pointer]:
+                            - generic [ref=e79]:
+                                - generic [ref=e80]: Real-time Webhooks
+                                - generic [ref=e81]: Live event reconciliation
+        - generic [ref=e83]:
+            - heading "Secure & Reliable" [level=2] [ref=e85]
+            - list "Trust badges and certifications" [ref=e86]:
+                - listitem "SOC 2 Planned Q3 2026" [ref=e87]:
+                    - img "SOC 2 Planned Q3 2026 badge" [ref=e90]
+                    - generic [ref=e91]:
+                        - generic [ref=e92]: SOC 2 Planned Q3 2026
+                        - generic [ref=e93]: Enterprise security certification planned
+                - listitem "GDPR Compliant" [ref=e94]:
+                    - img "GDPR Compliant badge" [ref=e97]
+                    - generic [ref=e98]:
+                        - generic [ref=e99]: GDPR Compliant
+                        - generic [ref=e100]: EU data protection compliant
+                - listitem "PCI-DSS Ready" [ref=e101]:
+                    - img "PCI-DSS Ready badge" [ref=e104]
+                    - generic [ref=e105]:
+                        - generic [ref=e106]: PCI-DSS Ready
+                        - generic [ref=e107]: Payment security standards
+                - listitem "99.99% Uptime" [ref=e108]:
+                    - img "99.99% Uptime badge" [ref=e111]
+                    - generic [ref=e112]:
+                        - generic [ref=e113]: 99.99% Uptime
+                        - generic [ref=e114]: SLA-backed availability (Enterprise)
+                - listitem "Bank-Level Encryption" [ref=e115]:
+                    - img "Bank-Level Encryption badge" [ref=e118]
+                    - generic [ref=e119]:
+                        - generic [ref=e120]: Bank-Level Encryption
+                        - generic [ref=e121]: AES-256 encryption at rest
+                - listitem "30-Day Guarantee" [ref=e122]:
+                    - img "30-Day Guarantee badge" [ref=e125]
+                    - generic [ref=e126]:
+                        - generic [ref=e127]: 30-Day Guarantee
+                        - generic [ref=e128]: Money-back guarantee
+        - region "Ready to Integrate?" [ref=e131]:
+            - generic [ref=e132]:
+                - heading "Ready to Integrate?" [level=3] [ref=e133]
+                - paragraph [ref=e134]: Get your API key and start reconciling in minutes. Free tier available.
+                - generic [ref=e135]:
+                    - generic [ref=e136]:
+                        - img [ref=e137]
+                        - text: No credit card required
+                    - generic [ref=e139]:
+                        - img [ref=e140]
+                        - text: 30-day free trial
+                    - generic [ref=e142]:
+                        - img [ref=e143]
+                        - text: Cancel anytime
+            - group "Call to action buttons" [ref=e146]:
+                - link "Start Free Trial" [ref=e147] [cursor=pointer]:
+                    - /url: /signup
+                - link "View Pricing" [ref=e148] [cursor=pointer]:
+                    - /url: /pricing
+        - contentinfo [ref=e149]:
+            - generic [ref=e150]:
+                - generic [ref=e151]:
+                    - generic [ref=e152]:
+                        - link "Settler homepage" [ref=e153] [cursor=pointer]:
+                            - /url: /
+                            - generic [ref=e155]: S
+                            - generic [ref=e156]: Settler
+                        - paragraph [ref=e157]: Reconciliation-as-a-Service API. Automate financial data reconciliation across all platforms.
+                    - navigation "Product navigation" [ref=e158]:
+                        - heading "Product" [level=3] [ref=e159]
+                        - list [ref=e160]:
+                            - listitem [ref=e161]:
+                                - link "Documentation" [ref=e162] [cursor=pointer]:
+                                    - /url: /docs
+                            - listitem [ref=e163]:
+                                - link "Cookbook" [ref=e164] [cursor=pointer]:
+                                    - /url: /cookbook
+                            - listitem [ref=e165]:
+                                - link "Runbooks" [ref=e166] [cursor=pointer]:
+                                    - /url: /runbooks
+                            - listitem [ref=e167]:
+                                - link "Schematics" [ref=e168] [cursor=pointer]:
+                                    - /url: /schematics
+                            - listitem [ref=e169]:
+                                - link "Playground" [ref=e170] [cursor=pointer]:
+                                    - /url: /playground
+                            - listitem [ref=e171]:
+                                - link "Pricing" [ref=e172] [cursor=pointer]:
+                                    - /url: /pricing
+                            - listitem [ref=e173]:
+                                - link "Enterprise" [ref=e174] [cursor=pointer]:
+                                    - /url: /enterprise
+                    - navigation "Resources navigation" [ref=e175]:
+                        - heading "Resources" [level=3] [ref=e176]
+                        - list [ref=e177]:
+                            - listitem [ref=e178]:
+                                - link "Support" [ref=e179] [cursor=pointer]:
+                                    - /url: /support
+                            - listitem [ref=e180]:
+                                - link "Community" [ref=e181] [cursor=pointer]:
+                                    - /url: /community
+                            - listitem [ref=e182]:
+                                - link "GitHub repository (opens in new tab)" [ref=e183] [cursor=pointer]:
+                                    - /url: https://github.com/shardie-github/Settler-API
+                                    - text: GitHub
+                            - listitem [ref=e184]:
+                                - link "API Reference" [ref=e185] [cursor=pointer]:
+                                    - /url: /docs
+                            - listitem [ref=e186]:
+                                - link "Status page (opens in new tab)" [ref=e187] [cursor=pointer]:
+                                    - /url: https://status.settler.dev
+                                    - text: Status
+                    - navigation "Legal navigation" [ref=e188]:
+                        - heading "Legal" [level=3] [ref=e189]
+                        - list [ref=e190]:
+                            - listitem [ref=e191]:
+                                - link "Terms of Service" [ref=e192] [cursor=pointer]:
+                                    - /url: /legal/terms
+                            - listitem [ref=e193]:
+                                - link "Privacy Policy" [ref=e194] [cursor=pointer]:
+                                    - /url: /legal/privacy
+                            - listitem [ref=e195]:
+                                - link "License" [ref=e196] [cursor=pointer]:
+                                    - /url: /legal/license
+                            - listitem [ref=e197]:
+                                - link "Cookie Policy" [ref=e198] [cursor=pointer]:
+                                    - /url: /legal/cookies
+                            - listitem [ref=e199]:
+                                - link "Acceptable Use Policy" [ref=e200] [cursor=pointer]:
+                                    - /url: /legal/aup
+                            - listitem [ref=e201]:
+                                - link "Data Processing Agreement" [ref=e202] [cursor=pointer]:
+                                    - /url: /legal/dpa
+                - generic [ref=e203]:
+                    - generic [ref=e204]:
+                        - generic [ref=e205]: © 2026 Settler. All rights reserved.
+                        - 'link "System status: All systems operational. View status page" [ref=e206] [cursor=pointer]':
+                            - /url: https://status.settler.dev
+                            - img [ref=e207]
+                            - generic [ref=e210]: All systems operational
+                    - navigation "Social media links" [ref=e211]:
+                        - link "Twitter (opens in new tab)" [ref=e212] [cursor=pointer]:
+                            - /url: https://twitter.com/settler_io
+                            - text: Twitter
+                        - link "GitHub (opens in new tab)" [ref=e213] [cursor=pointer]:
+                            - /url: https://github.com/shardie-github/Settler-API
+                            - text: GitHub
+                        - link "Discord (opens in new tab)" [ref=e214] [cursor=pointer]:
+                            - /url: https://discord.gg/settler
+                            - text: Discord
+    - button "Open help menu" [ref=e216] [cursor=pointer]:
+        - img [ref=e217]
+    - button [ref=e220] [cursor=pointer]:
+        - img [ref=e221]
+    - generic [ref=e223]:
+        - generic [ref=e225]:
+            - generic [ref=e226]:
+                - img [ref=e227]
+                - generic [ref=e229]:
+                    - heading "Cookie Preferences" [level=3] [ref=e230]
+                    - paragraph [ref=e231]: We use cookies to enhance your experience. Choose your preferences below.
+            - button "Close cookie consent" [ref=e232] [cursor=pointer]:
+                - img [ref=e233]
+        - generic [ref=e236]:
+            - paragraph [ref=e237]:
+                - text: By clicking "Accept All", you consent to our use of cookies. You can customize your preferences or learn more in our
+                - link "Cookie Policy" [ref=e238] [cursor=pointer]:
+                    - /url: /legal/cookies
+                - text: .
+            - generic [ref=e239]:
+                - button "Accept All" [ref=e240] [cursor=pointer]
+                - button "Reject All" [ref=e241] [cursor=pointer]
+                - button "Customize" [ref=e242] [cursor=pointer]:
+                    - img [ref=e243]
+                    - text: Customize
+    - generic [ref=e246]:
+        - img [ref=e248]
+        - button "Open Tanstack query devtools" [ref=e296] [cursor=pointer]:
+            - img [ref=e297]
+    - alert [ref=e345]
+```
