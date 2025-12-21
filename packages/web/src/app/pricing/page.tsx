@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { PricingCalculator } from "@/components/pricing/PricingCalculator";
 
 export default function Pricing() {
   const plans = [
@@ -217,6 +218,14 @@ export default function Pricing() {
               </div>
             </CardContent>
           </Card>
+        </div>
+      </section>
+
+      {/* Pricing Calculator */}
+      <section className="px-4 sm:px-6 lg:px-8 py-12 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-8">Calculate Your Cost</h2>
+          <PricingCalculator />
         </div>
       </section>
 
