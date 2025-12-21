@@ -180,4 +180,22 @@ export const RATE_LIMIT_CONFIGS = {
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 30,
   },
+  
+  // Public endpoints (very lenient)
+  public: {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 1000,
+  },
+  
+  // Billing endpoints (moderate)
+  billing: {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 100,
+  },
+  
+  // Webhook endpoints (lenient for external services)
+  webhook: {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 500,
+  },
 } as const;

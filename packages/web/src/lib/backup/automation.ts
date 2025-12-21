@@ -51,11 +51,9 @@ export async function createDatabaseBackup(config: BackupConfig = {}): Promise<{
     return { success: true, backupId };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Backup failed', error instanceof Error ? error : new Error(errorMessage));
-
-    logger.error('Database Backup Failed', {
+    const errorObj = error instanceof Error ? error : new Error(errorMessage);
+    logger.error('Database Backup Failed', errorObj, {
       message: `Failed to create backup: ${errorMessage}`,
-      error: errorMessage,
     });
 
     return { success: false, error: errorMessage };
@@ -141,11 +139,11 @@ export async function restoreFromBackup(
     return { success: true };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorObj = error instanceof Error ? error : new Error(errorMessage);
     
-    logger.error('Database Restore Failed', {
+    logger.error('Database Restore Failed', errorObj, {
       message: `Failed to restore from backup ${backupId}: ${errorMessage}`,
       backupId,
-      error: errorMessage,
     });
 
     return { success: false, error: errorMessage };

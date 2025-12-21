@@ -216,8 +216,12 @@ export async function getTenantIdFromRequest(request: NextRequest): Promise<{
         .eq('user_id', user.id)
         .single();
       
-      if (billingAccount?.tenant_id) {
-        return { tenantId: billingAccount.tenant_id };
+      type BillingAccountRow = { tenant_id: string };
+      if (billingAccount && typeof billingAccount === 'object' && 'tenant_id' in billingAccount) {
+        const tenantId = (billingAccount as BillingAccountRow).tenant_id;
+        if (tenantId) {
+          return { tenantId };
+        }
       }
     }
   } catch (error) {

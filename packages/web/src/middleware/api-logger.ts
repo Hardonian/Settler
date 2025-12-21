@@ -20,7 +20,7 @@ export interface ApiLogContext {
 /**
  * Extract tenant ID from request
  */
-async function getTenantFromRequest(request: NextRequest): Promise<string | undefined> {
+async function getTenantFromRequest(_request: NextRequest): Promise<string | undefined> {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -36,7 +36,12 @@ async function getTenantFromRequest(request: NextRequest): Promise<string | unde
       .eq('user_id', user.id)
       .single();
     
-    return billingAccount?.tenant_id;
+    type BillingAccountRow = { tenant_id: string };
+    if (billingAccount && typeof billingAccount === 'object' && 'tenant_id' in billingAccount) {
+      return (billingAccount as BillingAccountRow).tenant_id;
+    }
+    
+    return undefined;
   } catch (error) {
     console.error('[api-logger] Failed to get tenant:', error);
     return undefined;
@@ -46,12 +51,7 @@ async function getTenantFromRequest(request: NextRequest): Promise<string | unde
 /**
  * Extract API key ID from Authorization header
  */
-function getApiKeyId(request: NextRequest): string | undefined {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return undefined;
-  }
-  
+function getApiKeyId(_request: NextRequest): string | undefined {
   // Extract API key (we'll need to look it up to get the ID)
   // For now, return undefined - we'll enhance this later
   return undefined;
@@ -60,7 +60,7 @@ function getApiKeyId(request: NextRequest): string | undefined {
 /**
  * Get user ID from request
  */
-async function getUserId(request: NextRequest): Promise<string | undefined> {
+async function getUserId(_request: NextRequest): Promise<string | undefined> {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

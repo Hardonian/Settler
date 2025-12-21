@@ -113,8 +113,14 @@ export async function getApiCallLogs(filters: ApiLogFilters = {}): Promise<ApiCa
         .eq('user_id', user.id)
         .single();
       
-      if (billingAccount && 'tenant_id' in billingAccount && billingAccount.tenant_id) {
-        query = query.eq('tenant_id', billingAccount.tenant_id);
+      type BillingAccountRow = { tenant_id: string };
+      if (billingAccount && typeof billingAccount === 'object' && 'tenant_id' in billingAccount) {
+        const tenantId = (billingAccount as BillingAccountRow).tenant_id;
+        if (tenantId) {
+          query = query.eq('tenant_id', tenantId);
+        } else {
+          return []; // No tenant, no logs
+        }
       } else {
         return []; // No tenant, no logs
       }
@@ -189,8 +195,8 @@ export async function getApiCallLogs(filters: ApiLogFilters = {}): Promise<ApiCa
       statusCode: log.status_code,
       responseTime: log.response_time,
       timestamp: new Date(log.created_at),
-      headers: sanitizeApiData({ headers: log.headers }).headers as Record<string, string>,
-      query: log.query as Record<string, string>,
+      headers: sanitizeApiData({ headers: log.headers }).headers as Record<string, string> | undefined,
+      query: (log.query && typeof log.query === 'object' ? log.query : {}) as Record<string, string>,
       body: sanitizeApiData({ body: log.body }).body,
       responseBody: sanitizeApiData({ body: log.response_body }).body,
       error: log.error,
