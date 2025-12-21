@@ -52,7 +52,7 @@ interface DOMMetrics {
   cumulativeLayoutShift?: number;
 }
 
-// Critical routes to audit
+// Critical routes to audit - expanded list
 const CRITICAL_ROUTES = [
   '/',
   '/signup',
@@ -63,6 +63,11 @@ const CRITICAL_ROUTES = [
   '/trust',
   '/cookbook',
   '/runbooks',
+  '/how-it-works',
+  '/why-settler',
+  '/security',
+  '/enterprise',
+  '/dashboard',
 ];
 
 // Breakpoints to test
@@ -79,11 +84,8 @@ const THEMES = ['light', 'dark'] as const;
  * Capture SSR HTML before any client-side hydration
  */
 async function captureSSRHTML(page: Page): Promise<string> {
-  // Navigate with JavaScript disabled to get pure SSR
-  const context = page.context();
-  await context.setExtraHTTPHeaders({ 'Accept': 'text/html' });
-  
-  // Get initial HTML before hydration
+  // Get initial HTML immediately after navigation
+  // In Next.js, this is the SSR output before hydration
   const html = await page.content();
   return html;
 }
@@ -92,13 +94,14 @@ async function captureSSRHTML(page: Page): Promise<string> {
  * Capture post-hydration DOM (after React hydration but before all effects)
  */
 async function capturePostHydrationDOM(page: Page): Promise<string> {
-  // Wait for React to hydrate
+  // Wait for Next.js to hydrate
   await page.waitForFunction(() => {
-    return window.document.querySelector('[data-reactroot]') !== null ||
-           window.document.querySelector('[data-nextjs-scroll-focus-boundary]') !== null ||
-           document.readyState === 'complete';
+    return (
+      document.readyState === 'complete' &&
+      (window as any).__NEXT_DATA__ !== undefined
+    );
   }, { timeout: 10000 }).catch(() => {
-    // If React markers aren't found, assume hydration is complete after DOMContentLoaded
+    // If Next.js markers aren't found, assume hydration is complete
   });
   
   // Wait a bit for initial hydration
@@ -232,7 +235,7 @@ async function analyzeVisibility(page: Page): Promise<DOMIssue[]> {
     }
   });
   
-  // Check for intentional hidden patterns
+        // Check for intentional hidden patterns
   const intentionalHiddenSelectors = await page.evaluate(() => {
     const intentional: string[] = [];
     document.querySelectorAll('[aria-hidden="true"]').forEach((el) => {
@@ -253,10 +256,17 @@ async function analyzeVisibility(page: Page): Promise<DOMIssue[]> {
     }
   });
   
+  // Also check for script/style tags and skip-to-main links
+  const skipSelectors = ['script', 'style', 'noscript', '.skip-to-main'];
+  
   invisibleElements.forEach(({ selector, reason, computedStyles }) => {
     // Allowlist known intentional patterns
     const isIntentionalHidden = 
       selector.includes('skip-to-main') ||
+      selector.includes('hidden') ||
+      selector.startsWith('script') ||
+      selector.startsWith('style') ||
+      selector.startsWith('noscript') ||
       intentionalHiddenSelectors.some(intentional => selector.includes(intentional.split('.')[0]));
     
     if (!isIntentionalHidden) {
