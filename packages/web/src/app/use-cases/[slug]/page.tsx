@@ -39,8 +39,8 @@ const useCases: Record<
         icon: Zap,
       },
       {
-        title: "100% Accuracy",
-        description: "Eliminate human error in matching",
+        title: "High Accuracy",
+        description: "Reduce human error in matching",
         icon: Shield,
       },
       {

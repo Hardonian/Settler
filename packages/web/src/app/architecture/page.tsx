@@ -63,7 +63,7 @@ export default function ArchitecturePage() {
             <h3 className="text-2xl font-bold mb-4">Event Sourcing</h3>
             <p className="text-slate-600 dark:text-slate-400">
               Every action is recorded as an immutable event. We can replay history 
-              to re-calculate balances or audit changes with 100% fidelity.
+              to re-calculate balances or audit changes with high fidelity.
             </p>
           </div>
           <div>

@@ -40,7 +40,7 @@ Your finance team spends **2-3 hours daily** on manual reconciliation. Your engi
 ### For Your Business
 
 - **Reduce reconciliation time by 80%** — from hours to minutes
-- **Eliminate manual errors** — automated matching with smart rules
+- **Reduce manual errors** — automated matching with smart rules
 - **Scale without hiring** — handles millions of transactions
 - **SOC 2 Type II ready** — compliance built-in from day one
 
@@ -93,7 +93,7 @@ Your finance team spends **2-3 hours daily** on manual reconciliation. Your engi
 
 - **SOC 2 Type II** — In progress (certification Q2 2026)
 - **GDPR Compliant** — Data export/deletion APIs, DPA available
-- **PCI-DSS Ready** — We never store card data (pass-through only)
+- **PCI-DSS Ready** — We are designed to minimize card data storage (pass-through only)
 - **Encryption** — AES-256 at rest, TLS 1.3 in transit
 - **Audit Logs** — Immutable logs, 7-year retention available
 

@@ -66,7 +66,7 @@ QuickBooks and Xero have **manual** reconciliation features. Settler is **fully 
 
 ### Can I try Settler before committing?
 
-**Yes!** Free tier includes 1,000 reconciliations/month—perfect for testing.
+**Yes!** Free tier includes 1,000 reconciliations/month—great for testing.
 
 - ✅ No credit card required
 - ✅ Full API access
@@ -264,12 +264,12 @@ rules: {
 **Yes!** We take security seriously:
 
 - ✅ **Encryption:** AES-256 at rest, TLS 1.3 in transit
-- ✅ **API Keys:** Encrypted storage, never logged
+- ✅ **API Keys:** Encrypted storage, designed to minimize logging
 - ✅ **Access Control:** Role-based access control (RBAC)
 - ✅ **Audit Logs:** Immutable logs, 7-year retention
 - ✅ **SOC 2 Type II:** In progress (certification Q2 2026)
 - ✅ **GDPR Compliant:** Data export/deletion APIs
-- ✅ **PCI-DSS Ready:** We never store card data
+- ✅ **PCI-DSS Ready:** We are designed to minimize card data storage
 
 [View security page →](https://settler.io/security)
 
@@ -301,7 +301,7 @@ We follow SOC 2 controls today and will be fully certified soon.
 
 ### Are you PCI-DSS compliant?
 
-**We never store card data**, so PCI-DSS scope is minimal. If you send card data via webhooks, we pass it through without storage.
+**We are designed to minimize card data storage**, so PCI-DSS scope is minimal. If you send card data via webhooks, we pass it through without storage.
 
 **PCI-DSS Level 1 certification:** Available for Enterprise customers (Q3 2026).
 

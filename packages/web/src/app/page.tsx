@@ -187,7 +187,7 @@ if (flag.value) { /* ... */ }`;
                 />
                 
                 <TextReveal
-                  text="Reconciliation happens automatically across Stripe, Shopify, QuickBooks, and 50+ platforms. No configuration, no manual work—just continuous matching that never stops."
+                  text="Reconciliation happens automatically across Stripe, Shopify, QuickBooks, and 50+ platforms. No configuration, no manual work—just continuous matching that runs continuously."
                   className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
                   delay={0.2}
                   staggerDelay={0.01}
@@ -359,7 +359,7 @@ if (flag.value) { /* ... */ }`;
                Built on a Solid Foundation
              </h2>
              <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8 sm:mb-12 px-4">
-               See how we handle double-entry accounting, event sourcing, and edge execution to guarantee correctness.
+               See how we handle double-entry accounting, event sourcing, and edge execution to ensure correctness.
              </p>
              <Link href="/architecture" className="relative group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl max-w-4xl mx-auto">
                <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 flex items-end justify-center pb-6 sm:pb-8">

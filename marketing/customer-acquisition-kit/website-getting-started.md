@@ -224,7 +224,7 @@ Full type safety and IntelliSense support. Works with your existing stack.
 
 ## Pricing
 
-**Free Forever:** 1,000 reconciliations/month — Perfect for testing
+**Free Forever:** 1,000 reconciliations/month — Great for testing
 
 **Starter:** $29/month — 10,000 reconciliations — Small businesses
 

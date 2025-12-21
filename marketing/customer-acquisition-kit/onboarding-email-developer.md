@@ -46,7 +46,7 @@ const job = await settler.jobs.create({
 
 ## 🎁 What You Get Free
 
-- ✅ **1,000 reconciliations/month** — Perfect for testing
+- ✅ **1,000 reconciliations/month** — Great for testing
 - ✅ **2 adapters** — Connect your most important platforms
 - ✅ **7-day log retention** — See what happened
 - ✅ **Community support** — We're here to help

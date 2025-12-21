@@ -114,7 +114,7 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 
 ### 🆓 Free
 
-**Perfect for:** Testing, small projects, developers learning the platform
+**Great for:** Testing, small projects, developers learning the platform
 
 **$0/month**
 
@@ -134,7 +134,7 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 
 ### 💼 Starter
 
-**Perfect for:** Small e-commerce stores, early-stage SaaS
+**Great for:** Small e-commerce stores, early-stage SaaS
 
 **$29/month**  
 _$290/year (save $58, ~17% discount)_
@@ -158,7 +158,7 @@ _$290/year (save $58, ~17% discount)_
 
 ### 🚀 Growth
 
-**Perfect for:** Mid-market SaaS, growing e-commerce
+**Great for:** Mid-market SaaS, growing e-commerce
 
 **$99/month**  
 _$990/year (save $198, ~17% discount)_
@@ -185,7 +185,7 @@ _$990/year (save $198, ~17% discount)_
 
 ### 📈 Scale
 
-**Perfect for:** Large e-commerce, enterprise SaaS
+**Great for:** Large e-commerce, enterprise SaaS
 
 **$299/month**  
 _$2,990/year (save $598, ~17% discount)_
@@ -215,7 +215,7 @@ _$2,990/year (save $598, ~17% discount)_
 
 ### 🏢 Enterprise
 
-**Perfect for:** Large enterprises, regulated industries
+**Great for:** Large enterprises, regulated industries
 
 **Custom Pricing**  
 _Typically $1,000-$10,000+/month_
@@ -424,7 +424,7 @@ Match transactions across Stripe, PayPal, Square, Apple Pay.
 
 Sync Stripe/Shopify data with QuickBooks/NetSuite automatically.
 
-**Example:** E-commerce business using Stripe for payments and QuickBooks for accounting. Automated sync eliminates manual data entry.
+**Example:** E-commerce business using Stripe for payments and QuickBooks for accounting. Automated sync reduces manual data entry significantly.
 
 ### Compliance Auditing
 

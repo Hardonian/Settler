@@ -1,12 +1,12 @@
 # FOR IMMEDIATE RELEASE
 
-## Settler Launches Reconciliation-as-a-Service API, Eliminates Manual Payment Reconciliation
+## Settler Launches Reconciliation-as-a-Service API, Reduces Manual Payment Reconciliation
 
 **Developer-first API automates reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms**
 
 ---
 
-**SAN FRANCISCO, CA — January 15, 2026** — Settler, a reconciliation-as-a-service platform, today announced the launch of its API that automates payment reconciliation across fragmented SaaS and e-commerce ecosystems. The platform eliminates hours of manual spreadsheet work with a 5-minute API integration.
+**SAN FRANCISCO, CA — January 15, 2026** — Settler, a reconciliation-as-a-service platform, today announced the launch of its API that automates payment reconciliation across fragmented SaaS and e-commerce ecosystems. The platform reduces hours of manual spreadsheet work with a 5-minute API integration.
 
 Settler solves the problem of multi-platform reconciliation—matching transactions between Stripe payments, Shopify orders, QuickBooks accounting, and other systems. Finance teams currently spend 2-3 hours daily manually reconciling transactions, leading to errors, revenue leakage, and compliance risks.
 

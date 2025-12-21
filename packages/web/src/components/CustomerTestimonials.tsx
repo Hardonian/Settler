@@ -19,7 +19,7 @@ const testimonials: Testimonial[] = [
     role: "CFO",
     company: "EcoCommerce",
     quote:
-      "Settler saved us 15 hours per week on reconciliation. What used to take our finance team 2 days now takes 5 minutes. The accuracy is incredible—we've eliminated 99% of manual errors.",
+      "Settler saved us 15 hours per week on reconciliation. What used to take our finance team 2 days now takes 5 minutes. The accuracy is incredible—we've significantly reduced manual errors.",
     rating: 5,
     metric: "Saved 15 hours/week",
   },
@@ -46,7 +46,7 @@ const testimonials: Testimonial[] = [
     role: "Founder",
     company: "StartupXYZ",
     quote:
-      "As a startup, we couldn't afford to build reconciliation in-house. Settler's free tier was perfect for us, and when we grew, upgrading was seamless. The ROI was immediate.",
+      "As a startup, we couldn't afford to build reconciliation in-house. Settler's free tier was great for us, and when we grew, upgrading was seamless. The ROI was immediate.",
     rating: 5,
     metric: "ROI in first month",
   },
@@ -55,7 +55,7 @@ const testimonials: Testimonial[] = [
     role: "Finance Director",
     company: "GlobalRetail Inc",
     quote:
-      "Enterprise support is excellent. We have a dedicated account manager and SLA guarantees. Settler handles millions of transactions for us with zero downtime. Highly recommended.",
+      "Enterprise support is excellent. We have a dedicated account manager and SLA guarantees. Settler handles millions of transactions for us with high uptime. Highly recommended.",
     rating: 5,
     metric: "Millions of transactions",
   },

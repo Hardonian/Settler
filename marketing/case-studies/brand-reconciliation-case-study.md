@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-[Brand] is a fast-growing e-commerce platform processing thousands of orders daily across multiple payment providers. Before Settler, their finance team spent 40+ hours per week manually reconciling transactions between Shopify, Stripe, PayPal, and QuickBooks. After implementing Settler, they automated 100% of reconciliation, reduced errors by 95%, and saved $X per month in operational costs.
+[Brand] is a fast-growing e-commerce platform processing thousands of orders daily across multiple payment providers. Before Settler, their finance team spent 40+ hours per week manually reconciling transactions between Shopify, Stripe, PayPal, and QuickBooks. After implementing Settler, they automated the vast majority of reconciliation, reduced errors significantly, and saved $X per month in operational costs.
 
 **Key Results:**
 - ⏱️ **Time Saved:** 40 hours/week (2,080 hours/year)
@@ -255,7 +255,7 @@
 
 **Error Reduction:**
 - ✅ 95% reduction in reconciliation errors
-- ✅ 100% of transactions automatically matched
+- ✅ High percentage of transactions automatically matched
 - ✅ Unmatched transactions flagged for review (not lost)
 - ✅ Duplicate charges automatically detected
 
@@ -384,7 +384,7 @@ Shopify Orders → Settler → Stripe Payments
 
 ## Conclusion
 
-Settler enabled [Brand] to automate 100% of their reconciliation process, saving 40 hours per week and $XXX,XXX per year. The 3-day implementation, 99.8% accuracy, and real-time visibility transformed their finance operations, allowing the team to focus on strategic work instead of manual data matching.
+Settler enabled [Brand] to automate the vast majority of their reconciliation process, saving 40 hours per week and $XXX,XXX per year. The 3-day implementation, high accuracy, and real-time visibility transformed their finance operations, allowing the team to focus on strategic work instead of manual data matching.
 
 **Key Takeaways:**
 - ⚡ **Fast Implementation:** 3 days vs. 6 months
