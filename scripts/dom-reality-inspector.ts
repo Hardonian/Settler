@@ -11,59 +11,12 @@
 import { chromium, Browser, Page } from 'playwright';
 import { writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
-
-interface DOMRealityReport {
-  route: string;
-  timestamp: string;
-  viewport: { width: number; height: number };
-  theme?: string;
-  ssrHtml: string;
-  postHydrationDOM: string;
-  finalDOM: string;
-  issues: DOMIssue[];
-  metrics: DOMMetrics;
-  screenshots?: {
-    ssr?: string;
-    hydrated?: string;
-    final?: string;
-  };
-}
-
-interface DOMIssue {
-  type: 'invisible' | 'hydration_mismatch' | 'layout_shift' | 'accessibility' | 'css_root_cause' | 'missing_content';
-  severity: 'critical' | 'warning' | 'info';
-  element: string;
-  selector?: string;
-  description: string;
-  rootCause?: string;
-  fix?: string;
-  cssSource?: string;
-  computedStyles?: Record<string, string>;
-}
-
-interface DOMMetrics {
-  ssrNodeCount: number;
-  hydratedNodeCount: number;
-  finalNodeCount: number;
-  visibleNodeCount: number;
-  invisibleNodeCount: number;
-  hydrationMismatches: number;
-  layoutShifts: number;
-  accessibilityViolations: number;
-  firstContentfulPaint?: number;
-  largestContentfulPaint?: number;
-  cumulativeLayoutShift?: number;
-  timeToInteractive?: number;
-}
-
-interface InspectionConfig {
-  routes: string[];
-  viewports: Array<{ name: string; width: number; height: number }>;
-  themes?: string[];
-  baseURL: string;
-  outputDir: string;
-  captureScreenshots?: boolean;
-}
+import type { 
+  DOMRealityReport, 
+  DOMIssue, 
+  DOMMetrics, 
+  InspectionConfig 
+} from './dom-reality-types';
 
 /**
  * Capture SSR HTML (before any client-side hydration)
@@ -666,5 +619,8 @@ if (require.main === module) {
     outputDir: join(process.cwd(), 'test-results', 'dom-reality-reports'),
   };
   
-  inspectDOMReality(config).catch(console.error);
+  inspectDOMReality(config).catch((error) => {
+    console.error('DOM Reality Inspection failed:', error);
+    process.exit(1);
+  });
 }

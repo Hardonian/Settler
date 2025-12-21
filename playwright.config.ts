@@ -33,6 +33,18 @@ export default defineConfig({
         reducedMotion: "reduce",
       },
     },
+    {
+      name: "dom-reality",
+      testMatch: /.*dom-reality.*\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1280, height: 720 },
+        // Capture screenshots for DOM reality tests
+        screenshot: "only-on-failure",
+        video: "retain-on-failure",
+        trace: "on-first-retry",
+      },
+    },
   ],
   webServer: {
     command: "npm run dev --workspace=packages/web",

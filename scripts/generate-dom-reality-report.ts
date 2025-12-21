@@ -6,37 +6,7 @@
 
 import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
-
-interface DOMRealityReport {
-  route: string;
-  timestamp: string;
-  viewport: { width: number; height: number };
-  theme?: string;
-  issues: DOMIssue[];
-  metrics: DOMMetrics;
-}
-
-interface DOMIssue {
-  type: string;
-  severity: string;
-  element: string;
-  selector?: string;
-  description: string;
-  rootCause?: string;
-  fix?: string;
-}
-
-interface DOMMetrics {
-  ssrNodeCount: number;
-  hydratedNodeCount: number;
-  finalNodeCount: number;
-  visibleNodeCount: number;
-  invisibleNodeCount: number;
-  hydrationMismatches: number;
-  layoutShifts: number;
-  accessibilityViolations: number;
-  cumulativeLayoutShift?: number;
-}
+import type { DOMRealityReport, DOMIssue, DOMMetrics } from './dom-reality-types';
 
 /**
  * Generate markdown report
@@ -407,7 +377,12 @@ if (require.main === module) {
   const reportsDir = process.argv[2] || join(process.cwd(), 'test-results', 'dom-reality-reports');
   const outputDir = process.argv[3] || join(process.cwd(), 'test-results', 'dom-reality-reports');
   
-  generateReports(reportsDir, outputDir);
+  try {
+    generateReports(reportsDir, outputDir);
+  } catch (error) {
+    console.error('Report generation failed:', error);
+    process.exit(1);
+  }
 }
 
 export { generateReports };

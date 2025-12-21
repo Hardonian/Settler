@@ -89,6 +89,12 @@ jobs:
             test-results/dom-reality-report.json
           retention-days: 30
 
+      - name: Generate CI output
+        if: always()
+        run: |
+          npx tsx scripts/dom-reality-ci-integration.ts test-results/dom-reality-reports output > ci-output.md
+        continue-on-error: true
+
       - name: Comment PR with report
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
@@ -96,20 +102,32 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
+            const { execSync } = require('child_process');
             
             try {
-              const reportPath = path.join(process.cwd(), 'test-results', 'dom-reality-report.md');
-              if (fs.existsSync(reportPath)) {
-                const report = fs.readFileSync(reportPath, 'utf-8');
-                const body = `## 🔍 DOM Reality Report\n\n\`\`\`\n${report}\n\`\`\``;
-                
-                github.rest.issues.createComment({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: body
-                });
+              // Try to use CI integration output first
+              const ciOutputPath = path.join(process.cwd(), 'ci-output.md');
+              let body;
+              
+              if (fs.existsSync(ciOutputPath)) {
+                body = fs.readFileSync(ciOutputPath, 'utf-8');
+              } else {
+                // Fallback to report generation
+                const reportPath = path.join(process.cwd(), 'test-results', 'dom-reality-reports', 'DOM_REALITY_REPORT.md');
+                if (fs.existsSync(reportPath)) {
+                  const report = fs.readFileSync(reportPath, 'utf-8');
+                  body = `## 🔍 DOM Reality Report\n\n\`\`\`\n${report.substring(0, 2000)}\n\`\`\`\n\n[View full report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+                } else {
+                  body = '## 🔍 DOM Reality Report\n\n⚠️ Report not available. Check workflow logs for details.';
+                }
               }
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
             } catch (error) {
               console.log('Could not post comment:', error.message);
             }
@@ -122,13 +140,8 @@ jobs:
             rm server.pid
           fi
 
-      - name: Fail on critical issues
+      - name: Check critical issues
         if: always()
         run: |
-          if [ -f test-results/dom-reality-report.json ]; then
-            critical=$(node -e "const r=require('./test-results/dom-reality-report.json'); console.log(r.summary.criticalIssues)")
-            if [ "$critical" -gt 0 ]; then
-              echo "❌ Found $critical critical DOM reality issue(s)"
-              exit 1
-            fi
-          fi
+          npx tsx scripts/dom-reality-ci-integration.ts test-results/dom-reality-reports exit
+        continue-on-error: false
