@@ -30,16 +30,21 @@ export function createMonitoringRouter(): Router {
         .select('id, status')
         .in('status', ['active', 'trialing']);
 
-      const { data: tickets } = await supabase
-        .from('support_tickets')
-        .select('id, status, sla_violated')
-        .eq('status', 'open')
-        .catch(() => ({ data: null, error: null }));
+      let tickets: Array<{ id: string; status: string; sla_violated: boolean }> | null = null;
+      try {
+        const { data } = await supabase
+          .from('support_tickets')
+          .select('id, status, sla_violated')
+          .eq('status', 'open');
+        tickets = data;
+      } catch {
+        // Table might not exist yet, ignore
+      }
 
       const activeCustomers = customers?.length || 0;
       const activeSubscriptions = subscriptions?.length || 0;
       const openTickets = tickets?.length || 0;
-      const slaViolations = tickets?.filter(t => t.sla_violated).length || 0;
+      const slaViolations = tickets?.filter((t: { sla_violated: boolean }) => t.sla_violated).length || 0;
 
       res.json({
         status: 'healthy',
@@ -223,23 +228,28 @@ export function createMonitoringRouter(): Router {
   router.get('/operational', async (_req: AuthRequest, res) => {
     try {
       // Get support ticket metrics
-      const { data: tickets } = await supabase
-        .from('support_tickets')
-        .select('status, priority, sla_met, created_at')
-        .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
-        .catch(() => ({ data: null }));
+      let tickets: Array<{ status: string; priority: string; sla_met: boolean; created_at: string }> | null = null;
+      try {
+        const { data } = await supabase
+          .from('support_tickets')
+          .select('status, priority, sla_met, created_at')
+          .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+        tickets = data;
+      } catch {
+        // Table might not exist yet, ignore
+      }
 
       const ticketMetrics = {
         total: tickets?.length || 0,
-        open: tickets?.filter(t => t.status === 'open').length || 0,
-        resolved: tickets?.filter(t => t.status === 'resolved').length || 0,
-        sla_met: tickets?.filter(t => t.sla_met === true).length || 0,
-        sla_missed: tickets?.filter(t => t.sla_met === false).length || 0,
+        open: tickets?.filter((t: { status: string }) => t.status === 'open').length || 0,
+        resolved: tickets?.filter((t: { status: string }) => t.status === 'resolved').length || 0,
+        sla_met: tickets?.filter((t: { sla_met: boolean }) => t.sla_met === true).length || 0,
+        sla_missed: tickets?.filter((t: { sla_met: boolean }) => t.sla_met === false).length || 0,
         by_priority: {
-          critical: tickets?.filter(t => t.priority === 'critical').length || 0,
-          high: tickets?.filter(t => t.priority === 'high').length || 0,
-          medium: tickets?.filter(t => t.priority === 'medium').length || 0,
-          low: tickets?.filter(t => t.priority === 'low').length || 0,
+          critical: tickets?.filter((t: { priority: string }) => t.priority === 'critical').length || 0,
+          high: tickets?.filter((t: { priority: string }) => t.priority === 'high').length || 0,
+          medium: tickets?.filter((t: { priority: string }) => t.priority === 'medium').length || 0,
+          low: tickets?.filter((t: { priority: string }) => t.priority === 'low').length || 0,
         },
       };
 

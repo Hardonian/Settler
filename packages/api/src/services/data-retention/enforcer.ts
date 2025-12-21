@@ -67,7 +67,7 @@ export function getRetentionPolicy(tierId: string): RetentionPolicy {
   
   const mappedTier = tierMap[tierId] || tierId;
   const policy = RETENTION_POLICIES[mappedTier];
-  return policy || RETENTION_POLICIES.free;
+  return policy ?? RETENTION_POLICIES.free;
 }
 
 /**
@@ -87,12 +87,18 @@ export async function enforceRetentionPolicy(
     const reconciliationCutoff = new Date(cutoffDate);
     reconciliationCutoff.setDate(reconciliationCutoff.getDate() - policy.reconciliation_data_days);
     
-    const { error: reconError, count: reconCount } = await supabase
+    // First get count of records to delete
+    const { count: reconCount } = await supabase
+      .from('reconciliation_runs')
+      .select('id', { count: 'exact', head: true })
+      .eq('billing_account_id', billingAccountId)
+      .lt('created_at', reconciliationCutoff.toISOString());
+    
+    const { error: reconError } = await supabase
       .from('reconciliation_runs')
       .delete()
       .eq('billing_account_id', billingAccountId)
-      .lt('created_at', reconciliationCutoff.toISOString())
-      .select('id', { count: 'exact', head: true });
+      .lt('created_at', reconciliationCutoff.toISOString());
 
     if (reconError) {
       logError('Error deleting old reconciliation data', reconError);
@@ -110,12 +116,18 @@ export async function enforceRetentionPolicy(
     const receiptCutoff = new Date(cutoffDate);
     receiptCutoff.setDate(receiptCutoff.getDate() - policy.receipt_data_days);
     
-    const { error: receiptError, count: receiptCount } = await supabase
+    // First get count of records to delete
+    const { count: receiptCount } = await supabase
+      .from('receipts')
+      .select('id', { count: 'exact', head: true })
+      .eq('billing_account_id', billingAccountId)
+      .lt('created_at', receiptCutoff.toISOString());
+    
+    const { error: receiptError } = await supabase
       .from('receipts')
       .delete()
       .eq('billing_account_id', billingAccountId)
-      .lt('created_at', receiptCutoff.toISOString())
-      .select('id', { count: 'exact', head: true });
+      .lt('created_at', receiptCutoff.toISOString());
 
     if (receiptError) {
       logError('Error deleting old receipt data', receiptError);
@@ -133,12 +145,18 @@ export async function enforceRetentionPolicy(
     const usageCutoff = new Date(cutoffDate);
     usageCutoff.setDate(usageCutoff.getDate() - policy.usage_data_days);
     
-    const { error: usageError, count: usageCount } = await supabase
+    // First get count of records to delete
+    const { count: usageCount } = await supabase
+      .from('usage_events')
+      .select('id', { count: 'exact', head: true })
+      .eq('billing_account_id', billingAccountId)
+      .lt('created_at', usageCutoff.toISOString());
+    
+    const { error: usageError } = await supabase
       .from('usage_events')
       .delete()
       .eq('billing_account_id', billingAccountId)
-      .lt('created_at', usageCutoff.toISOString())
-      .select('id', { count: 'exact', head: true });
+      .lt('created_at', usageCutoff.toISOString());
 
     if (usageError) {
       logError('Error deleting old usage data', usageError);
