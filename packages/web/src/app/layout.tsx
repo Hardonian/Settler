@@ -57,12 +57,12 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: SETTLER_IMAGES.favicon.path, type: SETTLER_IMAGES.favicon.mimeType, sizes: `${SETTLER_IMAGES.favicon.width}x${SETTLER_IMAGES.favicon.height}` },
-      { url: SETTLER_IMAGES.favicon192.path, sizes: "192x192", type: SETTLER_IMAGES.favicon192.mimeType },
-      { url: SETTLER_IMAGES.favicon512.path, sizes: "512x512", type: SETTLER_IMAGES.favicon512.mimeType },
-      { url: "/favicon.svg", type: "image/svg+xml" }, // Fallback SVG
+      { url: SETTLER_IMAGES.favicon192.path, type: SETTLER_IMAGES.favicon192.mimeType, sizes: "192x192" },
+      { url: SETTLER_IMAGES.favicon512.path, type: SETTLER_IMAGES.favicon512.mimeType, sizes: "512x512" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
     ],
     apple: [
-      { url: SETTLER_IMAGES.favicon192.path, sizes: "192x192", type: SETTLER_IMAGES.favicon192.mimeType },
+      { url: SETTLER_IMAGES.favicon192.path, type: SETTLER_IMAGES.favicon192.mimeType, sizes: "192x192" },
     ],
   },
   openGraph: {

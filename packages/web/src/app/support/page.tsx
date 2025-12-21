@@ -229,7 +229,7 @@ export default function Support() {
 
   return (
     <AnimatedPageWrapper aria-label="Support and help center">
-      <FAQSchema faqs={faqs} />
+      <FAQSchema faqs={faqs as Array<{ question: string; answer: string }>} />
       <Navigation />
 
       {/* Breadcrumbs */}

@@ -8,11 +8,7 @@ import type { AnalyticsProvider } from '../types';
 
 declare global {
   interface Window {
-    gtag?: (
-      command: 'config' | 'event' | 'set' | 'js',
-      targetId: string | Date,
-      config?: Record<string, any>
-    ) => void;
+    gtag?: (...args: unknown[]) => void;
     dataLayer?: unknown[];
   }
 }
@@ -39,9 +35,9 @@ class GA4Provider implements AnalyticsProvider {
     document.head.appendChild(script);
 
     // Initialize gtag
-    window.gtag = function() {
+    window.gtag = function(...args: unknown[]) {
       if (window.dataLayer) {
-        window.dataLayer.push(arguments);
+        window.dataLayer.push(args);
       }
     };
 
