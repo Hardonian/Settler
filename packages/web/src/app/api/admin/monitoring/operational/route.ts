@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     }
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    let tickets = null;
+    let tickets: Array<{ status: string; priority: string; sla_met: boolean; created_at: string }> | null = null;
     try {
       const result = await supabase
         .from('support_tickets')
@@ -34,15 +34,15 @@ export async function GET(request: NextRequest) {
 
     const ticketMetrics = {
       total: tickets?.length || 0,
-      open: tickets?.filter(t => t.status === 'open').length || 0,
-      resolved: tickets?.filter(t => t.status === 'resolved').length || 0,
-      sla_met: tickets?.filter(t => t.sla_met === true).length || 0,
-      sla_missed: tickets?.filter(t => t.sla_met === false).length || 0,
+      open: tickets?.filter((t: { status: string }) => t.status === 'open').length || 0,
+      resolved: tickets?.filter((t: { status: string }) => t.status === 'resolved').length || 0,
+      sla_met: tickets?.filter((t: { sla_met: boolean }) => t.sla_met === true).length || 0,
+      sla_missed: tickets?.filter((t: { sla_met: boolean }) => t.sla_met === false).length || 0,
       by_priority: {
-        critical: tickets?.filter(t => t.priority === 'critical').length || 0,
-        high: tickets?.filter(t => t.priority === 'high').length || 0,
-        medium: tickets?.filter(t => t.priority === 'medium').length || 0,
-        low: tickets?.filter(t => t.priority === 'low').length || 0,
+        critical: tickets?.filter((t: { priority: string }) => t.priority === 'critical').length || 0,
+        high: tickets?.filter((t: { priority: string }) => t.priority === 'high').length || 0,
+        medium: tickets?.filter((t: { priority: string }) => t.priority === 'medium').length || 0,
+        low: tickets?.filter((t: { priority: string }) => t.priority === 'low').length || 0,
       },
     };
 

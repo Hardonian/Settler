@@ -51,10 +51,10 @@ export function PricingCalculator() {
   const [monthlyReconciliations, setMonthlyReconciliations] = useState<number>(10000);
   const [exceptionRate, setExceptionRate] = useState<number>(1);
 
-  // Calculate recommended plan
-  const recommendedPlan = PLANS.find(
+  // Calculate recommended plan - always guaranteed to return a plan
+  const recommendedPlan: Plan = PLANS.find(
     plan => monthlyReconciliations <= plan.maxReconciliations
-  ) || PLANS[PLANS.length - 1];
+  ) ?? PLANS[PLANS.length - 1]!;
 
   // Calculate exceptions
   const monthlyExceptions = Math.ceil((monthlyReconciliations * exceptionRate) / 100);
