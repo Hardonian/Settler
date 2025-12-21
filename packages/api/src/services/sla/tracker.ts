@@ -53,7 +53,8 @@ export function getSLAPolicy(tierId: string): SLAPolicy {
   };
   
   const mappedTier = tierMap[tierId] || tierId;
-  return SLA_POLICIES[mappedTier] || SLA_POLICIES.free;
+  const policy = SLA_POLICIES[mappedTier];
+  return policy || SLA_POLICIES.free;
 }
 
 /**

@@ -66,7 +66,8 @@ export function getRetentionPolicy(tierId: string): RetentionPolicy {
   };
   
   const mappedTier = tierMap[tierId] || tierId;
-  return RETENTION_POLICIES[mappedTier] || RETENTION_POLICIES.free;
+  const policy = RETENTION_POLICIES[mappedTier];
+  return policy || RETENTION_POLICIES.free;
 }
 
 /**
@@ -91,7 +92,7 @@ export async function enforceRetentionPolicy(
       .delete()
       .eq('billing_account_id', billingAccountId)
       .lt('created_at', reconciliationCutoff.toISOString())
-      .select('*', { count: 'exact', head: true });
+      .select('id', { count: 'exact', head: true });
 
     if (reconError) {
       logError('Error deleting old reconciliation data', reconError);
@@ -114,7 +115,7 @@ export async function enforceRetentionPolicy(
       .delete()
       .eq('billing_account_id', billingAccountId)
       .lt('created_at', receiptCutoff.toISOString())
-      .select('*', { count: 'exact', head: true });
+      .select('id', { count: 'exact', head: true });
 
     if (receiptError) {
       logError('Error deleting old receipt data', receiptError);
@@ -137,7 +138,7 @@ export async function enforceRetentionPolicy(
       .delete()
       .eq('billing_account_id', billingAccountId)
       .lt('created_at', usageCutoff.toISOString())
-      .select('*', { count: 'exact', head: true });
+      .select('id', { count: 'exact', head: true });
 
     if (usageError) {
       logError('Error deleting old usage data', usageError);
