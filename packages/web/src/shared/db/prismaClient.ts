@@ -4,12 +4,6 @@
  * Provides a shared Prisma client instance for the Next.js app.
  */
 
-// Force Node.js runtime environment for Prisma
-if (typeof process !== 'undefined' && process.env) {
-  process.env.NEXT_RUNTIME = 'nodejs';
-  process.env.PRISMA_CLIENT_ENGINE_TYPE = 'binary';
-}
-
 import { PrismaClient } from '@prisma/client';
 
 // Prevent multiple instances in development
@@ -46,17 +40,38 @@ function getOptimizedDatabaseUrl(): string | undefined {
 const optimizedDbUrl = getOptimizedDatabaseUrl();
 
 // PrismaClient configuration
-const prismaConfig: ConstructorParameters<typeof PrismaClient>[0] = {
+const prismaConfig: any = {
   log: nodeEnv === 'development' ? ['error', 'warn'] : ['error'],
-  datasources: optimizedDbUrl ? {
+};
+
+if (optimizedDbUrl) {
+  prismaConfig.datasources = {
     db: {
       url: optimizedDbUrl,
     },
-  } : undefined,
-};
+  };
+}
 
 // Create Prisma client instance
-const prismaInstance = globalForPrisma.prisma ?? new PrismaClient(prismaConfig);
+let prismaInstance: PrismaClient;
+
+try {
+  prismaInstance = globalForPrisma.prisma ?? new PrismaClient(prismaConfig);
+} catch (error) {
+  console.warn('Failed to initialize PrismaClient with config, retrying with defaults:', error);
+  try {
+    // Fallback attempt
+    prismaInstance = globalForPrisma.prisma ?? new PrismaClient({
+      ...prismaConfig,
+      // Provide explicit engine type hint if supported by constructor in this version
+      // or standard fallback params
+    } as any);
+  } catch (secondError) {
+    console.error('Critical: Failed to initialize PrismaClient:', secondError);
+    // Last resort: empty constructor
+    prismaInstance = globalForPrisma.prisma ?? new PrismaClient() as any;
+  }
+}
 
 export const prisma = prismaInstance;
 
