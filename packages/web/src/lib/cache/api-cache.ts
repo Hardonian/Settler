@@ -93,7 +93,7 @@ import type { NextRequest, NextResponse } from 'next/server';
 /**
  * Cache middleware for Next.js route handlers
  */
-export function withCache<T>(
+export function withCache(
   config: CacheConfig,
   handler: (request: NextRequest) => Promise<NextResponse>
 ) {

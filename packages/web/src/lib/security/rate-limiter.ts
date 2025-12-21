@@ -19,7 +19,8 @@ const CLEANUP_INTERVAL = 60000; // 1 minute
 setInterval(() => {
   const now = Date.now();
   for (const key in store) {
-    if (store[key].resetAt < now) {
+    const entry = store[key];
+    if (entry && entry.resetAt < now) {
       delete store[key];
     }
   }

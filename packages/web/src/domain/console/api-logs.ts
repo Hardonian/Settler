@@ -113,7 +113,7 @@ export async function getApiCallLogs(filters: ApiLogFilters = {}): Promise<ApiCa
         .eq('user_id', user.id)
         .single();
       
-      if (billingAccount?.tenant_id) {
+      if (billingAccount && 'tenant_id' in billingAccount && billingAccount.tenant_id) {
         query = query.eq('tenant_id', billingAccount.tenant_id);
       } else {
         return []; // No tenant, no logs
@@ -150,7 +150,7 @@ export async function getApiCallLogs(filters: ApiLogFilters = {}): Promise<ApiCa
     query = query.range(offset, offset + limit - 1);
     
     // Use count for total if needed (optimized query)
-    const { data, error, count } = await query;
+    const { data, error } = await query;
     
     if (error) {
       console.error('[getApiCallLogs] Error fetching logs:', error);
@@ -158,8 +158,28 @@ export async function getApiCallLogs(filters: ApiLogFilters = {}): Promise<ApiCa
       return [];
     }
     
+    // Type guard for log data
+    type ApiCallLogRow = {
+      id: string;
+      tenant_id: string;
+      user_id?: string;
+      api_key_id?: string;
+      method: string;
+      path: string;
+      status_code: number;
+      response_time: number;
+      created_at: string;
+      headers?: unknown;
+      query?: unknown;
+      body?: unknown;
+      response_body?: unknown;
+      error?: string;
+      user_agent?: string;
+      ip_address?: string;
+    };
+    
     // Sanitize logs to remove PII (batch processing)
-    return (data || []).map((log) => ({
+    return ((data || []) as ApiCallLogRow[]).map((log) => ({
       id: log.id,
       tenantId: log.tenant_id,
       userId: log.user_id,
@@ -210,14 +230,18 @@ export async function getApiCallStats(filters: ApiLogFilters = {}): Promise<{
   
   for (const log of logs) {
     // Count by method
-    stats.byMethod[log.method] = (stats.byMethod[log.method] || 0) + 1;
+    const method = log.method || 'UNKNOWN';
+    stats.byMethod[method] = (stats.byMethod[method] || 0) + 1;
     
     // Count by status code
-    stats.byStatusCode[log.statusCode] = (stats.byStatusCode[log.statusCode] || 0) + 1;
+    const statusCode = log.statusCode || 0;
+    stats.byStatusCode[statusCode] = (stats.byStatusCode[statusCode] || 0) + 1;
     
     // Count by path (normalize)
-    const normalizedPath = log.path.split('?')[0]; // Remove query params
-    stats.byPath[normalizedPath] = (stats.byPath[normalizedPath] || 0) + 1;
+    const normalizedPath = (log.path || '').split('?')[0]; // Remove query params
+    if (normalizedPath) {
+      stats.byPath[normalizedPath] = (stats.byPath[normalizedPath] || 0) + 1;
+    }
     
     // Calculate response time
     totalResponseTime += log.responseTime;

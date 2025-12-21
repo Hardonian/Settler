@@ -24,7 +24,7 @@ export function redactPII(text: string): string {
   
   // Redact emails (keep domain for analytics)
   redacted = redacted.replace(PII_PATTERNS.email, (match) => {
-    const [local, domain] = match.split('@');
+    const [, domain] = match.split('@');
     return `***@${domain}`;
   });
   
@@ -53,7 +53,7 @@ export function removePIIFromObject<T extends Record<string, unknown>>(
   obj: T,
   fieldsToRemove: string[] = ['email', 'phone', 'ssn', 'creditCard', 'ipAddress']
 ): T {
-  const cleaned = { ...obj };
+  const cleaned = { ...obj } as Record<string, unknown>;
   
   for (const [key, value] of Object.entries(cleaned)) {
     // Remove specified fields
@@ -64,7 +64,7 @@ export function removePIIFromObject<T extends Record<string, unknown>>(
     
     // Recursively clean nested objects
     if (value && typeof value === 'object' && !Array.isArray(value)) {
-      cleaned[key] = removePIIFromObject(value as Record<string, unknown>, fieldsToRemove) as T[Extract<keyof T, string>];
+      cleaned[key] = removePIIFromObject(value as Record<string, unknown>, fieldsToRemove);
     }
     
     // Clean arrays
@@ -77,16 +77,16 @@ export function removePIIFromObject<T extends Record<string, unknown>>(
           return redactPII(item);
         }
         return item;
-      }) as T[Extract<keyof T, string>];
+      });
     }
     
     // Clean strings
     if (typeof value === 'string') {
-      cleaned[key] = redactPII(value) as T[Extract<keyof T, string>];
+      cleaned[key] = redactPII(value);
     }
   }
   
-  return cleaned;
+  return cleaned as T;
 }
 
 /**
@@ -112,7 +112,7 @@ export function sanitizeUserData(user: {
   
   // Keep email domain for analytics, redact local part
   if (user.email) {
-    const [local, domain] = user.email.split('@');
+    const [, domain] = user.email.split('@');
     sanitized.email = `***@${domain}`;
   }
   
