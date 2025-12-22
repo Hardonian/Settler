@@ -232,6 +232,7 @@ export class EtsyDriver implements ConnectorDriver {
                 shop_id: shopId,
                 buyer_email: receipt.buyer_email,
               },
+              idempotencyKey: `${receipt.receipt_id}-${receipt.creation_timestamp}`,
             });
           }
         }

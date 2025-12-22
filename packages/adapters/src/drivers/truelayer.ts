@@ -41,7 +41,7 @@ export class TrueLayerDriver implements ConnectorDriver {
       sandbox: 'https://api.truelayer-sandbox.com',
       production: 'https://api.truelayer.com',
     };
-    return urls[env] ?? urls.sandbox;
+    return (urls[env] ?? urls.sandbox) as string;
   }
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
@@ -278,13 +278,14 @@ export class TrueLayerDriver implements ConnectorDriver {
           if (balanceResponse.ok) {
             const balanceData = await balanceResponse.json();
             balances.push({
+              accountId: account.account_id,
               balanceCents: Math.round((balanceData.results?.[0]?.current || 0) * 100),
               availableBalanceCents: balanceData.results?.[0]?.available
                 ? Math.round(balanceData.results[0].available * 100)
                 : undefined,
               currency: account.currency || 'GBP',
               snapshotAt: new Date(),
-              metadata: {
+              providerMetadata: {
                 account_id: account.account_id,
               },
             });
@@ -330,12 +331,13 @@ export class TrueLayerDriver implements ConnectorDriver {
                 currency: tx.currency || account.currency || 'GBP',
                 occurredAt: new Date(tx.timestamp),
                 description: tx.description || tx.merchant_name,
-                metadata: {
+                providerMetadata: {
                   transaction_category: tx.transaction_category,
                   transaction_classification: tx.transaction_classification,
                   merchant_name: tx.merchant_name,
                   running_balance: tx.running_balance,
                 },
+                idempotencyKey: `${tx.transaction_id}-${tx.timestamp}`,
               });
             }
           }

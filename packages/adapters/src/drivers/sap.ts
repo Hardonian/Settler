@@ -154,9 +154,10 @@ export class SapDriver implements ConnectorDriver {
             currency: tx.Currency || 'USD',
             occurredAt: tx.TransactionDate ? new Date(tx.TransactionDate) : new Date(),
             description: tx.Description || `SAP transaction ${tx.TransactionId}`,
-            metadata: {
+            providerMetadata: {
               transaction_id: tx.Id,
             },
+            idempotencyKey: `${tx.TransactionId || tx.Id}-${tx.TransactionDate || Date.now()}`,
           });
         }
       }

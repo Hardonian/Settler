@@ -867,11 +867,17 @@ export class ConnectorRuntime {
           rawPayload: bal.rawPayload,
         }));
 
+        // Map payouts to ensure idempotencyKey is present
+        const payoutsWithIdempotency = result.payouts?.map((payout) => ({
+          ...payout,
+          idempotencyKey: payout.idempotencyKey || `${payout.externalId}-${payout.initiatedAt.toISOString()}`,
+        }));
+
         const dataToSave = {
           accounts: result.accounts,
           transactions: transactionsWithIdempotency,
           balances: balancesWithAccountId,
-          payouts: result.payouts,
+          payouts: payoutsWithIdempotency,
           invoices: result.invoices,
           subscriptions: result.subscriptions,
           taxEstimates: result.taxEstimates,

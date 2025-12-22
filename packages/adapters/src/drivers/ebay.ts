@@ -40,7 +40,7 @@ export class EbayDriver implements ConnectorDriver {
       sandbox: 'https://api.sandbox.ebay.com',
       production: 'https://api.ebay.com',
     };
-    return urls[env] ?? urls.sandbox;
+    return (urls[env] ?? urls.sandbox) as string;
   }
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
@@ -249,6 +249,7 @@ export class EbayDriver implements ConnectorDriver {
               transaction_id: tx.transactionId,
               order_id: tx.orderId,
             },
+            idempotencyKey: `${tx.transactionId}-${tx.transactionDate || Date.now()}`,
           });
         }
       }

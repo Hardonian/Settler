@@ -120,6 +120,7 @@ export interface NormalizedBalance {
 
 export interface NormalizedPayout {
   externalId: string;
+  accountId?: string;
   amountCents: number;
   currency: string;
   status: string;
@@ -130,7 +131,9 @@ export interface NormalizedPayout {
   destinationType?: string;
   destinationId?: string;
   description?: string;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
+  idempotencyKey: string;
 }
 
 export interface NormalizedInvoice {

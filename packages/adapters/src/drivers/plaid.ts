@@ -42,7 +42,7 @@ export class PlaidDriver implements ConnectorDriver {
       development: 'https://development.plaid.com',
       production: 'https://production.plaid.com',
     };
-    return urls[env] || urls.sandbox;
+    return (urls[env] ?? urls.sandbox) as string;
   }
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
@@ -66,7 +66,7 @@ export class PlaidDriver implements ConnectorDriver {
         country_codes: ['US', 'CA'],
         language: 'en',
         redirect_uri: options.redirectUri,
-        webhook: config.webhook_url,
+        webhook: (config as any).webhook_url,
       }),
     });
 
@@ -117,7 +117,6 @@ export class PlaidDriver implements ConnectorDriver {
     const data = await response.json();
     return {
       accessToken: data.access_token,
-      itemId: data.item_id,
       metadata: {
         item_id: data.item_id,
         institution_id: data.institution_id,
@@ -216,7 +215,6 @@ export class PlaidDriver implements ConnectorDriver {
     rawPayloads?: Array<{ type: string; payload: unknown }>;
   }> {
     const accessToken = credentials.access_token as string;
-    const itemId = credentials.item_id as string;
     const config = credentials.config as Record<string, unknown> || {};
     const env = (config.environment as string) || 'sandbox';
     const apiUrl = this.getApiUrl(env);
@@ -272,12 +270,13 @@ export class PlaidDriver implements ConnectorDriver {
         // Extract balance
         balances.push({
           balanceCents: Math.round((account.balances.current || 0) * 100),
+          accountId: account.account_id,
           availableBalanceCents: account.balances.available
             ? Math.round(account.balances.available * 100)
             : undefined,
           currency: account.balances.iso_currency_code || 'USD',
           snapshotAt: new Date(),
-          metadata: {
+          providerMetadata: {
             account_id: account.account_id,
           },
         });
@@ -323,12 +322,13 @@ export class PlaidDriver implements ConnectorDriver {
           description: tx.name || tx.merchant_name,
           referenceId: tx.pending_transaction_id,
           referenceType: tx.pending ? 'pending_transaction' : undefined,
-          metadata: {
+          providerMetadata: {
             category: tx.category,
             merchant_name: tx.merchant_name,
             payment_channel: tx.payment_channel,
             pending: tx.pending,
           },
+          idempotencyKey: `${tx.transaction_id}-${tx.date}`,
         });
       }
 

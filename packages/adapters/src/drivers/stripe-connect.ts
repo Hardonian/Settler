@@ -235,10 +235,11 @@ export class StripeConnectDriver implements ConnectorDriver {
 
         for (const balance of balanceData.available || []) {
           balances.push({
+            accountId: accountData.id,
             balanceCents: balance.amount,
             currency: balance.currency.toUpperCase(),
             snapshotAt: new Date(),
-            metadata: {
+            providerMetadata: {
               account_id: accountData.id,
               source_types: balance.source_types,
             },
@@ -272,7 +273,6 @@ export class StripeConnectDriver implements ConnectorDriver {
         for (const payout of payoutsData.data || []) {
           payouts.push({
             externalId: payout.id,
-            accountId: accountData.id,
             amountCents: payout.amount,
             currency: payout.currency.toUpperCase(),
             status: payout.status,
@@ -283,10 +283,11 @@ export class StripeConnectDriver implements ConnectorDriver {
             destinationType: payout.destination?.object,
             destinationId: payout.destination?.id,
             description: payout.description,
-            metadata: {
+            providerMetadata: {
               payout_id: payout.id,
               method: payout.method,
             },
+            idempotencyKey: `${payout.id}-${payout.created}`,
           });
         }
       }
