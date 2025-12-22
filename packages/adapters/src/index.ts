@@ -28,3 +28,8 @@ export * from "./webhook-verification";
 export * from "./token-refresh";
 export * from "./rate-limiting";
 export * from "./concurrency-protection";
+export * from "./metrics/prometheus";
+export * from "./alerting/alert-manager";
+export * from "./retry-queue/retry-queue";
+export * from "./validation/data-validator";
+export * from "./performance/batch-processor";

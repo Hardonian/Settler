@@ -10,6 +10,11 @@ import { decryptCredentials, decryptToken } from './credential-encryption';
 import { refreshTokenIfNeeded } from './token-refresh';
 import { checkRateLimit, recordApiCall } from './rate-limiting';
 import { acquireSyncLock, releaseSyncLock } from './concurrency-protection';
+import { trackSyncStart, trackSyncComplete, trackSyncFailure } from './metrics/prometheus';
+import { AlertManager } from './alerting/alert-manager';
+import { RetryQueue } from './retry-queue/retry-queue';
+import { validator } from './validation/data-validator';
+import { processInBatches } from './performance/batch-processor';
 
 export interface RuntimeConfig {
   supabaseUrl: string;
@@ -29,9 +34,13 @@ export interface SyncRunContext {
  */
 export class ConnectorRuntime {
   private supabase: ReturnType<typeof createClient>;
+  private alertManager: AlertManager;
+  private retryQueue: RetryQueue;
 
   constructor(private config: RuntimeConfig) {
     this.supabase = createClient(config.supabaseUrl, config.supabaseServiceKey);
+    this.alertManager = new AlertManager(config.supabaseUrl, config.supabaseServiceKey);
+    this.retryQueue = new RetryQueue(config.supabaseUrl, config.supabaseServiceKey);
   }
 
   /**
@@ -611,6 +620,51 @@ export class ConnectorRuntime {
   }
 
   /**
+   * Save normalized data in batches (for large datasets)
+   */
+  async saveNormalizedDataBatched(
+    tenantId: string,
+    connectorId: string,
+    syncRunId: string,
+    data: Parameters<ConnectorRuntime['saveNormalizedData']>[3]
+  ): Promise<void> {
+    const { processInBatches } = await import('./performance/batch-processor');
+    const batchSize = 500;
+
+    // Process transactions in batches
+    if (data.transactions && data.transactions.length > 0) {
+      const batches = [];
+      for (let i = 0; i < data.transactions.length; i += batchSize) {
+        batches.push(data.transactions.slice(i, i + batchSize));
+      }
+
+      for (const batch of batches) {
+        await this.saveNormalizedData(tenantId, connectorId, syncRunId, {
+          ...data,
+          transactions: batch,
+        });
+      }
+    }
+
+    // Process other data types similarly
+    const remainingData = {
+      ...data,
+      transactions: undefined,
+    };
+
+    if (
+      (data.accounts?.length || 0) +
+      (data.balances?.length || 0) +
+      (data.payouts?.length || 0) +
+      (data.invoices?.length || 0) +
+      (data.subscriptions?.length || 0) +
+      (data.taxEstimates?.length || 0) > 0
+    ) {
+      await this.saveNormalizedData(tenantId, connectorId, syncRunId, remainingData);
+    }
+  }
+
+  /**
    * Update sync cursor
    */
   async updateSyncCursor(
@@ -727,7 +781,12 @@ export class ConnectorRuntime {
       );
     }
 
+    const startTime = Date.now();
+    
     try {
+      // Track sync start
+      trackSyncStart(connectorId, tenantId);
+
       // Get credentials
       const credentials = await this.getCredentials(tenantId, connectorId);
 
@@ -744,121 +803,191 @@ export class ConnectorRuntime {
       // Record API call
       await recordApiCall(connectorId, tenantId, this.config.supabaseUrl, this.config.supabaseServiceKey);
 
-    // Get last cursor if exists
-    const lastCursor = await this.getSyncCursor(
-      tenantId,
-      connectorId,
-      'default',
-      options.accountId
-    );
+      // Get last cursor if exists
+      const lastCursor = await this.getSyncCursor(
+        tenantId,
+        connectorId,
+        'default',
+        options.accountId
+      );
 
-    const syncOptions: SyncOptions = {
-      ...options,
-      cursor: options.cursor || lastCursor || undefined,
-    };
+      const syncOptions: SyncOptions = {
+        ...options,
+        cursor: options.cursor || lastCursor || undefined,
+      };
 
-    // Create sync run
-    const syncRunId = await this.createSyncRun(tenantId, connectorId, syncOptions);
+      // Create sync run
+      const syncRunId = await this.createSyncRun(tenantId, connectorId, syncOptions);
 
-    try {
-      // Execute sync
-      const result = await driver.sync(credentials, syncOptions);
+      try {
+        // Execute sync
+        const result = await driver.sync(credentials, syncOptions);
 
-      // Save normalized data
-      await this.saveNormalizedData(tenantId, connectorId, syncRunId, {
-        accounts: result.accounts,
-        transactions: result.transactions,
-        balances: result.balances,
-        payouts: result.payouts,
-        invoices: result.invoices,
-        subscriptions: result.subscriptions,
-        taxEstimates: result.taxEstimates,
-        rawPayloads: result.rawPayloads,
-      });
+        // Validate data before saving
+        const validation = validator.validateAll({
+          transactions: result.transactions,
+          accounts: result.accounts,
+          balances: result.balances,
+          payouts: result.payouts,
+          invoices: result.invoices,
+          subscriptions: result.subscriptions,
+          taxEstimates: result.taxEstimates,
+        });
 
-      // Update cursor if provided
-      if (result.nextCursor) {
-        await this.updateSyncCursor(
-          tenantId,
-          connectorId,
-          'default',
-          result.nextCursor,
-          options.accountId
-        );
-      }
+        if (!validation.valid && validation.errors.length > 0) {
+          console.warn(`Validation errors for ${connectorId}:`, validation.errors);
+          // Continue but log errors
+        }
 
-      // Update sync run as completed
-      await this.updateSyncRun(syncRunId, {
-        status: 'completed',
-        finishedAt: new Date(),
-        accountsSynced: result.counts.accounts || 0,
-        transactionsSynced: result.counts.transactions || 0,
-        balancesSynced: result.counts.balances || 0,
-        payoutsSynced: result.counts.payouts || 0,
-        invoicesSynced: result.counts.invoices || 0,
-        subscriptionsSynced: result.counts.subscriptions || 0,
-        errorsCount: result.errors?.length || 0,
-        warningsCount: result.warnings?.length || 0,
-        cursor: result.nextCursor,
-      });
+        // Process in batches for performance
+        const dataToSave = {
+          accounts: result.accounts,
+          transactions: result.transactions,
+          balances: result.balances,
+          payouts: result.payouts,
+          invoices: result.invoices,
+          subscriptions: result.subscriptions,
+          taxEstimates: result.taxEstimates,
+          rawPayloads: result.rawPayloads,
+        };
 
-      // Update connector last sync
-      const { data: connector } = await this.supabase
-        .from('connectors')
-        .select('id')
-        .eq('tenant_id', tenantId)
-        .eq('provider_id', connectorId)
-        .single();
+        // Save in batches if large dataset
+        const totalItems = 
+          (result.transactions?.length || 0) +
+          (result.accounts?.length || 0) +
+          (result.balances?.length || 0) +
+          (result.payouts?.length || 0) +
+          (result.invoices?.length || 0) +
+          (result.subscriptions?.length || 0) +
+          (result.taxEstimates?.length || 0);
 
-      if (connector) {
-        await this.supabase
+        if (totalItems > 1000) {
+          // Use batch processing for large datasets
+          await this.saveNormalizedDataBatched(tenantId, connectorId, syncRunId, dataToSave);
+        } else {
+          // Use regular save for small datasets
+          await this.saveNormalizedData(tenantId, connectorId, syncRunId, dataToSave);
+        }
+
+        // Update cursor if provided
+        if (result.nextCursor) {
+          await this.updateSyncCursor(
+            tenantId,
+            connectorId,
+            'default',
+            result.nextCursor,
+            options.accountId
+          );
+        }
+
+        // Update sync run as completed
+        await this.updateSyncRun(syncRunId, {
+          status: 'completed',
+          finishedAt: new Date(),
+          accountsSynced: result.counts.accounts || 0,
+          transactionsSynced: result.counts.transactions || 0,
+          balancesSynced: result.counts.balances || 0,
+          payoutsSynced: result.counts.payouts || 0,
+          invoicesSynced: result.counts.invoices || 0,
+          subscriptionsSynced: result.counts.subscriptions || 0,
+          errorsCount: result.errors?.length || 0,
+          warningsCount: result.warnings?.length || 0,
+          cursor: result.nextCursor,
+        });
+
+        // Update connector last sync
+        const { data: connector } = await this.supabase
           .from('connectors')
-          .update({
-            last_sync_at: new Date().toISOString(),
-            last_successful_sync_at: new Date().toISOString(),
-            error_count: 0,
-            consecutive_failures: 0,
-            status: 'connected',
-          })
-          .eq('id', connector.id);
-      }
+          .select('id')
+          .eq('tenant_id', tenantId)
+          .eq('provider_id', connectorId)
+          .single();
 
-      return result;
-    } catch (error) {
-      // Update sync run as failed
-      await this.updateSyncRun(syncRunId, {
-        status: 'failed',
-        finishedAt: new Date(),
-        errorMessage: error instanceof Error ? error.message : String(error),
-        errorDetails: {
-          stack: error instanceof Error ? error.stack : undefined,
-        },
-      });
+        if (connector) {
+          await this.supabase
+            .from('connectors')
+            .update({
+              last_sync_at: new Date().toISOString(),
+              last_successful_sync_at: new Date().toISOString(),
+              error_count: 0,
+              consecutive_failures: 0,
+              status: 'connected',
+            })
+            .eq('id', connector.id);
+        }
 
-      // Update connector error state
-      const { data: connector } = await this.supabase
-        .from('connectors')
-        .select('id, consecutive_failures')
-        .eq('tenant_id', tenantId)
-        .eq('provider_id', connectorId)
-        .single();
+        // Track metrics
+        const duration = Date.now() - startTime;
+        trackSyncComplete(connectorId, tenantId, duration, {
+          transactions: result.counts.transactions,
+          accounts: result.counts.accounts,
+          errors: result.errors?.length || 0,
+        });
 
-      if (connector) {
-        const newFailureCount = (connector.consecutive_failures || 0) + 1;
-        await this.supabase
+        return result;
+      } catch (error) {
+        const duration = Date.now() - startTime;
+        const errorType = error instanceof ConnectorError ? error.code : 'UNKNOWN_ERROR';
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        // Update sync run as failed
+        await this.updateSyncRun(syncRunId, {
+          status: 'failed',
+          finishedAt: new Date(),
+          errorMessage,
+          errorDetails: {
+            stack: error instanceof Error ? error.stack : undefined,
+            type: errorType,
+          },
+        });
+
+        // Update connector error state
+        const { data: connector } = await this.supabase
           .from('connectors')
-          .update({
-            last_sync_at: new Date().toISOString(),
-            last_error: error instanceof Error ? error.message : String(error),
-            error_count: newFailureCount,
-            consecutive_failures: newFailureCount,
-            status: newFailureCount >= 5 ? 'error' : 'needs_attention',
-            auto_disabled: newFailureCount >= 10,
-          })
-          .eq('id', connector.id);
-      }
+          .select('id, consecutive_failures')
+          .eq('tenant_id', tenantId)
+          .eq('provider_id', connectorId)
+          .single();
 
-      throw error;
+        if (connector) {
+          const newFailureCount = (connector.consecutive_failures || 0) + 1;
+          await this.supabase
+            .from('connectors')
+            .update({
+              last_sync_at: new Date().toISOString(),
+              last_error: errorMessage,
+              error_count: newFailureCount,
+              consecutive_failures: newFailureCount,
+              status: newFailureCount >= 5 ? 'error' : 'needs_attention',
+              auto_disabled: newFailureCount >= 10,
+            })
+            .eq('id', connector.id);
+
+          // Track metrics
+          trackSyncFailure(connectorId, tenantId, duration, errorType);
+
+          // Check alerts
+          await this.alertManager.checkSyncFailure(
+            connectorId,
+            tenantId,
+            newFailureCount,
+            errorType,
+            errorMessage
+          );
+
+          // Add to retry queue if not max attempts
+          if (newFailureCount < 10) {
+            await this.retryQueue.enqueue(
+              connectorId,
+              tenantId,
+              syncRunId,
+              errorMessage,
+              errorType
+            );
+          }
+        }
+
+        throw error;
     } finally {
       // Release lock
       if (lock.lockId) {
