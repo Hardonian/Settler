@@ -115,7 +115,7 @@ export default function Home() {
   const heroStats = [
     { value: 'Precise', label: 'Matching', description: 'Deterministic algorithms' },
     { value: '<30ms', label: 'Edge Latency', description: 'Global evaluation' },
-    { value: 'ISO', label: 'Compliant', description: '27001 & SOC 2 Ready' },
+    { value: 'ISO', label: 'Compliant', description: 'SOC 2 Ready' },
     { value: '1st', label: 'Developer DX', description: 'Typed SDKs' },
   ];
 
@@ -171,9 +171,9 @@ if (flag.value) { /* ... */ }`;
             <HeroAnimationWrapper>
               <div className="text-center">
                 <Badge 
-                  className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30"
+                  className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30 break-words px-3 py-1.5 text-sm"
                 >
-                  Trusted by small businesses to automate financial reconciliation
+                  Trusted by businesses to automate reconciliation
                 </Badge>
                 
                 <TextRevealHeading
@@ -290,8 +290,8 @@ if (flag.value) { /* ... */ }`;
                       <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3 sm:p-3.5 mb-4 sm:mb-6 flex items-center justify-center`}>
                         <Icon className="w-full h-full text-white" aria-hidden="true" />
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-slate-900 dark:text-white">{feature.title}</h3>
-                      <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 flex-grow">{feature.description}</p>
+                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-slate-900 dark:text-white break-words">{feature.title}</h3>
+                      <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 flex-grow break-words">{feature.description}</p>
                       <Link 
                         href="/docs" 
                         className="flex items-center text-blue-600 dark:text-blue-400 font-semibold group transition-colors hover:text-blue-700 dark:hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded"

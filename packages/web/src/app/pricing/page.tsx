@@ -189,27 +189,27 @@ export default function Pricing() {
                   </div>
                 )}
                 <CardHeader>
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                  <div className="flex items-baseline gap-2 mt-2">
-                    <span className="text-4xl font-bold">{plan.price}</span>
+                  <CardTitle className="text-2xl break-words">{plan.name}</CardTitle>
+                  <div className="flex items-baseline gap-2 mt-2 flex-wrap">
+                    <span className="text-4xl font-bold break-words">{plan.price}</span>
                     {plan.price !== 'Custom' && (
-                      <span className="text-slate-600 dark:text-slate-400">/month</span>
+                      <span className="text-slate-600 dark:text-slate-400 break-words">/month</span>
                     )}
                   </div>
-                  <CardDescription>{plan.description}</CardDescription>
+                  <CardDescription className="break-words">{plan.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <div className="text-sm font-semibold mb-1">Reconciliation Volume</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">{plan.reconciliationVolume}</div>
+                    <div className="text-sm font-semibold mb-1 break-words">Reconciliation Volume</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400 break-words">{plan.reconciliationVolume}</div>
                   </div>
                   <div>
-                    <div className="text-sm font-semibold mb-1">Exception Rate Included</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">{plan.exceptionRate}</div>
-                    <div className="text-xs text-slate-500 mt-1">(Automatic explanations)</div>
+                    <div className="text-sm font-semibold mb-1 break-words">Exception Rate Included</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400 break-words">{plan.exceptionRate}</div>
+                    <div className="text-xs text-slate-500 mt-1 break-words">(Automatic explanations)</div>
                   </div>
                   <div className="pt-2 border-t">
-                    <div className="text-xs text-slate-600 dark:text-slate-400">{plan.example}</div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400 break-words">{plan.example}</div>
                   </div>
                   <Button
                     asChild

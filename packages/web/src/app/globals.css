@@ -77,9 +77,11 @@
     position: relative;
   }
   
-  /* Typography: Ensure all text elements have minimum line-height */
+  /* Typography: Ensure all text elements have minimum line-height and proper wrapping */
   p, span, div, li, td, th, label, input, textarea, select, button {
     line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   
   /* Fluid heading typography - scales smoothly from mobile to desktop */
