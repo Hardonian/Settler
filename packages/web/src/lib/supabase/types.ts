@@ -17,6 +17,10 @@ export type ConnectorCredentialsRow = Database['public']['Tables']['connector_cr
 export type ConnectorCredentialsInsert = Database['public']['Tables']['connector_credentials']['Insert'];
 export type ConnectorCredentialsUpdate = Database['public']['Tables']['connector_credentials']['Update'];
 
+export type WebhookEventRow = Database['public']['Tables']['webhook_events']['Row'];
+export type WebhookEventInsert = Database['public']['Tables']['webhook_events']['Insert'];
+export type WebhookEventUpdate = Database['public']['Tables']['webhook_events']['Update'];
+
 export type MembershipRow = {
   tenant_id: string;
   user_id?: string;
@@ -36,8 +40,10 @@ export interface ConnectorsQueryBuilder {
         limit(count: number): Promise<{ data: ConnectorRow[] | null; error: unknown }>;
         single(): Promise<{ data: ConnectorRow | null; error: unknown }>;
       };
+      limit(count: number): Promise<{ data: ConnectorRow[] | null; error: unknown }>;
       single(): Promise<{ data: ConnectorRow | null; error: unknown }>;
     };
+    limit(count: number): Promise<{ data: ConnectorRow[] | null; error: unknown }>;
   };
   insert(values: ConnectorInsert): {
     select(columns: string): {
@@ -88,11 +94,19 @@ export interface MembershipsQueryBuilder {
 }
 
 /**
+ * Type-safe query builder for webhook_events table
+ */
+export interface WebhookEventsQueryBuilder {
+  insert(values: WebhookEventInsert): Promise<{ error: unknown }>;
+}
+
+/**
  * Extended Supabase client with type-safe query builders
  */
 export interface ExtendedSupabaseClient extends SupabaseClient<Database> {
   from(table: 'connectors'): ConnectorsQueryBuilder;
   from(table: 'connector_credentials'): ConnectorCredentialsQueryBuilder;
+  from(table: 'webhook_events'): WebhookEventsQueryBuilder;
   from(table: 'app_private.memberships'): MembershipsQueryBuilder;
 }
 

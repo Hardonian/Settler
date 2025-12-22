@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, RefreshCw, Calendar } from "lucide-react";
+import { Loader2, ArrowLeft, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { asExtendedClient } from "@/lib/supabase/types";
 
@@ -26,7 +26,6 @@ export default function IntegrationLogsPage() {
   const integrationId = params?.integrationId as string | undefined;
   const [syncRuns, setSyncRuns] = useState<SyncRun[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentTenantId, setCurrentTenantId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!integrationId) return;
@@ -50,12 +49,10 @@ export default function IntegrationLogsPage() {
         .limit(1);
 
       const tenantId = memberships?.[0]?.tenant_id;
-      if (!tenantId) return;
-
-      setCurrentTenantId(tenantId);
+      if (!tenantId || !integrationId) return;
 
       // Get connector
-      const { data: connector } = await supabase
+      const { data: connector } = await typedSupabase
         .from('connectors')
         .select('id')
         .eq('tenant_id', tenantId)
@@ -64,9 +61,19 @@ export default function IntegrationLogsPage() {
 
       if (!connector) return;
 
-      // Get sync runs
-      const { data: runs } = await supabase
-        .from('sync_runs')
+      // Get sync runs - using regular supabase client for sync_runs table
+      // (not in our typed client yet, but this table may not exist)
+      const { data: runs } = await (supabase as unknown as {
+        from(table: 'sync_runs'): {
+          select(columns: string): {
+            eq(column: string, value: unknown): {
+              order(column: string, options: { ascending: boolean }): {
+                limit(count: number): Promise<{ data: SyncRun[] | null; error: unknown }>;
+              };
+            };
+          };
+        };
+      }).from('sync_runs')
         .select('*')
         .eq('connector_id', connector.id)
         .order('started_at', { ascending: false })

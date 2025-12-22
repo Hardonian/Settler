@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 import { verifyWebhook } from '@settler/adapters/src/webhook-verification';
 
@@ -22,11 +23,10 @@ export async function POST(
     }
 
     const rawBody = await request.text();
-    const body = JSON.parse(rawBody);
+    const body = JSON.parse(rawBody) as Record<string, unknown>;
     const signature = request.headers.get('x-signature') || request.headers.get('x-webhook-signature') || '';
 
     // Verify webhook signature
-    const config = {}; // TODO: Get webhook secret from connector config
     const webhookSecret = process.env[`${providerId.toUpperCase()}_WEBHOOK_SECRET`] || '';
     
     if (webhookSecret && signature) {
@@ -45,19 +45,29 @@ export async function POST(
 
     // Store webhook event
     const supabase = await createClient();
-    const { data: webhookEvent, error: webhookError } = await supabase
+    const typedSupabase = asExtendedClient(supabase);
+    const webhookId = typeof body.id === 'string' 
+      ? body.id 
+      : typeof body.event_id === 'string' 
+        ? body.event_id 
+        : crypto.randomUUID();
+    const eventType = typeof body.type === 'string' 
+      ? body.type 
+      : typeof body.event_type === 'string' 
+        ? body.event_type 
+        : 'unknown';
+    
+    const { error: webhookError } = await typedSupabase
       .from('webhook_events')
       .insert({
         connector_id: null, // Will be set after identifying tenant
         tenant_id: null, // Will be set after identifying tenant
-        webhook_id: body.id || body.event_id || crypto.randomUUID(),
-        event_type: body.type || body.event_type || 'unknown',
+        webhook_id: webhookId,
+        event_type: eventType,
         payload: body,
-        signature: request.headers.get('x-signature') || undefined,
+        signature: signature || null,
         processed: false,
-      })
-      .select('id')
-      .single();
+      });
 
     if (webhookError) {
       console.error('Failed to store webhook event:', webhookError);

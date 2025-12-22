@@ -931,6 +931,8 @@ export interface Database {
           created_by: string;
           created_at: string;
           updated_at: string;
+          last_sync_at?: string | null;
+          last_successful_sync_at?: string | null;
         };
         Insert: {
           id?: string;
@@ -987,6 +989,41 @@ export interface Database {
           token_expires_at?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+      };
+      webhook_events: {
+        Row: {
+          id: string;
+          connector_id: string | null;
+          tenant_id: string | null;
+          webhook_id: string;
+          event_type: string;
+          payload: Json;
+          signature: string | null;
+          processed: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          connector_id?: string | null;
+          tenant_id?: string | null;
+          webhook_id: string;
+          event_type: string;
+          payload: Json;
+          signature?: string | null;
+          processed?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          connector_id?: string | null;
+          tenant_id?: string | null;
+          webhook_id?: string;
+          event_type?: string;
+          payload?: Json;
+          signature?: string | null;
+          processed?: boolean;
+          created_at?: string;
         };
       };
       [key: string]: {

@@ -79,8 +79,12 @@ export async function GET(
 
     // Handle callback
     const redirectUri = `${request.nextUrl.origin}/api/connectors/callback/${providerId}`;
+    const tenantId = typeof connector.tenant_id === 'string' ? connector.tenant_id : '';
+    if (!tenantId) {
+      return NextResponse.json({ error: 'Invalid connector tenant_id' }, { status: 400 });
+    }
     const authResult = await driver.handleCallback(code, state || '', {
-      tenantId: connector.tenant_id,
+      tenantId,
       redirectUri,
     });
 
@@ -88,8 +92,8 @@ export async function GET(
     const { error: credError } = await typedSupabase
       .from('connector_credentials')
       .upsert({
-        connector_id: connector.id,
-        tenant_id: connector.tenant_id,
+        connector_id: typeof connector.id === 'string' ? connector.id : '',
+        tenant_id: tenantId,
         encrypted_credentials: {}, // Should encrypt
         access_token_encrypted: authResult.accessToken, // Should encrypt
         refresh_token_encrypted: authResult.refreshToken, // Should encrypt

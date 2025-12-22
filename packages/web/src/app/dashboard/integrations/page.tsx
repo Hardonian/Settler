@@ -82,30 +82,38 @@ export default function IntegrationsPage() {
       const allConnectors = getAllConnectorMetadata();
       
       // Get connected connectors from database
-      const { data: connectedConnectors } = await supabase
+      const typedSupabase = asExtendedClient(supabase);
+      const { data: connectedConnectors } = await typedSupabase
         .from('connectors')
         .select('id, provider_id, status, last_sync_at, last_successful_sync_at')
-        .eq('tenant_id', tenantId);
+        .eq('tenant_id', tenantId)
+        .limit(1000);
 
       const connectedMap = new Map(
-        (connectedConnectors || []).map((c) => [c.provider_id, c])
+        (connectedConnectors || []).map((c) => {
+          const providerId = typeof c.provider_id === 'string' ? c.provider_id : '';
+          return [providerId, c];
+        })
       );
 
       // Build integration list
       const integrationList: Integration[] = allConnectors.map((metadata) => {
         const connected = connectedMap.get(metadata.id);
-        const isConnected = connected && connected.status === 'connected';
+        const connectedStatus = connected && typeof connected.status === 'string' ? connected.status : null;
+        const isConnected = connectedStatus === 'connected';
         
         return {
-          id: connected?.id || metadata.id,
+          id: (connected && typeof connected.id === 'string' ? connected.id : null) || metadata.id,
           integration_id: metadata.id,
           name: metadata.displayName,
           description: metadata.description,
           is_standard: ['plaid', 'truelayer', 'freshbooks', 'wave'].includes(metadata.id),
           is_purchased: true, // TODO: Check subscription
-          is_connected: isConnected,
-          status: (connected?.status as Integration['status']) || 'not_connected',
-          last_sync: connected?.last_successful_sync_at || undefined,
+          is_connected: isConnected || false,
+          status: (connectedStatus as Integration['status']) || 'not_connected',
+          last_sync: (connected && typeof connected.last_successful_sync_at === 'string' 
+            ? connected.last_successful_sync_at 
+            : undefined),
           category: metadata.category,
         };
       });
@@ -153,7 +161,7 @@ export default function IntegrationsPage() {
     }
   };
 
-  const handleConnect = async (id: string, integrationId: string) => {
+  const handleConnect = async (_id: string, integrationId: string) => {
     if (!currentTenantId) return;
 
     try {
@@ -187,7 +195,7 @@ export default function IntegrationsPage() {
     }
   };
 
-  const handleDisconnect = async (id: string, integrationId: string) => {
+  const handleDisconnect = async (_id: string, integrationId: string) => {
     if (!currentTenantId) return;
 
     if (!confirm('Are you sure you want to disconnect this integration?')) {

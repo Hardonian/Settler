@@ -77,7 +77,12 @@ export async function POST(
     // Revoke tokens if driver supports it
     if (driver.revoke && credentials?.access_token_encrypted) {
       try {
-        await driver.revoke(credentials.access_token_encrypted, {});
+        const accessToken = typeof credentials.access_token_encrypted === 'string' 
+          ? credentials.access_token_encrypted 
+          : '';
+        if (accessToken) {
+          await driver.revoke(accessToken, { tenantId });
+        }
       } catch (error) {
         console.error('Failed to revoke token:', error);
         // Continue with disconnection even if revoke fails
