@@ -57,6 +57,9 @@ export async function GET(
     }
 
     const connector = connectors[0];
+    if (!connector) {
+      return NextResponse.json({ error: 'Connector not found' }, { status: 404 });
+    }
 
     // Verify tenant access
     const { data: membership } = await supabase

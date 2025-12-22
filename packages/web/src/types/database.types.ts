@@ -919,6 +919,49 @@ export interface Database {
         Insert: never;
         Update: never;
       };
+      connectors: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          provider_id: string;
+          display_name: string;
+          status: string;
+          auth_type: string;
+          config: Json;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["connectors"]["Row"],
+          "id" | "created_at" | "updated_at"
+        > & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["connectors"]["Insert"]>;
+      };
+      connector_credentials: {
+        Row: {
+          connector_id: string;
+          tenant_id: string;
+          encrypted_credentials: Json;
+          access_token_encrypted: string;
+          refresh_token_encrypted: string | null;
+          token_expires_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["connector_credentials"]["Row"],
+          "created_at" | "updated_at"
+        > & {
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["connector_credentials"]["Insert"]>;
+      };
       [key: string]: {
         Row: Record<string, unknown>;
         Insert: never;
@@ -959,6 +1002,40 @@ export interface Database {
         };
         Returns: null;
       };
+      [key: string]: {
+        Args: Record<string, unknown>;
+        Returns: unknown;
+      };
+    };
+  };
+  app_private: {
+    Tables: {
+      memberships: {
+        Row: {
+          tenant_id: string;
+          user_id: string;
+          status: string;
+          role?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Insert: {
+          tenant_id: string;
+          user_id: string;
+          status: string;
+          role?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["app_private"]["Tables"]["memberships"]["Insert"]>;
+      };
+      [key: string]: {
+        Row: Record<string, unknown>;
+        Insert: never;
+        Update: never;
+      };
+    };
+    Functions: {
       [key: string]: {
         Args: Record<string, unknown>;
         Returns: unknown;

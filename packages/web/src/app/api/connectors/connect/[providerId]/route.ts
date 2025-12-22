@@ -82,9 +82,16 @@ export async function POST(
           .select('id')
           .single();
 
+        if (!newConnector) {
+          return NextResponse.json(
+            { error: 'Failed to create connector' },
+            { status: 500 }
+          );
+        }
+
         return NextResponse.json({
           authUrl,
-          connectorId: newConnector?.id,
+          connectorId: newConnector.id,
         });
       }
 
