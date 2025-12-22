@@ -199,8 +199,8 @@ settler webhooks delete <webhook-id>`}</code>
         <div className="max-w-4xl mx-auto">
           <ConversionCTA
             title="Ready to Get Started?"
-            description="Start your 30-day free trial and get full access to all features. No credit card required."
-            primaryAction="Start 30-Day Free Trial"
+            description="Start your 14-day free trial and get full access to all features. No credit card required."
+            primaryAction="Start Free Trial"
             primaryLink="/signup"
             secondaryAction="View Pricing"
             secondaryLink="/pricing"

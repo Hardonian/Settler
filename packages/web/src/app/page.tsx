@@ -101,7 +101,7 @@ export default function Home() {
     {
       icon: Sparkles,
       title: "AI-Powered Insights",
-      description: "Get actionable recommendations powered by AI to optimize costs, improve performance, and understand usage patterns. Included with Commercial and Enterprise plans.",
+      description: "Get actionable recommendations powered by AI to optimize costs, improve performance, and understand usage patterns. Available on Growth, Scale, and Enterprise plans.",
       gradient: "from-purple-500 to-pink-500",
     },
     {
@@ -486,7 +486,7 @@ if (flag.value) { /* ... */ }`;
           <div className="max-w-4xl mx-auto">
             <EnhancedConversionCTA
               title="Ready to Transform Your Financial Operations?"
-              description="Join thousands of companies already using Settler. Start your free trial today—no credit card required, full access to all features."
+              description="Start your free trial today—no credit card required. Full access to all features for 14 days."
               primaryAction="Try Playground"
               primaryLink="/console/playground"
               secondaryAction="Start Free Trial"

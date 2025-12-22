@@ -68,7 +68,7 @@ export function PricingCalculator() {
       <CardHeader>
         <CardTitle>Pricing Calculator</CardTitle>
         <CardDescription>
-          Estimate your monthly cost based on your expected usage
+          Estimate your monthly cost based on reconciliation volume
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -84,7 +84,7 @@ export function PricingCalculator() {
               className="mt-1"
             />
             <p className="text-sm text-slate-500 mt-1">
-              How many reconciliations do you expect to process per month?
+              Expected monthly reconciliation volume
             </p>
           </div>
 
@@ -101,7 +101,7 @@ export function PricingCalculator() {
               className="mt-1"
             />
             <p className="text-sm text-slate-500 mt-1">
-              What percentage of reconciliations require manual review? (Most customers see 1-2%)
+              Percentage requiring manual review (most customers see 1-2%)
             </p>
           </div>
         </div>
@@ -138,10 +138,9 @@ export function PricingCalculator() {
           </div>
 
           {monthlyReconciliations > recommendedPlan.maxReconciliations && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800">
-                ⚠️ Your usage exceeds the {recommendedPlan.name} plan limit. 
-                Please contact us for Enterprise pricing.
+            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                Your usage exceeds the {recommendedPlan.name} plan limit. Contact us for Enterprise pricing.
               </p>
             </div>
           )}
