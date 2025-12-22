@@ -120,7 +120,7 @@ export default function Pricing() {
             Simple Pricing: Pay Per Transaction Match
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
-            Settler matches your payments to orders automatically. You pay per match. If a match needs your review, it costs extra. That's it.
+            Settler automatically matches your payments to orders across platforms. You pay per successful match. If a match requires manual review, there's a small additional fee. Simple, transparent pricing that scales with your business.
           </p>
           
           {/* Hero Illustration */}
@@ -152,15 +152,15 @@ export default function Pricing() {
               <div>
                 <h3 className="font-semibold mb-2 text-lg">What is a reconciliation?</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  A reconciliation is when Settler matches one transaction (like a Stripe payment) to another (like a Shopify order). 
-                  Each match counts as one reconciliation. Reconciliation runs automatically—no manual work required.
+                  A reconciliation occurs when Settler successfully matches one transaction (such as a Stripe payment) to another (such as a Shopify order). 
+                  Each successful match counts as one reconciliation. Reconciliation runs automatically in the background—no manual intervention required.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2 text-lg">What are exceptions?</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Exceptions are transactions that Settler can't match automatically. Settler explains why they don't match, 
-                  so you can review them quickly. Most exceptions are handled automatically—you only pay for ones that need your attention ($0.10 each).
+                  Exceptions are transactions that Settler cannot match automatically. Settler provides detailed explanations for each exception, 
+                  enabling you to review and resolve them efficiently. Most exceptions are resolved automatically—you only pay for exceptions that require manual review ($0.10 per exception).
                 </p>
               </div>
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">

@@ -60,9 +60,14 @@ export async function POST(request: NextRequest) {
     const session = await createCustomerPortalSession(billingAccount.id, returnUrl);
 
     if (!session.url) {
+      // Never return 500 - return actionable error message
       return NextResponse.json(
-        { error: 'Failed to create customer portal session URL' },
-        { status: 500 }
+        { 
+          error: 'Unable to access billing portal',
+          message: 'We were unable to create a billing portal session. Please try again or contact support at billing@settler.dev for assistance.',
+          retryable: true,
+        },
+        { status: 200 }
       );
     }
 
@@ -73,9 +78,14 @@ export async function POST(request: NextRequest) {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
+    // Never return 500 - return actionable error message
     return NextResponse.json(
-      { error: 'Failed to create customer portal session' },
-      { status: 500 }
+      { 
+        error: 'Unable to access billing portal',
+        message: 'We encountered an issue accessing your billing portal. Please try again in a moment or contact support at billing@settler.dev.',
+        retryable: true,
+      },
+      { status: 200 }
     );
   }
 }

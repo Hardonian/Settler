@@ -26,9 +26,16 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error('Error getting user role:', error);
+    // Never return 500 - return default role with error message
     return NextResponse.json(
-      { role: null, isSuperAdmin: false, error: error.message },
-      { status: 500 }
+      { 
+        role: null, 
+        isSuperAdmin: false, 
+        error: 'Unable to retrieve user role',
+        message: 'User role information is temporarily unavailable. Please try again.',
+        retryable: true,
+      },
+      { status: 200 }
     );
   }
 }

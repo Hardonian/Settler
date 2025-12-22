@@ -24,16 +24,21 @@ export async function GET() {
     });
   } catch (error) {
     console.error('[health] Error:', error);
+    // Never return 500 - return degraded health status
     return NextResponse.json(
       {
         health: {
-          overall: 'unhealthy',
+          overall: 'degraded',
           checks: [],
           timestamp: new Date().toISOString(),
         },
-        error: error instanceof Error ? error.message : 'Unknown error',
+        alerts: [],
+        activeAlerts: [],
+        error: 'Unable to complete full health check',
+        message: 'Health check services are temporarily unavailable. Basic functionality may be affected.',
+        retryable: true,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

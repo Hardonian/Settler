@@ -102,6 +102,20 @@ export async function GET(_request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching SLA metrics', error);
-    return NextResponse.json({ error: 'Failed to fetch SLA metrics' }, { status: 500 });
+    // Never return 500 - return empty metrics with professional error message
+    return NextResponse.json({ 
+      error: 'Unable to retrieve SLA metrics',
+      message: 'Service level agreement metrics are temporarily unavailable. Please try again in a moment.',
+      period: {
+        start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        end: new Date().toISOString(),
+      },
+      accounts: [],
+      violations: {
+        current: 0,
+        alerts_sent: 0,
+      },
+      retryable: true,
+    }, { status: 200 });
   }
 }

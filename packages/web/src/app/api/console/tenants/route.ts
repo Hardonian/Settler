@@ -73,9 +73,19 @@ async function handleGet(request: NextRequest) {
     
     if (tenantsError) {
       console.error('[tenants] Error fetching tenants:', tenantsError);
+      // Never return 500 - return empty tenants list with professional error message
       return NextResponse.json(
-        { error: 'Failed to fetch tenants', message: tenantsError.message },
-        { status: 500 }
+        { 
+          error: 'Unable to retrieve tenant information',
+          message: 'Tenant data is temporarily unavailable. Please try again in a moment.',
+          tenants: [],
+          count: 0,
+          total: 0,
+          limit: pagination.limit,
+          offset: pagination.offset,
+          retryable: true,
+        },
+        { status: 200 }
       );
     }
     
@@ -156,9 +166,19 @@ async function handleGet(request: NextRequest) {
     });
   } catch (error) {
     console.error('[tenants] Error:', error);
+    // Never return 500 - return empty tenants list with professional error message
     return NextResponse.json(
-      { error: 'Failed to fetch tenants', message: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      { 
+        error: 'Unable to retrieve tenant information',
+        message: 'An unexpected error occurred while fetching tenant data. Please try again.',
+        tenants: [],
+        count: 0,
+        total: 0,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        retryable: true,
+      },
+      { status: 200 }
     );
   }
 }

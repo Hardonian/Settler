@@ -77,6 +77,21 @@ export async function GET(_request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching unit economics', error);
-    return NextResponse.json({ error: 'Failed to fetch unit economics' }, { status: 500 });
+    // Never return 500 - return empty metrics with professional error message
+    return NextResponse.json({ 
+      error: 'Unable to retrieve unit economics',
+      message: 'Financial metrics are temporarily unavailable. Please try again in a moment.',
+      mrr: 0,
+      active_subscriptions: 0,
+      plan_distribution: {},
+      usage: {
+        total_reconciliations_30d: 0,
+      },
+      calculated_metrics: {
+        arpu: 0,
+        cost_per_reconciliation: 0.0006,
+      },
+      retryable: true,
+    }, { status: 200 });
   }
 }

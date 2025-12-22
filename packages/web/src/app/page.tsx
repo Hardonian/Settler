@@ -402,9 +402,20 @@ if (flag.value) { /* ... */ }`;
                  <Button variant="secondary" className="shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">View Full Architecture</Button>
                </div>
                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden opacity-50 blur-[1px] group-hover:opacity-75 group-hover:blur-0 group-focus-within:opacity-75 group-focus-within:blur-0 transition-all duration-500">
-                  {/* Placeholder for architecture preview image/diagram */}
-                  <div className="bg-slate-100 dark:bg-slate-800 h-[200px] sm:h-[300px] w-full flex items-center justify-center" role="img" aria-label="Architecture diagram placeholder">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 text-slate-300" aria-hidden="true" />
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 h-[200px] sm:h-[300px] w-full flex flex-col items-center justify-center p-8" role="img" aria-label="Architecture overview preview">
+                    <div className="text-center space-y-4">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                        <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-medium">
+                        Enterprise-Grade Architecture
+                      </p>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-500">
+                        Event-sourced, deterministic, and built for scale
+                      </p>
+                    </div>
                   </div>
                </div>
              </Link>

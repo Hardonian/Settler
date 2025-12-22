@@ -143,15 +143,33 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
               Start Your Free Trial
             </h1>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
-              Create your account and get instant access to Settler. You'll start with 1,000 free reconciliations per month—perfect for testing.
+              Create your account and get instant access to Settler. Start with 1,000 free reconciliations per month—perfect for testing and small projects.
             </p>
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left mt-4">
-              <p className="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-2">What happens next:</p>
-              <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
-                <li>Get your API key (takes 30 seconds)</li>
-                <li>Try the playground (no code required)</li>
-                <li>Connect your first integration (Stripe, Shopify, etc.)</li>
-              </ul>
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-5 text-left mt-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center mt-0.5">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-2">Get started in minutes:</p>
+                  <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">✓</span>
+                      <span>Generate your API key instantly</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">✓</span>
+                      <span>Explore our interactive playground—no coding required</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">✓</span>
+                      <span>Connect your first integration (Stripe, Shopify, QuickBooks, and more)</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
 

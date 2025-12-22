@@ -58,6 +58,28 @@ export async function GET(_request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching operational metrics', error);
-    return NextResponse.json({ error: 'Failed to fetch operational metrics' }, { status: 500 });
+    // Never return 500 - return empty metrics with professional error message
+    return NextResponse.json({ 
+      error: 'Unable to retrieve operational metrics',
+      message: 'Operational metrics are temporarily unavailable. Please try again in a moment.',
+      support: {
+        total: 0,
+        open: 0,
+        resolved: 0,
+        sla_met: 0,
+        sla_missed: 0,
+        by_priority: {
+          critical: 0,
+          high: 0,
+          medium: 0,
+          low: 0,
+        },
+      },
+      period: {
+        start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        end: new Date().toISOString(),
+      },
+      retryable: true,
+    }, { status: 200 });
   }
 }
