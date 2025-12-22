@@ -873,14 +873,32 @@ export class ConnectorRuntime {
           idempotencyKey: payout.idempotencyKey || `${payout.externalId}-${payout.initiatedAt.toISOString()}`,
         }));
 
+        // Map invoices to ensure idempotencyKey is present
+        const invoicesWithIdempotency = result.invoices?.map((invoice) => ({
+          ...invoice,
+          idempotencyKey: invoice.idempotencyKey || `${invoice.externalId}-${invoice.issueDate?.toISOString() || Date.now()}`,
+        }));
+
+        // Map subscriptions to ensure idempotencyKey is present
+        const subscriptionsWithIdempotency = result.subscriptions?.map((sub) => ({
+          ...sub,
+          idempotencyKey: sub.idempotencyKey || `${sub.externalId}-${sub.currentPeriodStart?.toISOString() || Date.now()}`,
+        }));
+
+        // Map taxEstimates to ensure idempotencyKey is present
+        const taxEstimatesWithIdempotency = result.taxEstimates?.map((tax) => ({
+          ...tax,
+          idempotencyKey: tax.idempotencyKey || `${tax.externalId}-${tax.occurredAt.toISOString()}`,
+        }));
+
         const dataToSave = {
           accounts: result.accounts,
           transactions: transactionsWithIdempotency,
           balances: balancesWithAccountId,
           payouts: payoutsWithIdempotency,
-          invoices: result.invoices,
-          subscriptions: result.subscriptions,
-          taxEstimates: result.taxEstimates,
+          invoices: invoicesWithIdempotency,
+          subscriptions: subscriptionsWithIdempotency,
+          taxEstimates: taxEstimatesWithIdempotency,
           rawPayloads: result.rawPayloads,
         };
 

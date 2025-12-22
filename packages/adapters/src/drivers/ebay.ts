@@ -218,9 +218,10 @@ export class EbayDriver implements ConnectorDriver {
             currency: payout.amount?.currency || 'USD',
             status: payout.payoutStatus,
             initiatedAt: payout.payoutDate ? new Date(payout.payoutDate) : new Date(),
-            metadata: {
+            providerMetadata: {
               payout_id: payout.payoutId,
             },
+            idempotencyKey: `${payout.payoutId}-${payout.payoutDate || Date.now()}`,
           });
         }
       }

@@ -153,7 +153,9 @@ export interface NormalizedInvoice {
     unitPriceCents: number;
     totalCents: number;
   }>;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
+  idempotencyKey: string;
 }
 
 export interface NormalizedSubscription {
@@ -170,7 +172,9 @@ export interface NormalizedSubscription {
   currentPeriodEnd?: Date;
   cancelAtPeriodEnd?: boolean;
   cancelledAt?: Date;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
+  idempotencyKey: string;
 }
 
 export interface NormalizedTaxEstimate {
@@ -184,7 +188,9 @@ export interface NormalizedTaxEstimate {
   jurisdiction?: string;
   taxType?: string;
   occurredAt: Date;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
+  idempotencyKey: string;
 }
 
 export interface WebhookPayload {
