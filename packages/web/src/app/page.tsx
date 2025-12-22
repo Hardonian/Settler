@@ -113,7 +113,7 @@ export default function Home() {
   ];
 
   const heroStats = [
-    { value: 'Deterministic', label: 'Matching', description: 'Precise algorithms' },
+    { value: 'Precise', label: 'Matching', description: 'Deterministic algorithms' },
     { value: '<30ms', label: 'Edge Latency', description: 'Global evaluation' },
     { value: 'ISO', label: 'Compliant', description: '27001 & SOC 2 Ready' },
     { value: '1st', label: 'Developer DX', description: 'Typed SDKs' },
