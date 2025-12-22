@@ -61,7 +61,7 @@ export default function IntegrationsPage() {
       }
 
       // Get user's tenants
-      const { data: memberships } = await supabase
+      const { data: memberships } = await (supabase as any)
         .from('app_private.memberships')
         .select('tenant_id')
         .eq('user_id', user.id)

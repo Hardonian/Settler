@@ -38,7 +38,7 @@ export async function POST(
     }
 
     // Verify tenant access
-    const { data: membership } = await supabase
+    const { data: membership } = await (supabase as any)
       .from('app_private.memberships')
       .select('tenant_id')
       .eq('user_id', user.id)
