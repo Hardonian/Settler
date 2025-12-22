@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 import { refreshTokenIfNeeded } from '@settler/adapters/src/token-refresh';
 
@@ -37,8 +38,10 @@ export async function POST(
       return NextResponse.json({ error: 'tenantId is required' }, { status: 400 });
     }
 
+    const typedSupabase = asExtendedClient(supabase);
+
     // Verify tenant access
-    const { data: membership } = await supabase
+    const { data: membership } = await typedSupabase
       .from('app_private.memberships')
       .select('tenant_id')
       .eq('user_id', user.id)
@@ -51,7 +54,7 @@ export async function POST(
     }
 
     // Get credentials
-    const { data: connector } = await supabase
+    const { data: connector } = await typedSupabase
       .from('connectors')
       .select('id, config')
       .eq('tenant_id', tenantId)
@@ -65,11 +68,18 @@ export async function POST(
       );
     }
 
-    const { data: credentials } = await supabase
+    const { data: credentials } = await typedSupabase
       .from('connector_credentials')
       .select('*')
       .eq('connector_id', connector.id)
       .single();
+
+    if (!credentials) {
+      return NextResponse.json(
+        { error: 'Credentials not found' },
+        { status: 404 }
+      );
+    }
 
     if (!credentials) {
       return NextResponse.json(

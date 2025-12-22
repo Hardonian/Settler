@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X, Settings, Loader2, RefreshCw } from "lucide-react";
+import { Check, X, Settings, Loader2, RefreshCw, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface IntegrationCardProps {

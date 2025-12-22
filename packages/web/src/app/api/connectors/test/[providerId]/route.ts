@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 
 export const dynamic = 'force-dynamic';
@@ -36,8 +37,10 @@ export async function POST(
       return NextResponse.json({ error: 'tenantId is required' }, { status: 400 });
     }
 
+    const typedSupabase = asExtendedClient(supabase);
+
     // Verify tenant access
-    const { data: membership } = await supabase
+    const { data: membership } = await typedSupabase
       .from('app_private.memberships')
       .select('tenant_id')
       .eq('user_id', user.id)

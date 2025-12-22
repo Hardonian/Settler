@@ -40,7 +40,7 @@ export class NetSuiteDriver implements ConnectorDriver {
     return `https://${accountId}.suitetalk.api.netsuite.com`;
   }
 
-  private async getAccessToken(credentials: Record<string, unknown>): Promise<string> {
+  private async getAccessToken(_credentials: Record<string, unknown>): Promise<string> {
     // NetSuite OAuth 1.0 credentials are used in signature generation
     // but the actual implementation would use them here
     // This is simplified - full OAuth 1.0 implementation needed

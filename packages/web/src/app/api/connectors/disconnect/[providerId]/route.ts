@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 
 export const dynamic = 'force-dynamic';
@@ -36,8 +37,10 @@ export async function POST(
       return NextResponse.json({ error: 'tenantId is required' }, { status: 400 });
     }
 
+    const typedSupabase = asExtendedClient(supabase);
+
     // Verify tenant access
-    const { data: membership } = await supabase
+    const { data: membership } = await typedSupabase
       .from('app_private.memberships')
       .select('tenant_id')
       .eq('user_id', user.id)
@@ -50,7 +53,7 @@ export async function POST(
     }
 
     // Get connector
-    const { data: connector } = await supabase
+    const { data: connector } = await typedSupabase
       .from('connectors')
       .select('id')
       .eq('tenant_id', tenantId)
@@ -65,7 +68,7 @@ export async function POST(
     }
 
     // Get credentials for revoke
-    const { data: credentials } = await supabase
+    const { data: credentials } = await typedSupabase
       .from('connector_credentials')
       .select('access_token_encrypted')
       .eq('connector_id', connector.id)
@@ -74,7 +77,12 @@ export async function POST(
     // Revoke tokens if driver supports it
     if (driver.revoke && credentials?.access_token_encrypted) {
       try {
-        await driver.revoke(credentials.access_token_encrypted, {});
+        const accessToken = typeof credentials.access_token_encrypted === 'string' 
+          ? credentials.access_token_encrypted 
+          : '';
+        if (accessToken) {
+          await driver.revoke(accessToken, { tenantId });
+        }
       } catch (error) {
         console.error('Failed to revoke token:', error);
         // Continue with disconnection even if revoke fails
@@ -82,13 +90,13 @@ export async function POST(
     }
 
     // Delete credentials
-    await supabase
+    await typedSupabase
       .from('connector_credentials')
       .delete()
       .eq('connector_id', connector.id);
 
     // Update connector status
-    await supabase
+    await typedSupabase
       .from('connectors')
       .update({
         status: 'disconnected',

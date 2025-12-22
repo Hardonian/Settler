@@ -919,10 +919,117 @@ export interface Database {
         Insert: never;
         Update: never;
       };
+      connectors: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          provider_id: string;
+          display_name: string;
+          status: string;
+          auth_type: string;
+          config: Json;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+          last_sync_at?: string | null;
+          last_successful_sync_at?: string | null;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          provider_id: string;
+          display_name: string;
+          status: string;
+          auth_type: string;
+          config: Json;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          provider_id?: string;
+          display_name?: string;
+          status?: string;
+          auth_type?: string;
+          config?: Json;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      connector_credentials: {
+        Row: {
+          connector_id: string;
+          tenant_id: string;
+          encrypted_credentials: Json;
+          access_token_encrypted: string;
+          refresh_token_encrypted: string | null;
+          token_expires_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          connector_id: string;
+          tenant_id: string;
+          encrypted_credentials: Json;
+          access_token_encrypted: string;
+          refresh_token_encrypted?: string | null;
+          token_expires_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          connector_id?: string;
+          tenant_id?: string;
+          encrypted_credentials?: Json;
+          access_token_encrypted?: string;
+          refresh_token_encrypted?: string | null;
+          token_expires_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      webhook_events: {
+        Row: {
+          id: string;
+          connector_id: string | null;
+          tenant_id: string | null;
+          webhook_id: string;
+          event_type: string;
+          payload: Json;
+          signature: string | null;
+          processed: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          connector_id?: string | null;
+          tenant_id?: string | null;
+          webhook_id: string;
+          event_type: string;
+          payload: Json;
+          signature?: string | null;
+          processed?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          connector_id?: string | null;
+          tenant_id?: string | null;
+          webhook_id?: string;
+          event_type?: string;
+          payload?: Json;
+          signature?: string | null;
+          processed?: boolean;
+          created_at?: string;
+        };
+      };
       [key: string]: {
         Row: Record<string, unknown>;
-        Insert: never;
-        Update: never;
+        Insert: Record<string, unknown> | never;
+        Update: Record<string, unknown> | never;
       };
     };
     Functions: {
@@ -959,6 +1066,40 @@ export interface Database {
         };
         Returns: null;
       };
+      [key: string]: {
+        Args: Record<string, unknown>;
+        Returns: unknown;
+      };
+    };
+  };
+  app_private: {
+    Tables: {
+      memberships: {
+        Row: {
+          tenant_id: string;
+          user_id: string;
+          status: string;
+          role?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Insert: {
+          tenant_id: string;
+          user_id: string;
+          status: string;
+          role?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["app_private"]["Tables"]["memberships"]["Insert"]>;
+      };
+      [key: string]: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown> | never;
+        Update: Record<string, unknown> | never;
+      };
+    };
+    Functions: {
       [key: string]: {
         Args: Record<string, unknown>;
         Returns: unknown;

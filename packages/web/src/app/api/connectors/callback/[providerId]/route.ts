@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 
 export const dynamic = 'force-dynamic';
@@ -44,8 +45,10 @@ export async function GET(
       return NextResponse.json({ error: 'Missing authorization code' }, { status: 400 });
     }
 
+    const typedSupabase = asExtendedClient(supabase);
+
     // Get connector config
-    const { data: connectors } = await supabase
+    const { data: connectors } = await typedSupabase
       .from('connectors')
       .select('id, tenant_id, config')
       .eq('provider_id', providerId)
@@ -57,9 +60,12 @@ export async function GET(
     }
 
     const connector = connectors[0];
+    if (!connector) {
+      return NextResponse.json({ error: 'Connector not found' }, { status: 404 });
+    }
 
     // Verify tenant access
-    const { data: membership } = await supabase
+    const { data: membership } = await typedSupabase
       .from('app_private.memberships')
       .select('tenant_id')
       .eq('user_id', user.id)
@@ -73,17 +79,21 @@ export async function GET(
 
     // Handle callback
     const redirectUri = `${request.nextUrl.origin}/api/connectors/callback/${providerId}`;
+    const tenantId = typeof connector.tenant_id === 'string' ? connector.tenant_id : '';
+    if (!tenantId) {
+      return NextResponse.json({ error: 'Invalid connector tenant_id' }, { status: 400 });
+    }
     const authResult = await driver.handleCallback(code, state || '', {
-      tenantId: connector.tenant_id,
+      tenantId,
       redirectUri,
     });
 
     // Store credentials (encrypted)
-    const { error: credError } = await supabase
+    const { error: credError } = await typedSupabase
       .from('connector_credentials')
       .upsert({
-        connector_id: connector.id,
-        tenant_id: connector.tenant_id,
+        connector_id: typeof connector.id === 'string' ? connector.id : '',
+        tenant_id: tenantId,
         encrypted_credentials: {}, // Should encrypt
         access_token_encrypted: authResult.accessToken, // Should encrypt
         refresh_token_encrypted: authResult.refreshToken, // Should encrypt
@@ -102,7 +112,7 @@ export async function GET(
     }
 
     // Update connector status
-    await supabase
+    await typedSupabase
       .from('connectors')
       .update({
         status: 'connected',

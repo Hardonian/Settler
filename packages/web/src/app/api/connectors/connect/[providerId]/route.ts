@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 
 export const dynamic = 'force-dynamic';
@@ -36,8 +37,10 @@ export async function POST(
       return NextResponse.json({ error: 'tenantId is required' }, { status: 400 });
     }
 
+    const typedSupabase = asExtendedClient(supabase);
+
     // Verify tenant access
-    const { data: membership } = await supabase
+    const { data: membership } = await typedSupabase
       .from('app_private.memberships')
       .select('tenant_id')
       .eq('user_id', user.id)
@@ -59,7 +62,7 @@ export async function POST(
       });
 
       // Store state in session/database for verification
-      const { data: connector } = await supabase
+      const { data: connector } = await typedSupabase
         .from('connectors')
         .select('id')
         .eq('tenant_id', tenantId)
@@ -68,7 +71,7 @@ export async function POST(
 
       if (!connector) {
         // Create connector record
-        const { data: newConnector } = await supabase
+        const { data: newConnector } = await typedSupabase
           .from('connectors')
           .insert({
             tenant_id: tenantId,
@@ -82,9 +85,16 @@ export async function POST(
           .select('id')
           .single();
 
+        if (!newConnector) {
+          return NextResponse.json(
+            { error: 'Failed to create connector' },
+            { status: 500 }
+          );
+        }
+
         return NextResponse.json({
           authUrl,
-          connectorId: newConnector?.id,
+          connectorId: newConnector.id,
         });
       }
 
