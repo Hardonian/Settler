@@ -37,7 +37,7 @@ export class TaxJarDriver implements ConnectorDriver {
       sandbox: 'https://api.sandbox.taxjar.com',
       production: 'https://api.taxjar.com',
     };
-    return urls[env] || urls.sandbox;
+    return urls[env] ?? urls.sandbox;
   }
 
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {

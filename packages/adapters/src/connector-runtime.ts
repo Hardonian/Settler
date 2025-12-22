@@ -633,7 +633,6 @@ export class ConnectorRuntime {
     syncRunId: string,
     data: Parameters<ConnectorRuntime['saveNormalizedData']>[3]
   ): Promise<void> {
-    const { processInBatches } = await import('./performance/batch-processor');
     const batchSize = 500;
 
     // Process transactions in batches
@@ -734,13 +733,19 @@ export class ConnectorRuntime {
       return null;
     }
 
-    const { data: cursor } = await this.supabase
+    let query = this.supabase
       .from('sync_cursors')
       .select('cursor_value')
       .eq('connector_id', (connector as { id: string }).id)
-      .eq('cursor_key', cursorKey)
-      .is('account_id', accountId || null)
-      .single();
+      .eq('cursor_key', cursorKey);
+    
+    if (accountId) {
+      query = query.eq('account_id', accountId);
+    } else {
+      query = query.is('account_id', null);
+    }
+    
+    const { data: cursor } = await query.single();
 
     return (cursor as { cursor_value: string } | null)?.cursor_value || null;
   }
@@ -851,10 +856,21 @@ export class ConnectorRuntime {
           idempotencyKey: tx.idempotencyKey || `${tx.externalId}-${tx.occurredAt.toISOString()}`,
         }));
 
+        // Map balances to ensure accountId is present (required by saveNormalizedData)
+        const balancesWithAccountId = result.balances?.map((bal) => ({
+          accountId: (bal as any).accountId || '',
+          balanceCents: bal.balanceCents,
+          availableBalanceCents: bal.availableBalanceCents,
+          currency: bal.currency,
+          snapshotAt: bal.snapshotAt,
+          providerMetadata: bal.providerMetadata,
+          rawPayload: bal.rawPayload,
+        }));
+
         const dataToSave = {
           accounts: result.accounts,
           transactions: transactionsWithIdempotency,
-          balances: result.balances,
+          balances: balancesWithAccountId,
           payouts: result.payouts,
           invoices: result.invoices,
           subscriptions: result.subscriptions,
@@ -1000,6 +1016,7 @@ export class ConnectorRuntime {
         }
 
         throw error;
+      }
     } finally {
       // Release lock
       if (lock.lockId) {

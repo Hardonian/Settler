@@ -228,7 +228,7 @@ export class EtsyDriver implements ConnectorDriver {
               description: `Etsy order ${receipt.receipt_id}`,
               referenceId: receipt.receipt_id.toString(),
               referenceType: 'order',
-              metadata: {
+              providerMetadata: {
                 shop_id: shopId,
                 buyer_email: receipt.buyer_email,
               },

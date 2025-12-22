@@ -323,7 +323,7 @@ export class AlertManager {
     const { data: alerts } = await this.supabase
       .from('connector_alerts')
       .select('*')
-      .eq('connector_id', connector.id)
+      .eq('connector_id', (connector as { id: string }).id)
       .is('resolved_at', null)
       .order('created_at', { ascending: false });
 

@@ -109,11 +109,13 @@ export interface NormalizedTransaction {
 }
 
 export interface NormalizedBalance {
+  accountId: string;
   balanceCents: number;
   availableBalanceCents?: number;
   currency: string;
   snapshotAt: Date;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
 }
 
 export interface NormalizedPayout {
@@ -275,7 +277,7 @@ export class ConnectorError extends Error {
     message: string,
     public readonly code: string,
     public readonly connectorId: string,
-    public readonly cause?: Error
+    public override readonly cause?: Error
   ) {
     super(message);
     this.name = 'ConnectorError';

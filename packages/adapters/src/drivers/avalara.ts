@@ -37,7 +37,7 @@ export class AvalaraDriver implements ConnectorDriver {
       sandbox: 'https://sandbox-rest.avatax.com',
       production: 'https://rest.avatax.com',
     };
-    return urls[env] || urls.sandbox;
+    return urls[env] ?? urls.sandbox;
   }
 
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {

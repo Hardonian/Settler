@@ -40,7 +40,7 @@ export class EbayDriver implements ConnectorDriver {
       sandbox: 'https://api.sandbox.ebay.com',
       production: 'https://api.ebay.com',
     };
-    return urls[env] || urls.sandbox;
+    return urls[env] ?? urls.sandbox;
   }
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
@@ -245,7 +245,7 @@ export class EbayDriver implements ConnectorDriver {
             currency: tx.amount?.currency || 'USD',
             occurredAt: tx.transactionDate ? new Date(tx.transactionDate) : new Date(),
             description: tx.transactionMemo || `eBay transaction ${tx.transactionId}`,
-            metadata: {
+            providerMetadata: {
               transaction_id: tx.transactionId,
               order_id: tx.orderId,
             },
