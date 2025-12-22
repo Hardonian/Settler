@@ -71,6 +71,11 @@ export async function GET() {
     return NextResponse.json({ integrations });
   } catch (error) {
     console.error("Error in integrations/health GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Return empty array instead of 500 - graceful degradation
+    return NextResponse.json({ 
+      integrations: [],
+      error: error instanceof Error ? error.message : "Failed to fetch integrations",
+      degraded: true,
+    }, { status: 200 });
   }
 }

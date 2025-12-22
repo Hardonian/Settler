@@ -18,3 +18,18 @@ export * from "./enhanced-paypal";
 export * from "./xero";
 export * from "./netsuite";
 export * from "./woocommerce";
+
+// New connector framework
+export * from "./connector-driver";
+export * from "./connector-runtime";
+export * from "./drivers";
+export * from "./credential-encryption";
+export * from "./webhook-verification";
+export * from "./token-refresh";
+export * from "./rate-limiting";
+export * from "./concurrency-protection";
+export * from "./metrics/prometheus";
+export * from "./alerting/alert-manager";
+export * from "./retry-queue/retry-queue";
+export * from "./validation/data-validator";
+export * from "./performance/batch-processor";
