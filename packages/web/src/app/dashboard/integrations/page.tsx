@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { getAllConnectorMetadata } from "@settler/adapters/src/drivers";
 
 interface Integration {
   id: string;
@@ -15,8 +17,9 @@ interface Integration {
   is_standard: boolean;
   is_purchased: boolean;
   is_connected: boolean;
-  status: "active" | "inactive" | "error" | "pending";
+  status: "active" | "inactive" | "error" | "pending" | "needs_attention" | "connected" | "not_connected";
   last_sync?: string;
+  category?: string;
 }
 
 export default function IntegrationsPage() {
@@ -26,6 +29,7 @@ export default function IntegrationsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [currentTenantId, setCurrentTenantId] = useState<string | null>(null);
 
   useEffect(() => {
     void fetchIntegrations();
@@ -44,128 +48,102 @@ export default function IntegrationsPage() {
     }
   }, [searchQuery, integrations]);
 
-  const fetchIntegrations = () => {
+  const fetchIntegrations = async () => {
     try {
       setIsLoading(true);
-      // In production, fetch from API
-      // Mock data
-      const mockIntegrations: Integration[] = [
+      const supabase = createClient();
+      
+      // Get current user and tenant
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      // Get user's tenants
+      const { data: memberships } = await supabase
+        .from('app_private.memberships')
+        .select('tenant_id')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .limit(1);
+
+      const tenantId = memberships?.[0]?.tenant_id;
+      if (!tenantId) {
+        setIsLoading(false);
+        return;
+      }
+
+      setCurrentTenantId(tenantId);
+
+      // Get all available connectors
+      const allConnectors = getAllConnectorMetadata();
+      
+      // Get connected connectors from database
+      const { data: connectedConnectors } = await supabase
+        .from('connectors')
+        .select('id, provider_id, status, last_sync_at, last_successful_sync_at')
+        .eq('tenant_id', tenantId);
+
+      const connectedMap = new Map(
+        (connectedConnectors || []).map((c) => [c.provider_id, c])
+      );
+
+      // Build integration list
+      const integrationList: Integration[] = allConnectors.map((metadata) => {
+        const connected = connectedMap.get(metadata.id);
+        const isConnected = connected && connected.status === 'connected';
+        
+        return {
+          id: connected?.id || metadata.id,
+          integration_id: metadata.id,
+          name: metadata.displayName,
+          description: metadata.description,
+          is_standard: ['plaid', 'truelayer', 'freshbooks', 'wave'].includes(metadata.id),
+          is_purchased: true, // TODO: Check subscription
+          is_connected: isConnected,
+          status: (connected?.status as Integration['status']) || 'not_connected',
+          last_sync: connected?.last_successful_sync_at || undefined,
+          category: metadata.category,
+        };
+      });
+
+      // Add existing integrations (Stripe, PayPal, etc.) that aren't in the registry
+      const existingIntegrations: Integration[] = [
         {
-          id: "1",
+          id: "stripe",
           integration_id: "stripe",
           name: "Stripe",
-          description:
-            "Automatically match Stripe payments with Shopify orders, PayPal transactions, or bank deposits. Reconcile charges, refunds, and disputes using deterministic matching algorithms. Set up in 5 minutes.",
+          description: "Automatically match Stripe payments with Shopify orders, PayPal transactions, or bank deposits.",
           is_standard: true,
           is_purchased: true,
-          is_connected: true,
-          status: "active",
-          last_sync: new Date().toISOString(),
+          is_connected: false,
+          status: "not_connected",
         },
         {
-          id: "2",
+          id: "shopify",
           integration_id: "shopify",
           name: "Shopify",
-          description:
-            "Match Shopify orders with payment processors (Stripe, PayPal), shipping providers, and accounting systems (QuickBooks, Xero). Reconcile orders, payments, refunds, and shipping costs automatically.",
+          description: "Match Shopify orders with payment processors and accounting systems.",
           is_standard: true,
           is_purchased: true,
-          is_connected: true,
-          status: "active",
-          last_sync: new Date().toISOString(),
+          is_connected: false,
+          status: "not_connected",
         },
         {
-          id: "3",
+          id: "paypal",
           integration_id: "paypal",
           name: "PayPal",
-          description:
-            "Reconcile PayPal transactions with e-commerce platforms, bank deposits, and accounting systems. Match payments, refunds, and fees automatically using deterministic matching algorithms.",
+          description: "Reconcile PayPal transactions with e-commerce platforms and accounting systems.",
           is_standard: true,
           is_purchased: true,
           is_connected: false,
-          status: "inactive",
-        },
-        {
-          id: "4",
-          integration_id: "google-pay",
-          name: "Google Pay",
-          description:
-            "Reconcile Google Pay transactions with payment processors and e-commerce platforms. Match payments, refunds, and fees across your payment ecosystem.",
-          is_standard: true,
-          is_purchased: true,
-          is_connected: false,
-          status: "inactive",
-        },
-        {
-          id: "5",
-          integration_id: "meta-commerce",
-          name: "Meta Commerce + Meta Ads",
-          description:
-            "Reconcile Facebook/Instagram Shop orders with payment processors and track Meta Ads spend. Match orders, payments, and ad costs automatically.",
-          is_standard: true,
-          is_purchased: true,
-          is_connected: false,
-          status: "inactive",
-        },
-        {
-          id: "6",
-          integration_id: "tiktok-shop",
-          name: "TikTok Shop + TikTok Ads",
-          description:
-            "Reconcile TikTok Shop orders with payment processors and track TikTok Ads spend. Match orders, payments, refunds, and ad costs with 99.7% accuracy.",
-          is_standard: false,
-          is_purchased: true,
-          is_connected: true,
-          status: "active",
-          last_sync: new Date().toISOString(),
-        },
-        {
-          id: "7",
-          integration_id: "wix-stores",
-          name: "Wix Stores",
-          description:
-            "Reconcile Wix Stores orders with payment processors and accounting systems. Match orders, payments, refunds, and shipping costs automatically.",
-          is_standard: false,
-          is_purchased: true,
-          is_connected: false,
-          status: "inactive",
-        },
-        {
-          id: "8",
-          integration_id: "ga4-deep-sync",
-          name: "Google Analytics GA4 Deep Sync",
-          description:
-            "Reconcile GA4 event data with revenue from payment processors. Match e-commerce events, conversions, and revenue data for accurate analytics reconciliation.",
-          is_standard: false,
-          is_purchased: false,
-          is_connected: false,
-          status: "inactive",
-        },
-        {
-          id: "9",
-          integration_id: "paypal-payouts",
-          name: "PayPal Payouts + Automation",
-          description:
-            "Reconcile PayPal Payouts API transactions with bank deposits and accounting systems. Automate payout reconciliation and track payouts, fees, and refunds.",
-          is_standard: false,
-          is_purchased: false,
-          is_connected: false,
-          status: "inactive",
-        },
-        {
-          id: "10",
-          integration_id: "whatsapp-telegram",
-          name: "WhatsApp Business + Telegram Messaging",
-          description:
-            "Integrate WhatsApp Business API and Telegram Bot API for messaging-based transaction reconciliation. Track orders and payments initiated through messaging platforms.",
-          is_standard: false,
-          is_purchased: false,
-          is_connected: false,
-          status: "inactive",
+          status: "not_connected",
         },
       ];
-      setIntegrations(mockIntegrations);
-      setFilteredIntegrations(mockIntegrations);
+
+      setIntegrations([...integrationList, ...existingIntegrations]);
+      setFilteredIntegrations([...integrationList, ...existingIntegrations]);
     } catch (error) {
       console.error("Failed to fetch integrations:", error);
     } finally {
@@ -173,39 +151,62 @@ export default function IntegrationsPage() {
     }
   };
 
-  const handleConnect = async (id: string) => {
+  const handleConnect = async (id: string, integrationId: string) => {
+    if (!currentTenantId) return;
+
     try {
       setIsProcessing(true);
-      // In production: await fetch(`/api/integrations/${id}/connect`, { method: "POST" });
-      console.log("Connecting integration:", id);
-      setIntegrations((prev) =>
-        prev.map((integration) =>
-          integration.id === id
-            ? { ...integration, is_connected: true, status: "active" as const }
-            : integration
-        )
-      );
+      
+      const response = await fetch(`/api/connectors/connect/${integrationId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tenantId: currentTenantId,
+          redirectUri: `${window.location.origin}/api/connectors/callback/${integrationId}`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.authUrl) {
+        // Redirect to OAuth flow
+        window.location.href = data.authUrl;
+      } else {
+        // API key flow - redirect to configuration page
+        router.push(`/dashboard/integrations/${integrationId}`);
+      }
     } catch (error) {
       console.error("Connection failed:", error);
+      alert("Failed to connect. Please try again.");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleDisconnect = async (id: string) => {
+  const handleDisconnect = async (id: string, integrationId: string) => {
+    if (!currentTenantId) return;
+
     try {
       setIsProcessing(true);
-      // In production: await fetch(`/api/integrations/${id}/disconnect`, { method: "POST" });
-      console.log("Disconnecting integration:", id);
-      setIntegrations((prev) =>
-        prev.map((integration) =>
-          integration.id === id
-            ? { ...integration, is_connected: false, status: "inactive" as const }
-            : integration
-        )
-      );
+      // TODO: Implement disconnect API
+      const response = await fetch(`/api/connectors/${integrationId}/disconnect`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tenantId: currentTenantId,
+        }),
+      });
+
+      if (response.ok) {
+        await fetchIntegrations();
+      }
     } catch (error) {
       console.error("Disconnection failed:", error);
+      alert("Failed to disconnect. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -213,6 +214,36 @@ export default function IntegrationsPage() {
 
   const handleConfigure = (id: string) => {
     router.push(`/dashboard/integrations/${id}`);
+  };
+
+  const handleSync = async (integrationId: string) => {
+    if (!currentTenantId) return;
+
+    try {
+      setIsProcessing(true);
+      const response = await fetch(`/api/connectors/sync/${integrationId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tenantId: currentTenantId,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Sync started successfully");
+        await fetchIntegrations();
+      } else {
+        const error = await response.json();
+        alert(`Sync failed: ${error.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Sync failed:", error);
+      alert("Failed to start sync. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (isLoading) {
@@ -223,8 +254,12 @@ export default function IntegrationsPage() {
     );
   }
 
-  const standardIntegrations = filteredIntegrations.filter((i) => i.is_standard);
-  const addOnIntegrations = filteredIntegrations.filter((i) => !i.is_standard);
+  // Group by category
+  const bankFeeds = filteredIntegrations.filter((i) => i.category === 'bank_feed');
+  const accounting = filteredIntegrations.filter((i) => i.category === 'accounting');
+  const subscriptions = filteredIntegrations.filter((i) => i.category === 'subscription_billing');
+  const standard = filteredIntegrations.filter((i) => i.is_standard && !i.category);
+  const addOns = filteredIntegrations.filter((i) => !i.is_standard && !i.category);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-6 md:space-y-8">
@@ -234,8 +269,8 @@ export default function IntegrationsPage() {
             Integrations
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1.5 text-sm md:text-base leading-relaxed max-w-2xl">
-            Connect 10+ platforms in minutes. Pre-built adapters for payment processors, e-commerce
-            platforms, and accounting systems.
+            Connect 20+ platforms in minutes. Pre-built adapters for payment processors, e-commerce
+            platforms, accounting systems, bank feeds, and more.
           </p>
         </div>
         <Button
@@ -259,13 +294,13 @@ export default function IntegrationsPage() {
         </div>
       </div>
 
-      {standardIntegrations.length > 0 && (
+      {bankFeeds.length > 0 && (
         <div className="space-y-4 md:space-y-6">
           <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Standard Integrations
+            Bank Feeds
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {standardIntegrations.map((integration) => (
+            {bankFeeds.map((integration) => (
               <IntegrationCard
                 key={integration.id}
                 id={integration.integration_id}
@@ -276,9 +311,10 @@ export default function IntegrationsPage() {
                 isPurchased={integration.is_purchased}
                 status={integration.status}
                 lastSync={integration.last_sync ? new Date(integration.last_sync) : undefined}
-                onConnect={handleConnect}
-                onDisconnect={handleDisconnect}
-                onConfigure={handleConfigure}
+                onConnect={() => handleConnect(integration.id, integration.integration_id)}
+                onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
+                onConfigure={() => handleConfigure(integration.integration_id)}
+                onSync={() => handleSync(integration.integration_id)}
                 isLoading={isProcessing}
               />
             ))}
@@ -286,13 +322,13 @@ export default function IntegrationsPage() {
         </div>
       )}
 
-      {addOnIntegrations.length > 0 && (
+      {accounting.length > 0 && (
         <div className="space-y-4 md:space-y-6">
           <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Premium Add-Ons
+            Accounting Systems
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {addOnIntegrations.map((integration) => (
+            {accounting.map((integration) => (
               <IntegrationCard
                 key={integration.id}
                 id={integration.integration_id}
@@ -303,9 +339,94 @@ export default function IntegrationsPage() {
                 isPurchased={integration.is_purchased}
                 status={integration.status}
                 lastSync={integration.last_sync ? new Date(integration.last_sync) : undefined}
-                onConnect={handleConnect}
-                onDisconnect={handleDisconnect}
-                onConfigure={handleConfigure}
+                onConnect={() => handleConnect(integration.id, integration.integration_id)}
+                onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
+                onConfigure={() => handleConfigure(integration.integration_id)}
+                onSync={() => handleSync(integration.integration_id)}
+                isLoading={isProcessing}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {subscriptions.length > 0 && (
+        <div className="space-y-4 md:space-y-6">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Subscription Billing
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {subscriptions.map((integration) => (
+              <IntegrationCard
+                key={integration.id}
+                id={integration.integration_id}
+                name={integration.name}
+                description={integration.description}
+                isConnected={integration.is_connected}
+                isStandard={integration.is_standard}
+                isPurchased={integration.is_purchased}
+                status={integration.status}
+                lastSync={integration.last_sync ? new Date(integration.last_sync) : undefined}
+                onConnect={() => handleConnect(integration.id, integration.integration_id)}
+                onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
+                onConfigure={() => handleConfigure(integration.integration_id)}
+                onSync={() => handleSync(integration.integration_id)}
+                isLoading={isProcessing}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {standard.length > 0 && (
+        <div className="space-y-4 md:space-y-6">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Standard Integrations
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {standard.map((integration) => (
+              <IntegrationCard
+                key={integration.id}
+                id={integration.integration_id}
+                name={integration.name}
+                description={integration.description}
+                isConnected={integration.is_connected}
+                isStandard={integration.is_standard}
+                isPurchased={integration.is_purchased}
+                status={integration.status}
+                lastSync={integration.last_sync ? new Date(integration.last_sync) : undefined}
+                onConnect={() => handleConnect(integration.id, integration.integration_id)}
+                onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
+                onConfigure={() => handleConfigure(integration.integration_id)}
+                onSync={() => handleSync(integration.integration_id)}
+                isLoading={isProcessing}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {addOns.length > 0 && (
+        <div className="space-y-4 md:space-y-6">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Premium Add-Ons
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {addOns.map((integration) => (
+              <IntegrationCard
+                key={integration.id}
+                id={integration.integration_id}
+                name={integration.name}
+                description={integration.description}
+                isConnected={integration.is_connected}
+                isStandard={integration.is_standard}
+                isPurchased={integration.is_purchased}
+                status={integration.status}
+                lastSync={integration.last_sync ? new Date(integration.last_sync) : undefined}
+                onConnect={() => handleConnect(integration.id, integration.integration_id)}
+                onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
+                onConfigure={() => handleConfigure(integration.integration_id)}
+                onSync={() => handleSync(integration.integration_id)}
                 isLoading={isProcessing}
               />
             ))}

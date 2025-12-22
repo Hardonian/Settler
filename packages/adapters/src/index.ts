@@ -18,3 +18,8 @@ export * from "./enhanced-paypal";
 export * from "./xero";
 export * from "./netsuite";
 export * from "./woocommerce";
+
+// New connector framework
+export * from "./connector-driver";
+export * from "./connector-runtime";
+export * from "./drivers";
