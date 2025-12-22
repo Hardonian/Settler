@@ -1,7 +1,7 @@
 /**
  * Pricing Page - Model 4: Volume + Exception Supervision
  * 
- * Simple, transparent pricing that scales with reliance.
+ * Simple, transparent pricing that scales with your business.
  * No feature matrices. No AI tokens. Just reconciliation volume + exceptions.
  */
 
@@ -22,7 +22,7 @@ export default function Pricing() {
     {
       name: 'Free',
       price: '$0',
-      description: 'Great for testing and small projects',
+      description: 'Perfect for testing and small projects',
       reconciliationVolume: '1,000/month',
       exceptionRate: '1% included',
       example: '1k reconciliations = $0/month',
@@ -66,7 +66,7 @@ export default function Pricing() {
     {
       name: 'Enterprise',
       price: 'Custom',
-      description: 'Custom volume and exception thresholds',
+      description: 'Custom volume and exception handling',
       reconciliationVolume: 'Unlimited',
       exceptionRate: 'Custom',
       example: 'Volume discounts available',
@@ -80,32 +80,32 @@ export default function Pricing() {
     {
       question: "What is a reconciliation?",
       answer:
-        'A reconciliation matches transactions between two platforms (e.g., Shopify orders with Stripe payments). Reconciliation runs automatically—no manual work required.',
+        'A reconciliation matches one transaction to another (e.g., Stripe payment to Shopify order). Each match counts as one reconciliation. Runs automatically—no manual work.',
     },
     {
       question: 'What are exceptions?',
       answer:
-        'Exceptions are mismatches that require human review. The system explains all mismatches automatically. You only pay for exceptions that require your attention ($0.10 each).',
+        'Exceptions are transactions that can\'t be matched automatically. Settler explains why they don\'t match. You only pay for exceptions requiring manual review ($0.10 each).',
     },
     {
       question: 'How does exception pricing work?',
       answer:
-        'Each plan includes 1% exception rate (automatic explanations). If more exceptions require review, you pay $0.10 per exception. Most exceptions are handled automatically.',
+        'Each plan includes 1% exception rate with automatic explanations. Exceptions beyond 1% requiring manual review cost $0.10 each. Most are handled automatically.',
     },
     {
       question: 'Can I switch plans later?',
       answer:
-        'Yes! You can upgrade, downgrade, or cancel at any time. Changes take effect immediately, and we\'ll prorate any charges.',
+        'Yes! Upgrade, downgrade, or cancel anytime. Changes take effect immediately. We\'ll prorate charges.',
     },
     {
       question: 'What payment methods do you accept?',
       answer:
-        'We accept all major credit cards, ACH transfers, and wire transfers for Enterprise plans.',
+        'We accept all major credit cards. ACH and wire transfers available for Enterprise plans.',
     },
     {
       question: 'Is there a free tier?',
       answer:
-        'Yes! Free plan includes 1,000 reconciliations per month forever. Paid plans include a 14-day free trial.',
+        'Yes! Free plan includes 1,000 reconciliations/month forever. Paid plans include a 14-day free trial with full access.',
     },
   ];
 
@@ -117,10 +117,10 @@ export default function Pricing() {
       <section className="px-4 sm:px-6 lg:px-8 pt-8 pb-12">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
-            Simple Pricing: Pay Per Transaction Match
+            Simple Pricing: Pay Per Match
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
-            Settler matches your payments to orders automatically. You pay per match. If a match needs your review, it costs extra. That's it.
+            Pay per successful match. Manual review costs extra. Simple, transparent pricing that scales with your business.
           </p>
           
           {/* Hero Illustration */}
@@ -152,21 +152,21 @@ export default function Pricing() {
               <div>
                 <h3 className="font-semibold mb-2 text-lg">What is a reconciliation?</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  A reconciliation is when Settler matches one transaction (like a Stripe payment) to another (like a Shopify order). 
-                  Each match counts as one reconciliation. Reconciliation runs automatically—no manual work required.
+                  A reconciliation is one successful match between transactions (e.g., Stripe payment to Shopify order). 
+                  Each match counts as one reconciliation. Runs automatically—no manual work required.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2 text-lg">What are exceptions?</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Exceptions are transactions that Settler can't match automatically. Settler explains why they don't match, 
-                  so you can review them quickly. Most exceptions are handled automatically—you only pay for ones that need your attention ($0.10 each).
+                  Exceptions are transactions that can't be matched automatically. Settler explains why they don't match. 
+                  Most exceptions are handled automatically—you only pay for ones requiring manual review ($0.10 each).
                 </p>
               </div>
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <p className="text-sm text-blue-800 dark:text-blue-200">
-                  <strong>Example:</strong> If you process 50,000 transactions per month, Settler will match them automatically. 
-                  If 500 transactions (1%) require your review, you pay $99 (Starter plan) + (500 × $0.10) = $149/month.
+                  <strong>Example:</strong> Process 50,000 transactions/month. Settler matches automatically. 
+                  If 500 (1%) require review: $99 (Starter) + (500 × $0.10) = $149/month.
                 </p>
               </div>
             </CardContent>
@@ -189,27 +189,27 @@ export default function Pricing() {
                   </div>
                 )}
                 <CardHeader>
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                  <div className="flex items-baseline gap-2 mt-2">
-                    <span className="text-4xl font-bold">{plan.price}</span>
+                  <CardTitle className="text-2xl break-words">{plan.name}</CardTitle>
+                  <div className="flex items-baseline gap-2 mt-2 flex-wrap">
+                    <span className="text-4xl font-bold break-words">{plan.price}</span>
                     {plan.price !== 'Custom' && (
-                      <span className="text-slate-600 dark:text-slate-400">/month</span>
+                      <span className="text-slate-600 dark:text-slate-400 break-words">/month</span>
                     )}
                   </div>
-                  <CardDescription>{plan.description}</CardDescription>
+                  <CardDescription className="break-words">{plan.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <div className="text-sm font-semibold mb-1">Reconciliation Volume</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">{plan.reconciliationVolume}</div>
+                    <div className="text-sm font-semibold mb-1 break-words">Reconciliation Volume</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400 break-words">{plan.reconciliationVolume}</div>
                   </div>
                   <div>
-                    <div className="text-sm font-semibold mb-1">Exception Rate Included</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">{plan.exceptionRate}</div>
-                    <div className="text-xs text-slate-500 mt-1">(Automatic explanations)</div>
+                    <div className="text-sm font-semibold mb-1 break-words">Exception Rate Included</div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400 break-words">{plan.exceptionRate}</div>
+                    <div className="text-xs text-slate-500 mt-1 break-words">(Automatic explanations)</div>
                   </div>
                   <div className="pt-2 border-t">
-                    <div className="text-xs text-slate-600 dark:text-slate-400">{plan.example}</div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400 break-words">{plan.example}</div>
                   </div>
                   <Button
                     asChild
@@ -233,30 +233,30 @@ export default function Pricing() {
           <Card>
             <CardHeader>
               <CardTitle>How Pricing Works</CardTitle>
-              <CardDescription>Simple, transparent, scales with your reliance</CardDescription>
+              <CardDescription>Simple, transparent, scales with your business</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <h3 className="font-semibold mb-2">Base Pricing</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Each plan includes a base volume of reconciliations per month. If you exceed your plan's volume, 
-                  you'll be prompted to upgrade to a higher plan. This ensures you always have the capacity you need.
+                  Each plan includes a monthly reconciliation volume. If you exceed your plan's volume, 
+                  you'll be prompted to upgrade. This ensures you always have the capacity you need.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Exception Handling</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Reconciliation runs automatically. The system explains mismatches automatically. 
-                  Most exceptions are handled automatically—you only pay for exceptions that require your review ($0.10 each). 
-                  Each plan includes 1% exception rate (automatic explanations).
+                  Reconciliation runs automatically. Settler explains mismatches automatically. 
+                  Most exceptions are handled automatically—you only pay for ones requiring manual review ($0.10 each). 
+                  Each plan includes 1% exception rate with automatic explanations.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Example</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Starter plan: 50,000 reconciliations/month included ($99/month). 
-                  If you process 60,000 reconciliations, you'll be prompted to upgrade to Growth plan ($599/month for 500,000/month).
-                  If 500 exceptions require review (1% rate), you pay $99 + (500 × $0.10) = $149/month.
+                  Starter: 50,000 reconciliations/month ($99/month). 
+                  Process 60,000? Upgrade to Growth ($599/month for 500,000/month).
+                  If 500 exceptions require review (1%): $99 + (500 × $0.10) = $149/month.
                 </p>
               </div>
             </CardContent>

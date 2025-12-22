@@ -200,9 +200,9 @@ export default async function UseCasePage({
             {useCase.features.map((feature, i) => (
               <Card key={i} className="border-2">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    {feature}
+                  <CardTitle className="flex items-center gap-2 break-words">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <span className="break-words">{feature}</span>
                   </CardTitle>
                 </CardHeader>
               </Card>
@@ -226,8 +226,8 @@ export default async function UseCasePage({
                     <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                       <IconComponent className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <CardTitle>{benefit.title}</CardTitle>
-                    <CardDescription>{benefit.description}</CardDescription>
+                    <CardTitle className="break-words">{benefit.title}</CardTitle>
+                    <CardDescription className="break-words">{benefit.description}</CardDescription>
                   </CardHeader>
                 </Card>
               );

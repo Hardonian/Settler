@@ -65,6 +65,19 @@ export async function GET(_request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching system health', error);
-    return NextResponse.json({ error: 'Failed to fetch system health' }, { status: 500 });
+    // Never return 500 - return degraded health status
+    return NextResponse.json({ 
+      status: 'degraded',
+      error: 'Failed to fetch system health',
+      message: 'Unable to retrieve full health metrics. Some data may be unavailable.',
+      metrics: {
+        active_customers: 0,
+        active_subscriptions: 0,
+        open_support_tickets: 0,
+        sla_violations: 0,
+        timestamp: new Date().toISOString(),
+      },
+      retryable: true,
+    }, { status: 200 });
   }
 }

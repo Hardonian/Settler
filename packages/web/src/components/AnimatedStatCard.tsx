@@ -74,19 +74,19 @@ export function AnimatedStatCard({
     >
       <AnimatedCounter
         value={value}
-        className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2"
+        className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 break-words overflow-wrap-anywhere"
         aria-label={`${label}: ${value}`}
       />
       <div
         id={`stat-label-${index}`}
-        className="text-sm md:text-base text-slate-600 dark:text-slate-400 font-medium"
+        className="text-sm md:text-base text-slate-600 dark:text-slate-400 font-medium break-words"
       >
         {label}
       </div>
       {description && (
         <div
           id={`stat-desc-${index}`}
-          className="text-xs text-slate-500 dark:text-slate-500 mt-1"
+          className="text-xs text-slate-500 dark:text-slate-500 mt-1 break-words px-2"
           aria-hidden="true"
         >
           {description}

@@ -59,6 +59,18 @@ export async function GET(_request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching business metrics', error);
-    return NextResponse.json({ error: 'Failed to fetch business metrics' }, { status: 500 });
+    // Never return 500 - return empty metrics with error message
+    return NextResponse.json({ 
+      error: 'Failed to fetch business metrics',
+      message: 'Unable to retrieve business metrics. Please try again.',
+      customers: {
+        total: 0,
+        active: 0,
+        churned_30d: 0,
+        churn_rate: 0,
+      },
+      timestamp: new Date().toISOString(),
+      retryable: true,
+    }, { status: 200 });
   }
 }

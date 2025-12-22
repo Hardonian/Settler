@@ -101,7 +101,7 @@ export default function Home() {
     {
       icon: Sparkles,
       title: "AI-Powered Insights",
-      description: "Get actionable recommendations powered by AI to optimize costs, improve performance, and understand usage patterns. Included with Commercial and Enterprise plans.",
+      description: "Get actionable recommendations powered by AI to optimize costs, improve performance, and understand usage patterns. Available on Growth, Scale, and Enterprise plans.",
       gradient: "from-purple-500 to-pink-500",
     },
     {
@@ -113,9 +113,9 @@ export default function Home() {
   ];
 
   const heroStats = [
-    { value: 'Deterministic', label: 'Matching', description: 'Precise algorithms' },
+    { value: 'Precise', label: 'Matching', description: 'Deterministic algorithms' },
     { value: '<30ms', label: 'Edge Latency', description: 'Global evaluation' },
-    { value: 'ISO', label: 'Compliant', description: '27001 & SOC 2 Ready' },
+    { value: 'ISO', label: 'Compliant', description: 'SOC 2 Ready' },
     { value: '1st', label: 'Developer DX', description: 'Typed SDKs' },
   ];
 
@@ -171,9 +171,9 @@ if (flag.value) { /* ... */ }`;
             <HeroAnimationWrapper>
               <div className="text-center">
                 <Badge 
-                  className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30"
+                  className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30 break-words px-3 py-1.5 text-sm"
                 >
-                  Trusted by small businesses to automate financial reconciliation
+                  Trusted by businesses to automate reconciliation
                 </Badge>
                 
                 <TextRevealHeading
@@ -290,8 +290,8 @@ if (flag.value) { /* ... */ }`;
                       <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3 sm:p-3.5 mb-4 sm:mb-6 flex items-center justify-center`}>
                         <Icon className="w-full h-full text-white" aria-hidden="true" />
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-slate-900 dark:text-white">{feature.title}</h3>
-                      <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 flex-grow">{feature.description}</p>
+                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-slate-900 dark:text-white break-words">{feature.title}</h3>
+                      <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 flex-grow break-words">{feature.description}</p>
                       <Link 
                         href="/docs" 
                         className="flex items-center text-blue-600 dark:text-blue-400 font-semibold group transition-colors hover:text-blue-700 dark:hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded"
@@ -402,9 +402,20 @@ if (flag.value) { /* ... */ }`;
                  <Button variant="secondary" className="shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">View Full Architecture</Button>
                </div>
                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden opacity-50 blur-[1px] group-hover:opacity-75 group-hover:blur-0 group-focus-within:opacity-75 group-focus-within:blur-0 transition-all duration-500">
-                  {/* Placeholder for architecture preview image/diagram */}
-                  <div className="bg-slate-100 dark:bg-slate-800 h-[200px] sm:h-[300px] w-full flex items-center justify-center" role="img" aria-label="Architecture diagram placeholder">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 text-slate-300" aria-hidden="true" />
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 h-[200px] sm:h-[300px] w-full flex flex-col items-center justify-center p-8" role="img" aria-label="Architecture overview preview">
+                    <div className="text-center space-y-4">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                        <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-medium">
+                        Enterprise-Grade Architecture
+                      </p>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-500">
+                        Event-sourced, deterministic, and built for scale
+                      </p>
+                    </div>
                   </div>
                </div>
              </Link>
@@ -475,7 +486,7 @@ if (flag.value) { /* ... */ }`;
           <div className="max-w-4xl mx-auto">
             <EnhancedConversionCTA
               title="Ready to Transform Your Financial Operations?"
-              description="Join thousands of companies already using Settler. Start your free trial today—no credit card required, full access to all features."
+              description="Start your free trial today—no credit card required. Full access to all features for 14 days."
               primaryAction="Try Playground"
               primaryLink="/console/playground"
               secondaryAction="Start Free Trial"

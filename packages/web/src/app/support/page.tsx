@@ -170,7 +170,7 @@ export default function Support() {
     },
     {
       question: 'Is there a free tier?',
-      answer: 'Yes! Our OSS (Open Source) tier is free forever with 1,000 reconciliations per month, access to 2 platform integrations, and 7-day log retention. Perfect for getting started and small projects. Check out our pricing page for full details on all tiers.',
+      answer: 'Yes! Our Free plan includes 1,000 reconciliations/month forever. Perfect for getting started and small projects. Check out our pricing page for full details on all plans.',
     },
     {
       question: 'How accurate is the reconciliation?',
@@ -202,7 +202,7 @@ export default function Support() {
     },
     {
       question: 'What is the API rate limit?',
-      answer: 'Rate limits vary by plan. OSS tier: 100 requests/minute. Commercial: 1,000 requests/minute. Enterprise: Custom limits. All responses include rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset) so you can implement proper backoff strategies.',
+      answer: 'Rate limits vary by plan. Free: 100 requests/minute. Starter: 1,000 requests/minute. Growth and Scale: Higher limits. Enterprise: Custom limits. All responses include rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset) so you can implement proper backoff strategies.',
     },
     {
       question: 'How do I build a custom adapter?',
@@ -210,7 +210,7 @@ export default function Support() {
     },
     {
       question: 'What data retention policies do you have?',
-      answer: 'Data retention varies by plan: OSS (7 days), Commercial (30 days), Enterprise (custom, up to 7 years). You can export all data via the API at any time. Enterprise customers can configure custom retention policies.',
+      answer: 'Data retention varies by plan: Free (7 days), Starter (30 days), Growth and Scale (90 days), Enterprise (custom, up to 7 years). You can export all data via the API at any time. Enterprise customers can configure custom retention policies.',
     },
     {
       question: 'How do I integrate Settler with my existing systems?',
@@ -218,7 +218,7 @@ export default function Support() {
     },
     {
       question: 'What kind of support do you offer?',
-      answer: 'OSS tier: Community support via Discord and GitHub. Commercial: Email support with 24-hour response time. Enterprise: 24/7 priority support with SLA guarantees, dedicated account manager, and phone support. See the support tiers section above for details.',
+      answer: 'Free plan: Community support via Discord and GitHub. Starter and Growth: Email support with 24-hour response time. Scale and Enterprise: 24/7 priority support with SLA guarantees, dedicated account manager, and phone support. See the support tiers section above for details.',
     },
   ];
 

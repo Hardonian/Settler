@@ -123,7 +123,7 @@ console.log("Report:", report.data.summary);
       <AnimatedHero
         badge="Interactive Playground"
         title="Try Settler API"
-        description="Test the API, see examples, and experiment with reconciliation jobs"
+        description="Test our APIs, explore examples, and experiment with reconciliation jobs—all without writing code or signing up"
       />
 
       {/* Playground Content */}
@@ -154,7 +154,7 @@ console.log("Report:", report.data.summary);
                 API Configuration
               </CardTitle>
               <CardDescription className="text-slate-600 dark:text-slate-300">
-                Enter your API key to test with real credentials, or leave empty for demo mode
+                Enter your API key to test with real credentials, or leave empty to explore demo mode with sample data
               </CardDescription>
             </CardHeader>
             <CardContent>

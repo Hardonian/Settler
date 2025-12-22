@@ -16,7 +16,7 @@ export default function AnalysisPage() {
             Analysis
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
-            Advanced analysis for deeper insights. Available on Pro and Enterprise tiers.
+            Advanced analysis for deeper insights. Available on Growth, Scale, and Enterprise plans.
           </p>
         </div>
         <AnalysisPanel />

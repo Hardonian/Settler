@@ -82,9 +82,18 @@ async function handleGet(request: NextRequest) {
     });
   } catch (error) {
     console.error('[api-logs] Error:', error);
+    // Never return 500 - return actionable error message with empty logs
     return NextResponse.json(
-      { error: 'Failed to fetch API logs', message: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      { 
+        error: 'Failed to fetch API logs', 
+        message: error instanceof Error ? error.message : 'Unknown error occurred. Please try again.',
+        logs: [],
+        count: 0,
+        limit: filters.limit,
+        offset: filters.offset,
+        retryable: true,
+      },
+      { status: 200 }
     );
   }
 }

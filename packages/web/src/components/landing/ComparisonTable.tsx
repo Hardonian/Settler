@@ -180,7 +180,7 @@ export function ComparisonTable() {
           className="mt-8 text-center"
         >
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            * AI Analysis available on Pro and Enterprise tiers. Free tier includes 1 analysis per week.
+            * AI Analysis available on Growth, Scale, and Enterprise plans. Free plan includes limited access.
           </p>
         </motion.div>
       </div>

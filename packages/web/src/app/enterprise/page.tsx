@@ -252,11 +252,11 @@ export default function Enterprise() {
                         />
                       </svg>
                     </div>
-                    <div className="ml-4">
-                      <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
+                    <div className="ml-4 flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 dark:text-white mb-1 break-words">
                         {benefit.title}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-300">{benefit.description}</p>
+                      <p className="text-slate-600 dark:text-slate-300 break-words">{benefit.description}</p>
                     </div>
                   </div>
                 ))}

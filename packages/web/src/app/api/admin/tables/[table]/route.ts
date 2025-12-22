@@ -75,6 +75,15 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Error fetching table data:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Never return 500 - return empty data with professional error message
+    return NextResponse.json({ 
+      error: 'Unable to retrieve table data',
+      message: error.message || 'An error occurred while fetching table data. Please try again.',
+      data: [],
+      count: 0,
+      limit: parseInt(request.nextUrl.searchParams.get('limit') || '100'),
+      offset: parseInt(request.nextUrl.searchParams.get('offset') || '0'),
+      retryable: true,
+    }, { status: 200 });
   }
 }

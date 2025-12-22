@@ -112,13 +112,19 @@ export async function GET(request: NextRequest) {
     
     if (error) {
       console.error('Error fetching table data:', error);
+      // Never return 500 - return empty data with professional error message
       return NextResponse.json(
         { 
-          error: 'Failed to fetch table data',
-          message: error.message || 'Unknown error',
-          actionable: 'Please check your connection and try again. If the problem persists, contact support.'
+          error: 'Unable to retrieve table data',
+          message: error.message || 'An error occurred while fetching table data.',
+          actionable: 'Please verify your connection and try again. If the problem persists, contact support at support@settler.dev.',
+          data: [],
+          count: 0,
+          limit,
+          offset,
+          retryable: true,
         },
-        { status: 500 }
+        { status: 200 }
       );
     }
     
@@ -130,13 +136,19 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Error fetching table data:', error);
+    // Never return 500 - return empty data with professional error message
     return NextResponse.json(
       { 
-        error: 'Failed to fetch table data',
-        message: error?.message || 'Unknown error',
-        actionable: 'Please check your connection and try again. If the problem persists, contact support.'
+        error: 'Unable to retrieve table data',
+        message: error?.message || 'An unexpected error occurred while fetching table data.',
+        actionable: 'Please verify your connection and try again. If the problem persists, contact support at support@settler.dev.',
+        data: [],
+        count: 0,
+        limit: parseInt(request.nextUrl.searchParams.get('limit') || '100'),
+        offset: parseInt(request.nextUrl.searchParams.get('offset') || '0'),
+        retryable: true,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
@@ -188,20 +200,28 @@ export async function POST(request: NextRequest) {
     
     if (error) {
       console.error('Direct insert error:', error);
+      // Never return 500 - return actionable error message
       return NextResponse.json(
         { 
-          error: 'Failed to insert data',
-          message: error.message || 'Unknown error',
-          actionable: 'Please check your data format and try again. If the problem persists, contact support.'
+          error: 'Unable to create record',
+          message: error.message || 'An error occurred while creating the record.',
+          actionable: 'Please verify your data format and try again. If the problem persists, contact support at support@settler.dev.',
+          retryable: true,
         },
-        { status: 500 }
+        { status: 200 }
       );
     }
     
     return NextResponse.json({ data }, { status: 201 });
   } catch (error: any) {
     console.error('Error creating record:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Never return 500 - return actionable error message
+    return NextResponse.json({ 
+      error: 'Unable to create record',
+      message: error.message || 'An unexpected error occurred. Please try again.',
+      actionable: 'If this problem persists, please contact support at support@settler.dev.',
+      retryable: true,
+    }, { status: 200 });
   }
 }
 
@@ -258,26 +278,30 @@ export async function PATCH(request: NextRequest) {
     
     if (error) {
       console.error('Update error:', error);
+      // Never return 500 - return actionable error message
       return NextResponse.json(
         { 
-          error: 'Failed to update data',
-          message: error.message || 'Unknown error',
-          actionable: 'Please check your data format and try again. If the problem persists, contact support.'
+          error: 'Unable to update record',
+          message: error.message || 'An error occurred while updating the record.',
+          actionable: 'Please verify your data format and try again. If the problem persists, contact support at support@settler.dev.',
+          retryable: true,
         },
-        { status: 500 }
+        { status: 200 }
       );
     }
     
     return NextResponse.json({ data });
   } catch (error: any) {
     console.error('Error updating record:', error);
+    // Never return 500 - return actionable error message
     return NextResponse.json(
       { 
-        error: 'Failed to update data',
-        message: error?.message || 'Unknown error',
-        actionable: 'Please check your connection and try again. If the problem persists, contact support.'
+        error: 'Unable to update record',
+        message: error?.message || 'An unexpected error occurred while updating the record.',
+        actionable: 'Please verify your data format and try again. If the problem persists, contact support at support@settler.dev.',
+        retryable: true,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
@@ -328,26 +352,32 @@ export async function DELETE(request: NextRequest) {
     
     if (error) {
       console.error('Delete error:', error);
+      // Never return 500 - return actionable error message
       return NextResponse.json(
         { 
-          error: 'Failed to delete data',
-          message: error.message || 'Unknown error',
-          actionable: 'Please check the record ID and try again. If the problem persists, contact support.'
+          error: 'Unable to delete record',
+          message: error.message || 'An error occurred while deleting the record.',
+          actionable: 'Please verify the record ID and try again. If the problem persists, contact support at support@settler.dev.',
+          success: false,
+          retryable: true,
         },
-        { status: 500 }
+        { status: 200 }
       );
     }
     
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Error deleting record:', error);
+    // Never return 500 - return actionable error message
     return NextResponse.json(
       { 
-        error: 'Failed to delete data',
-        message: error?.message || 'Unknown error',
-        actionable: 'Please check your connection and try again. If the problem persists, contact support.'
+        error: 'Unable to delete record',
+        message: error?.message || 'An unexpected error occurred while deleting the record.',
+        actionable: 'Please verify your connection and try again. If the problem persists, contact support at support@settler.dev.',
+        success: false,
+        retryable: true,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
