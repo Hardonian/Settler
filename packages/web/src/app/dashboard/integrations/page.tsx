@@ -82,7 +82,6 @@ export default function IntegrationsPage() {
       const allConnectors = getAllConnectorMetadata();
       
       // Get connected connectors from database
-      const typedSupabase = asExtendedClient(supabase);
       const { data: connectedConnectors } = await typedSupabase
         .from('connectors')
         .select('id, provider_id, status, last_sync_at, last_successful_sync_at')

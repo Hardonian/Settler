@@ -102,12 +102,21 @@ export interface WebhookEventsQueryBuilder {
 
 /**
  * Extended Supabase client with type-safe query builders
+ * This is a wrapper type that provides type-safe access to custom tables
+ * Note: This doesn't extend SupabaseClient to avoid method override conflicts
  */
-export interface ExtendedSupabaseClient extends SupabaseClient<Database> {
+export interface ExtendedSupabaseClient {
   from(table: 'connectors'): ConnectorsQueryBuilder;
   from(table: 'connector_credentials'): ConnectorCredentialsQueryBuilder;
   from(table: 'webhook_events'): WebhookEventsQueryBuilder;
   from(table: 'app_private.memberships'): MembershipsQueryBuilder;
+  // Include all other SupabaseClient methods
+  auth: SupabaseClient<Database>['auth'];
+  storage: SupabaseClient<Database>['storage'];
+  functions: SupabaseClient<Database>['functions'];
+  rest: SupabaseClient<Database>['rest'];
+  realtime: SupabaseClient<Database>['realtime'];
+  schema: SupabaseClient<Database>['schema'];
 }
 
 /**

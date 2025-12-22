@@ -1028,8 +1028,8 @@ export interface Database {
       };
       [key: string]: {
         Row: Record<string, unknown>;
-        Insert: never;
-        Update: never;
+        Insert: Record<string, unknown> | never;
+        Update: Record<string, unknown> | never;
       };
     };
     Functions: {
@@ -1095,8 +1095,8 @@ export interface Database {
       };
       [key: string]: {
         Row: Record<string, unknown>;
-        Insert: never;
-        Update: never;
+        Insert: Record<string, unknown> | never;
+        Update: Record<string, unknown> | never;
       };
     };
     Functions: {
