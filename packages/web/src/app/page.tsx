@@ -155,7 +155,7 @@ if (flag.value) { /* ... */ }`;
 
         {/* Hero Section */}
         <section 
-          className="relative pt-24 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[85vh] sm:min-h-[90vh] flex items-center"
+          className="relative pt-8 sm:pt-16 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[85vh] sm:min-h-[90vh] flex items-center"
           aria-labelledby="hero-heading"
         >
           <ParallaxBackground>
@@ -235,16 +235,19 @@ if (flag.value) { /* ... */ }`;
                 </div>
 
                 {/* Hero Illustration */}
-                <div className="relative w-full max-w-4xl mx-auto mb-16 px-4">
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 bottom-0 h-20"></div>
-                  <Image
-                    src="/assets/marketing/hero-illustration.svg"
-                    alt="Settler Platform Overview - Automating Financial Reconciliation"
-                    width={800}
-                    height={600}
-                    className="w-full h-auto drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
-                    priority
-                  />
+                <div className="relative w-full max-w-4xl mx-auto mb-12 sm:mb-16 px-4">
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 bottom-0 h-20 pointer-events-none" aria-hidden="true"></div>
+                  <div className="relative aspect-[4/3] w-full max-w-4xl mx-auto">
+                    <Image
+                      src="/assets/marketing/hero-illustration.svg"
+                      alt="Settler Platform Overview - Visual diagram showing automated financial reconciliation connecting multiple data sources through a central hub"
+                      width={800}
+                      height={600}
+                      className="w-full h-full object-contain drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                      priority
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 800px"
+                    />
+                  </div>
                 </div>
                 
                 {/* Hero Stats */}
