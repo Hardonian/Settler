@@ -27,6 +27,8 @@ interface IntegrationCardProps {
   onDisconnect?: (id: string) => Promise<void>;
   onConfigure?: (id: string) => void;
   onSync?: (id: string) => Promise<void>;
+  onViewLogs?: (id: string) => void;
+  onBackfill?: (id: string) => Promise<void>;
   isLoading?: boolean;
   className?: string;
 }
@@ -44,6 +46,8 @@ export function IntegrationCard({
   onDisconnect,
   onConfigure,
   onSync,
+  onViewLogs,
+  onBackfill,
   isLoading = false,
   className,
 }: IntegrationCardProps) {
@@ -133,6 +137,28 @@ export function IntegrationCard({
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             Sync Now
+          </Button>
+        )}
+        {isConnected && onViewLogs && (
+          <Button
+            onClick={() => onViewLogs(id)}
+            variant="outline"
+            size="sm"
+            className="flex-1 font-medium"
+          >
+            <Calendar className="mr-2 h-4 w-4" />
+            Logs
+          </Button>
+        )}
+        {isConnected && onBackfill && (
+          <Button
+            onClick={() => onBackfill(id)}
+            variant="outline"
+            size="sm"
+            className="flex-1 font-medium"
+            disabled={isLoading}
+          >
+            Backfill
           </Button>
         )}
         {isConnected && onConfigure && (

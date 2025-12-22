@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
+import { verifyWebhook } from '@settler/adapters/src/webhook-verification';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -20,8 +21,27 @@ export async function POST(
       );
     }
 
-    const body = await request.json();
     const rawBody = await request.text();
+    const body = JSON.parse(rawBody);
+    const signature = request.headers.get('x-signature') || request.headers.get('x-webhook-signature') || '';
+
+    // Verify webhook signature
+    const config = {}; // TODO: Get webhook secret from connector config
+    const webhookSecret = process.env[`${providerId.toUpperCase()}_WEBHOOK_SECRET`] || '';
+    
+    if (webhookSecret && signature) {
+      const verification = verifyWebhook(providerId, rawBody, signature, webhookSecret);
+      if (!verification.valid) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid webhook signature',
+            message: verification.error,
+          },
+          { status: 401 }
+        );
+      }
+    }
 
     // Store webhook event
     const supabase = await createClient();

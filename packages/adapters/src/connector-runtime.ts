@@ -6,6 +6,10 @@
 
 import { ConnectorDriver, ConnectorError, SyncOptions, SyncResult } from './connector-driver';
 import { createClient } from '@supabase/supabase-js';
+import { decryptCredentials, decryptToken } from './credential-encryption';
+import { refreshTokenIfNeeded } from './token-refresh';
+import { checkRateLimit, recordApiCall } from './rate-limiting';
+import { acquireSyncLock, releaseSyncLock } from './concurrency-protection';
 
 export interface RuntimeConfig {
   supabaseUrl: string;
@@ -66,17 +70,44 @@ export class ConnectorRuntime {
       );
     }
 
-    // TODO: Decrypt credentials using encryptionKey
-    // For now, return as-is (should be encrypted at application level)
-    const decrypted: Record<string, unknown> = {
-      ...(credentials.encrypted_credentials as Record<string, unknown>),
-    };
+    // Decrypt credentials
+    let decrypted: Record<string, unknown> = {};
+    
+    if (credentials.encrypted_credentials) {
+      try {
+        decrypted = await decryptCredentials(
+          JSON.stringify(credentials.encrypted_credentials),
+          this.config.supabaseUrl,
+          this.config.supabaseServiceKey
+        );
+      } catch (error) {
+        // Fallback: use as-is if decryption fails (backwards compatibility)
+        decrypted = credentials.encrypted_credentials as Record<string, unknown>;
+      }
+    }
 
     if (credentials.access_token_encrypted) {
-      decrypted.access_token = credentials.access_token_encrypted; // Should decrypt
+      try {
+        decrypted.access_token = await decryptToken(
+          credentials.access_token_encrypted,
+          this.config.supabaseUrl,
+          this.config.supabaseServiceKey
+        );
+      } catch (error) {
+        decrypted.access_token = credentials.access_token_encrypted;
+      }
     }
+    
     if (credentials.refresh_token_encrypted) {
-      decrypted.refresh_token = credentials.refresh_token_encrypted; // Should decrypt
+      try {
+        decrypted.refresh_token = await decryptToken(
+          credentials.refresh_token_encrypted,
+          this.config.supabaseUrl,
+          this.config.supabaseServiceKey
+        );
+      } catch (error) {
+        decrypted.refresh_token = credentials.refresh_token_encrypted;
+      }
     }
 
     return decrypted;
@@ -664,8 +695,54 @@ export class ConnectorRuntime {
     connectorId: string,
     options: SyncOptions
   ): Promise<SyncResult> {
-    // Get credentials
-    const credentials = await this.getCredentials(tenantId, connectorId);
+    // Check rate limits
+    const rateLimitCheck = await checkRateLimit(
+      connectorId,
+      tenantId,
+      this.config.supabaseUrl,
+      this.config.supabaseServiceKey
+    );
+
+    if (!rateLimitCheck.allowed) {
+      throw new ConnectorError(
+        `Rate limit exceeded. Retry after ${rateLimitCheck.retryAfter} seconds`,
+        'RATE_LIMIT_EXCEEDED',
+        connectorId
+      );
+    }
+
+    // Acquire concurrency lock
+    const lock = await acquireSyncLock(
+      tenantId,
+      connectorId,
+      this.config.supabaseUrl,
+      this.config.supabaseServiceKey
+    );
+
+    if (!lock.acquired) {
+      throw new ConnectorError(
+        lock.error || 'Sync already in progress',
+        'SYNC_IN_PROGRESS',
+        connectorId
+      );
+    }
+
+    try {
+      // Get credentials
+      const credentials = await this.getCredentials(tenantId, connectorId);
+
+      // Refresh token if needed
+      await refreshTokenIfNeeded(
+        driver,
+        connectorId,
+        tenantId,
+        credentials,
+        this.config.supabaseUrl,
+        this.config.supabaseServiceKey
+      );
+
+      // Record API call
+      await recordApiCall(connectorId, tenantId, this.config.supabaseUrl, this.config.supabaseServiceKey);
 
     // Get last cursor if exists
     const lastCursor = await this.getSyncCursor(
@@ -782,6 +859,11 @@ export class ConnectorRuntime {
       }
 
       throw error;
+    } finally {
+      // Release lock
+      if (lock.lockId) {
+        await releaseSyncLock(lock.lockId, this.config.supabaseUrl, this.config.supabaseServiceKey);
+      }
     }
   }
 }

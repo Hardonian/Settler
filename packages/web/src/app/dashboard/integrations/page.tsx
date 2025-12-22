@@ -188,10 +188,13 @@ export default function IntegrationsPage() {
   const handleDisconnect = async (id: string, integrationId: string) => {
     if (!currentTenantId) return;
 
+    if (!confirm('Are you sure you want to disconnect this integration?')) {
+      return;
+    }
+
     try {
       setIsProcessing(true);
-      // TODO: Implement disconnect API
-      const response = await fetch(`/api/connectors/${integrationId}/disconnect`, {
+      const response = await fetch(`/api/connectors/disconnect/${integrationId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -202,7 +205,11 @@ export default function IntegrationsPage() {
       });
 
       if (response.ok) {
+        alert("Integration disconnected successfully");
         await fetchIntegrations();
+      } else {
+        const error = await response.json();
+        alert(`Disconnect failed: ${error.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error("Disconnection failed:", error);
@@ -241,6 +248,44 @@ export default function IntegrationsPage() {
     } catch (error) {
       console.error("Sync failed:", error);
       alert("Failed to start sync. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleViewLogs = (integrationId: string) => {
+    router.push(`/dashboard/integrations/${integrationId}/logs`);
+  };
+
+  const handleBackfill = async (integrationId: string) => {
+    if (!currentTenantId) return;
+
+    const sinceDate = prompt('Enter start date (YYYY-MM-DD):');
+    if (!sinceDate) return;
+
+    try {
+      setIsProcessing(true);
+      const response = await fetch(`/api/connectors/backfill/${integrationId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tenantId: currentTenantId,
+          since: sinceDate,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Backfill started successfully");
+        await fetchIntegrations();
+      } else {
+        const error = await response.json();
+        alert(`Backfill failed: ${error.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Backfill failed:", error);
+      alert("Failed to start backfill. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -315,6 +360,8 @@ export default function IntegrationsPage() {
                 onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
                 onConfigure={() => handleConfigure(integration.integration_id)}
                 onSync={() => handleSync(integration.integration_id)}
+                onViewLogs={() => handleViewLogs(integration.integration_id)}
+                onBackfill={() => handleBackfill(integration.integration_id)}
                 isLoading={isProcessing}
               />
             ))}
@@ -343,6 +390,8 @@ export default function IntegrationsPage() {
                 onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
                 onConfigure={() => handleConfigure(integration.integration_id)}
                 onSync={() => handleSync(integration.integration_id)}
+                onViewLogs={() => handleViewLogs(integration.integration_id)}
+                onBackfill={() => handleBackfill(integration.integration_id)}
                 isLoading={isProcessing}
               />
             ))}
@@ -371,6 +420,8 @@ export default function IntegrationsPage() {
                 onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
                 onConfigure={() => handleConfigure(integration.integration_id)}
                 onSync={() => handleSync(integration.integration_id)}
+                onViewLogs={() => handleViewLogs(integration.integration_id)}
+                onBackfill={() => handleBackfill(integration.integration_id)}
                 isLoading={isProcessing}
               />
             ))}
@@ -399,6 +450,8 @@ export default function IntegrationsPage() {
                 onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
                 onConfigure={() => handleConfigure(integration.integration_id)}
                 onSync={() => handleSync(integration.integration_id)}
+                onViewLogs={() => handleViewLogs(integration.integration_id)}
+                onBackfill={() => handleBackfill(integration.integration_id)}
                 isLoading={isProcessing}
               />
             ))}
@@ -427,6 +480,8 @@ export default function IntegrationsPage() {
                 onDisconnect={() => handleDisconnect(integration.id, integration.integration_id)}
                 onConfigure={() => handleConfigure(integration.integration_id)}
                 onSync={() => handleSync(integration.integration_id)}
+                onViewLogs={() => handleViewLogs(integration.integration_id)}
+                onBackfill={() => handleBackfill(integration.integration_id)}
                 isLoading={isProcessing}
               />
             ))}
