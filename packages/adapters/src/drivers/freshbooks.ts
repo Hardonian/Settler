@@ -140,7 +140,6 @@ export class FreshBooksDriver implements ConnectorDriver {
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
     const { credentials } = options;
     const accessToken = credentials.access_token as string;
-    const _accountId = (credentials.metadata as Record<string, unknown>)?.account_id as string;
 
     try {
       const response = await fetch(`${this.apiUrl}/auth/api/v1/users/me`, {

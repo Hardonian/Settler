@@ -97,7 +97,6 @@ export class AvalaraDriver implements ConnectorDriver {
     const config = credentials.config as Record<string, unknown> || {};
     const env = (config.environment as string) || 'sandbox';
     const apiUrl = this.getApiUrl(env);
-    const _companyId = (config.company_id as string) || '';
 
     const taxEstimates: NormalizedTaxEstimate[] = [];
     const rawPayloads: Array<{ type: string; payload: unknown }> = [];

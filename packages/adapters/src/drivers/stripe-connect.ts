@@ -180,7 +180,6 @@ export class StripeConnectDriver implements ConnectorDriver {
     rawPayloads?: Array<{ type: string; payload: unknown }>;
   }> {
     const accessToken = credentials.access_token as string;
-    const _connectedAccountId = (credentials.metadata as Record<string, unknown>)?.stripe_user_id as string;
 
     const accounts: NormalizedAccount[] = [];
     const payouts: NormalizedPayout[] = [];
