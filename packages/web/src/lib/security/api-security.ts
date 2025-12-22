@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { rateLimiters } from "./rate-limiter";
+import { withRateLimit, RATE_LIMIT_CONFIGS } from "./rate-limiter";
 
 /**
  * CSRF token validation
@@ -116,15 +116,15 @@ export function withAPISecurity(
     maxRequestSize?: number;
   } = {}
 ): (req: NextRequest) => Promise<NextResponse> {
+  let wrappedHandler = handler;
+  
+  // Rate limiting
+  if (options.rateLimit) {
+    const config = RATE_LIMIT_CONFIGS[options.rateLimit] || RATE_LIMIT_CONFIGS.api;
+    wrappedHandler = withRateLimit(config, wrappedHandler);
+  }
+  
   return async (req: NextRequest): Promise<NextResponse> => {
-    // Rate limiting
-    if (options.rateLimit) {
-      const rateLimiter = rateLimiters[options.rateLimit];
-      const rateLimitResponse = await rateLimiter(req);
-      if (rateLimitResponse) {
-        return rateLimitResponse;
-      }
-    }
 
     // Request size validation
     if (options.maxRequestSize) {
@@ -157,8 +157,8 @@ export function withAPISecurity(
       }
     }
 
-    // Call original handler
-    return handler(req);
+    // Call wrapped handler (with rate limiting if applied)
+    return wrappedHandler(req);
   };
 }
 

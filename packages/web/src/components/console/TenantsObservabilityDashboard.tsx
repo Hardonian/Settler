@@ -29,7 +29,7 @@ interface Tenant {
 export function TenantsObservabilityDashboard() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
-  const [includeMetrics, setIncludeMetrics] = useState(true);
+  const [includeMetrics] = useState(true);
   
   useEffect(() => {
     loadTenants();

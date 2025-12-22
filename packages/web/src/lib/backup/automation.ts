@@ -6,7 +6,6 @@
  */
 
 import { logger } from '@/lib/logging/logger';
-import { alerts } from '@/lib/monitoring/alerts';
 
 interface BackupConfig {
   retentionDays?: number;
@@ -43,22 +42,19 @@ export async function createDatabaseBackup(config: BackupConfig = {}): Promise<{
     // In production, implement actual backup logic
     const backupId = `backup_${Date.now()}`;
 
-    await alerts.info(
-      'Database Backup Created',
-      `Backup ${backupId} created successfully`,
-      { backupId, config: finalConfig }
-    );
+    logger.info('Database Backup Created', {
+      message: `Backup ${backupId} created successfully`,
+      backupId,
+      config: finalConfig,
+    });
 
     return { success: true, backupId };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Backup failed', error instanceof Error ? error : new Error(errorMessage));
-
-    await alerts.error(
-      'Database Backup Failed',
-      `Failed to create backup: ${errorMessage}`,
-      { error: errorMessage }
-    );
+    const errorObj = error instanceof Error ? error : new Error(errorMessage);
+    logger.error('Database Backup Failed', errorObj, {
+      message: `Failed to create backup: ${errorMessage}`,
+    });
 
     return { success: false, error: errorMessage };
   }
@@ -135,21 +131,20 @@ export async function restoreFromBackup(
     // 4. Verify integrity
     // 5. Restart services
 
-    await alerts.critical(
-      'Database Restore Initiated',
-      `Restoring from backup ${backupId}`,
-      { backupId }
-    );
+    logger.warn('Database Restore Initiated', {
+      message: `Restoring from backup ${backupId}`,
+      backupId,
+    });
 
     return { success: true };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorObj = error instanceof Error ? error : new Error(errorMessage);
     
-    await alerts.critical(
-      'Database Restore Failed',
-      `Failed to restore from backup ${backupId}: ${errorMessage}`,
-      { backupId, error: errorMessage }
-    );
+    logger.error('Database Restore Failed', errorObj, {
+      message: `Failed to restore from backup ${backupId}: ${errorMessage}`,
+      backupId,
+    });
 
     return { success: false, error: errorMessage };
   }

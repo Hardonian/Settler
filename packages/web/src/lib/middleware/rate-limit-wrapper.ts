@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { rateLimiters } from '@/lib/security/rate-limiter';
+import { withRateLimit as withRateLimitMiddleware, RATE_LIMIT_CONFIGS } from '@/lib/security/rate-limiter';
 
 export type RateLimitType = 'auth' | 'api' | 'billing' | 'webhook' | 'public';
 
@@ -16,16 +16,8 @@ export function withRateLimit<T>(
   handler: (request: NextRequest) => Promise<NextResponse<T>>,
   rateLimitType: RateLimitType = 'api'
 ) {
-  return async (request: NextRequest): Promise<NextResponse<T>> => {
-    const rateLimiter = rateLimiters[rateLimitType];
-    const rateLimitResponse = await rateLimiter(request);
-    
-    if (rateLimitResponse) {
-      return rateLimitResponse as NextResponse<T>;
-    }
-    
-    return handler(request);
-  };
+  const config = RATE_LIMIT_CONFIGS[rateLimitType] || RATE_LIMIT_CONFIGS.api;
+  return withRateLimitMiddleware(config, handler);
 }
 
 /**

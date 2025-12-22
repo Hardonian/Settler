@@ -4,7 +4,7 @@
  * Provides alerting for critical system events and anomalies.
  */
 
-import { performHealthCheck, SystemHealth } from './health-check';
+import { performHealthCheck } from './health-check';
 import { getApiCallStats } from '@/domain/console/api-logs';
 
 export interface Alert {

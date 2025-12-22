@@ -8,7 +8,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -20,11 +20,6 @@ import {
   BookOpen,
   Palette,
   Menu,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'; // Assuming Sheet is standard
-
-import {
   Sparkles,
   Activity,
   Webhook,
@@ -36,8 +31,9 @@ import {
   FileText,
   Building2,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { BackendHealthBadge } from './BackendHealthBadge';
-import { useEffect, useState } from 'react';
 
 const consoleNavItems = [
     { href: '/console', label: 'Overview', icon: LayoutDashboard },

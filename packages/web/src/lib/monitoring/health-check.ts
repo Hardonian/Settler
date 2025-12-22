@@ -28,7 +28,7 @@ export async function checkSupabaseHealth(): Promise<HealthCheckResult> {
   
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('tenants').select('id').limit(1);
+    const { error } = await supabase.from('tenants').select('id').limit(1);
     
     const latency = Date.now() - startTime;
     

@@ -5,7 +5,6 @@
  */
 
 import { Suspense } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/server';
 import { requireConsoleAccess } from '@/lib/auth/console-gate';
 import { ApiLogsViewer } from '@/components/console/ApiLogsViewer';
