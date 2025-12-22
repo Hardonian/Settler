@@ -32,7 +32,7 @@ export class AmazonSellerDriver implements ConnectorDriver {
   };
 
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
-    const { credentials, config } = options;
+    const { credentials, config: _config } = options;
     
     // If SP-API credentials provided, test API connection
     if (credentials.sp_api_client_id && credentials.sp_api_client_secret) {
@@ -85,7 +85,7 @@ export class AmazonSellerDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     payouts?: NormalizedPayout[];
     rawPayloads?: Array<{ type: string; payload: unknown }>;
@@ -141,7 +141,7 @@ export class AmazonSellerDriver implements ConnectorDriver {
           // This is simplified - actual implementation would parse various event types
           for (const event of eventsData.payload?.FinancialEvents || []) {
             if (event.ShipmentEventList) {
-              for (const shipment of event.ShipmentEventList) {
+              for (const _shipment of event.ShipmentEventList) {
                 // Extract payout information from shipment events
                 // This is a simplified mapping
               }

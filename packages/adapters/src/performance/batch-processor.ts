@@ -47,10 +47,12 @@ export async function processInBatches<T, R>(
         results.push(...batchResults);
       } catch (error) {
         if (finalConfig.continueOnError) {
-          errors.push({
-            item: batch[0], // Represent batch with first item
-            error: error instanceof Error ? error : new Error(String(error)),
-          });
+          if (batch.length > 0) {
+            errors.push({
+              item: batch[0], // Represent batch with first item
+              error: error instanceof Error ? error : new Error(String(error)),
+            });
+          }
         } else {
           throw error;
         }

@@ -85,7 +85,7 @@ export class TaxJarDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     taxEstimates?: NormalizedTaxEstimate[];
     rawPayloads?: Array<{ type: string; payload: unknown }>;
@@ -128,10 +128,11 @@ export class TaxJarDriver implements ConnectorDriver {
               jurisdiction: tx.to_state || tx.to_country,
               taxType: 'sales_tax',
               occurredAt: tx.transaction_date ? new Date(tx.transaction_date) : new Date(),
-              metadata: {
+              providerMetadata: {
                 transaction_id: tx.transaction_id,
                 order_id: tx.transaction_id,
               },
+              idempotencyKey: `${tx.transaction_id}-${tx.transaction_date || Date.now()}`,
             });
           }
         }

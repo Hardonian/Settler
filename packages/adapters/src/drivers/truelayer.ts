@@ -66,7 +66,7 @@ export class TrueLayerDriver implements ConnectorDriver {
 
   async handleCallback(
     code: string,
-    state: string,
+    _state: string,
     options: AuthUrlOptions
   ): Promise<AuthCallbackResult> {
     const config = options as unknown as {
@@ -374,8 +374,8 @@ export class TrueLayerDriver implements ConnectorDriver {
   }
 
   async handleWebhook(
-    payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
-    credentials: Record<string, unknown>
+    _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
+    _credentials: Record<string, unknown>
   ): Promise<{
     accounts?: NormalizedAccount[];
     transactions?: NormalizedTransaction[];

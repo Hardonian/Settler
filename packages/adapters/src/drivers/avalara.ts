@@ -87,7 +87,7 @@ export class AvalaraDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     taxEstimates?: NormalizedTaxEstimate[];
     rawPayloads?: Array<{ type: string; payload: unknown }>;
@@ -97,7 +97,7 @@ export class AvalaraDriver implements ConnectorDriver {
     const config = credentials.config as Record<string, unknown> || {};
     const env = (config.environment as string) || 'sandbox';
     const apiUrl = this.getApiUrl(env);
-    const companyId = (config.company_id as string) || '';
+    const _companyId = (config.company_id as string) || '';
 
     const taxEstimates: NormalizedTaxEstimate[] = [];
     const rawPayloads: Array<{ type: string; payload: unknown }> = [];
@@ -134,10 +134,11 @@ export class AvalaraDriver implements ConnectorDriver {
               jurisdiction: tx.addresses?.shipTo?.region || tx.addresses?.shipTo?.country,
               taxType: 'sales_tax',
               occurredAt: tx.date ? new Date(tx.date) : new Date(),
-              metadata: {
+              providerMetadata: {
                 transaction_id: tx.id,
                 company_id: tx.companyId,
               },
+              idempotencyKey: `${tx.id}-${tx.date || Date.now()}`,
             });
           }
         }

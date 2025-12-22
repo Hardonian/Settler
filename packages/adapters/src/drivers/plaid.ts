@@ -86,7 +86,7 @@ export class PlaidDriver implements ConnectorDriver {
 
   async handleCallback(
     publicToken: string,
-    state: string,
+    _state: string,
     options: AuthUrlOptions
   ): Promise<AuthCallbackResult> {
     const config = options as unknown as { clientId: string; secret: string; environment: string };
@@ -125,8 +125,8 @@ export class PlaidDriver implements ConnectorDriver {
   }
 
   async refreshToken(
-    refreshToken: string,
-    config?: Record<string, unknown>
+    _refreshToken: string,
+    _config?: Record<string, unknown>
   ): Promise<AuthCallbackResult> {
     // Plaid doesn't use refresh tokens in the traditional sense
     // Access tokens are long-lived, but we can refresh via item/get
@@ -359,8 +359,8 @@ export class PlaidDriver implements ConnectorDriver {
   }
 
   async handleWebhook(
-    payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
-    credentials: Record<string, unknown>
+    _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
+    _credentials: Record<string, unknown>
   ): Promise<{
     accounts?: NormalizedAccount[];
     transactions?: NormalizedTransaction[];

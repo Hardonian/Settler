@@ -50,7 +50,7 @@ export class StripeConnectDriver implements ConnectorDriver {
 
   async handleCallback(
     code: string,
-    state: string,
+    _state: string,
     options: AuthUrlOptions
   ): Promise<AuthCallbackResult> {
     const config = options as unknown as {
@@ -131,7 +131,7 @@ export class StripeConnectDriver implements ConnectorDriver {
     };
   }
 
-  async revoke(accessToken: string, config?: Record<string, unknown>): Promise<void> {
+  async revoke(_accessToken: string, _config?: Record<string, unknown>): Promise<void> {
     // Stripe Connect doesn't have explicit revoke endpoint
     // Deauthorize via Stripe Dashboard or API
   }
@@ -180,7 +180,7 @@ export class StripeConnectDriver implements ConnectorDriver {
     rawPayloads?: Array<{ type: string; payload: unknown }>;
   }> {
     const accessToken = credentials.access_token as string;
-    const connectedAccountId = (credentials.metadata as Record<string, unknown>)?.stripe_user_id as string;
+    const _connectedAccountId = (credentials.metadata as Record<string, unknown>)?.stripe_user_id as string;
 
     const accounts: NormalizedAccount[] = [];
     const payouts: NormalizedPayout[] = [];
@@ -319,8 +319,8 @@ export class StripeConnectDriver implements ConnectorDriver {
   }
 
   async handleWebhook(
-    payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
-    credentials: Record<string, unknown>
+    _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
+    _credentials: Record<string, unknown>
   ): Promise<{
     accounts?: NormalizedAccount[];
     payouts?: NormalizedPayout[];

@@ -59,7 +59,7 @@ export class EbayDriver implements ConnectorDriver {
 
   async handleCallback(
     code: string,
-    state: string,
+    _state: string,
     options: AuthUrlOptions
   ): Promise<AuthCallbackResult> {
     const config = options as unknown as {
@@ -141,7 +141,7 @@ export class EbayDriver implements ConnectorDriver {
     };
   }
 
-  async revoke(accessToken: string, config?: Record<string, unknown>): Promise<void> {
+  async revoke(_accessToken: string, _config?: Record<string, unknown>): Promise<void> {
     // eBay doesn't have explicit revoke endpoint
   }
 
@@ -183,7 +183,7 @@ export class EbayDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     payouts?: NormalizedPayout[];
     transactions?: NormalizedTransaction[];

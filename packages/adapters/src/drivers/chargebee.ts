@@ -142,10 +142,11 @@ export class ChargebeeDriver implements ConnectorDriver {
             : undefined,
           cancelAtPeriodEnd: subscription.cancel_at_term_end || false,
           cancelledAt: subscription.cancelled_at ? new Date(subscription.cancelled_at * 1000) : undefined,
-          metadata: {
+          providerMetadata: {
             subscription_id: subscription.id,
             plan_id: subscription.plan_id,
           },
+          idempotencyKey: `${subscription.id}-${subscription.created_at || Date.now()}`,
         });
       }
 
@@ -185,10 +186,11 @@ export class ChargebeeDriver implements ConnectorDriver {
             status: invoice.status,
             issueDate: invoice.date ? new Date(invoice.date * 1000) : undefined,
             paidAt: invoice.paid_at ? new Date(invoice.paid_at * 1000) : undefined,
-            metadata: {
+            providerMetadata: {
               invoice_id: invoice.id,
               subscription_id: invoice.subscription_id,
             },
+            idempotencyKey: `${invoice.id}-${invoice.date || Date.now()}`,
           });
         }
       }
@@ -218,8 +220,8 @@ export class ChargebeeDriver implements ConnectorDriver {
   }
 
   async handleWebhook(
-    payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
-    credentials: Record<string, unknown>
+    _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
+    _credentials: Record<string, unknown>
   ): Promise<{
     subscriptions?: NormalizedSubscription[];
     invoices?: NormalizedInvoice[];
