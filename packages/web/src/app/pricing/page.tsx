@@ -7,6 +7,7 @@
 
 'use client';
 
+import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -113,7 +114,7 @@ export default function Pricing() {
       <Navigation />
 
       {/* Hero */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+      <section className="px-4 sm:px-6 lg:px-8 pt-8 pb-12">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
             Simple Pricing: Pay Per Transaction Match
@@ -121,6 +122,21 @@ export default function Pricing() {
           <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
             Settler matches your payments to orders automatically. You pay per match. If a match needs your review, it costs extra. That's it.
           </p>
+          
+          {/* Hero Illustration */}
+          <div className="relative w-full max-w-4xl mx-auto mt-8 mb-4">
+            <div className="relative aspect-[16/9] w-full max-w-4xl mx-auto">
+              <Image
+                src="/assets/marketing/hero-image-3.png"
+                alt="Settler Pricing Overview - Visual representation of transparent, volume-based pricing model"
+                width={1258}
+                height={618}
+                className="w-full h-full object-contain drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                priority
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1258px"
+              />
+            </div>
+          </div>
         </div>
       </section>
 

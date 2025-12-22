@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -151,7 +152,7 @@ export default function HowItWorksPage() {
 
       {/* Hero Section */}
       <section
-        className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[70vh] flex items-center"
+        className="relative pt-8 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[70vh] flex items-center"
         aria-labelledby="hero-heading"
       >
         <ParallaxBackground>
@@ -164,6 +165,21 @@ export default function HowItWorksPage() {
             title="How Settler Works"
             description="Reconcile millions of transactions automatically in 4 simple steps. Get started in 5 minutes."
           />
+          
+          {/* Hero Illustration */}
+          <div className="relative w-full max-w-4xl mx-auto mt-12 mb-8">
+            <div className="relative aspect-[16/9] w-full max-w-4xl mx-auto">
+              <Image
+                src="/assets/marketing/hero-image-2.png"
+                alt="How Settler Works - Step-by-step visual guide showing the reconciliation process"
+                width={1258}
+                height={618}
+                className="w-full h-full object-contain drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                priority
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1258px"
+              />
+            </div>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mt-6 sm:mt-8 w-full sm:w-auto px-4">
             <Button
