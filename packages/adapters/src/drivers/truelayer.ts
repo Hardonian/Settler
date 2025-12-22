@@ -41,7 +41,7 @@ export class TrueLayerDriver implements ConnectorDriver {
       sandbox: 'https://api.truelayer-sandbox.com',
       production: 'https://api.truelayer.com',
     };
-    return urls[env] || urls.sandbox;
+    return (urls[env] ?? urls.sandbox) as string;
   }
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
@@ -66,7 +66,7 @@ export class TrueLayerDriver implements ConnectorDriver {
 
   async handleCallback(
     code: string,
-    state: string,
+    _state: string,
     options: AuthUrlOptions
   ): Promise<AuthCallbackResult> {
     const config = options as unknown as {
@@ -278,13 +278,14 @@ export class TrueLayerDriver implements ConnectorDriver {
           if (balanceResponse.ok) {
             const balanceData = await balanceResponse.json();
             balances.push({
+              accountId: account.account_id,
               balanceCents: Math.round((balanceData.results?.[0]?.current || 0) * 100),
               availableBalanceCents: balanceData.results?.[0]?.available
                 ? Math.round(balanceData.results[0].available * 100)
                 : undefined,
               currency: account.currency || 'GBP',
               snapshotAt: new Date(),
-              metadata: {
+              providerMetadata: {
                 account_id: account.account_id,
               },
             });
@@ -330,12 +331,13 @@ export class TrueLayerDriver implements ConnectorDriver {
                 currency: tx.currency || account.currency || 'GBP',
                 occurredAt: new Date(tx.timestamp),
                 description: tx.description || tx.merchant_name,
-                metadata: {
+                providerMetadata: {
                   transaction_category: tx.transaction_category,
                   transaction_classification: tx.transaction_classification,
                   merchant_name: tx.merchant_name,
                   running_balance: tx.running_balance,
                 },
+                idempotencyKey: `${tx.transaction_id}-${tx.timestamp}`,
               });
             }
           }
@@ -372,8 +374,8 @@ export class TrueLayerDriver implements ConnectorDriver {
   }
 
   async handleWebhook(
-    payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
-    credentials: Record<string, unknown>
+    _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
+    _credentials: Record<string, unknown>
   ): Promise<{
     accounts?: NormalizedAccount[];
     transactions?: NormalizedTransaction[];

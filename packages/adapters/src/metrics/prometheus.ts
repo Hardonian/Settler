@@ -9,6 +9,7 @@ export interface MetricLabels {
   tenant_id?: string;
   status?: string;
   error_type?: string;
+  event_type?: string;
 }
 
 export class PrometheusMetrics {

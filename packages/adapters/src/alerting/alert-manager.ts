@@ -213,7 +213,7 @@ export class AlertManager {
         .eq('connector_id', data.connectorId)
         .eq('tenant_id', data.tenantId)
         .eq('severity', data.severity)
-        .eq('resolved_at', null)
+        .is('resolved_at', null)
         .eq('title', data.title)
         .limit(1);
 
@@ -237,14 +237,14 @@ export class AlertManager {
       const { data: alert, error } = await this.supabase
         .from('connector_alerts')
         .insert({
-          connector_id: connector.id,
+          connector_id: (connector as { id: string }).id,
           tenant_id: data.tenantId,
           severity: data.severity,
           title: data.title,
           message: data.message,
           error_type: data.errorType,
           metadata: data.metadata || {},
-        })
+        } as never)
         .select()
         .single();
 
@@ -301,7 +301,7 @@ export class AlertManager {
       .update({
         resolved_at: new Date().toISOString(),
         resolved_by: resolvedBy,
-      })
+      } as never)
       .eq('id', alertId);
   }
 
@@ -323,7 +323,7 @@ export class AlertManager {
     const { data: alerts } = await this.supabase
       .from('connector_alerts')
       .select('*')
-      .eq('connector_id', connector.id)
+      .eq('connector_id', (connector as { id: string }).id)
       .is('resolved_at', null)
       .order('created_at', { ascending: false });
 

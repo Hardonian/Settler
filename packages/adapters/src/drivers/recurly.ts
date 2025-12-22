@@ -141,10 +141,11 @@ export class RecurlyDriver implements ConnectorDriver {
             : undefined,
           cancelAtPeriodEnd: sub.cancel_at || false,
           cancelledAt: sub.canceled_at ? new Date(sub.canceled_at) : undefined,
-          metadata: {
+          providerMetadata: {
             subscription_id: sub.id,
             plan_code: sub.plan_code,
           },
+          idempotencyKey: `${sub.id}-${sub.current_period_starts_at || Date.now()}`,
         });
       }
 
@@ -184,10 +185,11 @@ export class RecurlyDriver implements ConnectorDriver {
             status: inv.state,
             issueDate: inv.created_at ? new Date(inv.created_at) : undefined,
             paidAt: inv.paid_at ? new Date(inv.paid_at) : undefined,
-            metadata: {
+            providerMetadata: {
               invoice_id: inv.id,
               subscription_id: inv.subscription_id,
             },
+            idempotencyKey: `${inv.id}-${inv.created_at || Date.now()}`,
           });
         }
       }
@@ -217,8 +219,8 @@ export class RecurlyDriver implements ConnectorDriver {
   }
 
   async handleWebhook(
-    payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
-    credentials: Record<string, unknown>
+    _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
+    _credentials: Record<string, unknown>
   ): Promise<{
     subscriptions?: NormalizedSubscription[];
     invoices?: NormalizedInvoice[];

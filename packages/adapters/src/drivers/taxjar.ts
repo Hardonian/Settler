@@ -37,7 +37,7 @@ export class TaxJarDriver implements ConnectorDriver {
       sandbox: 'https://api.sandbox.taxjar.com',
       production: 'https://api.taxjar.com',
     };
-    return urls[env] || urls.sandbox;
+    return (urls[env] ?? urls.sandbox) as string;
   }
 
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
@@ -85,7 +85,7 @@ export class TaxJarDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     taxEstimates?: NormalizedTaxEstimate[];
     rawPayloads?: Array<{ type: string; payload: unknown }>;
@@ -128,10 +128,11 @@ export class TaxJarDriver implements ConnectorDriver {
               jurisdiction: tx.to_state || tx.to_country,
               taxType: 'sales_tax',
               occurredAt: tx.transaction_date ? new Date(tx.transaction_date) : new Date(),
-              metadata: {
+              providerMetadata: {
                 transaction_id: tx.transaction_id,
                 order_id: tx.transaction_id,
               },
+              idempotencyKey: `${tx.transaction_id}-${tx.transaction_date || Date.now()}`,
             });
           }
         }

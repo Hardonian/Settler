@@ -40,7 +40,7 @@ export class EbayDriver implements ConnectorDriver {
       sandbox: 'https://api.sandbox.ebay.com',
       production: 'https://api.ebay.com',
     };
-    return urls[env] || urls.sandbox;
+    return (urls[env] ?? urls.sandbox) as string;
   }
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
@@ -59,7 +59,7 @@ export class EbayDriver implements ConnectorDriver {
 
   async handleCallback(
     code: string,
-    state: string,
+    _state: string,
     options: AuthUrlOptions
   ): Promise<AuthCallbackResult> {
     const config = options as unknown as {
@@ -141,7 +141,7 @@ export class EbayDriver implements ConnectorDriver {
     };
   }
 
-  async revoke(accessToken: string, config?: Record<string, unknown>): Promise<void> {
+  async revoke(_accessToken: string, _config?: Record<string, unknown>): Promise<void> {
     // eBay doesn't have explicit revoke endpoint
   }
 
@@ -183,7 +183,7 @@ export class EbayDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     payouts?: NormalizedPayout[];
     transactions?: NormalizedTransaction[];
@@ -218,9 +218,10 @@ export class EbayDriver implements ConnectorDriver {
             currency: payout.amount?.currency || 'USD',
             status: payout.payoutStatus,
             initiatedAt: payout.payoutDate ? new Date(payout.payoutDate) : new Date(),
-            metadata: {
+            providerMetadata: {
               payout_id: payout.payoutId,
             },
+            idempotencyKey: `${payout.payoutId}-${payout.payoutDate || Date.now()}`,
           });
         }
       }
@@ -245,10 +246,11 @@ export class EbayDriver implements ConnectorDriver {
             currency: tx.amount?.currency || 'USD',
             occurredAt: tx.transactionDate ? new Date(tx.transactionDate) : new Date(),
             description: tx.transactionMemo || `eBay transaction ${tx.transactionId}`,
-            metadata: {
+            providerMetadata: {
               transaction_id: tx.transactionId,
               order_id: tx.orderId,
             },
+            idempotencyKey: `${tx.transactionId}-${tx.transactionDate || Date.now()}`,
           });
         }
       }

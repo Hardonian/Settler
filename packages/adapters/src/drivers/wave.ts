@@ -8,8 +8,6 @@
 import {
   ConnectorDriver,
   ConnectorMetadata,
-  AuthUrlOptions,
-  AuthCallbackResult,
   TestConnectionOptions,
   TestConnectionResult,
   SyncOptions,
@@ -72,7 +70,7 @@ export class WaveDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     invoices?: NormalizedInvoice[];
     rawPayloads?: Array<{ type: string; payload: unknown }>;
@@ -126,10 +124,11 @@ export class WaveDriver implements ConnectorDriver {
             unitPriceCents: Math.round((item.price?.value || 0) * 100),
             totalCents: Math.round((item.amount?.value || 0) * 100),
           })),
-          metadata: {
+          providerMetadata: {
             invoice_id: invoice.id,
             po_number: invoice.po_number,
           },
+          idempotencyKey: `${invoice.id}-${invoice.invoice_date || Date.now()}`,
         });
       }
 

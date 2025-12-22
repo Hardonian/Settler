@@ -49,7 +49,7 @@ export class EtsyDriver implements ConnectorDriver {
 
   async handleCallback(
     code: string,
-    state: string,
+    _state: string,
     options: AuthUrlOptions
   ): Promise<AuthCallbackResult> {
     const config = options as unknown as {
@@ -128,7 +128,7 @@ export class EtsyDriver implements ConnectorDriver {
     };
   }
 
-  async revoke(accessToken: string, config?: Record<string, unknown>): Promise<void> {
+  async revoke(_accessToken: string, _config?: Record<string, unknown>): Promise<void> {
     // Etsy doesn't have explicit revoke endpoint
   }
 
@@ -168,7 +168,7 @@ export class EtsyDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     payouts?: NormalizedPayout[];
     transactions?: NormalizedTransaction[];
@@ -228,10 +228,11 @@ export class EtsyDriver implements ConnectorDriver {
               description: `Etsy order ${receipt.receipt_id}`,
               referenceId: receipt.receipt_id.toString(),
               referenceType: 'order',
-              metadata: {
+              providerMetadata: {
                 shop_id: shopId,
                 buyer_email: receipt.buyer_email,
               },
+              idempotencyKey: `${receipt.receipt_id}-${receipt.creation_timestamp}`,
             });
           }
         }

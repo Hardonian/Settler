@@ -50,7 +50,7 @@ export class StripeConnectDriver implements ConnectorDriver {
 
   async handleCallback(
     code: string,
-    state: string,
+    _state: string,
     options: AuthUrlOptions
   ): Promise<AuthCallbackResult> {
     const config = options as unknown as {
@@ -131,7 +131,7 @@ export class StripeConnectDriver implements ConnectorDriver {
     };
   }
 
-  async revoke(accessToken: string, config?: Record<string, unknown>): Promise<void> {
+  async revoke(_accessToken: string, _config?: Record<string, unknown>): Promise<void> {
     // Stripe Connect doesn't have explicit revoke endpoint
     // Deauthorize via Stripe Dashboard or API
   }
@@ -180,7 +180,6 @@ export class StripeConnectDriver implements ConnectorDriver {
     rawPayloads?: Array<{ type: string; payload: unknown }>;
   }> {
     const accessToken = credentials.access_token as string;
-    const connectedAccountId = (credentials.metadata as Record<string, unknown>)?.stripe_user_id as string;
 
     const accounts: NormalizedAccount[] = [];
     const payouts: NormalizedPayout[] = [];
@@ -235,10 +234,11 @@ export class StripeConnectDriver implements ConnectorDriver {
 
         for (const balance of balanceData.available || []) {
           balances.push({
+            accountId: accountData.id,
             balanceCents: balance.amount,
             currency: balance.currency.toUpperCase(),
             snapshotAt: new Date(),
-            metadata: {
+            providerMetadata: {
               account_id: accountData.id,
               source_types: balance.source_types,
             },
@@ -272,7 +272,6 @@ export class StripeConnectDriver implements ConnectorDriver {
         for (const payout of payoutsData.data || []) {
           payouts.push({
             externalId: payout.id,
-            accountId: accountData.id,
             amountCents: payout.amount,
             currency: payout.currency.toUpperCase(),
             status: payout.status,
@@ -283,10 +282,11 @@ export class StripeConnectDriver implements ConnectorDriver {
             destinationType: payout.destination?.object,
             destinationId: payout.destination?.id,
             description: payout.description,
-            metadata: {
+            providerMetadata: {
               payout_id: payout.id,
               method: payout.method,
             },
+            idempotencyKey: `${payout.id}-${payout.created}`,
           });
         }
       }
@@ -318,8 +318,8 @@ export class StripeConnectDriver implements ConnectorDriver {
   }
 
   async handleWebhook(
-    payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
-    credentials: Record<string, unknown>
+    _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
+    _credentials: Record<string, unknown>
   ): Promise<{
     accounts?: NormalizedAccount[];
     payouts?: NormalizedPayout[];

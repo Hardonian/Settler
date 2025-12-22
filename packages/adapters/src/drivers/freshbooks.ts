@@ -50,7 +50,7 @@ export class FreshBooksDriver implements ConnectorDriver {
 
   async handleCallback(
     code: string,
-    state: string,
+    _state: string,
     options: AuthUrlOptions
   ): Promise<AuthCallbackResult> {
     const config = options as unknown as {
@@ -132,7 +132,7 @@ export class FreshBooksDriver implements ConnectorDriver {
     };
   }
 
-  async revoke(accessToken: string, config?: Record<string, unknown>): Promise<void> {
+  async revoke(_accessToken: string, _config?: Record<string, unknown>): Promise<void> {
     // FreshBooks doesn't have explicit revoke endpoint
     // Token will expire naturally
   }
@@ -140,7 +140,6 @@ export class FreshBooksDriver implements ConnectorDriver {
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
     const { credentials } = options;
     const accessToken = credentials.access_token as string;
-    const accountId = (credentials.metadata as Record<string, unknown>)?.account_id as string;
 
     try {
       const response = await fetch(`${this.apiUrl}/auth/api/v1/users/me`, {
@@ -174,7 +173,7 @@ export class FreshBooksDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     invoices?: NormalizedInvoice[];
     rawPayloads?: Array<{ type: string; payload: unknown }>;
@@ -228,10 +227,11 @@ export class FreshBooksDriver implements ConnectorDriver {
             unitPriceCents: Math.round((line.amount?.amount || 0) * 100),
             totalCents: Math.round((line.amount?.amount || 0) * 100),
           })),
-          metadata: {
+          providerMetadata: {
             invoiceid: invoice.invoiceid,
             po_number: invoice.po_number,
           },
+          idempotencyKey: `${invoice.invoiceid}-${invoice.date || Date.now()}`,
         });
       }
 

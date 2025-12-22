@@ -95,6 +95,7 @@ export interface NormalizedAccount {
 
 export interface NormalizedTransaction {
   externalId: string;
+  accountId?: string;
   transactionType: 'debit' | 'credit' | 'transfer' | 'fee' | 'refund';
   amountCents: number;
   currency: string;
@@ -102,19 +103,24 @@ export interface NormalizedTransaction {
   description?: string;
   referenceId?: string;
   referenceType?: string;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
+  idempotencyKey: string;
 }
 
 export interface NormalizedBalance {
+  accountId: string;
   balanceCents: number;
   availableBalanceCents?: number;
   currency: string;
   snapshotAt: Date;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
 }
 
 export interface NormalizedPayout {
   externalId: string;
+  accountId?: string;
   amountCents: number;
   currency: string;
   status: string;
@@ -125,7 +131,9 @@ export interface NormalizedPayout {
   destinationType?: string;
   destinationId?: string;
   description?: string;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
+  idempotencyKey: string;
 }
 
 export interface NormalizedInvoice {
@@ -145,7 +153,9 @@ export interface NormalizedInvoice {
     unitPriceCents: number;
     totalCents: number;
   }>;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
+  idempotencyKey: string;
 }
 
 export interface NormalizedSubscription {
@@ -162,7 +172,9 @@ export interface NormalizedSubscription {
   currentPeriodEnd?: Date;
   cancelAtPeriodEnd?: boolean;
   cancelledAt?: Date;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
+  idempotencyKey: string;
 }
 
 export interface NormalizedTaxEstimate {
@@ -176,7 +188,9 @@ export interface NormalizedTaxEstimate {
   jurisdiction?: string;
   taxType?: string;
   occurredAt: Date;
-  metadata?: Record<string, unknown>;
+  providerMetadata?: Record<string, unknown>;
+  rawPayload?: unknown;
+  idempotencyKey: string;
 }
 
 export interface WebhookPayload {
@@ -272,10 +286,11 @@ export class ConnectorError extends Error {
     message: string,
     public readonly code: string,
     public readonly connectorId: string,
-    public readonly cause?: Error
+    public override readonly cause?: Error
   ) {
     super(message);
     this.name = 'ConnectorError';
+    Object.setPrototypeOf(this, ConnectorError.prototype);
   }
 }
 

@@ -14,7 +14,7 @@ import { trackSyncStart, trackSyncComplete, trackSyncFailure } from './metrics/p
 import { AlertManager } from './alerting/alert-manager';
 import { RetryQueue } from './retry-queue/retry-queue';
 import { validator } from './validation/data-validator';
-import { processInBatches } from './performance/batch-processor';
+// processInBatches imported dynamically when needed
 
 export interface RuntimeConfig {
   supabaseUrl: string;
@@ -68,7 +68,7 @@ export class ConnectorRuntime {
     const { data: credentials, error: credError } = await this.supabase
       .from('connector_credentials')
       .select('encrypted_credentials, access_token_encrypted, refresh_token_encrypted')
-      .eq('connector_id', connector.id)
+      .eq('connector_id', (connector as { id: string }).id)
       .single();
 
     if (credError || !credentials) {
@@ -81,41 +81,46 @@ export class ConnectorRuntime {
 
     // Decrypt credentials
     let decrypted: Record<string, unknown> = {};
+    const creds = credentials as {
+      encrypted_credentials?: unknown;
+      access_token_encrypted?: string | null;
+      refresh_token_encrypted?: string | null;
+    };
     
-    if (credentials.encrypted_credentials) {
+    if (creds.encrypted_credentials) {
       try {
         decrypted = await decryptCredentials(
-          JSON.stringify(credentials.encrypted_credentials),
+          JSON.stringify(creds.encrypted_credentials),
           this.config.supabaseUrl,
           this.config.supabaseServiceKey
         );
       } catch (error) {
         // Fallback: use as-is if decryption fails (backwards compatibility)
-        decrypted = credentials.encrypted_credentials as Record<string, unknown>;
+        decrypted = creds.encrypted_credentials as Record<string, unknown>;
       }
     }
 
-    if (credentials.access_token_encrypted) {
+    if (creds.access_token_encrypted) {
       try {
         decrypted.access_token = await decryptToken(
-          credentials.access_token_encrypted,
+          creds.access_token_encrypted,
           this.config.supabaseUrl,
           this.config.supabaseServiceKey
         );
       } catch (error) {
-        decrypted.access_token = credentials.access_token_encrypted;
+        decrypted.access_token = creds.access_token_encrypted;
       }
     }
     
-    if (credentials.refresh_token_encrypted) {
+    if (creds.refresh_token_encrypted) {
       try {
         decrypted.refresh_token = await decryptToken(
-          credentials.refresh_token_encrypted,
+          creds.refresh_token_encrypted,
           this.config.supabaseUrl,
           this.config.supabaseServiceKey
         );
       } catch (error) {
-        decrypted.refresh_token = credentials.refresh_token_encrypted;
+        decrypted.refresh_token = creds.refresh_token_encrypted;
       }
     }
 
@@ -148,13 +153,13 @@ export class ConnectorRuntime {
     const { data: syncRun, error: syncError } = await this.supabase
       .from('sync_runs')
       .insert({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         status: 'running',
         sync_since: options.since?.toISOString(),
         sync_until: options.until?.toISOString(),
         cursor: options.cursor,
-      })
+      } as never)
       .select('id')
       .single();
 
@@ -166,7 +171,7 @@ export class ConnectorRuntime {
       );
     }
 
-    return syncRun.id;
+    return (syncRun as { id: string }).id;
   }
 
   /**
@@ -207,7 +212,7 @@ export class ConnectorRuntime {
 
     const { error } = await this.supabase
       .from('sync_runs')
-      .update(updateData)
+      .update(updateData as never)
       .eq('id', syncRunId);
 
     if (error) {
@@ -352,7 +357,7 @@ export class ConnectorRuntime {
     // Save accounts
     if (data.accounts && data.accounts.length > 0) {
       const accountsToInsert = data.accounts.map((acc) => ({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         provider_account_id: acc.providerAccountId,
         account_name: acc.accountName,
@@ -365,7 +370,7 @@ export class ConnectorRuntime {
 
       const { error: accountsError } = await this.supabase
         .from('connector_accounts')
-        .upsert(accountsToInsert, {
+        .upsert(accountsToInsert as never, {
           onConflict: 'connector_id,provider_account_id',
           ignoreDuplicates: false,
         });
@@ -384,17 +389,17 @@ export class ConnectorRuntime {
         const { data: accounts } = await this.supabase
           .from('connector_accounts')
           .select('id, provider_account_id')
-          .eq('connector_id', connector.id);
+          .eq('connector_id', (connector as { id: string }).id);
 
         if (accounts) {
-          accounts.forEach((acc) => {
+          (accounts as Array<{ id: string; provider_account_id: string }>).forEach((acc) => {
             accountMap.set(acc.provider_account_id, acc.id);
           });
         }
       }
 
       const transactionsToInsert = data.transactions.map((tx) => ({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         account_id: tx.accountId ? accountMap.get(tx.accountId) || null : null,
         external_id: tx.externalId,
@@ -407,12 +412,12 @@ export class ConnectorRuntime {
         reference_type: tx.referenceType,
         provider_metadata: tx.providerMetadata || {},
         raw_payload: tx.rawPayload ? (tx.rawPayload as Record<string, unknown>) : null,
-        idempotency_key: tx.idempotencyKey,
+        idempotency_key: tx.idempotencyKey || `${tx.externalId}-${tx.occurredAt.toISOString()}`,
       }));
 
       const { error: transactionsError } = await this.supabase
         .from('financial_transactions')
-        .upsert(transactionsToInsert, {
+        .upsert(transactionsToInsert as never, {
           onConflict: 'tenant_id,connector_id,idempotency_key',
           ignoreDuplicates: false,
         });
@@ -428,16 +433,16 @@ export class ConnectorRuntime {
       const { data: accounts } = await this.supabase
         .from('connector_accounts')
         .select('id, provider_account_id')
-        .eq('connector_id', connector.id);
+        .eq('connector_id', (connector as { id: string }).id);
 
       if (accounts) {
-        accounts.forEach((acc) => {
+        (accounts as Array<{ id: string; provider_account_id: string }>).forEach((acc) => {
           accountMap.set(acc.provider_account_id, acc.id);
         });
       }
 
       const balancesToInsert = data.balances.map((bal) => ({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         account_id: accountMap.get(bal.accountId) || null,
         balance_cents: bal.balanceCents,
@@ -450,7 +455,7 @@ export class ConnectorRuntime {
 
       const { error: balancesError } = await this.supabase
         .from('financial_balances')
-        .upsert(balancesToInsert, {
+        .upsert(balancesToInsert as never, {
           onConflict: 'account_id,snapshot_at',
           ignoreDuplicates: false,
         });
@@ -463,7 +468,7 @@ export class ConnectorRuntime {
     // Save payouts
     if (data.payouts && data.payouts.length > 0) {
       const payoutsToInsert = data.payouts.map((payout) => ({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         account_id: null, // TODO: Map account ID if needed
         external_id: payout.externalId,
@@ -484,7 +489,7 @@ export class ConnectorRuntime {
 
       const { error: payoutsError } = await this.supabase
         .from('financial_payouts')
-        .upsert(payoutsToInsert, {
+        .upsert(payoutsToInsert as never, {
           onConflict: 'tenant_id,connector_id,idempotency_key',
           ignoreDuplicates: false,
         });
@@ -497,7 +502,7 @@ export class ConnectorRuntime {
     // Save invoices
     if (data.invoices && data.invoices.length > 0) {
       const invoicesToInsert = data.invoices.map((inv) => ({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         external_id: inv.externalId,
         invoice_number: inv.invoiceNumber,
@@ -517,7 +522,7 @@ export class ConnectorRuntime {
 
       const { error: invoicesError } = await this.supabase
         .from('financial_invoices')
-        .upsert(invoicesToInsert, {
+        .upsert(invoicesToInsert as never, {
           onConflict: 'tenant_id,connector_id,idempotency_key',
           ignoreDuplicates: false,
         });
@@ -530,7 +535,7 @@ export class ConnectorRuntime {
     // Save subscriptions
     if (data.subscriptions && data.subscriptions.length > 0) {
       const subscriptionsToInsert = data.subscriptions.map((sub) => ({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         external_id: sub.externalId,
         customer_id: sub.customerId,
@@ -552,7 +557,7 @@ export class ConnectorRuntime {
 
       const { error: subscriptionsError } = await this.supabase
         .from('financial_subscriptions')
-        .upsert(subscriptionsToInsert, {
+        .upsert(subscriptionsToInsert as never, {
           onConflict: 'tenant_id,connector_id,idempotency_key',
           ignoreDuplicates: false,
         });
@@ -565,7 +570,7 @@ export class ConnectorRuntime {
     // Save tax estimates
     if (data.taxEstimates && data.taxEstimates.length > 0) {
       const taxEstimatesToInsert = data.taxEstimates.map((tax) => ({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         external_id: tax.externalId,
         transaction_id: tax.transactionId,
@@ -584,7 +589,7 @@ export class ConnectorRuntime {
 
       const { error: taxError } = await this.supabase
         .from('financial_tax_estimates')
-        .upsert(taxEstimatesToInsert, {
+        .upsert(taxEstimatesToInsert as never, {
           onConflict: 'tenant_id,connector_id,idempotency_key',
           ignoreDuplicates: false,
         });
@@ -597,7 +602,7 @@ export class ConnectorRuntime {
     // Save raw payloads for audit
     if (data.rawPayloads && data.rawPayloads.length > 0) {
       const rawEventsToInsert = data.rawPayloads.map((raw, idx) => ({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         event_type: 'sync',
         event_id: `${syncRunId}-${idx}`,
@@ -608,7 +613,7 @@ export class ConnectorRuntime {
 
       const { error: rawError } = await this.supabase
         .from('raw_events')
-        .upsert(rawEventsToInsert, {
+        .upsert(rawEventsToInsert as never, {
           onConflict: 'connector_id,event_id',
           ignoreDuplicates: false,
         });
@@ -628,7 +633,6 @@ export class ConnectorRuntime {
     syncRunId: string,
     data: Parameters<ConnectorRuntime['saveNormalizedData']>[3]
   ): Promise<void> {
-    const { processInBatches } = await import('./performance/batch-processor');
     const batchSize = 500;
 
     // Process transactions in batches
@@ -692,13 +696,13 @@ export class ConnectorRuntime {
     const { error } = await this.supabase
       .from('sync_cursors')
       .upsert({
-        connector_id: connector.id,
+        connector_id: (connector as { id: string }).id,
         tenant_id: tenantId,
         account_id: accountId || null,
         cursor_key: cursorKey,
         cursor_value: cursorValue,
         last_synced_at: new Date().toISOString(),
-      }, {
+      } as never, {
         onConflict: 'connector_id,COALESCE(account_id, \'00000000-0000-0000-0000-000000000000\'::uuid),cursor_key',
         ignoreDuplicates: false,
       });
@@ -729,15 +733,21 @@ export class ConnectorRuntime {
       return null;
     }
 
-    const { data: cursor } = await this.supabase
+    let query = this.supabase
       .from('sync_cursors')
       .select('cursor_value')
-      .eq('connector_id', connector.id)
-      .eq('cursor_key', cursorKey)
-      .eq('account_id', accountId || null)
-      .single();
+      .eq('connector_id', (connector as { id: string }).id)
+      .eq('cursor_key', cursorKey);
+    
+    if (accountId) {
+      query = query.eq('account_id', accountId);
+    } else {
+      query = query.is('account_id', null);
+    }
+    
+    const { data: cursor } = await query.single();
 
-    return cursor?.cursor_value || null;
+    return (cursor as { cursor_value: string } | null)?.cursor_value || null;
   }
 
   /**
@@ -840,14 +850,55 @@ export class ConnectorRuntime {
         }
 
         // Process in batches for performance
+        // Map NormalizedTransaction[] to the expected format with idempotencyKey
+        const transactionsWithIdempotency = result.transactions?.map((tx) => ({
+          ...tx,
+          idempotencyKey: tx.idempotencyKey || `${tx.externalId}-${tx.occurredAt.toISOString()}`,
+        }));
+
+        // Map balances to ensure accountId is present (required by saveNormalizedData)
+        const balancesWithAccountId = result.balances?.map((bal) => ({
+          accountId: (bal as any).accountId || '',
+          balanceCents: bal.balanceCents,
+          availableBalanceCents: bal.availableBalanceCents,
+          currency: bal.currency,
+          snapshotAt: bal.snapshotAt,
+          providerMetadata: bal.providerMetadata,
+          rawPayload: bal.rawPayload,
+        }));
+
+        // Map payouts to ensure idempotencyKey is present
+        const payoutsWithIdempotency = result.payouts?.map((payout) => ({
+          ...payout,
+          idempotencyKey: payout.idempotencyKey || `${payout.externalId}-${payout.initiatedAt.toISOString()}`,
+        }));
+
+        // Map invoices to ensure idempotencyKey is present
+        const invoicesWithIdempotency = result.invoices?.map((invoice) => ({
+          ...invoice,
+          idempotencyKey: invoice.idempotencyKey || `${invoice.externalId}-${invoice.issueDate?.toISOString() || Date.now()}`,
+        }));
+
+        // Map subscriptions to ensure idempotencyKey is present
+        const subscriptionsWithIdempotency = result.subscriptions?.map((sub) => ({
+          ...sub,
+          idempotencyKey: sub.idempotencyKey || `${sub.externalId}-${sub.currentPeriodStart?.toISOString() || Date.now()}`,
+        }));
+
+        // Map taxEstimates to ensure idempotencyKey is present
+        const taxEstimatesWithIdempotency = result.taxEstimates?.map((tax) => ({
+          ...tax,
+          idempotencyKey: tax.idempotencyKey || `${tax.externalId}-${tax.occurredAt.toISOString()}`,
+        }));
+
         const dataToSave = {
           accounts: result.accounts,
-          transactions: result.transactions,
-          balances: result.balances,
-          payouts: result.payouts,
-          invoices: result.invoices,
-          subscriptions: result.subscriptions,
-          taxEstimates: result.taxEstimates,
+          transactions: transactionsWithIdempotency,
+          balances: balancesWithAccountId,
+          payouts: payoutsWithIdempotency,
+          invoices: invoicesWithIdempotency,
+          subscriptions: subscriptionsWithIdempotency,
+          taxEstimates: taxEstimatesWithIdempotency,
           rawPayloads: result.rawPayloads,
         };
 
@@ -912,8 +963,8 @@ export class ConnectorRuntime {
               error_count: 0,
               consecutive_failures: 0,
               status: 'connected',
-            })
-            .eq('id', connector.id);
+            } as never)
+            .eq('id', (connector as { id: string }).id);
         }
 
         // Track metrics
@@ -950,7 +1001,8 @@ export class ConnectorRuntime {
           .single();
 
         if (connector) {
-          const newFailureCount = (connector.consecutive_failures || 0) + 1;
+          const conn = connector as { id: string; consecutive_failures?: number };
+          const newFailureCount = (conn.consecutive_failures || 0) + 1;
           await this.supabase
             .from('connectors')
             .update({
@@ -960,8 +1012,8 @@ export class ConnectorRuntime {
               consecutive_failures: newFailureCount,
               status: newFailureCount >= 5 ? 'error' : 'needs_attention',
               auto_disabled: newFailureCount >= 10,
-            })
-            .eq('id', connector.id);
+            } as never)
+            .eq('id', conn.id);
 
           // Track metrics
           trackSyncFailure(connectorId, tenantId, duration, errorType);
@@ -988,6 +1040,7 @@ export class ConnectorRuntime {
         }
 
         throw error;
+      }
     } finally {
       // Release lock
       if (lock.lockId) {

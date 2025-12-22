@@ -12,7 +12,6 @@ import {
   NormalizedInvoice,
   NormalizedSubscription,
   NormalizedTaxEstimate,
-  ValidationError,
 } from '../connector-driver';
 
 export interface ValidationResult {

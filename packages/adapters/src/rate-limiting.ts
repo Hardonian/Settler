@@ -108,10 +108,10 @@ export async function checkRateLimit(
  * Record API call for rate limiting
  */
 export async function recordApiCall(
-  providerId: string,
-  tenantId: string,
-  supabaseUrl: string,
-  supabaseServiceKey: string
+  _providerId: string,
+  _tenantId: string,
+  _supabaseUrl: string,
+  _supabaseServiceKey: string
 ): Promise<void> {
   // Rate limiting is tracked via sync_runs table
   // This function is a placeholder for future dedicated rate limit tracking

@@ -8,8 +8,6 @@
 import {
   ConnectorDriver,
   ConnectorMetadata,
-  AuthUrlOptions,
-  AuthCallbackResult,
   TestConnectionOptions,
   TestConnectionResult,
   SyncOptions,
@@ -43,15 +41,8 @@ export class NetSuiteDriver implements ConnectorDriver {
   }
 
   private async getAccessToken(credentials: Record<string, unknown>): Promise<string> {
-    const accountId = credentials.account_id as string;
-    const consumerKey = credentials.consumer_key as string;
-    const consumerSecret = credentials.consumer_secret as string;
-    const tokenId = credentials.token_id as string;
-    const tokenSecret = credentials.token_secret as string;
-    const realm = (credentials.realm as string) || accountId;
-
-    // NetSuite uses OAuth 1.0 Token-Based Authentication
-    // Generate signature and make authenticated request
+    // NetSuite OAuth 1.0 credentials are used in signature generation
+    // but the actual implementation would use them here
     // This is simplified - full OAuth 1.0 implementation needed
     
     // For now, return a placeholder - full OAuth 1.0 implementation required
@@ -106,7 +97,7 @@ export class NetSuiteDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     invoices?: NormalizedInvoice[];
     transactions?: NormalizedTransaction[];
@@ -148,10 +139,11 @@ export class NetSuiteDriver implements ConnectorDriver {
             status: invoice.status,
             issueDate: invoice.trandate ? new Date(invoice.trandate) : undefined,
             dueDate: invoice.duedate ? new Date(invoice.duedate) : undefined,
-            metadata: {
+            providerMetadata: {
               invoice_id: invoice.id,
               transaction_id: invoice.tranid,
             },
+            idempotencyKey: `${invoice.id}-${invoice.trandate || Date.now()}`,
           });
         }
       }

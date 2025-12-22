@@ -33,7 +33,7 @@ export class SapDriver implements ConnectorDriver {
   };
 
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
-    const { credentials, config } = options;
+    const { credentials, config: _config } = options;
     const odataUrl = credentials.odata_url as string;
     const username = credentials.username as string;
     const password = credentials.password as string;
@@ -80,7 +80,7 @@ export class SapDriver implements ConnectorDriver {
 
   async sync(
     credentials: Record<string, unknown>,
-    options: SyncOptions
+    _options: SyncOptions
   ): Promise<SyncResult & {
     invoices?: NormalizedInvoice[];
     transactions?: NormalizedTransaction[];
@@ -126,9 +126,10 @@ export class SapDriver implements ConnectorDriver {
             status: invoice.Status,
             issueDate: invoice.InvoiceDate ? new Date(invoice.InvoiceDate) : undefined,
             dueDate: invoice.DueDate ? new Date(invoice.DueDate) : undefined,
-            metadata: {
+            providerMetadata: {
               invoice_id: invoice.Id,
             },
+            idempotencyKey: `${invoice.Id}-${invoice.InvoiceDate || Date.now()}`,
           });
         }
       }
@@ -154,9 +155,10 @@ export class SapDriver implements ConnectorDriver {
             currency: tx.Currency || 'USD',
             occurredAt: tx.TransactionDate ? new Date(tx.TransactionDate) : new Date(),
             description: tx.Description || `SAP transaction ${tx.TransactionId}`,
-            metadata: {
+            providerMetadata: {
               transaction_id: tx.Id,
             },
+            idempotencyKey: `${tx.TransactionId || tx.Id}-${tx.TransactionDate || Date.now()}`,
           });
         }
       }
