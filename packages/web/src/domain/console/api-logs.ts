@@ -195,7 +195,12 @@ export async function getApiCallLogs(filters: ApiLogFilters = {}): Promise<ApiCa
       statusCode: log.status_code,
       responseTime: log.response_time,
       timestamp: new Date(log.created_at),
-      headers: sanitizeApiData({ headers: log.headers }).headers as Record<string, string> | undefined,
+      headers: (() => {
+        const sanitized = sanitizeApiData({ headers: log.headers });
+        return sanitized.headers && typeof sanitized.headers === 'object' 
+          ? sanitized.headers as Record<string, string>
+          : undefined;
+      })(),
       query: (log.query && typeof log.query === 'object' ? log.query : {}) as Record<string, string>,
       body: sanitizeApiData({ body: log.body }).body,
       responseBody: sanitizeApiData({ body: log.response_body }).body,
