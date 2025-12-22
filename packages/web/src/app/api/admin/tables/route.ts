@@ -65,6 +65,12 @@ export async function GET() {
     
     return NextResponse.json({ tables });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Never return 500 - return empty tables list with error message
+    return NextResponse.json({ 
+      error: error.message || 'Failed to fetch tables',
+      tables: [],
+      message: 'Unable to load database tables. Please try again or check database connection.',
+      retryable: true,
+    }, { status: 200 });
   }
 }

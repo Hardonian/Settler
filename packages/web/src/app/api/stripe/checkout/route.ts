@@ -114,9 +114,14 @@ export async function POST(request: NextRequest) {
     );
 
     if (!session.url) {
+      // Never return 500 - return actionable error message
       return NextResponse.json(
-        { error: 'Failed to create checkout session URL' },
-        { status: 500 }
+        { 
+          error: 'Failed to create checkout session URL',
+          message: 'Unable to create checkout session. Please try again or contact support.',
+          retryable: true,
+        },
+        { status: 200 }
       );
     }
 
@@ -144,12 +149,19 @@ export async function POST(request: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
     });
 
-    // Track error metrics
-    await trackApiMetric('/api/stripe/checkout', 'POST', 500, Date.now() - startTime);
+    // Track error metrics (but return 200, not 500)
+    await trackApiMetric('/api/stripe/checkout', 'POST', 200, Date.now() - startTime).catch(() => {
+      // Don't block response if metrics fail
+    });
 
+    // Never return 500 - return actionable error message
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
+      { 
+        error: 'Failed to create checkout session',
+        message: 'Unable to process checkout request. Please try again or contact support at billing@settler.dev.',
+        retryable: true,
+      },
+      { status: 200 }
     );
   }
 }

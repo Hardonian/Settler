@@ -186,9 +186,15 @@ export default function ExperimentsPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <p className="text-sm text-slate-500">
-              Experiment creation UI coming soon. For now, use the API directly.
-            </p>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <p className="text-sm text-blue-800 dark:text-blue-200 font-medium mb-2">
+                Feature Unavailable
+              </p>
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                Experiment creation is currently unavailable. This feature is being prepared for release. 
+                For now, you can manage experiments via the API or contact support for assistance.
+              </p>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>

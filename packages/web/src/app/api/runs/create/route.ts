@@ -94,13 +94,15 @@ export async function POST(request: NextRequest) {
 
     if (createError || !run) {
       logger.error('Failed to create run', createError as Error);
+      // Never return 500 - return actionable error message
       return NextResponse.json(
         {
           error: 'Failed to create run',
-          message: createError?.message,
+          message: createError?.message || 'Unable to create reconciliation run. Please try again.',
           correlationId,
+          retryable: true,
         },
-        { status: 500 }
+        { status: 200 }
       );
     }
 
@@ -160,13 +162,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Never return 500 - return actionable error message
     return NextResponse.json(
       {
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: error instanceof Error ? error.message : 'Unknown error occurred. Please try again.',
         correlationId,
+        retryable: true,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

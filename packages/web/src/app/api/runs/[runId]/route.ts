@@ -59,12 +59,14 @@ export async function GET(
     });
   } catch (error) {
     logger.error('Error fetching run', error as Error);
+    // Never return 500 - return actionable error message
     return NextResponse.json(
       {
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: error instanceof Error ? error.message : 'Unknown error occurred. Please try again.',
+        retryable: true,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
