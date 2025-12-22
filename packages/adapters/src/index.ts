@@ -1,9 +1,13 @@
 // Public connector contract (for external developers)
 export * from "./connector-contract";
 
-// Base interfaces and types
-export * from "./base";
-export * from "./enhanced-base";
+// Base interfaces and types - export types only to avoid conflicts
+export type { ValidationResult as BaseValidationResult } from "./base";
+export type { WebhookVerificationResult as EnhancedWebhookVerificationResult } from "./enhanced-base";
+
+// Re-export non-conflicting items
+export type { NormalizedData, FetchOptions, Adapter } from "./base";
+export type { AdapterConfig, DateRange, NormalizedEvent, EnhancedAdapter } from "./enhanced-base";
 
 // Built-in connectors (reference implementations)
 export * from "./stripe";
@@ -19,8 +23,27 @@ export * from "./xero";
 export * from "./netsuite";
 export * from "./woocommerce";
 
-// New connector framework
-export * from "./connector-driver";
+// New connector framework - use connector-driver exports (preferred)
+export {
+  ConnectorDriver,
+  ConnectorMetadata as DriverConnectorMetadata,
+  ConnectorError as DriverConnectorError,
+  ValidationError as DriverValidationError,
+  type NormalizedAccount,
+  type NormalizedTransaction,
+  type NormalizedBalance,
+  type NormalizedPayout,
+  type NormalizedInvoice,
+  type NormalizedSubscription,
+  type NormalizedTaxEstimate,
+  type SyncOptions,
+  type SyncResult,
+  type AuthUrlOptions,
+  type AuthCallbackResult,
+  type TestConnectionOptions,
+  type TestConnectionResult,
+  type WebhookPayload,
+} from "./connector-driver";
 export * from "./connector-runtime";
 export * from "./drivers";
 export * from "./credential-encryption";

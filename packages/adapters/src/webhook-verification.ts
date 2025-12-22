@@ -34,6 +34,7 @@ export function verifyStripeWebhook(
       .digest('hex');
 
     const isValid = signatures.some((sig) => {
+      if (!sig) return false;
       const expected = Buffer.from(expectedSignature, 'hex');
       const received = Buffer.from(sig, 'hex');
       return expected.length === received.length && 

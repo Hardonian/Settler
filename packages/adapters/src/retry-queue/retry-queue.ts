@@ -75,7 +75,7 @@ export class RetryQueue {
         error_type: errorType,
         metadata: metadata || {},
         status: 'pending',
-      })
+      } as never)
       .select('id')
       .single();
 
@@ -83,7 +83,7 @@ export class RetryQueue {
       throw new Error(`Failed to enqueue retry job: ${error?.message}`);
     }
 
-    return job.id;
+    return (job as { id: string }).id;
   }
 
   /**
@@ -121,13 +121,13 @@ export class RetryQueue {
     // Mark as processing
     await this.supabase
       .from('retry_queue')
-      .update({ status: 'processing', started_at: new Date().toISOString() })
+      .update({ status: 'processing', started_at: new Date().toISOString() } as never)
       .eq('id', jobId);
 
     // Job will be processed by sync worker
     // This function just marks it as ready
-
-    return { success: true, retryAgain: job.attempt_count < job.max_attempts };
+    const jobTyped = job as { attempt_count: number; max_attempts: number };
+    return { success: true, retryAgain: jobTyped.attempt_count < jobTyped.max_attempts };
   }
 
   /**
@@ -139,7 +139,7 @@ export class RetryQueue {
       .update({
         status: 'completed',
         completed_at: new Date().toISOString(),
-      })
+      } as never)
       .eq('id', jobId);
   }
 
@@ -161,8 +161,9 @@ export class RetryQueue {
       return { retryAgain: false };
     }
 
-    const newAttemptCount = job.attempt_count + 1;
-    const retryAgain = newAttemptCount < job.max_attempts;
+    const jobTyped = job as { attempt_count: number; max_attempts: number };
+    const newAttemptCount = jobTyped.attempt_count + 1;
+    const retryAgain = newAttemptCount < jobTyped.max_attempts;
 
     if (retryAgain) {
       const nextRetryAt = this.calculateNextRetry(newAttemptCount);
@@ -174,7 +175,7 @@ export class RetryQueue {
           error_message: errorMessage,
           error_type: errorType,
           status: 'pending',
-        })
+        } as never)
         .eq('id', jobId);
 
       return { retryAgain: true, nextRetryAt };
@@ -188,7 +189,7 @@ export class RetryQueue {
           error_message: errorMessage,
           error_type: errorType,
           completed_at: new Date().toISOString(),
-        })
+        } as never)
         .eq('id', jobId);
 
       return { retryAgain: false };
@@ -238,7 +239,7 @@ export class RetryQueue {
         attempt_count: 0,
         next_retry_at: new Date().toISOString(),
         completed_at: null,
-      })
+      } as never)
       .eq('id', jobId);
   }
 }
