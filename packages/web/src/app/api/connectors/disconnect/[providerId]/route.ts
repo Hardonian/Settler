@@ -50,7 +50,7 @@ export async function POST(
     }
 
     // Get connector
-    const { data: connector } = await supabase
+    const { data: connector } = await (supabase as any)
       .from('connectors')
       .select('id')
       .eq('tenant_id', tenantId)
@@ -64,17 +64,19 @@ export async function POST(
       );
     }
 
+    const connectorId = (connector as { id: string }).id;
+
     // Get credentials for revoke
-    const { data: credentials } = await supabase
+    const { data: credentials } = await (supabase as any)
       .from('connector_credentials')
       .select('access_token_encrypted')
-      .eq('connector_id', connector.id)
+      .eq('connector_id', connectorId)
       .single();
 
     // Revoke tokens if driver supports it
     if (driver.revoke && credentials?.access_token_encrypted) {
       try {
-        await driver.revoke(credentials.access_token_encrypted, {});
+        await driver.revoke((credentials as { access_token_encrypted: string }).access_token_encrypted, {});
       } catch (error) {
         console.error('Failed to revoke token:', error);
         // Continue with disconnection even if revoke fails
@@ -82,19 +84,19 @@ export async function POST(
     }
 
     // Delete credentials
-    await supabase
+    await (supabase as any)
       .from('connector_credentials')
       .delete()
-      .eq('connector_id', connector.id);
+      .eq('connector_id', connectorId);
 
     // Update connector status
-    await supabase
+    await (supabase as any)
       .from('connectors')
       .update({
         status: 'disconnected',
         updated_at: new Date().toISOString(),
       })
-      .eq('id', connector.id);
+      .eq('id', connectorId);
 
     return NextResponse.json({
       success: true,

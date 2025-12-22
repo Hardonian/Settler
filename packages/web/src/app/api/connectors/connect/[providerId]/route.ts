@@ -59,7 +59,7 @@ export async function POST(
       });
 
       // Store state in session/database for verification
-      const { data: connector } = await supabase
+      const { data: connector } = await (supabase as any)
         .from('connectors')
         .select('id')
         .eq('tenant_id', tenantId)
@@ -68,7 +68,7 @@ export async function POST(
 
       if (!connector) {
         // Create connector record
-        const { data: newConnector } = await supabase
+        const { data: newConnector } = await (supabase as any)
           .from('connectors')
           .insert({
             tenant_id: tenantId,
@@ -91,13 +91,13 @@ export async function POST(
 
         return NextResponse.json({
           authUrl,
-          connectorId: newConnector.id,
+          connectorId: (newConnector as { id: string }).id,
         });
       }
 
       return NextResponse.json({
         authUrl,
-        connectorId: connector.id,
+        connectorId: (connector as { id: string }).id,
       });
     }
 

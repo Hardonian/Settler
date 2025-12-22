@@ -932,15 +932,30 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["connectors"]["Row"],
-          "id" | "created_at" | "updated_at"
-        > & {
+        Insert: {
           id?: string;
+          tenant_id: string;
+          provider_id: string;
+          display_name: string;
+          status: string;
+          auth_type: string;
+          config: Json;
+          created_by: string;
           created_at?: string;
           updated_at?: string;
         };
-        Update: Partial<Database["public"]["Tables"]["connectors"]["Insert"]>;
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          provider_id?: string;
+          display_name?: string;
+          status?: string;
+          auth_type?: string;
+          config?: Json;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
       };
       connector_credentials: {
         Row: {
@@ -953,14 +968,26 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["connector_credentials"]["Row"],
-          "created_at" | "updated_at"
-        > & {
+        Insert: {
+          connector_id: string;
+          tenant_id: string;
+          encrypted_credentials: Json;
+          access_token_encrypted: string;
+          refresh_token_encrypted?: string | null;
+          token_expires_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
-        Update: Partial<Database["public"]["Tables"]["connector_credentials"]["Insert"]>;
+        Update: {
+          connector_id?: string;
+          tenant_id?: string;
+          encrypted_credentials?: Json;
+          access_token_encrypted?: string;
+          refresh_token_encrypted?: string | null;
+          token_expires_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
       };
       [key: string]: {
         Row: Record<string, unknown>;

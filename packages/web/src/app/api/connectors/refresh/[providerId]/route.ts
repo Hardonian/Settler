@@ -51,7 +51,7 @@ export async function POST(
     }
 
     // Get credentials
-    const { data: connector } = await supabase
+    const { data: connector } = await (supabase as any)
       .from('connectors')
       .select('id, config')
       .eq('tenant_id', tenantId)
@@ -65,10 +65,12 @@ export async function POST(
       );
     }
 
-    const { data: credentials } = await supabase
+    const connectorId = (connector as { id: string; config: unknown }).id;
+
+    const { data: credentials } = await (supabase as any)
       .from('connector_credentials')
       .select('*')
-      .eq('connector_id', connector.id)
+      .eq('connector_id', connectorId)
       .single();
 
     if (!credentials) {

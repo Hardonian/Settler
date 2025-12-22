@@ -45,7 +45,7 @@ export async function GET(
     }
 
     // Get connector config
-    const { data: connectors } = await supabase
+    const { data: connectors } = await (supabase as any)
       .from('connectors')
       .select('id, tenant_id, config')
       .eq('provider_id', providerId)
@@ -56,7 +56,7 @@ export async function GET(
       return NextResponse.json({ error: 'Connector not found' }, { status: 404 });
     }
 
-    const connector = connectors[0];
+    const connector = connectors[0] as { id: string; tenant_id: string; config: unknown };
     if (!connector) {
       return NextResponse.json({ error: 'Connector not found' }, { status: 404 });
     }
@@ -82,7 +82,7 @@ export async function GET(
     });
 
     // Store credentials (encrypted)
-    const { error: credError } = await supabase
+    const { error: credError } = await (supabase as any)
       .from('connector_credentials')
       .upsert({
         connector_id: connector.id,
@@ -105,7 +105,7 @@ export async function GET(
     }
 
     // Update connector status
-    await supabase
+    await (supabase as any)
       .from('connectors')
       .update({
         status: 'connected',
