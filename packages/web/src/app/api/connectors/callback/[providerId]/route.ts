@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 
 export const dynamic = 'force-dynamic';
@@ -44,8 +45,10 @@ export async function GET(
       return NextResponse.json({ error: 'Missing authorization code' }, { status: 400 });
     }
 
+    const typedSupabase = asExtendedClient(supabase);
+
     // Get connector config
-    const { data: connectors } = await (supabase as any)
+    const { data: connectors } = await typedSupabase
       .from('connectors')
       .select('id, tenant_id, config')
       .eq('provider_id', providerId)
@@ -56,13 +59,13 @@ export async function GET(
       return NextResponse.json({ error: 'Connector not found' }, { status: 404 });
     }
 
-    const connector = connectors[0] as { id: string; tenant_id: string; config: unknown };
+    const connector = connectors[0];
     if (!connector) {
       return NextResponse.json({ error: 'Connector not found' }, { status: 404 });
     }
 
     // Verify tenant access
-    const { data: membership } = await (supabase as any)
+    const { data: membership } = await typedSupabase
       .from('app_private.memberships')
       .select('tenant_id')
       .eq('user_id', user.id)
@@ -82,7 +85,7 @@ export async function GET(
     });
 
     // Store credentials (encrypted)
-    const { error: credError } = await (supabase as any)
+    const { error: credError } = await typedSupabase
       .from('connector_credentials')
       .upsert({
         connector_id: connector.id,
@@ -105,7 +108,7 @@ export async function GET(
     }
 
     // Update connector status
-    await (supabase as any)
+    await typedSupabase
       .from('connectors')
       .update({
         status: 'connected',

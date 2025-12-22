@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, ArrowLeft, RefreshCw, Calendar } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { asExtendedClient } from "@/lib/supabase/types";
 
 interface SyncRun {
   id: string;
@@ -40,7 +41,8 @@ export default function IntegrationLogsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: memberships } = await (supabase as any)
+      const typedSupabase = asExtendedClient(supabase);
+      const { data: memberships } = await typedSupabase
         .from('app_private.memberships')
         .select('tenant_id')
         .eq('user_id', user.id)

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Search, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { asExtendedClient } from "@/lib/supabase/types";
 import { getAllConnectorMetadata } from "@settler/adapters/src/drivers";
 
 interface Integration {
@@ -61,7 +62,8 @@ export default function IntegrationsPage() {
       }
 
       // Get user's tenants
-      const { data: memberships } = await (supabase as any)
+      const typedSupabase = asExtendedClient(supabase);
+      const { data: memberships } = await typedSupabase
         .from('app_private.memberships')
         .select('tenant_id')
         .eq('user_id', user.id)
