@@ -14,11 +14,14 @@ interface BlockEditorProps {
 }
 
 export function BlockEditor(_props: BlockEditorProps) {
-  // Future: Visual block editor with drag-and-drop
+  // Visual block editor - use JSON editor for now
   return (
-    <div className="p-4 border rounded-lg">
-      <p className="text-sm text-slate-600 dark:text-slate-400">
-        Visual block editor coming soon
+    <div className="p-4 border rounded-lg bg-slate-50 dark:bg-slate-900">
+      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+        Edit block configuration using the JSON editor or form fields.
+      </p>
+      <p className="text-xs text-slate-500 dark:text-slate-500">
+        Visual drag-and-drop editor will be available in a future update.
       </p>
     </div>
   );

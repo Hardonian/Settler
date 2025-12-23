@@ -55,7 +55,6 @@ const InfographicSection = dynamic(() => import("@/components/marketing").then(m
 });
 // Dynamic imports for heavy components
 const CustomerLogos = dynamic(() => import("@/components/CustomerLogos").then(mod => ({ default: mod.CustomerLogos })), { ssr: true });
-const SocialProof = dynamic(() => import("@/components/SocialProof").then(mod => ({ default: mod.SocialProof })), { ssr: false });
 const NewsletterSignup = dynamic(() => import("@/components/NewsletterSignup").then(mod => ({ default: mod.NewsletterSignup })), { ssr: false });
 const ConversionCTA = dynamic(() => import("@/components/ConversionCTA").then(mod => ({ default: mod.ConversionCTA })), { ssr: true });
 const AnimatedCodeBlock = dynamic(() => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })), { ssr: false });
@@ -250,8 +249,8 @@ if (flag.value) { /* ... */ }`;
                   </div>
                 </div>
 
-                {/* Alternative Hero Screenshot - Dashboard View */}
-                <div className="relative w-full max-w-5xl mx-auto mb-8 px-4">
+                {/* Dashboard Screenshot - Hidden on mobile to reduce redundancy */}
+                <div className="relative w-full max-w-5xl mx-auto mb-8 px-4 hidden md:block">
                   <div className="relative w-full aspect-[2816/1536] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-2xl">
                     <Image
                       src="/assets/images/1766448964045.jpg"
@@ -367,7 +366,7 @@ if (flag.value) { /* ... */ }`;
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
               >
                 <Link href="/console/playground">
-                  Open Playground <ArrowRight className="ml-2 w-5 h-5" />
+                  Try Playground <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
               <Button 
@@ -518,9 +517,6 @@ if (flag.value) { /* ... */ }`;
             </Button>
           </div>
         </section>
-
-        {/* Social Proof */}
-        <SocialProof />
 
         {/* Testimonial Carousel */}
         <TestimonialCarousel />
