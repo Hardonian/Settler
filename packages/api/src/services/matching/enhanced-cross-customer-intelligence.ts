@@ -169,8 +169,18 @@ export class EnhancedCrossCustomerIntelligence {
       const insights: PatternInsight[] = Array.from(aggregatedPatterns.values()).map(
         (pattern) => {
           const insight = this.generateInsight(pattern);
+          // Convert pattern to Record<string, unknown> for hashing
+          const patternRecord: Record<string, unknown> = {
+            sourceAdapter: pattern.sourceAdapter,
+            targetAdapter: pattern.targetAdapter,
+            matchType: pattern.matchType,
+            averageConfidence: pattern.averageConfidence,
+            averageAmountDiff: pattern.averageAmountDiff,
+            averageDateDiff: pattern.averageDateDiff,
+            frequency: pattern.frequency,
+          };
           return {
-            patternId: this.hashPattern(pattern),
+            patternId: this.hashPattern(patternRecord),
             insight: insight.text,
             confidence: Math.min(1.0, pattern.frequency / 100), // Higher frequency = higher confidence
             recommendedAction: insight.action,

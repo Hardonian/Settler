@@ -198,7 +198,7 @@ function levenshteinDistance(str1: string, str2: string): number {
   for (let i = 0; i <= len2; i++) {
     matrix[i] = [];
     for (let j = 0; j <= len1; j++) {
-      matrix[i][j] = 0;
+      matrix[i]![j] = 0;
     }
   }
 

@@ -9,7 +9,6 @@
 
 import { query } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
-import type { MatchResult } from "../ingestion/types";
 
 export interface MLMatchFeatures {
   amountDiff: number;
@@ -235,7 +234,7 @@ export class MLMatchingEngine {
    * Get model weights for tenant
    * Trained on historical matches, falls back to default weights
    */
-  private getModelWeights(tenantId: string): {
+  private getModelWeights(_tenantId: string): {
     externalIdWeight: number;
     amountWeight: number;
     dateWeight: number;
@@ -244,7 +243,7 @@ export class MLMatchingEngine {
     historicalMatchWeight: number;
     adapterWeights: Record<string, number>;
   } {
-    // In production, load trained weights from database
+    // In production, load trained weights from database using _tenantId
     // For now, use default weights that will be improved by training
     return {
       externalIdWeight: 0.4,

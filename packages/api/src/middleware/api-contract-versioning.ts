@@ -109,7 +109,7 @@ export function apiContractVersioningMiddleware(
  */
 function extractVersionFromPath(path: string): string | null {
   const match = path.match(/^\/api\/(v\d+)\//);
-  return match ? match[1] : null;
+  return match && match[1] ? match[1] : null;
 }
 
 /**
