@@ -22,10 +22,12 @@ export default function Pricing() {
     {
       name: 'Free',
       price: '$0',
-      description: 'Perfect for testing and small projects',
+      description: 'Test Settler with real data. Experience value before committing.',
       reconciliationVolume: '1,000/month',
       exceptionRate: '1% included',
       example: '1k reconciliations = $0/month',
+      valueProposition: 'See Settler work with your data. No credit card required.',
+      limits: ['1,000 reconciliations/month', 'Basic support', 'Public API access'],
       cta: 'Get Started',
       ctaLink: '/signup',
       popular: false,
@@ -33,10 +35,12 @@ export default function Pricing() {
     {
       name: 'Starter',
       price: '$99',
-      description: 'For small businesses',
+      description: 'Relieve manual reconciliation work. Process 50k matches automatically.',
       reconciliationVolume: '50,000/month',
       exceptionRate: '1% included',
       example: '50k reconciliations = $99/month',
+      valueProposition: 'Eliminates ~25 hours/month of manual work. Pays for itself.',
+      limits: ['50,000 reconciliations/month', 'Email support', 'Standard integrations'],
       cta: 'Start Free Trial',
       ctaLink: '/signup',
       popular: true,
@@ -44,10 +48,12 @@ export default function Pricing() {
     {
       name: 'Growth',
       price: '$599',
-      description: 'For growing businesses',
+      description: 'Scale reconciliation as your business grows. Handle 500k matches.',
       reconciliationVolume: '500,000/month',
       exceptionRate: '1% included',
       example: '500k reconciliations = $599/month',
+      valueProposition: 'Processes high volume automatically. Prevents costly errors.',
+      limits: ['500,000 reconciliations/month', 'Priority support', 'Advanced integrations', 'Custom mappings'],
       cta: 'Start Free Trial',
       ctaLink: '/signup',
       popular: false,
@@ -55,10 +61,12 @@ export default function Pricing() {
     {
       name: 'Scale',
       price: '$4,999',
-      description: 'For high-volume operations',
+      description: 'Enterprise-grade volume. Process millions of matches reliably.',
       reconciliationVolume: '5,000,000/month',
       exceptionRate: '1% included',
       example: '5M reconciliations = $4,999/month',
+      valueProposition: 'Handles massive scale. Reduces operational risk.',
+      limits: ['5,000,000 reconciliations/month', 'Dedicated support', 'All integrations', 'SLA guarantee'],
       cta: 'Start Free Trial',
       ctaLink: '/signup',
       popular: false,
@@ -66,10 +74,12 @@ export default function Pricing() {
     {
       name: 'Enterprise',
       price: 'Custom',
-      description: 'Custom volume and exception handling',
+      description: 'Unlimited volume with custom exception handling and control.',
       reconciliationVolume: 'Unlimited',
       exceptionRate: 'Custom',
       example: 'Volume discounts available',
+      valueProposition: 'Full control over reconciliation strategy. Custom integrations and workflows.',
+      limits: ['Unlimited reconciliations', 'Dedicated account manager', 'Custom integrations', 'On-premise option'],
       cta: 'Contact Sales',
       ctaLink: '/enterprise',
       popular: false,
@@ -208,6 +218,31 @@ export default function Pricing() {
                     <div className="text-sm text-slate-600 dark:text-slate-400 break-words">{plan.exceptionRate}</div>
                     <div className="text-xs text-slate-500 mt-1 break-words">(Automatic explanations)</div>
                   </div>
+                  {plan.valueProposition && (
+                    <div className="pt-2 border-t">
+                      <div className="text-sm font-medium text-slate-900 dark:text-white mb-2 break-words">
+                        Value Delivered
+                      </div>
+                      <div className="text-xs text-slate-600 dark:text-slate-400 break-words">
+                        {plan.valueProposition}
+                      </div>
+                    </div>
+                  )}
+                  {plan.limits && plan.limits.length > 0 && (
+                    <div className="pt-2 border-t">
+                      <div className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-2 break-words">
+                        Includes:
+                      </div>
+                      <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                        {plan.limits.map((limit, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <span className="text-green-600 dark:text-green-400 mt-0.5">✓</span>
+                            <span className="break-words">{limit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   <div className="pt-2 border-t">
                     <div className="text-xs text-slate-600 dark:text-slate-400 break-words">{plan.example}</div>
                   </div>
