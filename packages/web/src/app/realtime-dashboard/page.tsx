@@ -1,5 +1,5 @@
 /**
- * Real-time Reconciliation Dashboard
+ * Webhook-Based Reconciliation Dashboard
  * Next.js/React page showing live reconciliation progress
  */
 

@@ -34,7 +34,7 @@ export default function EdgeAIPage() {
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Dual-layer architecture combining cloud intelligence with local edge processing for
-            real-time reconciliation, reduced latency, and enhanced privacy.
+            webhook-based reconciliation with near-real-time results, reduced latency, and enhanced privacy.
           </p>
         </div>
 

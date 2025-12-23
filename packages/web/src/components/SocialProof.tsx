@@ -23,7 +23,7 @@ const defaultTestimonials: Testimonial[] = [
     role: 'CTO',
     company: 'TechCorp',
     image: '👩‍💼',
-    quote: 'Settler reduced our reconciliation time from 8 hours to 5 minutes. The API is incredibly easy to use and the accuracy is unmatched.',
+    quote: 'Settler eliminated $100K+ in annual risk with deterministic reconciliation and complete audit trails. System-level enforcement, not human promises.',
     rating: 5,
   },
   {
@@ -31,7 +31,7 @@ const defaultTestimonials: Testimonial[] = [
     role: 'Head of Finance',
     company: 'EcomPlus',
     image: '👨‍💼',
-    quote: 'We\'ve reconciled over 2M transactions with Settler. The real-time webhook support eliminated all our manual processes.',
+    quote: 'We\'ve reconciled over 2M transactions with Settler. Webhook-based reconciliation with near-real-time results. System-level enforcement eliminates operational risk.',
     rating: 5,
   },
   {

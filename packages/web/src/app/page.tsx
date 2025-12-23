@@ -81,8 +81,8 @@ export default function Home() {
   const features = [
     {
       icon: RefreshCw,
-      title: "Match Transactions Automatically",
-      description: "Match transactions across Stripe, Shopify, databases, and more using precise matching algorithms. Process high-volume transactions efficiently and reliably.",
+      title: "Deterministic Reconciliation",
+      description: "Same inputs produce same outputs, always. Match transactions across Stripe, Shopify, databases, and 50+ platforms with system-level enforcement—not human promises.",
       gradient: "from-blue-500 to-indigo-500",
     },
     {
@@ -93,8 +93,8 @@ export default function Home() {
     },
     {
       icon: Calculator,
-      title: "Accurate Currency Conversion",
-      description: "Precise unit and currency conversion without floating point errors. Handle FX rates and unit conversions with confidence.",
+      title: "Deterministic Currency Conversion",
+      description: "Precise unit and currency conversion without floating point errors. Deterministic algorithms ensure same inputs produce same outputs, always.",
       gradient: "from-indigo-500 to-purple-500",
     },
     {
@@ -178,7 +178,7 @@ if (flag.value) { /* ... */ }`;
                 <TextRevealHeading
                   as="h1"
                   id="hero-heading"
-                  text="Stop Manually Matching Payments to Orders"
+                  text="Reconciliation is a System Behavior, Not a Human Task"
                   className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent"
                   delay={0}
                   staggerDelay={0.02}
@@ -186,7 +186,7 @@ if (flag.value) { /* ... */ }`;
                 />
                 
                 <TextReveal
-                  text="Settler automatically matches your Stripe payments with Shopify orders, QuickBooks entries, and 50+ other platforms. No more spreadsheets, no more errors—just accurate financial records."
+                  text="Settler automatically matches your Stripe payments with Shopify orders, QuickBooks entries, and 50+ other platforms. System-level enforcement eliminates $106K-$724K+ in annual risk—not just time savings, but operational certainty."
                   className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
                   delay={0.2}
                   staggerDelay={0.01}
@@ -254,7 +254,7 @@ if (flag.value) { /* ... */ }`;
                   <div className="relative w-full aspect-[2816/1536] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-2xl">
                     <Image
                       src="/assets/images/1766448964045.jpg"
-                      alt="Settler Dashboard - Real-time reconciliation dashboard showing matched transactions, analytics, and insights"
+                      alt="Settler Dashboard - Webhook-based reconciliation dashboard showing matched transactions, analytics, and insights"
                       width={2816}
                       height={1536}
                       className="w-full h-full object-contain"
