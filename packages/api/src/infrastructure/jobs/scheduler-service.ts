@@ -1,7 +1,11 @@
 /**
- * Job Scheduler Service
+ * Job Scheduler Service - Production Ready
  * 
  * Executes scheduled reconciliation jobs based on cron expressions.
+ * 
+ * Dependencies:
+ * - node-cron: npm install node-cron @types/node-cron
+ * 
  * Enterprise-ready with:
  * - Type-safe Prisma queries
  * - Comprehensive error handling
@@ -9,25 +13,21 @@
  * - Timezone support
  * - Retry logic
  * - Health monitoring
+ * - Graceful shutdown
  */
 
 import { PrismaClient } from '@prisma/client';
-// Note: node-cron needs to be added to package.json dependencies
-// For now, using a simple interval-based scheduler
-// TODO: Add node-cron: npm install node-cron @types/node-cron
 import { ReconCoreEngine } from '../../services/recon-core';
 
-// Simple cron parser (basic implementation)
-// In production, use node-cron library
-function parseCronExpression(cronExpr: string): { isValid: boolean; nextRun?: Date } {
-  // Basic validation - in production use node-cron.validate()
-  const parts = cronExpr.split(' ');
-  if (parts.length !== 5) {
-    return { isValid: false };
-  }
-  // For now, return valid but don't calculate next run
-  // Full implementation requires node-cron or cron-parser
-  return { isValid: true };
+// Dynamic import for node-cron (allows graceful degradation)
+let cron: typeof import('node-cron') | null = null;
+
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  cron = require('node-cron');
+} catch (error) {
+  console.warn('[JobScheduler] node-cron not installed. Scheduled jobs will not run.');
+  console.warn('[JobScheduler] Install with: npm install node-cron @types/node-cron');
 }
 
 interface ScheduledJob {
@@ -40,12 +40,13 @@ interface ScheduledJob {
   nextExecutionAt: Date | null;
 }
 
-export class JobScheduler {
+export class JobSchedulerService {
   private prisma: PrismaClient;
   private reconEngine: ReconCoreEngine;
-  private cronJobs: Map<string, cron.ScheduledTask> = new Map();
+  private cronJobs: Map<string, { task: any; job: ScheduledJob }> = new Map();
   private isRunning = false;
   private healthCheckInterval: NodeJS.Timeout | null = null;
+  private reloadInterval: NodeJS.Timeout | null = null;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
@@ -61,18 +62,30 @@ export class JobScheduler {
       return;
     }
 
+    if (!cron) {
+      console.error('[JobScheduler] Cannot start: node-cron not installed');
+      return;
+    }
+
     console.log('[JobScheduler] Starting scheduler...');
     this.isRunning = true;
 
     // Load and schedule all active jobs
     await this.loadAndScheduleJobs();
 
-    // Set up health check
+    // Set up health check (every minute)
     this.healthCheckInterval = setInterval(() => {
       this.healthCheck().catch((error) => {
         console.error('[JobScheduler] Health check failed:', error);
       });
-    }, 60000); // Every minute
+    }, 60000);
+
+    // Reload jobs periodically (every 5 minutes) to pick up new/changed jobs
+    this.reloadInterval = setInterval(async () => {
+      await this.reloadJobs().catch((error) => {
+        console.error('[JobScheduler] Reload failed:', error);
+      });
+    }, 300000);
 
     console.log('[JobScheduler] Scheduler started');
   }
@@ -88,21 +101,24 @@ export class JobScheduler {
     console.log('[JobScheduler] Stopping scheduler...');
     this.isRunning = false;
 
-      // Stop all cron jobs
-      for (const [jobId, cronJob] of this.cronJobs.entries()) {
-        if ('stop' in cronJob && typeof cronJob.stop === 'function') {
-          cronJob.stop();
-        } else if ('clearInterval' in globalThis && typeof cronJob === 'number') {
-          clearInterval(cronJob);
-        }
-        console.log(`[JobScheduler] Stopped cron job: ${jobId}`);
+    // Stop all cron jobs
+    for (const [jobId, { task }] of this.cronJobs.entries()) {
+      if (task && typeof task.stop === 'function') {
+        task.stop();
       }
-      this.cronJobs.clear();
+      console.log(`[JobScheduler] Stopped cron job: ${jobId}`);
+    }
+    this.cronJobs.clear();
 
-    // Clear health check interval
+    // Clear intervals
     if (this.healthCheckInterval) {
       clearInterval(this.healthCheckInterval);
       this.healthCheckInterval = null;
+    }
+
+    if (this.reloadInterval) {
+      clearInterval(this.reloadInterval);
+      this.reloadInterval = null;
     }
 
     console.log('[JobScheduler] Scheduler stopped');
@@ -150,48 +166,95 @@ export class JobScheduler {
   }
 
   /**
+   * Reload jobs (pick up new/changed/deleted jobs)
+   */
+  private async reloadJobs(): Promise<void> {
+    try {
+      // Get current jobs from database
+      const dbJobs = await this.prisma.reconJob.findMany({
+        where: {
+          status: 'active',
+          scheduleCron: { not: null },
+          deletedAt: null,
+        },
+        select: {
+          id: true,
+          name: true,
+          scheduleCron: true,
+          scheduleTimezone: true,
+          tenantId: true,
+        },
+      });
+
+      const dbJobIds = new Set(dbJobs.map((j) => j.id));
+
+      // Unschedule jobs that no longer exist or are inactive
+      for (const [jobId] of this.cronJobs.entries()) {
+        if (!dbJobIds.has(jobId)) {
+          await this.unscheduleJob(jobId);
+        }
+      }
+
+      // Schedule new or updated jobs
+      for (const dbJob of dbJobs) {
+        const existing = this.cronJobs.get(dbJob.id);
+        if (!existing || existing.job.scheduleCron !== dbJob.scheduleCron || existing.job.scheduleTimezone !== dbJob.scheduleTimezone) {
+          await this.scheduleJob({
+            id: dbJob.id,
+            name: dbJob.name,
+            scheduleCron: dbJob.scheduleCron!,
+            scheduleTimezone: dbJob.scheduleTimezone,
+            tenantId: dbJob.tenantId,
+            lastExecutionAt: null,
+            nextExecutionAt: null,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('[JobScheduler] Failed to reload jobs:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Schedule a single job
    */
   async scheduleJob(job: ScheduledJob): Promise<void> {
+    if (!cron) {
+      console.error('[JobScheduler] Cannot schedule job: node-cron not installed');
+      return;
+    }
+
     try {
       // Validate cron expression
-      const cronValidation = parseCronExpression(job.scheduleCron);
-      if (!cronValidation.isValid) {
+      if (!cron.validate(job.scheduleCron)) {
         console.error(`[JobScheduler] Invalid cron expression for job ${job.id}: ${job.scheduleCron}`);
         return;
       }
 
       // Stop existing cron job if any
-      const existingCronJob = this.cronJobs.get(job.id);
-      if (existingCronJob) {
-        if ('stop' in existingCronJob && typeof existingCronJob.stop === 'function') {
-          existingCronJob.stop();
-        } else if ('clearInterval' in globalThis && typeof existingCronJob === 'number') {
-          clearInterval(existingCronJob);
-        }
+      const existing = this.cronJobs.get(job.id);
+      if (existing && existing.task) {
+        existing.task.stop();
       }
 
-      // TODO: Replace with node-cron when available
-      // For now, use a simple interval-based approach (checks every minute)
-      // This is less efficient but works without external dependencies
-      const intervalId = setInterval(async () => {
-        // Check if it's time to run (simplified - in production use cron parser)
-        const now = new Date();
-        const shouldRun = await this.shouldRunJob(job, now);
-        if (shouldRun) {
+      // Create new cron job with timezone support
+      const task = cron.schedule(
+        job.scheduleCron,
+        async () => {
           await this.executeJob(job);
+        },
+        {
+          scheduled: true,
+          timezone: job.scheduleTimezone || 'UTC',
         }
-      }, 60000); // Check every minute
+      );
 
-      this.cronJobs.set(job.id, intervalId as any);
-
-      // Calculate next execution time
-      const nextExecution = this.calculateNextExecution(job.scheduleCron, job.scheduleTimezone);
+      this.cronJobs.set(job.id, { task, job });
 
       console.log(`[JobScheduler] Scheduled job ${job.id} (${job.name})`, {
         cron: job.scheduleCron,
         timezone: job.scheduleTimezone,
-        nextExecution: nextExecution?.toISOString(),
       });
     } catch (error) {
       console.error(`[JobScheduler] Failed to schedule job ${job.id}:`, error);
@@ -203,26 +266,12 @@ export class JobScheduler {
    * Unschedule a job
    */
   async unscheduleJob(jobId: string): Promise<void> {
-    const cronJob = this.cronJobs.get(jobId);
-    if (cronJob) {
-      if ('stop' in cronJob && typeof cronJob.stop === 'function') {
-        cronJob.stop();
-      } else if ('clearInterval' in globalThis && typeof cronJob === 'number') {
-        clearInterval(cronJob);
-      }
+    const existing = this.cronJobs.get(jobId);
+    if (existing && existing.task) {
+      existing.task.stop();
       this.cronJobs.delete(jobId);
       console.log(`[JobScheduler] Unscheduled job ${jobId}`);
     }
-  }
-
-  /**
-   * Check if job should run now (simplified - in production use cron parser)
-   */
-  private async shouldRunJob(job: ScheduledJob, now: Date): Promise<boolean> {
-    // TODO: Implement proper cron parsing with node-cron
-    // For now, this is a placeholder that always returns false
-    // In production, use: cronParser.parseExpression(job.scheduleCron, { tz: job.scheduleTimezone })
-    return false;
   }
 
   /**
@@ -233,7 +282,7 @@ export class JobScheduler {
     console.log(`[JobScheduler] Executing job ${job.id} (${job.name})`);
 
     try {
-      // Verify job still exists and is active
+      // Verify job still exists and is active (idempotent check)
       const dbJob = await this.prisma.reconJob.findFirst({
         where: {
           id: job.id,
@@ -307,8 +356,9 @@ export class JobScheduler {
       });
 
       // Create failed result record
+      let failedResultId: string | null = null;
       try {
-        await this.prisma.reconResult.create({
+        const failedResult = await this.prisma.reconResult.create({
           data: {
             reconJobId: job.id,
             tenantId: job.tenantId,
@@ -327,26 +377,30 @@ export class JobScheduler {
             durationMs: BigInt(duration),
           },
         });
+        failedResultId = failedResult.id;
       } catch (createError) {
         console.error(`[JobScheduler] Failed to create error result for job ${job.id}:`, createError);
       }
 
-      // Don't throw - allow scheduler to continue
-    }
-  }
+      // Send failure notification
+      if (failedResultId) {
+        try {
+          const { notifyJobFailure } = await import('../../services/notifications/job-failure');
+          await notifyJobFailure(this.prisma, {
+            jobId: job.id,
+            resultId: failedResultId,
+            errorMessage: errorMessage,
+            errorStack: errorStack,
+            tenantId: job.tenantId,
+            userId: 'system',
+          });
+        } catch (notificationError) {
+          // Don't fail if notification fails
+          console.error(`[JobScheduler] Failed to send failure notification:`, notificationError);
+        }
+      }
 
-  /**
-   * Calculate next execution time for a cron expression
-   */
-  private calculateNextExecution(cronExpression: string, timezone: string): Date | null {
-    try {
-      // Use cron-parser if available, otherwise return null
-      // For now, return null as we don't have cron-parser installed
-      // This is a nice-to-have feature
-      return null;
-    } catch (error) {
-      console.error('[JobScheduler] Failed to calculate next execution:', error);
-      return null;
+      // Don't throw - allow scheduler to continue
     }
   }
 
@@ -361,7 +415,7 @@ export class JobScheduler {
       // Verify database connection
       await this.prisma.$queryRaw`SELECT 1`;
 
-      // Log health status
+      // Log health status (only if there are jobs to avoid spam)
       if (activeJobCount > 0) {
         console.log(`[JobScheduler] Health check OK - ${activeJobCount} active jobs`);
       }
@@ -377,24 +431,26 @@ export class JobScheduler {
     isRunning: boolean;
     activeJobCount: number;
     jobIds: string[];
+    hasCronLibrary: boolean;
   } {
     return {
       isRunning: this.isRunning,
       activeJobCount: this.cronJobs.size,
       jobIds: Array.from(this.cronJobs.keys()),
+      hasCronLibrary: cron !== null,
     };
   }
 }
 
 // Singleton instance
-let schedulerInstance: JobScheduler | null = null;
+let schedulerInstance: JobSchedulerService | null = null;
 
 /**
  * Get or create scheduler instance
  */
-export function getJobScheduler(prisma: PrismaClient): JobScheduler {
+export function getJobSchedulerService(prisma: PrismaClient): JobSchedulerService {
   if (!schedulerInstance) {
-    schedulerInstance = new JobScheduler(prisma);
+    schedulerInstance = new JobSchedulerService(prisma);
   }
   return schedulerInstance;
 }

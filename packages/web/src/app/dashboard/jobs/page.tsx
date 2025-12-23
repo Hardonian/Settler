@@ -56,62 +56,56 @@ export default function JobsPage() {
     setFilteredJobs(filtered);
   }, [searchQuery, statusFilter, jobs]);
 
-  const fetchJobs = () => {
+  const fetchJobs = async () => {
     try {
       setIsLoading(true);
-      // In production, fetch from API
-      const mockJobs: Job[] = [
-        {
-          id: "1",
-          name: "Shopify-Stripe Monthly Reconciliation",
-          status: "completed",
-          source: "Shopify",
-          target: "Stripe",
-          matchedCount: 145,
-          unmatchedCount: 3,
-          accuracy: 97.9,
-          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 5 * 60 * 1000).toISOString(),
-        },
-        {
-          id: "2",
-          name: "PayPal-QuickBooks Weekly Sync",
-          status: "running",
-          source: "PayPal",
-          target: "QuickBooks",
-          matchedCount: 42,
-          unmatchedCount: 0,
-          accuracy: 100,
-          createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        },
-        {
-          id: "3",
-          name: "Stripe-Xero Daily Reconciliation",
-          status: "completed",
-          source: "Stripe",
-          target: "Xero",
-          matchedCount: 89,
-          unmatchedCount: 1,
-          accuracy: 98.9,
-          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-          completedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000 + 3 * 60 * 1000).toISOString(),
-        },
-        {
-          id: "4",
-          name: "Shopify-Bank Deposit Match",
-          status: "failed",
-          source: "Shopify",
-          target: "Bank",
-          matchedCount: 0,
-          unmatchedCount: 0,
-          accuracy: 0,
-          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        },
-      ];
-      setJobs(mockJobs);
-      setFilteredJobs(mockJobs);
+      
+      // Build query string with filters
+      const params = new URLSearchParams();
+      if (statusFilter !== "all") {
+        params.append("status", statusFilter);
+      }
+      params.append("limit", "100");
+      params.append("offset", "0");
+
+      // Fetch from real API
+      const response = await fetch(`/api/v1/recon/jobs?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch jobs: ${response.statusText}`);
+      }
+
+      const apiData = await response.json();
+      const jobsData = apiData.data || [];
+
+      // Transform API response to Job format
+      const jobsList: Job[] = jobsData.map((jobData: any) => {
+        const latestResult = jobData.latestResult;
+        const totalTransactions = (latestResult?.sourceCount || 0) + (latestResult?.targetCount || 0);
+        const accuracy = totalTransactions > 0 && latestResult?.matchedCount
+          ? (latestResult.matchedCount / totalTransactions) * 100
+          : 0;
+
+        return {
+          id: jobData.id,
+          name: jobData.name,
+          status: latestResult?.status || jobData.status || "pending",
+          source: jobData.sourceAdapter,
+          target: jobData.targetAdapter,
+          matchedCount: latestResult?.matchedCount || 0,
+          unmatchedCount: (latestResult?.unmatchedSourceCount || 0) + (latestResult?.unmatchedTargetCount || 0),
+          accuracy: Math.round(accuracy * 10) / 10,
+          createdAt: new Date(jobData.createdAt).toISOString(),
+          completedAt: latestResult?.completedAt ? new Date(latestResult.completedAt).toISOString() : undefined,
+        };
+      });
+
+      setJobs(jobsList);
+      setFilteredJobs(jobsList);
     } catch (error) {
       logger.error("Failed to fetch jobs", error instanceof Error ? error : new Error(String(error)));
+      setJobs([]);
+      setFilteredJobs([]);
     } finally {
       setIsLoading(false);
     }
