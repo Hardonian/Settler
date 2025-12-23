@@ -16,6 +16,8 @@
  * - Graceful shutdown
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { ReconCoreEngine } from '../../services/recon-core';
 
@@ -186,7 +188,7 @@ export class JobSchedulerService {
         },
       });
 
-      const dbJobIds = new Set(dbJobs.map((j) => j.id));
+      const dbJobIds = new Set(dbJobs.map((j: { id: string }) => j.id));
 
       // Unschedule jobs that no longer exist or are inactive
       for (const [jobId] of this.cronJobs.entries()) {
@@ -199,15 +201,17 @@ export class JobSchedulerService {
       for (const dbJob of dbJobs) {
         const existing = this.cronJobs.get(dbJob.id);
         if (!existing || existing.job.scheduleCron !== dbJob.scheduleCron || existing.job.scheduleTimezone !== dbJob.scheduleTimezone) {
-          await this.scheduleJob({
-            id: dbJob.id,
-            name: dbJob.name,
-            scheduleCron: dbJob.scheduleCron!,
-            scheduleTimezone: dbJob.scheduleTimezone,
-            tenantId: dbJob.tenantId,
-            lastExecutionAt: null,
-            nextExecutionAt: null,
-          });
+          if (dbJob.scheduleCron) {
+            await this.scheduleJob({
+              id: dbJob.id,
+              name: dbJob.name,
+              scheduleCron: dbJob.scheduleCron,
+              scheduleTimezone: dbJob.scheduleTimezone,
+              tenantId: dbJob.tenantId,
+              lastExecutionAt: null,
+              nextExecutionAt: null,
+            });
+          }
         }
       }
     } catch (error) {

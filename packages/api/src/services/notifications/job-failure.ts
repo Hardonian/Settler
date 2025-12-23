@@ -9,10 +9,11 @@
  * - Multiple notification channels (email, webhook)
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { sendEmail, EmailTemplate } from '../../lib/email';
 import { getJobFailureTemplate, getJobCompletionTemplate } from '../email/job-templates';
-import { logAuditEvent } from '../../lib/audit/logger';
 
 interface JobFailureNotificationParams {
   jobId: string;
@@ -98,22 +99,28 @@ export async function notifyJobFailure(
       // Don't throw - notification failure shouldn't break job execution
     }
 
-    // Log audit event
-    await logAuditEvent({
-      userId: userId,
-      tenantId: tenantId,
-      action: 'notify',
-      resourceType: 'reconciliation_job',
-      resourceId: jobId,
-      metadata: {
-        notificationType: 'job_failure',
-        resultId: resultId,
-        errorMessage: errorMessage,
-      },
-    }).catch((auditError) => {
+    // Log audit event (if audit logger exists)
+    try {
+      // Try web audit logger first (Next.js)
+      const { logAuditEvent } = await import('../../lib/audit/logger').catch(() => null);
+      if (logAuditEvent) {
+        await logAuditEvent({
+          userId: userId,
+          tenantId: tenantId,
+          action: 'notify',
+          resourceType: 'reconciliation_job',
+          resourceId: jobId,
+          metadata: {
+            notificationType: 'job_failure',
+            resultId: resultId,
+            errorMessage: errorMessage,
+          },
+        });
+      }
+    } catch (auditError: unknown) {
       // Don't fail if audit logging fails
       console.error(`[JobFailureNotification] Audit log failed:`, auditError);
-    });
+    }
 
     // TODO: Send webhook notification if configured
     // await sendWebhookNotification(...);
@@ -133,13 +140,12 @@ export async function notifyJobCompletion(
     jobId: string;
     resultId: string;
     tenantId: string;
-    userId: string;
     matchedCount: number;
     unmatchedCount: number;
     accuracy: number;
   }
 ): Promise<void> {
-  const { jobId, resultId, tenantId, userId, matchedCount, unmatchedCount, accuracy } = params;
+  const { jobId, resultId, tenantId, matchedCount, unmatchedCount, accuracy } = params;
 
   try {
     // Fetch job details

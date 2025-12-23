@@ -268,7 +268,6 @@ export class ReconCoreEngine {
             jobId: reconJobId,
             resultId: updatedResult.id,
             tenantId: tenantId,
-            userId: reconJob.userId,
             matchedCount: results.matchedCount,
             unmatchedCount: results.unmatchedSourceCount + results.unmatchedTargetCount,
             accuracy,
