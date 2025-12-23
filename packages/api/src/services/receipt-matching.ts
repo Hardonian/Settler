@@ -189,18 +189,23 @@ function stringSimilarity(str1: string, str2: string): number {
 }
 
 function levenshteinDistance(str1: string, str2: string): number {
-  const matrix: number[][] = [];
+  const len1 = str1.length;
+  const len2 = str2.length;
+  const matrix: number[][] = Array(len2 + 1)
+    .fill(null)
+    .map(() => Array(len1 + 1).fill(0));
 
-  for (let i = 0; i <= str2.length; i++) {
-    matrix[i] = [i];
+  // Initialize first row and column
+  for (let i = 0; i <= len2; i++) {
+    matrix[i][0] = i;
   }
-
-  for (let j = 0; j <= str1.length; j++) {
+  for (let j = 0; j <= len1; j++) {
     matrix[0][j] = j;
   }
 
-  for (let i = 1; i <= str2.length; i++) {
-    for (let j = 1; j <= str1.length; j++) {
+  // Fill the matrix
+  for (let i = 1; i <= len2; i++) {
+    for (let j = 1; j <= len1; j++) {
       if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
         matrix[i][j] = matrix[i - 1][j - 1];
       } else {
@@ -213,7 +218,7 @@ function levenshteinDistance(str1: string, str2: string): number {
     }
   }
 
-  return matrix[str2.length][str1.length];
+  return matrix[len2][len1];
 }
 
 /**
