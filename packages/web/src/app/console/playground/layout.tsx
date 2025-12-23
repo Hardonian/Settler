@@ -1,10 +1,15 @@
 /**
- * Playground Layout
+ * Console Playground Layout
  * 
- * Provides consistent layout and subscription context for all playground pages.
- * Playground pages are accessible without authentication for basic testing.
+ * CRITICAL: This is the CONSOLE playground, nested under /console.
+ * It inherits authentication and subscription requirements from the parent console layout.
  * 
- * NOTE: Navigation is provided by parent console layout to avoid duplication.
+ * For public playground (no auth), see /playground route.
+ * 
+ * This playground provides authenticated users with:
+ * - Real API testing with their credentials
+ * - Tenant-scoped data
+ * - Subscription-aware features
  */
 
 import { ConsoleLayout } from '@/components/console/ConsoleLayout';
@@ -13,14 +18,13 @@ import { Footer } from '@/components/Footer';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export default function PlaygroundLayout({
+export default function ConsolePlaygroundLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Playground pages are accessible without authentication
-  // They use ConsoleLayout but don't require auth checks
-  // Navigation is provided by parent console layout
+  // This layout inherits auth + subscription from parent /console layout
+  // No additional auth checks needed here - parent console layout enforces it
   return (
     <>
       <ConsoleLayout>{children}</ConsoleLayout>

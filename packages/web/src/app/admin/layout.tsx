@@ -1,8 +1,29 @@
+/**
+ * Admin Layout
+ * 
+ * CRITICAL: All admin routes require super admin authentication.
+ * Unauthenticated users are redirected to sign-in.
+ * Non-admin users are shown access denied.
+ */
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, FileText, Settings, Flag, Palette, FlaskConical, BarChart3, Activity } from 'lucide-react';
+import { isSuperAdmin } from '@/lib/auth/super-admin';
+import { redirect } from 'next/navigation';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  // CRITICAL: Server-side super admin gate
+  const isAdmin = await isSuperAdmin();
+  
+  if (!isAdmin) {
+    // Redirect to sign-in if not authenticated, or show access denied
+    redirect('/signup?next=' + encodeURIComponent('/admin'));
+  }
+
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
       {/* Sidebar */}
