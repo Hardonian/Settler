@@ -131,12 +131,16 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[Daily Rollup] Error:', error);
+    // Never return 500 - return graceful error for cron retry
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : 'Failed to run rollup',
+        error: 'ROLLUP_FAILED',
+        message: error instanceof Error ? error.message : 'Failed to run rollup',
         success: false,
+        retryable: true,
+        retryAfter: 300, // 5 minutes
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
