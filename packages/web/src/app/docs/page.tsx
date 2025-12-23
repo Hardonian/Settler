@@ -1,8 +1,10 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SafeImage } from '@/components/SafeImage';
 import { Rocket, Code, Zap, Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -18,6 +20,22 @@ export default function DocsPage() {
       <p className="text-lg text-slate-600 dark:text-slate-400">
         Everything you need to integrate Settler into your application. Get started in minutes.
       </p>
+
+      {/* Docs Interface Screenshot */}
+      <div className="my-8 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-lg">
+        <div className="relative w-full aspect-[2816/1536]">
+          <Image
+            src="/assets/images/1766449041951.jpg"
+            alt="Settler API Documentation Interface - Complete API reference with interactive examples and code snippets"
+            width={2816}
+            height={1536}
+            className="w-full h-full object-contain"
+            priority={false}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+            unoptimized
+          />
+        </div>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-6 my-8">
         <Card>
@@ -81,7 +99,7 @@ export default function DocsPage() {
         </Card>
       </div>
 
-      <section>
+      <section className="mb-12">
         <h2>Quick Example</h2>
         <CodeBlock
           code={`import { Settler } from '@settler/sdk';
@@ -114,6 +132,28 @@ const report = await client.jobs.run(job.id);
 console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
           language="typescript"
         />
+      </section>
+
+      <section className="mb-12">
+        <h2>How Data Flows</h2>
+        <p className="text-slate-600 dark:text-slate-400 mb-6">
+          Understand how Settler processes data from source to target platforms.
+        </p>
+        <div className="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-50 dark:bg-slate-900">
+          <div className="relative w-full aspect-[2/1]">
+            <SafeImage
+              src="/assets/diagrams/data-flow.svg"
+              alt="Settler data flow diagram showing how data moves from source platforms through adapters to reconciliation engine and target platforms"
+              width={1200}
+              height={600}
+              className="w-full h-full object-contain"
+              fallbackTitle="Data Flow Diagram"
+              fallbackCaption="Visual representation of Settler's data processing pipeline"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+              unoptimized
+            />
+          </div>
+        </div>
       </section>
     </div>
   );

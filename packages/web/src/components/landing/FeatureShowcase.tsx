@@ -10,6 +10,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SafeImage } from '@/components/SafeImage';
 import { 
   TrendingUp, 
   Shield, 
@@ -30,6 +31,7 @@ interface Feature {
   link: string;
   color: string;
   gradient: string;
+  screenshot?: string;
 }
 
 const features: Feature[] = [
@@ -42,6 +44,7 @@ const features: Feature[] = [
     link: '/console/changes',
     color: 'blue',
     gradient: 'from-blue-500 to-cyan-500',
+    screenshot: '/assets/images/1766446412895.jpg',
   },
   {
     id: 'reconciliation',
@@ -52,6 +55,7 @@ const features: Feature[] = [
     link: '/console/reconciliation-view',
     color: 'green',
     gradient: 'from-green-500 to-emerald-500',
+    screenshot: '/assets/images/1766446421153.jpg',
   },
   {
     id: 'receipts',
@@ -62,6 +66,7 @@ const features: Feature[] = [
     link: '/console/receipts-hash',
     color: 'purple',
     gradient: 'from-purple-500 to-pink-500',
+    screenshot: '/assets/images/1766446442563.jpg',
   },
   {
     id: 'alerts',
@@ -72,6 +77,7 @@ const features: Feature[] = [
     link: '/console/alerts-view',
     color: 'orange',
     gradient: 'from-orange-500 to-red-500',
+    screenshot: '/assets/images/1766446446143.jpg',
   },
   {
     id: 'ai-analysis',
@@ -82,6 +88,7 @@ const features: Feature[] = [
     link: '/console/ai-analysis',
     color: 'indigo',
     gradient: 'from-indigo-500 to-purple-500',
+    screenshot: '/assets/images/1766446457350.jpg',
   },
 ];
 
@@ -151,6 +158,23 @@ export function FeatureShowcase() {
                     }`}
                   />
                   <CardContent className="p-6 relative z-10">
+                    {feature.screenshot && (
+                      <div className="mb-4 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                        <div className="relative w-full aspect-[512/279]">
+                          <SafeImage
+                            src={feature.screenshot}
+                            alt={`${feature.title} - UI screenshot`}
+                            width={512}
+                            height={279}
+                            className="w-full h-full object-contain"
+                            fallbackTitle={feature.title}
+                            fallbackCaption={feature.description}
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            unoptimized
+                          />
+                        </div>
+                      </div>
+                    )}
                     <motion.div
                       animate={{
                         rotate: hoveredFeature === feature.id ? [0, -10, 10, -10, 0] : 0,

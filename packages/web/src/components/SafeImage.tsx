@@ -113,7 +113,7 @@ export function SafeImage({
         width={widthNum > 0 ? widthNum : width}
         height={heightNum > 0 ? heightNum : height}
         className={cn(
-          "transition-opacity duration-300",
+          "transition-opacity duration-300 w-full h-full",
           isLoading ? "opacity-0" : "opacity-100",
           className
         )}

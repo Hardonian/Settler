@@ -249,6 +249,22 @@ if (flag.value) { /* ... */ }`;
                     />
                   </div>
                 </div>
+
+                {/* Alternative Hero Screenshot - Dashboard View */}
+                <div className="relative w-full max-w-5xl mx-auto mb-8 px-4">
+                  <div className="relative w-full aspect-[2816/1536] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-2xl">
+                    <Image
+                      src="/assets/images/1766448964045.jpg"
+                      alt="Settler Dashboard - Real-time reconciliation dashboard showing matched transactions, analytics, and insights"
+                      width={2816}
+                      height={1536}
+                      className="w-full h-full object-contain"
+                      priority={false}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+                      unoptimized
+                    />
+                  </div>
+                </div>
                 
                 {/* Hero Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-12 sm:mb-16">
@@ -304,6 +320,34 @@ if (flag.value) { /* ... */ }`;
                 );
               })}
             </BentoGrid>
+
+            {/* Feature Illustrations */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mt-12 sm:mt-16">
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 flex items-center justify-center">
+                <Image
+                  src="/assets/marketing/feature-1.svg"
+                  alt=""
+                  width={600}
+                  height={400}
+                  className="w-full h-full object-contain max-w-full"
+                  aria-hidden="true"
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  unoptimized
+                />
+              </div>
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 flex items-center justify-center">
+                <Image
+                  src="/assets/marketing/feature-2.svg"
+                  alt=""
+                  width={600}
+                  height={400}
+                  className="w-full h-full object-contain max-w-full"
+                  aria-hidden="true"
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  unoptimized
+                />
+              </div>
+            </div>
           </div>
         </section>
 

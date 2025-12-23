@@ -53,6 +53,34 @@ export default function ArchitecturePage() {
           <ArchitectureDiagram />
         </div>
 
+        {/* Data Flow Diagram */}
+        <div className="max-w-6xl mx-auto mb-20">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+              Data Flow Architecture
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300">
+              See how data moves through Settler's reconciliation pipeline
+            </p>
+          </div>
+          <figure className="w-full overflow-hidden bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-8">
+            <div className="relative w-full aspect-[2/1]">
+              <Image
+                src="/assets/diagrams/data-flow.svg"
+                alt="Settler data flow diagram showing how data moves from source platforms through adapters to reconciliation engine and target platforms"
+                width={1200}
+                height={600}
+                className="w-full h-full object-contain"
+                priority={false}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+              />
+            </div>
+            <figcaption className="mt-4 text-sm text-slate-600 dark:text-slate-400 text-center px-4">
+              Data flows from source platforms through adapters, processed by the reconciliation engine, and synchronized to target platforms with full audit trails.
+            </figcaption>
+          </figure>
+        </div>
+
         {/* Reconciliation Workflow Diagram */}
         <div className="max-w-7xl mx-auto mb-20">
           <InfographicSection />
