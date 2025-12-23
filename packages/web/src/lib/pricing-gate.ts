@@ -7,9 +7,9 @@
  * This ensures consistent enforcement across the application.
  */
 
-import { getSubscriptionStatus, SubscriptionStatus } from './get-subscription-status';
-import { getEntitlements, Entitlements } from './auth/entitlements';
-import { SubscriptionTier } from './subscription-access';
+import { getSubscriptionStatus } from './get-subscription-status';
+import { getEntitlements } from './auth/entitlements';
+import { SubscriptionTier, SubscriptionStatus } from './subscription-access';
 
 /**
  * Server-side: Check if user has access to a feature

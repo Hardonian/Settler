@@ -11,8 +11,6 @@ import { Button } from '@/components/ui/button';
 import { LayoutDashboard, FileText, Settings, Flag, Palette, FlaskConical, BarChart3, Activity } from 'lucide-react';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { redirect } from 'next/navigation';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
