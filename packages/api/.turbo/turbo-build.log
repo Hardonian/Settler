@@ -14,7 +14,28 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
-
-> @settler/api@1.0.0 build
-> tsc
-
+src/middleware/cost-control.ts(11,19): error TS6133: 'logInfo' is declared but its value is never read.
+src/middleware/cost-control.ts(82,51): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Record<string, unknown> | undefined'.
+src/middleware/cost-control.ts(101,37): error TS6133: 'res' is declared but its value is never read.
+src/middleware/cost-control.ts(131,39): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Record<string, unknown> | undefined'.
+src/routes/v1/multi-source-reconciliation.ts(128,11): error TS6133: 'userId' is declared but its value is never read.
+src/routes/v1/multi-source-reconciliation.ts(138,65): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/routes/v1/multi-source-reconciliation.ts(180,37): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/automation-gravity.ts(15,20): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/automation-gravity.ts(249,13): error TS6133: 'totalTimeSaved' is declared but its value is never read.
+src/services/cost-control.ts(16,20): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/cost-control.ts(298,13): error TS6133: 'monthStart' is declared but its value is never read.
+src/services/cost-control.ts(406,9): error TS2322: Type 'Record<string, { daily: number; monthly: number; burst: number; }> | undefined' is not assignable to type 'Record<string, { daily: number; monthly: number; burst: number; }>'.
+  Type 'undefined' is not assignable to type 'Record<string, { daily: number; monthly: number; burst: number; }>'.
+src/services/cost-control.ts(420,43): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/data-gravity.ts(15,20): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/data-gravity.ts(259,55): error TS2532: Object is possibly 'undefined'.
+src/services/data-gravity.ts(311,59): error TS2532: Object is possibly 'undefined'.
+src/services/data-gravity.ts(497,42): error TS6133: 'format' is declared but its value is never read.
+src/services/learning-loops.ts(15,20): error TS6133: 'logInfo' is declared but its value is never read.
+src/services/multi-source-reconciliation.ts(106,17): error TS6133: 'key' is declared but its value is never read.
+src/services/scale-defense.ts(205,31): error TS6133: 'tenantId' is declared but its value is never read.
+src/services/scale-defense.ts(437,41): error TS6133: 'operationType' is declared but its value is never read.
+src/services/workflow-entanglement.ts(15,20): error TS6133: 'logInfo' is declared but its value is never read.

@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, CheckCircle2, Clock, Users, DollarSign, Activity, Shield, Database, TrendingUp } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Clock, Users, DollarSign, Activity, Shield, Database, TrendingUp, AlertTriangle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface SystemHealth {
@@ -86,8 +86,33 @@ interface BusinessMetrics {
   timestamp: string;
 }
 
+interface ReliabilityMetrics {
+  operationStats: Array<{
+    operation: string;
+    totalRequests: number;
+    successCount: number;
+    failureCount: number;
+    successRate: number;
+    avgDurationMs: number;
+    p95DurationMs: number;
+    retryCount: number;
+    deadLetterCount: number;
+  }>;
+  adapterErrorRates: Array<{
+    adapterType: string;
+    errorRate: number;
+    totalRequests: number;
+  }>;
+  deadLetterCount: number;
+  latestFailures: Array<{
+    operation: string;
+    error: string;
+    timestamp: string;
+  }>;
+}
+
 export default function MonitoringDashboard() {
-  const [health, setHealth] = useState<SystemHealth | null>(null);
+  const [health, setHealth] = useState<SystemHealth & { reliability?: ReliabilityMetrics } | null>(null);
   const [sla, setSla] = useState<SLAMetrics | null>(null);
   const [unitEconomics, setUnitEconomics] = useState<UnitEconomics | null>(null);
   const [operational, setOperational] = useState<OperationalMetrics | null>(null);
@@ -418,6 +443,139 @@ export default function MonitoringDashboard() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Reliability Metrics */}
+      {health?.reliability && (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle>Reliability Metrics (Last 24 Hours)</CardTitle>
+              <CardDescription>
+                Operation success rates, error rates, and dead-letter jobs
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {health.reliability.operationStats.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold mb-2">Operation Statistics</h3>
+                    <div className="space-y-2">
+                      {health.reliability.operationStats.map((stats) => (
+                        <div key={stats.operation} className="border rounded-lg p-3">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="font-medium">{stats.operation}</div>
+                            <Badge 
+                              variant={stats.successRate >= 0.95 ? 'default' : stats.successRate >= 0.90 ? 'secondary' : 'destructive'}
+                            >
+                              {(stats.successRate * 100).toFixed(1)}% success
+                            </Badge>
+                          </div>
+                          <div className="grid grid-cols-4 gap-4 text-sm">
+                            <div>
+                              <div className="text-slate-500">Total</div>
+                              <div className="font-semibold">{stats.totalRequests.toLocaleString()}</div>
+                            </div>
+                            <div>
+                              <div className="text-slate-500">Failures</div>
+                              <div className="font-semibold text-red-600">{stats.failureCount}</div>
+                            </div>
+                            <div>
+                              <div className="text-slate-500">Avg Duration</div>
+                              <div className="font-semibold">{stats.avgDurationMs.toFixed(0)}ms</div>
+                            </div>
+                            <div>
+                              <div className="text-slate-500">P95 Duration</div>
+                              <div className="font-semibold">{stats.p95DurationMs.toFixed(0)}ms</div>
+                            </div>
+                          </div>
+                          {(stats.retryCount > 0 || stats.deadLetterCount > 0) && (
+                            <div className="mt-2 pt-2 border-t grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <div className="text-slate-500">Retries</div>
+                                <div className="font-semibold text-yellow-600">{stats.retryCount}</div>
+                              </div>
+                              <div>
+                                <div className="text-slate-500">Dead Letters</div>
+                                <div className="font-semibold text-red-600">{stats.deadLetterCount}</div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {health.reliability.adapterErrorRates.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold mb-2">Adapter Error Rates</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {health.reliability.adapterErrorRates.map((adapter) => (
+                        <div key={adapter.adapterType} className="border rounded-lg p-3">
+                          <div className="font-medium mb-1">{adapter.adapterType}</div>
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant={adapter.errorRate < 0.05 ? 'default' : adapter.errorRate < 0.10 ? 'secondary' : 'destructive'}
+                            >
+                              {(adapter.errorRate * 100).toFixed(1)}%
+                            </Badge>
+                            <span className="text-xs text-slate-500">
+                              {adapter.totalRequests} requests
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium flex items-center gap-2">
+                        <XCircle className="w-4 h-4" />
+                        Dead-Letter Jobs
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-red-600">
+                        {health.reliability.deadLetterCount}
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Jobs requiring manual intervention
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  {health.reliability.latestFailures.length > 0 && (
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4" />
+                          Latest Failures
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2 max-h-48 overflow-y-auto">
+                          {health.reliability.latestFailures.slice(0, 5).map((failure, idx) => (
+                            <div key={idx} className="text-sm border-l-2 border-red-500 pl-2">
+                              <div className="font-medium">{failure.operation}</div>
+                              <div className="text-xs text-slate-500 truncate">{failure.error}</div>
+                              <div className="text-xs text-slate-400">
+                                {new Date(failure.timestamp).toLocaleString()}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </>
       )}
 
       {/* Last Updated */}
