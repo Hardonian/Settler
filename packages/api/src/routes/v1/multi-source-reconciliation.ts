@@ -125,12 +125,19 @@ router.post("/jobs/:jobId/run", async (req: AuthRequest, res: Response) => {
     const { jobId } = req.params;
     const { reconRunId } = req.body;
     const tenantId = req.tenantId!;
-    const userId = req.userId!;
 
-    if (!reconRunId) {
+    if (!reconRunId || typeof reconRunId !== 'string') {
       return res.status(400).json({
         error: "Bad Request",
         message: "reconRunId is required",
+        traceId: req.traceId,
+      });
+    }
+
+    if (!jobId || typeof jobId !== 'string') {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "jobId is required",
         traceId: req.traceId,
       });
     }
@@ -167,12 +174,20 @@ router.post("/conflicts/:conflictId/resolve", async (req: AuthRequest, res: Resp
     const { conflictId } = req.params;
     const { resolutionStrategy } = req.body;
     const tenantId = req.tenantId!;
-    const userId = req.userId!;
+    const userId = req.userId;
 
     if (!resolutionStrategy) {
       return res.status(400).json({
         error: "Bad Request",
         message: "resolutionStrategy is required",
+        traceId: req.traceId,
+      });
+    }
+
+    if (!userId) {
+      return res.status(401).json({
+        error: "Unauthorized",
+        message: "User ID is required",
         traceId: req.traceId,
       });
     }

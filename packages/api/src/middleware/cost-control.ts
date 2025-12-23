@@ -8,7 +8,7 @@
 import { Response, NextFunction } from 'express';
 import { TenantRequest } from './tenant';
 import { costControlService, CostControlResult } from '../services/cost-control';
-import { logWarn, logInfo } from '../utils/logger';
+import { logWarn } from '../utils/logger';
 
 export interface CostControlOptions {
   costDriverId: string;
@@ -79,7 +79,10 @@ export function enforceCostControl(options: CostControlOptions) {
 
       next();
     } catch (error) {
-      logWarn('Error in cost control middleware', error);
+      logWarn('Error in cost control middleware', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       // Fail closed for cost control
       if (!options.failOpen) {
         res.status(500).json({
@@ -98,7 +101,7 @@ export function enforceCostControl(options: CostControlOptions) {
  * Middleware to check for abuse scenarios
  */
 export function checkAbuse() {
-  return async (req: TenantRequest, res: Response, next: NextFunction): Promise<void> => {
+  return async (req: TenantRequest, _res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.tenantId) {
         return next();
@@ -128,7 +131,10 @@ export function checkAbuse() {
 
       next();
     } catch (error) {
-      logWarn('Error checking abuse', error);
+      logWarn('Error checking abuse', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       // Fail open - don't block requests on abuse check failure
       next();
     }
