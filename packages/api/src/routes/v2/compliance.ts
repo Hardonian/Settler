@@ -9,6 +9,7 @@ import { complianceExportSystem } from '../../services/compliance/export-system'
 import { EdgeAgent } from '../../services/privacy-preserving/edge-agent';
 import { handleRouteError } from '../../utils/error-handler';
 import { AuthRequest } from '../../middleware/auth';
+import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 
 const router = Router();
 
@@ -16,20 +17,23 @@ const router = Router();
  * POST /api/v2/compliance/exports
  * Create a compliance export
  */
-router.post('/exports', async (req: Request, res: Response) => {
+router.post('/exports', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const customerId = (req as AuthRequest).userId || req.body.customerId;
+    const tenantId = req.tenantId!;
+    const userId = req.userId!;
     const { jurisdiction, format } = req.body;
 
-    if (!customerId || !jurisdiction) {
+    if (!jurisdiction) {
       return res.status(400).json({
         error: 'Missing required fields',
-        message: 'customerId and jurisdiction are required',
+        message: 'jurisdiction is required',
+        traceId: req.traceId,
       });
     }
 
     const export_ = await complianceExportSystem.createExport(
-      customerId,
+      tenantId,
+      userId,
       jurisdiction,
       format || 'json'
     );
@@ -47,19 +51,13 @@ router.post('/exports', async (req: Request, res: Response) => {
 
 /**
  * GET /api/v2/compliance/exports
- * List exports for customer
+ * List exports for tenant
  */
-router.get('/exports', async (req: Request, res: Response) => {
+router.get('/exports', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const customerId = (req as any).user?.id || req.query.customerId as string;
+    const tenantId = req.tenantId!;
 
-    if (!customerId) {
-      return res.status(400).json({
-        error: 'Missing customer ID',
-      });
-    }
-
-    const exports = complianceExportSystem.listExports(customerId);
+    const exports = complianceExportSystem.listExports(tenantId);
 
     res.json({
       data: exports,
@@ -76,13 +74,18 @@ router.get('/exports', async (req: Request, res: Response) => {
  * GET /api/v2/compliance/exports/:id
  * Get export by ID
  */
-router.get('/exports/:id', async (req: Request, res: Response) => {
+router.get('/exports/:id', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const { id } = req.params;
+    const tenantId = req.tenantId!;
+    
     if (!id) {
-      return res.status(400).json({ error: 'Export ID is required' });
+      return res.status(400).json({ 
+        error: 'Export ID is required',
+        traceId: req.traceId,
+      });
     }
-    const export_ = complianceExportSystem.getExport(id);
+    const export_ = complianceExportSystem.getExport(id, tenantId);
 
     if (!export_) {
       return res.status(404).json({
@@ -124,20 +127,23 @@ router.get('/templates', async (_req: Request, res: Response) => {
  * POST /api/v2/compliance/edge/initialize
  * Initialize edge agent
  */
-router.post('/edge/initialize', async (req: Request, res: Response) => {
+router.post('/edge/initialize', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const customerId = (req as AuthRequest).userId || req.body.customerId;
+    const tenantId = req.tenantId!;
+    const userId = req.userId!;
     const { apiKey, cloudEndpoint, reconciliationRules, encryptionKey } = req.body;
 
-    if (!customerId || !apiKey || !cloudEndpoint || !reconciliationRules) {
+    if (!apiKey || !cloudEndpoint || !reconciliationRules) {
       return res.status(400).json({
         error: 'Missing required fields',
-        message: 'customerId, apiKey, cloudEndpoint, and reconciliationRules are required',
+        message: 'apiKey, cloudEndpoint, and reconciliationRules are required',
+        traceId: req.traceId,
       });
     }
 
     const edgeAgent = new EdgeAgent({
-      customerId,
+      tenantId,
+      userId,
       apiKey,
       cloudEndpoint: cloudEndpoint || 'https://api.settler.io',
       reconciliationRules,
@@ -148,10 +154,11 @@ router.post('/edge/initialize', async (req: Request, res: Response) => {
 
     res.json({
       data: {
-        customerId,
+        tenantId,
         initialized: true,
       },
       message: 'Edge agent initialized successfully',
+      traceId: req.traceId,
     });
     return;
   } catch (error: unknown) {

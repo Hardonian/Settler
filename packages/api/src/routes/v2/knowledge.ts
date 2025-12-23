@@ -8,6 +8,7 @@ import { Router, Request, Response } from 'express';
 import { decisionLog } from '../../services/knowledge/decision-log';
 import { aiKnowledgeAssistant } from '../../services/knowledge/ai-assistant';
 import { handleRouteError } from '../../utils/error-handler';
+import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 
 const router = Router();
 
@@ -15,9 +16,15 @@ const router = Router();
  * POST /api/v2/knowledge/decisions
  * Create a new decision
  */
-router.post('/decisions', async (req: Request, res: Response) => {
+router.post('/decisions', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const decision = await decisionLog.createDecision(req.body);
+    const tenantId = req.tenantId!;
+    const userId = req.userId!;
+    const decision = await decisionLog.createDecision({
+      ...req.body,
+      tenantId,
+      userId,
+    });
 
     res.status(201).json({
       data: decision,
@@ -32,15 +39,17 @@ router.post('/decisions', async (req: Request, res: Response) => {
  * GET /api/v2/knowledge/decisions
  * Query decisions
  */
-router.get('/decisions', async (req: Request, res: Response) => {
+router.get('/decisions', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
+    const tenantId = req.tenantId!;
     const queryOptions: {
+      tenantId: string;
       status?: "proposed" | "accepted" | "rejected" | "superseded";
       decisionMaker?: string;
       tag?: string;
       dateRange?: { start: Date; end: Date };
       search?: string;
-    } = {};
+    } = { tenantId };
     if (req.query.status) {
       queryOptions.status = req.query.status as "proposed" | "accepted" | "rejected" | "superseded";
     }
@@ -76,13 +85,18 @@ router.get('/decisions', async (req: Request, res: Response) => {
  * GET /api/v2/knowledge/decisions/:id
  * Get a decision by ID
  */
-router.get('/decisions/:id', async (req: Request, res: Response) => {
+router.get('/decisions/:id', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const { id } = req.params;
+    const tenantId = req.tenantId!;
+    
     if (!id) {
-      return res.status(400).json({ error: 'Decision ID is required' });
+      return res.status(400).json({ 
+        error: 'Decision ID is required',
+        traceId: req.traceId,
+      });
     }
-    const decision = decisionLog.getDecision(id);
+    const decision = decisionLog.getDecision(id, tenantId);
 
     if (!decision) {
       return res.status(404).json({
@@ -91,7 +105,7 @@ router.get('/decisions/:id', async (req: Request, res: Response) => {
       });
     }
 
-    const related = decisionLog.getRelatedDecisions(id);
+    const related = decisionLog.getRelatedDecisions(id, tenantId);
 
     res.json({
       data: {
@@ -110,22 +124,27 @@ router.get('/decisions/:id', async (req: Request, res: Response) => {
  * PATCH /api/v2/knowledge/decisions/:id/outcomes
  * Update decision outcomes
  */
-router.patch('/decisions/:id/outcomes', async (req: Request, res: Response) => {
+router.patch('/decisions/:id/outcomes', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const { id } = req.params;
+    const tenantId = req.tenantId!;
     const { outcome } = req.body;
 
     if (!id) {
-      return res.status(400).json({ error: 'Decision ID is required' });
+      return res.status(400).json({ 
+        error: 'Decision ID is required',
+        traceId: req.traceId,
+      });
     }
 
     if (!outcome) {
       return res.status(400).json({
         error: 'Missing outcome',
+        traceId: req.traceId,
       });
     }
 
-    const decision = await decisionLog.updateOutcomes(id, outcome);
+    const decision = await decisionLog.updateOutcomes(id, tenantId, outcome);
 
     res.json({
       data: decision,
@@ -142,17 +161,20 @@ router.patch('/decisions/:id/outcomes', async (req: Request, res: Response) => {
  * POST /api/v2/knowledge/assistant/query
  * Query the AI knowledge assistant
  */
-router.post('/assistant/query', async (req: Request, res: Response) => {
+router.post('/assistant/query', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
+    const tenantId = req.tenantId!;
     const { question, context } = req.body;
 
     if (!question || typeof question !== 'string') {
       return res.status(400).json({
         error: 'Missing question',
+        traceId: req.traceId,
       });
     }
 
     const response = await aiKnowledgeAssistant.query({
+      tenantId,
       question,
       context,
     });
@@ -171,12 +193,13 @@ router.post('/assistant/query', async (req: Request, res: Response) => {
  * GET /api/v2/knowledge/stats
  * Get knowledge base statistics
  */
-router.get('/stats', async (_req: Request, res: Response) => {
+router.get('/stats', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const assistantStats = aiKnowledgeAssistant.getStats();
+    const tenantId = req.tenantId!;
+    const assistantStats = aiKnowledgeAssistant.getStats(tenantId);
     
     // Get decision stats
-    const allDecisions = decisionLog.queryDecisions({});
+    const allDecisions = decisionLog.queryDecisions({ tenantId });
     const decisionsByStatus = allDecisions.reduce((acc, d) => {
       acc[d.status] = (acc[d.status] || 0) + 1;
       return acc;

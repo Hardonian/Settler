@@ -26,24 +26,24 @@ export interface PatternMatch {
 
 export class CrossCustomerIntelligence extends EventEmitter {
   private patterns: Map<string, AnonymizedPattern> = new Map();
-  private customerPatterns: Map<string, Set<string>> = new Map(); // customerId -> patternIds
+  private customerPatterns: Map<string, Set<string>> = new Map(); // tenantId -> patternIds (kept as customerPatterns for compatibility)
   private optInCustomers: Set<string> = new Set();
 
   /**
-   * Opt-in a customer to share anonymized patterns
+   * Opt-in a tenant to share anonymized patterns
    */
-  optIn(customerId: string): void {
-    this.optInCustomers.add(customerId);
-    this.emit('customer_opted_in', customerId);
+  optIn(tenantId: string): void {
+    this.optInCustomers.add(tenantId);
+    this.emit('tenant_opted_in', tenantId);
   }
 
   /**
-   * Opt-out a customer
+   * Opt-out a tenant
    */
-  optOut(customerId: string): void {
-    this.optInCustomers.delete(customerId);
-    // Remove customer's patterns
-    const patternIds = this.customerPatterns.get(customerId);
+  optOut(tenantId: string): void {
+    this.optInCustomers.delete(tenantId);
+    // Remove tenant's patterns
+    const patternIds = this.customerPatterns.get(tenantId);
     if (patternIds) {
       patternIds.forEach(patternId => {
         const pattern = this.patterns.get(patternId);
@@ -54,20 +54,20 @@ export class CrossCustomerIntelligence extends EventEmitter {
           }
         }
       });
-      this.customerPatterns.delete(customerId);
+      this.customerPatterns.delete(tenantId);
     }
-    this.emit('customer_opted_out', customerId);
+    this.emit('tenant_opted_out', tenantId);
   }
 
   /**
-   * Submit a pattern from a customer (anonymized)
+   * Submit a pattern from a tenant (anonymized)
    */
-  submitPattern(customerId: string, pattern: {
+  submitPattern(tenantId: string, pattern: {
     type: AnonymizedPattern['patternType'];
     data: Record<string, unknown>;
   }): string {
-    if (!this.optInCustomers.has(customerId)) {
-      throw new Error('Customer has not opted in to pattern sharing');
+    if (!this.optInCustomers.has(tenantId)) {
+      throw new Error('Tenant has not opted in to pattern sharing');
     }
 
     // Create anonymized pattern hash
@@ -96,13 +96,13 @@ export class CrossCustomerIntelligence extends EventEmitter {
       this.patterns.set(existingPattern.id, existingPattern);
     }
 
-    // Track customer's patterns
-    if (!this.customerPatterns.has(customerId)) {
-      this.customerPatterns.set(customerId, new Set());
+    // Track tenant's patterns
+    if (!this.customerPatterns.has(tenantId)) {
+      this.customerPatterns.set(tenantId, new Set());
     }
-    this.customerPatterns.get(customerId)!.add(existingPattern.id);
+    this.customerPatterns.get(tenantId)!.add(existingPattern.id);
 
-    this.emit('pattern_submitted', { customerId, patternId: existingPattern.id });
+    this.emit('pattern_submitted', { tenantId, patternId: existingPattern.id });
 
     return existingPattern.id;
   }
@@ -110,7 +110,7 @@ export class CrossCustomerIntelligence extends EventEmitter {
   /**
    * Check if a pattern matches known patterns
    */
-  checkPattern(pattern: {
+  checkPattern(tenantId: string, pattern: {
     type: AnonymizedPattern['patternType'];
     data: Record<string, unknown>;
   }): PatternMatch | null {
@@ -138,7 +138,7 @@ export class CrossCustomerIntelligence extends EventEmitter {
   /**
    * Get network insights (anonymized)
    */
-  getNetworkInsights(): {
+  getNetworkInsights(_tenantId: string): {
     totalPatterns: number;
     fraudPatterns: number;
     anomalyPatterns: number;

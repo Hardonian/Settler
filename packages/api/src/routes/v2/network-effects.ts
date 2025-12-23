@@ -9,6 +9,7 @@ import { crossCustomerIntelligence } from '../../services/network-effects/cross-
 import { performanceTuningPools } from '../../services/network-effects/performance-pools';
 import { handleRouteError } from '../../utils/error-handler';
 import { AuthRequest } from '../../middleware/auth';
+import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 
 const router = Router();
 
@@ -16,24 +17,19 @@ const router = Router();
  * POST /api/v2/network-effects/intelligence/opt-in
  * Opt-in to cross-customer intelligence
  */
-router.post('/intelligence/opt-in', async (req: Request, res: Response) => {
+router.post('/intelligence/opt-in', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const customerId = (req as AuthRequest).userId || req.body.customerId;
+    const tenantId = req.tenantId!;
     
-    if (!customerId) {
-      return res.status(400).json({
-        error: 'Missing customer ID',
-      });
-    }
-
-    crossCustomerIntelligence.optIn(customerId);
+    crossCustomerIntelligence.optIn(tenantId);
 
     res.json({
       data: {
-        customerId,
+        tenantId,
         optedIn: true,
       },
       message: 'Successfully opted in to cross-customer intelligence',
+      traceId: req.traceId,
     });
     return;
   } catch (error: unknown) {
@@ -46,24 +42,19 @@ router.post('/intelligence/opt-in', async (req: Request, res: Response) => {
  * POST /api/v2/network-effects/intelligence/opt-out
  * Opt-out of cross-customer intelligence
  */
-router.post('/intelligence/opt-out', async (req: Request, res: Response) => {
+router.post('/intelligence/opt-out', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const customerId = (req as AuthRequest).userId || req.body.customerId;
+    const tenantId = req.tenantId!;
     
-    if (!customerId) {
-      return res.status(400).json({
-        error: 'Missing customer ID',
-      });
-    }
-
-    crossCustomerIntelligence.optOut(customerId);
+    crossCustomerIntelligence.optOut(tenantId);
 
     res.json({
       data: {
-        customerId,
+        tenantId,
         optedIn: false,
       },
       message: 'Successfully opted out of cross-customer intelligence',
+      traceId: req.traceId,
     });
     return;
   } catch (error: unknown) {
@@ -76,18 +67,20 @@ router.post('/intelligence/opt-out', async (req: Request, res: Response) => {
  * POST /api/v2/network-effects/intelligence/check-pattern
  * Check if a pattern matches known patterns
  */
-router.post('/intelligence/check-pattern', async (req: Request, res: Response) => {
+router.post('/intelligence/check-pattern', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
+    const tenantId = req.tenantId!;
     const { type, data } = req.body;
 
     if (!type || !data) {
       return res.status(400).json({
         error: 'Missing required fields',
         message: 'type and data are required',
+        traceId: req.traceId,
       });
     }
 
-    const match = crossCustomerIntelligence.checkPattern({ type, data });
+    const match = crossCustomerIntelligence.checkPattern(tenantId, { type, data });
 
     res.json({
       data: match,
@@ -104,9 +97,10 @@ router.post('/intelligence/check-pattern', async (req: Request, res: Response) =
  * GET /api/v2/network-effects/intelligence/insights
  * Get network insights (anonymized)
  */
-router.get('/intelligence/insights', async (_req: Request, res: Response) => {
+router.get('/intelligence/insights', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const insights = crossCustomerIntelligence.getNetworkInsights();
+    const tenantId = req.tenantId!;
+    const insights = crossCustomerIntelligence.getNetworkInsights(tenantId);
 
     res.json({
       data: insights,
@@ -122,24 +116,19 @@ router.get('/intelligence/insights', async (_req: Request, res: Response) => {
  * POST /api/v2/network-effects/performance/opt-in
  * Opt-in to performance tuning pools
  */
-router.post('/performance/opt-in', async (req: Request, res: Response) => {
+router.post('/performance/opt-in', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const customerId = (req as AuthRequest).userId || req.body.customerId;
+    const tenantId = req.tenantId!;
     
-    if (!customerId) {
-      return res.status(400).json({
-        error: 'Missing customer ID',
-      });
-    }
-
-    performanceTuningPools.optIn(customerId);
+    performanceTuningPools.optIn(tenantId);
 
     res.json({
       data: {
-        customerId,
+        tenantId,
         optedIn: true,
       },
       message: 'Successfully opted in to performance tuning pools',
+      traceId: req.traceId,
     });
     return;
   } catch (error: unknown) {
@@ -152,19 +141,20 @@ router.post('/performance/opt-in', async (req: Request, res: Response) => {
  * POST /api/v2/network-effects/performance/submit
  * Submit performance metrics
  */
-router.post('/performance/submit', async (req: Request, res: Response) => {
+router.post('/performance/submit', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const customerId = (req as AuthRequest).userId || req.body.customerId;
+    const tenantId = req.tenantId!;
     const { jobId, adapter, ruleType, accuracy, latency, throughput } = req.body;
 
-    if (!customerId || !jobId || !adapter || !ruleType) {
+    if (!jobId || !adapter || !ruleType) {
       return res.status(400).json({
         error: 'Missing required fields',
-        message: 'customerId, jobId, adapter, and ruleType are required',
+        message: 'jobId, adapter, and ruleType are required',
+        traceId: req.traceId,
       });
     }
 
-    performanceTuningPools.submitMetrics(customerId, {
+    performanceTuningPools.submitMetrics(tenantId, {
       jobId,
       adapter,
       ruleType,
@@ -190,17 +180,20 @@ router.post('/performance/submit', async (req: Request, res: Response) => {
  * GET /api/v2/network-effects/performance/insights
  * Get performance insights
  */
-router.get('/performance/insights', async (req: Request, res: Response) => {
+router.get('/performance/insights', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
+    const tenantId = req.tenantId!;
     const { adapter, ruleType } = req.query;
 
     if (!adapter) {
       return res.status(400).json({
         error: 'Missing adapter parameter',
+        traceId: req.traceId,
       });
     }
 
     const insights = performanceTuningPools.getInsights(
+      tenantId,
       adapter as string,
       ruleType as string | undefined
     );
@@ -219,17 +212,20 @@ router.get('/performance/insights', async (req: Request, res: Response) => {
  * GET /api/v2/network-effects/performance/recommendations
  * Get recommended rules
  */
-router.get('/performance/recommendations', async (req: Request, res: Response) => {
+router.get('/performance/recommendations', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
+    const tenantId = req.tenantId!;
     const { adapter, useCase } = req.query;
 
     if (!adapter) {
       return res.status(400).json({
         error: 'Missing adapter parameter',
+        traceId: req.traceId,
       });
     }
 
     const recommendations = performanceTuningPools.getRecommendedRules(
+      tenantId,
       adapter as string,
       (useCase as string) || 'default'
     );
@@ -248,10 +244,11 @@ router.get('/performance/recommendations', async (req: Request, res: Response) =
  * GET /api/v2/network-effects/stats
  * Get network effects statistics
  */
-router.get('/stats', async (_req: Request, res: Response) => {
+router.get('/stats', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const intelligenceInsights = crossCustomerIntelligence.getNetworkInsights();
-    const performanceStats = performanceTuningPools.getStats();
+    const tenantId = req.tenantId!;
+    const intelligenceInsights = crossCustomerIntelligence.getNetworkInsights(tenantId);
+    const performanceStats = performanceTuningPools.getStats(tenantId);
 
     res.json({
       data: {

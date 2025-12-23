@@ -9,6 +9,7 @@ import { agentOrchestrator } from '../../services/ai-agents/orchestrator';
 import { InfrastructureOptimizerAgent } from '../../services/ai-agents/infrastructure-optimizer';
 import { AnomalyDetectorAgent } from '../../services/ai-agents/anomaly-detector';
 import { handleRouteError } from '../../utils/error-handler';
+import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 
 const router = Router();
 
@@ -26,9 +27,10 @@ agentOrchestrator.initializeAll().catch(console.error);
  * GET /api/v2/ai-agents
  * List all agents
  */
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const agents = agentOrchestrator.listAgents();
+    const tenantId = req.tenantId!;
+    const agents = agentOrchestrator.listAgents(tenantId);
     res.json({
       data: agents,
       count: agents.length,
@@ -44,15 +46,18 @@ router.get('/', async (_req: Request, res: Response) => {
  * GET /api/v2/ai-agents/:agentId
  * Get agent details
  */
-router.get('/:agentId', async (req: Request, res: Response) => {
+router.get('/:agentId', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const { agentId } = req.params;
+    const tenantId = req.tenantId!;
+    
     if (!agentId) {
       return res.status(400).json({
         error: 'Agent ID is required',
+        traceId: req.traceId,
       });
     }
-    const agent = agentOrchestrator.getAgent(agentId);
+    const agent = agentOrchestrator.getAgent(agentId, tenantId);
 
     if (!agent) {
       return res.status(404).json({
@@ -82,15 +87,21 @@ router.get('/:agentId', async (req: Request, res: Response) => {
  * POST /api/v2/ai-agents/:agentId/execute
  * Execute an agent action
  */
-router.post('/:agentId/execute', async (req: Request, res: Response) => {
+router.post('/:agentId/execute', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const { agentId } = req.params;
+    const tenantId = req.tenantId!;
+    
     if (!agentId) {
-      return res.status(400).json({ error: 'Agent ID is required' });
+      return res.status(400).json({ 
+        error: 'Agent ID is required',
+        traceId: req.traceId,
+      });
     }
     const { action, params } = req.body;
 
     const response = await agentOrchestrator.execute({
+      tenantId,
       agentId,
       action,
       params: params || {},
@@ -110,13 +121,18 @@ router.post('/:agentId/execute', async (req: Request, res: Response) => {
  * POST /api/v2/ai-agents/:agentId/enable
  * Enable an agent
  */
-router.post('/:agentId/enable', async (req: Request, res: Response) => {
+router.post('/:agentId/enable', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const { agentId } = req.params;
+    const tenantId = req.tenantId!;
+    
     if (!agentId) {
-      return res.status(400).json({ error: 'Agent ID is required' });
+      return res.status(400).json({ 
+        error: 'Agent ID is required',
+        traceId: req.traceId,
+      });
     }
-    const agent = agentOrchestrator.getAgent(agentId);
+    const agent = agentOrchestrator.getAgent(agentId, tenantId);
 
     if (!agent) {
       return res.status(404).json({
@@ -145,13 +161,18 @@ router.post('/:agentId/enable', async (req: Request, res: Response) => {
  * POST /api/v2/ai-agents/:agentId/disable
  * Disable an agent
  */
-router.post('/:agentId/disable', async (req: Request, res: Response) => {
+router.post('/:agentId/disable', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const { agentId } = req.params;
+    const tenantId = req.tenantId!;
+    
     if (!agentId) {
-      return res.status(400).json({ error: 'Agent ID is required' });
+      return res.status(400).json({ 
+        error: 'Agent ID is required',
+        traceId: req.traceId,
+      });
     }
-    const agent = agentOrchestrator.getAgent(agentId);
+    const agent = agentOrchestrator.getAgent(agentId, tenantId);
 
     if (!agent) {
       return res.status(404).json({
@@ -180,9 +201,10 @@ router.post('/:agentId/disable', async (req: Request, res: Response) => {
  * GET /api/v2/ai-agents/stats
  * Get orchestrator stats
  */
-router.get('/stats', async (_req: Request, res: Response) => {
+router.get('/stats', tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
-    const stats = agentOrchestrator.getStats();
+    const tenantId = req.tenantId!;
+    const stats = agentOrchestrator.getStats(tenantId);
     res.json({
       data: stats,
     });

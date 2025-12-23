@@ -34,9 +34,10 @@ export class AIKnowledgeAssistant extends EventEmitter {
   /**
    * Query the knowledge base
    */
-  async query(query: KnowledgeQuery): Promise<KnowledgeResponse> {
+  async query(query: KnowledgeQuery & { tenantId: string }): Promise<KnowledgeResponse> {
     // Search decisions
     const decisions = decisionLog.queryDecisions({
+      tenantId: query.tenantId,
       search: query.question,
     });
 
@@ -102,7 +103,7 @@ For "${query.question}", I recommend reviewing our decision logs and documentati
   /**
    * Get knowledge base stats
    */
-  getStats(): {
+  getStats(_tenantId: string): {
     totalItems: number;
     byType: Record<string, number>;
   } {

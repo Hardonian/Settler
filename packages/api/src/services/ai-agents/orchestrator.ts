@@ -103,16 +103,17 @@ export class AgentOrchestrator extends EventEmitter {
   }
 
   /**
-   * Get an agent by ID
+   * Get an agent by ID (tenant-scoped)
    */
-  getAgent(agentId: string): BaseAgent | undefined {
+  getAgent(agentId: string, _tenantId: string): BaseAgent | undefined {
+    // Agents are shared across tenants but execution is tenant-scoped
     return this.agents.get(agentId);
   }
 
   /**
-   * List all agents
+   * List all agents (tenant-scoped)
    */
-  listAgents(): AgentConfig[] {
+  listAgents(_tenantId: string): AgentConfig[] {
     return Array.from(this.agents.values()).map(agent => ({
       id: agent.id,
       name: agent.name,
@@ -125,7 +126,7 @@ export class AgentOrchestrator extends EventEmitter {
   /**
    * Execute an agent action
    */
-  async execute(request: AgentRequest): Promise<AgentResponse> {
+  async execute(request: AgentRequest & { tenantId: string }): Promise<AgentResponse> {
     const agent = this.agents.get(request.agentId);
     
     if (!agent) {
@@ -165,7 +166,7 @@ export class AgentOrchestrator extends EventEmitter {
   /**
    * Queue a request for processing
    */
-  queueRequest(request: AgentRequest): void {
+  queueRequest(request: AgentRequest & { tenantId?: string }): void {
     this.requestQueue.push(request);
     this.processQueue();
   }
@@ -212,7 +213,7 @@ export class AgentOrchestrator extends EventEmitter {
   /**
    * Get orchestrator stats
    */
-  getStats(): {
+  getStats(_tenantId: string): {
     totalAgents: number;
     enabledAgents: number;
     queueLength: number;

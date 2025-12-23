@@ -11,6 +11,8 @@ import * as path from 'path';
 
 export interface Decision {
   id: string;
+  tenantId: string;
+  userId: string;
   title: string;
   date: Date;
   decisionMakers: string[];
@@ -64,8 +66,8 @@ export class DecisionLog extends EventEmitter {
   /**
    * Update decision outcomes
    */
-  async updateOutcomes(decisionId: string, outcome: string): Promise<Decision> {
-    const decision = this.decisions.get(decisionId);
+  async updateOutcomes(decisionId: string, tenantId: string, outcome: string): Promise<Decision> {
+    const decision = this.getDecision(decisionId, tenantId);
     
     if (!decision) {
       throw new Error(`Decision ${decisionId} not found`);
@@ -103,23 +105,29 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Get a decision by ID
+   * Get a decision by ID (with tenant verification)
    */
-  getDecision(decisionId: string): Decision | undefined {
-    return this.decisions.get(decisionId);
+  getDecision(decisionId: string, tenantId: string): Decision | undefined {
+    const decision = this.decisions.get(decisionId);
+    if (!decision || decision.tenantId !== tenantId) {
+      return undefined;
+    }
+    return decision;
   }
 
   /**
    * Query decisions
    */
   queryDecisions(query: {
+    tenantId: string;
     status?: Decision['status'];
     decisionMaker?: string;
     tag?: string;
     dateRange?: { start: Date; end: Date };
     search?: string;
   }): Decision[] {
-    let decisions = Array.from(this.decisions.values());
+    let decisions = Array.from(this.decisions.values())
+      .filter(d => d.tenantId === query.tenantId);
 
     if (query.status) {
       decisions = decisions.filter(d => d.status === query.status);
@@ -156,15 +164,15 @@ export class DecisionLog extends EventEmitter {
   /**
    * Get related decisions
    */
-  getRelatedDecisions(decisionId: string): Decision[] {
-    const decision = this.decisions.get(decisionId);
+  getRelatedDecisions(decisionId: string, tenantId: string): Decision[] {
+    const decision = this.getDecision(decisionId, tenantId);
     
     if (!decision) {
       return [];
     }
 
     return decision.relatedDecisions
-      .map(id => this.decisions.get(id))
+      .map(id => this.getDecision(id, tenantId))
       .filter((d): d is Decision => d !== undefined);
   }
 

@@ -33,34 +33,34 @@ export class PerformanceTuningPools extends EventEmitter {
   private maxMetrics = 100000; // Keep last 100k metrics
 
   /**
-   * Opt-in a customer to share performance metrics
+   * Opt-in a tenant to share performance metrics
    */
-  optIn(customerId: string): void {
-    this.optInCustomers.add(customerId);
-    this.emit('customer_opted_in', customerId);
+  optIn(tenantId: string): void {
+    this.optInCustomers.add(tenantId);
+    this.emit('tenant_opted_in', tenantId);
   }
 
   /**
-   * Opt-out a customer
+   * Opt-out a tenant
    */
-  optOut(customerId: string): void {
-    this.optInCustomers.delete(customerId);
-    // Remove customer's metrics
-    this.metrics = this.metrics.filter(m => m.customerId !== customerId);
-    this.emit('customer_opted_out', customerId);
+  optOut(tenantId: string): void {
+    this.optInCustomers.delete(tenantId);
+    // Remove tenant's metrics
+    this.metrics = this.metrics.filter(m => m.customerId !== tenantId);
+    this.emit('tenant_opted_out', tenantId);
   }
 
   /**
    * Submit performance metrics
    */
-  submitMetrics(customerId: string, metrics: Omit<PerformanceMetric, 'customerId' | 'timestamp'>): void {
-    if (!this.optInCustomers.has(customerId)) {
+  submitMetrics(tenantId: string, metrics: Omit<PerformanceMetric, 'customerId' | 'timestamp'>): void {
+    if (!this.optInCustomers.has(tenantId)) {
       return; // Silently ignore if not opted in
     }
 
     const metric: PerformanceMetric = {
       ...metrics,
-      customerId,
+      customerId: tenantId, // Using tenantId as customerId for compatibility
       timestamp: new Date(),
     };
 
@@ -77,7 +77,7 @@ export class PerformanceTuningPools extends EventEmitter {
   /**
    * Get performance insights for an adapter/rule combination
    */
-  getInsights(adapter: string, ruleType?: string): PerformanceInsight[] {
+  getInsights(_tenantId: string, adapter: string, ruleType?: string): PerformanceInsight[] {
     const relevantMetrics = this.metrics.filter(m => {
       if (m.adapter !== adapter) return false;
       if (ruleType && m.ruleType !== ruleType) return false;
@@ -119,12 +119,12 @@ export class PerformanceTuningPools extends EventEmitter {
   /**
    * Get recommended rules for a use case
    */
-  getRecommendedRules(adapter: string, _useCase: string): Array<{
+  getRecommendedRules(_tenantId: string, adapter: string, _useCase: string): Array<{
     ruleType: string;
     confidence: number;
     expectedAccuracy: number;
   }> {
-    const insights = this.getInsights(adapter);
+    const insights = this.getInsights(_tenantId, adapter);
     
     return insights
       .map(insight => ({
@@ -160,9 +160,9 @@ export class PerformanceTuningPools extends EventEmitter {
   /**
    * Get aggregate statistics
    */
-  getStats(): {
+  getStats(_tenantId: string): {
     totalMetrics: number;
-    optInCustomers: number;
+    optInTenants: number;
     adapters: string[];
     topPerformers: Array<{
       adapter: string;
@@ -205,7 +205,7 @@ export class PerformanceTuningPools extends EventEmitter {
 
     return {
       totalMetrics: this.metrics.length,
-      optInCustomers: this.optInCustomers.size,
+      optInTenants: this.optInCustomers.size,
       adapters: Array.from(adapters),
       topPerformers,
     };

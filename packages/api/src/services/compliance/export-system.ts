@@ -8,7 +8,8 @@ import { EventEmitter } from 'events';
 
 export interface ComplianceExport {
   id: string;
-  customerId: string;
+  tenantId: string;
+  userId: string;
   jurisdiction: 'GDPR' | 'CCPA' | 'SOC2' | 'PCI-DSS' | 'HIPAA' | 'custom';
   format: 'json' | 'csv' | 'xml' | 'pdf';
   status: 'pending' | 'processing' | 'completed' | 'failed';
@@ -86,7 +87,8 @@ export class ComplianceExportSystem extends EventEmitter {
    * Create a compliance export
    */
   async createExport(
-    customerId: string,
+    tenantId: string,
+    userId: string,
     jurisdiction: ComplianceExport['jurisdiction'],
     format: ComplianceExport['format'] = 'json'
   ): Promise<ComplianceExport> {
@@ -98,7 +100,8 @@ export class ComplianceExportSystem extends EventEmitter {
 
     const export_: ComplianceExport = {
       id: `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      customerId,
+      tenantId,
+      userId,
       jurisdiction,
       format,
       status: 'pending',
@@ -128,7 +131,7 @@ export class ComplianceExportSystem extends EventEmitter {
 
     try {
       // Fetch data (would query database in production)
-      const data = await this.fetchExportData(export_.customerId, export_.jurisdiction);
+      const data = await this.fetchExportData(export_.tenantId, export_.jurisdiction);
 
       // Format data according to jurisdiction
       const formattedData = this.formatData(data, export_.jurisdiction, export_.format);
@@ -153,14 +156,13 @@ export class ComplianceExportSystem extends EventEmitter {
    * Fetch export data (mock implementation)
    */
   private async fetchExportData(
-    customerId: string,
+    tenantId: string,
     _jurisdiction: ComplianceExport['jurisdiction']
   ): Promise<Record<string, unknown>> {
-    // TODO: Query database for actual data
+    // TODO: Query database for actual data filtered by tenant_id
     // For now, return mock data
     return {
-      user_id: customerId,
-      email: `user_${customerId}@example.com`,
+      tenant_id: tenantId,
       created_at: new Date().toISOString(),
       reconciliation_jobs: [],
       reports: [],
@@ -239,18 +241,22 @@ export class ComplianceExportSystem extends EventEmitter {
   }
 
   /**
-   * Get export by ID
+   * Get export by ID (with tenant verification)
    */
-  getExport(exportId: string): ComplianceExport | undefined {
-    return this.exports.get(exportId);
+  getExport(exportId: string, tenantId: string): ComplianceExport | undefined {
+    const export_ = this.exports.get(exportId);
+    if (!export_ || export_.tenantId !== tenantId) {
+      return undefined;
+    }
+    return export_;
   }
 
   /**
-   * List exports for a customer
+   * List exports for a tenant
    */
-  listExports(customerId: string): ComplianceExport[] {
+  listExports(tenantId: string): ComplianceExport[] {
     return Array.from(this.exports.values())
-      .filter(e => e.customerId === customerId)
+      .filter(e => e.tenantId === tenantId)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
