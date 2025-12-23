@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Invalid request body',
           message: 'Request body validation failed',
-          details: validationResult.error.errors,
+          details: validationResult.error.issues,
         },
         { status: 400 }
       );
@@ -181,7 +181,7 @@ async function processExport(
   format: string,
   reconciliationRunId: string | undefined,
   jobId: string | undefined,
-  ingestionId: string | undefined
+  _ingestionId: string | undefined
 ): Promise<void> {
   try {
     // Update status to processing
@@ -248,7 +248,6 @@ async function processExport(
 
     // Generate file based on type
     let fileContent: string | Buffer;
-    let mimeType: string;
     let filename: string;
 
     if (type === 'csv') {
@@ -266,16 +265,13 @@ async function processExport(
         ),
       ];
       fileContent = csvRows.join('\n');
-      mimeType = 'text/csv';
       filename = `export-${exportId}.csv`;
     } else if (type === 'json') {
       fileContent = JSON.stringify(data, null, 2);
-      mimeType = 'application/json';
       filename = `export-${exportId}.json`;
     } else {
       // Excel - for now, return JSON (requires exceljs library)
       fileContent = JSON.stringify(data, null, 2);
-      mimeType = 'application/json';
       filename = `export-${exportId}.json`;
     }
 
@@ -303,7 +299,6 @@ async function processExport(
     console.log(`[Export API] Export ${exportId} completed successfully`);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorStack = error instanceof Error ? error.stack : undefined;
 
     await prisma.export.update({
       where: { id: exportId },

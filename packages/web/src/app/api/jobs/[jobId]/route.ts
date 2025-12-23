@@ -108,7 +108,7 @@ export async function GET(
         {
           error: 'Invalid job ID',
           message: 'Job ID must be a valid UUID',
-          details: validationResult.error.errors,
+          details: validationResult.error.issues,
         },
         { status: 400 }
       );

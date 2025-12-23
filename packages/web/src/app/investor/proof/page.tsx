@@ -19,7 +19,7 @@ export const runtime = 'nodejs';
 
 async function InvestorProofContent() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  await supabase.auth.getUser();
 
   // Get aggregate metrics (redacted for privacy)
   const [

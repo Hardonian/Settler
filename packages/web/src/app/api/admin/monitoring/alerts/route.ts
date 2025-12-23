@@ -7,7 +7,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { getOperationStats, getAdapterErrorRates } from '@/lib/monitoring/reliability-metrics';
-import { performHealthCheck } from '@/lib/monitoring/health-check';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';

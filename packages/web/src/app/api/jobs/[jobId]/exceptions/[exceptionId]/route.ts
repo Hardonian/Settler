@@ -57,8 +57,8 @@ export async function PATCH(
           error: 'Invalid ID',
           message: 'Job ID and Exception ID must be valid UUIDs',
           details: {
-            jobId: jobIdValidation.success ? undefined : jobIdValidation.error.errors,
-            exceptionId: exceptionIdValidation.success ? undefined : exceptionIdValidation.error.errors,
+            jobId: jobIdValidation.success ? undefined : jobIdValidation.error.issues,
+            exceptionId: exceptionIdValidation.success ? undefined : exceptionIdValidation.error.issues,
           },
         },
         { status: 400 }
@@ -74,7 +74,7 @@ export async function PATCH(
         {
           error: 'Invalid request body',
           message: 'Request body validation failed',
-          details: actionValidation.error.errors,
+          details: actionValidation.error.issues,
         },
         { status: 400 }
       );
@@ -155,7 +155,7 @@ export async function PATCH(
       include: {
         run: {
           select: {
-            reconJobId: true,
+            id: true,
           },
         },
       },

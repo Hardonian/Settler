@@ -15,7 +15,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
-import { logAuditEvent } from '@/lib/audit/logger';
+import { logAuditEvent, type AuditAction } from '@/lib/audit/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Invalid request body',
           message: 'Request body validation failed',
-          details: validationResult.error.errors,
+          details: validationResult.error.issues,
         },
         { status: 400 }
       );
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
         await logAuditEvent({
           userId: userId,
           tenantId: tenantId,
-          action: action,
+          action: action as AuditAction,
           resourceType: 'reconciliation_job',
           resourceId: jobId,
           metadata: {
