@@ -26,6 +26,11 @@ tsconfig.tsbuildinfo
 /test-results/
 /coverage/
 *.log
+**/playwright-report/
+**/test-results/
+**/.next/
+**/.turbo/
+**/coverage/
 
 # turbo
 .turbo/
