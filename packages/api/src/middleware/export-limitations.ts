@@ -73,13 +73,7 @@ export async function exportLimitationsMiddleware(
         ? (planResult[0] as { plan_id: string }).plan_id
         : "starter";
 
-    const limits = DEFAULT_LIMITS[planId] || DEFAULT_LIMITS.starter;
-
-    if (!limits) {
-      // Fail open if limits not found
-      next();
-      return;
-    }
+    const limits: ExportLimits = DEFAULT_LIMITS[planId] || DEFAULT_LIMITS.starter;
 
     // Check daily limit
     const today = new Date();
@@ -187,11 +181,8 @@ export async function getExportLimits(
         ? (planResult[0] as { plan_id: string }).plan_id
         : "starter";
 
-    const limits = DEFAULT_LIMITS[planId] || DEFAULT_LIMITS.starter;
-    if (!limits) {
-      return DEFAULT_LIMITS.starter;
-    }
-    return limits;
+    const limits = DEFAULT_LIMITS[planId];
+    return limits || DEFAULT_LIMITS.starter;
   } catch (error) {
     logError("Failed to get export limits", error, { tenantId });
     return DEFAULT_LIMITS.starter;
