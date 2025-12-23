@@ -174,7 +174,7 @@ export function CheckoutExample() {
     // Also track subscription started
     ProductEvents.conversions.subscriptionStarted({
       planId: 'pro_monthly',
-      planName: 'Pro Plan',
+      planName: 'Starter Plan',
       billingCycle: 'monthly',
       amount: 9999,
     });

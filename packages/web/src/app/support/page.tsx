@@ -71,24 +71,27 @@ export default function Support() {
 
   const supportTiers = [
     {
-      tier: 'OSS / Free',
+      tier: 'Starter',
       features: [
         'Documentation & Guides',
         'Community Support (Discord, GitHub)',
         'Cookbooks & Examples',
         'Interactive Playground',
-      ],
-      responseTime: 'Community response',
-    },
-    {
-      tier: 'Commercial',
-      features: [
-        'Everything in OSS',
         'Email Support (24 hour response)',
         'Technical Integration Help',
-        'Bug Reports & Feature Requests',
       ],
       responseTime: '24 hours',
+    },
+    {
+      tier: 'Growth',
+      features: [
+        'Everything in Starter',
+        'Priority Email Support (4 hour response)',
+        'Advanced Integration Help',
+        'Bug Reports & Feature Requests',
+        'SOC 2 Compliance',
+      ],
+      responseTime: '4 hours',
     },
     {
       tier: 'Enterprise',
@@ -169,8 +172,8 @@ export default function Support() {
       answer: 'Settler supports 50+ platforms including Stripe, Shopify, QuickBooks, PayPal, Square, Amazon Pay, and many more. We have pre-built integrations for the most popular platforms, and you can easily build custom integrations for any platform with our integration SDK.',
     },
     {
-      question: 'Is there a free tier?',
-      answer: 'Yes! Our Free plan includes 1,000 reconciliations/month forever. Perfect for getting started and small projects. Check out our pricing page for full details on all plans.',
+      question: 'Is there a free trial?',
+      answer: 'Yes! All paid plans include a 14-day free trial with full access—no credit card required. Perfect for testing Settler with your data. Check out our pricing page for full details on all plans.',
     },
     {
       question: 'How accurate is the reconciliation?',
@@ -202,7 +205,7 @@ export default function Support() {
     },
     {
       question: 'What is the API rate limit?',
-      answer: 'Rate limits vary by plan. Free: 100 requests/minute. Starter: 1,000 requests/minute. Growth and Scale: Higher limits. Enterprise: Custom limits. All responses include rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset) so you can implement proper backoff strategies.',
+      answer: 'Rate limits vary by plan. Starter: 500 requests/15 minutes. Growth: 2,000 requests/15 minutes. Enterprise: Custom limits. All responses include rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset) so you can implement proper backoff strategies.',
     },
     {
       question: 'How do I build a custom adapter?',
@@ -210,7 +213,7 @@ export default function Support() {
     },
     {
       question: 'What data retention policies do you have?',
-      answer: 'Data retention varies by plan: Free (7 days), Starter (30 days), Growth and Scale (90 days), Enterprise (custom, up to 7 years). You can export all data via the API at any time. Enterprise customers can configure custom retention policies.',
+      answer: 'Data retention varies by plan: Starter (30 days), Growth (1 year), Enterprise (custom, up to 7 years). You can export all data via the API at any time. Enterprise customers can configure custom retention policies.',
     },
     {
       question: 'How do I integrate Settler with my existing systems?',
@@ -218,7 +221,7 @@ export default function Support() {
     },
     {
       question: 'What kind of support do you offer?',
-      answer: 'Free plan: Community support via Discord and GitHub. Starter and Growth: Email support with 24-hour response time. Scale and Enterprise: 24/7 priority support with SLA guarantees, dedicated account manager, and phone support. See the support tiers section above for details.',
+      answer: 'Starter: Email support with 24-hour response time. Growth: Priority email support with 4-hour response time. Enterprise: 24/7 priority support with SLA guarantees (<1 hour response), dedicated account manager, and phone support. See the support tiers section above for details.',
     },
   ];
 

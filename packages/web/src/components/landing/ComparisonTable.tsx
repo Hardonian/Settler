@@ -25,7 +25,7 @@ const competitors: Competitor[] = [
       'Meaningful Changes': true,
       'Impact Ranking': true,
       'Hash Chain Receipts': true,
-      'AI Analysis': 'Pro+',
+      'AI Analysis': 'Growth+',
       'Judgment Layer': true,
       'Feature Flags as Policy': true,
       'Tamper-Evident Audit Trail': true,
@@ -180,7 +180,7 @@ export function ComparisonTable() {
           className="mt-8 text-center"
         >
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            * AI Analysis available on Growth, Scale, and Enterprise plans. Free plan includes limited access.
+            * AI Analysis available on Growth and Enterprise plans.
           </p>
         </motion.div>
       </div>

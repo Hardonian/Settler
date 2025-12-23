@@ -32,7 +32,9 @@ export function ROICalculator({ className }: ROICalculatorProps) {
     const totalCurrentCost = monthlyCost + errorCost;
 
     // With Settler
-    const settlerMonthlyCost = monthlyTransactions <= 1000 ? 0 : 99; // Free tier or Pro
+    // Starter: $99/month for up to 10,000 transactions
+    // Growth: $299/month for up to 100,000 transactions
+    const settlerMonthlyCost = monthlyTransactions <= 10000 ? 99 : 299;
     const automatedHours = monthlyTransactions * 0.05; // 5 minutes per reconciliation
     const automatedCost = automatedHours * hourlyRate;
     const automatedErrorCost = automatedCost * 0.01; // 1% error rate

@@ -32,7 +32,7 @@ interface FeatureGateProps {
 const TIER_NAMES: Record<SubscriptionTier, string> = {
   unauthenticated: 'Sign In Required',
   free: 'Free Plan',
-  pro: 'Pro Plan',
+  pro: 'Starter Plan',
   enterprise: 'Enterprise',
 };
 

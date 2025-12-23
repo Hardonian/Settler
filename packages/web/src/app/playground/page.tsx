@@ -421,7 +421,7 @@ client.webhooks.on("reconciliation.complete", (event) => {
         <div className="max-w-4xl mx-auto">
           <ConversionCTA
             title="Ready to Integrate?"
-            description="Get your API key and start reconciling in minutes. Free tier available."
+            description="Get your API key and start reconciling in minutes. 14-day free trial—no credit card required."
             primaryAction="Start Free Trial"
             primaryLink="/signup"
             secondaryAction="View Pricing"

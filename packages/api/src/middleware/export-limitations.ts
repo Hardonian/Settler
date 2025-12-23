@@ -18,7 +18,7 @@ export interface ExportLimits {
   approvalRequired: boolean; // Whether approval is required
 }
 
-const DEFAULT_LIMITS: Record<string, ExportLimits> = {
+const DEFAULT_LIMITS = {
   starter: {
     dailyLimit: 5,
     monthlyLimit: 50,
@@ -37,7 +37,7 @@ const DEFAULT_LIMITS: Record<string, ExportLimits> = {
     sizeLimit: 1000000,
     approvalRequired: false,
   },
-};
+} satisfies Record<string, ExportLimits>;
 
 /**
  * Export Limitations Middleware
@@ -73,7 +73,7 @@ export async function exportLimitationsMiddleware(
         ? (planResult[0] as { plan_id: string }).plan_id
         : "starter";
 
-    const limits: ExportLimits = DEFAULT_LIMITS[planId] || DEFAULT_LIMITS.starter;
+    const limits: ExportLimits = getLimitsForPlan(planId);
 
     // Check daily limit
     const today = new Date();
@@ -159,6 +159,19 @@ export async function exportLimitationsMiddleware(
 }
 
 /**
+ * Get export limits for a plan ID
+ */
+function getLimitsForPlan(planId: string): ExportLimits {
+  const limits = DEFAULT_LIMITS[planId];
+  if (limits) {
+    return limits;
+  }
+  // Fallback to starter if plan not found
+  // starter is guaranteed to exist in DEFAULT_LIMITS
+  return DEFAULT_LIMITS.starter;
+}
+
+/**
  * Get export limits for tenant
  */
 export async function getExportLimits(
@@ -181,10 +194,10 @@ export async function getExportLimits(
         ? (planResult[0] as { plan_id: string }).plan_id
         : "starter";
 
-    const limits = DEFAULT_LIMITS[planId];
-    return limits || DEFAULT_LIMITS.starter;
+    return getLimitsForPlan(planId);
   } catch (error) {
     logError("Failed to get export limits", error, { tenantId });
+    // starter is guaranteed to exist in DEFAULT_LIMITS
     return DEFAULT_LIMITS.starter;
   }
 }

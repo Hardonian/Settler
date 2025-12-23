@@ -7,6 +7,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,28 +23,16 @@ interface Plan {
 
 const PLANS: Plan[] = [
   {
-    name: 'Free',
-    price: 0,
-    includedReconciliations: 1000,
-    maxReconciliations: 1000,
-  },
-  {
     name: 'Starter',
     price: 99,
-    includedReconciliations: 50000,
-    maxReconciliations: 50000,
+    includedReconciliations: 10000,
+    maxReconciliations: 10000,
   },
   {
     name: 'Growth',
-    price: 599,
-    includedReconciliations: 500000,
-    maxReconciliations: 500000,
-  },
-  {
-    name: 'Scale',
-    price: 4999,
-    includedReconciliations: 5000000,
-    maxReconciliations: 5000000,
+    price: 299,
+    includedReconciliations: 100000,
+    maxReconciliations: 100000,
   },
 ];
 
@@ -140,14 +129,14 @@ export function PricingCalculator() {
           {monthlyReconciliations > recommendedPlan.maxReconciliations && (
             <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                Your usage exceeds the {recommendedPlan.name} plan limit. Contact us for Enterprise pricing.
+                Your usage exceeds the {recommendedPlan.name} plan limit. Contact us for Enterprise pricing (typically $2K-$10K/month).
               </p>
             </div>
           )}
 
           <div className="mt-6">
-            <Button className="w-full" size="lg">
-              Start Free Trial
+            <Button className="w-full" size="lg" asChild>
+              <Link href="/signup">Start Free Trial</Link>
             </Button>
             <p className="text-xs text-center text-slate-500 mt-2">
               14-day free trial • No credit card required
