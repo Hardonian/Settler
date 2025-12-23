@@ -124,6 +124,32 @@ const FEATURE_GATES: Record<string, FeatureGate> = {
     feature: "high_volume_api",
     requiresPlan: "pro",
   },
+  // Premium features (Growth+)
+  receipt_matching: {
+    feature: "receipt_matching",
+    requiresPlan: "growth",
+  },
+  advanced_matching_rules: {
+    feature: "advanced_matching_rules",
+    requiresPlan: "growth",
+  },
+  bulk_operations: {
+    feature: "bulk_operations",
+    requiresPlan: "growth",
+  },
+  // Enterprise features
+  custom_integrations: {
+    feature: "custom_integrations",
+    requiresPlan: "enterprise",
+  },
+  dedicated_infrastructure: {
+    feature: "dedicated_infrastructure",
+    requiresPlan: "enterprise",
+  },
+  sla: {
+    feature: "sla",
+    requiresPlan: "enterprise",
+  },
   tiktok_integration: {
     feature: "tiktok_integration",
     requiresAddOn: "tiktok-shop",

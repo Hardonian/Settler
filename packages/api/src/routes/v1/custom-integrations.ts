@@ -4,6 +4,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
+import { featureGate } from "../../middleware/billing-gating";
 import { logError } from "../../utils/logger";
 import {
   createCustomIntegration,
@@ -14,7 +16,7 @@ import {
 
 const router = Router();
 
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", tenantMiddleware, featureGate("custom_integrations"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { integrationName, integrationType, adapterConfig, whiteLabelConfig } = req.body;
@@ -46,7 +48,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get("/", async (req: AuthRequest, res: Response) => {
+router.get("/", tenantMiddleware, featureGate("custom_integrations"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { isActive, integrationType } = req.query;
@@ -67,7 +69,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get("/:integrationId", async (req: AuthRequest, res: Response) => {
+router.get("/:integrationId", tenantMiddleware, featureGate("custom_integrations"), async (req: TenantRequest, res: Response) => {
   try {
     const { integrationId } = req.params;
     const tenantId = req.tenantId!;
@@ -101,7 +103,7 @@ router.get("/:integrationId", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.patch("/:integrationId", async (req: AuthRequest, res: Response) => {
+router.patch("/:integrationId", tenantMiddleware, featureGate("custom_integrations"), async (req: TenantRequest, res: Response) => {
   try {
     const { integrationId } = req.params;
     const tenantId = req.tenantId!;

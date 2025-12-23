@@ -5,6 +5,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
+import { featureGate } from "../../middleware/billing-gating";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createSLAAgreement,
@@ -20,7 +22,7 @@ const router = Router();
  * POST /api/v1/sla/agreements
  * Create SLA agreement
  */
-router.post("/agreements", async (req: AuthRequest, res: Response) => {
+router.post("/agreements", tenantMiddleware, featureGate("sla"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { slaType, targetValue, measurementPeriod, startDate, endDate } = req.body;
@@ -64,7 +66,7 @@ router.post("/agreements", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/sla/metrics
  * Record SLA metric
  */
-router.post("/metrics", async (req: AuthRequest, res: Response) => {
+router.post("/metrics", tenantMiddleware, featureGate("sla"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const {
@@ -124,7 +126,7 @@ router.post("/metrics", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/sla/violations
  * Get SLA violations
  */
-router.get("/violations", async (req: AuthRequest, res: Response) => {
+router.get("/violations", tenantMiddleware, featureGate("sla"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { resolved, acknowledged, severity, limit = 100, offset = 0 } = req.query;
@@ -161,7 +163,7 @@ router.get("/violations", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/sla/violations/:violationId/acknowledge
  * Acknowledge SLA violation
  */
-router.post("/violations/:violationId/acknowledge", async (req: AuthRequest, res: Response) => {
+router.post("/violations/:violationId/acknowledge", tenantMiddleware, featureGate("sla"), async (req: TenantRequest, res: Response) => {
   try {
     const { violationId } = req.params;
     const tenantId = req.tenantId!;

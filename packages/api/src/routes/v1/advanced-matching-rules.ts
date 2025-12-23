@@ -5,6 +5,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
+import { featureGate } from "../../middleware/billing-gating";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createCustomMatchingRule,
@@ -20,7 +22,7 @@ const router = Router();
  * POST /api/v1/advanced-matching-rules
  * Create a custom matching rule
  */
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", tenantMiddleware, featureGate("advanced_matching_rules"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId!;
@@ -56,7 +58,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/advanced-matching-rules
  * List custom matching rules
  */
-router.get("/", async (req: AuthRequest, res: Response) => {
+router.get("/", tenantMiddleware, featureGate("advanced_matching_rules"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { isTemplate, isActive, limit = 100, offset = 0 } = req.query;
@@ -91,7 +93,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/advanced-matching-rules/:ruleId
  * Get custom matching rule
  */
-router.get("/:ruleId", async (req: AuthRequest, res: Response) => {
+router.get("/:ruleId", tenantMiddleware, featureGate("advanced_matching_rules"), async (req: TenantRequest, res: Response) => {
   try {
     const { ruleId } = req.params;
     const tenantId = req.tenantId!;
@@ -132,7 +134,7 @@ router.get("/:ruleId", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/advanced-matching-rules/:ruleId/test
  * Test a matching rule
  */
-router.post("/:ruleId/test", async (req: AuthRequest, res: Response) => {
+router.post("/:ruleId/test", tenantMiddleware, featureGate("advanced_matching_rules"), async (req: TenantRequest, res: Response) => {
   try {
     const { ruleId } = req.params;
     const tenantId = req.tenantId!;

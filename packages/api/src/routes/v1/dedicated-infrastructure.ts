@@ -4,6 +4,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
+import { featureGate } from "../../middleware/billing-gating";
 import { logError } from "../../utils/logger";
 import {
   provisionDedicatedInfrastructure,
@@ -14,7 +16,7 @@ import {
 
 const router = Router();
 
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", tenantMiddleware, featureGate("dedicated_infrastructure"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { infrastructureType, resourceConfig, isolationLevel, dataRetentionDays, securityConfig } =
@@ -50,7 +52,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get("/", async (req: AuthRequest, res: Response) => {
+router.get("/", tenantMiddleware, featureGate("dedicated_infrastructure"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { isActive, infrastructureType } = req.query;
@@ -71,7 +73,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get("/:infrastructureId", async (req: AuthRequest, res: Response) => {
+router.get("/:infrastructureId", tenantMiddleware, featureGate("dedicated_infrastructure"), async (req: TenantRequest, res: Response) => {
   try {
     const { infrastructureId } = req.params;
     const tenantId = req.tenantId!;
@@ -105,7 +107,7 @@ router.get("/:infrastructureId", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.delete("/:infrastructureId", async (req: AuthRequest, res: Response) => {
+router.delete("/:infrastructureId", tenantMiddleware, featureGate("dedicated_infrastructure"), async (req: TenantRequest, res: Response) => {
   try {
     const { infrastructureId } = req.params;
     const tenantId = req.tenantId!;

@@ -5,6 +5,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
+import { featureGate } from "../../middleware/billing-gating";
 import { logError, logInfo } from "../../utils/logger";
 import {
   matchReceiptsToTransactions,
@@ -18,7 +20,7 @@ const router = Router();
  * POST /api/v1/receipt-matching/match
  * Match receipts to transactions
  */
-router.post("/match", async (req: AuthRequest, res: Response) => {
+router.post("/match", tenantMiddleware, featureGate("receipt_matching"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { reconciliationRunId, receipts, transactions } = req.body;
@@ -63,7 +65,7 @@ router.post("/match", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/receipt-matching/matches/:reconciliationRunId
  * Get receipt matches for a reconciliation run
  */
-router.get("/matches/:reconciliationRunId", async (req: AuthRequest, res: Response) => {
+router.get("/matches/:reconciliationRunId", tenantMiddleware, featureGate("receipt_matching"), async (req: TenantRequest, res: Response) => {
   try {
     const { reconciliationRunId } = req.params;
     const tenantId = req.tenantId!;
@@ -96,7 +98,7 @@ router.get("/matches/:reconciliationRunId", async (req: AuthRequest, res: Respon
  * POST /api/v1/receipt-matching/links/:linkId/verify
  * Verify a receipt-transaction link
  */
-router.post("/links/:linkId/verify", async (req: AuthRequest, res: Response) => {
+router.post("/links/:linkId/verify", tenantMiddleware, featureGate("receipt_matching"), async (req: TenantRequest, res: Response) => {
   try {
     const { linkId } = req.params;
     const tenantId = req.tenantId!;

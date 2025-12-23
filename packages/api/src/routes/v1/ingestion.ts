@@ -6,6 +6,7 @@
 import { Router, Response } from "express";
 import multer from "multer";
 import { AuthRequest } from "../../middleware/auth";
+import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
 import { logError, logInfo } from "../../utils/logger";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -35,7 +36,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  * POST /api/v1/ingestion/sources
  * Create a new ingestion source (connector or CSV)
  */
-router.post("/sources", async (req: AuthRequest, res: Response) => {
+router.post("/sources", tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const { name, type, connectorType, config, configMetadata } = req.body;
     const tenantId = req.tenantId!;
@@ -91,12 +92,43 @@ router.post("/sources", async (req: AuthRequest, res: Response) => {
       createdAt: new Date().toISOString(),
     });
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     logError("Failed to create ingestion source", error, {
       traceId: req.traceId,
+      tenantId,
+      userId,
     });
+    
+    // Check for specific error types
+    if (errorMessage.includes("duplicate") || errorMessage.includes("unique")) {
+      return res.status(409).json({
+        error: "Conflict",
+        message: `An ingestion source with this name already exists. Please use a unique name.`,
+        traceId: req.traceId,
+      });
+    }
+    
+    if (errorMessage.includes("permission") || errorMessage.includes("unauthorized")) {
+      return res.status(403).json({
+        error: "Forbidden",
+        message: `You don't have permission to create ingestion sources. Please contact support if you believe this is an error.`,
+        traceId: req.traceId,
+      });
+    }
+    
+    // Database connection or query errors
+    if (errorMessage.includes("connection") || errorMessage.includes("timeout") || errorMessage.includes("ECONNREFUSED")) {
+      return res.status(503).json({
+        error: "Service Unavailable",
+        message: `Database connection failed. Please try again in a few moments. If the problem persists, contact support.`,
+        traceId: req.traceId,
+      });
+    }
+    
+    // Default to 500 only for truly unexpected errors
     return res.status(500).json({
       error: "Internal Server Error",
-      message: "Failed to create ingestion source",
+      message: `Failed to create ingestion source: ${errorMessage}. Please contact support with traceId if this persists.`,
       traceId: req.traceId,
     });
   }
@@ -106,7 +138,7 @@ router.post("/sources", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/ingestion/sources
  * List ingestion sources
  */
-router.get("/sources", async (req: AuthRequest, res: Response) => {
+router.get("/sources", tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
 
@@ -134,12 +166,25 @@ router.get("/sources", async (req: AuthRequest, res: Response) => {
       })),
     });
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     logError("Failed to list ingestion sources", error, {
       traceId: req.traceId,
+      tenantId,
     });
+    
+    // Database connection errors
+    if (errorMessage.includes("connection") || errorMessage.includes("timeout") || errorMessage.includes("ECONNREFUSED")) {
+      return res.status(503).json({
+        error: "Service Unavailable",
+        message: `Database connection failed while retrieving ingestion sources. Please try again in a few moments.`,
+        traceId: req.traceId,
+      });
+    }
+    
+    // Default to 500 only for truly unexpected errors
     return res.status(500).json({
       error: "Internal Server Error",
-      message: "Failed to list ingestion sources",
+      message: `Failed to list ingestion sources: ${errorMessage}. Please contact support with traceId if this persists.`,
       traceId: req.traceId,
     });
   }
@@ -152,8 +197,9 @@ router.get("/sources", async (req: AuthRequest, res: Response) => {
 router.post(
   "/upload",
   upload.single("file"),
+  tenantMiddleware,
   checkIngestionLimit(),
-  async (req: AuthRequest, res: Response) => {
+  async (req: TenantRequest, res: Response) => {
     try {
       const file = req.file;
       if (!file) {
@@ -335,13 +381,43 @@ router.post(
         traceId,
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       logError("Failed to process CSV upload", error, {
-        traceId: req.traceId,
+        traceId: req.traceId || traceId,
+        tenantId,
+        userId,
       });
+      
+      // Check for specific error types
+      if (errorMessage.includes("parse") || errorMessage.includes("CSV") || errorMessage.includes("format")) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: `CSV file format is invalid: ${errorMessage}. Please ensure your CSV file is properly formatted and try again.`,
+          traceId: req.traceId || traceId,
+        });
+      }
+      
+      if (errorMessage.includes("limit") || errorMessage.includes("quota") || errorMessage.includes("exceeded")) {
+        return res.status(429).json({
+          error: "Too Many Requests",
+          message: `Ingestion limit exceeded. ${errorMessage}. Please upgrade your plan or wait before uploading more files.`,
+          traceId: req.traceId || traceId,
+        });
+      }
+      
+      if (errorMessage.includes("connection") || errorMessage.includes("timeout") || errorMessage.includes("ECONNREFUSED")) {
+        return res.status(503).json({
+          error: "Service Unavailable",
+          message: `Database connection failed while processing CSV upload. Please try again in a few moments.`,
+          traceId: req.traceId || traceId,
+        });
+      }
+      
+      // Default to 500 only for truly unexpected errors
       return res.status(500).json({
         error: "Internal Server Error",
-        message: "Failed to process CSV upload",
-        traceId: req.traceId,
+        message: `Failed to process CSV upload: ${errorMessage}. Please contact support with traceId if this persists.`,
+        traceId: req.traceId || traceId,
       });
     }
   }
@@ -351,7 +427,7 @@ router.post(
  * GET /api/v1/ingestion/:ingestionId
  * Get ingestion details
  */
-router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
+router.get("/:ingestionId", tenantMiddleware, async (req: TenantRequest, res: Response) => {
   try {
     const { ingestionId } = req.params;
     const tenantId = req.tenantId!;
@@ -393,10 +469,26 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
         : ingestion.metadata,
     });
   } catch (error) {
-    logError("Failed to get ingestion", error, { traceId: req.traceId });
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    logError("Failed to get ingestion", error, { 
+      traceId: req.traceId,
+      ingestionId,
+      tenantId,
+    });
+    
+    // Database connection errors
+    if (errorMessage.includes("connection") || errorMessage.includes("timeout") || errorMessage.includes("ECONNREFUSED")) {
+      return res.status(503).json({
+        error: "Service Unavailable",
+        message: `Database connection failed while retrieving ingestion details. Please try again in a few moments.`,
+        traceId: req.traceId,
+      });
+    }
+    
+    // Default to 500 only for truly unexpected errors
     return res.status(500).json({
       error: "Internal Server Error",
-      message: "Failed to get ingestion",
+      message: `Failed to get ingestion: ${errorMessage}. Please contact support with traceId if this persists.`,
       traceId: req.traceId,
     });
   }
@@ -408,7 +500,8 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
  */
 router.get(
   "/:ingestionId/transactions",
-  async (req: AuthRequest, res: Response) => {
+  tenantMiddleware,
+  async (req: TenantRequest, res: Response) => {
     try {
       const { ingestionId } = req.params;
       const tenantId = req.tenantId!;
@@ -463,10 +556,26 @@ router.get(
         },
       });
     } catch (error) {
-      logError("Failed to get transactions", error, { traceId: req.traceId });
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      logError("Failed to get transactions", error, { 
+        traceId: req.traceId,
+        ingestionId,
+        tenantId,
+      });
+      
+      // Database connection errors
+      if (errorMessage.includes("connection") || errorMessage.includes("timeout") || errorMessage.includes("ECONNREFUSED")) {
+        return res.status(503).json({
+          error: "Service Unavailable",
+          message: `Database connection failed while retrieving transactions. Please try again in a few moments.`,
+          traceId: req.traceId,
+        });
+      }
+      
+      // Default to 500 only for truly unexpected errors
       return res.status(500).json({
         error: "Internal Server Error",
-        message: "Failed to get transactions",
+        message: `Failed to get transactions: ${errorMessage}. Please contact support with traceId if this persists.`,
         traceId: req.traceId,
       });
     }

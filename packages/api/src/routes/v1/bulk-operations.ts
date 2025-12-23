@@ -5,6 +5,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
+import { featureGate } from "../../middleware/billing-gating";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createBulkOperation,
@@ -19,7 +21,7 @@ const router = Router();
  * POST /api/v1/bulk-operations
  * Create a bulk operation
  */
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", tenantMiddleware, featureGate("bulk_operations"), async (req: TenantRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId!;
@@ -74,7 +76,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/bulk-operations/:operationId
  * Get bulk operation status
  */
-router.get("/:operationId", async (req: AuthRequest, res: Response) => {
+router.get("/:operationId", tenantMiddleware, featureGate("bulk_operations"), async (req: TenantRequest, res: Response) => {
   try {
     const { operationId } = req.params;
     const tenantId = req.tenantId!;
