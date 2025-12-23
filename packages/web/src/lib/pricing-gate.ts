@@ -30,7 +30,7 @@ export async function checkFeatureAccess(): Promise<{
         canAccess: false,
         tier: status.tier,
         reason: 'Subscription required',
-        upgradeUrl: '/pricing?next=' + encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '/console'),
+        upgradeUrl: '/pricing?next=' + encodeURIComponent('/console'),
       };
     }
     
@@ -64,6 +64,8 @@ export async function checkFeatureAccess(): Promise<{
 
 /**
  * Server-side: Check if user has a specific plan or higher
+ * 
+ * Note: Maps entitlement plans ('free' | 'pro' | 'enterprise') to pricing tiers
  */
 export async function requirePlan(
   minimumPlan: 'free' | 'starter' | 'growth' | 'scale' | 'enterprise'
@@ -74,6 +76,10 @@ export async function requirePlan(
 }> {
   try {
     const entitlements = await getEntitlements();
+    
+    // Map entitlement plan to pricing tier level
+    // Entitlements use: 'free' | 'pro' | 'enterprise'
+    // Pricing uses: 'free' | 'starter' | 'growth' | 'scale' | 'enterprise'
     const planHierarchy: Record<string, number> = {
       free: 0,
       starter: 1,
@@ -82,8 +88,16 @@ export async function requirePlan(
       enterprise: 4,
     };
     
-    const userPlanLevel = planHierarchy[entitlements.plan] || 0;
-    const requiredPlanLevel = planHierarchy[minimumPlan] || 0;
+    // Map entitlement plan to hierarchy level
+    // 'pro' maps to 'starter' level (paid plans start at starter)
+    const entitlementToLevel: Record<string, number> = {
+      free: 0,
+      pro: 1, // Maps to starter tier
+      enterprise: 4,
+    };
+    
+    const userPlanLevel = entitlementToLevel[entitlements.plan] ?? 0;
+    const requiredPlanLevel = planHierarchy[minimumPlan] ?? 0;
     
     return {
       hasAccess: userPlanLevel >= requiredPlanLevel,
@@ -157,12 +171,23 @@ export function getUpgradeMessage(tier: SubscriptionTier): {
         cta: 'Update Payment',
         ctaUrl: '/console/billing',
       };
-    default:
+    case 'subscribed_paid':
+    case 'enterprise':
       return {
         title: 'Upgrade Required',
         message: 'This feature requires a higher plan tier.',
         cta: 'Upgrade Plan',
         ctaUrl: '/console/billing',
       };
+    default: {
+      // Exhaustive check - TypeScript will error if we miss a case
+      const _exhaustive: never = tier;
+      return {
+        title: 'Upgrade Required',
+        message: 'This feature requires a higher plan tier.',
+        cta: 'Upgrade Plan',
+        ctaUrl: '/console/billing',
+      };
+    }
   }
 }
