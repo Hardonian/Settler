@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         "I'm here to help! What specifically are you trying to do? I can help with: setting up integrations, creating reconciliation jobs, understanding matching rules, or troubleshooting issues.";
     } else if (lowerMessage.includes("pricing") || lowerMessage.includes("cost")) {
       response =
-        "Settler offers a free tier with 1,000 transactions/month, and paid plans starting at $99/month. You're currently on a 30-day free trial with full access. Would you like to know more about our pricing?";
+        "Settler offers a 14-day free trial with full access—no credit card required. Paid plans start at $99/month (Starter) for 10,000 reconciliations/month, and $299/month (Growth) for 100,000/month. Enterprise plans offer unlimited volume with custom pricing. Would you like to know more about our pricing?";
     } else {
       response =
         "I understand you're asking about that. Let me help you with that. Could you provide a bit more detail about what you're trying to accomplish? I can help with onboarding, integrations, reconciliation jobs, or any other questions about Settler.";

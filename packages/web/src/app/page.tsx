@@ -225,7 +225,7 @@ if (flag.value) { /* ... */ }`;
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    <span>14-day free trial</span>
+                    <span>14-day free trial - No credit card</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-600" />

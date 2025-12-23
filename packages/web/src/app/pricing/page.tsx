@@ -20,53 +20,27 @@ import { PricingCalculator } from "@/components/pricing/PricingCalculator";
 export default function Pricing() {
   const plans = [
     {
-      name: 'Free',
-      price: '$0',
-      description: 'Test Settler with real data. Experience value before committing.',
-      reconciliationVolume: '1,000/month',
-      exceptionRate: '1% included',
-      example: '1k reconciliations = $0/month',
-      valueProposition: 'See Settler work with your data. No credit card required.',
-      limits: ['1,000 reconciliations/month', 'Basic support', 'Public API access'],
-      cta: 'Get Started',
-      ctaLink: '/signup',
-      popular: false,
-    },
-    {
       name: 'Starter',
       price: '$99',
-      description: 'Relieve manual reconciliation work. Process 50k matches automatically.',
-      reconciliationVolume: '50,000/month',
+      description: 'Eliminate manual reconciliation work. Process 10k matches automatically.',
+      reconciliationVolume: '10,000/month',
       exceptionRate: '1% included',
-      example: '50k reconciliations = $99/month',
-      valueProposition: 'Eliminates ~25 hours/month of manual work. Pays for itself.',
-      limits: ['50,000 reconciliations/month', 'Email support', 'Standard integrations'],
+      example: '10k reconciliations = $99/month',
+      valueProposition: 'Eliminates ~10 hours/month of manual work. Pays for itself.',
+      limits: ['10,000 reconciliations/month', 'Scheduled jobs', 'Email support (24h)', 'Standard integrations', 'Basic audit trails'],
       cta: 'Start Free Trial',
       ctaLink: '/signup',
       popular: true,
     },
     {
       name: 'Growth',
-      price: '$599',
-      description: 'Scale reconciliation as your business grows. Handle 500k matches.',
-      reconciliationVolume: '500,000/month',
+      price: '$299',
+      description: 'Scale reconciliation with compliance guarantees. Handle 100k matches with SOC 2 readiness.',
+      reconciliationVolume: '100,000/month',
       exceptionRate: '1% included',
-      example: '500k reconciliations = $599/month',
-      valueProposition: 'Processes high volume automatically. Prevents costly errors.',
-      limits: ['500,000 reconciliations/month', 'Priority support', 'Advanced integrations', 'Custom mappings'],
-      cta: 'Start Free Trial',
-      ctaLink: '/signup',
-      popular: false,
-    },
-    {
-      name: 'Scale',
-      price: '$4,999',
-      description: 'Enterprise-grade volume. Process millions of matches reliably.',
-      reconciliationVolume: '5,000,000/month',
-      exceptionRate: '1% included',
-      example: '5M reconciliations = $4,999/month',
-      valueProposition: 'Handles massive scale. Reduces operational risk.',
-      limits: ['5,000,000 reconciliations/month', 'Dedicated support', 'All integrations', 'SLA guarantee'],
+      example: '100k reconciliations = $299/month',
+      valueProposition: 'Eliminates $100K+ annual risk. Compliance-ready with audit trails.',
+      limits: ['100,000 reconciliations/month', 'Unlimited scheduled jobs', 'Priority support (4h)', 'Advanced integrations', 'SOC 2 ready', '1-year retention'],
       cta: 'Start Free Trial',
       ctaLink: '/signup',
       popular: false,
@@ -74,12 +48,12 @@ export default function Pricing() {
     {
       name: 'Enterprise',
       price: 'Custom',
-      description: 'Unlimited volume with custom exception handling and control.',
+      description: 'Unlimited volume with dedicated support and custom compliance requirements.',
       reconciliationVolume: 'Unlimited',
       exceptionRate: 'Custom',
-      example: 'Volume discounts available',
-      valueProposition: 'Full control over reconciliation strategy. Custom integrations and workflows.',
-      limits: ['Unlimited reconciliations', 'Dedicated account manager', 'Custom integrations', 'On-premise option'],
+      example: 'Typically $2K-$10K/month',
+      valueProposition: 'Full control with dedicated account manager. Custom integrations and 7-year retention.',
+      limits: ['Unlimited reconciliations', 'Dedicated account manager', 'Custom integrations', '7-year retention', 'On-premise option', '99.99% SLA'],
       cta: 'Contact Sales',
       ctaLink: '/enterprise',
       popular: false,
@@ -113,9 +87,9 @@ export default function Pricing() {
         'We accept all major credit cards. ACH and wire transfers available for Enterprise plans.',
     },
     {
-      question: 'Is there a free tier?',
+      question: 'Is there a free trial?',
       answer:
-        'Yes! Free plan includes 1,000 reconciliations/month forever. Paid plans include a 14-day free trial with full access.',
+        'Yes! All paid plans include a 14-day free trial with full access—no credit card required. Try all features risk-free before committing.',
     },
   ];
 
@@ -175,8 +149,8 @@ export default function Pricing() {
               </div>
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <p className="text-sm text-blue-800 dark:text-blue-200">
-                  <strong>Example:</strong> Process 50,000 transactions/month. Settler matches automatically. 
-                  If 500 (1%) require review: $99 (Starter) + (500 × $0.10) = $149/month.
+                  <strong>Example:</strong> Process 10,000 transactions/month. Settler matches automatically. 
+                  If 100 (1%) require review: $99 (Starter) + (100 × $0.10) = $109/month.
                 </p>
               </div>
             </CardContent>
@@ -187,7 +161,7 @@ export default function Pricing() {
       {/* Pricing Cards */}
       <section className="px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {plans.map((plan, index) => (
               <Card
                 key={index}
@@ -289,9 +263,9 @@ export default function Pricing() {
               <div>
                 <h3 className="font-semibold mb-2">Example</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Starter: 50,000 reconciliations/month ($99/month). 
-                  Process 60,000? Upgrade to Growth ($599/month for 500,000/month).
-                  If 500 exceptions require review (1%): $99 + (500 × $0.10) = $149/month.
+                  Starter: 10,000 reconciliations/month ($99/month). 
+                  Process 15,000? Upgrade to Growth ($299/month for 100,000/month).
+                  If 100 exceptions require review (1%): $99 + (100 × $0.10) = $109/month.
                 </p>
               </div>
             </CardContent>

@@ -108,7 +108,7 @@ async function generateSupportResponse(
   // Context-aware responses
   if (context?.page === "/console/usage" && lowerQuestion.includes("limit")) {
     return {
-      answer: `Your usage limits depend on your plan. Free tier includes 1,000 reconciliations/month, while Commercial ($99/mo) includes 100,000/month. You can check your current usage and limits in the Usage dashboard. If you're approaching your limit, we'll show a warning banner.`,
+      answer: `Your usage limits depend on your plan. Starter ($99/mo) includes 10,000 reconciliations/month, while Growth ($299/mo) includes 100,000/month. Enterprise plans offer unlimited volume. You can check your current usage and limits in the Usage dashboard. If you're approaching your limit, we'll show a warning banner.`,
       suggestions: [
         "View your current usage",
         "Upgrade to increase limits",

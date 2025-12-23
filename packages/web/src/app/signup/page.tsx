@@ -143,7 +143,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
               Start Your Free Trial
             </h1>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
-              Create your account and get instant access. Start with 1,000 free reconciliations/month—perfect for testing and small projects.
+              Create your account and get instant access to a 14-day free trial—no credit card required. Full access to all features, perfect for testing Settler with your data.
             </p>
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-5 text-left mt-4">
               <div className="flex items-start gap-3">

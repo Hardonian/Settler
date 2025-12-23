@@ -46,7 +46,7 @@ const testimonials: Testimonial[] = [
     role: "Founder",
     company: "StartupXYZ",
     quote:
-      "As a startup, we couldn't afford to build reconciliation in-house. Settler's free tier was great for us, and when we grew, upgrading was seamless. The ROI was immediate.",
+      "As a startup, we couldn't afford to build reconciliation in-house. Settler's 14-day free trial let us test everything risk-free, and when we grew, upgrading was seamless. The ROI was immediate.",
     rating: 5,
     metric: "ROI in first month",
   },
