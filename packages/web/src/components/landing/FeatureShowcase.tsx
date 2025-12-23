@@ -159,18 +159,20 @@ export function FeatureShowcase() {
                   />
                   <CardContent className="p-6 relative z-10">
                     {feature.screenshot && (
-                      <div className="mb-4 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
-                        <SafeImage
-                          src={feature.screenshot}
-                          alt={`${feature.title} - UI screenshot`}
-                          width={512}
-                          height={279}
-                          className="w-full h-auto"
-                          fallbackTitle={feature.title}
-                          fallbackCaption={feature.description}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          unoptimized
-                        />
+                      <div className="mb-4 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                        <div className="relative w-full aspect-[512/279]">
+                          <SafeImage
+                            src={feature.screenshot}
+                            alt={`${feature.title} - UI screenshot`}
+                            width={512}
+                            height={279}
+                            className="w-full h-full object-contain"
+                            fallbackTitle={feature.title}
+                            fallbackCaption={feature.description}
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            unoptimized
+                          />
+                        </div>
                       </div>
                     )}
                     <motion.div

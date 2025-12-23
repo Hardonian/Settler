@@ -300,30 +300,30 @@ export default function HowItWorksPage() {
                           />
                         </div>
                       ) : index === 1 ? (
-                        <div className="aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                        <div className="aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
                           <SafeImage
                             src="/assets/images/1766446595797.jpg"
                             alt="Define matching rules - Visual interface showing how to configure matching rules in Settler"
                             width={512}
                             height={279}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                             fallbackTitle="Matching Rules Configuration"
                             fallbackCaption="Configure intelligent matching rules for transaction reconciliation"
-                            sizes="(max-width: 1024px) 100vw, 50vw"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
                             unoptimized
                           />
                         </div>
                       ) : index === 2 ? (
-                        <div className="aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                        <div className="aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
                           <SafeImage
                             src="/assets/images/1766446607998.jpg"
                             alt="Run reconciliation - Visual showing reconciliation process in action"
                             width={512}
                             height={279}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                             fallbackTitle="Reconciliation Process"
                             fallbackCaption="Process millions of transactions automatically with real-time progress tracking"
-                            sizes="(max-width: 1024px) 100vw, 50vw"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
                             unoptimized
                           />
                         </div>

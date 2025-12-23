@@ -63,17 +63,19 @@ export default function ArchitecturePage() {
               See how data moves through Settler's reconciliation pipeline
             </p>
           </div>
-          <figure className="w-full overflow-hidden bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8">
-            <Image
-              src="/assets/diagrams/data-flow.svg"
-              alt="Settler data flow diagram showing how data moves from source platforms through adapters to reconciliation engine and target platforms"
-              width={1200}
-              height={600}
-              className="w-full h-auto"
-              priority={false}
-              sizes="(max-width: 768px) 100vw, 1200px"
-            />
-            <figcaption className="mt-4 text-sm text-slate-600 dark:text-slate-400 text-center">
+          <figure className="w-full overflow-hidden bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-8">
+            <div className="relative w-full aspect-[2/1]">
+              <Image
+                src="/assets/diagrams/data-flow.svg"
+                alt="Settler data flow diagram showing how data moves from source platforms through adapters to reconciliation engine and target platforms"
+                width={1200}
+                height={600}
+                className="w-full h-full object-contain"
+                priority={false}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+              />
+            </div>
+            <figcaption className="mt-4 text-sm text-slate-600 dark:text-slate-400 text-center px-4">
               Data flows from source platforms through adapters, processed by the reconciliation engine, and synchronized to target platforms with full audit trails.
             </figcaption>
           </figure>

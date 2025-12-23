@@ -22,17 +22,19 @@ export default function DocsPage() {
       </p>
 
       {/* Docs Interface Screenshot */}
-      <div className="my-8 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg">
-        <Image
-          src="/assets/images/1766449041951.jpg"
-          alt="Settler API Documentation Interface - Complete API reference with interactive examples and code snippets"
-          width={2816}
-          height={1536}
-          className="w-full h-auto"
-          priority={false}
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1200px"
-          unoptimized
-        />
+      <div className="my-8 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-lg">
+        <div className="relative w-full aspect-[2816/1536]">
+          <Image
+            src="/assets/images/1766449041951.jpg"
+            alt="Settler API Documentation Interface - Complete API reference with interactive examples and code snippets"
+            width={2816}
+            height={1536}
+            className="w-full h-full object-contain"
+            priority={false}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+            unoptimized
+          />
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 my-8">
@@ -138,17 +140,19 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
           Understand how Settler processes data from source to target platforms.
         </p>
         <div className="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-50 dark:bg-slate-900">
-          <SafeImage
-            src="/assets/diagrams/data-flow.svg"
-            alt="Settler data flow diagram showing how data moves from source platforms through adapters to reconciliation engine and target platforms"
-            width={1200}
-            height={600}
-            className="w-full h-auto"
-            fallbackTitle="Data Flow Diagram"
-            fallbackCaption="Visual representation of Settler's data processing pipeline"
-            sizes="(max-width: 768px) 100vw, 1200px"
-            unoptimized
-          />
+          <div className="relative w-full aspect-[2/1]">
+            <SafeImage
+              src="/assets/diagrams/data-flow.svg"
+              alt="Settler data flow diagram showing how data moves from source platforms through adapters to reconciliation engine and target platforms"
+              width={1200}
+              height={600}
+              className="w-full h-full object-contain"
+              fallbackTitle="Data Flow Diagram"
+              fallbackCaption="Visual representation of Settler's data processing pipeline"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+              unoptimized
+            />
+          </div>
         </div>
       </section>
     </div>
