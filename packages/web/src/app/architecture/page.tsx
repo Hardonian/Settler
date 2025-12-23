@@ -76,7 +76,6 @@ export default function ArchitecturePage() {
                 sizes="100vw"
                 style={{ maxWidth: '100%', height: 'auto' }}
                 priority={false}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
               />
             </div>
             <figcaption className="mt-4 text-sm text-slate-600 dark:text-slate-400 text-center px-4">

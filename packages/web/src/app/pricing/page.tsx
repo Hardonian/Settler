@@ -119,7 +119,6 @@ export default function Pricing() {
                 priority
                 sizes="100vw"
                 style={{ maxWidth: '100%', height: 'auto' }}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1258px"
               />
             </div>
           </div>
