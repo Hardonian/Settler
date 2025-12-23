@@ -73,7 +73,7 @@ export async function exportLimitationsMiddleware(
         ? (planResult[0] as { plan_id: string }).plan_id
         : "starter";
 
-    const limits: ExportLimits = DEFAULT_LIMITS[planId] || DEFAULT_LIMITS.starter;
+    const limits: ExportLimits = getLimitsForPlan(planId);
 
     // Check daily limit
     const today = new Date();
@@ -159,6 +159,19 @@ export async function exportLimitationsMiddleware(
 }
 
 /**
+ * Get export limits for a plan ID
+ */
+function getLimitsForPlan(planId: string): ExportLimits {
+  const limits = DEFAULT_LIMITS[planId];
+  if (limits) {
+    return limits;
+  }
+  // Fallback to starter if plan not found
+  // TypeScript: starter is guaranteed to exist in DEFAULT_LIMITS
+  return DEFAULT_LIMITS.starter as ExportLimits;
+}
+
+/**
  * Get export limits for tenant
  */
 export async function getExportLimits(
@@ -181,10 +194,10 @@ export async function getExportLimits(
         ? (planResult[0] as { plan_id: string }).plan_id
         : "starter";
 
-    const limits = DEFAULT_LIMITS[planId];
-    return limits || DEFAULT_LIMITS.starter;
+    return getLimitsForPlan(planId);
   } catch (error) {
     logError("Failed to get export limits", error, { tenantId });
-    return DEFAULT_LIMITS.starter;
+    // TypeScript: starter is guaranteed to exist in DEFAULT_LIMITS
+    return DEFAULT_LIMITS.starter as ExportLimits;
   }
 }
