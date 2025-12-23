@@ -7,6 +7,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -134,8 +135,8 @@ export function PricingCalculator() {
           )}
 
           <div className="mt-6">
-            <Button className="w-full" size="lg">
-              Start Free Trial
+            <Button className="w-full" size="lg" asChild>
+              <Link href="/signup">Start Free Trial</Link>
             </Button>
             <p className="text-xs text-center text-slate-500 mt-2">
               14-day free trial • No credit card required

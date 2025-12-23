@@ -1,7 +1,7 @@
 /**
  * Analysis Panel Component
  * 
- * Advanced analysis with token management for Pro and Enterprise tiers.
+ * Advanced analysis with token management for Growth and Enterprise tiers.
  */
 
 'use client';

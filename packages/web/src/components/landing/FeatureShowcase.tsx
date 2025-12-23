@@ -84,7 +84,7 @@ const features: Feature[] = [
     icon: <Sparkles className="w-8 h-8" />,
     title: 'AI-Powered Analysis',
     description: 'Advanced AI analysis for deeper insights. Understand patterns, predict issues, get recommendations.',
-    highlight: 'Pro & Enterprise tiers with token management',
+    highlight: 'Growth & Enterprise tiers with token management',
     link: '/console/ai-analysis',
     color: 'indigo',
     gradient: 'from-indigo-500 to-purple-500',

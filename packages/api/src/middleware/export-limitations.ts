@@ -18,7 +18,7 @@ export interface ExportLimits {
   approvalRequired: boolean; // Whether approval is required
 }
 
-const DEFAULT_LIMITS: Record<string, ExportLimits> = {
+const DEFAULT_LIMITS = {
   starter: {
     dailyLimit: 5,
     monthlyLimit: 50,
@@ -37,7 +37,7 @@ const DEFAULT_LIMITS: Record<string, ExportLimits> = {
     sizeLimit: 1000000,
     approvalRequired: false,
   },
-};
+} satisfies Record<string, ExportLimits>;
 
 /**
  * Export Limitations Middleware
@@ -167,8 +167,8 @@ function getLimitsForPlan(planId: string): ExportLimits {
     return limits;
   }
   // Fallback to starter if plan not found
-  // TypeScript: starter is guaranteed to exist in DEFAULT_LIMITS
-  return DEFAULT_LIMITS.starter as ExportLimits;
+  // starter is guaranteed to exist in DEFAULT_LIMITS
+  return DEFAULT_LIMITS.starter;
 }
 
 /**
@@ -197,7 +197,7 @@ export async function getExportLimits(
     return getLimitsForPlan(planId);
   } catch (error) {
     logError("Failed to get export limits", error, { tenantId });
-    // TypeScript: starter is guaranteed to exist in DEFAULT_LIMITS
-    return DEFAULT_LIMITS.starter as ExportLimits;
+    // starter is guaranteed to exist in DEFAULT_LIMITS
+    return DEFAULT_LIMITS.starter;
   }
 }

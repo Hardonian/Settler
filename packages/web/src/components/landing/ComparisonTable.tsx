@@ -25,7 +25,7 @@ const competitors: Competitor[] = [
       'Meaningful Changes': true,
       'Impact Ranking': true,
       'Hash Chain Receipts': true,
-      'AI Analysis': 'Pro+',
+      'AI Analysis': 'Growth+',
       'Judgment Layer': true,
       'Feature Flags as Policy': true,
       'Tamper-Evident Audit Trail': true,

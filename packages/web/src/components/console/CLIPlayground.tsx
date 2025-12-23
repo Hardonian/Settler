@@ -159,7 +159,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     // Check rate limits
     if (requestLimit !== -1 && requestCount >= requestLimit) {
       setError({
-        message: `Daily request limit reached (${requestLimit} requests). Upgrade to Pro for unlimited requests.`,
+        message: `Daily request limit reached (${requestLimit} requests). Upgrade to Growth for unlimited requests.`,
         code: 'RATE_LIMIT_EXCEEDED'
       });
       setIsRunning(false);
@@ -563,7 +563,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                   Unlock Advanced Features
                 </CardTitle>
                 <CardDescription>
-                  Upgrade to Pro for unlimited requests and advanced features
+                  Upgrade to Growth for unlimited requests and advanced features
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -587,7 +587,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                 </ul>
                 <Button asChild className="w-full" size="lg">
                   <Link href="/console/billing">
-                    Upgrade to Pro
+                    Upgrade to Growth
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>

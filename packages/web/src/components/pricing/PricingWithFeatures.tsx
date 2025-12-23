@@ -304,7 +304,7 @@ export function PricingWithFeatures() {
           className="mt-12 text-center"
         >
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            All plans include core features. AI Analysis tokens can be purchased as add-ons or used as overage on Pro+ plans.
+            All plans include core features. AI Analysis tokens can be purchased as add-ons or used as overage on Growth+ plans.
           </p>
         </motion.div>
       </div>
