@@ -151,6 +151,10 @@ export async function getOperationStats(
     }
 
     const row = results[0];
+    if (!row) {
+      return null;
+    }
+    
     const total = Number(row.total || 0);
     const successCount = Number(row.success_count || 0);
     const failureCount = Number(row.failure_count || 0);

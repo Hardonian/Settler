@@ -18,15 +18,6 @@ import { Input } from '@/components/ui/input';
 import { AlertTriangle, CheckCircle2, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 
-interface SLAAgreement {
-  id: string;
-  slaType: string;
-  targetValue: number;
-  measurementPeriod: string;
-  startDate: string;
-  isActive: boolean;
-}
-
 interface SLAViolation {
   id: string;
   slaAgreementId: string;

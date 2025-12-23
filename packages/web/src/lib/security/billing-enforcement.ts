@@ -8,7 +8,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
 import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/observability/logger';
 
@@ -26,7 +25,7 @@ export interface BillingEnforcementResult {
  * This is a runtime guard that complements database RLS policies
  */
 export async function requireActiveSubscription(
-  request: NextRequest,
+  _request: NextRequest,
   userId?: string
 ): Promise<BillingEnforcementResult> {
   try {
@@ -78,7 +77,7 @@ export async function requireActiveSubscription(
     }
 
     // Check for active subscription
-    const { data: subscription, error: subError } = await supabaseClient
+    const subscriptionResult = await supabaseClient
       .from('subscriptions')
       .select('id, status, plan_id, trial_end, cancel_at_period_end, cancelled_at')
       .eq('billing_account_id', billingAccount.id)
@@ -86,6 +85,8 @@ export async function requireActiveSubscription(
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
+    
+    const { data: subscription, error: subError } = subscriptionResult;
 
     if (subError || !subscription) {
       return {
@@ -105,9 +106,37 @@ export async function requireActiveSubscription(
       };
     }
 
+    // Type guard for subscription
+    if (!subscription || typeof subscription !== 'object') {
+      return {
+        allowed: false,
+        subscriptionStatus: 'none',
+        billingAccountId: billingAccount.id,
+        error: NextResponse.json(
+          {
+            error: 'Active Subscription Required',
+            message: 'Please subscribe to a plan to access this feature',
+            code: 'SUBSCRIPTION_REQUIRED',
+            upgrade_required: true,
+          },
+          { status: 403 }
+        ),
+        reason: 'No active subscription',
+      };
+    }
+
+    const sub = subscription as {
+      id: string;
+      status: string;
+      plan_id: string | null;
+      trial_end: string | null;
+      cancel_at_period_end: boolean | null;
+      cancelled_at: string | null;
+    };
+
     // Check if trial has expired
-    if (subscription.trial_end) {
-      const trialEnd = new Date(subscription.trial_end);
+    if (sub.trial_end) {
+      const trialEnd = new Date(sub.trial_end);
       const now = new Date();
       const gracePeriodEnd = new Date(trialEnd);
       gracePeriodEnd.setDate(gracePeriodEnd.getDate() + 7); // 7-day grace period
@@ -117,7 +146,7 @@ export async function requireActiveSubscription(
           allowed: false,
           subscriptionStatus: 'expired',
           billingAccountId: billingAccount.id,
-          planId: subscription.plan_id || undefined,
+          planId: sub.plan_id || undefined,
           error: NextResponse.json(
             {
               error: 'Pilot Expired',
@@ -134,21 +163,21 @@ export async function requireActiveSubscription(
     }
 
     // Check if subscription is cancelled but still in period
-    if (subscription.cancel_at_period_end && subscription.cancelled_at) {
+    if (sub.cancel_at_period_end && sub.cancelled_at) {
       // Still allow access until period ends
       return {
         allowed: true,
-        subscriptionStatus: subscription.status === 'trialing' ? 'trialing' : 'active',
+        subscriptionStatus: sub.status === 'trialing' ? 'trialing' : 'active',
         billingAccountId: billingAccount.id,
-        planId: subscription.plan_id || undefined,
+        planId: sub.plan_id || undefined,
       };
     }
 
     return {
       allowed: true,
-      subscriptionStatus: subscription.status === 'trialing' ? 'trialing' : 'active',
+      subscriptionStatus: sub.status === 'trialing' ? 'trialing' : 'active',
       billingAccountId: billingAccount.id,
-      planId: subscription.plan_id || undefined,
+      planId: sub.plan_id || undefined,
     };
   } catch (error) {
     await logger.error('Billing enforcement check failed', {
@@ -246,14 +275,16 @@ export async function requireAddOn(
     const supabaseClient = await createClient();
     
     // Check if add-on is standard (included in base plan)
-    const { data: addOn, error: addOnError } = await supabaseClient
+    const addOnResult = await supabaseClient
       .from('add_ons')
       .select('id, integration_id, is_standard')
       .eq('integration_id', addOnIntegrationId)
       .eq('is_active', true)
       .single();
+    
+    const { data: addOn, error: addOnError } = addOnResult;
 
-    if (addOnError || !addOn) {
+    if (addOnError || !addOn || typeof addOn !== 'object') {
       return {
         allowed: false,
         billingAccountId: subscriptionCheck.billingAccountId,
@@ -269,8 +300,14 @@ export async function requireAddOn(
       };
     }
 
+    const addOnTyped = addOn as {
+      id: string;
+      integration_id: string;
+      is_standard: boolean;
+    };
+
     // If standard, allow access
-    if (addOn.is_standard) {
+    if (addOnTyped.is_standard) {
       return {
         ...subscriptionCheck,
         allowed: true,
@@ -278,13 +315,15 @@ export async function requireAddOn(
     }
 
     // Check if add-on is purchased
-    const { data: purchase, error: purchaseError } = await supabaseClient
+    const purchaseResult = await supabaseClient
       .from('add_on_purchases')
       .select('id, status')
       .eq('billing_account_id', subscriptionCheck.billingAccountId)
-      .eq('add_on_id', addOn.id)
+      .eq('add_on_id', addOnTyped.id)
       .eq('status', 'active')
       .single();
+    
+    const { data: purchase, error: purchaseError } = purchaseResult;
 
     if (purchaseError || !purchase) {
       return {

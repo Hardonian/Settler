@@ -182,6 +182,7 @@ export function getUpgradeMessage(tier: SubscriptionTier): {
     default: {
       // Exhaustive check - TypeScript will error if we miss a case
       const _exhaustive: never = tier;
+      void _exhaustive; // Use void to mark as intentionally unused
       return {
         title: 'Upgrade Required',
         message: 'This feature requires a higher plan tier.',

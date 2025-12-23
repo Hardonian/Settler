@@ -5,14 +5,13 @@
  */
 
 import { Job } from './worker';
-import { prisma } from '@/shared/db/prismaClient';
 
 /**
  * Check if a job with the same idempotency key already exists
  */
 export async function checkJobIdempotency(
-  idempotencyKey: string,
-  workspaceId: string
+  _idempotencyKey: string,
+  _workspaceId: string
 ): Promise<{ exists: boolean; jobId?: string }> {
   try {
     // Check in jobs table (if it exists in Supabase)
