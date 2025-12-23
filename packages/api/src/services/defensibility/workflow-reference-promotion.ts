@@ -65,7 +65,7 @@ export class WorkflowReferencePromotionService {
       );
 
       // Register external reference
-      const reference = await workflowEntanglementService.registerExternalReference(
+      await workflowEntanglementService.registerExternalReference(
         tenantId,
         entityType,
         entityId,

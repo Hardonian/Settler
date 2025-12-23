@@ -15,7 +15,6 @@
 
 import { logError, logInfo } from '../../utils/logger';
 import { query } from '../../db';
-import { getSLAPolicy } from '../sla/tracker';
 
 export interface DeterministicRun {
   reconciliationRunId: string;

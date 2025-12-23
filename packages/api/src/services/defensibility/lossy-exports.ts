@@ -56,8 +56,6 @@ export class LossyExportService {
         includeDerivedArtifacts = false,
         includeConfidenceScores = false,
         includeLongitudinalInsights = false,
-        includeHistoricalMatches = true,
-        includeAuditTrail = true,
       } = options;
 
       // Get reconciliation run

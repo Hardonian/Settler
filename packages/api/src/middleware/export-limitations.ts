@@ -162,7 +162,7 @@ export async function exportLimitationsMiddleware(
  * Get export limits for a plan ID
  */
 function getLimitsForPlan(planId: string): ExportLimits {
-  const limits = DEFAULT_LIMITS[planId];
+  const limits = DEFAULT_LIMITS[planId as keyof typeof DEFAULT_LIMITS];
   if (limits) {
     return limits;
   }

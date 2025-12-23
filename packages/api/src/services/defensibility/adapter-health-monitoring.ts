@@ -18,7 +18,7 @@ import { query } from '../../db';
 
 export interface AdapterHealthMetrics {
   adapterType: string;
-  healthStatus: 'healthy' | 'degraded' | 'unhealthy';
+  healthStatus: 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
   lastChecked: Date;
   successRate: number; // 0-1
   averageResponseTime: number; // milliseconds
