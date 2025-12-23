@@ -576,8 +576,9 @@ export async function checkUsageQuotaForEvent(
 
 /**
  * Middleware to check integration access
+ * Supports dynamic integration ID from route params
  */
-export function checkIntegrationAccess(integrationId: string) {
+export function checkIntegrationAccess(integrationIdOrParam: string) {
   return async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const userId = req.userId;
@@ -587,6 +588,12 @@ export function checkIntegrationAccess(integrationId: string) {
           error: "Unauthorized",
           message: "Authentication required",
         });
+      }
+
+      // Extract integration ID from route params if ":id" pattern used
+      let integrationId = integrationIdOrParam;
+      if (integrationIdOrParam === ":id" && req.params && req.params.id) {
+        integrationId = req.params.id;
       }
 
       // Check if integration is standard (included in base plan)
