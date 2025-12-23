@@ -14,8 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Lock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
-import { getCurrentFunnelStage, getNextAction, type FunnelStage } from '@/lib/gtm/funnels';
-import { createClient } from '@/lib/supabase/client';
+import { getNextAction, type FunnelStage } from '@/lib/gtm/funnels';
 
 interface FunnelCTAProps {
   userId?: string;

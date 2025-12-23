@@ -7,6 +7,8 @@
  * Every page has a next logical action.
  */
 
+import { Prisma } from '@prisma/client';
+
 export type FunnelStage =
   | 'visitor'
   | 'playground_engaged'
@@ -163,7 +165,7 @@ export async function trackFunnelTransition(
             userId: transition.userId,
             eventType: `funnel:${transition.from}→${transition.to}`,
             quantity: 1,
-            metadata: transition.metadata || {},
+            metadata: (transition.metadata || {}) as Prisma.InputJsonValue,
             timestamp: transition.timestamp,
           },
         });

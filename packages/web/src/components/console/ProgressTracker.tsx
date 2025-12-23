@@ -48,6 +48,7 @@ export function ProgressTracker({
         return () => clearInterval(interval);
       }
     }
+    return undefined;
   }, [runId, resultId, autoRefresh, refreshInterval, isPaused]);
 
   const fetchProgress = async () => {

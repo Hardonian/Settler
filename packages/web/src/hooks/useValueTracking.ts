@@ -10,7 +10,6 @@ import { usePathname } from 'next/navigation';
 import { trackValueEvent, type ValueEvent } from '@/lib/gtm/value-events';
 import { trackFunnelTransition, type FunnelStage } from '@/lib/gtm/funnels';
 import { trackPageView } from '@/lib/gtm/analytics';
-import { createClient } from '@/lib/supabase/client';
 
 interface UseValueTrackingOptions {
   userId?: string;

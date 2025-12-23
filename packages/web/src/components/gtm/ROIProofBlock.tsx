@@ -12,7 +12,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2, Clock, DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
-import { calculateROI, type ROIMetrics } from '@/lib/gtm/value-events';
+import { type ROIMetrics } from '@/lib/gtm/value-events';
 
 interface ROIProofBlockProps {
   billingAccountId?: string;
