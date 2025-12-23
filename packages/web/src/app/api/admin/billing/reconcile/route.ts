@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { reconcileBillingAccount, reconcileAllActiveSubscriptions } from '@/domain/billing/reconciliation';
 import { createErrorResponse, ErrorCodes } from '@/lib/server-error-handler';
 
@@ -19,20 +19,9 @@ export const runtime = 'nodejs';
  */
 export async function POST(request: NextRequest) {
   try {
-    // Check admin access
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return createErrorResponse(new Error('Unauthorized'), 401, ErrorCodes.UNAUTHORIZED);
-    }
-
-    // Check if user is admin (you may need to adjust this based on your auth setup)
-    const isAdmin = user.user_metadata?.role === 'admin' || 
-                    user.email?.endsWith('@settler.dev') ||
-                    process.env.ADMIN_EMAILS?.split(',').includes(user.email || '');
-
-    if (!isAdmin) {
+    // CRITICAL: Require super admin access
+    const adminCheck = await isSuperAdmin();
+    if (!adminCheck) {
       return createErrorResponse(new Error('Forbidden'), 403, ErrorCodes.FORBIDDEN);
     }
 
@@ -70,19 +59,9 @@ export async function POST(request: NextRequest) {
  */
 export async function GET() {
   try {
-    // Check admin access
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return createErrorResponse(new Error('Unauthorized'), 401, ErrorCodes.UNAUTHORIZED);
-    }
-
-    const isAdmin = user.user_metadata?.role === 'admin' || 
-                    user.email?.endsWith('@settler.dev') ||
-                    process.env.ADMIN_EMAILS?.split(',').includes(user.email || '');
-
-    if (!isAdmin) {
+    // CRITICAL: Require super admin access
+    const adminCheck = await isSuperAdmin();
+    if (!adminCheck) {
       return createErrorResponse(new Error('Forbidden'), 403, ErrorCodes.FORBIDDEN);
     }
 

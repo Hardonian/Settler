@@ -4,23 +4,20 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { isSuperAdmin } from '@/lib/auth/super-admin';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(_request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const isAdmin = user.user_metadata?.role === 'admin' || user.email?.endsWith('@settler.dev');
-    if (!isAdmin) {
+    // CRITICAL: Require super admin access
+    const adminCheck = await isSuperAdmin();
+    if (!adminCheck) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+
+    const supabase = await createClient();
 
     const { data: subscriptions } = await supabase
       .from('subscriptions')

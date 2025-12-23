@@ -6,7 +6,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { cleanupAllExpiredData, getRetentionSummary } from '@/lib/data-retention/policies';
 
 export const dynamic = 'force-dynamic';
@@ -17,20 +17,9 @@ export const runtime = 'nodejs';
  */
 export async function POST() {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Check if user is admin (simplified - would use proper role check)
-    const isAdmin = user.user_metadata?.role === 'admin';
-
-    if (!isAdmin) {
+    // CRITICAL: Require super admin access
+    const adminCheck = await isSuperAdmin();
+    if (!adminCheck) {
       return NextResponse.json(
         { error: 'Forbidden' },
         { status: 403 }
@@ -58,20 +47,9 @@ export async function POST() {
  */
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Check if user is admin (simplified - would use proper role check)
-    const isAdmin = user.user_metadata?.role === 'admin';
-
-    if (!isAdmin) {
+    // CRITICAL: Require super admin access
+    const adminCheck = await isSuperAdmin();
+    if (!adminCheck) {
       return NextResponse.json(
         { error: 'Forbidden' },
         { status: 403 }
