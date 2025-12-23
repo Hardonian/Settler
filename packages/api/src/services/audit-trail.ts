@@ -53,8 +53,10 @@ export async function getAuditLogs(
     const params: unknown[] = [];
     let paramIndex = 1;
 
-    // Note: audit_log is in app_private schema, so we need to handle tenant filtering differently
-    // This is a simplified version - actual implementation would need proper RLS or tenant context
+    // CRITICAL: Always filter by tenant_id for RLS compliance
+    conditions.push(`tenant_id = $${paramIndex}`);
+    params.push(tenantId);
+    paramIndex++;
 
     if (filters.actor) {
       conditions.push(`actor = $${paramIndex}`);
@@ -104,11 +106,14 @@ export async function getAuditLogs(
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
     const result = await query<Record<string, unknown>>(
-      `SELECT id, at, actor, action, schema_name, table_name, row_pk, details,
-              ip_address, user_agent, compliance_tags
-       FROM app_private.audit_log
+      `SELECT id, timestamp as at, user_id as actor, event as action, 
+              'public' as schema_name, resource_type as table_name, 
+              resource_id as row_pk, metadata as details,
+              ip_address, user_agent, 
+              CASE WHEN tags IS NOT NULL THEN tags::text[] ELSE ARRAY[]::text[] END as compliance_tags
+       FROM audit_logs
        ${whereClause}
-       ORDER BY at DESC
+       ORDER BY timestamp DESC
        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
       [...params, limit, offset] as (string | number | boolean | null | Date)[]
     );

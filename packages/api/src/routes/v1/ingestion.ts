@@ -59,6 +59,52 @@ router.post("/sources", tenantMiddleware, async (req: TenantRequest, res: Respon
       });
     }
 
+    // Check adapter limit enforcement
+    if (type === "connector" && connectorType) {
+      const billingAccount = await getBillingAccount(userId, tenantId);
+      if (billingAccount) {
+        const subscription = await query(
+          `SELECT plan_id FROM subscriptions 
+           WHERE billing_account_id = $1 AND status = 'active' 
+           ORDER BY created_at DESC LIMIT 1`,
+          [billingAccount.id]
+        );
+        
+        const planId = subscription[0]?.plan_id || "free";
+        const planLimits: Record<string, { platformAdapters: number | "unlimited" }> = {
+          free: { platformAdapters: 2 },
+          starter: { platformAdapters: 5 },
+          growth: { platformAdapters: "unlimited" },
+          scale: { platformAdapters: "unlimited" },
+          enterprise: { platformAdapters: "unlimited" },
+        };
+        
+        const limits = planLimits[planId] || planLimits.free;
+        
+        if (limits.platformAdapters !== "unlimited") {
+          // Count existing adapters (connector-type ingestion sources)
+          const adapterCount = await query(
+            `SELECT COUNT(*) as count FROM ingestion_sources 
+             WHERE tenant_id = $1 AND type = 'connector' AND deleted_at IS NULL`,
+            [tenantId]
+          );
+          
+          const currentCount = parseInt((adapterCount[0] as { count: string })?.count || "0");
+          
+          if (currentCount >= limits.platformAdapters) {
+            return res.status(403).json({
+              error: "Plan Limit Exceeded",
+              message: `You have reached your adapter limit (${limits.platformAdapters} adapters). Please upgrade to a higher plan to add more adapters. Current plan: ${planId}.`,
+              currentCount,
+              limit: limits.platformAdapters,
+              upgradeRequired: true,
+              traceId: req.traceId,
+            });
+          }
+        }
+      }
+    }
+
     const sourceId = uuidv4();
     const encryptedConfig = config ? JSON.stringify(config) : null; // TODO: Encrypt properly
 
