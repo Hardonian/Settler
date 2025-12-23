@@ -114,6 +114,14 @@ router.get("/exports/:exportId", async (req: AuthRequest, res: Response) => {
     const { exportId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!exportId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "exportId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const exportData = await getAuditExport(tenantId, exportId);
 
     if (!exportData) {

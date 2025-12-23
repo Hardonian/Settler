@@ -35,7 +35,11 @@ export async function updateReconciliationProgress(
     // Calculate ETA if not provided
     let estimatedCompletionAt = progress.estimatedCompletionAt;
     if (!estimatedCompletionAt && progress.transactionsProcessed > 0) {
-      const runResult = await query(
+      const runResult = await query<{
+        started_at?: Date;
+        last_progress_update_at?: Date;
+        transactions_processed: number;
+      }>(
         `SELECT started_at, last_progress_update_at, transactions_processed
          FROM recon_runs
          WHERE id = $1 AND workspace_id IN (SELECT id FROM tenants WHERE id = $2)`,
@@ -43,11 +47,7 @@ export async function updateReconciliationProgress(
       );
 
       if (runResult.length > 0) {
-        const run = runResult[0] as {
-          started_at?: Date;
-          last_progress_update_at?: Date;
-          transactions_processed: number;
-        };
+        const run = runResult[0]!;
 
         const lastUpdate = run.last_progress_update_at || run.started_at;
         if (lastUpdate && progress.transactionsProcessed > run.transactions_processed) {
@@ -147,7 +147,13 @@ export async function getReconciliationProgress(
   runId: string
 ): Promise<ProgressUpdate | null> {
   try {
-    const result = await query(
+    const result = await query<{
+      progress_percentage: number;
+      transactions_processed: number;
+      total_transactions: number;
+      estimated_completion_at?: Date;
+      last_progress_update_at?: Date;
+    }>(
       `SELECT progress_percentage, transactions_processed, total_transactions,
               estimated_completion_at, last_progress_update_at
        FROM recon_runs
@@ -159,13 +165,7 @@ export async function getReconciliationProgress(
       return null;
     }
 
-    const row = result[0] as {
-      progress_percentage: number;
-      transactions_processed: number;
-      total_transactions: number;
-      estimated_completion_at?: Date;
-      last_progress_update_at?: Date;
-    };
+    const row = result[0]!;
 
     return {
       progressPercentage: row.progress_percentage || 0,
@@ -188,7 +188,12 @@ export async function getReconciliationResultProgress(
   resultId: string
 ): Promise<ProgressUpdate | null> {
   try {
-    const result = await query(
+    const result = await query<{
+      progress_percentage: number;
+      transactions_processed: number;
+      estimated_completion_at?: Date;
+      updated_at: Date;
+    }>(
       `SELECT progress_percentage, transactions_processed,
               estimated_completion_at, updated_at
        FROM recon_results
@@ -200,23 +205,17 @@ export async function getReconciliationResultProgress(
       return null;
     }
 
-    const row = result[0] as {
-      progress_percentage: number;
-      transactions_processed: number;
-      estimated_completion_at?: Date;
-      updated_at: Date;
-    };
+    const row = result[0]!;
 
     // Get total from source_count + target_count
-    const totalResult = await query(
+    const totalResult = await query<{ total: number }>(
       `SELECT source_count + target_count as total
        FROM recon_results
        WHERE id = $1 AND tenant_id = $2`,
       [resultId, tenantId]
     );
 
-    const totalTransactions =
-      totalResult.length > 0 ? (totalResult[0]?.total as number) || 0 : 0;
+    const totalTransactions = totalResult.length > 0 ? (totalResult[0]?.total || 0) : 0;
 
     return {
       progressPercentage: row.progress_percentage || 0,
@@ -252,15 +251,15 @@ export async function createCheckpoint(
     // Create new checkpoint
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO checkpoints (
         tenant_id, job_id, checkpoint_data, transactions_processed, expires_at
       ) VALUES ($1, $2, $3, $4, $5)
       RETURNING id`,
-      [tenantId, jobId, JSON.stringify(checkpointData), transactionsProcessed, expiresAt]
+      [tenantId, jobId, JSON.stringify(checkpointData), transactionsProcessed, expiresAt] as (string | number | boolean | null | Date)[]
     );
 
-    const checkpointId = result[0]?.id as string;
+    const checkpointId = result[0]?.id || '';
     logInfo("Checkpoint created", { checkpointId, jobId, tenantId });
     return checkpointId;
   } catch (error) {
@@ -282,7 +281,12 @@ export async function getLatestCheckpoint(
   createdAt: Date;
 } | null> {
   try {
-    const result = await query(
+    const result = await query<{
+      id: string;
+      checkpoint_data: Record<string, unknown>;
+      transactions_processed: number;
+      created_at: Date;
+    }>(
       `SELECT id, checkpoint_data, transactions_processed, created_at
        FROM checkpoints
        WHERE job_id = $1 AND tenant_id = $2 AND status = 'active'
@@ -295,12 +299,7 @@ export async function getLatestCheckpoint(
       return null;
     }
 
-    const row = result[0] as {
-      id: string;
-      checkpoint_data: Record<string, unknown>;
-      transactions_processed: number;
-      created_at: Date;
-    };
+    const row = result[0]!;
 
     return {
       id: row.id,

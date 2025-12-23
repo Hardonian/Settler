@@ -58,27 +58,27 @@ export async function createApprovalRequest(
     let approverId = options.approverId;
     let approverRole = options.approverRole;
 
-    // Auto-assign approver if not provided
-    if (!approverId && !approverRole) {
-      const approverResult = await query(
-        `SELECT user_id, role FROM approvers
-         WHERE tenant_id = $1 AND can_approve_final = true
-         ORDER BY created_at ASC
-         LIMIT 1`,
-        [tenantId]
-      );
+      // Auto-assign approver if not provided
+      if (!approverId && !approverRole) {
+        const approverResult = await query<{ user_id: string; role: string }>(
+          `SELECT user_id, role FROM approvers
+           WHERE tenant_id = $1 AND can_approve_final = true
+           ORDER BY created_at ASC
+           LIMIT 1`,
+          [tenantId]
+        );
 
-      if (approverResult.length > 0) {
-        approverId = approverResult[0]?.user_id as string;
-        approverRole = approverResult[0]?.role as string;
+        if (approverResult.length > 0) {
+          approverId = approverResult[0]?.user_id;
+          approverRole = approverResult[0]?.role;
+        }
       }
-    }
 
     const expiresAt = options.expiresInHours
       ? new Date(Date.now() + options.expiresInHours * 60 * 60 * 1000)
       : null;
 
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO approval_requests (
         tenant_id, requested_by, approver_id, approver_role,
         reconciliation_run_id, recon_job_id, recon_result_id,
@@ -97,10 +97,10 @@ export async function createApprovalRequest(
         JSON.stringify(requestDetails),
         options.comments || null,
         expiresAt,
-      ]
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const approvalId = result[0]?.id as string;
+    const approvalId = result[0]?.id || '';
 
     logInfo("Approval request created", {
       approvalId,
@@ -124,8 +124,7 @@ export async function createApprovalRequest(
 export async function approveRequest(
   tenantId: string,
   approvalId: string,
-  approverId: string,
-  comments?: string
+  approverId: string
 ): Promise<void> {
   try {
     await transaction(async (client) => {
@@ -137,11 +136,11 @@ export async function approveRequest(
         [approvalId, tenantId]
       );
 
-      if (requestResult.length === 0) {
+      if (requestResult.rows.length === 0) {
         throw new Error("Approval request not found");
       }
 
-      const request = requestResult[0] as {
+      const request = requestResult.rows[0] as {
         approver_id?: string;
         approver_role?: string;
         status: string;
@@ -159,14 +158,16 @@ export async function approveRequest(
       // Verify approver has permission
       if (request.approver_id && request.approver_id !== approverId) {
         // Check if user has the required role
-        const approverResult = await client.query(
-          `SELECT id FROM approvers
-           WHERE tenant_id = $1 AND user_id = $2 AND role = $3`,
-          [tenantId, approverId, request.approver_role]
-        );
+        if (request.approver_role) {
+          const approverResult = await client.query(
+            `SELECT id FROM approvers
+             WHERE tenant_id = $1 AND user_id = $2 AND role = $3`,
+            [tenantId, approverId, request.approver_role]
+          );
 
-        if (approverResult.length === 0) {
-          throw new Error("User does not have permission to approve this request");
+          if (approverResult.rows.length === 0) {
+            throw new Error("User does not have permission to approve this request");
+          }
         }
       }
 
@@ -207,11 +208,11 @@ export async function rejectRequest(
         [approvalId, tenantId]
       );
 
-      if (requestResult.length === 0) {
+      if (requestResult.rows.length === 0) {
         throw new Error("Approval request not found");
       }
 
-      const request = requestResult[0] as {
+      const request = requestResult.rows[0] as {
         approver_id?: string;
         approver_role?: string;
         status: string;
@@ -245,7 +246,7 @@ export async function getApprovalRequest(
   approvalId: string
 ): Promise<ApprovalRequest | null> {
   try {
-    const result = await query(
+    const result = await query<Record<string, unknown>>(
       `SELECT id, tenant_id, requested_by, approver_id, approver_role,
               reconciliation_run_id, recon_job_id, recon_result_id,
               status, request_type, request_details, comments,
@@ -259,7 +260,7 @@ export async function getApprovalRequest(
       return null;
     }
 
-    const row = result[0] as Record<string, unknown>;
+    const row = result[0]!;
     return {
       id: row.id as string,
       tenantId: row.tenant_id as string,
@@ -323,7 +324,7 @@ export async function listApprovalRequests(
     const limit = filters.limit || 100;
     const offset = filters.offset || 0;
 
-    const result = await query(
+    const result = await query<Record<string, unknown>>(
       `SELECT id, tenant_id, requested_by, approver_id, approver_role,
               reconciliation_run_id, recon_job_id, recon_result_id,
               status, request_type, request_details, comments,
@@ -332,7 +333,7 @@ export async function listApprovalRequests(
        WHERE ${conditions.join(" AND ")}
        ORDER BY requested_at DESC
        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
-      [...params, limit, offset]
+      [...params, limit, offset] as (string | number | boolean | null | Date)[]
     );
 
     return result.map((row) => ({
@@ -372,7 +373,7 @@ export async function addApprover(
   } = {}
 ): Promise<string> {
   try {
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO approvers (
         tenant_id, user_id, role, approval_threshold, can_approve_final
       ) VALUES ($1, $2, $3, $4, $5)
@@ -387,10 +388,10 @@ export async function addApprover(
         role,
         options.approvalThreshold || null,
         options.canApproveFinal ?? false,
-      ]
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const approverId = result[0]?.id as string;
+    const approverId = result[0]?.id || '';
     logInfo("Approver added", { approverId, tenantId, userId, role });
     return approverId;
   } catch (error) {

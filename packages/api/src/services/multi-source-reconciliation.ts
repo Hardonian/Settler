@@ -3,9 +3,8 @@
  * Handles reconciliation with multiple source adapters against a single target
  */
 
-import { query, transaction } from "../db";
+import { query } from "../db";
 import { logError, logInfo } from "../utils/logger";
-import type { AuthRequest } from "../middleware/auth";
 
 export interface MultiSourceConfig {
   sourceAdapters: Array<{
@@ -44,7 +43,7 @@ export async function createMultiSourceJob(
   config: MultiSourceConfig
 ): Promise<string> {
   try {
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO multi_source_jobs (
         tenant_id, user_id, source_adapters, target_adapter,
         conflict_resolution_strategy, duplicate_detection_enabled
@@ -57,10 +56,13 @@ export async function createMultiSourceJob(
         config.targetAdapter,
         config.conflictResolutionStrategy,
         config.duplicateDetectionEnabled,
-      ]
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const jobId = result[0]?.id as string;
+    if (!result[0]?.id) {
+      throw new Error("Failed to create multi-source job");
+    }
+    const jobId = result[0].id;
     logInfo("Multi-source job created", { jobId, tenantId, userId });
     return jobId;
   } catch (error) {
@@ -94,7 +96,10 @@ export async function detectConflicts(
       if (!seenTransactions.has(key)) {
         seenTransactions.set(key, []);
       }
-      seenTransactions.get(key)!.push(tx);
+      const group = seenTransactions.get(key);
+      if (group) {
+        group.push(tx);
+      }
     }
 
     // Detect conflicts (same transaction from multiple sources)
@@ -106,7 +111,7 @@ export async function detectConflicts(
             const tx1 = txs[i]!;
             const tx2 = txs[j]!;
 
-            const conflictResult = await query(
+            const conflictResult = await query<{ id: string }>(
               `INSERT INTO source_conflicts (
                 multi_source_job_id, tenant_id, conflict_type,
                 source_adapter_1, source_adapter_2,
@@ -128,11 +133,11 @@ export async function detectConflicts(
                   description: tx1.description,
                   externalId: tx1.externalId,
                 }),
-              ]
+              ] as (string | number | boolean | null | Date)[]
             );
 
             conflicts.push({
-              conflictId: conflictResult[0]?.id as string,
+              conflictId: conflictResult[0]?.id || '',
               conflictType: "duplicate_transaction",
               sourceAdapter1: tx1.adapter,
               sourceAdapter2: tx2.adapter,
@@ -169,8 +174,7 @@ export async function resolveConflict(
   tenantId: string,
   conflictId: string,
   resolutionStrategy: "first_wins" | "last_wins" | "highest_amount" | "lowest_amount" | "manual",
-  resolvedBy: string,
-  selectedTransactionId?: string
+  resolvedBy: string
 ): Promise<void> {
   try {
     await query(
@@ -192,13 +196,17 @@ export async function resolveConflict(
  */
 export async function runMultiSourceReconciliation(
   tenantId: string,
-  userId: string,
   multiSourceJobId: string,
   reconRunId: string
 ): Promise<MultiSourceReconciliationResult> {
   try {
     // Get job configuration
-    const jobResult = await query(
+    const jobResult = await query<{
+      source_adapters: Array<{ adapter: string; config: Record<string, unknown> }>;
+      target_adapter: string;
+      conflict_resolution_strategy: string;
+      duplicate_detection_enabled: boolean;
+    }>(
       `SELECT source_adapters, target_adapter, conflict_resolution_strategy, duplicate_detection_enabled
        FROM multi_source_jobs
        WHERE id = $1 AND tenant_id = $2`,
@@ -208,13 +216,6 @@ export async function runMultiSourceReconciliation(
     if (jobResult.length === 0) {
       throw new Error("Multi-source job not found");
     }
-
-    const job = jobResult[0] as {
-      source_adapters: Array<{ adapter: string; config: Record<string, unknown> }>;
-      target_adapter: string;
-      conflict_resolution_strategy: string;
-      duplicate_detection_enabled: boolean;
-    };
 
     // TODO: Fetch transactions from all source adapters
     // This would integrate with the adapter system
@@ -265,7 +266,12 @@ export async function getMultiSourceJob(
   conflicts: ConflictDetectionResult[];
 } | null> {
   try {
-    const jobResult = await query(
+    const jobResult = await query<{
+      id: string;
+      source_adapters: Array<{ adapter: string; config: Record<string, unknown> }>;
+      target_adapter: string;
+      conflict_resolution_strategy: string;
+    }>(
       `SELECT id, source_adapters, target_adapter, conflict_resolution_strategy
        FROM multi_source_jobs
        WHERE id = $1 AND tenant_id = $2`,
@@ -276,15 +282,18 @@ export async function getMultiSourceJob(
       return null;
     }
 
-    const job = jobResult[0] as {
-      id: string;
-      source_adapters: Array<{ adapter: string; config: Record<string, unknown> }>;
-      target_adapter: string;
-      conflict_resolution_strategy: string;
-    };
+    const job = jobResult[0]!;
 
     // Get conflicts
-    const conflictsResult = await query(
+    const conflictsResult = await query<{
+      id: string;
+      conflict_type: string;
+      source_adapter_1: string;
+      source_adapter_2: string;
+      transaction_id_1: string | null;
+      transaction_id_2: string | null;
+      conflict_details: Record<string, unknown>;
+    }>(
       `SELECT id, conflict_type, source_adapter_1, source_adapter_2,
               transaction_id_1, transaction_id_2, conflict_details
        FROM source_conflicts
@@ -293,13 +302,13 @@ export async function getMultiSourceJob(
     );
 
     const conflicts: ConflictDetectionResult[] = conflictsResult.map((row) => ({
-      conflictId: row.id as string,
-      conflictType: row.conflict_type as string,
-      sourceAdapter1: row.source_adapter_1 as string,
-      sourceAdapter2: row.source_adapter_2 as string,
-      transactionId1: row.transaction_id_1 as string | undefined,
-      transactionId2: row.transaction_id_2 as string | undefined,
-      conflictDetails: row.conflict_details as Record<string, unknown>,
+      conflictId: row.id,
+      conflictType: row.conflict_type,
+      sourceAdapter1: row.source_adapter_1,
+      sourceAdapter2: row.source_adapter_2,
+      transactionId1: row.transaction_id_1 || undefined,
+      transactionId2: row.transaction_id_2 || undefined,
+      conflictDetails: row.conflict_details,
     }));
 
     return {

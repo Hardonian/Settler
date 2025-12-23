@@ -60,11 +60,11 @@ export async function getNotificationPreferences(
       conditions.push("user_id IS NULL");
     }
 
-    const result = await query(
+    const result = await query<Record<string, unknown>>(
       `SELECT event_type, channels, enabled
        FROM notification_preferences
        WHERE ${conditions.join(" AND ")}`,
-      params
+      params as (string | number | boolean | null | Date)[]
     );
 
     return result.map((row) => ({
@@ -191,15 +191,15 @@ async function logNotification(
   body?: string
 ): Promise<string> {
   try {
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO notification_logs (
         tenant_id, user_id, event_type, channel, recipient, subject, body
       ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id`,
-      [tenantId, userId || null, eventType, channel, recipient, subject || null, body || null]
+      [tenantId, userId || null, eventType, channel, recipient, subject || null, body || null] as (string | number | boolean | null | Date)[]
     );
 
-    const logId = result[0]?.id as string;
+    const logId = result[0]?.id || '';
     return logId;
   } catch (error) {
     logError("Failed to log notification", error, { tenantId, userId, eventType });
@@ -280,14 +280,14 @@ export async function getNotificationLogs(
     const limit = filters.limit || 100;
     const offset = filters.offset || 0;
 
-    const result = await query(
+    const result = await query<Record<string, unknown>>(
       `SELECT id, tenant_id, user_id, event_type, channel, recipient,
               subject, body, sent_at, delivered_at, failed_at, error_message
        FROM notification_logs
        WHERE ${conditions.join(" AND ")}
        ORDER BY sent_at DESC
        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
-      [...params, limit, offset]
+      [...params, limit, offset] as (string | number | boolean | null | Date)[]
     );
 
     return result.map((row) => ({

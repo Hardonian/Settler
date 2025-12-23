@@ -52,7 +52,7 @@ export async function createCustomMatchingRule(
   rule: MatchingRule
 ): Promise<string> {
   try {
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO custom_matching_rules (
         tenant_id, user_id, name, description, rule_type,
         rule_config, custom_fields, is_template, is_active
@@ -68,10 +68,10 @@ export async function createCustomMatchingRule(
         JSON.stringify(rule.customFields || []),
         rule.isTemplate || false,
         rule.isActive !== undefined ? rule.isActive : true,
-      ]
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const ruleId = result[0]?.id as string;
+    const ruleId = result[0]?.id || '';
     logInfo("Custom matching rule created", { ruleId, tenantId, userId, name: rule.name });
     return ruleId;
   } catch (error) {
@@ -88,7 +88,17 @@ export async function getCustomMatchingRule(
   ruleId: string
 ): Promise<MatchingRule | null> {
   try {
-    const result = await query(
+    const result = await query<{
+      id: string;
+      name: string;
+      description?: string;
+      rule_type: string;
+      rule_config: MatchingRule["ruleConfig"];
+      custom_fields: CustomField[];
+      is_template: boolean;
+      is_active: boolean;
+      performance_metrics: RulePerformanceMetrics | null;
+    }>(
       `SELECT id, name, description, rule_type, rule_config, custom_fields,
               is_template, is_active, performance_metrics
        FROM custom_matching_rules
@@ -100,17 +110,7 @@ export async function getCustomMatchingRule(
       return null;
     }
 
-    const row = result[0] as {
-      id: string;
-      name: string;
-      description?: string;
-      rule_type: string;
-      rule_config: MatchingRule["ruleConfig"];
-      custom_fields: CustomField[];
-      is_template: boolean;
-      is_active: boolean;
-      performance_metrics: RulePerformanceMetrics | null;
-    };
+    const row = result[0]!;
 
     return {
       id: row.id,
@@ -160,14 +160,14 @@ export async function listCustomMatchingRules(
     const limit = filters.limit || 100;
     const offset = filters.offset || 0;
 
-    const result = await query(
+    const result = await query<Record<string, unknown>>(
       `SELECT id, name, description, rule_type, rule_config, custom_fields,
               is_template, is_active, performance_metrics
        FROM custom_matching_rules
        WHERE ${conditions.join(" AND ")}
        ORDER BY created_at DESC
        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
-      [...params, limit, offset]
+      [...params, limit, offset] as (string | number | boolean | null | Date)[]
     );
 
     return result.map((row) => ({
@@ -196,7 +196,7 @@ export async function updateRulePerformanceMetrics(
 ): Promise<void> {
   try {
     // Get existing metrics
-    const existingResult = await query(
+    const existingResult = await query<{ performance_metrics: RulePerformanceMetrics | null }>(
       `SELECT performance_metrics FROM custom_matching_rules
        WHERE id = $1 AND tenant_id = $2`,
       [ruleId, tenantId]
@@ -206,7 +206,7 @@ export async function updateRulePerformanceMetrics(
       throw new Error("Rule not found");
     }
 
-    const existingMetrics = (existingResult[0]?.performance_metrics as RulePerformanceMetrics) || {
+    const existingMetrics = existingResult[0]?.performance_metrics || {
       ruleId,
       totalMatches: 0,
       successfulMatches: 0,
@@ -227,7 +227,7 @@ export async function updateRulePerformanceMetrics(
       `UPDATE custom_matching_rules
        SET performance_metrics = $1, updated_at = now()
        WHERE id = $2 AND tenant_id = $3`,
-      [JSON.stringify(updatedMetrics), ruleId, tenantId]
+      [JSON.stringify(updatedMetrics), ruleId, tenantId] as (string | number | boolean | null | Date)[]
     );
 
     logInfo("Rule performance metrics updated", { ruleId, tenantId });
@@ -264,7 +264,7 @@ export async function testMatchingRule(
 
       switch (rule.ruleType) {
         case "exact":
-          matched = sourceValue === targetValue;
+          matched = String(sourceValue) === String(targetValue);
           confidence = matched ? 1.0 : 0;
           break;
 
@@ -277,18 +277,20 @@ export async function testMatchingRule(
 
         case "range":
           if (typeof sourceValue === "number" && typeof targetValue === "number") {
-            const tolerance = (rule.ruleConfig.weight as number) || 0.01;
+            const tolerance = typeof rule.ruleConfig.weight === "number" ? rule.ruleConfig.weight : 0.01;
             const diff = Math.abs(sourceValue - targetValue);
             matched = diff <= tolerance;
-            confidence = matched ? 1.0 - diff / tolerance : 0;
+            confidence = matched ? Math.max(0, 1.0 - diff / tolerance) : 0;
           }
           break;
 
-        case "custom":
-          // Custom logic would go here based on ruleConfig.conditions
-          matched = evaluateCustomConditions(rule.ruleConfig.conditions || [], sourceData, targetData);
+      case "custom":
+        // Custom logic would go here based on ruleConfig.conditions
+        if (rule.ruleConfig.conditions) {
+          matched = evaluateCustomConditions(rule.ruleConfig.conditions, sourceData, targetData);
           confidence = matched ? 0.9 : 0;
-          break;
+        }
+        break;
       }
 
       matchDetails.push({
@@ -356,20 +358,21 @@ function evaluateCustomConditions(
   for (const condition of conditions) {
     const sourceValue = getNestedValue(sourceData, condition.field);
     const targetValue = getNestedValue(targetData, condition.field);
+    const conditionValue = condition.value;
 
     let result = false;
     switch (condition.operator) {
       case "equals":
-        result = sourceValue === condition.value && targetValue === condition.value;
+        result = sourceValue === conditionValue && targetValue === conditionValue;
         break;
       case "contains":
-        if (typeof sourceValue === "string" && typeof condition.value === "string") {
-          result = sourceValue.includes(condition.value) && targetValue === sourceValue;
+        if (typeof sourceValue === "string" && typeof conditionValue === "string") {
+          result = sourceValue.includes(conditionValue) && targetValue === sourceValue;
         }
         break;
       case "greaterThan":
-        if (typeof sourceValue === "number" && typeof condition.value === "number") {
-          result = sourceValue > condition.value && targetValue > condition.value;
+        if (typeof sourceValue === "number" && typeof conditionValue === "number") {
+          result = sourceValue > conditionValue && typeof targetValue === "number" && targetValue > conditionValue;
         }
         break;
       // Add more operators as needed

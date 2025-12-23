@@ -27,42 +27,44 @@ export async function getExchangeRate(
       return 1.0;
     }
 
+    const dateStr = date.toISOString().split("T")[0] as string;
+    
     // Try exact date first
-    let result = await query(
+    let result = await query<{ rate: number }>(
       `SELECT rate FROM currency_rates
        WHERE from_currency = $1 AND to_currency = $2 AND date = $3
        ORDER BY created_at DESC
        LIMIT 1`,
-      [fromCurrency, toCurrency, date.toISOString().split("T")[0]]
+      [fromCurrency, toCurrency, dateStr]
     );
 
     // If not found, try latest available rate
     if (result.length === 0) {
-      result = await query(
+      result = await query<{ rate: number }>(
         `SELECT rate FROM currency_rates
          WHERE from_currency = $1 AND to_currency = $2 AND date <= $3
          ORDER BY date DESC
          LIMIT 1`,
-        [fromCurrency, toCurrency, date.toISOString().split("T")[0]]
+        [fromCurrency, toCurrency, dateStr]
       );
     }
 
     // If still not found, try reverse (and invert rate)
     if (result.length === 0) {
-      result = await query(
+      result = await query<{ rate: number }>(
         `SELECT rate FROM currency_rates
          WHERE from_currency = $1 AND to_currency = $2 AND date <= $3
          ORDER BY date DESC
          LIMIT 1`,
-        [toCurrency, fromCurrency, date.toISOString().split("T")[0]]
+        [toCurrency, fromCurrency, dateStr]
       );
 
-      if (result.length > 0) {
-        return 1 / (result[0]?.rate as number);
+      if (result.length > 0 && result[0]) {
+        return 1 / result[0].rate;
       }
     }
 
-    return result.length > 0 ? (result[0]?.rate as number) : null;
+    return result.length > 0 && result[0] ? result[0].rate : null;
   } catch (error) {
     logError("Failed to get exchange rate", error, { fromCurrency, toCurrency, date });
     throw error;
@@ -80,16 +82,22 @@ export async function addExchangeRate(
   source: string = "manual"
 ): Promise<string> {
   try {
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO currency_rates (from_currency, to_currency, rate, date, source)
        VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (from_currency, to_currency, date, source) DO UPDATE
        SET rate = EXCLUDED.rate
        RETURNING id`,
-      [fromCurrency, toCurrency, rate, date.toISOString().split("T")[0], source]
+      [
+        fromCurrency,
+        toCurrency,
+        rate,
+        date.toISOString().split("T")[0] as string,
+        source,
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const rateId = result[0]?.id as string;
+    const rateId = result[0]?.id || '';
     logInfo("Exchange rate added", { rateId, fromCurrency, toCurrency, rate, date });
     return rateId;
   } catch (error) {
@@ -146,8 +154,8 @@ export async function convertCurrency(
           amount,
           convertedAmount,
           rate,
-          date.toISOString().split("T")[0],
-        ]
+          date.toISOString().split("T")[0] as string,
+        ] as (string | number | boolean | null | Date)[]
       );
     }
 

@@ -25,6 +25,14 @@ router.get("/reconciliation-runs/:runId", async (req: AuthRequest, res: Response
     const { runId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!runId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "runId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const progress = await getReconciliationProgress(tenantId, runId);
 
     if (!progress) {
@@ -57,6 +65,14 @@ router.get("/reconciliation-results/:resultId", async (req: AuthRequest, res: Re
   try {
     const { resultId } = req.params;
     const tenantId = req.tenantId!;
+
+    if (!resultId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "resultId is required",
+        traceId: req.traceId,
+      });
+    }
 
     const progress = await getReconciliationResultProgress(tenantId, resultId);
 
@@ -131,6 +147,14 @@ router.get("/checkpoints/jobs/:jobId", async (req: AuthRequest, res: Response) =
     const { jobId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!jobId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "jobId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const checkpoint = await getLatestCheckpoint(tenantId, jobId);
 
     if (!checkpoint) {
@@ -163,6 +187,14 @@ router.post("/checkpoints/:checkpointId/resume", async (req: AuthRequest, res: R
   try {
     const { checkpointId } = req.params;
     const tenantId = req.tenantId!;
+
+    if (!checkpointId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "checkpointId is required",
+        traceId: req.traceId,
+      });
+    }
 
     await resumeFromCheckpoint(tenantId, checkpointId);
 

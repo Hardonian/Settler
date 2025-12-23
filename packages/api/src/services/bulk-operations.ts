@@ -3,7 +3,7 @@
  * Handles bulk operations on transactions, matches, etc.
  */
 
-import { query, transaction } from "../db";
+import { query } from "../db";
 import { logError, logInfo } from "../utils/logger";
 
 export type BulkOperationType =
@@ -35,7 +35,7 @@ export async function createBulkOperation(
   operationConfig: Record<string, unknown> = {}
 ): Promise<string> {
   try {
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO bulk_operations (
         tenant_id, user_id, operation_type, target_type,
         target_ids, operation_config, total_items, status
@@ -49,10 +49,10 @@ export async function createBulkOperation(
         JSON.stringify(targetIds),
         JSON.stringify(operationConfig),
         targetIds.length,
-      ]
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const operationId = result[0]?.id as string;
+    const operationId = result[0]?.id || '';
     logInfo("Bulk operation created", {
       operationId,
       tenantId,
@@ -78,7 +78,13 @@ export async function executeBulkOperation(
 ): Promise<BulkOperationResult> {
   try {
     // Get operation details
-    const opResult = await query(
+    const opResult = await query<{
+      operation_type: BulkOperationType;
+      target_type: string;
+      target_ids: string[];
+      operation_config: Record<string, unknown>;
+      total_items: number;
+    }>(
       `SELECT operation_type, target_type, target_ids, operation_config, total_items
        FROM bulk_operations
        WHERE id = $1 AND tenant_id = $2`,
@@ -89,13 +95,7 @@ export async function executeBulkOperation(
       throw new Error("Bulk operation not found");
     }
 
-    const operation = opResult[0] as {
-      operation_type: BulkOperationType;
-      target_type: string;
-      target_ids: string[];
-      operation_config: Record<string, unknown>;
-      total_items: number;
-    };
+    const operation = opResult[0]!;
 
     await query(
       `UPDATE bulk_operations
@@ -218,7 +218,15 @@ export async function getBulkOperationStatus(
   operationId: string
 ): Promise<BulkOperationResult | null> {
   try {
-    const result = await query(
+    const result = await query<{
+      id: string;
+      status: string;
+      items_processed: number;
+      total_items: number;
+      succeeded_count: number;
+      failed_count: number;
+      error_details: Array<{ itemId: string; error: string }>;
+    }>(
       `SELECT id, status, items_processed, total_items,
               succeeded_count, failed_count, error_details, progress_percentage
        FROM bulk_operations
@@ -230,15 +238,7 @@ export async function getBulkOperationStatus(
       return null;
     }
 
-    const row = result[0] as {
-      id: string;
-      status: string;
-      items_processed: number;
-      total_items: number;
-      succeeded_count: number;
-      failed_count: number;
-      error_details: Array<{ itemId: string; error: string }>;
-    };
+    const row = result[0]!;
 
     return {
       id: row.id,

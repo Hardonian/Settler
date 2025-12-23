@@ -4,7 +4,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
-import { logError, logInfo } from "../../utils/logger";
+import { logError } from "../../utils/logger";
 import {
   createCustomIntegration,
   getCustomIntegration,
@@ -72,6 +72,14 @@ router.get("/:integrationId", async (req: AuthRequest, res: Response) => {
     const { integrationId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!integrationId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "integrationId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const integration = await getCustomIntegration(tenantId, integrationId);
 
     if (!integration) {
@@ -98,6 +106,14 @@ router.patch("/:integrationId", async (req: AuthRequest, res: Response) => {
     const { integrationId } = req.params;
     const tenantId = req.tenantId!;
     const updates = req.body;
+
+    if (!integrationId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "integrationId is required",
+        traceId: req.traceId,
+      });
+    }
 
     await updateCustomIntegration(tenantId, integrationId, updates);
 

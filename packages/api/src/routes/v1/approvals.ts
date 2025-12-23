@@ -85,7 +85,6 @@ router.post("/requests", async (req: AuthRequest, res: Response) => {
 router.get("/requests", async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
-    const userId = req.userId!;
     const {
       status,
       approverId,
@@ -130,6 +129,14 @@ router.get("/requests/:approvalId", async (req: AuthRequest, res: Response) => {
     const { approvalId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!approvalId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "approvalId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const request = await getApprovalRequest(tenantId, approvalId);
 
     if (!request) {
@@ -161,11 +168,18 @@ router.get("/requests/:approvalId", async (req: AuthRequest, res: Response) => {
 router.post("/requests/:approvalId/approve", async (req: AuthRequest, res: Response) => {
   try {
     const { approvalId } = req.params;
-    const { comments } = req.body;
     const tenantId = req.tenantId!;
     const userId = req.userId!;
 
-    await approveRequest(tenantId, approvalId, userId, comments);
+    if (!approvalId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "approvalId is required",
+        traceId: req.traceId,
+      });
+    }
+
+    await approveRequest(tenantId, approvalId, userId);
 
     logInfo("Approval request approved", { approvalId, tenantId, userId, traceId: req.traceId });
 
@@ -194,6 +208,14 @@ router.post("/requests/:approvalId/reject", async (req: AuthRequest, res: Respon
     const { comments } = req.body;
     const tenantId = req.tenantId!;
     const userId = req.userId!;
+
+    if (!approvalId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "approvalId is required",
+        traceId: req.traceId,
+      });
+    }
 
     await rejectRequest(tenantId, approvalId, userId, comments);
 

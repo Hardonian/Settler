@@ -32,7 +32,7 @@ export async function createCustomIntegration(
   whiteLabelConfig?: Record<string, unknown>
 ): Promise<string> {
   try {
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO custom_integrations (
         tenant_id, integration_name, integration_type,
         adapter_config, white_label_config, is_active
@@ -44,10 +44,10 @@ export async function createCustomIntegration(
         integrationType,
         JSON.stringify(adapterConfig),
         whiteLabelConfig ? JSON.stringify(whiteLabelConfig) : null,
-      ]
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const integrationId = result[0]?.id as string;
+    const integrationId = result[0]?.id || '';
     logInfo("Custom integration created", {
       integrationId,
       tenantId,
@@ -69,7 +69,15 @@ export async function getCustomIntegration(
   integrationId: string
 ): Promise<CustomIntegration | null> {
   try {
-    const result = await query(
+    const result = await query<{
+      id: string;
+      tenant_id: string;
+      integration_name: string;
+      integration_type: string;
+      adapter_config: Record<string, unknown>;
+      white_label_config: Record<string, unknown> | null;
+      is_active: boolean;
+    }>(
       `SELECT id, tenant_id, integration_name, integration_type,
               adapter_config, white_label_config, is_active
        FROM custom_integrations
@@ -81,15 +89,7 @@ export async function getCustomIntegration(
       return null;
     }
 
-    const row = result[0] as {
-      id: string;
-      tenant_id: string;
-      integration_name: string;
-      integration_type: string;
-      adapter_config: Record<string, unknown>;
-      white_label_config: Record<string, unknown> | null;
-      is_active: boolean;
-    };
+    const row = result[0]!;
 
     return {
       id: row.id,
@@ -133,13 +133,13 @@ export async function listCustomIntegrations(
       paramIndex++;
     }
 
-    const result = await query(
+    const result = await query<Record<string, unknown>>(
       `SELECT id, tenant_id, integration_name, integration_type,
               adapter_config, white_label_config, is_active
        FROM custom_integrations
        WHERE ${conditions.join(" AND ")}
        ORDER BY created_at DESC`,
-      params
+      params as (string | number | boolean | null | Date)[]
     );
 
     return result.map((row) => ({
@@ -203,7 +203,7 @@ export async function updateCustomIntegration(
       `UPDATE custom_integrations
        SET ${updateFields.join(", ")}
        WHERE tenant_id = $${paramIndex} AND id = $${paramIndex + 1}`,
-      params
+      params as (string | number | boolean | null | Date)[]
     );
 
     logInfo("Custom integration updated", { integrationId, tenantId });

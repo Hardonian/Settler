@@ -84,6 +84,14 @@ router.get("/jobs/:jobId", async (req: AuthRequest, res: Response) => {
     const { jobId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!jobId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "jobId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const job = await getMultiSourceJob(tenantId, jobId);
 
     if (!job) {
@@ -127,7 +135,7 @@ router.post("/jobs/:jobId/run", async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const result = await runMultiSourceReconciliation(tenantId, userId, jobId, reconRunId);
+    const result = await runMultiSourceReconciliation(tenantId, jobId, reconRunId);
 
     logInfo("Multi-source reconciliation started", {
       jobId,
@@ -157,7 +165,7 @@ router.post("/jobs/:jobId/run", async (req: AuthRequest, res: Response) => {
 router.post("/conflicts/:conflictId/resolve", async (req: AuthRequest, res: Response) => {
   try {
     const { conflictId } = req.params;
-    const { resolutionStrategy, selectedTransactionId } = req.body;
+    const { resolutionStrategy } = req.body;
     const tenantId = req.tenantId!;
     const userId = req.userId!;
 
@@ -169,7 +177,7 @@ router.post("/conflicts/:conflictId/resolve", async (req: AuthRequest, res: Resp
       });
     }
 
-    await resolveConflict(tenantId, conflictId, resolutionStrategy, userId, selectedTransactionId);
+    await resolveConflict(tenantId, conflictId, resolutionStrategy, userId);
 
     logInfo("Conflict resolved", { conflictId, tenantId, userId, traceId: req.traceId });
 

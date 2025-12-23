@@ -167,6 +167,14 @@ router.post("/violations/:violationId/acknowledge", async (req: AuthRequest, res
     const tenantId = req.tenantId!;
     const userId = req.userId!;
 
+    if (!violationId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "violationId is required",
+        traceId: req.traceId,
+      });
+    }
+
     await acknowledgeSLAViolation(tenantId, violationId, userId);
 
     logInfo("SLA violation acknowledged", {

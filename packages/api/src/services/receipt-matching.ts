@@ -238,7 +238,14 @@ export async function getReceiptMatches(
   verified: boolean;
 }>> {
   try {
-    const result = await query(
+    const result = await query<{
+      id: string;
+      receipt_id: string;
+      transaction_id: string;
+      match_confidence: MatchConfidence;
+      confidence_score: number;
+      verified: boolean;
+    }>(
       `SELECT id, receipt_id, transaction_id, match_confidence, confidence_score, verified
        FROM receipt_transaction_links
        WHERE tenant_id = $1 AND reconciliation_run_id = $2
@@ -247,12 +254,12 @@ export async function getReceiptMatches(
     );
 
     return result.map((row) => ({
-      id: row.id as string,
-      receiptId: row.receipt_id as string,
-      transactionId: row.transaction_id as string,
-      confidence: row.match_confidence as MatchConfidence,
-      confidenceScore: row.confidence_score as number,
-      verified: row.verified as boolean,
+      id: row.id,
+      receiptId: row.receipt_id,
+      transactionId: row.transaction_id,
+      confidence: row.match_confidence,
+      confidenceScore: row.confidence_score,
+      verified: row.verified,
     }));
   } catch (error) {
     logError("Failed to get receipt matches", error, { tenantId, reconciliationRunId });

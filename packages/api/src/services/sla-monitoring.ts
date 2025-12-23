@@ -60,7 +60,7 @@ export async function createSLAAgreement(
     const startDate = options.startDate || new Date();
     const measurementPeriod = options.measurementPeriod || "monthly";
 
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO sla_agreements (
         tenant_id, sla_type, target_value, measurement_period,
         start_date, end_date, is_active
@@ -75,12 +75,12 @@ export async function createSLAAgreement(
         slaType,
         targetValue,
         measurementPeriod,
-        startDate.toISOString().split("T")[0],
-        options.endDate ? options.endDate.toISOString().split("T")[0] : null,
-      ]
+        startDate.toISOString().split("T")[0] as string,
+        options.endDate ? (options.endDate.toISOString().split("T")[0] as string) : null,
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const agreementId = result[0]?.id as string;
+    const agreementId = result[0]?.id || '';
     logInfo("SLA agreement created", { agreementId, tenantId, slaType, targetValue });
     return agreementId;
   } catch (error) {
@@ -102,7 +102,7 @@ export async function recordSLAMetric(
 ): Promise<string> {
   try {
     // Get target value from agreement
-    const agreementResult = await query(
+    const agreementResult = await query<{ target_value: number }>(
       `SELECT target_value FROM sla_agreements WHERE id = $1 AND tenant_id = $2`,
       [slaAgreementId, tenantId]
     );
@@ -111,9 +111,9 @@ export async function recordSLAMetric(
       throw new Error("SLA agreement not found");
     }
 
-    const targetValue = agreementResult[0]?.target_value as number;
+    const targetValue = agreementResult[0]?.target_value || 0;
 
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO sla_metrics (
         tenant_id, sla_agreement_id, metric_type, measured_value,
         target_value, measurement_date, measurement_period
@@ -125,12 +125,12 @@ export async function recordSLAMetric(
         metricType,
         measuredValue,
         targetValue,
-        measurementDate.toISOString().split("T")[0],
+        measurementDate.toISOString().split("T")[0] as string,
         measurementPeriod,
-      ]
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const metricId = result[0]?.id as string;
+    const metricId = result[0]?.id || '';
 
     // Check for violation
     const isViolation = checkSLAViolation(metricType, measuredValue, targetValue);
@@ -210,7 +210,7 @@ async function createSLAViolation(
       severity = "medium";
     }
 
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO sla_violations (
         tenant_id, sla_agreement_id, metric_type, measured_value,
         target_value, violation_date, violation_period, severity
@@ -222,13 +222,13 @@ async function createSLAViolation(
         metricType,
         measuredValue,
         targetValue,
-        violationDate.toISOString().split("T")[0],
+        violationDate.toISOString().split("T")[0] as string,
         violationPeriod,
         severity,
-      ]
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const violationId = result[0]?.id as string;
+    const violationId = result[0]?.id || '';
     logInfo("SLA violation created", {
       violationId,
       tenantId,
@@ -285,7 +285,7 @@ export async function getSLAViolations(
     const limit = filters.limit || 100;
     const offset = filters.offset || 0;
 
-    const result = await query(
+    const result = await query<Record<string, unknown>>(
       `SELECT id, tenant_id, sla_agreement_id, metric_type, measured_value,
               target_value, violation_date, violation_period, severity,
               acknowledged, resolved
@@ -293,7 +293,7 @@ export async function getSLAViolations(
        WHERE ${conditions.join(" AND ")}
        ORDER BY violation_date DESC
        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
-      [...params, limit, offset]
+      [...params, limit, offset] as (string | number | boolean | null | Date)[]
     );
 
     return result.map((row) => ({

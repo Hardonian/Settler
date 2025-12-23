@@ -10,7 +10,6 @@ import {
   createCustomMatchingRule,
   getCustomMatchingRule,
   listCustomMatchingRules,
-  updateRulePerformanceMetrics,
   testMatchingRule,
   type MatchingRule,
 } from "../../services/advanced-matching-rules";
@@ -97,6 +96,14 @@ router.get("/:ruleId", async (req: AuthRequest, res: Response) => {
     const { ruleId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!ruleId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "ruleId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const rule = await getCustomMatchingRule(tenantId, ruleId);
 
     if (!rule) {
@@ -130,6 +137,14 @@ router.post("/:ruleId/test", async (req: AuthRequest, res: Response) => {
     const { ruleId } = req.params;
     const tenantId = req.tenantId!;
     const { sourceData, targetData } = req.body;
+
+    if (!ruleId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "ruleId is required",
+        traceId: req.traceId,
+      });
+    }
 
     if (!sourceData || !targetData) {
       return res.status(400).json({

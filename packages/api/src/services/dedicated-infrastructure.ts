@@ -57,7 +57,7 @@ export async function provisionDedicatedInfrastructure(
       mfaRequired: true,
     };
 
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO dedicated_infrastructure (
         tenant_id, infrastructure_type, resource_config,
         isolation_level, data_retention_days, security_config,
@@ -71,10 +71,10 @@ export async function provisionDedicatedInfrastructure(
         options.isolationLevel || "standard",
         options.dataRetentionDays || null,
         JSON.stringify({ ...defaultSecurityConfig, ...options.securityConfig }),
-      ]
+      ] as (string | number | boolean | null | Date)[]
     );
 
-    const infrastructureId = result[0]?.id as string;
+    const infrastructureId = result[0]?.id || '';
 
     logInfo("Dedicated infrastructure provisioned", {
       infrastructureId,
@@ -104,7 +104,16 @@ export async function getDedicatedInfrastructure(
   infrastructureId: string
 ): Promise<DedicatedInfrastructure | null> {
   try {
-    const result = await query(
+    const result = await query<{
+      id: string;
+      tenant_id: string;
+      infrastructure_type: string;
+      resource_config: DedicatedInfrastructure["resourceConfig"];
+      isolation_level: string;
+      data_retention_days: number | null;
+      security_config: DedicatedInfrastructure["securityConfig"];
+      is_active: boolean;
+    }>(
       `SELECT id, tenant_id, infrastructure_type, resource_config,
               isolation_level, data_retention_days, security_config, is_active
        FROM dedicated_infrastructure
@@ -116,16 +125,7 @@ export async function getDedicatedInfrastructure(
       return null;
     }
 
-    const row = result[0] as {
-      id: string;
-      tenant_id: string;
-      infrastructure_type: string;
-      resource_config: DedicatedInfrastructure["resourceConfig"];
-      isolation_level: string;
-      data_retention_days: number | null;
-      security_config: DedicatedInfrastructure["securityConfig"];
-      is_active: boolean;
-    };
+    const row = result[0]!;
 
     return {
       id: row.id,
@@ -170,13 +170,13 @@ export async function listDedicatedInfrastructure(
       paramIndex++;
     }
 
-    const result = await query(
+    const result = await query<Record<string, unknown>>(
       `SELECT id, tenant_id, infrastructure_type, resource_config,
               isolation_level, data_retention_days, security_config, is_active
        FROM dedicated_infrastructure
        WHERE ${conditions.join(" AND ")}
        ORDER BY created_at DESC`,
-      params
+      params as (string | number | boolean | null | Date)[]
     );
 
     return result.map((row) => ({

@@ -103,14 +103,14 @@ export async function getAuditLogs(
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    const result = await query(
+    const result = await query<Record<string, unknown>>(
       `SELECT id, at, actor, action, schema_name, table_name, row_pk, details,
               ip_address, user_agent, compliance_tags
        FROM app_private.audit_log
        ${whereClause}
        ORDER BY at DESC
        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
-      [...params, limit, offset]
+      [...params, limit, offset] as (string | number | boolean | null | Date)[]
     );
 
     return result.map((row) => ({
@@ -145,15 +145,15 @@ export async function createAuditExport(
   try {
     const expiresAt = new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000);
 
-    const result = await query(
+    const result = await query<{ id: string }>(
       `INSERT INTO audit_exports (
         tenant_id, exported_by, export_format, filters, expires_at
       ) VALUES ($1, $2, $3, $4, $5)
       RETURNING id`,
-      [tenantId, exportedBy, exportFormat, JSON.stringify(filters), expiresAt]
+      [tenantId, exportedBy, exportFormat, JSON.stringify(filters), expiresAt] as (string | number | boolean | null | Date)[]
     );
 
-    const exportId = result[0]?.id as string;
+    const exportId = result[0]?.id || '';
 
     // TODO: Generate actual export file (CSV, JSON, etc.)
     // For now, just log it
@@ -179,7 +179,14 @@ export async function getAuditExport(
   exportId: string
 ): Promise<AuditExport | null> {
   try {
-    const result = await query(
+    const result = await query<{
+      id: string;
+      export_format: string;
+      filters: AuditLogFilter;
+      file_path?: string;
+      expires_at?: Date;
+      created_at: Date;
+    }>(
       `SELECT id, export_format, filters, file_path, expires_at, created_at
        FROM audit_exports
        WHERE id = $1 AND tenant_id = $2`,
@@ -190,14 +197,7 @@ export async function getAuditExport(
       return null;
     }
 
-    const row = result[0] as {
-      id: string;
-      export_format: string;
-      filters: AuditLogFilter;
-      file_path?: string;
-      expires_at?: Date;
-      created_at: Date;
-    };
+    const row = result[0]!;
 
     return {
       id: row.id,

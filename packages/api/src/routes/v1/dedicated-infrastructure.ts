@@ -4,7 +4,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
-import { logError, logInfo } from "../../utils/logger";
+import { logError } from "../../utils/logger";
 import {
   provisionDedicatedInfrastructure,
   getDedicatedInfrastructure,
@@ -76,6 +76,14 @@ router.get("/:infrastructureId", async (req: AuthRequest, res: Response) => {
     const { infrastructureId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!infrastructureId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "infrastructureId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const infrastructure = await getDedicatedInfrastructure(tenantId, infrastructureId);
 
     if (!infrastructure) {
@@ -101,6 +109,14 @@ router.delete("/:infrastructureId", async (req: AuthRequest, res: Response) => {
   try {
     const { infrastructureId } = req.params;
     const tenantId = req.tenantId!;
+
+    if (!infrastructureId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "infrastructureId is required",
+        traceId: req.traceId,
+      });
+    }
 
     await deprovisionDedicatedInfrastructure(tenantId, infrastructureId);
 

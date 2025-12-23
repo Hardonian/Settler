@@ -79,6 +79,14 @@ router.get("/:operationId", async (req: AuthRequest, res: Response) => {
     const { operationId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!operationId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "operationId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const status = await getBulkOperationStatus(tenantId, operationId);
 
     if (!status) {

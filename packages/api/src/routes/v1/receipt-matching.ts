@@ -68,6 +68,14 @@ router.get("/matches/:reconciliationRunId", async (req: AuthRequest, res: Respon
     const { reconciliationRunId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!reconciliationRunId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "reconciliationRunId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const matches = await getReceiptMatches(tenantId, reconciliationRunId);
 
     return res.json({
@@ -93,6 +101,14 @@ router.post("/links/:linkId/verify", async (req: AuthRequest, res: Response) => 
     const { linkId } = req.params;
     const tenantId = req.tenantId!;
     const userId = req.userId!;
+
+    if (!linkId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "linkId is required",
+        traceId: req.traceId,
+      });
+    }
 
     await verifyReceiptLink(tenantId, linkId, userId);
 
