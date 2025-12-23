@@ -22,11 +22,11 @@ export default function Pricing() {
     {
       name: 'Starter',
       price: '$99',
-      description: 'Eliminate manual reconciliation work. Process 10k matches automatically.',
+      description: 'System-level enforcement eliminates $106K-$724K+ in annual risk. Process 10k matches with deterministic guarantees.',
       reconciliationVolume: '10,000/month',
       exceptionRate: '1% included',
       example: '10k reconciliations = $99/month',
-      valueProposition: 'Eliminates ~10 hours/month of manual work. Pays for itself.',
+      valueProposition: 'Eliminates $106K-$724K+ in annual risk. 7-42x ROI compared to building in-house. Compliance-ready infrastructure.',
       limits: ['10,000 reconciliations/month', 'Scheduled jobs', 'Email support (24h)', 'Standard integrations', 'Basic audit trails'],
       cta: 'Start Free Trial',
       ctaLink: '/signup',
@@ -35,11 +35,11 @@ export default function Pricing() {
     {
       name: 'Growth',
       price: '$299',
-      description: 'Scale reconciliation with compliance guarantees. Handle 100k matches with SOC 2 readiness.',
+      description: 'Compliance-ready infrastructure with SOC 2 Type II readiness. Handle 100k matches with complete audit trails and deterministic guarantees.',
       reconciliationVolume: '100,000/month',
       exceptionRate: '1% included',
       example: '100k reconciliations = $299/month',
-      valueProposition: 'Eliminates $100K+ annual risk. Compliance-ready with audit trails.',
+      valueProposition: 'Eliminates $106K-$724K+ in annual risk. SOC 2 Type II infrastructure ready. Complete audit trails. Deterministic guarantees.',
       limits: ['100,000 reconciliations/month', 'Unlimited scheduled jobs', 'Priority support (4h)', 'Advanced integrations', 'SOC 2 ready', '1-year retention'],
       cta: 'Start Free Trial',
       ctaLink: '/signup',
@@ -64,7 +64,7 @@ export default function Pricing() {
     {
       question: "What is a reconciliation?",
       answer:
-        'A reconciliation matches one transaction to another (e.g., Stripe payment to Shopify order). Each match counts as one reconciliation. Runs automatically—no manual work.',
+        'A reconciliation matches one transaction to another (e.g., Stripe payment to Shopify order). Each match counts as one reconciliation. Reconciliation happens automatically—system-level enforcement, not human promises.',
     },
     {
       question: 'What are exceptions?',

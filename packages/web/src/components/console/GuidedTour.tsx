@@ -64,7 +64,7 @@ const TOUR_STEPS: TourStepConfig[] = [
   {
     id: 'reconcile',
     title: 'Reconciliation',
-    description: 'Match transactions across platforms automatically. Set up reconciliation jobs to run on schedule or on-demand.',
+    description: 'Reconciliation happens automatically. Match transactions across platforms with system-level enforcement. Scheduled jobs run automatically.',
     icon: RefreshCw,
     ctaLabel: 'Try Reconciliation',
     ctaUrl: '/console/playground/reconcile',

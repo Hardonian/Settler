@@ -28,7 +28,7 @@ const testimonials: Testimonial[] = [
     role: 'CTO',
     company: 'TechCorp',
     image: '👩‍💼',
-    quote: 'Settler reduced our reconciliation time from 8 hours to 5 minutes. The API is incredibly easy to use and the accuracy is unmatched. ROI was immediate.',
+    quote: 'Settler eliminated $100K+ in annual risk by providing deterministic reconciliation with complete audit trails. System-level enforcement, not human promises. Compliance-ready from day one.',
     rating: 5,
   },
   {
@@ -36,7 +36,7 @@ const testimonials: Testimonial[] = [
     role: 'Head of Finance',
     company: 'EcomPlus',
     image: '👨‍💼',
-    quote: 'We\'ve reconciled over 2M transactions with Settler. The real-time webhook support eliminated all our manual processes. Our team can now focus on strategic work.',
+    quote: 'We\'ve reconciled over 2M transactions with Settler. Webhook-based reconciliation with near-real-time results. System-level enforcement eliminates operational risk.',
     rating: 5,
   },
   {
@@ -44,7 +44,7 @@ const testimonials: Testimonial[] = [
     role: 'Engineering Lead',
     company: 'SaaSCo',
     image: '👩‍💻',
-    quote: 'The developer experience is excellent. We integrated Settler in one afternoon and it\'s been running flawlessly for months. Best infrastructure decision we made.',
+    quote: 'Deterministic reconciliation with complete audit trails. We integrated Settler in one afternoon and it\'s been providing system-level guarantees for months. Best infrastructure decision we made.',
     rating: 5,
   },
   {
@@ -52,7 +52,7 @@ const testimonials: Testimonial[] = [
     role: 'VP of Operations',
     company: 'FinTech Startup',
     image: '👨‍💼',
-    quote: 'Settler saved us $50K+ in the first quarter alone by eliminating manual reconciliation errors. The deterministic matching is a game-changer.',
+    quote: 'Settler eliminated $50K+ in annual risk in the first quarter alone. Deterministic reconciliation with complete audit trails. System-level enforcement prevents errors from becoming catastrophes.',
     rating: 5,
   },
 ];

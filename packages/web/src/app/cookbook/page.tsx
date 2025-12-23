@@ -168,7 +168,7 @@ await Promise.all([
       timeToImplement: '20 min',
       useCase: 'Get instant reconciliation results as orders and payments occur, enabling real-time financial visibility.',
       adapters: ['Shopify', 'Stripe'],
-      features: ['Real-time matching', 'Webhook integration', 'Instant alerts', 'Event-driven'],
+      features: ['Webhook-based matching', 'Webhook integration', 'Near-real-time alerts', 'Event-driven'],
       code: `import Settler from "@settler/sdk";
 import express from "express";
 
@@ -181,7 +181,7 @@ app.use(express.json());
 
 // Create job
 const job = await settler.jobs.create({
-  name: "Real-Time Reconciliation",
+  name: "Webhook-Based Reconciliation",
   source: { adapter: "shopify", config: { /* ... */ } },
   target: { adapter: "stripe", config: { /* ... */ } },
   rules: { matching: [{ field: "order_id", type: "exact" }] },

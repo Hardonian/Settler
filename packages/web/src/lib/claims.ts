@@ -22,10 +22,10 @@ export interface Claim {
 export const CLAIMS: Claim[] = [
   {
     id: 'soc2',
-    claim: 'SOC 2 Type II Certified',
+    claim: 'SOC 2 Type II Infrastructure Ready (Certification Planned Q3 2026)',
     status: 'planned',
-    plannedDate: '2025-Q2',
-    notes: 'SOC 2 certification in progress',
+    plannedDate: '2026-Q3',
+    notes: 'SOC 2 Type II infrastructure ready. Certification planned Q3 2026.',
   },
   {
     id: 'pci',

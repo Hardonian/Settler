@@ -58,7 +58,7 @@ export default function WhySettlerPage() {
               <ul className="space-y-4">
                 <li className="flex gap-3">
                   <Check className="w-5 h-5 text-green-500 shrink-0" />
-                  <span className="text-slate-900 dark:text-white font-medium">Automated real-time reconciliation</span>
+                  <span className="text-slate-900 dark:text-white font-medium">Webhook-based reconciliation with near-real-time results</span>
                 </li>
                 <li className="flex gap-3">
                   <Check className="w-5 h-5 text-green-500 shrink-0" />

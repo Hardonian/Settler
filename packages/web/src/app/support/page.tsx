@@ -185,7 +185,7 @@ export default function Support() {
     },
     {
       question: 'What security certifications do you have?',
-      answer: 'We\'re SOC 2 Type II certified, GDPR compliant, and PCI-DSS ready. All data is encrypted at rest and in transit using AES-256-GCM. Enterprise customers get additional security features including SSO, RBAC, and dedicated security reviews.',
+      answer: 'We have SOC 2 Type II infrastructure ready. Certification planned Q3 2026. GDPR compliant, PCI-DSS ready. All data is encrypted at rest and in transit using AES-256-GCM. Enterprise customers get additional security features including SSO, RBAC, and dedicated security reviews.',
     },
     {
       question: 'How do I handle unmatched records?',

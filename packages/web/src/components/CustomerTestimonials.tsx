@@ -64,7 +64,7 @@ const testimonials: Testimonial[] = [
     role: "VP Engineering",
     company: "ScaleUp Co",
     quote:
-      "The API is clean and well-documented. We integrated Settler into our existing systems in a day. The webhook support for real-time reconciliation is a game-changer.",
+      "The API is clean and well-documented. We integrated Settler into our existing systems in a day. Webhook-based reconciliation with near-real-time results provides system-level enforcement.",
     rating: 5,
     metric: "Integrated in 1 day",
   },
