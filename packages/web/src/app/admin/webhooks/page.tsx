@@ -76,21 +76,39 @@ async function getWebhookStats() {
 }
 
 async function WebhookInboxContent() {
-  // Check admin access
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  try {
+    // Check admin access
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+    if (authError || !user) {
+      redirect('/signup');
+    }
+
+    // Use proper super admin check
+    const { isSuperAdmin } = await import('@/lib/auth/super-admin');
+    const isAdmin = await isSuperAdmin();
+
+    if (!isAdmin) {
+      redirect('/signup?next=' + encodeURIComponent('/admin/webhooks'));
+    }
+  } catch (error) {
+    console.error('[Admin Webhooks] Auth check error:', error);
     redirect('/signup');
   }
 
-  // TODO: Add proper admin role check
-  // For now, allow any authenticated user (should be restricted in production)
+  let events: WebhookEvent[] = [];
+  let stats = { total: 0, processed: 0, failed: 0, pending: 0 };
 
-  const [events, stats] = await Promise.all([
-    getWebhookEvents(50),
-    getWebhookStats(),
-  ]);
+  try {
+    [events, stats] = await Promise.all([
+      getWebhookEvents(50),
+      getWebhookStats(),
+    ]);
+  } catch (error) {
+    console.error('[Admin Webhooks] Error loading data:', error);
+    // Continue with empty data - error already logged
+  }
 
   const statusConfig = {
     processed: {
@@ -174,8 +192,13 @@ async function WebhookInboxContent() {
         </CardHeader>
         <CardContent>
           {events.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-              No webhook events found
+            <div className="text-center py-8">
+              <p className="text-slate-500 dark:text-slate-400 mb-2">
+                No webhook events found
+              </p>
+              <p className="text-sm text-slate-400 dark:text-slate-500">
+                Webhook events will appear here once Stripe sends events to your endpoint.
+              </p>
             </div>
           ) : (
             <div className="space-y-2">

@@ -102,12 +102,15 @@ export async function matchReceiptToTransaction(
       matchReason: string;
     }
 
-    const scores: ScoreResult[] = transactions.map((transaction) => {
-      const receiptTotal = Number(receipt.total);
-      const transactionAmount = Number(transaction.amount);
+    // Type assertion for transactions from Prisma query
+    type TransactionType = { id: string; amount: number | null | undefined; date: Date | null | undefined; description?: string | null };
+    const scores: ScoreResult[] = transactions.map((transaction: TransactionType) => {
+      const receiptTotal = Number(receipt.total ?? 0);
+      const transactionAmount = Number(transaction.amount ?? 0);
       const amountDiff = Math.abs(transactionAmount - receiptTotal);
+      const transactionDate = transaction.date ?? new Date();
       const dateDiff = Math.abs(
-        (transaction.date.getTime() - receiptDate.getTime()) / (1000 * 60 * 60 * 24)
+        (transactionDate.getTime() - receiptDate.getTime()) / (1000 * 60 * 60 * 24)
       );
 
       // Amount score (closer to 0 is better)
@@ -154,7 +157,7 @@ export async function matchReceiptToTransaction(
         confidence: bestMatch.confidence,
         matchReason: bestMatch.matchReason,
         amountDiff: bestMatch.amountDiff,
-        dateDiff: bestMatch.dateDiff,
+        dateDiff: bestMatch.dateDiff ?? 0,
       };
     }
 
@@ -188,31 +191,41 @@ function stringSimilarity(str1: string, str2: string): number {
 }
 
 function levenshteinDistance(str1: string, str2: string): number {
+  const len1 = str1.length;
+  const len2 = str2.length;
+  // Initialize matrix with proper dimensions - TypeScript knows all indices exist
   const matrix: number[][] = [];
-
-  for (let i = 0; i <= str2.length; i++) {
-    matrix[i] = [i];
+  for (let i = 0; i <= len2; i++) {
+    matrix[i] = [];
+    for (let j = 0; j <= len1; j++) {
+      matrix[i][j] = 0;
+    }
   }
 
-  for (let j = 0; j <= str1.length; j++) {
-    matrix[0][j] = j;
+  // Initialize first row and column
+  for (let i = 0; i <= len2; i++) {
+    matrix[i]![0] = i;
+  }
+  for (let j = 0; j <= len1; j++) {
+    matrix[0]![j] = j;
   }
 
-  for (let i = 1; i <= str2.length; i++) {
-    for (let j = 1; j <= str1.length; j++) {
+  // Fill the matrix
+  for (let i = 1; i <= len2; i++) {
+    for (let j = 1; j <= len1; j++) {
       if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
+        matrix[i]![j] = matrix[i - 1]![j - 1]!;
       } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
+        matrix[i]![j] = Math.min(
+          matrix[i - 1]![j - 1]! + 1,
+          matrix[i]![j - 1]! + 1,
+          matrix[i - 1]![j]! + 1
         );
       }
     }
   }
 
-  return matrix[str2.length][str1.length];
+  return matrix[len2]![len1]!;
 }
 
 /**
@@ -242,8 +255,8 @@ export async function batchMatchReceipts(
  * For full matching, use matchReceiptToTransaction with PrismaClient
  */
 export async function matchReceiptsToTransactions(
-  tenantId: string,
-  reconciliationRunId: string,
+  _tenantId: string,
+  _reconciliationRunId: string,
   receipts: Array<{ id: string }>,
   transactions: Array<{ id: string; amount: number; date: Date; currency: string }>
 ): Promise<Array<{ receiptId: string; transactionId: string; confidence: number }>> {
@@ -276,8 +289,8 @@ export async function matchReceiptsToTransactions(
  * Get receipt matches for a reconciliation run
  */
 export async function getReceiptMatches(
-  tenantId: string,
-  reconciliationRunId: string
+  _tenantId: string,
+  _reconciliationRunId: string
 ): Promise<Array<{ receiptId: string; transactionId: string; confidence: number }>> {
   // Placeholder implementation
   // In production, query receipt_transaction_matches table
@@ -288,9 +301,9 @@ export async function getReceiptMatches(
  * Verify a receipt-transaction link
  */
 export async function verifyReceiptLink(
-  tenantId: string,
-  linkId: string,
-  userId: string
+  _tenantId: string,
+  _linkId: string,
+  _userId: string
 ): Promise<void> {
   // Placeholder implementation
   // In production, update receipt_transaction_matches table

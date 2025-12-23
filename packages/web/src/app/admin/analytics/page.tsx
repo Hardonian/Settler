@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Skeleton } from '@/components/Skeleton';
 import { safeFetch } from '@/lib/safe-fetch';
 // Admin check will be done server-side via middleware
-import { DollarSign, Users, Download } from 'lucide-react';
+import { DollarSign, Users, Download, AlertCircle } from 'lucide-react';
 
 interface KPIs {
   mrr: number;
@@ -41,8 +41,11 @@ export default function AdminAnalyticsPage() {
     loadData();
   }, [dateRange, planFilter]);
 
+  const [error, setError] = useState<string | null>(null);
+
   const loadData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const [kpisResult, workspacesResult] = await Promise.all([
         safeFetch<KPIs>(`/api/admin/analytics/kpis?range=${dateRange}`),
@@ -51,26 +54,24 @@ export default function AdminAnalyticsPage() {
 
       if (kpisResult.success) {
         setKpis(kpisResult.data || null);
+      } else {
+        console.warn('[Admin Analytics] KPIs fetch failed:', kpisResult.error);
       }
+      
       if (workspacesResult.success) {
         setWorkspaces(workspacesResult.data?.workspaces || []);
+      } else {
+        console.warn('[Admin Analytics] Workspaces fetch failed:', workspacesResult.error);
       }
-    } catch {
-      // Mock data for demo
-      setKpis({
-        mrr: 12500,
-        arr: 150000,
-        churn: 0.02,
-        trialToPaidConversion: 0.15,
-        activeWorkspaces: 245,
-        runsPerDay: 1250,
-        errorRate: 0.01,
-        cogsEstimate: 2500,
-      });
-      setWorkspaces([
-        { id: '1', name: 'Acme Corp', plan: 'commercial', mrr: 99, status: 'active', createdAt: new Date() },
-        { id: '2', name: 'Tech Startup', plan: 'enterprise', mrr: 500, status: 'active', createdAt: new Date() },
-      ]);
+      
+      // Only set error if both fail
+      if (!kpisResult.success && !workspacesResult.success) {
+        setError('Unable to load analytics data. Please try again.');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      console.error('[Admin Analytics] Error loading data:', errorMessage);
+      setError('Failed to load analytics data. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -130,6 +131,24 @@ export default function AdminAnalyticsPage() {
           </Button>
         </div>
       </div>
+
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertCircle className="h-5 w-5 text-red-600" />
+            <h3 className="font-semibold text-red-900 dark:text-red-200">
+              Error Loading Analytics
+            </h3>
+          </div>
+          <p className="text-sm text-red-800 dark:text-red-300 mb-4">
+            {error}
+          </p>
+          <Button onClick={loadData} variant="outline" size="sm">
+            Retry
+          </Button>
+        </div>
+      )}
 
       {/* KPIs */}
       {loading ? (

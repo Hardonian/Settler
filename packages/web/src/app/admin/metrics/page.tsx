@@ -15,28 +15,45 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 async function AdminMetricsContent() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+    if (authError || !user) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-slate-600 dark:text-slate-400 mb-4">
+            Please sign in to access the admin dashboard.
+          </p>
+        </div>
+      );
+    }
+
+    // Use proper super admin check
+    const { isSuperAdmin } = await import('@/lib/auth/super-admin');
+    const isAdmin = await isSuperAdmin();
+
+    if (!isAdmin) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-slate-600 dark:text-slate-400 mb-4">
+            You do not have permission to access this page.
+          </p>
+        </div>
+      );
+    }
+  } catch (error) {
+    console.error('[Admin Metrics] Error:', error);
     return (
       <div className="text-center py-12">
-        <p className="text-slate-600 dark:text-slate-400 mb-4">
-          Please sign in to access the admin dashboard.
-        </p>
-      </div>
-    );
-  }
-
-  // Check if user is admin (simplified - would use proper role check)
-  const isAdmin = user.user_metadata?.role === 'admin';
-
-  if (!isAdmin) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-slate-600 dark:text-slate-400 mb-4">
-          You do not have permission to access this page.
-        </p>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 max-w-md mx-auto">
+          <p className="text-red-800 dark:text-red-200 mb-2">
+            Unable to load metrics dashboard.
+          </p>
+          <p className="text-sm text-red-600 dark:text-red-400">
+            Please try again or contact support if the problem persists.
+          </p>
+        </div>
       </div>
     );
   }

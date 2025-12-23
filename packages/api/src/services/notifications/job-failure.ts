@@ -100,11 +100,21 @@ export async function notifyJobFailure(
     }
 
     // Log audit event (if audit logger exists)
+    // Note: Audit logger may not exist in API package - this is optional
     try {
-      // Try web audit logger first (Next.js)
-      const { logAuditEvent } = await import('../../lib/audit/logger').catch(() => null);
-      if (logAuditEvent) {
-        await logAuditEvent({
+      // Use dynamic import with error suppression for optional module
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires
+      let auditModule: any = null;
+      try {
+        // @ts-ignore - Module may not exist in API package
+        auditModule = await import('../../lib/audit/logger');
+      } catch {
+        // Module doesn't exist - that's okay
+        auditModule = null;
+      }
+      
+      if (auditModule?.logAuditEvent) {
+        await auditModule.logAuditEvent({
           userId: userId,
           tenantId: tenantId,
           action: 'notify',
