@@ -7,6 +7,8 @@
  * PHASE 1: VALUE SURFACE MAPPING
  */
 
+import { Prisma } from '@prisma/client';
+
 export type ValueEventType =
   // Reconciliation value
   | 'reconciliation_completed'
@@ -221,7 +223,7 @@ export async function trackValueEvent(event: ValueEvent): Promise<void> {
           projectId: event.projectId,
           eventType: `value:${event.type}`,
           quantity: event.quantity,
-          metadata: event.metadata || {},
+          metadata: (event.metadata || {}) as Prisma.InputJsonValue,
           timestamp: event.timestamp,
         },
       });

@@ -6,6 +6,7 @@
  */
 
 import { prisma } from '@/shared/db/prismaClient';
+import { Prisma } from '@prisma/client';
 
 export interface TenantQuota {
   tenantId: string;
@@ -55,9 +56,6 @@ export async function checkRequestRateLimit(
   tenantId: string
 ): Promise<QuotaCheckResult> {
   const quota = await getTenantQuota(tenantId);
-  
-  // Count requests in last minute
-  const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
   
   try {
     // Query usage events or telemetry table
@@ -217,7 +215,7 @@ export async function recordUsage(
         billingAccountId: tenantId, // Assuming tenantId maps to billingAccountId
         eventType: type,
         quantity: 1,
-        metadata: metadata || {},
+        metadata: (metadata || {}) as Prisma.InputJsonValue,
       },
     }).catch(() => {
       // Ignore errors - usage tracking is best-effort

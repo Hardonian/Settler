@@ -52,20 +52,20 @@ const SETTLER_IMAGES_CONFIG = {
 
   // Social Media Images
   ogImage: {
-    path: '/assets/images/social/og-image.svg',
+    path: '/assets/images/social/settler-og-image.jpg',
     width: 1200,
     height: 630,
     alt: 'Settler - Financial Infrastructure for Developers',
     category: 'social' as const,
-    mimeType: 'image/svg+xml',
+    mimeType: 'image/jpeg',
   },
   twitterCard: {
-    path: '/assets/images/social/og-image.svg',
+    path: '/assets/images/social/settler-twitter-card.png',
     width: 1200,
     height: 630,
     alt: 'Settler - Financial Infrastructure for Developers',
     category: 'social' as const,
-    mimeType: 'image/svg+xml',
+    mimeType: 'image/png',
   },
 
   // Logos
@@ -80,12 +80,12 @@ const SETTLER_IMAGES_CONFIG = {
 
   // Thumbnails
   thumbnail: {
-    path: '/assets/images/social/og-image.svg',
+    path: '/assets/images/thumbnails/settler-thumbnail.jpg',
     width: 1200,
     height: 630,
     alt: 'Settler Thumbnail',
     category: 'thumbnail' as const,
-    mimeType: 'image/svg+xml',
+    mimeType: 'image/jpeg',
   },
 } as const;
 

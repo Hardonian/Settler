@@ -151,9 +151,13 @@ export async function getOperationStats(
     }
 
     const row = results[0];
-    const total = Number(row.total || 0);
-    const successCount = Number(row.success_count || 0);
-    const failureCount = Number(row.failure_count || 0);
+    if (!row) {
+      return null;
+    }
+    
+    const total = Number(row.total ?? 0n);
+    const successCount = Number(row.success_count ?? 0n);
+    const failureCount = Number(row.failure_count ?? 0n);
 
     return {
       operation,
@@ -161,10 +165,10 @@ export async function getOperationStats(
       successCount,
       failureCount,
       successRate: total > 0 ? successCount / total : 0,
-      avgDurationMs: row.avg_duration || 0,
-      p95DurationMs: row.p95_duration || 0,
-      retryCount: Number(row.retry_count || 0),
-      deadLetterCount: Number(row.dead_letter_count || 0),
+      avgDurationMs: row.avg_duration ?? 0,
+      p95DurationMs: row.p95_duration ?? 0,
+      retryCount: Number(row.retry_count ?? 0n),
+      deadLetterCount: Number(row.dead_letter_count ?? 0n),
     };
   } catch (error) {
     console.error('[Reliability Metrics] Error getting stats:', error);
@@ -213,8 +217,8 @@ export async function getAdapterErrorRates(
 
     const results = await query.catch(() => []);
     return results.map((row) => {
-      const total = Number(row.total || 0);
-      const errorCount = Number(row.error_count || 0);
+      const total = Number(row.total ?? 0n);
+      const errorCount = Number(row.error_count ?? 0n);
       return {
         adapterType: row.adapter_type || 'unknown',
         errorRate: total > 0 ? errorCount / total : 0,

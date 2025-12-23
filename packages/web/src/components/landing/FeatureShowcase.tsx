@@ -44,7 +44,7 @@ const features: Feature[] = [
     link: '/console/changes',
     color: 'blue',
     gradient: 'from-blue-500 to-cyan-500',
-    screenshot: '/assets/images/1766446412895.jpg',
+    screenshot: '/assets/marketing/hero-image-1.png',
   },
   {
     id: 'reconciliation',
@@ -55,7 +55,7 @@ const features: Feature[] = [
     link: '/console/reconciliation-view',
     color: 'green',
     gradient: 'from-green-500 to-emerald-500',
-    screenshot: '/assets/images/1766446421153.jpg',
+    screenshot: '/assets/marketing/hero-image-2.png',
   },
   {
     id: 'receipts',
@@ -66,7 +66,7 @@ const features: Feature[] = [
     link: '/console/receipts-hash',
     color: 'purple',
     gradient: 'from-purple-500 to-pink-500',
-    screenshot: '/assets/images/1766446442563.jpg',
+    screenshot: '/assets/marketing/hero-image-3.png',
   },
   {
     id: 'alerts',
@@ -77,7 +77,7 @@ const features: Feature[] = [
     link: '/console/alerts-view',
     color: 'orange',
     gradient: 'from-orange-500 to-red-500',
-    screenshot: '/assets/images/1766446446143.jpg',
+    screenshot: '/assets/marketing/hero-image-1.png',
   },
   {
     id: 'ai-analysis',
@@ -88,7 +88,7 @@ const features: Feature[] = [
     link: '/console/ai-analysis',
     color: 'indigo',
     gradient: 'from-indigo-500 to-purple-500',
-    screenshot: '/assets/images/1766446457350.jpg',
+    screenshot: '/assets/marketing/hero-image-2.png',
   },
 ];
 
@@ -160,17 +160,17 @@ export function FeatureShowcase() {
                   <CardContent className="p-6 relative z-10">
                     {feature.screenshot && (
                       <div className="mb-4 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                        <div className="relative w-full aspect-[512/279]">
+                        <div className="relative w-full">
                           <SafeImage
                             src={feature.screenshot}
                             alt={`${feature.title} - UI screenshot`}
-                            width={512}
-                            height={279}
-                            className="w-full h-full object-contain"
+                            width={1258}
+                            height={618}
+                            className="w-full h-auto object-contain md:object-cover"
                             fallbackTitle={feature.title}
                             fallbackCaption={feature.description}
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            unoptimized
+                            sizes="100vw"
+                            containerClassName="w-full"
                           />
                         </div>
                       </div>

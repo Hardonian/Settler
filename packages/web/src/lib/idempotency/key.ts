@@ -75,6 +75,11 @@ export function parseIdempotencyKey(key: string): {
   }
 
   const [tenantId, operation, windowStartStr, payloadHash, ...rest] = parts;
+  
+  if (!tenantId || !operation || !windowStartStr || !payloadHash) {
+    return null;
+  }
+  
   const userId = rest.length > 0 ? rest.join(':') : undefined;
 
   return {

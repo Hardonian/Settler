@@ -15,17 +15,8 @@ import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { AlertTriangle, CheckCircle2, TrendingUp, TrendingDown, Plus } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Plus } from 'lucide-react';
 import { format } from 'date-fns';
-
-interface SLAAgreement {
-  id: string;
-  slaType: string;
-  targetValue: number;
-  measurementPeriod: string;
-  startDate: string;
-  isActive: boolean;
-}
 
 interface SLAViolation {
   id: string;
@@ -40,7 +31,6 @@ interface SLAViolation {
 }
 
 export function SLADashboard() {
-  const [agreements, setAgreements] = useState<SLAAgreement[]>([]);
   const [violations, setViolations] = useState<SLAViolation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

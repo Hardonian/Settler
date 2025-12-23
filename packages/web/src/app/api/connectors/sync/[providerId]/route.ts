@@ -150,6 +150,7 @@ export async function POST(
     }
 
     // Never return 500 - return graceful error response
+    const errorMessage = errorObj.message || String(error);
     return NextResponse.json(
       {
         success: false,

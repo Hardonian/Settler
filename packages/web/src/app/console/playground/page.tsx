@@ -82,15 +82,16 @@ export default function PlaygroundOverview() {
         
         {/* Playground Screenshot */}
         <div className="relative w-full max-w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-lg">
-          <div className="relative w-full aspect-[2816/1536]">
+          <div className="relative w-full">
             <Image
-              src="/assets/images/1766448707397.jpg"
+              src="/assets/marketing/hero-image-2.png"
               alt="Settler Developer Playground - Interactive API testing interface showing code editor, request builder, and response viewer"
-              width={2816}
-              height={1536}
-              className="w-full h-full object-contain"
+              width={1258}
+              height={618}
+              className="w-full h-auto object-contain md:object-cover"
               priority={false}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+              sizes="100vw"
+              style={{ maxWidth: '100%', height: 'auto' }}
               unoptimized
             />
           </div>

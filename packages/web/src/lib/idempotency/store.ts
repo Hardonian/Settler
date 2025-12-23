@@ -5,7 +5,7 @@
  */
 
 import { prisma } from '@/shared/db/prismaClient';
-import { IdempotencyKey } from '@prisma/client';
+import { IdempotencyKey, Prisma } from '@prisma/client';
 
 export interface IdempotencyResult<T = unknown> {
   isDuplicate: boolean;
@@ -109,7 +109,7 @@ export async function completeIdempotencyKey<T = unknown>(
       where: { key },
       data: {
         status: 'completed',
-        response: response as Record<string, unknown>,
+        response: response as Prisma.InputJsonValue,
         completedAt: new Date(),
       },
     });

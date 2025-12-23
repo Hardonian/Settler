@@ -98,12 +98,11 @@ export function SafeImage({
   return (
     <div
       className={cn(
-        "relative overflow-hidden",
+        "relative overflow-hidden w-full",
         isLoading && "bg-slate-100 dark:bg-slate-800 animate-pulse",
         containerClassName
       )}
       style={{
-        width: widthNum || '100%',
         aspectRatio: widthNum && heightNum ? `${widthNum} / ${heightNum}` : undefined,
       }}
     >
@@ -113,10 +112,16 @@ export function SafeImage({
         width={widthNum > 0 ? widthNum : width}
         height={heightNum > 0 ? heightNum : height}
         className={cn(
-          "transition-opacity duration-300 w-full h-full",
+          "transition-opacity duration-300 w-full h-auto object-contain md:object-cover",
           isLoading ? "opacity-0" : "opacity-100",
           className
         )}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        style={{
+          objectFit: 'contain',
+          maxWidth: '100%',
+          height: 'auto',
+        }}
         onError={handleError}
         onLoad={handleLoad}
         {...props}

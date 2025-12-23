@@ -236,30 +236,32 @@ if (flag.value) { /* ... */ }`;
                 {/* Hero Illustration */}
                 <div className="relative w-full max-w-4xl mx-auto mb-12 sm:mb-16 px-4">
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 bottom-0 h-20 pointer-events-none" aria-hidden="true"></div>
-                  <div className="relative aspect-[16/9] w-full max-w-4xl mx-auto">
+                  <div className="relative w-full max-w-4xl mx-auto">
                     <Image
                       src="/assets/marketing/hero-image-1.png"
                       alt="Settler Platform Overview - Visual diagram showing automated financial reconciliation connecting multiple data sources through a central hub"
                       width={1258}
                       height={618}
-                      className="w-full h-full object-contain drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                      className="w-full h-auto object-contain md:object-cover drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
                       priority
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1258px"
+                      sizes="100vw"
+                      style={{ maxWidth: '100%', height: 'auto' }}
                     />
                   </div>
                 </div>
 
                 {/* Dashboard Screenshot - Hidden on mobile to reduce redundancy */}
                 <div className="relative w-full max-w-5xl mx-auto mb-8 px-4 hidden md:block">
-                  <div className="relative w-full aspect-[2816/1536] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-2xl">
+                  <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-2xl">
                     <Image
                       src="/assets/images/1766448964045.jpg"
                       alt="Settler Dashboard - Webhook-based reconciliation dashboard showing matched transactions, analytics, and insights"
                       width={2816}
                       height={1536}
-                      className="w-full h-full object-contain"
+                      className="w-full h-auto object-contain md:object-cover"
                       priority={false}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+                      sizes="100vw"
+                      style={{ maxWidth: '100%', height: 'auto' }}
                       unoptimized
                     />
                   </div>
@@ -322,28 +324,26 @@ if (flag.value) { /* ... */ }`;
 
             {/* Feature Illustrations */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mt-12 sm:mt-16">
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 flex items-center justify-center">
+              <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 flex items-center justify-center">
                 <Image
-                  src="/assets/marketing/feature-1.svg"
-                  alt=""
-                  width={600}
-                  height={400}
-                  className="w-full h-full object-contain max-w-full"
-                  aria-hidden="true"
-                  sizes="(max-width: 640px) 100vw, 50vw"
-                  unoptimized
+                  src="/assets/marketing/hero-image-1.png"
+                  alt="Settler Feature - Automated Financial Reconciliation"
+                  width={1258}
+                  height={618}
+                  className="w-full h-auto object-contain md:object-cover max-w-full"
+                  sizes="100vw"
+                  style={{ maxWidth: '100%', height: 'auto' }}
                 />
               </div>
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 flex items-center justify-center">
+              <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 flex items-center justify-center">
                 <Image
-                  src="/assets/marketing/feature-2.svg"
-                  alt=""
-                  width={600}
-                  height={400}
-                  className="w-full h-full object-contain max-w-full"
-                  aria-hidden="true"
-                  sizes="(max-width: 640px) 100vw, 50vw"
-                  unoptimized
+                  src="/assets/marketing/hero-image-2.png"
+                  alt="Settler Feature - Real-time Transaction Matching"
+                  width={1258}
+                  height={618}
+                  className="w-full h-auto object-contain md:object-cover max-w-full"
+                  sizes="100vw"
+                  style={{ maxWidth: '100%', height: 'auto' }}
                 />
               </div>
             </div>

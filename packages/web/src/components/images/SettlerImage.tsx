@@ -2,43 +2,70 @@
  * Type-safe Settler image component
  * 
  * Provides a type-safe way to use Settler brand images throughout the app
+ * Fully responsive - fits horizontally on mobile portrait, can be cut off in landscape
  */
 
 import Image from 'next/image';
 import { getImageConfig, type SettlerImageKey } from '@/lib/images/image-config';
 import { type ImageProps } from 'next/image';
+import { cn } from '@/lib/utils';
 
 interface SettlerImageProps extends Omit<ImageProps, 'src' | 'alt' | 'width' | 'height'> {
   imageKey: SettlerImageKey;
   className?: string;
   priority?: boolean;
+  responsive?: boolean; // Enable responsive behavior (default: true)
 }
 
 /**
  * Type-safe Settler image component
  * 
+ * Responsive behavior:
+ * - Mobile portrait: Fits horizontally, maintains aspect ratio
+ * - Mobile landscape: Can be cut off horizontally, maintains aspect ratio
+ * - Desktop: Full size with aspect ratio maintained
+ * 
  * @example
  * <SettlerImage imageKey="logoMain" className="h-12 w-auto" />
- * <SettlerImage imageKey="ogImage" width={1200} height={630} />
+ * <SettlerImage imageKey="ogImage" responsive />
  */
 export function SettlerImage({
   imageKey,
   className,
   priority = false,
+  responsive = true,
   ...props
 }: SettlerImageProps) {
   const config = getImageConfig(imageKey);
 
+  const responsiveClasses = responsive
+    ? 'w-full h-auto max-w-full object-contain md:object-cover'
+    : '';
+
   return (
-    <Image
-      src={config.path}
-      alt={config.alt}
-      width={config.width}
-      height={config.height}
-      className={className}
-      priority={priority}
-      {...props}
-    />
+    <div className={cn('relative overflow-hidden', responsive && 'w-full')}>
+      <Image
+        src={config.path}
+        alt={config.alt}
+        width={config.width}
+        height={config.height}
+        className={cn(
+          responsiveClasses,
+          'transition-opacity duration-300',
+          className
+        )}
+        priority={priority}
+        sizes={responsive ? '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' : undefined}
+        style={{
+          objectFit: responsive ? 'contain' : undefined,
+          ...(responsive && {
+            width: '100%',
+            height: 'auto',
+          }),
+        }}
+        {...props}
+      />
+    </div>
   );
 }
 
