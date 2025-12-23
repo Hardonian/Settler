@@ -13,7 +13,7 @@
  */
 
 import { supabase } from '../infrastructure/supabase/client';
-import { logError, logInfo, logWarn } from '../utils/logger';
+import { logError, logWarn } from '../utils/logger';
 
 export interface CostDriver {
   id: string;
@@ -295,7 +295,6 @@ export class CostControlService {
       // Update usage counters
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
       // Get or create usage record
       const { data: existing } = await supabase
@@ -403,7 +402,7 @@ export class CostControlService {
         tenantId,
         billingAccountId,
         planId,
-        limits: planLimits,
+        limits: planLimits || {},
         currentUsage,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -417,7 +416,7 @@ export class CostControlService {
   /**
    * Invalidate cost limits cache
    */
-  private async invalidateCostLimitsCache(tenantId: string): Promise<void> {
+  private async invalidateCostLimitsCache(_tenantId: string): Promise<void> {
     // In a production system, this would invalidate Redis cache
     // For now, we'll rely on database queries
   }

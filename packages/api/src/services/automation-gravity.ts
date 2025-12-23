@@ -12,7 +12,7 @@
  */
 
 import { supabase } from '../infrastructure/supabase/client';
-import { logError, logInfo } from '../utils/logger';
+import { logError } from '../utils/logger';
 
 export interface AutomationConfig {
   id: string;
@@ -238,15 +238,6 @@ export class AutomationGravityService {
         .select('*', { count: 'exact', head: true })
         .eq('tenant_id', tenantId)
         .eq('event_type', 'manual_intervention');
-
-      // Get automation successes
-      const { data: automationSuccesses } = await supabase
-        .from('usage_events')
-        .select('quantity')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', 'automation_success');
-
-      const totalTimeSaved = automationSuccesses?.reduce((sum, s) => sum + (Number(s.quantity) || 0), 0) || 0;
 
       // Calculate automation efficiency
       const totalOperations = (activeAutomations || 0) + (manualInterventions || 0);

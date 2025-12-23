@@ -6,3 +6,58 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck
 > tsc --noEmit --incremental
 
+src/app/api/admin/monitoring/alerts/route.ts(10,1): error TS6133: 'performHealthCheck' is declared but its value is never read.
+src/app/api/connectors/sync/[providerId]/route.ts(128,43): error TS2353: Object literal may only specify known properties, and 'correlationId' does not exist in type 'Error'.
+src/app/investor/proof/page.tsx(22,17): error TS6133: 'user' is declared but its value is never read.
+src/components/console/AdvancedAuditTrail.tsx(14,1): error TS6192: All imports in import declaration are unused.
+src/components/console/BulkOperations.tsx(16,1): error TS6133: 'Checkbox' is declared but its value is never read.
+src/components/console/EnhancedRulesEngine.tsx(19,28): error TS6133: 'Trash2' is declared but its value is never read.
+src/components/console/EnhancedRulesEngine.tsx(19,36): error TS6133: 'Copy' is declared but its value is never read.
+src/components/console/MultiSourceReconciliation.tsx(8,20): error TS6133: 'useEffect' is declared but its value is never read.
+src/components/console/MultiSourceReconciliation.tsx(16,1): error TS6133: 'Input' is declared but its value is never read.
+src/components/console/ProgressTracker.tsx(43,13): error TS7030: Not all code paths return a value.
+src/components/console/ReceiptMatching.tsx(8,20): error TS6133: 'useEffect' is declared but its value is never read.
+src/components/console/SLADashboard.tsx(18,39): error TS6133: 'TrendingUp' is declared but its value is never read.
+src/components/console/SLADashboard.tsx(18,51): error TS6133: 'TrendingDown' is declared but its value is never read.
+src/components/console/SLADashboard.tsx(43,10): error TS6133: 'agreements' is declared but its value is never read.
+src/components/console/SLADashboard.tsx(43,22): error TS6133: 'setAgreements' is declared but its value is never read.
+src/components/gtm/FunnelCTA.tsx(17,10): error TS6133: 'getCurrentFunnelStage' is declared but its value is never read.
+src/components/gtm/FunnelCTA.tsx(18,1): error TS6133: 'createClient' is declared but its value is never read.
+src/components/gtm/ROIProofBlock.tsx(15,10): error TS6133: 'calculateROI' is declared but its value is never read.
+src/hooks/useValueTracking.ts(13,1): error TS6133: 'createClient' is declared but its value is never read.
+src/lib/containment/middleware.ts(82,57): error TS2353: Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
+src/lib/containment/tenant-quotas.ts(60,9): error TS6133: 'oneMinuteAgo' is declared but its value is never read.
+src/lib/containment/tenant-quotas.ts(220,9): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 26 more.
+src/lib/gtm/funnels.ts(166,13): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 26 more.
+src/lib/gtm/value-events.ts(224,11): error TS2322: Type '{ [key: string]: unknown; sourceAdapter?: string | undefined; targetAdapter?: string | undefined; reconciliationId?: string | undefined; integrationId?: string | undefined; planTier?: string | undefined; }' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
+  Type '{ [key: string]: unknown; sourceAdapter?: string | undefined; targetAdapter?: string | undefined; reconciliationId?: string | undefined; integrationId?: string | undefined; planTier?: string | undefined; }' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 26 more.
+src/lib/idempotency/key.ts(81,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/lib/idempotency/key.ts(82,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/lib/idempotency/key.ts(83,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/lib/idempotency/key.ts(84,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/lib/idempotency/store.ts(112,9): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 26 more.
+src/lib/jobs/idempotency.ts(8,1): error TS6133: 'prisma' is declared but its value is never read.
+src/lib/jobs/idempotency.ts(14,3): error TS6133: 'idempotencyKey' is declared but its value is never read.
+src/lib/jobs/idempotency.ts(15,3): error TS6133: 'workspaceId' is declared but its value is never read.
+src/lib/monitoring/reliability-metrics.ts(154,26): error TS18048: 'row' is possibly 'undefined'.
+src/lib/monitoring/reliability-metrics.ts(155,33): error TS18048: 'row' is possibly 'undefined'.
+src/lib/monitoring/reliability-metrics.ts(156,33): error TS18048: 'row' is possibly 'undefined'.
+src/lib/monitoring/reliability-metrics.ts(164,22): error TS18048: 'row' is possibly 'undefined'.
+src/lib/monitoring/reliability-metrics.ts(165,22): error TS18048: 'row' is possibly 'undefined'.
+src/lib/monitoring/reliability-metrics.ts(166,26): error TS18048: 'row' is possibly 'undefined'.
+src/lib/monitoring/reliability-metrics.ts(167,31): error TS18048: 'row' is possibly 'undefined'.
+src/lib/pricing-gate.ts(184,13): error TS6133: '_exhaustive' is declared but its value is never read.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 1
+npm error path /workspace/packages/web
+npm error workspace @settler/web@1.0.0
+npm error location /workspace/packages/web
+npm error command failed
+npm error command sh -c tsc --noEmit --incremental

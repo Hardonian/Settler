@@ -205,12 +205,121 @@ function checkGitStatus() {
   }
 }
 
+async function checkMigrations() {
+  try {
+    const { prisma } = await import('../packages/web/src/shared/db/prismaClient');
+    const migrationStatus = await prisma.$queryRaw<Array<{ migration_name: string }>>`
+      SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NOT NULL ORDER BY finished_at DESC LIMIT 5
+    `.catch(() => []);
+
+    if (migrationStatus.length === 0) {
+      addResult(
+        'Database Migrations',
+        'warning',
+        'Could not verify migrations (table might not exist)',
+        'Run prisma migrate deploy to ensure migrations are applied'
+      );
+    } else {
+      addResult(
+        'Database Migrations',
+        'ok',
+        `${migrationStatus.length} recent migrations found`
+      );
+    }
+  } catch (error) {
+    addResult(
+      'Database Migrations',
+      'warning',
+      `Could not check migrations: ${error instanceof Error ? error.message : String(error)}`,
+      'Ensure Prisma is properly configured'
+    );
+  }
+}
+
+async function checkSupabaseResources() {
+  const requiredEnvVars = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+  const hasAllVars = requiredEnvVars.every((v) => process.env[v]);
+
+  if (!hasAllVars) {
+    addResult(
+      'Supabase Resources',
+      'warning',
+      'Supabase environment variables not fully configured',
+      'Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
+    );
+    return;
+  }
+
+  try {
+    const { createClient } = await import('../packages/web/src/lib/supabase/server');
+    const supabase = await createClient();
+
+    // Check if core tables exist
+    const { error: tenantsError } = await supabase.from('tenants').select('id').limit(1);
+    const { error: jobsError } = await supabase.from('jobs' as any).select('id').limit(1).catch(() => ({ error: null }));
+
+    if (tenantsError && !tenantsError.message.includes('permission')) {
+      addResult(
+        'Supabase Resources',
+        'error',
+        `Core tables may not exist: ${tenantsError.message}`,
+        'Run database migrations: npm run db:migrate'
+      );
+    } else {
+      addResult('Supabase Resources', 'ok', 'Core tables accessible');
+    }
+  } catch (error) {
+    addResult(
+      'Supabase Resources',
+      'warning',
+      `Could not verify Supabase resources: ${error instanceof Error ? error.message : String(error)}`,
+      'Check Supabase connection and ensure tables exist'
+    );
+  }
+}
+
+async function checkDatabaseIntegrity() {
+  try {
+    const { prisma } = await import('../packages/web/src/shared/db/prismaClient');
+
+    // Check if expected tables exist
+    const tables = await prisma.$queryRaw<Array<{ tablename: string }>>`
+      SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename LIMIT 10
+    `.catch(() => []);
+
+    if (tables.length === 0) {
+      addResult(
+        'Database Integrity',
+        'warning',
+        'Could not verify database tables',
+        'Ensure database is accessible and migrations are applied'
+      );
+    } else {
+      addResult(
+        'Database Integrity',
+        'ok',
+        `Database accessible, ${tables.length}+ tables found`
+      );
+    }
+  } catch (error) {
+    addResult(
+      'Database Integrity',
+      'warning',
+      `Could not check database integrity: ${error instanceof Error ? error.message : String(error)}`,
+      'Check DATABASE_URL and ensure database is accessible'
+    );
+  }
+}
+
 async function main() {
   console.log('🏥 Settler Doctor - System Health Check\n');
 
   checkNodeVersion();
   checkEnvVars();
   await checkDatabaseConnectivity();
+  await checkMigrations();
+  await checkSupabaseResources();
+  await checkDatabaseIntegrity();
   checkStripeConfig();
   checkWorkspaceHealth();
   checkGitStatus();

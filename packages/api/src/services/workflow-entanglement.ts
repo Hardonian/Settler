@@ -12,7 +12,7 @@
  */
 
 import { supabase } from '../infrastructure/supabase/client';
-import { logError, logInfo } from '../utils/logger';
+import { logError } from '../utils/logger';
 
 export interface WorkflowReference {
   id: string;
