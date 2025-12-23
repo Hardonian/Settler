@@ -56,7 +56,7 @@ export default function HowItWorksPage() {
 
       {/* Hero Section */}
       <section
-        className="relative pt-8 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[60vh] flex items-center"
+        className="relative pt-8 pb-16 md:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[50vh] md:min-h-[60vh] flex items-center"
         aria-labelledby="hero-heading"
       >
         <ParallaxBackground>
@@ -69,23 +69,23 @@ export default function HowItWorksPage() {
               as="h1"
               id="hero-heading"
               text="How Settler Works"
-              className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent"
+              className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent leading-tight"
               delay={0}
               staggerDelay={0.02}
             />
-            <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
               Reconcile millions of transactions automatically in 4 simple steps.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <Button
                 size="lg"
                 asChild
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold"
               >
                 <Link href="/signup">Start Free Trial</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg">
                 <Link href="/console/playground">Try Playground</Link>
               </Button>
             </div>
@@ -94,21 +94,21 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Steps Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
-                <SpotlightCard key={index} className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
+                <SpotlightCard key={index} className="p-5 md:p-6 text-center">
+                  <div className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xl md:text-2xl font-bold">
                     {step.number}
                   </div>
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-4 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
+                    <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">{step.title}</h3>
-                  <p className="text-slate-600 dark:text-slate-300">{step.description}</p>
+                  <h3 className="text-lg md:text-xl font-bold mb-2 text-slate-900 dark:text-white">{step.title}</h3>
+                  <p className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">{step.description}</p>
                 </SpotlightCard>
               );
             })}
@@ -117,17 +117,17 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Code Example */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
+      <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
         <div className="max-w-4xl mx-auto">
-          <SpotlightCard className="p-8">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+          <SpotlightCard className="p-6 md:p-8">
+            <div className="text-center mb-5 md:mb-6">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
                 Get Started in 5 Minutes
               </h2>
             </div>
 
-            <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-6 overflow-x-auto mb-6">
-              <pre className="text-green-400 text-sm">
+            <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 md:p-6 overflow-x-auto mb-5 md:mb-6">
+              <pre className="text-green-400 text-xs md:text-sm leading-relaxed">
                 <code>{`npm install @settler/sdk
 
 import { Settler } from '@settler/sdk';
@@ -155,15 +155,15 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
               </pre>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button
                 size="lg"
                 asChild
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold"
               >
                 <Link href="/console/playground">Try Playground</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg">
                 <Link href="/docs">View Documentation</Link>
               </Button>
             </div>
@@ -172,26 +172,26 @@ console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <ParallaxBackground speed={0.2}>
           <ParallaxBlobs count={2} />
         </ParallaxBackground>
         <div className="max-w-4xl mx-auto relative z-10 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
             Ready to Automate Your Reconciliation?
           </h2>
-          <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-            Start automating reconciliation in minutes. Free trial—full access, no credit card required.
+          <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 mb-6 md:mb-8 leading-relaxed">
+            Start automating reconciliation in minutes. Free trial—no credit card required.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Button
               size="lg"
               asChild
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold"
             >
               <Link href="/signup">Start Free Trial</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
+            <Button size="lg" variant="outline" asChild className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg">
               <Link href="/pricing">View Pricing</Link>
             </Button>
           </div>

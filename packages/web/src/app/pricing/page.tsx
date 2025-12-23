@@ -58,21 +58,21 @@ export default function Pricing() {
       <Navigation />
 
       {/* Hero */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+      <section className="px-4 sm:px-6 lg:px-8 pt-8 pb-10 md:pb-12">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white leading-tight">
             Simple Pricing
           </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
-            Pay per successful match. Transparent pricing that scales with your business.
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
+            Pay per successful match. Transparent pricing that scales.
           </p>
         </div>
       </section>
 
       {/* Pricing Cards */}
-      <section className="px-4 sm:px-6 lg:px-8 py-12">
+      <section className="px-4 sm:px-6 lg:px-8 py-10 md:py-12">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
             {plans.map((plan, index) => (
               <Card
                 key={index}
@@ -84,28 +84,28 @@ export default function Pricing() {
                   </div>
                 )}
                 <CardHeader>
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                  <CardTitle className="text-xl md:text-2xl">{plan.name}</CardTitle>
                   <div className="flex items-baseline gap-2 mt-2">
-                    <span className="text-4xl font-bold">{plan.price}</span>
+                    <span className="text-3xl md:text-4xl font-bold">{plan.price}</span>
                     {plan.price !== 'Custom' && (
-                      <span className="text-slate-600 dark:text-slate-400">/month</span>
+                      <span className="text-sm md:text-base text-slate-600 dark:text-slate-400">/month</span>
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 md:space-y-4">
                   <div>
-                    <div className="text-sm font-semibold mb-1">Volume</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">{plan.volume}</div>
+                    <div className="text-xs md:text-sm font-semibold mb-1">Volume</div>
+                    <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400">{plan.volume}</div>
                   </div>
                   <div>
-                    <div className="text-sm font-semibold mb-1">Exceptions</div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">{plan.exceptionRate}</div>
+                    <div className="text-xs md:text-sm font-semibold mb-1">Exceptions</div>
+                    <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400">{plan.exceptionRate}</div>
                   </div>
                   <div className="pt-2 border-t">
-                    <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-2">
+                    <ul className="text-xs md:text-sm text-slate-600 dark:text-slate-400 space-y-1.5 md:space-y-2 leading-relaxed">
                       {plan.limits.map((limit, idx) => (
                         <li key={idx} className="flex items-start gap-2">
-                          <span className="text-green-600 dark:text-green-400 mt-0.5">✓</span>
+                          <span className="text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0">✓</span>
                           <span>{limit}</span>
                         </li>
                       ))}
@@ -128,39 +128,39 @@ export default function Pricing() {
       </section>
 
       {/* Pricing Calculator */}
-      <section className="px-4 sm:px-6 lg:px-8 py-12 bg-slate-50 dark:bg-slate-900/50">
+      <section className="px-4 sm:px-6 lg:px-8 py-10 md:py-12 bg-slate-50 dark:bg-slate-900/50">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">Calculate Your Cost</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">Calculate Your Cost</h2>
           <PricingCalculator />
         </div>
       </section>
 
       {/* Details Accordion */}
-      <section className="px-4 sm:px-6 lg:px-8 py-12">
+      <section className="px-4 sm:px-6 lg:px-8 py-10 md:py-12">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">Details</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">Details</h2>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="how-it-works">
-              <AccordionTrigger className="text-lg font-semibold">
+              <AccordionTrigger className="text-base md:text-lg font-semibold">
                 How It Works
               </AccordionTrigger>
-              <AccordionContent className="text-slate-600 dark:text-slate-300 space-y-4">
+              <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 space-y-3 md:space-y-4 leading-relaxed">
                 <div>
-                  <h3 className="font-semibold mb-2">What is a reconciliation?</h3>
-                  <p className="text-sm">
+                  <h3 className="font-semibold mb-1.5 md:mb-2">What is a reconciliation?</h3>
+                  <p>
                     A reconciliation matches one transaction to another (e.g., Stripe payment to Shopify order). 
                     Each match counts as one reconciliation. Runs automatically.
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">What are exceptions?</h3>
-                  <p className="text-sm">
+                  <h3 className="font-semibold mb-1.5 md:mb-2">What are exceptions?</h3>
+                  <p>
                     Exceptions are transactions that can't be matched automatically. 
                     You only pay for exceptions requiring manual review ($0.10 each). Most are handled automatically.
                   </p>
                 </div>
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 md:p-4">
+                  <p className="text-blue-800 dark:text-blue-200">
                     <strong>Example:</strong> Process 10,000 transactions/month. 
                     If 100 (1%) require review: $99 + (100 × $0.10) = $109/month.
                   </p>
@@ -168,20 +168,20 @@ export default function Pricing() {
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="pricing-details">
-              <AccordionTrigger className="text-lg font-semibold">
+              <AccordionTrigger className="text-base md:text-lg font-semibold">
                 Pricing Details
               </AccordionTrigger>
-              <AccordionContent className="text-slate-600 dark:text-slate-300 space-y-4">
+              <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 space-y-3 md:space-y-4 leading-relaxed">
                 <div>
-                  <h3 className="font-semibold mb-2">Base Pricing</h3>
-                  <p className="text-sm">
+                  <h3 className="font-semibold mb-1.5 md:mb-2">Base Pricing</h3>
+                  <p>
                     Each plan includes a monthly reconciliation volume. If you exceed your plan's volume, 
                     you'll be prompted to upgrade.
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Exception Handling</h3>
-                  <p className="text-sm">
+                  <h3 className="font-semibold mb-1.5 md:mb-2">Exception Handling</h3>
+                  <p>
                     Each plan includes 1% exception rate with automatic explanations. 
                     Exceptions beyond 1% requiring manual review cost $0.10 each.
                   </p>
@@ -189,21 +189,21 @@ export default function Pricing() {
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="faq">
-              <AccordionTrigger className="text-lg font-semibold">
+              <AccordionTrigger className="text-base md:text-lg font-semibold">
                 Frequently Asked Questions
               </AccordionTrigger>
-              <AccordionContent className="text-slate-600 dark:text-slate-300 space-y-4">
+              <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 space-y-3 md:space-y-4 leading-relaxed">
                 <div>
-                  <h3 className="font-semibold mb-2">Can I switch plans later?</h3>
-                  <p className="text-sm">Yes! Upgrade, downgrade, or cancel anytime. Changes take effect immediately.</p>
+                  <h3 className="font-semibold mb-1.5 md:mb-2">Can I switch plans later?</h3>
+                  <p>Yes! Upgrade, downgrade, or cancel anytime. Changes take effect immediately.</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Is there a free trial?</h3>
-                  <p className="text-sm">Yes! All paid plans include a 14-day free trial with full access—no credit card required.</p>
+                  <h3 className="font-semibold mb-1.5 md:mb-2">Is there a free trial?</h3>
+                  <p>Yes! All paid plans include a 14-day free trial with full access—no credit card required.</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">What payment methods do you accept?</h3>
-                  <p className="text-sm">We accept all major credit cards. ACH and wire transfers available for Enterprise plans.</p>
+                  <h3 className="font-semibold mb-1.5 md:mb-2">What payment methods do you accept?</h3>
+                  <p>We accept all major credit cards. ACH and wire transfers available for Enterprise plans.</p>
                 </div>
               </AccordionContent>
             </AccordionItem>
