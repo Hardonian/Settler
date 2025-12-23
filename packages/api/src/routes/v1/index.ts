@@ -25,6 +25,9 @@ import receiptMatchingRouter from './receipt-matching';
 import bulkOperationsRouter from './bulk-operations';
 import slaRouter from './sla';
 import auditTrailRouter from './audit-trail';
+import advancedMatchingRulesRouter from './advanced-matching-rules';
+import customIntegrationsRouter from './custom-integrations';
+import dedicatedInfrastructureRouter from './dedicated-infrastructure';
 
 export const v1Router = Router();
 
@@ -56,10 +59,13 @@ v1Router.use('/audit-trail', auditTrailRouter);
 // Phase 2: Premium Features
 v1Router.use('/receipt-matching', receiptMatchingRouter);
 v1Router.use('/bulk-operations', bulkOperationsRouter);
+v1Router.use('/advanced-matching-rules', advancedMatchingRulesRouter);
 // Currency routes already exist at /currency
 
 // Phase 3: Enterprise Features
 v1Router.use('/sla', slaRouter);
+v1Router.use('/custom-integrations', customIntegrationsRouter);
+v1Router.use('/dedicated-infrastructure', dedicatedInfrastructureRouter);
 
 // Operator mode routes
 v1Router.use('/', operatorModeRouter);
