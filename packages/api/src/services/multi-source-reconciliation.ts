@@ -103,7 +103,7 @@ export async function detectConflicts(
     }
 
     // Detect conflicts (same transaction from multiple sources)
-    for (const [key, txs] of seenTransactions.entries()) {
+    for (const [, txs] of seenTransactions.entries()) {
       if (txs.length > 1) {
         // Multiple sources have the same transaction
         for (let i = 0; i < txs.length; i++) {

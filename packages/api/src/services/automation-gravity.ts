@@ -239,13 +239,6 @@ export class AutomationGravityService {
         .eq('tenant_id', tenantId)
         .eq('event_type', 'manual_intervention');
 
-      // Get automation successes
-      const { data: automationSuccesses } = await supabase
-        .from('usage_events')
-        .select('quantity')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', 'automation_success');
-
       // Calculate automation efficiency
       const totalOperations = (activeAutomations || 0) + (manualInterventions || 0);
       const automationEfficiency = totalOperations > 0

@@ -12,7 +12,7 @@
  */
 
 import { supabase } from '../infrastructure/supabase/client';
-import { logError, logInfo } from '../utils/logger';
+import { logError } from '../utils/logger';
 
 export interface LongitudinalInsight {
   id: string;
@@ -253,10 +253,16 @@ export class DataGravityService {
    */
   private detectLinearTrend(values: number[]): { slope: number; intercept: number } {
     const n = values.length;
+    if (n === 0) {
+      return { slope: 0, intercept: 0 };
+    }
     const x = Array.from({ length: n }, (_, i) => i);
     const sumX = x.reduce((a, b) => a + b, 0);
     const sumY = values.reduce((a, b) => a + b, 0);
-    const sumXY = x.reduce((sum, xi, i) => sum + xi * values[i], 0);
+    const sumXY = x.reduce((sum, xi, i) => {
+      const value = values[i];
+      return sum + xi * (value ?? 0);
+    }, 0);
     const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
 
     const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
@@ -308,7 +314,10 @@ export class DataGravityService {
 
     // Recency = higher confidence (more recent data is better)
     const now = new Date();
-    const daysSinceLastUpdate = (now.getTime() - new Date(historicalValues[historicalValues.length - 1].date).getTime()) / (1000 * 60 * 60 * 24);
+    const lastValue = historicalValues[historicalValues.length - 1];
+    const daysSinceLastUpdate = lastValue 
+      ? (now.getTime() - new Date(lastValue.date).getTime()) / (1000 * 60 * 60 * 24)
+      : 30; // Default to max if no data
     const recencyScore = Math.max(0, 1 - daysSinceLastUpdate / 30);
 
     return (dataPointsScore * 0.4 + consistencyScore * 0.4 + recencyScore * 0.2);
@@ -494,7 +503,7 @@ export class DataGravityService {
   /**
    * Generate export (lossy - excludes derived artifacts and insights)
    */
-  async generateExport(tenantId: string, format: 'csv' | 'json' = 'json'): Promise<{
+  async generateExport(tenantId: string, _format: 'csv' | 'json' = 'json'): Promise<{
     data: any[];
     metadata: {
       totalRecords: number;

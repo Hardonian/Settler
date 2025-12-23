@@ -202,7 +202,7 @@ export class ScaleDefenseService {
   /**
    * Get plan limits
    */
-  private async getPlanLimits(tenantId: string): Promise<{ baseRps: number; baseRpm: number }> {
+  private async getPlanLimits(_tenantId: string): Promise<{ baseRps: number; baseRpm: number }> {
     // Get tenant's plan (simplified - in production, query subscription)
     // Default limits
     return {
@@ -434,7 +434,7 @@ export class ScaleDefenseService {
   /**
    * Check if operation should be degraded
    */
-  async shouldDegrade(tenantId: string, operationType: string): Promise<{
+  async shouldDegrade(tenantId: string, _operationType: string): Promise<{
     degrade: boolean;
     reason?: string;
     degradedFeatures?: string[];

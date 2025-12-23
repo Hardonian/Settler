@@ -16,6 +16,11 @@ import {
 
 const router = Router();
 
+// Helper function to validate userId exists
+function isValidUserId(userId: string | undefined): boolean {
+  return typeof userId === 'string' && userId.length > 0;
+}
+
 /**
  * POST /api/v1/multi-source-reconciliation/jobs
  * Create a multi-source reconciliation job
@@ -174,7 +179,6 @@ router.post("/conflicts/:conflictId/resolve", async (req: AuthRequest, res: Resp
     const { conflictId } = req.params;
     const { resolutionStrategy } = req.body;
     const tenantId = req.tenantId!;
-    const userId = req.userId;
 
     if (!resolutionStrategy) {
       return res.status(400).json({
@@ -184,7 +188,8 @@ router.post("/conflicts/:conflictId/resolve", async (req: AuthRequest, res: Resp
       });
     }
 
-    if (!userId) {
+    const userId = req.userId;
+    if (!isValidUserId(userId)) {
       return res.status(401).json({
         error: "Unauthorized",
         message: "User ID is required",
@@ -192,7 +197,9 @@ router.post("/conflicts/:conflictId/resolve", async (req: AuthRequest, res: Resp
       });
     }
 
-    await resolveConflict(tenantId, conflictId, resolutionStrategy, userId);
+    // Type assertion is safe here because isValidUserId check above guarantees userId is string
+    // @ts-expect-error - TypeScript doesn't narrow optional properties, but isValidUserId guarantees it's a string
+    await resolveConflict(tenantId, conflictId, resolutionStrategy, userId as string);
 
     logInfo("Conflict resolved", { conflictId, tenantId, userId, traceId: req.traceId });
 
