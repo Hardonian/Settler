@@ -1,149 +1,157 @@
 /**
- * Currency/FX API Routes
- * 
- * REST API endpoints for multi-currency operations
+ * Currency Conversion API Routes
+ * Handles currency conversion endpoints
  */
 
-import { Router, Response } from 'express';
-import { z } from 'zod';
-import { validateRequest } from '../../middleware/validation';
-import { AuthRequest } from '../../middleware/auth';
-import { requirePermission } from '../../middleware/authorization';
-import { Permission } from '../../infrastructure/security/Permissions';
-import { FXService } from '../../application/currency/FXService';
-import { sendSuccess, sendError } from '../../utils/api-response';
-import { handleRouteError } from '../../utils/error-handler';
+import { Router, Response } from "express";
+import { AuthRequest } from "../../middleware/auth";
+import { logError, logInfo } from "../../utils/logger";
+import {
+  convertCurrency,
+  getExchangeRate,
+  addExchangeRate,
+} from "../../services/currency-conversion";
 
 const router = Router();
-const fxService = new FXService();
 
-// Validation schemas
-const convertCurrencySchema = z.object({
-  body: z.object({
-    amount: z.object({
-      value: z.number(),
-      currency: z.string(),
-    }),
-    toCurrency: z.string(),
-    date: z.string().datetime().optional(),
-  }),
+/**
+ * GET /api/v1/currency/rates
+ * Get exchange rate
+ */
+router.get("/rates", async (req: AuthRequest, res: Response) => {
+  try {
+    const { fromCurrency, toCurrency, date } = req.query;
+
+    if (!fromCurrency || !toCurrency) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "fromCurrency and toCurrency are required",
+        traceId: req.traceId,
+      });
+    }
+
+    const rateDate = date ? new Date(date as string) : new Date();
+    const rate = await getExchangeRate(
+      fromCurrency as string,
+      toCurrency as string,
+      rateDate
+    );
+
+    if (!rate) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Exchange rate not found",
+        traceId: req.traceId,
+      });
+    }
+
+    return res.json({
+      fromCurrency,
+      toCurrency,
+      rate,
+      date: rateDate.toISOString().split("T")[0],
+      traceId: req.traceId,
+    });
+  } catch (error) {
+    logError("Failed to get exchange rate", error, { traceId: req.traceId });
+    return res.status(500).json({
+      error: "Internal Server Error",
+      message: "Failed to get exchange rate",
+      traceId: req.traceId,
+    });
+  }
 });
 
-const getFXRateSchema = z.object({
-  query: z.object({
-    fromCurrency: z.string(),
-    toCurrency: z.string(),
-    date: z.string().datetime().optional(),
-  }),
+/**
+ * POST /api/v1/currency/rates
+ * Add exchange rate
+ */
+router.post("/rates", async (req: AuthRequest, res: Response) => {
+  try {
+    const { fromCurrency, toCurrency, rate, date, source } = req.body;
+
+    if (!fromCurrency || !toCurrency || rate === undefined) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "fromCurrency, toCurrency, and rate are required",
+        traceId: req.traceId,
+      });
+    }
+
+    const rateDate = date ? new Date(date) : new Date();
+    const rateId = await addExchangeRate(
+      fromCurrency,
+      toCurrency,
+      rate,
+      rateDate,
+      source || "manual"
+    );
+
+    logInfo("Exchange rate added", {
+      rateId,
+      fromCurrency,
+      toCurrency,
+      rate,
+      traceId: req.traceId,
+    });
+
+    return res.status(201).json({
+      id: rateId,
+      traceId: req.traceId,
+    });
+  } catch (error) {
+    logError("Failed to add exchange rate", error, { traceId: req.traceId });
+    return res.status(500).json({
+      error: "Internal Server Error",
+      message: "Failed to add exchange rate",
+      traceId: req.traceId,
+    });
+  }
 });
 
 /**
  * POST /api/v1/currency/convert
- * Convert amount to base currency
+ * Convert currency
  */
-router.post(
-  '/convert',
-  requirePermission(Permission.REPORTS_READ),
-  validateRequest(convertCurrencySchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const { amount, toCurrency, date } = req.body;
-      const tenantId = req.tenantId!;
+router.post("/convert", async (req: AuthRequest, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const { amount, fromCurrency, toCurrency, date, reconciliationRunId, transactionId } =
+      req.body;
 
-      const moneyAmount = {
-        value: typeof amount === 'number' ? amount : parseFloat(String(amount)),
-        currency: toCurrency,
-      };
-
-      const converted = await fxService.convertToBaseCurrency(
-        tenantId,
-        moneyAmount,
-        toCurrency,
-        date ? new Date(date) : undefined
-      );
-
-      if (!converted) {
-        return sendError(res, 404, 'NOT_FOUND', 'FX rate not available for currency pair');
-      }
-
-      sendSuccess(res, { original: amount, converted });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to convert currency', 500);
-    }
-  }
-);
-
-/**
- * GET /api/v1/currency/fx-rate
- * Get FX rate for currency pair
- */
-router.get(
-  '/fx-rate',
-  requirePermission(Permission.REPORTS_READ),
-  validateRequest(getFXRateSchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const { fromCurrency, toCurrency, date } = req.query;
-      const tenantId = req.tenantId!;
-
-      const rate = await fxService.getFXRate(
-        tenantId,
-        fromCurrency as string,
-        toCurrency as string,
-        date ? new Date(date as string) : undefined
-      );
-
-      if (rate === null) {
-        return sendError(res, 404, 'NOT_FOUND', 'FX rate not available for currency pair');
-      }
-
-      sendSuccess(res, {
-        fromCurrency,
-        toCurrency,
-        rate,
-        date: date || new Date().toISOString(),
+    if (!amount || !fromCurrency || !toCurrency) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "amount, fromCurrency, and toCurrency are required",
+        traceId: req.traceId,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get FX rate', 500);
     }
-  }
-);
 
-/**
- * GET /api/v1/currency/base-currency
- * Get base currency for tenant
- */
-router.get(
-  '/base-currency',
-  requirePermission(Permission.REPORTS_READ),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const baseCurrency = await fxService.getBaseCurrency(tenantId);
-      sendSuccess(res, { baseCurrency });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get base currency', 500);
-    }
-  }
-);
+    const conversionDate = date ? new Date(date) : new Date();
+    const result = await convertCurrency(
+      tenantId,
+      amount,
+      fromCurrency,
+      toCurrency,
+      conversionDate,
+      {
+        reconciliationRunId,
+        transactionId,
+      }
+    );
 
-/**
- * GET /api/v1/currency/fx-rates
- * Get all FX rates for tenant
- */
-router.get(
-  '/fx-rates',
-  requirePermission(Permission.REPORTS_READ),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = req.tenantId!;
-      const date = req.query.date ? new Date(req.query.date as string) : undefined;
-      const rates = await fxService.getFXRates(tenantId, date);
-      sendSuccess(res, { rates });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get FX rates', 500);
-    }
+    return res.json({
+      ...result,
+      traceId: req.traceId,
+    });
+  } catch (error) {
+    logError("Failed to convert currency", error, { traceId: req.traceId });
+    return res.status(500).json({
+      error: "Internal Server Error",
+      message: (error as Error).message || "Failed to convert currency",
+      traceId: req.traceId,
+    });
   }
-);
+});
 
 export default router;

@@ -17,6 +17,17 @@ import ingestionRouter from './ingestion';
 import reconciliationRouter from './reconciliation';
 import ingestionExportsRouter from './ingestion-exports';
 import { operatorModeRouter } from './operator-mode';
+import multiSourceReconciliationRouter from './multi-source-reconciliation';
+import approvalsRouter from './approvals';
+import progressRouter from './progress';
+import notificationsRouter from './notifications';
+import receiptMatchingRouter from './receipt-matching';
+import bulkOperationsRouter from './bulk-operations';
+import slaRouter from './sla';
+import auditTrailRouter from './audit-trail';
+import advancedMatchingRulesRouter from './advanced-matching-rules';
+import customIntegrationsRouter from './custom-integrations';
+import dedicatedInfrastructureRouter from './dedicated-infrastructure';
 
 export const v1Router = Router();
 
@@ -37,6 +48,24 @@ v1Router.use('/currency', currencyRouter);
 v1Router.use('/ingestion', ingestionRouter);
 v1Router.use('/reconciliation', reconciliationRouter);
 v1Router.use('/ingestion/exports', ingestionExportsRouter);
+
+// Phase 1: Core Features
+v1Router.use('/multi-source-reconciliation', multiSourceReconciliationRouter);
+v1Router.use('/approvals', approvalsRouter);
+v1Router.use('/progress', progressRouter);
+v1Router.use('/notifications', notificationsRouter);
+v1Router.use('/audit-trail', auditTrailRouter);
+
+// Phase 2: Premium Features
+v1Router.use('/receipt-matching', receiptMatchingRouter);
+v1Router.use('/bulk-operations', bulkOperationsRouter);
+v1Router.use('/advanced-matching-rules', advancedMatchingRulesRouter);
+// Currency routes already exist at /currency
+
+// Phase 3: Enterprise Features
+v1Router.use('/sla', slaRouter);
+v1Router.use('/custom-integrations', customIntegrationsRouter);
+v1Router.use('/dedicated-infrastructure', dedicatedInfrastructureRouter);
 
 // Operator mode routes
 v1Router.use('/', operatorModeRouter);
