@@ -74,15 +74,28 @@ export class WorkflowReferencePromotionService {
         referenceType
       );
 
-      // Record promotion
+      // Record promotion (get billing account ID first)
+      const billingAccountResult = await query(
+        `SELECT id FROM billing_accounts WHERE tenant_id = $1 LIMIT 1`,
+        [tenantId]
+      );
+      const billingAccountId = billingAccountResult.length > 0 
+        ? (billingAccountResult[0] as { id: string }).id 
+        : null;
+
+      if (!billingAccountId) {
+        throw new Error('Billing account not found for tenant');
+      }
+
       await query(
         `INSERT INTO usage_events (
-          tenant_id, event_type, quantity, metadata, timestamp
+          tenant_id, billing_account_id, event_type, quantity, metadata, timestamp
         ) VALUES (
-          $1, 'workflow_ref_promotion', 1, $2, NOW()
+          $1, $2, 'workflow_ref_promotion', 1, $3, NOW()
         )`,
         [
           tenantId,
+          billingAccountId,
           JSON.stringify({
             entityType,
             entityId,
@@ -144,7 +157,7 @@ export class WorkflowReferencePromotionService {
       // Get reconciliation run
       const runResult = await query(
         `SELECT 
-          id, source_adapter, target_adapter, status, created_at
+          id, status, created_at, metadata
         FROM reconciliation_runs
         WHERE id = $1 AND tenant_id = $2`,
         [reconciliationRunId, tenantId]
@@ -156,11 +169,15 @@ export class WorkflowReferencePromotionService {
 
       const run = runResult[0] as {
         id: string;
-        source_adapter: string;
-        target_adapter: string;
         status: string;
         created_at: Date;
+        metadata: string | Record<string, unknown>;
       };
+
+      // Extract adapter info from metadata if available
+      const metadata = typeof run.metadata === 'string' ? JSON.parse(run.metadata) : run.metadata;
+      const sourceAdapter = (metadata as { source_adapter?: string })?.source_adapter || 'unknown';
+      const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || 'unknown';
 
       const suggestions: Array<{
         entityType: string;
@@ -171,24 +188,24 @@ export class WorkflowReferencePromotionService {
       }> = [];
 
       // Suggest accounting system reference if QuickBooks/Xero is target
-      if (run.target_adapter === 'quickbooks' || run.target_adapter === 'xero') {
+      if (targetAdapter === 'quickbooks' || targetAdapter === 'xero') {
         suggestions.push({
           entityType: 'reconciliation_run',
           entityId: run.id,
           suggestedSystem: 'accounting',
           suggestedReferenceType: 'finance',
-          reason: `Reference this reconciliation in ${run.target_adapter} for audit trail`,
+          reason: `Reference this reconciliation in ${targetAdapter} for audit trail`,
         });
       }
 
       // Suggest ERP reference if NetSuite/SAP is target
-      if (run.target_adapter === 'netsuite' || run.target_adapter === 'sap') {
+      if (targetAdapter === 'netsuite' || targetAdapter === 'sap') {
         suggestions.push({
           entityType: 'reconciliation_run',
           entityId: run.id,
           suggestedSystem: 'erp',
           suggestedReferenceType: 'finance',
-          reason: `Reference this reconciliation in ${run.target_adapter} for financial reporting`,
+          reason: `Reference this reconciliation in ${targetAdapter} for financial reporting`,
         });
       }
 

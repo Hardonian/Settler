@@ -93,9 +93,7 @@ export class DeterministicGuaranteeEnforcementService {
       // Get reconciliation run inputs
       const runResult = await query(
         `SELECT 
-          id, source_adapter, target_adapter, source_config_encrypted,
-          target_config_encrypted, validation_rules, recon_strategy,
-          date_range_start, date_range_end
+          id, started_at, completed_at, metadata
         FROM reconciliation_runs
         WHERE id = $1 AND tenant_id = $2`,
         [reconciliationRunId, tenantId]
@@ -107,24 +105,26 @@ export class DeterministicGuaranteeEnforcementService {
 
       const run = runResult[0] as {
         id: string;
-        source_adapter: string;
-        target_adapter: string;
-        source_config_encrypted: string;
-        target_config_encrypted: string;
-        validation_rules: string;
-        recon_strategy: string;
-        date_range_start: Date;
-        date_range_end: Date;
+        started_at: Date;
+        completed_at: Date | null;
+        metadata: string | Record<string, unknown>;
       };
+
+      // Extract inputs from metadata
+      const metadata = typeof run.metadata === 'string' ? JSON.parse(run.metadata) : run.metadata;
+      const sourceAdapter = (metadata as { source_adapter?: string })?.source_adapter || 'unknown';
+      const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || 'unknown';
+      const validationRules = JSON.stringify((metadata as { validation_rules?: unknown })?.validation_rules || {});
+      const reconStrategy = (metadata as { recon_strategy?: string })?.recon_strategy || 'deterministic';
 
       // Hash inputs
       const inputsHash = this.hashInputs({
-        sourceAdapter: run.source_adapter,
-        targetAdapter: run.target_adapter,
-        validationRules: run.validation_rules,
-        reconStrategy: run.recon_strategy,
-        dateRangeStart: run.date_range_start,
-        dateRangeEnd: run.date_range_end,
+        sourceAdapter,
+        targetAdapter,
+        validationRules,
+        reconStrategy,
+        startedAt: run.started_at.toISOString(),
+        completedAt: run.completed_at?.toISOString() || null,
       });
 
       // Get outputs (matches)
@@ -133,7 +133,7 @@ export class DeterministicGuaranteeEnforcementService {
           id, source_transaction_id, target_transaction_id,
           match_type, confidence, match_reason, amount_diff, date_diff
         FROM reconciliation_matches
-        WHERE reconciliation_run_id = $1
+        WHERE run_id = $1
         ORDER BY id`,
         [reconciliationRunId]
       );
@@ -151,15 +151,28 @@ export class DeterministicGuaranteeEnforcementService {
         }))
       );
 
-      // Store verification
+      // Store verification (get billing account ID first)
+      const billingAccountResult = await query(
+        `SELECT id FROM billing_accounts WHERE tenant_id = $1 LIMIT 1`,
+        [tenantId]
+      );
+      const billingAccountId = billingAccountResult.length > 0 
+        ? (billingAccountResult[0] as { id: string }).id 
+        : null;
+
+      if (!billingAccountId) {
+        throw new Error('Billing account not found for tenant');
+      }
+
       await query(
         `INSERT INTO usage_events (
-          tenant_id, event_type, quantity, metadata, timestamp
+          tenant_id, billing_account_id, event_type, quantity, metadata, timestamp
         ) VALUES (
-          $1, 'deterministic_verification', 1, $2, NOW()
+          $1, $2, 'deterministic_verification', 1, $3, NOW()
         )`,
         [
           tenantId,
+          billingAccountId,
           JSON.stringify({
             reconciliationRunId,
             inputsHash,

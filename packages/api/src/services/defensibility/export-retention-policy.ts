@@ -208,10 +208,10 @@ export class ExportRetentionPolicyService {
           );
 
           if (!availability.available) {
-            // Delete export
+            // Delete export (set status to deleted)
             await query(
               `UPDATE exports
-              SET status = 'deleted', deleted_at = NOW()
+              SET status = 'deleted'
               WHERE id = $1`,
               [exportData.id]
             );

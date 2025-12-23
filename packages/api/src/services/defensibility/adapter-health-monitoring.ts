@@ -54,11 +54,44 @@ export class AdapterHealthMonitoringService {
     }
   ): Promise<void> {
     try {
+      // Get a system billing account for system events
+      const billingAccountResult = await query(
+        `SELECT id FROM billing_accounts WHERE tenant_id IS NULL LIMIT 1`,
+        []
+      );
+      const billingAccountId = billingAccountResult.length > 0 
+        ? (billingAccountResult[0] as { id: string }).id 
+        : null;
+
+      if (!billingAccountId) {
+        // Create a system billing account if it doesn't exist
+        const createResult = await query(
+          `INSERT INTO billing_accounts (id, status) VALUES (gen_random_uuid(), 'active') RETURNING id`,
+          []
+        );
+        const newBillingAccountId = (createResult[0] as { id: string }).id;
+        await query(
+          `INSERT INTO usage_events (
+            billing_account_id, event_type, quantity, metadata, timestamp
+          ) VALUES (
+            $1, 'adapter_health_check', 1, $2, NOW()
+          )`,
+          [newBillingAccountId, JSON.stringify({
+            adapterType,
+            success: metrics.success,
+            responseTime: metrics.responseTime,
+            error: metrics.error,
+            timestamp: new Date().toISOString(),
+          })]
+        );
+        return;
+      }
+
       await query(
         `INSERT INTO usage_events (
-          tenant_id, event_type, quantity, metadata, timestamp
+          billing_account_id, event_type, quantity, metadata, timestamp
         ) VALUES (
-          'system', 'adapter_health_check', 1, $1, NOW()
+          $1, 'adapter_health_check', 1, $2, NOW()
         )`,
         [
           JSON.stringify({
@@ -192,13 +225,47 @@ export class AdapterHealthMonitoringService {
 
       const affectedCustomers = (customerCount[0] as { count: number }).count || 0;
 
+      // Get a system billing account for system events
+      const billingAccountResult = await query(
+        `SELECT id FROM billing_accounts WHERE tenant_id IS NULL LIMIT 1`,
+        []
+      );
+      const billingAccountId = billingAccountResult.length > 0 
+        ? (billingAccountResult[0] as { id: string }).id 
+        : null;
+
+      if (!billingAccountId) {
+        // Create a system billing account if it doesn't exist
+        const createResult = await query(
+          `INSERT INTO billing_accounts (id, status) VALUES (gen_random_uuid(), 'active') RETURNING id`,
+          []
+        );
+        const newBillingAccountId = (createResult[0] as { id: string }).id;
+        await query(
+          `INSERT INTO usage_events (
+            billing_account_id, event_type, quantity, metadata, timestamp
+          ) VALUES (
+            $1, 'adapter_maintenance', 1, $2, NOW()
+          )`,
+          [newBillingAccountId, JSON.stringify({
+            adapterType,
+            eventType: event.eventType,
+            description: event.description,
+            affectedCustomers,
+            resolvedAt: event.resolvedAt.toISOString(),
+          })]
+        );
+        return;
+      }
+
       await query(
         `INSERT INTO usage_events (
-          tenant_id, event_type, quantity, metadata, timestamp
+          billing_account_id, event_type, quantity, metadata, timestamp
         ) VALUES (
-          'system', 'adapter_maintenance', 1, $1, NOW()
+          $1, 'adapter_maintenance', 1, $2, NOW()
         )`,
         [
+          billingAccountId,
           JSON.stringify({
             adapterType,
             eventType: event.eventType,

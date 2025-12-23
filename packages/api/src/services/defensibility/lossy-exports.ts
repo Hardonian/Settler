@@ -48,6 +48,7 @@ export class LossyExportService {
    */
   async createLossyExport(
     tenantId: string,
+    userId: string,
     reconciliationRunId: string,
     options: ExportOptions = {}
   ): Promise<LossyExportResult> {
@@ -61,9 +62,8 @@ export class LossyExportService {
       // Get reconciliation run
       const runResult = await query(
         `SELECT 
-          id, tenant_id, source_adapter, target_adapter, 
-          matched_count, unmatched_source_count, unmatched_target_count,
-          created_at, status
+          id, tenant_id, matched_count, unmatched_source_count, unmatched_target_count,
+          created_at, status, metadata
         FROM reconciliation_runs
         WHERE id = $1 AND tenant_id = $2`,
         [reconciliationRunId, tenantId]
@@ -76,14 +76,18 @@ export class LossyExportService {
       const run = runResult[0] as {
         id: string;
         tenant_id: string;
-        source_adapter: string;
-        target_adapter: string;
         matched_count: number;
         unmatched_source_count: number;
         unmatched_target_count: number;
         created_at: Date;
         status: string;
+        metadata: string | Record<string, unknown>;
       };
+
+      // Extract adapter info from metadata if available
+      const metadata = typeof run.metadata === 'string' ? JSON.parse(run.metadata) : run.metadata;
+      const sourceAdapter = (metadata as { source_adapter?: string })?.source_adapter || 'unknown';
+      const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || 'unknown';
 
       // Get matches (with or without confidence scores)
       const matchesQuery = includeConfidenceScores
@@ -92,26 +96,26 @@ export class LossyExportService {
             match_type, confidence, match_reason,
             amount_diff, date_diff, created_at
           FROM reconciliation_matches
-          WHERE reconciliation_run_id = $1`
+          WHERE run_id = $1`
         : `SELECT 
             id, source_transaction_id, target_transaction_id,
             match_type, match_reason,
             amount_diff, date_diff, created_at
           FROM reconciliation_matches
-          WHERE reconciliation_run_id = $1`;
+          WHERE run_id = $1`;
 
       const matches = await query(matchesQuery, [reconciliationRunId]);
 
       // Get unmatched transactions (basic data only)
       const unmatchedQuery = `SELECT 
-        id, transaction_id, adapter_type, amount, currency, date, description, external_id
+        id, external_id, amount, currency, date, description
       FROM normalized_transactions
       WHERE id IN (
         SELECT source_transaction_id FROM reconciliation_matches 
-        WHERE reconciliation_run_id = $1 AND match_type = 'unmatched'
+        WHERE run_id = $1 AND match_type = 'unmatched'
         UNION
         SELECT target_transaction_id FROM reconciliation_matches 
-        WHERE reconciliation_run_id = $1 AND match_type = 'unmatched'
+        WHERE run_id = $1 AND match_type = 'unmatched'
       )`;
 
       const unmatched = await query(unmatchedQuery, [reconciliationRunId]);
@@ -131,20 +135,20 @@ export class LossyExportService {
       // Create export record
       const exportResult = await query(
         `INSERT INTO exports (
-          id, tenant_id, export_type, format, status,
-          row_count, excluded_fields, metadata, created_at
+          id, tenant_id, user_id, type, format, status,
+          reconciliation_run_id, row_count, metadata, created_at
         ) VALUES (
-          gen_random_uuid(), $1, 'reconciliation_lossy', 'csv', 'completed',
-          $2, $3, $4, NOW()
+          gen_random_uuid(), $1, $2, 'csv', 'reconciliation_report', 'completed',
+          $3, $4, $5, NOW()
         ) RETURNING id`,
         [
           tenantId,
+          userId,
+          reconciliationRunId,
           matches.length + unmatched.length,
-          JSON.stringify(excludedFields),
           JSON.stringify({
-            reconciliation_run_id: reconciliationRunId,
-            source_adapter: run.source_adapter,
-            target_adapter: run.target_adapter,
+            source_adapter: sourceAdapter,
+            target_adapter: targetAdapter,
             lossy: true,
             excluded_fields: excludedFields,
             warning: this.generateWarning(excludedFields),
@@ -230,7 +234,7 @@ export class LossyExportService {
   async getExcludedFields(exportId: string): Promise<string[]> {
     try {
       const result = await query(
-        `SELECT excluded_fields
+        `SELECT metadata
         FROM exports
         WHERE id = $1`,
         [exportId]
@@ -240,8 +244,13 @@ export class LossyExportService {
         return [];
       }
 
-      const excludedFields = (result[0] as { excluded_fields: string }).excluded_fields;
-      return excludedFields ? JSON.parse(excludedFields) : [];
+      const metadata = (result[0] as { metadata: string }).metadata;
+      if (!metadata) {
+        return [];
+      }
+
+      const parsed = typeof metadata === 'string' ? JSON.parse(metadata) : metadata;
+      return (parsed as { excluded_fields?: string[] }).excluded_fields || [];
     } catch (error) {
       logError('Failed to get excluded fields', error, { exportId });
       return [];
