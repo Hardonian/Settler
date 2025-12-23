@@ -8,11 +8,13 @@
 
 ## What is Settler?
 
-**Settler** is reconciliation-as-a-service for modern businesses. We reduce the expensive pain of manually matching transactions across fragmented SaaS platforms—reducing reconciliation time from hours to minutes, preventing revenue leakage, and ensuring compliance—all through a single API.
+**Settler** is reconciliation-as-a-service for modern businesses. We automate transaction matching across fragmented SaaS platforms—reducing reconciliation time from hours to minutes, preventing revenue leakage, and ensuring compliance—all through a single API.
+
+**Core Invariant:** Reconciliation is a system behavior, not a human task. Settler performs continuous, automatic reconciliation. Users supervise exceptions, not configure matching logic.
 
 ### One-Liner
 
-**Settler automates financial reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms—reducing hours of manual work with a 5-minute API integration.**
+**Settler automates financial reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms—reducing hours of manual work with automatic matching and exception supervision.**
 
 ---
 
@@ -36,18 +38,18 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 **How it works:**
 
 1. Connect your platforms (Stripe, Shopify, QuickBooks, etc.) via adapters
-2. Configure matching rules (order ID, amount, timestamp)
-3. Automatic reconciliation runs in real-time or on schedule
-4. Get reports and alerts for mismatches
+2. Ingest transaction data (automatic normalization)
+3. Automatic reconciliation runs continuously (no configuration required)
+4. Review exceptions and export audit trails
 
 ### Key Benefits
 
 - ⚡ **5-minute integration** vs. weeks of custom code
-- 🔄 **Real-time reconciliation** vs. batch processing
-- 🔌 **Composable adapters** for any platform
-- 🔒 **Compliance built-in** (SOC 2, GDPR, PCI-DSS ready)
+- 🔄 **Automatic reconciliation** vs. manual matching
+- 🔌 **Standard adapters** for 50+ platforms
+- 🔒 **Compliance built-in** (SOC 2 planned Q3 2026, GDPR/CCPA compliant)
 - 📊 **Comprehensive reporting** with audit trails
-- 🚀 **Scalable** from 1K to 1M+ transactions/month
+- 🚀 **Scalable** from 10K to 1M+ transactions/month
 
 ---
 
@@ -61,12 +63,12 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 - Normalize data across different formats
 - Real-time or scheduled reconciliation
 
-**Flexible Matching Rules**
+**Deterministic Matching**
 
-- Exact matching (order ID, amount)
-- Fuzzy matching (amount tolerance, date ranges)
-- Custom matching logic
-- Conflict resolution strategies
+- Automatic matching (order ID, amount, timestamp)
+- Confidence scoring (0.0-1.0) for match quality
+- Exception identification for unmatched items
+- No configuration required—matching happens automatically
 
 **Comprehensive Reporting**
 
@@ -367,7 +369,7 @@ Settler provides white-label reports and custom integrations for agencies and co
 
 ### Security Certifications
 
-- **SOC 2 Type II:** Certified (Q3 2026)
+- **SOC 2 Type II:** Planned (Q3 2026) — working toward certification
 - **GDPR:** Compliant
 - **CCPA:** Compliant
 - **PIPEDA:** Compliant
@@ -379,7 +381,7 @@ Settler provides white-label reports and custom integrations for agencies and co
 - **Access Control:** Role-based access control (RBAC)
 - **Audit Logs:** Comprehensive audit trails
 - **API Security:** API key authentication, rate limiting
-- **Infrastructure:** Multi-region redundancy, 99.9% uptime SLA
+- **Infrastructure:** Single-region deployment, 99.9% uptime target (not guaranteed)
 
 ### Data Privacy
 
