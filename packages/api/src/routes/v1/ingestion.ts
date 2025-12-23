@@ -5,7 +5,6 @@
 
 import { Router, Response } from "express";
 import multer from "multer";
-import { AuthRequest } from "../../middleware/auth";
 import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
 import { logError, logInfo } from "../../utils/logger";
 import { v4 as uuidv4 } from "uuid";
@@ -70,7 +69,8 @@ router.post("/sources", tenantMiddleware, async (req: TenantRequest, res: Respon
           [billingAccount.id]
         );
         
-        const planId = subscription[0]?.plan_id || "free";
+        const firstSubscription = subscription[0] as { plan_id?: string } | undefined;
+        const planId = firstSubscription?.plan_id || "free";
         const planLimits: Record<string, { platformAdapters: number | "unlimited" }> = {
           free: { platformAdapters: 2 },
           starter: { platformAdapters: 5 },
@@ -474,9 +474,10 @@ router.post(
  * Get ingestion details
  */
 router.get("/:ingestionId", tenantMiddleware, async (req: TenantRequest, res: Response) => {
+  const { ingestionId } = req.params;
+  const tenantId = req.tenantId!;
+  
   try {
-    const { ingestionId } = req.params;
-    const tenantId = req.tenantId!;
 
       const results = await query(
         `SELECT 
@@ -548,9 +549,10 @@ router.get(
   "/:ingestionId/transactions",
   tenantMiddleware,
   async (req: TenantRequest, res: Response) => {
+    const { ingestionId } = req.params;
+    const tenantId = req.tenantId!;
+    
     try {
-      const { ingestionId } = req.params;
-      const tenantId = req.tenantId!;
       const limit = parseInt(req.query.limit as string) || 100;
       const offset = parseInt(req.query.offset as string) || 0;
 

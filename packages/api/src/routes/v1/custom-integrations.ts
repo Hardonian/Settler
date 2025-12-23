@@ -3,7 +3,6 @@
  */
 
 import { Router, Response } from "express";
-import { AuthRequest } from "../../middleware/auth";
 import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
 import { featureGate } from "../../middleware/billing-gating";
 import { logError } from "../../utils/logger";

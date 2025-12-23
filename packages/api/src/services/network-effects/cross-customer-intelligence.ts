@@ -110,7 +110,7 @@ export class CrossCustomerIntelligence extends EventEmitter {
   /**
    * Check if a pattern matches known patterns
    */
-  checkPattern(tenantId: string, pattern: {
+  checkPattern(_tenantId: string, pattern: {
     type: AnonymizedPattern['patternType'];
     data: Record<string, unknown>;
   }): PatternMatch | null {

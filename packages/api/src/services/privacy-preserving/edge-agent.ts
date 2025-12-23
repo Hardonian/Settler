@@ -8,7 +8,9 @@
 import { EventEmitter } from 'events';
 
 export interface EdgeAgentConfig {
-  customerId: string;
+  tenantId?: string;
+  userId?: string;
+  customerId?: string; // Deprecated, use tenantId
   apiKey: string;
   cloudEndpoint: string;
   reconciliationRules: ReconciliationRule[];
@@ -46,7 +48,8 @@ export class EdgeAgent extends EventEmitter {
    */
   async initialize(): Promise<void> {
     // Validate configuration
-    if (!this.config.customerId || !this.config.apiKey) {
+    const customerId = this.config.customerId || this.config.tenantId;
+    if (!customerId || !this.config.apiKey) {
       throw new Error('Missing required configuration');
     }
 

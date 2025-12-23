@@ -4,7 +4,6 @@
  */
 
 import { Router, Response } from "express";
-import { AuthRequest } from "../../middleware/auth";
 import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
 import { logError, logInfo } from "../../utils/logger";
 import { runReconciliation } from "../../services/ingestion/reconciliation-matcher";
@@ -18,10 +17,11 @@ const router = Router();
  * Run reconciliation for an ingestion
  */
 router.post("/run", tenantMiddleware, async (req: TenantRequest, res: Response) => {
+  const { ingestionId, config } = req.body;
+  const tenantId = req.tenantId!;
+  const userId = req.userId!;
+  
   try {
-    const { ingestionId, config } = req.body;
-    const tenantId = req.tenantId!;
-    const userId = req.userId!;
 
     if (!ingestionId) {
       return res.status(400).json({
@@ -119,9 +119,10 @@ router.post("/run", tenantMiddleware, async (req: TenantRequest, res: Response) 
  * Get reconciliation run details
  */
 router.get("/runs/:runId", tenantMiddleware, async (req: TenantRequest, res: Response) => {
+  const { runId } = req.params;
+  const tenantId = req.tenantId!;
+  
   try {
-    const { runId } = req.params;
-    const tenantId = req.tenantId!;
 
     const results = await query(
       `SELECT 
@@ -194,9 +195,10 @@ router.get("/runs/:runId", tenantMiddleware, async (req: TenantRequest, res: Res
  * Get reconciliation matches
  */
 router.get("/runs/:runId/matches", tenantMiddleware, async (req: TenantRequest, res: Response) => {
+  const { runId } = req.params;
+  const tenantId = req.tenantId!;
+  
   try {
-    const { runId } = req.params;
-    const tenantId = req.tenantId!;
     const limit = parseInt(req.query.limit as string) || 100;
     const offset = parseInt(req.query.offset as string) || 0;
     const matchType = req.query.matchType as string | undefined;
@@ -317,11 +319,12 @@ router.get("/runs/:runId/matches", tenantMiddleware, async (req: TenantRequest, 
  * Update match (e.g., mark as reviewed)
  */
 router.patch("/matches/:matchId", tenantMiddleware, async (req: TenantRequest, res: Response) => {
+  const { matchId } = req.params;
+  const { reviewed } = req.body;
+  const tenantId = req.tenantId!;
+  const userId = req.userId!;
+  
   try {
-    const { matchId } = req.params;
-    const { reviewed } = req.body;
-    const tenantId = req.tenantId!;
-    const userId = req.userId!;
 
     await query(
       `UPDATE reconciliation_matches SET
@@ -386,11 +389,12 @@ router.patch("/matches/:matchId", tenantMiddleware, async (req: TenantRequest, r
  * Resolve a reconciliation exception (unmatched transaction)
  */
 router.put("/exceptions/:exceptionId", tenantMiddleware, async (req: TenantRequest, res: Response) => {
+  const { exceptionId } = req.params;
+  const { resolution, notes, targetTransactionId } = req.body;
+  const tenantId = req.tenantId!;
+  const userId = req.userId!;
+  
   try {
-    const { exceptionId } = req.params;
-    const { resolution, notes, targetTransactionId } = req.body;
-    const tenantId = req.tenantId!;
-    const userId = req.userId!;
 
     if (!exceptionId) {
       return res.status(400).json({

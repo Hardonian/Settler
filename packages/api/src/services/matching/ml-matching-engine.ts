@@ -346,7 +346,7 @@ export class MLMatchingEngine {
       // This aggregates anonymized patterns across all customers
       const { crossCustomerIntelligence } = await import("../network-effects/cross-customer-intelligence");
       
-      const pattern = crossCustomerIntelligence.checkPattern({
+      const pattern = crossCustomerIntelligence.checkPattern(tenantId, {
         type: "performance",
         data: {
           sourceAdapter,

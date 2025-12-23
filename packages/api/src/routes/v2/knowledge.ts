@@ -4,7 +4,7 @@
  * REST API for decision logs and AI knowledge assistant
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { decisionLog } from '../../services/knowledge/decision-log';
 import { aiKnowledgeAssistant } from '../../services/knowledge/ai-assistant';
 import { handleRouteError } from '../../utils/error-handler';

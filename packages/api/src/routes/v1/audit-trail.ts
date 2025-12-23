@@ -4,7 +4,6 @@
  */
 
 import { Router, Response } from "express";
-import { AuthRequest } from "../../middleware/auth";
 import { tenantMiddleware, TenantRequest } from "../../middleware/tenant";
 import { logError, logInfo } from "../../utils/logger";
 import {
@@ -13,7 +12,6 @@ import {
   getAuditExport,
   type AuditLogFilter,
 } from "../../services/audit-trail";
-import { query } from "../../db";
 import { getBillingAccount } from "../../utils/billing-helpers";
 
 const router = Router();
@@ -187,7 +185,7 @@ router.get("/export", tenantMiddleware, async (req: TenantRequest, res: Response
     };
 
     const planTier = billingAccount.plan_tier || "free";
-    const limits = planLimits[planTier] || planLimits.free;
+    const limits = planLimits[planTier] || planLimits.free!; // planLimits.free is guaranteed to exist
     const retentionCutoff = new Date();
     retentionCutoff.setDate(retentionCutoff.getDate() - limits.logRetentionDays);
 
@@ -223,11 +221,11 @@ router.get("/export", tenantMiddleware, async (req: TenantRequest, res: Response
 
       for (const log of logs) {
         const row = [
-          log.timestamp.toISOString(),
+          log.at.toISOString(),
           log.actor || "",
           log.action || "",
-          log.resourceType || "",
-          log.resourceId || "",
+          log.tableName || "",
+          log.rowPk || "",
           JSON.stringify(log.details || {}).replace(/"/g, '""'), // Escape quotes
         ];
         csvRows.push(`"${row.join('","')}"`);

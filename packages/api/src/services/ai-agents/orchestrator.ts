@@ -19,6 +19,7 @@ export interface AgentRequest {
   action: string;
   params: Record<string, unknown>;
   context?: Record<string, unknown>;
+  tenantId?: string;
 }
 
 export interface AgentResponse {
@@ -127,6 +128,9 @@ export class AgentOrchestrator extends EventEmitter {
    * Execute an agent action
    */
   async execute(request: AgentRequest & { tenantId: string }): Promise<AgentResponse> {
+    if (!request.tenantId) {
+      throw new Error('tenantId is required for agent execution');
+    }
     const agent = this.agents.get(request.agentId);
     
     if (!agent) {
@@ -183,9 +187,9 @@ export class AgentOrchestrator extends EventEmitter {
 
     while (this.requestQueue.length > 0) {
       const request = this.requestQueue.shift();
-      if (request) {
+      if (request && request.tenantId) {
         try {
-          const response = await this.execute(request);
+          const response = await this.execute(request as AgentRequest & { tenantId: string });
           this.emit('request_completed', response);
         } catch (error) {
           this.emit('request_failed', { request, error });

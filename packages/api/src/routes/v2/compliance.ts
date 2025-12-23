@@ -4,11 +4,10 @@
  * REST API for compliance exports and edge agent management
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { complianceExportSystem } from '../../services/compliance/export-system';
 import { EdgeAgent } from '../../services/privacy-preserving/edge-agent';
 import { handleRouteError } from '../../utils/error-handler';
-import { AuthRequest } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 
 const router = Router();
@@ -144,6 +143,7 @@ router.post('/edge/initialize', tenantMiddleware, async (req: TenantRequest, res
     const edgeAgent = new EdgeAgent({
       tenantId,
       userId,
+      customerId: tenantId, // For backward compatibility
       apiKey,
       cloudEndpoint: cloudEndpoint || 'https://api.settler.io',
       reconciliationRules,

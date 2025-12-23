@@ -4,7 +4,7 @@
  * REST API for managing and interacting with AI agents
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { agentOrchestrator } from '../../services/ai-agents/orchestrator';
 import { InfrastructureOptimizerAgent } from '../../services/ai-agents/infrastructure-optimizer';
 import { AnomalyDetectorAgent } from '../../services/ai-agents/anomaly-detector';

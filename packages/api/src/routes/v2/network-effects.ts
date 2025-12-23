@@ -4,11 +4,10 @@
  * REST API for network effects features (cross-customer intelligence, performance pools)
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { crossCustomerIntelligence } from '../../services/network-effects/cross-customer-intelligence';
 import { performanceTuningPools } from '../../services/network-effects/performance-pools';
 import { handleRouteError } from '../../utils/error-handler';
-import { AuthRequest } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 
 const router = Router();
