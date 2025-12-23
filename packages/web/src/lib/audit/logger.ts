@@ -19,13 +19,18 @@ export type AuditAction =
   | 'export'
   | 'import'
   | 'approve'
-  | 'reject';
+  | 'reject'
+  | 'review'
+  | 'match'
+  | 'notify';
 
 export type AuditResourceType =
   | 'api_key'
   | 'receipt'
   | 'feature_flag'
   | 'reconciliation'
+  | 'reconciliation_job'
+  | 'reconciliation_match'
   | 'billing_account'
   | 'subscription'
   | 'user'

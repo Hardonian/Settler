@@ -125,8 +125,22 @@ export class ReconCoreEngine {
     });
 
     try {
+      // Update progress: Starting ingestion
+      await this.updateProgress(reconResult.id, {
+        stage: 'ingesting',
+        percentage: 10,
+        message: 'Fetching data from source and target adapters...',
+      });
+
       // Step 1: Ingest data from source and target
       const { sourceData, targetData } = await this.ingestData(reconJob);
+
+      // Update progress: Data ingested
+      await this.updateProgress(reconResult.id, {
+        stage: 'transforming',
+        percentage: 30,
+        message: `Ingested ${sourceData.length} source and ${targetData.length} target records`,
+      });
 
       // Step 2: Transform data if transform recipe is specified
       const transformedSource = reconJob.transformRecipeId
@@ -154,6 +168,13 @@ export class ReconCoreEngine {
         ? await this.applyMapping(transformedTarget, reconJob.mappingTemplateId, tenantId)
         : transformedTarget;
 
+      // Update progress: Starting reconciliation
+      await this.updateProgress(reconResult.id, {
+        stage: 'matching',
+        percentage: 60,
+        message: `Matching ${mappedSource.length} source transactions against ${mappedTarget.length} target transactions...`,
+      });
+
       // Step 5: Perform reconciliation
       const reconMatches = await this.performReconciliation(
         mappedSource,
@@ -161,6 +182,13 @@ export class ReconCoreEngine {
         reconJob.reconStrategy as ReconStrategy,
         reconJob
       );
+
+      // Update progress: Reconciliation complete
+      await this.updateProgress(reconResult.id, {
+        stage: 'calculating',
+        percentage: 90,
+        message: `Reconciliation complete. Processing ${reconMatches.length} matches...`,
+      });
 
       // Step 6: Calculate results
       const results = this.calculateResults(reconMatches, mappedSource, mappedTarget);
@@ -229,11 +257,48 @@ export class ReconCoreEngine {
         summary: results.summary,
       });
 
+      // Step 12: Send completion notification if there are exceptions
+      if (results.unmatchedSourceCount > 0 || results.unmatchedTargetCount > 0) {
+        try {
+          const { notifyJobCompletion } = await import('../notifications/job-failure');
+          const accuracy = results.matchedCount > 0
+            ? (results.matchedCount / (results.matchedCount + results.unmatchedSourceCount + results.unmatchedTargetCount)) * 100
+            : 0;
+          await notifyJobCompletion(this.prisma, {
+            jobId: reconJobId,
+            resultId: updatedResult.id,
+            tenantId: tenantId,
+            matchedCount: results.matchedCount,
+            unmatchedCount: results.unmatchedSourceCount + results.unmatchedTargetCount,
+            accuracy,
+          });
+        } catch (notificationError) {
+          // Don't fail job execution if notification fails
+          console.error('[ReconCoreEngine] Failed to send completion notification:', notificationError);
+        }
+      }
+
       return updatedResult;
     } catch (error) {
       const durationMs = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       const errorStack = error instanceof Error ? error.stack : undefined;
+
+      // Send failure notification
+      try {
+        const { notifyJobFailure } = await import('../notifications/job-failure');
+        await notifyJobFailure(this.prisma, {
+          jobId: reconJobId,
+          resultId: reconResult.id,
+          errorMessage: errorMessage,
+          errorStack: errorStack,
+          tenantId: tenantId,
+          userId: reconJob.userId,
+        });
+      } catch (notificationError) {
+        // Don't fail if notification fails
+        console.error('[ReconCoreEngine] Failed to send failure notification:', notificationError);
+      }
 
       // Update result with error
       const failedResult = await this.prisma.reconResult.update({
@@ -604,5 +669,44 @@ export class ReconCoreEngine {
         status: 'active',
       },
     });
+  }
+
+  /**
+   * Update job progress (idempotent)
+   */
+  private async updateProgress(
+    resultId: string,
+    progress: {
+      stage: string;
+      percentage: number;
+      message: string;
+    }
+  ): Promise<void> {
+    try {
+      // Fetch current result to preserve existing metadata
+      const currentResult = await this.prisma.reconResult.findUnique({
+        where: { id: resultId },
+        select: { metadata: true },
+      });
+
+      const existingMetadata = (currentResult?.metadata as Record<string, unknown>) || {};
+
+      // Update progress in metadata (idempotent - can be called multiple times)
+      await this.prisma.reconResult.update({
+        where: { id: resultId },
+        data: {
+          metadata: {
+            ...existingMetadata,
+            progress: {
+              ...progress,
+              updatedAt: new Date().toISOString(),
+            },
+          },
+        },
+      });
+    } catch (error) {
+      // Don't fail job execution if progress update fails
+      console.error(`[ReconCoreEngine] Failed to update progress for result ${resultId}:`, error);
+    }
   }
 }

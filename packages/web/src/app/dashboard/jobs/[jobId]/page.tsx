@@ -61,41 +61,61 @@ export default function JobDetailPage() {
     }
   }, [jobId]);
 
-  const fetchJobDetail = (id: string) => {
+  const fetchJobDetail = async (id: string) => {
     try {
       setIsLoading(true);
-      // In production, fetch from API: `/api/jobs/${id}`
-      const mockJob: JobDetail = {
-        id: id,
-        name: "Shopify-Stripe Monthly Reconciliation",
-        status: "completed",
+      
+      // Fetch from real API
+      const response = await fetch(`/api/jobs/${id}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          setJob(null);
+          return;
+        }
+        throw new Error(`Failed to fetch job: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const latestResult = data.latestResult;
+
+      // Transform API response to JobDetail format
+      const jobDetail: JobDetail = {
+        id: data.id,
+        name: data.name,
+        status: latestResult?.status || data.status || "pending",
         source: {
-          adapter: "shopify",
-          config: {
-            shop: "example.myshopify.com",
-          },
+          adapter: data.sourceAdapter,
+          config: {}, // Config is encrypted, not returned
         },
         target: {
-          adapter: "stripe",
-          config: {},
+          adapter: data.targetAdapter,
+          config: {}, // Config is encrypted, not returned
         },
-        matchedCount: 145,
-        unmatchedCount: 3,
-        conflictsCount: 2,
-        accuracy: 97.9,
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        startedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 1 * 60 * 1000).toISOString(),
-        completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 5 * 60 * 1000).toISOString(),
+        matchedCount: latestResult?.matchedCount || 0,
+        unmatchedCount: latestResult?.unmatchedSourceCount || 0,
+        conflictsCount: latestResult?.conflictCount || 0,
+        accuracy: latestResult
+          ? latestResult.matchedCount > 0
+            ? (latestResult.matchedCount / (latestResult.sourceCount + latestResult.targetCount)) * 100
+            : 0
+          : 0,
+        createdAt: new Date(data.createdAt).toISOString(),
+        startedAt: latestResult?.startedAt ? new Date(latestResult.startedAt).toISOString() : undefined,
+        completedAt: latestResult?.completedAt ? new Date(latestResult.completedAt).toISOString() : undefined,
+        error: latestResult?.errorMessage || undefined,
         summary: {
-          total: 150,
-          matched: 145,
-          unmatched: 3,
-          conflicts: 2,
+          total: (latestResult?.sourceCount || 0) + (latestResult?.targetCount || 0),
+          matched: latestResult?.matchedCount || 0,
+          unmatched: (latestResult?.unmatchedSourceCount || 0) + (latestResult?.unmatchedTargetCount || 0),
+          conflicts: latestResult?.conflictCount || 0,
         },
       };
-      setJob(mockJob);
+
+      setJob(jobDetail);
     } catch (error) {
-      logger.error("Failed to fetch job", error instanceof Error ? error : new Error(String(error)), { jobId });
+      logger.error("Failed to fetch job", error instanceof Error ? error : new Error(String(error)), { jobId: id });
+      setJob(null);
     } finally {
       setIsLoading(false);
     }

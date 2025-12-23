@@ -4,6 +4,9 @@
  */
 
 import { Router, Response } from "express";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - PrismaClient is generated at build time
+import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from "../../middleware/auth";
 import { logError, logInfo } from "../../utils/logger";
 import {
@@ -13,6 +16,7 @@ import {
 } from "../../services/receipt-matching";
 
 const router = Router();
+const prisma = new PrismaClient();
 
 /**
  * POST /api/v1/receipt-matching/match
