@@ -109,14 +109,16 @@ export default function Pricing() {
           
           {/* Hero Illustration */}
           <div className="relative w-full max-w-4xl mx-auto mt-8 mb-4">
-            <div className="relative aspect-[16/9] w-full max-w-4xl mx-auto">
+            <div className="relative w-full max-w-4xl mx-auto">
               <Image
                 src="/assets/marketing/hero-image-3.png"
                 alt="Settler Pricing Overview - Visual representation of transparent, volume-based pricing model"
                 width={1258}
                 height={618}
-                className="w-full h-full object-contain drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                className="w-full h-auto object-contain md:object-cover drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
                 priority
+                sizes="100vw"
+                style={{ maxWidth: '100%', height: 'auto' }}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1258px"
               />
             </div>

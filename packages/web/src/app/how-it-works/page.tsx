@@ -169,15 +169,16 @@ export default function HowItWorksPage() {
           
           {/* Hero Illustration */}
           <div className="relative w-full max-w-4xl mx-auto mt-12 mb-8">
-            <div className="relative aspect-[16/9] w-full max-w-4xl mx-auto">
+            <div className="relative w-full max-w-4xl mx-auto">
               <Image
                 src="/assets/marketing/hero-image-2.png"
                 alt="How Settler Works - Step-by-step visual guide showing the reconciliation process"
                 width={1258}
                 height={618}
-                className="w-full h-full object-contain drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                className="w-full h-auto object-contain md:object-cover drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
                 priority
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1258px"
+                sizes="100vw"
+                style={{ maxWidth: '100%', height: 'auto' }}
               />
             </div>
           </div>
@@ -286,45 +287,45 @@ export default function HowItWorksPage() {
                   <div className={cn(index % 2 === 1 && "lg:col-start-1 lg:row-start-1")}>
                     <div className="relative">
                       {index === 0 ? (
-                        <div className="aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                        <div className="w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                           <SafeImage
-                            src="/assets/infographics/reconciliation-flow.svg"
+                            src="/assets/marketing/hero-image-1.png"
                             alt="Reconciliation flow diagram showing how Settler connects platforms and matches transactions"
-                            width={800}
-                            height={450}
-                            className="w-full h-full object-contain p-4"
+                            width={1258}
+                            height={618}
+                            className="w-full h-auto object-contain md:object-cover p-4"
                             fallbackTitle="Reconciliation Flow"
                             fallbackCaption="Visual diagram of Settler's reconciliation process"
-                            sizes="(max-width: 1024px) 100vw, 50vw"
-                            unoptimized
+                            sizes="100vw"
+                            containerClassName="w-full"
                           />
                         </div>
                       ) : index === 1 ? (
-                        <div className="aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+                        <div className="w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
                           <SafeImage
-                            src="/assets/images/1766446595797.jpg"
+                            src="/assets/marketing/hero-image-2.png"
                             alt="Define matching rules - Visual interface showing how to configure matching rules in Settler"
-                            width={512}
-                            height={279}
-                            className="w-full h-full object-contain"
+                            width={1258}
+                            height={618}
+                            className="w-full h-auto object-contain md:object-cover"
                             fallbackTitle="Matching Rules Configuration"
                             fallbackCaption="Configure intelligent matching rules for transaction reconciliation"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
-                            unoptimized
+                            sizes="100vw"
+                            containerClassName="w-full"
                           />
                         </div>
                       ) : index === 2 ? (
-                        <div className="aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+                        <div className="w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
                           <SafeImage
-                            src="/assets/images/1766446607998.jpg"
+                            src="/assets/marketing/hero-image-3.png"
                             alt="Run reconciliation - Visual showing reconciliation process in action"
-                            width={512}
-                            height={279}
-                            className="w-full h-full object-contain"
+                            width={1258}
+                            height={618}
+                            className="w-full h-auto object-contain md:object-cover"
                             fallbackTitle="Reconciliation Process"
                             fallbackCaption="Process millions of transactions automatically with real-time progress tracking"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
-                            unoptimized
+                            sizes="100vw"
+                            containerClassName="w-full"
                           />
                         </div>
                       ) : (

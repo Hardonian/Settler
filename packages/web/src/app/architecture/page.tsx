@@ -14,12 +14,14 @@ function ArchitectureDiagram() {
   return (
     <figure className="w-full overflow-hidden bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8">
       <Image
-        src="/assets/diagrams/system-architecture.svg"
+        src="/assets/marketing/hero-image-3.png"
         alt="Settler Architecture Diagram"
-        width={800}
-        height={400}
-        className="w-full h-auto"
+        width={1258}
+        height={618}
+        className="w-full h-auto object-contain md:object-cover"
         priority
+        sizes="100vw"
+        style={{ maxWidth: '100%', height: 'auto' }}
       />
       <figcaption id="architecture-diagram-caption" className="mt-4 text-sm text-slate-600 dark:text-slate-400 text-center">
         Settler architecture: API Gateway routes requests to core services (Reconciliation, Receipts, Feature Flags), all backed by a distributed event-sourced data store.
@@ -64,13 +66,15 @@ export default function ArchitecturePage() {
             </p>
           </div>
           <figure className="w-full overflow-hidden bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-8">
-            <div className="relative w-full aspect-[2/1]">
+            <div className="relative w-full">
               <Image
-                src="/assets/diagrams/data-flow.svg"
+                src="/assets/marketing/hero-image-1.png"
                 alt="Settler data flow diagram showing how data moves from source platforms through adapters to reconciliation engine and target platforms"
-                width={1200}
-                height={600}
-                className="w-full h-full object-contain"
+                width={1258}
+                height={618}
+                className="w-full h-auto object-contain md:object-cover"
+                sizes="100vw"
+                style={{ maxWidth: '100%', height: 'auto' }}
                 priority={false}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
               />
