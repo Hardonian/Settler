@@ -16,11 +16,18 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  // CRITICAL: Server-side super admin gate
-  const isAdmin = await isSuperAdmin();
-  
-  if (!isAdmin) {
-    // Redirect to sign-in if not authenticated, or show access denied
+  // CRITICAL: Server-side super admin gate with error handling
+  try {
+    const isAdmin = await isSuperAdmin();
+    
+    if (!isAdmin) {
+      // Redirect to sign-in if not authenticated, or show access denied
+      redirect('/signup?next=' + encodeURIComponent('/admin'));
+    }
+  } catch (error) {
+    // Log error but don't expose internal details
+    console.error('[Admin Layout] Error checking super admin status:', error);
+    // Redirect to sign-in on error - fail secure
     redirect('/signup?next=' + encodeURIComponent('/admin'));
   }
 

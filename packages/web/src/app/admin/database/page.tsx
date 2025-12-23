@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface TableInfo {
   table_schema: string;
@@ -79,8 +81,31 @@ export default function AdminDatabasePage() {
   if (error) {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          Error: {error}
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertCircle className="h-5 w-5 text-red-600" />
+            <h3 className="font-semibold text-red-900 dark:text-red-200">
+              Unable to Load Database Tables
+            </h3>
+          </div>
+          <p className="text-sm text-red-800 dark:text-red-300">
+            We encountered an error while loading the database tables. Please try again or contact support if the problem persists.
+          </p>
+          {process.env.NODE_ENV === 'development' && (
+            <p className="text-xs font-mono text-red-600 dark:text-red-400 mt-2">
+              {error}
+            </p>
+          )}
+          <Button 
+            onClick={() => {
+              setError(null);
+              loadTables();
+            }}
+            variant="outline"
+            className="mt-4"
+          >
+            Retry
+          </Button>
         </div>
       </div>
     );

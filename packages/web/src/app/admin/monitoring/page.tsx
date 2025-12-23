@@ -9,6 +9,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { AlertCircle, CheckCircle2, Clock, Users, DollarSign, Activity, Shield, Database, TrendingUp, AlertTriangle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -181,8 +182,32 @@ export default function MonitoringDashboard() {
   if (error) {
     return (
       <div className="p-8">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">Error loading metrics: {error}</p>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertCircle className="h-5 w-5 text-red-600" />
+            <h3 className="font-semibold text-red-900 dark:text-red-200">
+              Unable to Load Metrics
+            </h3>
+          </div>
+          <p className="text-sm text-red-800 dark:text-red-300 mb-4">
+            We encountered an error while loading monitoring metrics. Please try again or contact support if the problem persists.
+          </p>
+          {process.env.NODE_ENV === 'development' && (
+            <p className="text-xs font-mono text-red-600 dark:text-red-400 mb-4">
+              {error}
+            </p>
+          )}
+          <Button 
+            onClick={() => {
+              setError(null);
+              setLoading(true);
+              // Trigger re-fetch
+              window.location.reload();
+            }}
+            variant="outline"
+          >
+            Retry
+          </Button>
         </div>
       </div>
     );
