@@ -71,7 +71,7 @@ export async function suggestRuleOptimizations(
     // Analyze amount differences
     const amountDiffs = unmatchedMatches
       .map((m: { amountDiff: number | null | undefined }) => m.amountDiff)
-      .filter((d): d is number => d !== null && d !== undefined)
+      .filter((d: number | null | undefined): d is number => d !== null && d !== undefined)
       .map((d: number) => Math.abs(Number(d)));
 
     if (amountDiffs.length > 0) {
@@ -94,7 +94,7 @@ export async function suggestRuleOptimizations(
     // Analyze date differences
     const dateDiffs = unmatchedMatches
       .map((m: { dateDiff: number | null | undefined }) => m.dateDiff)
-      .filter((d): d is number => d !== null && d !== undefined)
+      .filter((d: number | null | undefined): d is number => d !== null && d !== undefined)
       .map((d: number) => Math.abs(d));
 
     if (dateDiffs.length > 0) {

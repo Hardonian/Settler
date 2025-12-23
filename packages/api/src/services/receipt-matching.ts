@@ -102,7 +102,9 @@ export async function matchReceiptToTransaction(
       matchReason: string;
     }
 
-    const scores: ScoreResult[] = transactions.map((transaction) => {
+    // Type assertion for transactions from Prisma query
+    type TransactionType = { id: string; amount: number | null | undefined; date: Date | null | undefined; description?: string | null };
+    const scores: ScoreResult[] = transactions.map((transaction: TransactionType) => {
       const receiptTotal = Number(receipt.total ?? 0);
       const transactionAmount = Number(transaction.amount ?? 0);
       const amountDiff = Math.abs(transactionAmount - receiptTotal);
@@ -191,34 +193,39 @@ function stringSimilarity(str1: string, str2: string): number {
 function levenshteinDistance(str1: string, str2: string): number {
   const len1 = str1.length;
   const len2 = str2.length;
-  const matrix: number[][] = Array(len2 + 1)
-    .fill(null)
-    .map(() => Array(len1 + 1).fill(0));
+  // Initialize matrix with proper dimensions - TypeScript knows all indices exist
+  const matrix: number[][] = [];
+  for (let i = 0; i <= len2; i++) {
+    matrix[i] = [];
+    for (let j = 0; j <= len1; j++) {
+      matrix[i][j] = 0;
+    }
+  }
 
   // Initialize first row and column
   for (let i = 0; i <= len2; i++) {
-    matrix[i][0] = i;
+    matrix[i]![0] = i;
   }
   for (let j = 0; j <= len1; j++) {
-    matrix[0][j] = j;
+    matrix[0]![j] = j;
   }
 
   // Fill the matrix
   for (let i = 1; i <= len2; i++) {
     for (let j = 1; j <= len1; j++) {
       if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
+        matrix[i]![j] = matrix[i - 1]![j - 1]!;
       } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
+        matrix[i]![j] = Math.min(
+          matrix[i - 1]![j - 1]! + 1,
+          matrix[i]![j - 1]! + 1,
+          matrix[i - 1]![j]! + 1
         );
       }
     }
   }
 
-  return matrix[len2][len1];
+  return matrix[len2]![len1]!;
 }
 
 /**
