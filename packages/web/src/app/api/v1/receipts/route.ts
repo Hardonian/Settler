@@ -21,6 +21,7 @@ import { trackApiMetric } from '@/lib/monitoring/metrics';
 import { createLogger, addCorrelationHeaders } from '@/lib/monitoring/correlation';
 import { validateReceipt, sanitizeReceiptData, validateReceiptTotals } from '@/domain/receipts/validation';
 import { logReceiptParsed } from '@/lib/audit/logger';
+import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -92,6 +93,12 @@ export async function POST(request: NextRequest) {
       
       const response = NextResponse.json(demoReceipt, { status: 200 });
       return addCorrelationHeaders(response, correlationId);
+    }
+
+    // CRITICAL: Enforce active subscription requirement
+    const subscriptionCheck = await requireActiveSubscription(request, auth?.userId);
+    if (!subscriptionCheck.allowed) {
+      return addCorrelationHeaders(subscriptionCheck.error!, correlationId);
     }
 
     // Get billing account (required for usage tracking)

@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { prisma } from '@/shared/db/prismaClient';
 import { FlagType } from '@/domain/featureFlags/types';
+import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -44,6 +45,12 @@ export async function POST(request: NextRequest) {
         demo: true,
         message: 'This is a demo response. Sign in to create real feature flags.',
       }, { status: 201 });
+    }
+
+    // CRITICAL: Enforce active subscription requirement
+    const subscriptionCheck = await requireActiveSubscription(request, auth?.userId);
+    if (!subscriptionCheck.allowed) {
+      return subscriptionCheck.error!;
     }
 
     if (!auth || !auth.billingAccountId) {
@@ -137,6 +144,12 @@ export async function GET(request: NextRequest) {
         ],
         message: 'This is a demo response. Sign in to see your real feature flags.',
       }, { status: 200 });
+    }
+
+    // CRITICAL: Enforce active subscription requirement
+    const subscriptionCheck = await requireActiveSubscription(request, auth?.userId);
+    if (!subscriptionCheck.allowed) {
+      return subscriptionCheck.error!;
     }
 
     if (!auth || !auth.billingAccountId) {

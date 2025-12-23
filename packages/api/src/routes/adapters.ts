@@ -2,6 +2,8 @@ import { Router, Request, Response } from "express";
 import { get, set } from "../utils/cache";
 import { handleRouteError } from "../utils/error-handler";
 import { listAdapters, getAdapterConfigSchema } from "../utils/adapter-config-validator";
+import { checkIntegrationAccess } from "../middleware/billing-gating";
+import { AuthRequest } from "../middleware/auth";
 
 const router = Router();
 
@@ -54,7 +56,8 @@ router.get("/", async (_req: Request, res: Response) => {
 });
 
 // Get adapter details (UX-002: Enhanced with schema)
-router.get("/:id", async (req: Request, res: Response) => {
+// CRITICAL: Enforce add-on purchase requirement for premium adapters
+router.get("/:id", checkIntegrationAccess(":id"), async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     

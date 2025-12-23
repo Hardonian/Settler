@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
+import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -65,6 +66,12 @@ export async function POST(request: NextRequest) {
       };
 
       return NextResponse.json(demoResponse, { status: 201 });
+    }
+
+    // CRITICAL: Enforce active subscription requirement
+    const subscriptionCheck = await requireActiveSubscription(request, auth?.userId);
+    if (!subscriptionCheck.allowed) {
+      return subscriptionCheck.error!;
     }
 
     // For authenticated users, check billing account
