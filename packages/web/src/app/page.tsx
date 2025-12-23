@@ -1,145 +1,75 @@
 'use client';
 
 import Link from "next/link";
-import Image from "next/image";
 import dynamic from "next/dynamic";
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { HeroAnimationWrapper } from "@/components/HeroAnimationWrapper";
 import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
-import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
-import { RefreshCw, FileText, Flag, Calculator, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
-// Dynamic imports for new landing components (code splitting)
-const FeatureShowcase = dynamic(() => import("@/components/landing/FeatureShowcase").then(mod => ({ default: mod.FeatureShowcase })), { 
-  ssr: true,
-  loading: () => <div className="py-24" />
-});
-const ComparisonTable = dynamic(() => import("@/components/landing/ComparisonTable").then(mod => ({ default: mod.ComparisonTable })), { 
-  ssr: true,
-  loading: () => <div className="py-24" />
-});
+import { RefreshCw, FileText, Calculator, ArrowRight } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 import { trackPageView } from "@/lib/analytics/conversion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-// Dynamic imports for marketing components - using index file for better webpack resolution
-// This provides code splitting and lazy loading benefits while avoiding webpack alias issues
-const LiveMetricsCounter = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.LiveMetricsCounter })), { 
-  ssr: false,
-  loading: () => <div className="py-12" />
-});
-const ValueProposition = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.ValueProposition })), { 
-  ssr: true,
-  loading: () => <div className="py-20" />
-});
-const SocialProofCounter = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.SocialProofCounter })), { 
-  ssr: true,
-  loading: () => <div className="py-12" />
-});
+// Dynamic imports for heavy components
+const AnimatedCodeBlock = dynamic(() => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })), { ssr: false });
+const EnhancedTrustBadges = dynamic(() => import("@/components/EnhancedTrustBadges").then(mod => ({ default: mod.EnhancedTrustBadges })), { ssr: true });
 const UrgencyBanner = dynamic<{ variant?: 'default' | 'minimal' | 'prominent'; className?: string }>(() => import("@/components/marketing").then(mod => ({ default: mod.UrgencyBanner })), { 
   ssr: true,
-  loading: () => null // No placeholder for banner
+  loading: () => null
 });
-const TestimonialCarousel = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.TestimonialCarousel })), { 
-  ssr: true,
-  loading: () => <div className="py-20" />
-});
-const InfographicSection = dynamic(() => import("@/components/marketing").then(mod => ({ default: mod.InfographicSection })), { 
-  ssr: true,
-  loading: () => <div className="py-20" />
-});
-// Dynamic imports for heavy components
-const CustomerLogos = dynamic(() => import("@/components/CustomerLogos").then(mod => ({ default: mod.CustomerLogos })), { ssr: true });
-const NewsletterSignup = dynamic(() => import("@/components/NewsletterSignup").then(mod => ({ default: mod.NewsletterSignup })), { ssr: false });
-const ConversionCTA = dynamic(() => import("@/components/ConversionCTA").then(mod => ({ default: mod.ConversionCTA })), { ssr: true });
-const AnimatedCodeBlock = dynamic(() => import("@/components/AnimatedCodeBlock").then(mod => ({ default: mod.AnimatedCodeBlock })), { ssr: false });
-const AnimatedStatCard = dynamic(() => import("@/components/AnimatedStatCard").then(mod => ({ default: mod.AnimatedStatCard })), { ssr: true });
-const TrustSignalBanner = dynamic(() => import("@/components/TrustSignalBanner").then(mod => ({ default: mod.TrustSignalBanner })), { ssr: true });
-const EnhancedConversionCTA = dynamic(() => import("@/components/EnhancedConversionCTA").then(mod => ({ default: mod.EnhancedConversionCTA })), { ssr: true });
-const IntegrationLogos = dynamic(() => import("@/components/IntegrationLogos").then(mod => ({ default: mod.IntegrationLogos })), { ssr: true });
-const EnhancedTrustBadges = dynamic(() => import("@/components/EnhancedTrustBadges").then(mod => ({ default: mod.EnhancedTrustBadges })), { ssr: true });
 
 export default function Home() {
   const trackCTA = useTrackCTA();
 
-  // Track page view
   useEffect(() => {
     analytics.trackPageView('/', {
       title: 'Settler - The API Infrastructure for Financial Evidence',
     });
-    // Track conversion event
-    trackPageView('/', undefined, undefined).catch(() => {
-      // Don't block if tracking fails
-    });
+    trackPageView('/', undefined, undefined).catch(() => {});
   }, []);
 
-  const features = [
+  const howItWorksSteps = [
     {
+      number: 1,
+      title: "Connect",
+      description: "Link Stripe, Shopify, QuickBooks, and 50+ platforms",
       icon: RefreshCw,
-      title: "Deterministic Reconciliation",
-      description: "Same inputs produce same outputs, always. Match transactions across Stripe, Shopify, databases, and 50+ platforms with system-level enforcement—not human promises.",
-      gradient: "from-blue-500 to-indigo-500",
     },
     {
+      number: 2,
+      title: "Match",
+      description: "Automatic reconciliation with deterministic guarantees",
       icon: FileText,
-      title: "Receipts → JSON",
-      description: "Turn PDFs and images into structured financial data with AI-powered OCR. Extract vendors, dates, totals, and line items instantly.",
-      gradient: "from-green-500 to-emerald-500",
     },
     {
+      number: 3,
+      title: "Verify",
+      description: "Complete audit trail and exception handling",
       icon: Calculator,
-      title: "Deterministic Currency Conversion",
-      description: "Precise unit and currency conversion without floating point errors. Deterministic algorithms ensure same inputs produce same outputs, always.",
-      gradient: "from-indigo-500 to-purple-500",
     },
-    {
-      icon: Sparkles,
-      title: "AI-Powered Insights",
-      description: "Get actionable recommendations powered by AI to optimize costs, improve performance, and understand usage patterns. Available on Growth, Scale, and Enterprise plans.",
-      gradient: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: Flag,
-      title: "Feature Flags for Developers",
-      description: "Edge-evaluated feature flags with typed payloads and instant rollouts. Manage entitlements and phased releases programmatically.",
-      gradient: "from-amber-500 to-orange-500",
-    },
-  ];
-
-  const heroStats = [
-    { value: 'Precise', label: 'Matching', description: 'Deterministic algorithms' },
-    { value: '<30ms', label: 'Edge Latency', description: 'Global evaluation' },
-    { value: 'ISO', label: 'Compliant', description: 'SOC 2 Ready' },
-    { value: '1st', label: 'Developer DX', description: 'Typed SDKs' },
   ];
 
   const codeExample = `import { SettlerClient } from "@settler/sdk";
 
 const client = new SettlerClient({ apiKey: "sk_live_..." });
 
-// 1. Start Continuous Reconciliation
-// Reconciliation runs automatically—no manual intervention needed
+// Start reconciliation
 const reconciliation = await client.reconciliations.create({
   source: { adapter: "stripe" },
   target: { adapter: "database" },
   rules: { matching: [{ field: "amount", tolerance: 0.01 }] }
-});
-
-// 2. Parse Receipt
-const receipt = await client.receipts.parse("https://receipts.com/123.jpg");
-console.log(receipt.total, receipt.merchant.name);
-
-// 3. Convert Currency
-const fx = await client.convert.currency(100, "USD", "EUR");
-
-// 4. Check Feature Flag
-const flag = await client.flags.evaluate("new-dashboard", { userId: "123" });
-if (flag.value) { /* ... */ }`;
+});`;
 
   return (
     <>
@@ -158,7 +88,7 @@ if (flag.value) { /* ... */ }`;
           aria-labelledby="hero-heading"
         >
           <ParallaxBackground>
-            <ParallaxBlobs count={5} />
+            <ParallaxBlobs count={3} />
           </ParallaxBackground>
           
           <div 
@@ -169,12 +99,6 @@ if (flag.value) { /* ... */ }`;
           <div className="max-w-7xl mx-auto relative z-10">
             <HeroAnimationWrapper>
               <div className="text-center">
-                <Badge 
-                  className="mb-6 glass-strong text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-400/30 break-words px-3 py-1.5 text-sm"
-                >
-                  Trusted by businesses to automate reconciliation
-                </Badge>
-                
                 <TextRevealHeading
                   as="h1"
                   id="hero-heading"
@@ -186,8 +110,8 @@ if (flag.value) { /* ... */ }`;
                 />
                 
                 <TextReveal
-                  text="Settler automatically matches your Stripe payments with Shopify orders, QuickBooks entries, and 50+ other platforms. System-level enforcement eliminates $106K-$724K+ in annual risk—not just time savings, but operational certainty."
-                  className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-8 max-w-4xl mx-auto"
+                  text="Automatically match transactions across 50+ platforms with system-level enforcement."
+                  className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 mb-10 max-w-3xl mx-auto"
                   delay={0.2}
                   staggerDelay={0.01}
                   splitBy="words"
@@ -201,7 +125,7 @@ if (flag.value) { /* ... */ }`;
                     onClick={() => trackCTA('Start Free Trial', { location: 'hero' })}
                   >
                     <Link href="/signup" className="flex items-center justify-center gap-2">
-                      <span>Start Free Trial - No Credit Card</span>
+                      <span>Start Free Trial</span>
                       <ArrowRight className="w-5 h-5" aria-hidden="true" />
                     </Link>
                   </Button>
@@ -211,339 +135,150 @@ if (flag.value) { /* ... */ }`;
                     asChild 
                     className="w-full sm:w-auto px-6 sm:px-8 py-6 sm:py-7 text-base sm:text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                   >
-                    <Link href="/docs">
-                      View Docs
+                    <Link href="/console/playground">
+                      Try Playground
                     </Link>
                   </Button>
                 </div>
-                
-                {/* Trust Signals */}
-                <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 dark:text-slate-400 mb-8">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    <span>No credit card required</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    <span>14-day free trial - No credit card</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    <span>Cancel anytime</span>
-                  </div>
-                </div>
 
-                {/* Hero Illustration */}
-                <div className="relative w-full max-w-4xl mx-auto mb-12 sm:mb-16 px-4">
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 bottom-0 h-20 pointer-events-none" aria-hidden="true"></div>
-                  <div className="relative w-full max-w-4xl mx-auto">
-                    <Image
-                      src="/assets/marketing/hero-image-1.png"
-                      alt="Settler Platform Overview - Visual diagram showing automated financial reconciliation connecting multiple data sources through a central hub"
-                      width={1258}
-                      height={618}
-                      className="w-full h-auto object-contain md:object-cover drop-shadow-2xl rounded-lg border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
-                      priority
-                      sizes="100vw"
-                      style={{ maxWidth: '100%', height: 'auto' }}
-                    />
-                  </div>
-                </div>
-
-                {/* Dashboard Screenshot - Hidden on mobile to reduce redundancy */}
-                <div className="relative w-full max-w-5xl mx-auto mb-8 px-4 hidden md:block">
-                  <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-2xl">
-                    <Image
-                      src="/assets/images/1766448964045.jpg"
-                      alt="Settler Dashboard - Webhook-based reconciliation dashboard showing matched transactions, analytics, and insights"
-                      width={2816}
-                      height={1536}
-                      className="w-full h-auto object-contain md:object-cover"
-                      priority={false}
-                      sizes="100vw"
-                      style={{ maxWidth: '100%', height: 'auto' }}
-                      unoptimized
-                    />
-                  </div>
-                </div>
-                
-                {/* Hero Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-12 sm:mb-16">
-                  {heroStats.map((stat, index) => (
-                    <SpotlightCard key={index} className="p-4 h-full">
-                      <AnimatedStatCard
-                        value={stat.value}
-                        label={stat.label}
-                        description={stat.description}
-                        index={index}
-                        delay={0.4 + index * 0.1}
-                      />
-                    </SpotlightCard>
-                  ))}
+                {/* Credibility Strip - Trust Badges Only */}
+                <div className="max-w-4xl mx-auto mb-12">
+                  <EnhancedTrustBadges />
                 </div>
               </div>
             </HeroAnimationWrapper>
           </div>
         </section>
 
-        {/* Features Grid */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 glass-subtle">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-slate-900 dark:text-white">
-                Core Primitives
+        {/* How It Works - 3 Steps */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+                How It Works
               </h2>
-              <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto px-4">
-                Everything you need to automate financial reconciliation, without the complexity.
-              </p>
             </div>
             
-            <BentoGrid columns={2} gap="lg">
-              {features.map((feature, index) => {
-                const Icon = feature.icon;
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {howItWorksSteps.map((step, index) => {
+                const Icon = step.icon;
                 return (
-                  <BentoGridItem key={index} colSpan={1}>
-                    <SpotlightCard className="h-full flex flex-col p-6 sm:p-8">
-                      <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3 sm:p-3.5 mb-4 sm:mb-6 flex items-center justify-center`}>
-                        <Icon className="w-full h-full text-white" aria-hidden="true" />
-                      </div>
-                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-slate-900 dark:text-white break-words">{feature.title}</h3>
-                      <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 flex-grow break-words">{feature.description}</p>
-                      <Link 
-                        href="/docs" 
-                        className="flex items-center text-blue-600 dark:text-blue-400 font-semibold group transition-colors hover:text-blue-700 dark:hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded"
-                        aria-label={`Learn more about ${feature.title}`}
-                      >
-                        Learn more <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-                      </Link>
-                    </SpotlightCard>
-                  </BentoGridItem>
+                  <SpotlightCard key={index} className="p-6 sm:p-8 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
+                      {step.number}
+                    </div>
+                    <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">{step.title}</h3>
+                    <p className="text-slate-600 dark:text-slate-300">{step.description}</p>
+                  </SpotlightCard>
                 );
               })}
-            </BentoGrid>
-
-            {/* Feature Illustrations */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mt-12 sm:mt-16">
-              <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 flex items-center justify-center">
-                <Image
-                  src="/assets/marketing/hero-image-1.png"
-                  alt="Settler Feature - Automated Financial Reconciliation"
-                  width={1258}
-                  height={618}
-                  className="w-full h-auto object-contain md:object-cover max-w-full"
-                  sizes="100vw"
-                  style={{ maxWidth: '100%', height: 'auto' }}
-                />
-              </div>
-              <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 flex items-center justify-center">
-                <Image
-                  src="/assets/marketing/hero-image-2.png"
-                  alt="Settler Feature - Real-time Transaction Matching"
-                  width={1258}
-                  height={618}
-                  className="w-full h-auto object-contain md:object-cover max-w-full"
-                  sizes="100vw"
-                  style={{ maxWidth: '100%', height: 'auto' }}
-                />
-              </div>
             </div>
           </div>
         </section>
 
-        {/* Try Playground Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
-          <div className="max-w-7xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white">
-              Try Settler Without Writing Code
+        {/* Product in Motion - Code Example */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+                Simple API, Powerful Results
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Get started in minutes with our typed SDKs
+              </p>
+            </div>
+            <SpotlightCard className="p-0 overflow-hidden shadow-2xl">
+              <AnimatedCodeBlock
+                code={codeExample}
+                title="Universal API Client"
+                description="One client, all primitives"
+                language="typescript"
+              />
+            </SpotlightCard>
+          </div>
+        </section>
+
+        {/* Details Accordion */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center text-slate-900 dark:text-white">
+              Details
             </h2>
-            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 mb-8 sm:mb-12 max-w-2xl mx-auto">
-              Use our interactive playground to test Settler's APIs, see how reconciliation works, and explore features—all without signing up or writing a single line of code.
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="features">
+                <AccordionTrigger className="text-lg font-semibold">
+                  Core Features
+                </AccordionTrigger>
+                <AccordionContent className="text-slate-600 dark:text-slate-300 space-y-2">
+                  <p><strong>Deterministic Reconciliation:</strong> Same inputs produce same outputs, always. Match transactions across 50+ platforms.</p>
+                  <p><strong>Receipts → JSON:</strong> Turn PDFs and images into structured financial data with AI-powered OCR.</p>
+                  <p><strong>Currency Conversion:</strong> Precise unit and currency conversion without floating point errors.</p>
+                  <p><strong>Feature Flags:</strong> Edge-evaluated feature flags with typed payloads and instant rollouts.</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="integrations">
+                <AccordionTrigger className="text-lg font-semibold">
+                  Integrations
+                </AccordionTrigger>
+                <AccordionContent className="text-slate-600 dark:text-slate-300">
+                  <p>Connect with Stripe, Shopify, PayPal, QuickBooks, Square, WooCommerce, BigCommerce, Adyen, Xero, and 50+ other platforms.</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="security">
+                <AccordionTrigger className="text-lg font-semibold">
+                  Security & Compliance
+                </AccordionTrigger>
+                <AccordionContent className="text-slate-600 dark:text-slate-300">
+                  <p>Enterprise-grade security with SOC 2 Type II readiness, bank-level encryption, and complete audit trails. ISO compliant infrastructure.</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="pricing">
+                <AccordionTrigger className="text-lg font-semibold">
+                  Pricing
+                </AccordionTrigger>
+                <AccordionContent className="text-slate-600 dark:text-slate-300">
+                  <p>Simple, transparent pricing starting at $99/month. <Link href="/pricing" className="text-blue-600 dark:text-blue-400 hover:underline">View pricing details →</Link></p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+              Ready to Get Started?
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
+              Start your free trial today—no credit card required. Full access for 14 days.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg" 
                 asChild 
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
               >
-                <Link href="/console/playground">
-                  Try Playground <ArrowRight className="ml-2 w-5 h-5" />
+                <Link href="/signup">
+                  Start Free Trial <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
               <Button 
                 size="lg" 
                 variant="outline" 
                 asChild 
-                className="px-8 py-6 text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                className="w-full sm:w-auto px-8 py-6 text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
               >
-                <Link href="/docs">
-                  View Documentation
+                <Link href="/console/playground">
+                  Try Playground
                 </Link>
               </Button>
             </div>
           </div>
         </section>
-
-        {/* Code Example */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
-           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-             <div className="order-2 lg:order-1">
-               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white">
-                 Developer Experience First
-               </h2>
-               <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 mb-6 sm:mb-8">
-                 Simple APIs that work out of the box. No complex configuration, no learning curve—just reliable reconciliation.
-               </p>
-               <div className="space-y-3 sm:space-y-4">
-                 {[
-                   "TypeScript, Python, Go, and Ruby SDKs",
-                   "OpenAPI 3.1 Specification",
-                   "Interactive Developer Console",
-                   "Local Development Sandbox"
-                 ].map((item, i) => (
-                   <div key={i} className="flex items-center gap-2 sm:gap-3">
-                     <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 flex-shrink-0" aria-hidden="true">✓</div>
-                     <span className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">{item}</span>
-                   </div>
-                 ))}
-               </div>
-               <div className="mt-6 sm:mt-8">
-                 <Link href="/docs/sdk" className="text-blue-600 dark:text-blue-400 font-bold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded">
-                   Explore the SDKs &rarr;
-                 </Link>
-               </div>
-             </div>
-             <div className="order-1 lg:order-2">
-               <SpotlightCard className="p-0 overflow-hidden shadow-2xl">
-                <AnimatedCodeBlock
-                  code={codeExample}
-                  title="Universal API Client"
-                  description="One client, all primitives"
-                  language="typescript"
-                />
-               </SpotlightCard>
-             </div>
-           </div>
-        </section>
-
-        {/* Feature Showcase */}
-        <FeatureShowcase />
-
-        {/* Comparison Table */}
-        <ComparisonTable />
-
-        {/* Architecture Preview */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white">
-               Built on a Solid Foundation
-             </h2>
-             <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8 sm:mb-12 px-4">
-               See how we handle double-entry accounting, event sourcing, and edge execution to ensure correctness.
-             </p>
-             <Link href="/architecture" className="relative group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl max-w-4xl mx-auto">
-               <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-transparent to-transparent z-10 flex items-end justify-center pb-6 sm:pb-8">
-                 <Button variant="secondary" className="shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">View Full Architecture</Button>
-               </div>
-               <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden opacity-50 blur-[1px] group-hover:opacity-75 group-hover:blur-0 group-focus-within:opacity-75 group-focus-within:blur-0 transition-all duration-500">
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 h-[200px] sm:h-[300px] w-full flex flex-col items-center justify-center p-8" role="img" aria-label="Architecture overview preview">
-                    <div className="text-center space-y-4">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                        <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                      </div>
-                      <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-medium">
-                        Enterprise-Grade Architecture
-                      </p>
-                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-500">
-                        Event-sourced, deterministic, and built for scale
-                      </p>
-                    </div>
-                  </div>
-               </div>
-             </Link>
-          </div>
-        </section>
-
-        {/* Infographics Section - Workflow Diagram (moved after Architecture section per audit requirements) */}
-        <InfographicSection />
-
-        {/* Live Metrics Counter */}
-        <LiveMetricsCounter />
-
-        {/* Value Proposition */}
-        <ValueProposition />
-
-        {/* Integration Logos */}
-        <IntegrationLogos />
-
-        {/* Trust Signal Banner */}
-        <TrustSignalBanner />
-
-        {/* Enhanced Trust Badges */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900 dark:text-white">
-                Trusted & Secure
-              </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                Enterprise-grade security and compliance certifications
-              </p>
-            </div>
-            <EnhancedTrustBadges />
-          </div>
-        </section>
-
-        {/* Social Proof Counter */}
-        <SocialProofCounter />
-
-        {/* Why Settler */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,transparent)]" aria-hidden="true" />
-          <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 sm:mb-6 px-4">Why Settler Exists</h2>
-            <p className="text-lg sm:text-xl text-blue-100 mb-6 sm:mb-8 leading-relaxed px-4">
-              We got tired of building the same fragile financial infrastructure at every company. 
-              We built Settler to solve it once and for all.
-            </p>
-            <Button 
-              size="lg" 
-              variant="secondary" 
-              asChild 
-              className="bg-white text-blue-600 hover:bg-blue-50 px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600"
-            >
-              <Link href="/why-settler">Read our Manifesto</Link>
-            </Button>
-          </div>
-        </section>
-
-        {/* Testimonial Carousel */}
-        <TestimonialCarousel />
-
-        {/* Enhanced Conversion CTA */}
-        <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
-          <div className="max-w-4xl mx-auto">
-            <EnhancedConversionCTA
-              title="Ready to Transform Your Financial Operations?"
-              description="Start your free trial today—no credit card required. Full access to all features for 14 days."
-              primaryAction="Try Playground"
-              primaryLink="/console/playground"
-              secondaryAction="Start Free Trial"
-              secondaryLink="/signup"
-              showUrgency={true}
-              showTrustBadges={true}
-              variant="hero"
-            />
-          </div>
-        </section>
-        
-        {/* Hidden Preload for components - intentionally hidden for prefetching */}
-        <div className="hidden" aria-hidden="true">
-          <CustomerLogos />
-          <NewsletterSignup />
-          <ConversionCTA />
-        </div>
 
         <Footer />
       </div>
