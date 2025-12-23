@@ -238,8 +238,13 @@ export function EnhancedRulesEngine() {
             </TabsContent>
 
             <TabsContent value="templates">
-              <div className="text-center py-8 text-muted-foreground">
-                Rule templates coming soon
+              <div className="text-center py-8">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Rule templates help you quickly create common reconciliation rules.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Create custom rules using the Rule Builder tab above.
+                </p>
               </div>
             </TabsContent>
 

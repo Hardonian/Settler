@@ -213,7 +213,7 @@ async function ConsoleOverviewContent() {
             </CardHeader>
             <CardContent>
               <Button asChild size="lg" variant="secondary">
-                <Link href="/playground">Open Playground</Link>
+                <Link href="/console/playground">Try Playground</Link>
               </Button>
             </CardContent>
           </Card>

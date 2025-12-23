@@ -177,8 +177,8 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
               </div>
               <div>
                 <Label>Features ({block.features?.length || 0})</Label>
-                <p className="text-xs text-slate-500 mt-1">
-                  Feature editing coming soon
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Configure features in the block JSON editor.
                 </p>
               </div>
             </div>

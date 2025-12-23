@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Clock, Users, Zap, X } from 'lucide-react';
+import { Clock, Zap, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -80,7 +80,7 @@ export function UrgencyBanner({ variant = 'default', className }: UrgencyBannerP
               <Zap className="w-5 h-5 animate-pulse" />
               <span className="font-bold text-lg">Flash Sale</span>
             </div>
-            <div className="hidden md:flex items-center gap-6">
+              <div className="hidden md:flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span>
@@ -88,10 +88,6 @@ export function UrgencyBanner({ variant = 'default', className }: UrgencyBannerP
                   {String(timeLeft.minutes).padStart(2, '0')}:
                   {String(timeLeft.seconds).padStart(2, '0')}
                 </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                <span>127 people viewing</span>
               </div>
             </div>
           </div>
