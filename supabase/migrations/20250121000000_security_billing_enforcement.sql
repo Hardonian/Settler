@@ -230,123 +230,162 @@ CREATE POLICY "tenant_isolation_delete" ON public.recon_jobs
   );
 
 -- Receipts: Tenant isolation + billing account requirement
-DROP POLICY IF EXISTS "tenant_isolation_select" ON public.receipt_uploads;
-DROP POLICY IF EXISTS "tenant_isolation_insert" ON public.receipt_uploads;
-DROP POLICY IF EXISTS "tenant_isolation_update" ON public.receipt_uploads;
+-- Check if billing_account_id column exists before creating policies
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'receipt_uploads' 
+    AND column_name = 'billing_account_id'
+  ) THEN
+    DROP POLICY IF EXISTS "tenant_isolation_select" ON public.receipt_uploads;
+    DROP POLICY IF EXISTS "tenant_isolation_insert" ON public.receipt_uploads;
+    DROP POLICY IF EXISTS "tenant_isolation_update" ON public.receipt_uploads;
 
-CREATE POLICY "tenant_isolation_select" ON public.receipt_uploads
-  FOR SELECT
-  TO authenticated
-  USING (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-  );
+    EXECUTE '
+      CREATE POLICY "tenant_isolation_select" ON public.receipt_uploads
+        FOR SELECT
+        TO authenticated
+        USING (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+        );
 
-CREATE POLICY "tenant_isolation_insert" ON public.receipt_uploads
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-    AND public.has_active_subscription(auth.uid())
-  );
+      CREATE POLICY "tenant_isolation_insert" ON public.receipt_uploads
+        FOR INSERT
+        TO authenticated
+        WITH CHECK (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+          AND public.has_active_subscription(auth.uid())
+        );
 
-CREATE POLICY "tenant_isolation_update" ON public.receipt_uploads
-  FOR UPDATE
-  TO authenticated
-  USING (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-  )
-  WITH CHECK (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-  );
+      CREATE POLICY "tenant_isolation_update" ON public.receipt_uploads
+        FOR UPDATE
+        TO authenticated
+        USING (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+        )
+        WITH CHECK (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+        );
+    ';
+  END IF;
+END $$;
 
 -- Feature Flags: Tenant isolation + billing account requirement
-DROP POLICY IF EXISTS "tenant_isolation_select" ON public.feature_flags;
-DROP POLICY IF EXISTS "tenant_isolation_insert" ON public.feature_flags;
-DROP POLICY IF EXISTS "tenant_isolation_update" ON public.feature_flags;
-DROP POLICY IF EXISTS "tenant_isolation_delete" ON public.feature_flags;
+-- Check if billing_account_id column exists before creating policies
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'feature_flags' 
+    AND column_name = 'billing_account_id'
+  ) THEN
+    DROP POLICY IF EXISTS "tenant_isolation_select" ON public.feature_flags;
+    DROP POLICY IF EXISTS "tenant_isolation_insert" ON public.feature_flags;
+    DROP POLICY IF EXISTS "tenant_isolation_update" ON public.feature_flags;
+    DROP POLICY IF EXISTS "tenant_isolation_delete" ON public.feature_flags;
 
-CREATE POLICY "tenant_isolation_select" ON public.feature_flags
-  FOR SELECT
-  TO authenticated
-  USING (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-  );
+    EXECUTE '
+      CREATE POLICY "tenant_isolation_select" ON public.feature_flags
+        FOR SELECT
+        TO authenticated
+        USING (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+        );
 
-CREATE POLICY "tenant_isolation_insert" ON public.feature_flags
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-    AND public.has_active_subscription(auth.uid())
-  );
+      CREATE POLICY "tenant_isolation_insert" ON public.feature_flags
+        FOR INSERT
+        TO authenticated
+        WITH CHECK (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+          AND public.has_active_subscription(auth.uid())
+        );
 
-CREATE POLICY "tenant_isolation_update" ON public.feature_flags
-  FOR UPDATE
-  TO authenticated
-  USING (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-  )
-  WITH CHECK (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-  );
+      CREATE POLICY "tenant_isolation_update" ON public.feature_flags
+        FOR UPDATE
+        TO authenticated
+        USING (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+        )
+        WITH CHECK (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+        );
 
-CREATE POLICY "tenant_isolation_delete" ON public.feature_flags
-  FOR DELETE
-  TO authenticated
-  USING (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-  );
+      CREATE POLICY "tenant_isolation_delete" ON public.feature_flags
+        FOR DELETE
+        TO authenticated
+        USING (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+        );
+    ';
+  END IF;
+END $$;
 
 -- Usage Events: Tenant isolation + billing account requirement
-DROP POLICY IF EXISTS "tenant_isolation_select" ON public.usage_events;
-DROP POLICY IF EXISTS "tenant_isolation_insert" ON public.usage_events;
+-- Check if billing_account_id column exists before creating policies
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'usage_events' 
+    AND column_name = 'billing_account_id'
+  ) THEN
+    DROP POLICY IF EXISTS "tenant_isolation_select" ON public.usage_events;
+    DROP POLICY IF EXISTS "tenant_isolation_insert" ON public.usage_events;
 
-CREATE POLICY "tenant_isolation_select" ON public.usage_events
-  FOR SELECT
-  TO authenticated
-  USING (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-  );
+    EXECUTE '
+      CREATE POLICY "tenant_isolation_select" ON public.usage_events
+        FOR SELECT
+        TO authenticated
+        USING (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+        );
 
-CREATE POLICY "tenant_isolation_insert" ON public.usage_events
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    billing_account_id IN (
-      SELECT id FROM public.billing_accounts
-      WHERE user_id = auth.uid() AND status = 'active' AND deleted_at IS NULL
-    )
-  );
+      CREATE POLICY "tenant_isolation_insert" ON public.usage_events
+        FOR INSERT
+        TO authenticated
+        WITH CHECK (
+          billing_account_id IN (
+            SELECT id FROM public.billing_accounts
+            WHERE user_id = auth.uid() AND status = ''active'' AND deleted_at IS NULL
+          )
+        );
+    ';
+  END IF;
+END $$;
 
 -- ============================================================================
 -- DATABASE CONSTRAINTS FOR BILLING ENFORCEMENT
@@ -355,7 +394,12 @@ CREATE POLICY "tenant_isolation_insert" ON public.usage_events
 -- Ensure subscriptions reference valid billing accounts
 DO $$
 BEGIN
-  IF NOT EXISTS (
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'subscriptions' 
+    AND column_name = 'billing_account_id'
+  ) AND NOT EXISTS (
     SELECT 1 FROM pg_constraint
     WHERE conname = 'subscriptions_billing_account_id_fkey'
   ) THEN
@@ -370,7 +414,12 @@ END $$;
 -- Ensure add-on purchases reference valid billing accounts
 DO $$
 BEGIN
-  IF NOT EXISTS (
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'add_on_purchases' 
+    AND column_name = 'billing_account_id'
+  ) AND NOT EXISTS (
     SELECT 1 FROM pg_constraint
     WHERE conname = 'add_on_purchases_billing_account_id_fkey'
   ) THEN
@@ -385,7 +434,12 @@ END $$;
 -- Ensure usage events reference valid billing accounts
 DO $$
 BEGIN
-  IF NOT EXISTS (
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'usage_events' 
+    AND column_name = 'billing_account_id'
+  ) AND NOT EXISTS (
     SELECT 1 FROM pg_constraint
     WHERE conname = 'usage_events_billing_account_id_fkey'
   ) THEN
