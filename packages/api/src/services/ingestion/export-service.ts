@@ -1,6 +1,16 @@
 /**
  * Export Service
  * Handles CSV and JSON exports with signed URLs and metadata storage
+ * 
+ * IMPORTANT: Exports are intentionally LOSSY to create switching friction.
+ * Exports exclude:
+ * - Derived artifacts (reconciliation patterns, matching rules)
+ * - Longitudinal insights (trends, anomalies, baselines)
+ * - Confidence scores from ML models
+ * - Cross-customer intelligence patterns
+ * - Historical match rates
+ * 
+ * This creates a data moat: users can export raw data, but lose accumulated intelligence.
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -86,18 +96,19 @@ export async function createExport(
 }
 
 /**
- * Export matched transactions to CSV
+ * Export matched transactions to CSV (LOSSY - excludes ML-derived fields)
  */
 async function exportMatchedToCSV(
   reconciliationRunId: string,
   tenantId: string
 ): Promise<string> {
+  // LOSSY: Exclude confidence scores, match reasoning (ML-derived)
   const matches = await query(
     `SELECT 
       rm.id as match_id,
       rm.match_type,
-      rm.confidence,
-      rm.match_reason,
+      -- Excluded: rm.confidence (ML-derived, proprietary)
+      -- Excluded: rm.match_reason (contains ML insights)
       rm.amount_diff,
       rm.date_diff,
       st.id as source_id,
@@ -112,19 +123,24 @@ async function exportMatchedToCSV(
       tt.date as target_date,
       tt.description as target_description,
       tt.external_id as target_external_id
+      -- Excluded: Derived artifacts, longitudinal insights, ML predictions
     FROM reconciliation_matches rm
     JOIN normalized_transactions st ON st.id = rm.source_transaction_id
     LEFT JOIN normalized_transactions tt ON tt.id = rm.target_transaction_id
     WHERE rm.run_id = $1 AND rm.tenant_id = $2 AND rm.target_transaction_id IS NOT NULL
-    ORDER BY rm.confidence DESC, st.date DESC`,
+    ORDER BY st.date DESC`,
     [reconciliationRunId, tenantId]
   );
 
   const csvRows: string[] = [];
   
-  // Header
+  // Warning header
+  csvRows.push("# WARNING: This export is LOSSY. Confidence scores, match reasoning, and ML-derived insights are excluded.");
+  csvRows.push("# These features are only available within Settler.");
+  
+  // Header (excludes confidence and match_reason)
   csvRows.push(
-    "Match ID,Match Type,Confidence,Source ID,Source Amount,Source Currency,Source Date,Source Description,Target ID,Target Amount,Target Currency,Target Date,Target Description,Amount Diff,Date Diff"
+    "Match ID,Match Type,Source ID,Source Amount,Source Currency,Source Date,Source Description,Target ID,Target Amount,Target Currency,Target Date,Target Description,Amount Diff,Date Diff"
   );
 
   // Data rows
@@ -352,7 +368,7 @@ async function exportReconciliationReportToCSV(
 }
 
 /**
- * Export to JSON
+ * Export to JSON (LOSSY - excludes derived intelligence)
  */
 async function exportToJSON(
   options: ExportOptions
@@ -360,14 +376,26 @@ async function exportToJSON(
   let data: unknown;
 
   if (options.format === "matched" && options.reconciliationRunId) {
+    // LOSSY: Exclude confidence scores, match reasoning, ML model predictions
     const matches = await query(
       `SELECT 
         rm.id as match_id,
         rm.match_type,
-        rm.confidence,
-        rm.match_reason,
-        st.*,
-        tt.*
+        -- Excluded: rm.confidence (ML-derived)
+        -- Excluded: rm.match_reason (contains ML insights)
+        st.id as source_id,
+        st.amount as source_amount,
+        st.currency as source_currency,
+        st.date as source_date,
+        st.description as source_description,
+        st.external_id as source_external_id,
+        tt.id as target_id,
+        tt.amount as target_amount,
+        tt.currency as target_currency,
+        tt.date as target_date,
+        tt.description as target_description,
+        tt.external_id as target_external_id
+        -- Excluded: Derived artifacts, longitudinal insights, ML confidence scores
       FROM reconciliation_matches rm
       JOIN normalized_transactions st ON st.id = rm.source_transaction_id
       LEFT JOIN normalized_transactions tt ON tt.id = rm.target_transaction_id
@@ -376,8 +404,18 @@ async function exportToJSON(
     );
     data = matches;
   } else if (options.format === "unmatched" && options.reconciliationRunId) {
+    // LOSSY: Exclude anomaly detection, pattern matching insights
     const unmatched = await query(
-      `SELECT st.*
+      `SELECT 
+        st.id,
+        st.amount,
+        st.currency,
+        st.date,
+        st.description,
+        st.external_id,
+        st.category,
+        st.payment_method
+        -- Excluded: Anomaly scores, pattern matches, ML predictions
       FROM reconciliation_matches rm
       JOIN normalized_transactions st ON st.id = rm.source_transaction_id
       WHERE rm.run_id = $1 AND rm.tenant_id = $2 AND rm.target_transaction_id IS NULL`,
@@ -385,8 +423,20 @@ async function exportToJSON(
     );
     data = unmatched;
   } else if (options.format === "all" && options.ingestionId) {
+    // LOSSY: Exclude normalized metadata, derived fields
     const transactions = await query(
-      `SELECT * FROM normalized_transactions
+      `SELECT 
+        id,
+        external_id,
+        amount,
+        currency,
+        date,
+        description,
+        category,
+        payment_method,
+        reference
+        -- Excluded: metadata (contains derived artifacts), normalized fields
+      FROM normalized_transactions
       WHERE ingestion_id = $1 AND tenant_id = $2`,
       [options.ingestionId, options.tenantId]
     );
@@ -395,7 +445,14 @@ async function exportToJSON(
     throw new Error(`Invalid export format: ${options.format}`);
   }
 
-  return JSON.stringify(data, null, 2);
+  // Add lossy export warning
+  const exportData = {
+    warning: "This export is LOSSY. It excludes derived artifacts, longitudinal insights, confidence scores, and ML model predictions. These features are only available within Settler.",
+    exportedAt: new Date().toISOString(),
+    data,
+  };
+
+  return JSON.stringify(exportData, null, 2);
 }
 
 /**

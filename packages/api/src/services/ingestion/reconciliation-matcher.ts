@@ -1,11 +1,14 @@
 /**
  * Reconciliation Matcher
- * Deterministic matching algorithm: exact amount + date window + fuzzy description
+ * Deterministic matching algorithm with ML enhancement fallback.
+ * Uses proprietary ML models trained on historical matches for improved accuracy.
  */
 
 import { query, transaction } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
 import { MatchResult, ReconciliationConfig } from "./types";
+import { mlMatchingEngine } from "../matching/ml-matching-engine";
+import { enhancedCrossCustomerIntelligence } from "../matching/enhanced-cross-customer-intelligence";
 
 const DEFAULT_CONFIG: Required<ReconciliationConfig> = {
   dateWindowDays: 7,
@@ -184,6 +187,47 @@ export async function matchTransaction(
         dateDiff: daysDifference(source.date, exactMatch.date),
       };
     }
+  }
+
+  // Try ML matching engine (proprietary, creates data moat)
+  // This uses historical match data and cross-customer intelligence
+  try {
+    const sourceAdapter = await getSourceAdapter(sourceTransactionId);
+    const targetAdapters = await Promise.all(
+      targetTransactionIds.map((id) => getSourceAdapter(id))
+    );
+    
+    // Use ML engine for first target adapter (most common case)
+    if (targetAdapters.length > 0) {
+      const mlPrediction = await mlMatchingEngine.predictMatch(
+        sourceTransactionId,
+        targetTransactionIds,
+        "", // tenantId will be extracted from transaction
+        sourceAdapter || "unknown",
+        targetAdapters[0] || "unknown"
+      );
+
+      if (mlPrediction && mlPrediction.confidence > 0.7) {
+        // ML prediction is confident, use it
+        const bestTarget = targets.find((t) =>
+          targetTransactionIds.includes(t.id)
+        );
+        if (bestTarget) {
+          return {
+            sourceTransactionId: source.id,
+            targetTransactionId: bestTarget.id,
+            matchType: mlPrediction.matchType,
+            confidence: mlPrediction.confidence,
+            matchReason: `ML model prediction: ${mlPrediction.reasoning}`,
+            amountDiff: Math.abs(source.amount - bestTarget.amount),
+            dateDiff: daysDifference(source.date, bestTarget.date),
+          };
+        }
+      }
+    }
+  } catch (error) {
+    // Fall back to deterministic algorithm if ML fails
+    logError("ML matching failed, falling back to deterministic", error);
   }
 
   // Filter by currency match
@@ -449,6 +493,33 @@ export async function runReconciliation(
       traceId,
     });
 
+    // Record patterns for cross-customer intelligence (creates data moat)
+    for (const match of matches) {
+      if (match.targetTransactionId && match.matchType !== "unmatched") {
+        try {
+          const sourceAdapter = await getSourceAdapter(match.sourceTransactionId);
+          const targetAdapter = await getSourceAdapter(match.targetTransactionId);
+          
+          if (sourceAdapter && targetAdapter) {
+            await enhancedCrossCustomerIntelligence.recordPattern(
+              tenantId,
+              {
+                sourceAdapter,
+                targetAdapter,
+                matchType: match.matchType,
+                confidence: match.confidence,
+                amountDiff: match.amountDiff || 0,
+                dateDiff: match.dateDiff || 0,
+              }
+            );
+          }
+        } catch (error) {
+          // Non-fatal - continue even if pattern recording fails
+          logError("Failed to record pattern", error);
+        }
+      }
+    }
+
     return runId;
   } catch (error) {
     logError("Reconciliation failed", error, { runId, traceId });
@@ -465,5 +536,29 @@ export async function runReconciliation(
       ]
     );
     throw error;
+  }
+}
+
+/**
+ * Get source adapter for transaction
+ */
+async function getSourceAdapter(transactionId: string): Promise<string | null> {
+  try {
+    const result = await query(
+      `SELECT si.connector_type
+      FROM normalized_transactions nt
+      JOIN ingestion_sources si ON si.id = nt.source_id
+      WHERE nt.id = $1
+      LIMIT 1`,
+      [transactionId]
+    );
+
+    if (result.length > 0) {
+      return (result[0] as { connector_type: string | null }).connector_type;
+    }
+    return null;
+  } catch (error) {
+    logError("Failed to get source adapter", error, { transactionId });
+    return null;
   }
 }
