@@ -36,10 +36,11 @@ const upload = multer({ storage: multer.memoryStorage() });
  * Create a new ingestion source (connector or CSV)
  */
 router.post("/sources", tenantMiddleware, async (req: TenantRequest, res: Response) => {
+  const tenantId = req.tenantId!;
+  const userId = req.userId!;
+  
   try {
     const { name, type, connectorType, config, configMetadata } = req.body;
-    const tenantId = req.tenantId!;
-    const userId = req.userId!;
 
     if (!name || !type) {
       return res.status(400).json({
@@ -79,7 +80,7 @@ router.post("/sources", tenantMiddleware, async (req: TenantRequest, res: Respon
           enterprise: { platformAdapters: "unlimited" },
         };
         
-        const limits = planLimits[planId] || planLimits.free;
+        const limits: { platformAdapters: number | "unlimited" } = planLimits[planId] ?? planLimits.free!;
         
         if (limits.platformAdapters !== "unlimited") {
           // Count existing adapters (connector-type ingestion sources)
@@ -185,8 +186,9 @@ router.post("/sources", tenantMiddleware, async (req: TenantRequest, res: Respon
  * List ingestion sources
  */
 router.get("/sources", tenantMiddleware, async (req: TenantRequest, res: Response) => {
+  const tenantId = req.tenantId!;
+  
   try {
-    const tenantId = req.tenantId!;
 
     const sources = await query(
       `SELECT 
@@ -246,20 +248,21 @@ router.post(
   tenantMiddleware,
   checkIngestionLimit(),
   async (req: TenantRequest, res: Response) => {
+    const tenantId = req.tenantId!;
+    const userId = req.userId!;
+    const traceId = req.traceId || uuidv4();
+    
     try {
       const file = req.file;
       if (!file) {
         return res.status(400).json({
           error: "Bad Request",
           message: "CSV file is required",
-          traceId: req.traceId,
+          traceId,
         });
       }
 
       const { sourceId, columnMapping: columnMappingOverride } = req.body;
-      const tenantId = req.tenantId!;
-      const userId = req.userId!;
-      const traceId = req.traceId || uuidv4();
 
       // Parse CSV
       const { headers, rows } = parseCSV(file.buffer);
@@ -429,7 +432,7 @@ router.post(
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       logError("Failed to process CSV upload", error, {
-        traceId: req.traceId || traceId,
+        traceId,
         tenantId,
         userId,
       });
@@ -439,7 +442,7 @@ router.post(
         return res.status(400).json({
           error: "Bad Request",
           message: `CSV file format is invalid: ${errorMessage}. Please ensure your CSV file is properly formatted and try again.`,
-          traceId: req.traceId || traceId,
+          traceId,
         });
       }
       
@@ -447,7 +450,7 @@ router.post(
         return res.status(429).json({
           error: "Too Many Requests",
           message: `Ingestion limit exceeded. ${errorMessage}. Please upgrade your plan or wait before uploading more files.`,
-          traceId: req.traceId || traceId,
+          traceId,
         });
       }
       
@@ -455,7 +458,7 @@ router.post(
         return res.status(503).json({
           error: "Service Unavailable",
           message: `Database connection failed while processing CSV upload. Please try again in a few moments.`,
-          traceId: req.traceId || traceId,
+          traceId,
         });
       }
       
@@ -463,7 +466,7 @@ router.post(
       return res.status(500).json({
         error: "Internal Server Error",
         message: `Failed to process CSV upload: ${errorMessage}. Please contact support with traceId if this persists.`,
-        traceId: req.traceId || traceId,
+        traceId,
       });
     }
   }

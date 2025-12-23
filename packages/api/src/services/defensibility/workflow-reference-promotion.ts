@@ -176,7 +176,6 @@ export class WorkflowReferencePromotionService {
 
       // Extract adapter info from metadata if available
       const metadata = typeof run.metadata === 'string' ? JSON.parse(run.metadata) : run.metadata;
-      const _sourceAdapter = (metadata as { source_adapter?: string })?.source_adapter || 'unknown';
       const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || 'unknown';
 
       const suggestions: Array<{
