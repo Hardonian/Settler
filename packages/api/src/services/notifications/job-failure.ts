@@ -101,10 +101,11 @@ export async function notifyJobFailure(
 
     // Log audit event (if audit logger exists)
     try {
-      // Try web audit logger first (Next.js)
-      const { logAuditEvent } = await import('../../lib/audit/logger').catch(() => null);
-      if (logAuditEvent) {
-        await logAuditEvent({
+      // Try web audit logger first (Next.js) - path may not exist in API package
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const auditModule = await import('../../lib/audit/logger').catch(() => null) as any;
+      if (auditModule?.logAuditEvent) {
+        await auditModule.logAuditEvent({
           userId: userId,
           tenantId: tenantId,
           action: 'notify',

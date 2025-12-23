@@ -103,11 +103,12 @@ export async function matchReceiptToTransaction(
     }
 
     const scores: ScoreResult[] = transactions.map((transaction) => {
-      const receiptTotal = Number(receipt.total);
-      const transactionAmount = Number(transaction.amount);
+      const receiptTotal = Number(receipt.total ?? 0);
+      const transactionAmount = Number(transaction.amount ?? 0);
       const amountDiff = Math.abs(transactionAmount - receiptTotal);
+      const transactionDate = transaction.date ?? new Date();
       const dateDiff = Math.abs(
-        (transaction.date.getTime() - receiptDate.getTime()) / (1000 * 60 * 60 * 24)
+        (transactionDate.getTime() - receiptDate.getTime()) / (1000 * 60 * 60 * 24)
       );
 
       // Amount score (closer to 0 is better)
@@ -154,7 +155,7 @@ export async function matchReceiptToTransaction(
         confidence: bestMatch.confidence,
         matchReason: bestMatch.matchReason,
         amountDiff: bestMatch.amountDiff,
-        dateDiff: bestMatch.dateDiff,
+        dateDiff: bestMatch.dateDiff ?? 0,
       };
     }
 
@@ -242,8 +243,8 @@ export async function batchMatchReceipts(
  * For full matching, use matchReceiptToTransaction with PrismaClient
  */
 export async function matchReceiptsToTransactions(
-  tenantId: string,
-  reconciliationRunId: string,
+  _tenantId: string,
+  _reconciliationRunId: string,
   receipts: Array<{ id: string }>,
   transactions: Array<{ id: string; amount: number; date: Date; currency: string }>
 ): Promise<Array<{ receiptId: string; transactionId: string; confidence: number }>> {
@@ -276,8 +277,8 @@ export async function matchReceiptsToTransactions(
  * Get receipt matches for a reconciliation run
  */
 export async function getReceiptMatches(
-  tenantId: string,
-  reconciliationRunId: string
+  _tenantId: string,
+  _reconciliationRunId: string
 ): Promise<Array<{ receiptId: string; transactionId: string; confidence: number }>> {
   // Placeholder implementation
   // In production, query receipt_transaction_matches table
@@ -288,9 +289,9 @@ export async function getReceiptMatches(
  * Verify a receipt-transaction link
  */
 export async function verifyReceiptLink(
-  tenantId: string,
-  linkId: string,
-  userId: string
+  _tenantId: string,
+  _linkId: string,
+  _userId: string
 ): Promise<void> {
   // Placeholder implementation
   // In production, update receipt_transaction_matches table

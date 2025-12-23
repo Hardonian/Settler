@@ -16,7 +16,6 @@ import {
 } from "../../services/receipt-matching";
 
 const router = Router();
-const prisma = new PrismaClient();
 
 /**
  * POST /api/v1/receipt-matching/match
