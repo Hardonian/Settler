@@ -13,11 +13,23 @@ packages/*/node_modules
 # next.js
 /.next/
 /out/
+**/.next/
+**/.turbo/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 
 # production
 /build
+
+# testing artifacts
+/playwright-report/
+/test-results/
+/coverage/
+*.log
+
+# turbo
+.turbo/
+**/.turbo/
 
 # misc
 .DS_Store
@@ -27,6 +39,7 @@ tsconfig.tsbuildinfo
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
 
 # local env files
 .env*.local
