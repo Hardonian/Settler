@@ -52,15 +52,17 @@ export async function requireActiveSubscription(
     const targetUserId = userId || user.id;
 
     // Get billing account
-    const { data: billingAccount, error: billingError } = await supabaseClient
+    const billingAccountResult = await supabaseClient
       .from('billing_accounts')
       .select('id, status, tenant_id')
       .eq('user_id', targetUserId)
       .eq('status', 'active')
       .is('deleted_at', null)
       .single();
+    
+    const { data: billingAccount, error: billingError } = billingAccountResult;
 
-    if (billingError || !billingAccount) {
+    if (billingError || !billingAccount || typeof billingAccount !== 'object') {
       return {
         allowed: false,
         error: NextResponse.json(
@@ -76,11 +78,17 @@ export async function requireActiveSubscription(
       };
     }
 
+    const billingAccountTyped = billingAccount as {
+      id: string;
+      status: string;
+      tenant_id: string | null;
+    };
+
     // Check for active subscription
     const subscriptionResult = await supabaseClient
       .from('subscriptions')
       .select('id, status, plan_id, trial_end, cancel_at_period_end, cancelled_at')
-      .eq('billing_account_id', billingAccount.id)
+      .eq('billing_account_id', billingAccountTyped.id)
       .in('status', ['active', 'trialing'])
       .order('created_at', { ascending: false })
       .limit(1)
@@ -92,7 +100,7 @@ export async function requireActiveSubscription(
       return {
         allowed: false,
         subscriptionStatus: 'none',
-        billingAccountId: billingAccount.id,
+        billingAccountId: billingAccountTyped.id,
         error: NextResponse.json(
           {
             error: 'Active Subscription Required',
@@ -111,7 +119,7 @@ export async function requireActiveSubscription(
       return {
         allowed: false,
         subscriptionStatus: 'none',
-        billingAccountId: billingAccount.id,
+        billingAccountId: billingAccountTyped.id,
         error: NextResponse.json(
           {
             error: 'Active Subscription Required',
@@ -145,7 +153,7 @@ export async function requireActiveSubscription(
         return {
           allowed: false,
           subscriptionStatus: 'expired',
-          billingAccountId: billingAccount.id,
+          billingAccountId: billingAccountTyped.id,
           planId: sub.plan_id || undefined,
           error: NextResponse.json(
             {
@@ -168,7 +176,7 @@ export async function requireActiveSubscription(
       return {
         allowed: true,
         subscriptionStatus: sub.status === 'trialing' ? 'trialing' : 'active',
-        billingAccountId: billingAccount.id,
+        billingAccountId: billingAccountTyped.id,
         planId: sub.plan_id || undefined,
       };
     }
@@ -176,7 +184,7 @@ export async function requireActiveSubscription(
     return {
       allowed: true,
       subscriptionStatus: sub.status === 'trialing' ? 'trialing' : 'active',
-      billingAccountId: billingAccount.id,
+      billingAccountId: billingAccountTyped.id,
       planId: sub.plan_id || undefined,
     };
   } catch (error) {
