@@ -124,8 +124,8 @@ export async function POST(
       correlationId,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logger.error('Error in sync route', { correlationId, error: errorMessage });
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Error in sync route', errorObj, { correlationId });
 
     // Mark idempotency key as failed if we created one
     try {

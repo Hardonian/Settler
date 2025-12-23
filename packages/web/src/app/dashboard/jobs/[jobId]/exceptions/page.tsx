@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,13 +11,10 @@ import { Footer } from "@/components/Footer";
 import {
   Loader2,
   ArrowLeft,
-  AlertCircle,
   CheckCircle2,
-  XCircle,
   Filter,
   Search,
   RefreshCw,
-  Download,
 } from "lucide-react";
 import Link from "next/link";
 import { logger } from "@/lib/logging/logger";
@@ -73,7 +70,6 @@ interface ExceptionsResponse {
 
 export default function ExceptionsPage() {
   const params = useParams();
-  const router = useRouter();
   const jobId = params?.jobId as string | undefined;
   
   const [exceptions, setExceptions] = useState<Exception[]>([]);
