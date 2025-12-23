@@ -8,6 +8,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, FileText, RefreshCw, Flag, Calculator, Terminal } from 'lucide-react';
@@ -68,12 +69,29 @@ export default function PlaygroundOverview() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-[1.4]">Developer Playground</h2>
-          <p className="text-slate-600 dark:text-slate-300 mt-2 leading-[1.5]">
-            Interactive tools to explore and test the Settler API capabilities.
-          </p>
+      {/* Hero Section with Screenshot */}
+      <div className="space-y-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-[1.4]">Developer Playground</h2>
+            <p className="text-slate-600 dark:text-slate-300 mt-2 leading-[1.5]">
+              Interactive tools to explore and test the Settler API capabilities.
+            </p>
+          </div>
+        </div>
+        
+        {/* Playground Screenshot */}
+        <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg">
+          <Image
+            src="/assets/images/1766448707397.jpg"
+            alt="Settler Developer Playground - Interactive API testing interface showing code editor, request builder, and response viewer"
+            width={2816}
+            height={1536}
+            className="w-full h-auto"
+            priority={false}
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1200px"
+            unoptimized
+          />
         </div>
       </div>
 

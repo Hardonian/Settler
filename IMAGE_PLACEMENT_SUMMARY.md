@@ -2,7 +2,9 @@
 
 ## Asset Map
 
-### Images Used
+### Images Used (Original + Newly Added)
+
+**Total Images Placed: 30+ images across marketing pages**
 
 | Image File | Used On Page/Section | Reason | Status |
 |------------|---------------------|--------|--------|
@@ -24,6 +26,16 @@
 | `/assets/icons/gdpr-badge.svg` | EnhancedTrustBadges Component | Security badges | ✅ Already in use |
 | `/assets/icons/*-badge.svg` | EnhancedTrustBadges Component | Trust badges | ✅ Already in use |
 | `/assets/icons/*-badge.svg` | Security Page | Trust badges display | ✅ **NEWLY ADDED** |
+| `/assets/images/1766446412895.jpg` | Homepage FeatureShowcase | Meaningful Changes feature screenshot | ✅ **NEWLY ADDED** |
+| `/assets/images/1766446421153.jpg` | Homepage FeatureShowcase | Smart Reconciliation feature screenshot | ✅ **NEWLY ADDED** |
+| `/assets/images/1766446442563.jpg` | Homepage FeatureShowcase | Tamper-Evident Receipts feature screenshot | ✅ **NEWLY ADDED** |
+| `/assets/images/1766446446143.jpg` | Homepage FeatureShowcase | Intelligent Alerts feature screenshot | ✅ **NEWLY ADDED** |
+| `/assets/images/1766446457350.jpg` | Homepage FeatureShowcase | AI-Powered Analysis feature screenshot | ✅ **NEWLY ADDED** |
+| `/assets/images/1766446595797.jpg` | How-it-works Step 2 | Matching rules configuration screenshot | ✅ **NEWLY ADDED** |
+| `/assets/images/1766446607998.jpg` | How-it-works Step 3 | Reconciliation process screenshot | ✅ **NEWLY ADDED** |
+| `/assets/images/1766448707397.jpg` | Playground Page Hero | Developer Playground interface screenshot | ✅ **NEWLY ADDED** |
+| `/assets/images/1766448964045.jpg` | Homepage Hero | Dashboard view screenshot | ✅ **NEWLY ADDED** |
+| `/assets/images/1766449041951.jpg` | Docs Page Hero | API Documentation interface screenshot | ✅ **NEWLY ADDED** |
 
 ## Files Changed
 
@@ -31,6 +43,7 @@
 
 1. **`/packages/web/src/app/page.tsx`**
    - Added feature illustrations (feature-1.svg, feature-2.svg) to features section
+   - Added dashboard screenshot (1766448964045.jpg) to hero section
    - Images are decorative (aria-hidden="true") with proper responsive sizing
 
 2. **`/packages/web/src/app/security/page.tsx`**
@@ -61,9 +74,9 @@
 ## Before/After Improvements
 
 ### Homepage (`/`)
-- **Before:** Features section had only icons, no supporting visuals
-- **After:** Added feature-1.svg and feature-2.svg illustrations below features grid
-- **Impact:** Better visual storytelling, improved comprehension
+- **Before:** Features section had only icons, no supporting visuals; hero had only diagram
+- **After:** Added feature-1.svg and feature-2.svg illustrations below features grid; added dashboard screenshot to hero; FeatureShowcase component now shows 5 actual UI screenshots
+- **Impact:** Better visual storytelling, improved comprehension, shows real product UI
 
 ### Security Page (`/security`)
 - **Before:** Text-only security information, no visual trust signals
@@ -76,14 +89,24 @@
 - **Impact:** Better discoverability, visual recognition of platforms, improved UX
 
 ### How-it-works Page (`/how-it-works`)
-- **Before:** Step 1 had placeholder visualization
-- **After:** Actual reconciliation-flow.svg diagram showing the process
-- **Impact:** Better understanding of reconciliation flow, visual learning
+- **Before:** Step 1 had placeholder visualization; Steps 2-4 had icon placeholders
+- **After:** Actual reconciliation-flow.svg diagram showing the process; Steps 2-3 now show real UI screenshots
+- **Impact:** Better understanding of reconciliation flow, visual learning, shows actual interface
 
 ### Docs Page (`/docs`)
-- **Before:** Code examples only, no visual diagrams
-- **After:** Data flow diagram showing how Settler processes data
-- **Impact:** Better technical understanding, visual explanation of architecture
+- **Before:** Code examples only, no visual diagrams or UI screenshots
+- **After:** Data flow diagram showing how Settler processes data; added API documentation interface screenshot
+- **Impact:** Better technical understanding, visual explanation of architecture, shows actual docs interface
+
+### Playground Page (`/console/playground`)
+- **Before:** Text-only description of playground tools
+- **After:** Large screenshot showing actual Developer Playground interface
+- **Impact:** Users can see what the playground looks like before trying it, better conversion
+
+### FeatureShowcase Component
+- **Before:** Feature cards had only icons
+- **After:** Each feature card now shows actual UI screenshot (5 features)
+- **Impact:** Shows real product UI, increases credibility, better feature understanding
 
 ### Architecture Page (`/architecture`)
 - **Before:** Only system-architecture.svg diagram

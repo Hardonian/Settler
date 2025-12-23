@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +20,20 @@ export default function DocsPage() {
       <p className="text-lg text-slate-600 dark:text-slate-400">
         Everything you need to integrate Settler into your application. Get started in minutes.
       </p>
+
+      {/* Docs Interface Screenshot */}
+      <div className="my-8 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg">
+        <Image
+          src="/assets/images/1766449041951.jpg"
+          alt="Settler API Documentation Interface - Complete API reference with interactive examples and code snippets"
+          width={2816}
+          height={1536}
+          className="w-full h-auto"
+          priority={false}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1200px"
+          unoptimized
+        />
+      </div>
 
       <div className="grid md:grid-cols-2 gap-6 my-8">
         <Card>

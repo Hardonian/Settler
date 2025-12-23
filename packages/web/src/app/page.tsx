@@ -249,6 +249,22 @@ if (flag.value) { /* ... */ }`;
                     />
                   </div>
                 </div>
+
+                {/* Alternative Hero Screenshot - Dashboard View */}
+                <div className="relative w-full max-w-5xl mx-auto mb-8 px-4">
+                  <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl">
+                    <Image
+                      src="/assets/images/1766448964045.jpg"
+                      alt="Settler Dashboard - Real-time reconciliation dashboard showing matched transactions, analytics, and insights"
+                      width={2816}
+                      height={1536}
+                      className="w-full h-auto"
+                      priority={false}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 2816px"
+                      unoptimized
+                    />
+                  </div>
+                </div>
                 
                 {/* Hero Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-12 sm:mb-16">
