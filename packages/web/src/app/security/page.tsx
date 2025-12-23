@@ -2,6 +2,7 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { EnhancedTrustBadges } from '@/components/EnhancedTrustBadges';
 import { Shield, Lock, FileKey, Server, Eye, RefreshCcw, Database, AlertTriangle, Users, Globe } from 'lucide-react';
 import { Metadata } from 'next';
 
@@ -39,8 +40,23 @@ export default function SecurityPage() {
         </div>
       </section>
 
-      {/* Compliance Posture */}
+      {/* Trust Badges */}
       <section className="px-4 sm:px-6 lg:px-8 py-12 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+              Security Certifications & Compliance
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Enterprise-grade security certifications and compliance standards
+            </p>
+          </div>
+          <EnhancedTrustBadges />
+        </div>
+      </section>
+
+      {/* Compliance Posture */}
+      <section className="px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">

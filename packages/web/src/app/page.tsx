@@ -304,6 +304,34 @@ if (flag.value) { /* ... */ }`;
                 );
               })}
             </BentoGrid>
+
+            {/* Feature Illustrations */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 sm:mt-16">
+              <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex items-center justify-center">
+                <Image
+                  src="/assets/marketing/feature-1.svg"
+                  alt=""
+                  width={600}
+                  height={400}
+                  className="w-full h-full object-contain"
+                  aria-hidden="true"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  unoptimized
+                />
+              </div>
+              <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex items-center justify-center">
+                <Image
+                  src="/assets/marketing/feature-2.svg"
+                  alt=""
+                  width={600}
+                  height={400}
+                  className="w-full h-full object-contain"
+                  aria-hidden="true"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  unoptimized
+                />
+              </div>
+            </div>
           </div>
         </section>
 

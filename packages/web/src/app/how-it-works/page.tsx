@@ -13,6 +13,7 @@ import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { ConversionCTA } from "@/components/ConversionCTA";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { SafeImage } from "@/components/SafeImage";
 import {
   Zap,
   Plug,
@@ -284,21 +285,37 @@ export default function HowItWorksPage() {
 
                   <div className={cn(index % 2 === 1 && "lg:col-start-1 lg:row-start-1")}>
                     <div className="relative">
-                      <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-6 md:p-8 flex items-center justify-center">
-                        <div className="text-center">
-                          <div
-                            className={cn(
-                              "w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-3 sm:mb-4 rounded-xl bg-gradient-to-br flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:rotate-3",
-                              step.gradient
-                            )}
-                          >
-                            <Icon className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 transition-transform duration-300" />
-                          </div>
-                          <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium break-words">
-                            Step {step.number} Visualization
-                          </p>
+                      {index === 0 ? (
+                        <div className="aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                          <SafeImage
+                            src="/assets/infographics/reconciliation-flow.svg"
+                            alt="Reconciliation flow diagram showing how Settler connects platforms and matches transactions"
+                            width={800}
+                            height={450}
+                            className="w-full h-full object-contain p-4"
+                            fallbackTitle="Reconciliation Flow"
+                            fallbackCaption="Visual diagram of Settler's reconciliation process"
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                            unoptimized
+                          />
                         </div>
-                      </div>
+                      ) : (
+                        <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-6 md:p-8 flex items-center justify-center">
+                          <div className="text-center">
+                            <div
+                              className={cn(
+                                "w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-3 sm:mb-4 rounded-xl bg-gradient-to-br flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:rotate-3",
+                                step.gradient
+                              )}
+                            >
+                              <Icon className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 transition-transform duration-300" />
+                            </div>
+                            <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium break-words">
+                              Step {step.number} Visualization
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SafeImage } from '@/components/SafeImage';
 import { Rocket, Code, Zap, Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -81,7 +82,7 @@ export default function DocsPage() {
         </Card>
       </div>
 
-      <section>
+      <section className="mb-12">
         <h2>Quick Example</h2>
         <CodeBlock
           code={`import { Settler } from '@settler/sdk';
@@ -114,6 +115,26 @@ const report = await client.jobs.run(job.id);
 console.log(\`Matched: \${report.summary.matched}/\${report.summary.total}\`);`}
           language="typescript"
         />
+      </section>
+
+      <section className="mb-12">
+        <h2>How Data Flows</h2>
+        <p className="text-slate-600 dark:text-slate-400 mb-6">
+          Understand how Settler processes data from source to target platforms.
+        </p>
+        <div className="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-50 dark:bg-slate-900">
+          <SafeImage
+            src="/assets/diagrams/data-flow.svg"
+            alt="Settler data flow diagram showing how data moves from source platforms through adapters to reconciliation engine and target platforms"
+            width={1200}
+            height={600}
+            className="w-full h-auto"
+            fallbackTitle="Data Flow Diagram"
+            fallbackCaption="Visual representation of Settler's data processing pipeline"
+            sizes="(max-width: 768px) 100vw, 1200px"
+            unoptimized
+          />
+        </div>
       </section>
     </div>
   );
