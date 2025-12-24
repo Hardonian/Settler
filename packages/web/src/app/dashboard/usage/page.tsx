@@ -11,12 +11,6 @@ const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 };
 
-const subDays = (date: Date, days: number) => {
-  const result = new Date(date);
-  result.setDate(result.getDate() - days);
-  return result;
-};
-
 const startOfMonth = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 };
@@ -64,7 +58,13 @@ export default function UsageDashboardPage() {
     try {
       setIsLoading(true);
       // Fetch from API based on selectedPeriod
-      const periodParam = selectedPeriod === 'month' ? 'month' : selectedPeriod === 'week' ? 'week' : 'day';
+      // Map selectedPeriod to API parameter
+      let periodParam = 'day';
+      if (selectedPeriod === 'last-month') {
+        periodParam = 'month';
+      } else if (selectedPeriod === 'last-7-days') {
+        periodParam = 'week';
+      }
       const response = await fetch(`/api/console/usage?period=${periodParam}`);
       if (response.ok) {
         const data = await response.json();

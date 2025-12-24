@@ -94,22 +94,39 @@ export async function POST(request: NextRequest) {
     // Create reconciliation job using Prisma
     const { prisma } = await import('@/shared/db/prismaClient');
     
+    // Get tenant ID from billing account
+    const billingAccount = await prisma.billingAccount.findUnique({
+      where: { id: auth.billingAccountId },
+      select: { tenantId: true },
+    });
+
+    if (!billingAccount?.tenantId) {
+      return NextResponse.json(
+        { error: 'Tenant not found' },
+        { status: 400 }
+      );
+    }
+    
     // Create the job in the database
+    // Store rules and options in metadata if schema doesn't support them directly
     const job = await prisma.reconJob.create({
       data: {
-        tenantId: auth.tenantId || tenantId!,
+        tenantId: billingAccount.tenantId,
         name: body.name || 'Reconciliation Job',
         description: body.description || null,
         sourceAdapter: body.sourceAdapter,
         targetAdapter: body.targetAdapter,
         status: 'queued',
-        rules: body.rules || [],
-        options: body.options || {},
-        scheduleCron: body.scheduleCron || null,
-        scheduleTimezone: body.scheduleTimezone || null,
+        metadata: {
+          rules: body.rules || [],
+          options: body.options || {},
+          scheduleCron: body.scheduleCron || null,
+          scheduleTimezone: body.scheduleTimezone || null,
+        },
       },
     });
 
+    const metadata = job.metadata as Record<string, any> | null;
     const jobResponse = {
       id: job.id,
       jobId: job.id,
@@ -117,8 +134,8 @@ export async function POST(request: NextRequest) {
       status: job.status,
       sourceAdapter: job.sourceAdapter,
       targetAdapter: job.targetAdapter,
-      rules: job.rules,
-      options: job.options,
+      rules: metadata?.rules || [],
+      options: metadata?.options || {},
       createdAt: job.createdAt.toISOString(),
       message: 'Reconciliation job created successfully. Processing will begin shortly.',
     };

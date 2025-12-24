@@ -45,7 +45,7 @@ export default function AddOnsMarketplacePage() {
     }
   }, [searchQuery, addOns]);
 
-  const fetchAddOns = () => {
+  const fetchAddOns = async () => {
     try {
       setIsLoading(true);
       // Fetch from API

@@ -37,9 +37,12 @@ export async function GET(_request: NextRequest) {
       .eq('tenant_id', billingAccount.tenantId);
 
     const roleCounts: Record<string, number> = {};
-    tenantUsers?.forEach(tu => {
-      roleCounts[tu.role] = (roleCounts[tu.role] || 0) + 1;
-    });
+    if (tenantUsers && Array.isArray(tenantUsers)) {
+      tenantUsers.forEach((tu: any) => {
+        const role = tu?.role || 'member';
+        roleCounts[role] = (roleCounts[role] || 0) + 1;
+      });
+    }
 
     const roles = [
       {

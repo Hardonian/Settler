@@ -39,19 +39,20 @@ export async function GET(_request: NextRequest) {
     }
 
     // Get user emails from Supabase auth
-    const userIds = tenantUsers.map(tu => tu.user_id);
     const users = [];
     
-    for (const userId of userIds) {
+    for (const tenantUser of tenantUsers) {
       try {
+        const userId = (tenantUser as any)?.user_id;
+        if (!userId) continue;
+        
         const { data: { user: authUser } } = await supabase.auth.admin.getUserById(userId);
-        const tenantUser = tenantUsers.find(tu => tu.user_id === userId);
-        if (authUser && tenantUser) {
+        if (authUser) {
           users.push({
             userId: userId,
             email: authUser.email || '',
-            role: tenantUser.role,
-            assignedAt: tenantUser.joined_at || new Date().toISOString(),
+            role: (tenantUser as any)?.role || 'member',
+            assignedAt: (tenantUser as any)?.joined_at || new Date().toISOString(),
           });
         }
       } catch {

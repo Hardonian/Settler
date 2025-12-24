@@ -31,7 +31,7 @@ export async function GET(_request: NextRequest) {
     // Get subscription to determine limits
     const subscription = await prisma.subscription.findFirst({
       where: { billingAccountId: billingAccount.tenantId },
-      select: { plan: true },
+      select: { metadata: true, stripePriceId: true },
     });
 
     // Get actual usage from usage_events or ops_usage_aggregates
@@ -46,18 +46,24 @@ export async function GET(_request: NextRequest) {
       .gte('created_at', weekStart.toISOString());
 
     const usageByType: Record<string, number> = {};
-    usageEvents?.forEach(event => {
-      usageByType[event.event_type] = (usageByType[event.event_type] || 0) + (event.quantity || 1);
-    });
+    if (usageEvents && Array.isArray(usageEvents)) {
+      usageEvents.forEach((event: any) => {
+        const eventType = event?.event_type || 'unknown';
+        const quantity = event?.quantity || 1;
+        usageByType[eventType] = (usageByType[eventType] || 0) + quantity;
+      });
+    }
 
     // Determine limits based on plan (default to starter plan limits)
+    // Check metadata or stripePriceId to infer plan
     const planLimits: Record<string, number> = {
       starter: 10000,
       growth: 100000,
       enterprise: 1000000,
     };
-    const plan = subscription?.plan || 'starter';
-    const baseLimit = planLimits[plan] || planLimits.starter;
+    const metadata = subscription?.metadata as Record<string, any> | null;
+    const plan = metadata?.plan || 'starter';
+    const baseLimit = planLimits[plan as string] || planLimits.starter;
 
     const quotas = [
       {
