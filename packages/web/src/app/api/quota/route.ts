@@ -64,7 +64,7 @@ export async function GET(_request: NextRequest) {
     const metadata = subscription?.metadata as Record<string, any> | null;
     const plan = (metadata?.plan as string) || 'starter';
     const planLimit = planLimits[plan];
-    const baseLimit: number = planLimit !== undefined ? planLimit : planLimits.starter;
+    const baseLimit: number = planLimit ?? planLimits.starter;
 
     const quotas = [
       {
