@@ -32,7 +32,6 @@ export function SubscriptionGate({
 }: SubscriptionGateProps) {
   const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadSubscription();
@@ -40,7 +39,6 @@ export function SubscriptionGate({
 
   async function loadSubscription() {
     try {
-      setError(null);
       // Use cache-busting only if needed, otherwise rely on browser cache
       const response = await fetch('/api/console/subscription-status', {
         cache: 'no-store', // Always fresh for gating decisions
@@ -116,7 +114,6 @@ interface AccessDeniedProps {
   requiredTier?: string;
   showValueProp?: boolean;
   benefits?: string[];
-  onRetry?: () => void;
 }
 
 function AccessDenied({ 
@@ -125,7 +122,6 @@ function AccessDenied({
   requiredTier,
   showValueProp = true,
   benefits,
-  onRetry
 }: AccessDeniedProps) {
   const tierInfo = useMemo(() => {
     const tierLabels: Record<string, { label: string; icon: typeof Lock; color: string }> = {
@@ -152,8 +148,8 @@ function AccessDenied({
     };
 
     return {
-      current: tierLabels[currentTier || 'unsubscribed'],
-      required: tierLabels[requiredTier || 'subscribed_paid'],
+      current: tierLabels[currentTier || 'unsubscribed'] || tierLabels.unsubscribed,
+      required: tierLabels[requiredTier || 'subscribed_paid'] || tierLabels.subscribed_paid,
     };
   }, [currentTier, requiredTier]);
 
@@ -205,8 +201,8 @@ function AccessDenied({
     ? '/pricing?feature=' + encodeURIComponent(feature)
     : '/console/billing?upgrade=true';
 
-  const CurrentTierIcon = tierInfo.current.icon;
-  const RequiredTierIcon = tierInfo.required.icon;
+  const CurrentTierIcon = tierInfo.current?.icon || Lock;
+  const RequiredTierIcon = tierInfo.required?.icon || Lock;
 
   return (
     <Card className="border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
@@ -234,15 +230,15 @@ function AccessDenied({
         {/* Current vs Required Tier */}
         <div className="flex items-center gap-4 p-4 bg-white dark:bg-slate-800 rounded-lg">
           <div className="flex-1 text-center">
-            <CurrentTierIcon className={`w-5 h-5 mx-auto mb-2 ${tierInfo.current.color}`} />
+            <CurrentTierIcon className={`w-5 h-5 mx-auto mb-2 ${tierInfo.current?.color || 'text-slate-600'}`} />
             <div className="text-sm font-medium text-slate-600 dark:text-slate-400">Current</div>
-            <div className="text-lg font-semibold">{tierInfo.current.label}</div>
+            <div className="text-lg font-semibold">{tierInfo.current?.label || 'Free Plan'}</div>
           </div>
           <ArrowRight className="w-5 h-5 text-slate-400" />
           <div className="flex-1 text-center">
-            <RequiredTierIcon className={`w-5 h-5 mx-auto mb-2 ${tierInfo.required.color}`} />
+            <RequiredTierIcon className={`w-5 h-5 mx-auto mb-2 ${tierInfo.required?.color || 'text-blue-600'}`} />
             <div className="text-sm font-medium text-slate-600 dark:text-slate-400">Required</div>
-            <div className="text-lg font-semibold">{tierInfo.required.label}</div>
+            <div className="text-lg font-semibold">{tierInfo.required?.label || 'Paid Subscription'}</div>
           </div>
         </div>
 

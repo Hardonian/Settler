@@ -50,7 +50,7 @@ function useSubscriptionStatus() {
 
     // Create new request
     setLoading(true);
-    const promise = fetch('/api/console/subscription-status')
+    const promise: Promise<SubscriptionStatus> = fetch('/api/console/subscription-status')
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch subscription');
         return res.json() as Promise<SubscriptionStatus>;
@@ -161,11 +161,12 @@ export function RBACGate({
     }
 
     fetch('/api/console/user-role')
-      .then((res) => {
+      .then(async (res) => {
         if (res.ok) {
-          return res.json() as Promise<{ role?: string }>;
+          const data = await res.json() as { role?: string };
+          return data;
         }
-        return { role: null };
+        return { role: undefined };
       })
       .then((data) => {
         setUserRole(data.role || null);

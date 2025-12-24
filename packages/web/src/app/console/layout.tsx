@@ -15,7 +15,6 @@ import { Footer } from '@/components/Footer';
 import { getConsoleAccessStatus } from '@/lib/auth/console-gate';
 import { validateSupabaseEnv } from '@/lib/env/validator';
 import { EnvErrorPanel } from '@/components/env/EnvErrorPanel';
-import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
