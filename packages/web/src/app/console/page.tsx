@@ -26,6 +26,7 @@ import { UsageWarningBanner } from '@/components/console/UsageWarningBanner';
 import { GuidedTourClient } from '@/components/console/GuidedTourClient';
 import { UsageInsightsPanel } from '@/components/console/UsageInsightsPanel';
 import { RBACGate } from '@/lib/rbac-gate';
+import { ValuePropositionBanner } from '@/components/console/ValuePropositionBanner';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -397,6 +398,15 @@ async function ConsoleOverviewContent() {
       {/* Welcome Banner */}
       <WelcomeBannerClient userName={userName} />
       
+      {/* Value Proposition Banner - Show for unauthenticated/unpaid users */}
+      {(!user || !billingAccount) && (
+        <ValuePropositionBanner
+          feature="Full Console Access"
+          message="Unlock unlimited API keys, advanced analytics, and premium features"
+          storageKey="console-value-prop-dismissed"
+        />
+      )}
+      
       {/* Usage Warning Banner */}
       <UsageWarningBanner />
       
@@ -447,7 +457,16 @@ async function ConsoleOverviewContent() {
               </CardContent>
             </Card>
 
-          <RBACGate requiredTier="subscribed_unpaid" feature="API Keys">
+          <RBACGate 
+            requiredTier="subscribed_unpaid" 
+            feature="API Keys"
+            benefits={[
+              'Unlimited API keys',
+              'Advanced key management',
+              'Key rotation & security',
+              'Usage analytics per key'
+            ]}
+          >
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <CardDescription>API Keys</CardDescription>
@@ -477,7 +496,16 @@ async function ConsoleOverviewContent() {
             </CardContent>
           </Card>
 
-          <RBACGate requiredTier="subscribed_unpaid" feature="Feature Flags">
+          <RBACGate 
+            requiredTier="subscribed_unpaid" 
+            feature="Feature Flags"
+            benefits={[
+              'Unlimited feature flags',
+              'Environment management',
+              'A/B testing support',
+              'Advanced targeting'
+            ]}
+          >
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <CardDescription>Feature Flags</CardDescription>
@@ -568,7 +596,16 @@ async function ConsoleOverviewContent() {
         </div>
 
         {/* AI Insights & Error Alerts */}
-        <RBACGate requiredTier="subscribed_paid" feature="Insights">
+        <RBACGate 
+          requiredTier="subscribed_paid" 
+          feature="AI Insights"
+          benefits={[
+            'AI-powered data insights',
+            'Automated error detection',
+            'Predictive analytics',
+            'Custom recommendations'
+          ]}
+        >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <InsightsPanel />
             <ErrorAlertsPanel />
