@@ -52,7 +52,18 @@ export default async function ConsoleRootLayout({
     // This will redirect unauthenticated users to sign-in
     // and non-subscribers to pricing
     // If access is allowed, this returns null (doesn't throw)
-    await requireConsoleAccess();
+    try {
+      await requireConsoleAccess();
+    } catch (redirectError) {
+      // requireConsoleAccess uses redirect() which throws NextResponse
+      // This is expected behavior - re-throw redirects
+      if (redirectError && typeof redirectError === 'object' && 'digest' in redirectError) {
+        throw redirectError; // Re-throw Next.js redirects
+      }
+      // If it's not a redirect, log and continue to show error page
+      console.error('[Console Layout] requireConsoleAccess failed:', redirectError);
+      throw redirectError; // Re-throw to be caught by outer catch
+    }
 
     // If we reach here, user is authenticated and has subscription
     // Render the console layout

@@ -39,9 +39,16 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[Supabase] Failed to get environment variables:', errorMessage);
     
-    // Return a minimal mock client that will fail gracefully on operations
+    // Return a proper mock client that won't throw on method calls
     // This prevents hard 500s while still allowing the page to render
-    return {} as SupabaseClient<Database>;
+    return {
+      auth: {
+        getUser: async () => ({
+          data: { user: null },
+          error: { message: 'Supabase not configured', status: 500 },
+        }),
+      },
+    } as unknown as SupabaseClient<Database>;
   }
 
   // Reuse cached client if available and fresh
