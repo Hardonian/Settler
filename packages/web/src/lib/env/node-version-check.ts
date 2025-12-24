@@ -12,14 +12,30 @@ const REQUIRED_NODE_MAJOR = 24;
  * Check Node version and return friendly error if mismatch
  */
 export function checkNodeVersion(): { valid: boolean; error?: string } {
-  const nodeVersion = process.version;
-  if (!nodeVersion) {
+  // process.version is always defined in Node.js, but TypeScript types may not reflect this
+  const nodeVersionRaw = process.version;
+  if (!nodeVersionRaw || typeof nodeVersionRaw !== 'string') {
     return {
       valid: false,
       error: `Node.js version ${REQUIRED_NODE_VERSION} or higher is required. Unable to detect current version.`,
     };
   }
-  const majorVersion = parseInt(nodeVersion.slice(1).split('.')[0], 10);
+  const nodeVersion: string = nodeVersionRaw;
+  const versionParts = nodeVersion.slice(1).split('.');
+  const majorVersionStr = versionParts[0];
+  if (!majorVersionStr || typeof majorVersionStr !== 'string') {
+    return {
+      valid: false,
+      error: `Node.js version ${REQUIRED_NODE_VERSION} or higher is required. Unable to parse current version: ${nodeVersion}`,
+    };
+  }
+  const majorVersion: number = parseInt(majorVersionStr, 10);
+  if (isNaN(majorVersion)) {
+    return {
+      valid: false,
+      error: `Node.js version ${REQUIRED_NODE_VERSION} or higher is required. Unable to parse major version from: ${nodeVersion}`,
+    };
+  }
 
   if (majorVersion < REQUIRED_NODE_MAJOR) {
     return {
