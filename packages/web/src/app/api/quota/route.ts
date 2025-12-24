@@ -63,7 +63,7 @@ export async function GET(_request: NextRequest) {
     };
     const metadata = subscription?.metadata as Record<string, any> | null;
     const plan = metadata?.plan || 'starter';
-    const baseLimit = planLimits[plan as string] ?? planLimits.starter;
+    const baseLimit: number = planLimits[plan as string] ?? planLimits.starter;
 
     const quotas = [
       {
