@@ -18,7 +18,9 @@ export type EventType =
   | 'audit.ready'
   | 'contract.breaking_change'
   | 'usage.limit_exceeded'
-  | 'agent.fallback';
+  | 'agent.fallback'
+  | 'value.reconciliation_completed'
+  | 'value.errors_prevented';
 
 export interface PlatformEvent {
   id: string;

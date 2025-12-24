@@ -135,8 +135,10 @@ if (typeof window === 'undefined') {
   }
   
   // Check Node version (non-blocking, logs warning if mismatch)
+  // Use synchronous import since this runs at module load time
   try {
-    const { checkNodeVersion } = await import('@/lib/env/node-version-check');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { checkNodeVersion } = require('@/lib/env/node-version-check');
     const nodeCheck = checkNodeVersion();
     if (!nodeCheck.valid) {
       console.warn('[Node Version]', nodeCheck.error);

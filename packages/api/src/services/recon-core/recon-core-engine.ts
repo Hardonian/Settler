@@ -475,7 +475,7 @@ export class ReconCoreEngine {
   private async performReconciliation(
     sourceData: ReconDataRecord[],
     targetData: ReconDataRecord[],
-    strategy: ReconStrategy,
+    _strategy: ReconStrategy,
     reconJob: ReconJob
   ): Promise<ReconMatch[]> {
     // Get billing account to fetch rules
@@ -510,7 +510,14 @@ export class ReconCoreEngine {
           ORDER BY success_rate DESC, match_count DESC
         `;
 
-        activeRules = rules.map(r => ({
+        activeRules = rules.map((r: {
+          id: string;
+          rule_type: string;
+          source_field: string | null;
+          target_field: string | null;
+          rule_config: unknown;
+          success_rate: number;
+        }) => ({
           id: r.id,
           ruleType: r.rule_type,
           sourceField: r.source_field || undefined,
@@ -534,14 +541,16 @@ export class ReconCoreEngine {
       if (rule.ruleType === 'field_mapping' && rule.sourceField && rule.targetField) {
         // Apply field mapping rule
         for (const sourceRecord of sourceData) {
-          if (matchedTargetIds.has(sourceRecord.id || '')) continue;
+          const sourceId = String(sourceRecord.id || '');
+          if (matchedTargetIds.has(sourceId)) continue;
           
           const sourceValue = (sourceRecord as Record<string, unknown>)[rule.sourceField];
-          if (!sourceValue) continue;
+          if (sourceValue === undefined || sourceValue === null) continue;
 
           // Find matching target record
           for (const targetRecord of targetData) {
-            if (matchedTargetIds.has(targetRecord.id || '')) continue;
+            const targetId = String(targetRecord.id || '');
+            if (matchedTargetIds.has(targetId)) continue;
             
             const targetValue = (targetRecord as Record<string, unknown>)[rule.targetField];
             if (sourceValue === targetValue) {
@@ -572,16 +581,23 @@ export class ReconCoreEngine {
               }
 
               matches.push({
-                sourceId: sourceRecord.id || '',
-                targetId: targetRecord.id || '',
+                id: `match_${sourceId}_${targetId}_${Date.now()}`,
+                sourceId,
+                targetId,
                 confidence: 0.9,
                 amount: (sourceRecord.amount || targetRecord.amount || 0) as number,
                 currency: (sourceRecord.currency || targetRecord.currency || 'USD') as string,
-                matchedFields: [rule.sourceField, rule.targetField],
-                matchReason: `Rule: ${rule.sourceField} → ${rule.targetField}`,
+                matchedFields: {
+                  [rule.sourceField]: sourceValue,
+                  [rule.targetField]: targetValue,
+                },
+                metadata: {
+                  matchReason: `Rule: ${rule.sourceField} → ${rule.targetField}`,
+                  ruleId: rule.id,
+                },
               });
               
-              matchedTargetIds.add(targetRecord.id || '');
+              matchedTargetIds.add(targetId);
               break;
             }
           }
@@ -593,11 +609,13 @@ export class ReconCoreEngine {
     // TODO: Integrate with existing MatchingEngine for remaining records
     // For now, basic matching logic
     for (const sourceRecord of sourceData) {
-      if (matches.some(m => m.sourceId === sourceRecord.id)) continue;
+      const sourceId = String(sourceRecord.id || '');
+      if (matches.some(m => m.sourceId === sourceId)) continue;
       
       // Try to find match by amount and date
       for (const targetRecord of targetData) {
-        if (matchedTargetIds.has(targetRecord.id || '')) continue;
+        const targetId = String(targetRecord.id || '');
+        if (matchedTargetIds.has(targetId)) continue;
         
         const sourceAmount = (sourceRecord.amount || 0) as number;
         const targetAmount = (targetRecord.amount || 0) as number;
@@ -606,16 +624,21 @@ export class ReconCoreEngine {
         // Match if amounts are close (within 1% or $0.01)
         if (amountDiff < Math.max(sourceAmount * 0.01, 0.01)) {
           matches.push({
-            sourceId: sourceRecord.id || '',
-            targetId: targetRecord.id || '',
+            id: `match_${sourceId}_${targetId}_${Date.now()}`,
+            sourceId,
+            targetId,
             confidence: 0.8,
             amount: sourceAmount,
             currency: (sourceRecord.currency || 'USD') as string,
-            matchedFields: ['amount'],
-            matchReason: 'Amount match',
+            matchedFields: {
+              amount: sourceAmount,
+            },
+            metadata: {
+              matchReason: 'Amount match',
+            },
           });
           
-          matchedTargetIds.add(targetRecord.id || '');
+          matchedTargetIds.add(targetId);
           break;
         }
       }
