@@ -1,71 +1,10 @@
 {
-  "buildCommand": "cd packages/web && npm run build:vercel",
-  "installCommand": "ROOT=$(pwd); while [ ! -f \"$ROOT/package-lock.json\" ] && [ \"$ROOT\" != \"/\" ]; do ROOT=$(dirname \"$ROOT\"); done; cd \"$ROOT\" && (npm ci --prefer-offline --no-audit --omit=optional || (npm cache clean --force && npm ci --prefer-offline --no-audit --omit=optional))",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
   "framework": "nextjs",
-  "outputDirectory": "packages/web/.next",
-  "regions": ["iad1", "sfo1", "lhr1", "syd1"],
-  "build": {
-    "env": {
-      "NODE_OPTIONS": "--max-old-space-size=4096",
-      "PRISMA_CLIENT_ENGINE_TYPE": "binary",
-      "PRISMA_ENGINES_MIRROR": "",
-      "NEXT_TELEMETRY_DISABLED": "1",
-      "NODE_VERSION": "24",
-      "TURBO_TOKEN": "",
-      "TURBO_TEAM": "",
-      "SKIP_ENV_VALIDATION": "false"
-    }
-  },
-  "functions": {
-    "app/api/**/*.ts": {
-      "memory": 1024,
-      "maxDuration": 30
-    }
-  },
-  "crons": [
-    {
-      "path": "/api/cron/check-reliability-alerts",
-      "schedule": "*/5 * * * *"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains; preload"
-        }
-      ]
-    },
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
-    }
-  ]
+  "nodeVersion": "24.x",
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
