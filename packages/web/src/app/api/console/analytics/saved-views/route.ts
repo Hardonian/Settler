@@ -37,7 +37,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ views: data || [] });
   } catch (error) {
     console.error('Failed to fetch saved views:', error);
-    return NextResponse.json({ views: [] }, { status: 500 });
+    // Never return 500 - return graceful error response
+
+    return NextResponse.json(
+
+      {
+
+        success: false,
+
+        error: 'An error occurred',
+
+        message: 'Please try again later or contact support if the issue persists',
+
+      },
+
+      { status: 200 }
+
+    );
   }
 }
 
@@ -81,9 +97,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ view: data });
   } catch (error) {
     console.error('Failed to create saved view:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create saved view' },
-      { status: 500 }
+      { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to create saved view',
+        message: 'Please try again later or contact support if the issue persists',
+        view: null,
+      },
+      { status: 200 }
     );
   }
 }
@@ -121,9 +143,14 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to delete saved view:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete saved view' },
-      { status: 500 }
+      { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to delete saved view',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

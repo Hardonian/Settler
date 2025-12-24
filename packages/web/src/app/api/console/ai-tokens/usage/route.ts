@@ -29,17 +29,25 @@ export async function GET() {
     
     if (!usage) {
       return NextResponse.json(
-        { error: 'Failed to get token usage' },
-        { status: 500 }
-      );
+      {
+        success: false,
+        error: 'Failed to get token usage',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
     
     return NextResponse.json({ usage });
   } catch (error) {
     console.error('[AI Tokens Usage API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to get token usage' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to get token usage',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

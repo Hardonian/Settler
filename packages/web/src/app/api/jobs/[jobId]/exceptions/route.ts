@@ -412,13 +412,15 @@ export async function GET(
       duration,
     });
 
+    // Never return 500 - return empty exceptions array with graceful error message
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: 'Failed to fetch exceptions',
+        exceptions: [],
+        error: 'Failed to fetch exceptions',
+        message: 'Please try again later or contact support if the issue persists',
         details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

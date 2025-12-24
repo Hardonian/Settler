@@ -91,19 +91,63 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // TODO: In production, integrate with actual reconciliation service
-    // For now, return a mock response that looks like a real job
-    const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Create reconciliation job using Prisma
+    const { prisma } = await import('@/shared/db/prismaClient');
+    
+    // Get tenant ID from billing account
+    const billingAccount = await prisma.billingAccount.findUnique({
+      where: { id: auth.billingAccountId },
+      select: { tenantId: true },
+    });
+
+    if (!billingAccount?.tenantId) {
+      return NextResponse.json(
+        { error: 'Tenant not found' },
+        { status: 400 }
+      );
+    }
+    
+    // Create the job in the database
+    // Store rules and options in metadata if schema doesn't support them directly
+    if (!auth?.userId) {
+      return NextResponse.json(
+        { error: 'User ID required' },
+        { status: 400 }
+      );
+    }
+
+    const job = await prisma.reconJob.create({
+      data: {
+        tenantId: billingAccount.tenantId,
+        userId: auth.userId,
+        name: body.name || 'Reconciliation Job',
+        description: body.description || null,
+        sourceAdapter: body.sourceAdapter,
+        sourceConfigEncrypted: JSON.stringify(body.sourceConfig || {}),
+        targetAdapter: body.targetAdapter,
+        targetConfigEncrypted: JSON.stringify(body.targetConfig || {}),
+        status: 'queued',
+        validationRules: body.rules || [],
+        scheduleCron: body.scheduleCron || null,
+        scheduleTimezone: body.scheduleTimezone || 'UTC',
+        metadata: {
+          options: body.options || {},
+        },
+      },
+    });
+
+    const metadata = job.metadata as Record<string, any> | null;
+    const validationRules = job.validationRules as any[] | null;
     const jobResponse = {
-      id: jobId,
-      jobId: jobId,
-      name: body.name || 'Reconciliation Job',
-      status: 'queued',
-      sourceAdapter: body.sourceAdapter,
-      targetAdapter: body.targetAdapter,
-      rules: body.rules || [],
-      options: body.options || {},
-      createdAt: new Date().toISOString(),
+      id: job.id,
+      jobId: job.id,
+      name: job.name,
+      status: job.status,
+      sourceAdapter: job.sourceAdapter,
+      targetAdapter: job.targetAdapter,
+      rules: validationRules || [],
+      options: metadata?.options || {},
+      createdAt: job.createdAt.toISOString(),
       message: 'Reconciliation job created successfully. Processing will begin shortly.',
     };
 

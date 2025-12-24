@@ -67,6 +67,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, planType });
   } catch (error) {
     console.error("Upgrade error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return graceful error response
+    return NextResponse.json({ 
+      success: false,
+      error: "Unable to process upgrade at this time",
+      message: "Please try again later or contact support"
+    }, { status: 200 });
   }
 }

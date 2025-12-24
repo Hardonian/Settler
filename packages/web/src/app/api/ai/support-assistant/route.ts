@@ -85,9 +85,14 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("AI support assistant error:", error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: "Failed to generate support response" },
-      { status: 500 }
+      { 
+        answer: "I'm having trouble processing your question right now. Please try again in a moment or contact support for immediate assistance.",
+        suggestions: ["Try rephrasing your question", "Contact support", "Browse documentation"],
+        related_docs: ["/docs", "/support"]
+      },
+      { status: 200 }
     );
   }
 }

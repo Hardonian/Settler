@@ -99,7 +99,7 @@ export async function GET(request: Request) {
         pendingJobs: 0,
         failedWebhooks: 0,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

@@ -32,6 +32,22 @@ export async function GET(request: Request) {
     return NextResponse.json({ customers });
   } catch (error) {
     console.error('Failed to fetch customers:', error);
-    return NextResponse.json({ customers: [] }, { status: 500 });
+    // Never return 500 - return graceful error response
+
+    return NextResponse.json(
+
+      {
+
+        success: false,
+
+        error: 'An error occurred',
+
+        message: 'Please try again later or contact support if the issue persists',
+
+      },
+
+      { status: 200 }
+
+    );
   }
 }

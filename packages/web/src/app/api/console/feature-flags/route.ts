@@ -60,9 +60,13 @@ export async function POST(request: NextRequest) {
     
     if (!success) {
       return NextResponse.json(
-        { error: 'Failed to set feature flag' },
-        { status: 500 }
-      );
+      {
+        success: false,
+        error: 'Failed to set feature flag',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
     
     return NextResponse.json({ success: true });
@@ -76,8 +80,12 @@ export async function POST(request: NextRequest) {
     
     console.error('[Feature Flags API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to set feature flag' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to set feature flag',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

@@ -39,12 +39,26 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error storing event:", error);
-      return NextResponse.json({ error: "Failed to store event" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to store event',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error in events POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

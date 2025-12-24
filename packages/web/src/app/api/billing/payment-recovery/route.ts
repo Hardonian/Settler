@@ -35,7 +35,14 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("Error fetching payment recovery:", error);
-      return NextResponse.json({ error: "Failed to fetch recovery status" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch recovery status',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     // Check if grace period has expired
@@ -54,7 +61,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ recovery: data?.[0] || null });
   } catch (error) {
     console.error("Error in payment-recovery GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }
 
@@ -101,7 +115,14 @@ export async function POST(request: NextRequest) {
 
       if (error) {
         console.error("Error updating payment recovery:", error);
-        return NextResponse.json({ error: "Failed to update recovery" }, { status: 500 });
+        return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to update recovery',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
       }
 
       return NextResponse.json({ recovery: data });
@@ -126,12 +147,26 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error creating payment recovery:", error);
-      return NextResponse.json({ error: "Failed to create recovery" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to create recovery',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     return NextResponse.json({ recovery: data });
   } catch (error) {
     console.error("Error in payment-recovery POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

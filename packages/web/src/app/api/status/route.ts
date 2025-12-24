@@ -64,9 +64,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return addCorsHeaders(response, request);
   } catch (error) {
     console.error("Error in status GET:", error);
+    // Never return 500 - return degraded status with graceful error message
     const errorResponse = NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { 
+        systems: [],
+        overallStatus: "degraded",
+        error: "Unable to fetch system status",
+        message: "Please try again later"
+      },
+      { status: 200 }
     );
     // Don't cache errors
     errorResponse.headers.set('Cache-Control', 'no-store');

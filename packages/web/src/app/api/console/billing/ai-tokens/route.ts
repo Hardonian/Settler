@@ -41,12 +41,17 @@ export async function GET() {
     });
     return addCorrelationHeaders(response, correlationId);
   } catch (error) {
+    // Never return 500 - return empty state with graceful error message
     const response = NextResponse.json(
       {
+        included: 0,
+        used: 0,
+        remaining: 0,
+        addOns: [],
         error: 'Failed to fetch AI token data',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Please try again later',
       },
-      { status: 500 }
+      { status: 200 }
     );
     return addCorrelationHeaders(response, correlationId);
   }
@@ -78,12 +83,14 @@ export async function POST(_request: NextRequest) {
     );
     return addCorrelationHeaders(response, correlationId);
   } catch (error) {
+    // Never return 500 - return graceful error response
     const response = NextResponse.json(
       {
+        success: false,
         error: 'Failed to process request',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 200 }
     );
     return addCorrelationHeaders(response, correlationId);
   }

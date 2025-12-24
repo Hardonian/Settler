@@ -30,49 +30,18 @@ export default function InvoicesPage() {
     void fetchInvoices();
   }, []);
 
-  const fetchInvoices = () => {
+  const fetchInvoices = async () => {
     try {
       setIsLoading(true);
-      // In production, fetch from API
-      const mockInvoices: Invoice[] = [
-        {
-          id: "inv_1",
-          number: "INV-2025-001",
-          amount: 99.0,
-          status: "paid",
-          issueDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-          dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          period: {
-            start: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
-            end: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-          },
-        },
-        {
-          id: "inv_2",
-          number: "INV-2025-002",
-          amount: 99.0,
-          status: "paid",
-          issueDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
-          dueDate: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
-          period: {
-            start: new Date(Date.now() - 75 * 24 * 60 * 60 * 1000).toISOString(),
-            end: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
-          },
-        },
-        {
-          id: "inv_3",
-          number: "INV-2025-003",
-          amount: 104.9,
-          status: "pending",
-          issueDate: new Date().toISOString(),
-          dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
-          period: {
-            start: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-            end: new Date().toISOString(),
-          },
-        },
-      ];
-      setInvoices(mockInvoices);
+      // Fetch from Stripe API via our backend
+      const response = await fetch("/api/stripe/invoices");
+      if (response.ok) {
+        const data = await response.json();
+        setInvoices(data.invoices || []);
+        return;
+      }
+      // Fallback: Empty state if API fails
+      setInvoices([]);
     } catch (error) {
       console.error("Failed to fetch invoices:", error);
     } finally {

@@ -241,7 +241,7 @@ export default function Schematics() {
                   className="border-slate-300 dark:border-slate-700"
                   asChild
                 >
-                  <Link href="/cookbook">View Cookbook</Link>
+                  <Link href="/cookbooks">View Cookbooks</Link>
                 </Button>
               </div>
             </CardContent>

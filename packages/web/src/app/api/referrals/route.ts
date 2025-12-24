@@ -20,7 +20,12 @@ export async function GET(_request: NextRequest) {
     return NextResponse.json({ stats });
   } catch (error) {
     console.error("Error in referrals GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return empty stats with graceful error message
+    return NextResponse.json({ 
+      stats: { referrals: 0, signups: 0, rewards: [] },
+      error: "Unable to fetch referral stats at this time",
+      message: "Please try again later"
+    }, { status: 200 });
   }
 }
 
@@ -51,6 +56,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
     console.error("Error in referrals POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return graceful error response
+    return NextResponse.json({ 
+      success: false,
+      error: "Unable to process referral action at this time",
+      message: "Please try again later"
+    }, { status: 200 });
   }
 }

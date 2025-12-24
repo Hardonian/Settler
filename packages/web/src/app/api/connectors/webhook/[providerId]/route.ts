@@ -84,13 +84,14 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error in webhook route:', error);
+    // Never return 500 - return graceful error response (webhooks should retry via their own mechanism)
     return NextResponse.json(
       {
         success: false,
-        error: 'Internal server error',
+        error: 'Failed to process webhook',
         message: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

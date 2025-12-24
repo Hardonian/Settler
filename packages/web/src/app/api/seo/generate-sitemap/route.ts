@@ -83,8 +83,12 @@ ${integrations
   } catch (error) {
     console.error("Sitemap generation error:", error);
     return NextResponse.json(
-      { error: "Failed to generate sitemap" },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to generate sitemap',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

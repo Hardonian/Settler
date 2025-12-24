@@ -11,12 +11,6 @@ const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 };
 
-const subDays = (date: Date, days: number) => {
-  const result = new Date(date);
-  result.setDate(result.getDate() - days);
-  return result;
-};
-
 const startOfMonth = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 };
@@ -60,38 +54,38 @@ export default function UsageDashboardPage() {
     void fetchUsageData();
   }, [selectedPeriod]);
 
-  const fetchUsageData = () => {
+  const fetchUsageData = async () => {
     try {
       setIsLoading(true);
-      // In production, fetch from API based on selectedPeriod
-      // Mock data
+      // Fetch from API based on selectedPeriod
+      // Map selectedPeriod to API parameter
+      let periodParam = 'day';
+      if (selectedPeriod === 'last-month') {
+        periodParam = 'month';
+      } else if (selectedPeriod === 'last-7-days') {
+        periodParam = 'week';
+      }
+      const response = await fetch(`/api/console/usage?period=${periodParam}`);
+      if (response.ok) {
+        const data = await response.json();
+        setData(data);
+        return;
+      }
+      // Fallback: Empty state if API fails
       setData({
         period: {
           start: startOfMonth(new Date()).toISOString(),
           end: endOfMonth(new Date()).toISOString(),
         },
         usage: {
-          reconciliation_jobs: { current: 7500, limit: 10000, trend: 5.2 },
-          api_requests: { current: 85000, limit: 100000, trend: -2.1 },
-          webhook_events: { current: 45000, limit: 50000, trend: 8.5 },
-          db_queries: { current: 420000, limit: 500000, trend: 3.2 },
-          ai_requests: { current: 850, limit: 1000, trend: 12.1 },
+          reconciliation_jobs: { current: 0, limit: 0, trend: 0 },
+          api_requests: { current: 0, limit: 0, trend: 0 },
+          webhook_events: { current: 0, limit: 0, trend: 0 },
+          db_queries: { current: 0, limit: 0, trend: 0 },
+          ai_requests: { current: 0, limit: 0, trend: 0 },
         },
-        byIntegration: [
-          { integration_id: "stripe", name: "Stripe", usage: 3500, percentage: 46.7 },
-          { integration_id: "shopify", name: "Shopify", usage: 2800, percentage: 37.3 },
-          { integration_id: "paypal", name: "PayPal", usage: 1200, percentage: 16.0 },
-        ],
-        dailyUsage: Array.from({ length: 30 }, (_, i) => {
-          const dateObj = subDays(new Date(), 29 - i);
-          const dateStr = dateObj.toISOString().split("T")[0] as string;
-          return {
-            date: dateStr,
-            reconciliation_jobs: Math.floor(Math.random() * 300) + 200,
-            api_requests: Math.floor(Math.random() * 3000) + 2000,
-            webhook_events: Math.floor(Math.random() * 2000) + 1000,
-          };
-        }),
+        byIntegration: [],
+        dailyUsage: [],
       });
     } catch (error) {
       logger.error("Failed to fetch usage data", error instanceof Error ? error : new Error(String(error)));

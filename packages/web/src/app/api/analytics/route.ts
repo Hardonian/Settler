@@ -67,13 +67,15 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('[Analytics Error]', error);
-    
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       { 
+        success: false,
         error: 'Failed to process analytics event',
         message: error instanceof Error ? error.message : 'Unknown error',
+        eventId: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

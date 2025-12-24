@@ -87,9 +87,13 @@ export async function POST(
 
         if (!newConnector) {
           return NextResponse.json(
-            { error: 'Failed to create connector' },
-            { status: 500 }
-          );
+      {
+        success: false,
+        error: 'Failed to create connector',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
         }
 
         return NextResponse.json({
@@ -111,12 +115,15 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error in connect route:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : String(error),
+        success: false,
+        error: 'Failed to connect integration',
+        message: 'Please try again later or contact support if the issue persists',
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

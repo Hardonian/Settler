@@ -61,13 +61,15 @@ export async function POST(
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error in test route:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
-        error: 'Internal server error',
+        error: 'Failed to test connection',
         message: error instanceof Error ? error.message : String(error),
+        result: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

@@ -34,7 +34,14 @@ export async function GET() {
     return NextResponse.json({ allowlist });
   } catch (error) {
     console.error("Error in ip-allowlist GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }
 
@@ -56,6 +63,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error in ip-allowlist POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

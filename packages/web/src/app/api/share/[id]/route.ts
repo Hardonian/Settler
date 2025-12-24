@@ -52,8 +52,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Share artifact error:", error);
     return NextResponse.json(
-      { error: "Failed to create shareable link" },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to create shareable link',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }
@@ -130,8 +134,12 @@ export async function GET(
   } catch (error) {
     console.error("Get shareable artifact error:", error);
     return NextResponse.json(
-      { error: "Failed to get artifact" },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to get artifact',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

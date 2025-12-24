@@ -33,7 +33,14 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("Error fetching snapshots:", error);
-      return NextResponse.json({ error: "Failed to fetch snapshots" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch snapshots',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     type SnapshotRow = {
@@ -57,7 +64,14 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error in snapshots GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }
 
@@ -116,12 +130,26 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error creating snapshot:", error);
-      return NextResponse.json({ error: "Failed to create snapshot" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to create snapshot',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     return NextResponse.json({ snapshot });
   } catch (error) {
     console.error("Error in snapshots POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

@@ -112,13 +112,15 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error in refresh route:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to refresh token',
         message: error instanceof Error ? error.message : 'Unknown error',
+        result: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

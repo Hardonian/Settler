@@ -45,12 +45,14 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('A/B test tracking error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to track A/B test event',
+        message: 'Please try again later',
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

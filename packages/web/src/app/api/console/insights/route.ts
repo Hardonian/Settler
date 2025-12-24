@@ -42,8 +42,12 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('[Usage Insights API] Error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

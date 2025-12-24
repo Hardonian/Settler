@@ -23,7 +23,12 @@ export async function GET(_request: NextRequest) {
 
     if (error) {
       console.error("Error fetching canned responses:", error);
-      return NextResponse.json({ error: "Failed to fetch responses" }, { status: 500 });
+      // Never return 500 - return empty responses array with graceful error message
+      return NextResponse.json({ 
+        responses: [],
+        error: "Unable to fetch responses at this time",
+        message: "Please try again later"
+      }, { status: 200 });
     }
 
     type CannedResponseRow = {
@@ -47,7 +52,12 @@ export async function GET(_request: NextRequest) {
     });
   } catch (error) {
     console.error("Error in canned-responses GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return empty responses array with graceful error message
+    return NextResponse.json({ 
+      responses: [],
+      error: "Unable to fetch responses at this time",
+      message: "Please try again later"
+    }, { status: 200 });
   }
 }
 
@@ -79,12 +89,22 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error creating canned response:", error);
-      return NextResponse.json({ error: "Failed to create response" }, { status: 500 });
+      // Never return 500 - return graceful error response
+      return NextResponse.json({ 
+        success: false,
+        error: "Unable to create response at this time",
+        message: "Please try again later"
+      }, { status: 200 });
     }
 
     return NextResponse.json({ response: data });
   } catch (error) {
     console.error("Error in canned-responses POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return graceful error response
+    return NextResponse.json({ 
+      success: false,
+      error: "Unable to create response at this time",
+      message: "Please try again later"
+    }, { status: 200 });
   }
 }

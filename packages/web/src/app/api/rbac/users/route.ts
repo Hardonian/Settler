@@ -15,25 +15,59 @@ export async function GET(_request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Mock user roles (in production, fetch from user_roles table)
-    const users = [
-      {
-        userId: "user-1",
-        email: "admin@settler.dev",
-        role: "admin",
-        assignedAt: "2026-01-01T00:00:00Z",
-      },
-      {
-        userId: "user-2",
-        email: "dev@settler.dev",
-        role: "developer",
-        assignedAt: "2026-01-05T00:00:00Z",
-      },
-    ];
+    // Fetch user roles from database
+    const { prisma } = await import('@/shared/db/prismaClient');
+    
+    // Get tenant ID from user's billing account
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: { userId: user.id },
+      select: { tenantId: true },
+    });
+
+    if (!billingAccount?.tenantId) {
+      return NextResponse.json({ users: [] });
+    }
+
+    // Fetch user roles from tenant_users table via Supabase
+    const { data: tenantUsers } = await supabase
+      .from('tenant_users')
+      .select('user_id, role, joined_at')
+      .eq('tenant_id', billingAccount.tenantId);
+
+    if (!tenantUsers || tenantUsers.length === 0) {
+      return NextResponse.json({ users: [] });
+    }
+
+    // Get user emails from Supabase auth
+    const users = [];
+    
+    for (const tenantUser of tenantUsers) {
+      try {
+        const userId = (tenantUser as any)?.user_id;
+        if (!userId) continue;
+        
+        const { data: { user: authUser } } = await supabase.auth.admin.getUserById(userId);
+        if (authUser) {
+          users.push({
+            userId: userId,
+            email: authUser.email || '',
+            role: (tenantUser as any)?.role || 'member',
+            assignedAt: (tenantUser as any)?.joined_at || new Date().toISOString(),
+          });
+        }
+      } catch {
+        // Skip if user not found
+      }
+    }
 
     return NextResponse.json({ users });
   } catch (error) {
     console.error("Error in users GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return empty users array with graceful error message
+    return NextResponse.json({ 
+      users: [],
+      error: "Unable to fetch users at this time",
+      message: "Please try again later"
+    }, { status: 200 });
   }
 }

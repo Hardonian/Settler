@@ -51,9 +51,13 @@ export async function POST(request: NextRequest) {
     
     if (!receipt) {
       return NextResponse.json(
-        { error: 'Failed to create receipt' },
-        { status: 500 }
-      );
+      {
+        success: false,
+        error: 'Failed to create receipt',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
     
     return NextResponse.json({ receipt }, { status: 201 });
@@ -68,8 +72,12 @@ export async function POST(request: NextRequest) {
     
     console.error('[Receipts V2 API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to create receipt' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to create receipt',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

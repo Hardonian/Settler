@@ -370,13 +370,15 @@ export async function PATCH(
       duration,
     });
 
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: 'Failed to update exception',
+        success: false,
+        error: 'Failed to update exception',
+        message: 'Please try again later or contact support if the issue persists',
         details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

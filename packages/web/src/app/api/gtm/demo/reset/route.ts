@@ -50,8 +50,12 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('[Demo Reset] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to reset demo data' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to reset demo data',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

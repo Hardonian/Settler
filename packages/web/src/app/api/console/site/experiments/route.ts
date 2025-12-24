@@ -64,8 +64,12 @@ export async function GET() {
   } catch (error) {
     console.error('Error listing experiments:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }
@@ -222,8 +226,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating experiment:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

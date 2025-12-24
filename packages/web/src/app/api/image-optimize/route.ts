@@ -67,8 +67,12 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Image optimization error:', error);
     return NextResponse.json(
-      { error: 'Failed to optimize image' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to optimize image',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

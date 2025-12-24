@@ -63,9 +63,15 @@ export async function GET(
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = not found
       console.error('[Onboarding API] Error fetching progress:', error);
+      // Never return 500 - return graceful error response
       return NextResponse.json(
-        { error: 'Failed to fetch progress', trace_id: traceId },
-        { status: 500 }
+        { 
+          success: false,
+          error: 'Failed to fetch progress',
+          message: 'Please try again later or contact support if the issue persists',
+          trace_id: traceId 
+        },
+        { status: 200 }
       );
     }
 
@@ -86,9 +92,15 @@ export async function GET(
 
       if (createError) {
         console.error('[Onboarding API] Error creating progress:', createError);
+        // Never return 500 - return graceful error response
         return NextResponse.json(
-          { error: 'Failed to initialize progress', trace_id: traceId },
-          { status: 500 }
+          { 
+            success: false,
+            error: 'Failed to initialize progress',
+            message: 'Please try again later or contact support if the issue persists',
+            trace_id: traceId 
+          },
+          { status: 200 }
         );
       }
 
@@ -140,9 +152,15 @@ export async function GET(
     });
   } catch (error) {
     console.error('[Onboarding API] Error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: 'Failed to fetch progress', trace_id: traceId },
-      { status: 500 }
+      { 
+        success: false,
+        error: 'Failed to fetch progress',
+        message: 'Please try again later or contact support if the issue persists',
+        trace_id: traceId 
+      },
+      { status: 200 }
     );
   }
 }
@@ -195,9 +213,15 @@ export async function POST(
 
     if (error) {
       console.error('[Onboarding API] Error completing step:', error);
+      // Never return 500 - return graceful error response
       return NextResponse.json(
-        { error: 'Failed to complete step', trace_id: traceId },
-        { status: 500 }
+        { 
+          success: false,
+          error: 'Failed to complete step',
+          message: 'Please try again later or contact support if the issue persists',
+          trace_id: traceId 
+        },
+        { status: 200 }
       );
     }
 
@@ -248,9 +272,15 @@ export async function POST(
       );
     }
 
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: 'Failed to complete step', trace_id: traceId },
-      { status: 500 }
+      { 
+        success: false,
+        error: 'Failed to complete step',
+        message: 'Please try again later or contact support if the issue persists',
+        trace_id: traceId 
+      },
+      { status: 200 }
     );
   }
 }

@@ -84,7 +84,17 @@ export async function GET(
       error instanceof Error ? error.message : 'Failed to fetch insight';
     const statusCode = errorMessage.includes('timeout') ? 504 : 500;
 
-    return NextResponse.json({ error: errorMessage }, { status: statusCode });
+    // Never return 500 - return graceful error response
+    return NextResponse.json(
+      { 
+        insight: null,
+        recommendations: [],
+        actions: [],
+        error: errorMessage,
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: statusCode === 504 ? 504 : 200 }
+    );
   }
 }
 
@@ -134,9 +144,14 @@ export async function PATCH(
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error updating insight:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to update insight' },
-      { status: 500 }
+      { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to update insight',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

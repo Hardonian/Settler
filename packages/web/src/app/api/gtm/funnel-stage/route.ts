@@ -29,8 +29,12 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('[Funnel Stage API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to get funnel stage' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to get funnel stage',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

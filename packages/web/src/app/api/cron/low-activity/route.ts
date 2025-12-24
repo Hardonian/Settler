@@ -35,7 +35,14 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       logger.error("Failed to fetch inactive users", error instanceof Error ? error : new Error(String(error)));
-      return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch users',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     const results = {
@@ -97,9 +104,16 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     logger.error("Low activity cron job failed", error instanceof Error ? error : new Error(String(error)));
+    // Never return 500 - return graceful error response (cron can retry)
     return NextResponse.json(
-      { error: "Internal server error", message: (error as Error).message },
-      { status: 500 }
+      { 
+        success: false,
+        processed: 0,
+        errors: 1,
+        error: "Failed to process low activity check",
+        message: "Cron job will retry on next schedule"
+      },
+      { status: 200 }
     );
   }
 }

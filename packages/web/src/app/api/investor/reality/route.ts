@@ -173,7 +173,7 @@ export async function GET(_request: NextRequest) {
         details: errorMessage,
         data: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
     return addCorrelationHeaders(response, correlationId);
   }

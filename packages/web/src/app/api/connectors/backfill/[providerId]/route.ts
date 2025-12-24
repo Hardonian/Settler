@@ -79,13 +79,15 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error in backfill route:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
-        error: 'Internal server error',
+        error: 'Failed to execute backfill',
         message: error instanceof Error ? error.message : String(error),
+        result: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

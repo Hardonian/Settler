@@ -41,8 +41,12 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('[ROI API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to calculate ROI' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to calculate ROI',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

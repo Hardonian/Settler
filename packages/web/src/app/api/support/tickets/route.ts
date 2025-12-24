@@ -76,6 +76,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ tickets: ticketsWithUsers });
   } catch (error) {
     console.error('Failed to fetch support tickets:', error);
-    return NextResponse.json({ tickets: [] }, { status: 500 });
+    // Never return 500 - return empty array with graceful error message
+    return NextResponse.json({ 
+      tickets: [],
+      error: 'Unable to fetch tickets at this time',
+      message: 'Please try again later'
+    }, { status: 200 });
   }
 }

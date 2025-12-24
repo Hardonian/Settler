@@ -63,9 +63,13 @@ export async function POST(request: NextRequest) {
     if (ticketError || !ticket) {
       console.error('Failed to create ticket:', ticketError);
       return NextResponse.json(
-        { error: 'Failed to create ticket' },
-        { status: 500 }
-      );
+      {
+        success: false,
+        error: 'Failed to create ticket',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     type TicketRow = {
@@ -112,9 +116,14 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Report issue error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to report issue' },
-      { status: 500 }
+      { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to report issue',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

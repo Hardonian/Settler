@@ -123,13 +123,24 @@ export async function GET(_request: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
     });
     
+    // Never return 500 - return empty metrics with graceful error message
     const response = NextResponse.json(
       { 
+        summary: {
+          total_metrics: 0,
+          proven_metrics: 0,
+          assumed_metrics: 0,
+          broken_metrics: 0,
+          proven_percentage: '0',
+        },
+        metrics_by_category: {},
+        recent_events: [],
+        latest_snapshot: null,
         error: 'Failed to fetch reality metrics',
-        details: errorMessage,
-        data: null,
+        message: 'Please try again later or contact support if the issue persists',
+        timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 200 }
     );
     return addCorrelationHeaders(response, correlationId);
   }

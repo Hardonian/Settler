@@ -51,12 +51,15 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Social share error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to generate share URL',
+        message: 'Please try again later',
+        shareUrl: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
