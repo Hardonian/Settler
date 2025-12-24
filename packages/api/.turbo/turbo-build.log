@@ -14,3 +14,17 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
+src/infrastructure/jobs/scheduler-service.ts(369,13): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type 'Without<ReconResultCreateInput, ReconResultUncheckedCreateInput> & ReconResultUncheckedCreateInput'.
+src/services/receipt-matching.ts(84,16): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/services/receipt-matching.ts(85,16): error TS2365: Operator '+' cannot be applied to types 'Decimal' and 'number'.
+src/services/receipt-matching.ts(107,52): error TS2345: Argument of type '(transaction: TransactionType) => { transactionId: string; confidence: number; amountDiff: number; dateDiff: number; matchReason: string; }' is not assignable to parameter of type '(value: { id: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; tenantId: string; description: string | null; currency: string; amount: Decimal; date: Date; ... 6 more ...; reference: string | null; }, index: number, array: { ...; }[]) => { ...; }'.
+  Types of parameters 'transaction' and 'value' are incompatible.
+    Type '{ id: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; tenantId: string; description: string | null; currency: string; amount: Decimal; date: Date; ... 6 more ...; reference: string | null; }' is not assignable to type 'TransactionType'.
+      Types of property 'amount' are incompatible.
+        Type 'Decimal' is not assignable to type 'number'.
+src/services/rule-optimizer.ts(73,12): error TS2345: Argument of type '(m: { amountDiff: number | null | undefined; }) => number | null | undefined' is not assignable to parameter of type '(value: { sourceTransaction: { id: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; tenantId: string; description: string | null; currency: string; amount: Decimal; ... 7 more ...; reference: string | null; }; } & { ...; }, index: number, array: ({ ...; } & { ...; })[]) => number | ... 1 more ... | und...'.
+  Types of parameters 'm' and 'value' are incompatible.
+    Type '{ sourceTransaction: { id: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; tenantId: string; description: string | null; currency: string; amount: Decimal; ... 7 more ...; reference: string | null; }; } & { ...; }' is not assignable to type '{ amountDiff: number | null | undefined; }'.
+      Types of property 'amountDiff' are incompatible.
+        Type 'Decimal | null' is not assignable to type 'number | null | undefined'.
+          Type 'Decimal' is not assignable to type 'number'.
