@@ -22,39 +22,63 @@ export interface ConsoleAccessResult {
  * @throws {NextResponse} Redirects to sign-in or pricing if access denied
  */
 export async function requireConsoleAccess(): Promise<null> {
-  const supabase = await createClient();
-  
-  // Check authentication
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  
-  if (authError || !user) {
-    // Redirect to sign-in with return URL
-    const signInUrl = `/signup?next=${encodeURIComponent('/console')}`;
-    redirect(signInUrl);
-  }
-  
-  // Check subscription status
   try {
-    const subscriptionStatus = await getSubscriptionStatus();
+    const supabase = await createClient();
     
-    // Allow access if user has any subscription (including unpaid/trialing)
-    // This allows users to see console and upgrade if needed
-    if (!subscriptionStatus.hasSubscription && subscriptionStatus.tier === 'unsubscribed') {
-      // Redirect to pricing/upgrade page
-      const upgradeUrl = `/pricing?next=${encodeURIComponent('/console')}`;
-      redirect(upgradeUrl);
+    // Check authentication with error handling
+    let user;
+    let authError;
+    try {
+      const authResult = await supabase.auth.getUser();
+      user = authResult.data?.user;
+      authError = authResult.error;
+    } catch (error) {
+      // If auth.getUser() throws (e.g., invalid client), treat as unauthenticated
+      console.error('[requireConsoleAccess] Auth check failed:', error);
+      authError = { message: 'Authentication check failed', status: 500 };
+      user = null;
     }
     
-    // User is authenticated and has subscription - allow access
-    return null;
-  } catch (error) {
-    // CRITICAL: Fail closed - do not allow access if subscription check fails
-    // This prevents revenue leakage. Show friendly error instead of granting access.
-    console.error('[requireConsoleAccess] Subscription check failed:', error);
+    if (authError || !user) {
+      // Redirect to sign-in with return URL
+      const signInUrl = `/signup?next=${encodeURIComponent('/console')}`;
+      redirect(signInUrl);
+    }
     
-    // Redirect to pricing with error message
-    const upgradeUrl = `/pricing?next=${encodeURIComponent('/console')}&error=subscription_check_failed`;
-    redirect(upgradeUrl);
+    // Check subscription status
+    try {
+      const subscriptionStatus = await getSubscriptionStatus();
+      
+      // Allow access if user has any subscription (including unpaid/trialing)
+      // This allows users to see console and upgrade if needed
+      if (!subscriptionStatus.hasSubscription && subscriptionStatus.tier === 'unsubscribed') {
+        // Redirect to pricing/upgrade page
+        const upgradeUrl = `/pricing?next=${encodeURIComponent('/console')}`;
+        redirect(upgradeUrl);
+      }
+      
+      // User is authenticated and has subscription - allow access
+      return null;
+    } catch (error) {
+      // CRITICAL: Fail closed - do not allow access if subscription check fails
+      // This prevents revenue leakage. Show friendly error instead of granting access.
+      console.error('[requireConsoleAccess] Subscription check failed:', error);
+      
+      // Redirect to pricing with error message
+      const upgradeUrl = `/pricing?next=${encodeURIComponent('/console')}&error=subscription_check_failed`;
+      redirect(upgradeUrl);
+    }
+  } catch (error) {
+    // Catch any unexpected errors (including redirect throws)
+    // Re-throw redirects (they're expected)
+    if (error && typeof error === 'object' && 'digest' in error) {
+      throw error; // Re-throw Next.js redirects
+    }
+    
+    // For other errors, redirect to sign-in as fallback
+    console.error('[requireConsoleAccess] Unexpected error:', error);
+    const signInUrl = `/signup?next=${encodeURIComponent('/console')}`;
+    redirect(signInUrl);
   }
 }
 
@@ -66,7 +90,19 @@ export async function getConsoleAccessStatus(): Promise<ConsoleAccessResult> {
   try {
     const supabase = await createClient();
     
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    // Check authentication with error handling
+    let user;
+    let authError;
+    try {
+      const authResult = await supabase.auth.getUser();
+      user = authResult.data?.user;
+      authError = authResult.error;
+    } catch (error) {
+      // If auth.getUser() throws (e.g., invalid client), treat as unauthenticated
+      console.error('[getConsoleAccessStatus] Auth check failed:', error);
+      authError = { message: 'Authentication check failed', status: 500 };
+      user = null;
+    }
     
     if (authError || !user) {
       return {
