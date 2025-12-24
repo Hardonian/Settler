@@ -133,6 +133,21 @@ if (typeof window === 'undefined') {
     );
     // Continue execution - pages will handle missing env vars gracefully
   }
+  
+  // Check Node version (non-blocking, logs warning if mismatch)
+  try {
+    const { checkNodeVersion } = await import('@/lib/env/node-version-check');
+    const nodeCheck = checkNodeVersion();
+    if (!nodeCheck.valid) {
+      console.warn('[Node Version]', nodeCheck.error);
+      // Don't throw - allow app to run but log warning
+    }
+  } catch (error) {
+    // Node version check failed - non-fatal
+    console.warn('Node version check failed (non-fatal):', 
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+  }
 }
 
 export default async function RootLayout({

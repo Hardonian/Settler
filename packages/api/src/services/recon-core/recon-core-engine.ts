@@ -242,6 +242,46 @@ export class ReconCoreEngine {
         );
       }
 
+      // Step 9.5: Record value events (reconciliation completed, anomalies detected)
+      // Note: Value ledger is in packages/web, so we'll record via API call or event
+      // For now, emit event that web package can listen to
+      if (billingAccount) {
+        try {
+          // Emit value event via event bus (web package can subscribe)
+          await eventBus.emitEvent('value.reconciliation_completed', tenantId, {
+            billingAccountId: billingAccount.id,
+            tenantId,
+            userId: reconJob.userId,
+            matchedCount: results.matchedCount,
+            unmatchedCount: results.unmatchedSourceCount + results.unmatchedTargetCount,
+            totalAmount: results.totalAmountMatched ? Number(results.totalAmountMatched) : undefined,
+            jobId: reconJobId,
+            runId: updatedResult.id,
+          });
+
+          // Record anomalies detected (unmatched transactions)
+          const totalUnmatched = results.unmatchedSourceCount + results.unmatchedTargetCount;
+          if (totalUnmatched > 0) {
+            await eventBus.emitEvent('value.errors_prevented', tenantId, {
+              billingAccountId: billingAccount.id,
+              tenantId,
+              userId: reconJob.userId,
+              quantity: totalUnmatched,
+              unit: 'anomaly',
+              metadata: {
+                source: 'reconciliation_completed',
+                runId: updatedResult.id,
+                jobId: reconJobId,
+                matchedCount: results.matchedCount,
+              },
+            });
+          }
+        } catch (valueError) {
+          // Log but don't throw - value tracking should never break reconciliation
+          console.error('[ReconCoreEngine] Failed to emit value events:', valueError);
+        }
+      }
+
       // Step 10: Fire webhook
       await this.webhookService.queueWebhook(tenantId, 'recon.completed', {
         reconJobId,
@@ -430,16 +470,158 @@ export class ReconCoreEngine {
 
   /**
    * Perform reconciliation matching
+   * Integrates rules engine for improved match rates over time
    */
   private async performReconciliation(
-    _sourceData: ReconDataRecord[],
-    _targetData: ReconDataRecord[],
-    _strategy: ReconStrategy,
-    _reconJob: ReconJob
+    sourceData: ReconDataRecord[],
+    targetData: ReconDataRecord[],
+    strategy: ReconStrategy,
+    reconJob: ReconJob
   ): Promise<ReconMatch[]> {
-    // TODO: Integrate with existing MatchingEngine
-    // For now, return empty matches
-    return [];
+    // Get billing account to fetch rules
+    const billingAccount = await this.getBillingAccount(reconJob.tenantId);
+    
+    // Get active rules for this billing account
+    // Rules are stored in reconciliation_rules table
+    let activeRules: Array<{
+      id: string;
+      ruleType: string;
+      sourceField?: string;
+      targetField?: string;
+      ruleConfig: Record<string, unknown>;
+      successRate: number;
+    }> = [];
+
+    if (billingAccount) {
+      try {
+        // Query rules directly from database (rules engine is in web package)
+        const rules = await this.prisma.$queryRaw<Array<{
+          id: string;
+          rule_type: string;
+          source_field: string | null;
+          target_field: string | null;
+          rule_config: unknown;
+          success_rate: number;
+        }>>`
+          SELECT id, rule_type, source_field, target_field, rule_config, success_rate
+          FROM reconciliation_rules
+          WHERE billing_account_id = ${billingAccount.id}::uuid
+            AND is_active = true
+          ORDER BY success_rate DESC, match_count DESC
+        `;
+
+        activeRules = rules.map(r => ({
+          id: r.id,
+          ruleType: r.rule_type,
+          sourceField: r.source_field || undefined,
+          targetField: r.target_field || undefined,
+          ruleConfig: (r.rule_config as Record<string, unknown>) || {},
+          successRate: Number(r.success_rate) || 0,
+        }));
+      } catch (rulesError) {
+        // Log but continue - rules are optional
+        console.warn('[ReconCoreEngine] Failed to load rules, continuing without rules:', rulesError);
+      }
+    }
+
+    const matches: ReconMatch[] = [];
+    const matchedTargetIds = new Set<string>();
+
+    // Apply rules-based matching first (higher success rate rules first)
+    const sortedRules = activeRules.sort((a, b) => b.successRate - a.successRate);
+    
+    for (const rule of sortedRules) {
+      if (rule.ruleType === 'field_mapping' && rule.sourceField && rule.targetField) {
+        // Apply field mapping rule
+        for (const sourceRecord of sourceData) {
+          if (matchedTargetIds.has(sourceRecord.id || '')) continue;
+          
+          const sourceValue = (sourceRecord as Record<string, unknown>)[rule.sourceField];
+          if (!sourceValue) continue;
+
+          // Find matching target record
+          for (const targetRecord of targetData) {
+            if (matchedTargetIds.has(targetRecord.id || '')) continue;
+            
+            const targetValue = (targetRecord as Record<string, unknown>)[rule.targetField];
+            if (sourceValue === targetValue) {
+              // Match found - record rule usage in database
+              try {
+                await this.prisma.$executeRaw`
+                  INSERT INTO rule_usage_events (
+                    rule_id,
+                    reconciliation_run_id,
+                    matched,
+                    confidence,
+                    metadata,
+                    created_at
+                  ) VALUES (
+                    ${rule.id}::uuid,
+                    ${reconJob.id}::uuid,
+                    true::boolean,
+                    0.9::decimal,
+                    ${JSON.stringify({
+                      sourceField: rule.sourceField,
+                      targetField: rule.targetField,
+                    })}::jsonb,
+                    NOW()
+                  )
+                `;
+              } catch (ruleError) {
+                console.warn('[ReconCoreEngine] Failed to record rule usage:', ruleError);
+              }
+
+              matches.push({
+                sourceId: sourceRecord.id || '',
+                targetId: targetRecord.id || '',
+                confidence: 0.9,
+                amount: (sourceRecord.amount || targetRecord.amount || 0) as number,
+                currency: (sourceRecord.currency || targetRecord.currency || 'USD') as string,
+                matchedFields: [rule.sourceField, rule.targetField],
+                matchReason: `Rule: ${rule.sourceField} → ${rule.targetField}`,
+              });
+              
+              matchedTargetIds.add(targetRecord.id || '');
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    // Fallback to strategy-based matching for unmatched records
+    // TODO: Integrate with existing MatchingEngine for remaining records
+    // For now, basic matching logic
+    for (const sourceRecord of sourceData) {
+      if (matches.some(m => m.sourceId === sourceRecord.id)) continue;
+      
+      // Try to find match by amount and date
+      for (const targetRecord of targetData) {
+        if (matchedTargetIds.has(targetRecord.id || '')) continue;
+        
+        const sourceAmount = (sourceRecord.amount || 0) as number;
+        const targetAmount = (targetRecord.amount || 0) as number;
+        const amountDiff = Math.abs(sourceAmount - targetAmount);
+        
+        // Match if amounts are close (within 1% or $0.01)
+        if (amountDiff < Math.max(sourceAmount * 0.01, 0.01)) {
+          matches.push({
+            sourceId: sourceRecord.id || '',
+            targetId: targetRecord.id || '',
+            confidence: 0.8,
+            amount: sourceAmount,
+            currency: (sourceRecord.currency || 'USD') as string,
+            matchedFields: ['amount'],
+            matchReason: 'Amount match',
+          });
+          
+          matchedTargetIds.add(targetRecord.id || '');
+          break;
+        }
+      }
+    }
+
+    return matches;
   }
 
   /**
