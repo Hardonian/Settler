@@ -164,8 +164,15 @@ export async function getEntitlementStatus(): Promise<EntitlementStatus | null> 
     }
 
     const subscription = billingAccount.subscriptions[0];
+    if (!subscription) {
+      return null; // No subscription
+    }
+
     const planId = normalizePlanId(subscription.planId);
-    const limits = PLAN_ENTITLEMENTS[planId] || PLAN_ENTITLEMENTS.free;
+    const limits = PLAN_ENTITLEMENTS[planId];
+    if (!limits) {
+      return null; // Invalid plan
+    }
 
     return {
       planId,

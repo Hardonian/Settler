@@ -11,7 +11,7 @@ import { redirect } from 'next/navigation';
 
 export interface ConsoleAccessResult {
   allowed: boolean;
-  reason?: 'unauthenticated' | 'no_subscription' | 'subscription_inactive';
+  reason?: 'unauthenticated' | 'no_subscription' | 'subscription_inactive' | 'subscription_check_failed';
   redirectTo?: string;
 }
 

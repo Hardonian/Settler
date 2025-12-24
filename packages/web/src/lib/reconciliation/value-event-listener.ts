@@ -3,9 +3,9 @@
  * 
  * Listens to reconciliation completion events and records value events.
  * Should be initialized at app startup.
+ * 
+ * Note: Currently a placeholder - requires event bus integration
  */
-
-import { recordReconciliationCompleted, recordValueEvent } from '@/lib/value-ledger';
 
 /**
  * Initialize value event listeners

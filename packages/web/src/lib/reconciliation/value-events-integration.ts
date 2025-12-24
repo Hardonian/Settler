@@ -6,7 +6,6 @@
  */
 
 import { recordReconciliationCompleted } from '@/lib/value-ledger';
-import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 
 /**

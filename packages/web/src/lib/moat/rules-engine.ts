@@ -102,6 +102,10 @@ export async function createRule(input: CreateRuleInput): Promise<Reconciliation
     RETURNING *
   `;
 
+  if (!rule || rule.length === 0 || !rule[0]) {
+    throw new Error('Failed to create rule');
+  }
+
   return mapRuleFromDb(rule[0]);
 }
 

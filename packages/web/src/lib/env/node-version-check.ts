@@ -13,6 +13,12 @@ const REQUIRED_NODE_MAJOR = 24;
  */
 export function checkNodeVersion(): { valid: boolean; error?: string } {
   const nodeVersion = process.version;
+  if (!nodeVersion) {
+    return {
+      valid: false,
+      error: `Node.js version ${REQUIRED_NODE_VERSION} or higher is required. Unable to detect current version.`,
+    };
+  }
   const majorVersion = parseInt(nodeVersion.slice(1).split('.')[0], 10);
 
   if (majorVersion < REQUIRED_NODE_MAJOR) {
