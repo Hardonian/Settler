@@ -7,8 +7,6 @@ npm warn config       Default value does install optional deps unless otherwise 
 > tsc --noEmit
 
 src/infrastructure/jobs/scheduler-service.ts(369,13): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type 'Without<ReconResultCreateInput, ReconResultUncheckedCreateInput> & ReconResultUncheckedCreateInput'.
-src/middleware/export-limitations.ts(165,18): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ starter: { dailyLimit: number; monthlyLimit: number; sizeLimit: number; approvalRequired: false; }; professional: { dailyLimit: number; monthlyLimit: number; sizeLimit: number; approvalRequired: false; }; enterprise: { ...; }; }'.
-  No index signature with a parameter of type 'string' was found on type '{ starter: { dailyLimit: number; monthlyLimit: number; sizeLimit: number; approvalRequired: false; }; professional: { dailyLimit: number; monthlyLimit: number; sizeLimit: number; approvalRequired: false; }; enterprise: { ...; }; }'.
 src/services/receipt-matching.ts(84,16): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 src/services/receipt-matching.ts(85,16): error TS2365: Operator '+' cannot be applied to types 'Decimal' and 'number'.
 src/services/receipt-matching.ts(107,52): error TS2345: Argument of type '(transaction: TransactionType) => { transactionId: string; confidence: number; amountDiff: number; dateDiff: number; matchReason: string; }' is not assignable to parameter of type '(value: { id: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; tenantId: string; description: string | null; currency: string; amount: Decimal; date: Date; ... 6 more ...; reference: string | null; }, index: number, array: { ...; }[]) => { ...; }'.
@@ -23,7 +21,7 @@ src/services/rule-optimizer.ts(73,12): error TS2345: Argument of type '(m: { amo
         Type 'Decimal | null' is not assignable to type 'number | null | undefined'.
           Type 'Decimal' is not assignable to type 'number'.
 npm error Lifecycle script `typecheck` failed with error:
-npm error code 2
+npm error code 1
 npm error path /workspace/packages/api
 npm error workspace @settler/api@1.0.0
 npm error location /workspace/packages/api
