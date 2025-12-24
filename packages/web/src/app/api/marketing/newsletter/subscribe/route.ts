@@ -46,12 +46,14 @@ export async function POST(request: NextRequest) {
     });
 
     if (!result.success) {
+      // Never return 500 - return graceful error response
       return NextResponse.json(
         {
           success: false,
           error: result.error || 'Failed to subscribe to newsletter',
+          message: 'Please try again later or contact support if the issue persists',
         },
-        { status: 500 }
+        { status: 200 }
       );
     }
 
@@ -102,12 +104,14 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Newsletter subscription error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to subscribe to newsletter',
+        message: 'Please try again later or contact support if the issue persists',
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

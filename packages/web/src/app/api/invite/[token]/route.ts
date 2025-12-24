@@ -68,9 +68,15 @@ export async function GET(
     });
   } catch (error) {
     console.error('[Invite API] Error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: 'Failed to fetch invite', trace_id: traceId },
-      { status: 500 }
+      { 
+        success: false,
+        error: 'Failed to fetch invite',
+        message: 'Please try again later or contact support if the issue persists',
+        trace_id: traceId 
+      },
+      { status: 200 }
     );
   }
 }
@@ -172,9 +178,15 @@ export async function POST(
     });
   } catch (error) {
     console.error('[Invite API] Error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: 'Failed to accept invite', trace_id: traceId },
-      { status: 500 }
+      { 
+        success: false,
+        error: 'Failed to accept invite',
+        message: 'Please try again later or contact support if the issue persists',
+        trace_id: traceId 
+      },
+      { status: 200 }
     );
   }
 }

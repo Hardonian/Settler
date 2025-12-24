@@ -74,6 +74,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ response });
   } catch (error) {
     console.error("Error in onboarding-assistant POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return graceful error response
+    return NextResponse.json({ 
+      response: "I'm having trouble processing your question right now. Please try again in a moment or check our documentation for help.",
+      error: "Unable to process request",
+      message: "Please try again later"
+    }, { status: 200 });
   }
 }

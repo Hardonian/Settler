@@ -91,19 +91,35 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // TODO: In production, integrate with actual reconciliation service
-    // For now, return a mock response that looks like a real job
-    const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Create reconciliation job using Prisma
+    const { prisma } = await import('@/shared/db/prismaClient');
+    
+    // Create the job in the database
+    const job = await prisma.reconJob.create({
+      data: {
+        tenantId: auth.tenantId || tenantId!,
+        name: body.name || 'Reconciliation Job',
+        description: body.description || null,
+        sourceAdapter: body.sourceAdapter,
+        targetAdapter: body.targetAdapter,
+        status: 'queued',
+        rules: body.rules || [],
+        options: body.options || {},
+        scheduleCron: body.scheduleCron || null,
+        scheduleTimezone: body.scheduleTimezone || null,
+      },
+    });
+
     const jobResponse = {
-      id: jobId,
-      jobId: jobId,
-      name: body.name || 'Reconciliation Job',
-      status: 'queued',
-      sourceAdapter: body.sourceAdapter,
-      targetAdapter: body.targetAdapter,
-      rules: body.rules || [],
-      options: body.options || {},
-      createdAt: new Date().toISOString(),
+      id: job.id,
+      jobId: job.id,
+      name: job.name,
+      status: job.status,
+      sourceAdapter: job.sourceAdapter,
+      targetAdapter: job.targetAdapter,
+      rules: job.rules,
+      options: job.options,
+      createdAt: job.createdAt.toISOString(),
       message: 'Reconciliation job created successfully. Processing will begin shortly.',
     };
 

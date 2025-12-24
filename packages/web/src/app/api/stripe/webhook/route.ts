@@ -165,9 +165,11 @@ export async function POST(request: NextRequest) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
     console.error('[Stripe Webhook] STRIPE_WEBHOOK_SECRET not configured');
+    // Configuration error - return 503 (service unavailable) instead of 500
+    // This indicates misconfiguration, not a transient error
     return NextResponse.json(
-      { error: 'Webhook secret not configured' },
-      { status: 500 }
+      { error: 'Webhook secret not configured', message: 'Server configuration error' },
+      { status: 503 }
     );
   }
 

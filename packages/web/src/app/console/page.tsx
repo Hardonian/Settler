@@ -191,7 +191,7 @@ async function ConsoleOverviewContent() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Button asChild variant="outline">
-                  <Link href="/cookbook">Cookbook</Link>
+                  <Link href="/cookbooks">Cookbooks</Link>
                 </Button>
                 <Button asChild variant="outline">
                   <Link href="/runbooks">Runbooks</Link>

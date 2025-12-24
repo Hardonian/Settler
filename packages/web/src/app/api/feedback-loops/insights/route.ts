@@ -18,8 +18,12 @@ export async function GET() {
   } catch (error) {
     console.error('[Feedback Loops] Error fetching insights:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch insights' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to fetch insights',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

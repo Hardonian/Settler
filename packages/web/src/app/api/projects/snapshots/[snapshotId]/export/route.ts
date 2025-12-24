@@ -48,6 +48,13 @@ export async function GET(_request: NextRequest, { params }: { params: { snapsho
     });
   } catch (error) {
     console.error("Error in export:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

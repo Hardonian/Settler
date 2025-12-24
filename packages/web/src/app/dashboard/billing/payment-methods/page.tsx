@@ -27,22 +27,18 @@ export default function PaymentMethodsPage() {
     void fetchPaymentMethods();
   }, []);
 
-  const fetchPaymentMethods = () => {
+  const fetchPaymentMethods = async () => {
     try {
       setIsLoading(true);
-      // In production, fetch from API
-      const mockMethods: PaymentMethod[] = [
-        {
-          id: "pm_1",
-          type: "card",
-          last4: "4242",
-          brand: "Visa",
-          expiryMonth: 12,
-          expiryYear: 2026,
-          isDefault: true,
-        },
-      ];
-      setPaymentMethods(mockMethods);
+      // Fetch from Stripe API via our backend
+      const response = await fetch("/api/stripe/payment-methods");
+      if (response.ok) {
+        const data = await response.json();
+        setPaymentMethods(data.paymentMethods || []);
+        return;
+      }
+      // Fallback: Empty state if API fails
+      setPaymentMethods([]);
     } catch (error) {
       console.error("Failed to fetch payment methods:", error);
     } finally {

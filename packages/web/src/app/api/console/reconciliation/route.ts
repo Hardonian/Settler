@@ -47,9 +47,13 @@ export async function POST(request: NextRequest) {
     
     if (!summary) {
       return NextResponse.json(
-        { error: 'Failed to create reconciliation' },
-        { status: 500 }
-      );
+      {
+        success: false,
+        error: 'Failed to create reconciliation',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
     
     return NextResponse.json({ reconciliation: summary }, { status: 201 });
@@ -64,8 +68,12 @@ export async function POST(request: NextRequest) {
     
     console.error('[Reconciliation API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to run reconciliation' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to run reconciliation',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

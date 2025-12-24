@@ -50,12 +50,26 @@ export async function POST(
 
     if (updateError) {
       console.error("Error upgrading integration:", updateError);
-      return NextResponse.json({ error: "Failed to upgrade" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to upgrade',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     return NextResponse.json({ success: true, version: "2.1.0" });
   } catch (error) {
     console.error("Error in upgrade POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

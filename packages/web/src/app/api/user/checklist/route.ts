@@ -25,7 +25,12 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("Error fetching checklist:", error);
-      return NextResponse.json({ error: "Failed to fetch checklist" }, { status: 500 });
+      // Never return 500 - return empty checklist with graceful error message
+      return NextResponse.json({ 
+        completedItems: [],
+        error: "Unable to fetch checklist at this time",
+        message: "Please try again later"
+      }, { status: 200 });
     }
 
     type ChecklistItemRow = {
@@ -40,7 +45,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ completedItems });
   } catch (error) {
     console.error("Error in checklist GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return empty checklist with graceful error message
+    return NextResponse.json({ 
+      completedItems: [],
+      error: "Unable to fetch checklist at this time",
+      message: "Please try again later"
+    }, { status: 200 });
   }
 }
 
@@ -73,12 +83,22 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error updating checklist:", error);
-      return NextResponse.json({ error: "Failed to update checklist" }, { status: 500 });
+      // Never return 500 - return graceful error response
+      return NextResponse.json({ 
+        success: false,
+        error: "Unable to update checklist at this time",
+        message: "Please try again later"
+      }, { status: 200 });
     }
 
     return NextResponse.json({ success: true, item: data });
   } catch (error) {
     console.error("Error in checklist POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return graceful error response
+    return NextResponse.json({ 
+      success: false,
+      error: "Unable to update checklist at this time",
+      message: "Please try again later"
+    }, { status: 200 });
   }
 }

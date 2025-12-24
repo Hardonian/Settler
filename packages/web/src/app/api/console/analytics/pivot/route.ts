@@ -44,9 +44,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('Pivot query error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to execute pivot query' },
-      { status: 500 }
+      { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to execute pivot query',
+        message: 'Please try again later',
+        data: null,
+      },
+      { status: 200 }
     );
   }
 }

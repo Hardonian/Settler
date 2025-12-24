@@ -35,9 +35,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('Triage error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to triage ticket' },
-      { status: 500 }
+      { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to triage ticket',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

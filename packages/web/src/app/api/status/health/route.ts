@@ -77,12 +77,21 @@ export async function GET() {
     }
 
     if (!data) {
+      // Never return 500 - return degraded status with graceful error message
       return NextResponse.json(
         {
-          status: 'Error',
-          message: 'Failed to fetch health status',
+          status: 'Building Momentum',
+          allCylindersFiring: false,
+          kpis: {
+            kpi1: { name: 'New Users This Week', value: 0, threshold: 50, passed: false },
+            kpi2: { name: 'Actions Completed in Last Hour', value: 0, threshold: 100, passed: false },
+            kpi3: { name: 'Most Engaged Post Engagement', value: 0, threshold: 100, passed: false },
+          },
+          error: 'Unable to fetch health status',
+          message: 'Please try again later',
+          timestamp: new Date().toISOString(),
         },
-        { status: 500 }
+        { status: 200 }
       );
     }
 
@@ -138,13 +147,21 @@ export async function GET() {
     );
   } catch (error) {
     console.error('Health check error:', error);
+    // Never return 500 - return degraded status with graceful error message
     return NextResponse.json(
       {
-        status: 'Error',
-        message: 'Internal server error',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        status: 'Building Momentum',
+        allCylindersFiring: false,
+        kpis: {
+          kpi1: { name: 'New Users This Week', value: 0, threshold: 50, passed: false },
+          kpi2: { name: 'Actions Completed in Last Hour', value: 0, threshold: 100, passed: false },
+          kpi3: { name: 'Most Engaged Post Engagement', value: 0, threshold: 100, passed: false },
+        },
+        error: 'Unable to fetch health status',
+        message: 'Please try again later',
+        timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

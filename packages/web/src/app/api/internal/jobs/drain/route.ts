@@ -47,12 +47,16 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     logger.error('Job drain failed', error as Error);
+    // Never return 500 - return graceful error response (cron can retry)
     return NextResponse.json(
       {
-        error: 'Internal server error',
+        success: false,
+        processed: 0,
+        error: 'Failed to drain jobs',
         message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

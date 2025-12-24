@@ -107,9 +107,18 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Rollup error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to run rollup' },
-      { status: 500 }
+      { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to run rollup',
+        message: 'Please try again later',
+        date: null,
+        costInputs: 0,
+        costRollup: null,
+        usageRollup: null,
+      },
+      { status: 200 }
     );
   }
 }

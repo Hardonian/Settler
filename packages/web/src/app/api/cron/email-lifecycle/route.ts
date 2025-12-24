@@ -298,9 +298,17 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     logger.error("Email lifecycle cron job failed", error instanceof Error ? error : new Error(String(error)));
+    // Never return 500 - return graceful error response (cron can retry)
     return NextResponse.json(
-      { error: "Internal server error", message: (error as Error).message },
-      { status: 500 }
+      { 
+        success: false,
+        processed: 0,
+        errors: 1,
+        emails: [],
+        error: "Failed to process email lifecycle",
+        message: "Cron job will retry on next schedule"
+      },
+      { status: 200 }
     );
   }
 }

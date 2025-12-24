@@ -77,12 +77,14 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('SDK analytics error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to track SDK analytics event',
+        message: 'Please try again later',
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
@@ -136,12 +138,20 @@ export async function GET(_request: NextRequest) {
     });
   } catch (error) {
     console.error('Failed to fetch SDK stats:', error);
+    // Never return 500 - return empty stats with graceful error message
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch SDK statistics',
+        message: 'Please try again later',
+        data: {
+          downloads: { total: 0, weekly: 0, monthly: 0, byPackage: {} },
+          playground: { totalSessions: 0, activeUsers: 0, usageByFeature: {}, popularIntegrations: [] },
+          github: { stars: 0, forks: 0, contributors: 0, issues: 0, prs: 0 },
+          usage: { totalProjects: 0, companies: 0, countries: 0, topUseCases: [] },
+        },
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

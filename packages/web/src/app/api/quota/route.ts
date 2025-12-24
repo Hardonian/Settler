@@ -15,31 +15,79 @@ export async function GET(_request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Mock quota data (in production, fetch from quota tracking system)
+    // Fetch quota data from database
+    const { prisma } = await import('@/shared/db/prismaClient');
+    
+    // Get tenant ID from user's billing account
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: { userId: user.id },
+      select: { tenantId: true },
+    });
+
+    if (!billingAccount?.tenantId) {
+      return NextResponse.json({ quotas: [] });
+    }
+
+    // Get subscription to determine limits
+    const subscription = await prisma.subscription.findFirst({
+      where: { billingAccountId: billingAccount.tenantId },
+      select: { plan: true },
+    });
+
+    // Get actual usage from usage_events or ops_usage_aggregates
+    const now = new Date();
+    const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    // Calculate usage from usage_events table
+    const { data: usageEvents } = await supabase
+      .from('usage_events')
+      .select('event_type, quantity')
+      .eq('user_id', user.id)
+      .gte('created_at', weekStart.toISOString());
+
+    const usageByType: Record<string, number> = {};
+    usageEvents?.forEach(event => {
+      usageByType[event.event_type] = (usageByType[event.event_type] || 0) + (event.quantity || 1);
+    });
+
+    // Determine limits based on plan (default to starter plan limits)
+    const planLimits: Record<string, number> = {
+      starter: 10000,
+      growth: 100000,
+      enterprise: 1000000,
+    };
+    const plan = subscription?.plan || 'starter';
+    const baseLimit = planLimits[plan] || planLimits.starter;
+
     const quotas = [
       {
         endpoint: "/api/reconcile",
-        limit: 10000,
-        used: 7850,
-        resetAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        limit: baseLimit,
+        used: usageByType.reconciliation || 0,
+        resetAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       },
       {
         endpoint: "/api/integrations/sync",
-        limit: 5000,
-        used: 4200,
-        resetAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        limit: baseLimit,
+        used: usageByType.integration_sync || 0,
+        resetAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       },
       {
         endpoint: "/api/webhooks",
-        limit: 20000,
-        used: 15200,
-        resetAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        limit: baseLimit * 2,
+        used: usageByType.webhook || 0,
+        resetAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       },
     ];
 
     return NextResponse.json({ quotas });
   } catch (error) {
     console.error("Error in quota GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    // Never return 500 - return empty quotas with graceful error message
+    return NextResponse.json({ 
+      quotas: [],
+      error: "Unable to fetch quota information at this time",
+      message: "Please try again later"
+    }, { status: 200 });
   }
 }

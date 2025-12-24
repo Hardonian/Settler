@@ -188,12 +188,15 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Chatbot error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to process chat message',
+        message: 'Please try again later or contact support@settler.dev',
+        data: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

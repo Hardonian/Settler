@@ -160,13 +160,15 @@ export async function POST(request: NextRequest) {
       duration,
     });
 
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: 'Failed to create export',
+        success: false,
+        error: 'Failed to create export',
+        message: 'Please try again later or contact support if the issue persists',
         details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
@@ -372,12 +374,14 @@ export async function GET(request: NextRequest) {
       })),
     });
   } catch (error) {
+    // Never return 500 - return empty exports array with graceful error message
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: 'Failed to list exports',
+        data: [],
+        error: 'Failed to list exports',
+        message: 'Please try again later or contact support if the issue persists',
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

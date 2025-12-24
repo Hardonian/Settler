@@ -41,7 +41,14 @@ export async function POST(_request: NextRequest, { params }: { params: { snapsh
 
       if (updateError) {
         console.error("Error rolling back job:", updateError);
-        return NextResponse.json({ error: "Failed to rollback" }, { status: 500 });
+        return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to rollback',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
       }
     } else if (project_type === "integration") {
       const { error: updateError } = await supabase
@@ -52,13 +59,27 @@ export async function POST(_request: NextRequest, { params }: { params: { snapsh
 
       if (updateError) {
         console.error("Error rolling back integration:", updateError);
-        return NextResponse.json({ error: "Failed to rollback" }, { status: 500 });
+        return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to rollback',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
       }
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error in rollback:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

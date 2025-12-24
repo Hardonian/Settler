@@ -26,7 +26,14 @@ export async function GET() {
 
     if (lifecycleError) {
       console.error("Error fetching churn risk users:", lifecycleError);
-      return NextResponse.json({ error: "Failed to fetch churn risk users" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch churn risk users',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     type LifecycleRow = { 
@@ -70,6 +77,13 @@ export async function GET() {
     return NextResponse.json({ users });
   } catch (error) {
     console.error("Error in churn-risk GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

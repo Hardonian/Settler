@@ -103,9 +103,13 @@ export async function POST(request: NextRequest) {
 
     if (!updated) {
       return NextResponse.json(
-        { error: 'Failed to update progress' },
-        { status: 500 }
-      );
+      {
+        success: false,
+        error: 'Failed to update progress',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     const steps = getAllStepsWithStatus(
@@ -125,8 +129,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[Onboarding API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to update progress' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to update progress',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

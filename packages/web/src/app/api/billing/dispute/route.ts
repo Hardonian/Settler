@@ -34,7 +34,14 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error creating dispute:", error);
-      return NextResponse.json({ error: "Failed to create dispute" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to create dispute',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     // In production, notify billing team
@@ -42,6 +49,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ dispute: data });
   } catch (error) {
     console.error("Error in dispute POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

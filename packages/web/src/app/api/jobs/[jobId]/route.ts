@@ -273,14 +273,15 @@ export async function GET(
       duration,
     });
 
-    // Return structured error response
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: 'Failed to fetch job details',
+        error: 'Failed to fetch job details',
+        message: 'Please try again later or contact support if the issue persists',
         details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        job: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

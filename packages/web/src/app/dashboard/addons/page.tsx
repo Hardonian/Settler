@@ -48,11 +48,20 @@ export default function AddOnsMarketplacePage() {
   const fetchAddOns = () => {
     try {
       setIsLoading(true);
-      // In production, fetch from API
-      // const response = await fetch("/api/billing/addons");
-      // const data = await response.json();
-
-      // Mock data
+      // Fetch from API
+      try {
+        const response = await fetch("/api/billing/addons");
+        if (response.ok) {
+          const data = await response.json();
+          setAddOns(data.addons || []);
+          setFilteredAddOns(data.addons || []);
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to fetch addons from API:", error);
+      }
+      
+      // Fallback: Empty state if API fails
       const mockAddOns: AddOn[] = [
         {
           id: "1",

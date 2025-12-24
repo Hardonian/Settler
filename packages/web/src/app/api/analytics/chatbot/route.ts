@@ -44,12 +44,14 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Chatbot analytics error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to track chatbot analytics event',
+        message: 'Please try again later',
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

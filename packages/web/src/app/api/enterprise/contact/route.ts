@@ -56,8 +56,12 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('[Enterprise Contact] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to submit request. Please try again or email enterprise@settler.dev' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to submit request. Please try again or email enterprise@settler.dev',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

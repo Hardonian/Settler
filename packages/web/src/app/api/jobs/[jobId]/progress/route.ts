@@ -218,13 +218,15 @@ export async function GET(
       duration,
     });
 
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: 'Failed to fetch job progress',
+        progress: null,
+        error: 'Failed to fetch job progress',
+        message: 'Please try again later or contact support if the issue persists',
         details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

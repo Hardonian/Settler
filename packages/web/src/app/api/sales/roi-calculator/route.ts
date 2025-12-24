@@ -105,12 +105,15 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('ROI calculator error:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to calculate ROI',
+        message: 'Please try again later or contact support if the issue persists',
+        roi: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

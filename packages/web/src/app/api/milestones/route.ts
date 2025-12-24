@@ -43,7 +43,14 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error creating milestone:", error);
-      return NextResponse.json({ error: "Failed to create milestone" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to create milestone',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     // Update user lifecycle if this is an activation milestone
@@ -59,7 +66,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ achieved: true, milestone: data });
   } catch (error) {
     console.error("Error in milestones POST:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }
 
@@ -87,7 +101,14 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("Error fetching milestones:", error);
-      return NextResponse.json({ error: "Failed to fetch milestones" }, { status: 500 });
+      return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch milestones',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
 
     if (milestoneType) {
@@ -99,6 +120,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ milestones });
   } catch (error) {
     console.error("Error in milestones GET:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
   }
 }

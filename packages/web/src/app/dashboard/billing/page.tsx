@@ -57,35 +57,73 @@ export default function BillingDashboardPage() {
   const fetchBillingData = async () => {
     try {
       setIsLoading(true);
-      // In production, this would fetch from your API
-      // For now, using mock data structure
-      await fetch("/api/billing/invoice/estimate?billing_account_id=current");
-      // Handle response...
+      // Fetch billing data from API
+      const [billingResponse, subscriptionResponse, usageResponse] = await Promise.all([
+        fetch("/api/console/billing"),
+        fetch("/api/console/subscription-status"),
+        fetch("/api/console/usage"),
+      ]);
 
-      // Mock data for now
+      const billingData = billingResponse.ok ? await billingResponse.json() : null;
+      const subscriptionData = subscriptionResponse.ok ? await subscriptionResponse.json() : null;
+      const usageData = usageResponse.ok ? await usageResponse.json() : null;
+
+      if (billingData && subscriptionData && usageData) {
+        setData({
+          billingAccount: billingData.billingAccount || {
+            id: "billing-account-id",
+            email: "user@example.com",
+            status: "active",
+          },
+          subscription: subscriptionData.subscription || {
+            id: "sub-id",
+            planName: "Settler Core",
+            status: "active",
+            currentPeriodStart: new Date().toISOString(),
+            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+          usage: usageData.usage || {
+            reconciliation_jobs: { current: 0, limit: 10000 },
+            api_requests: { current: 0, limit: 100000 },
+            webhook_events: { current: 0, limit: 50000 },
+          },
+          estimatedBill: billingData.estimatedBill || {
+            base_subscription_cost: 0,
+            add_on_costs: 0,
+            usage_costs: 0,
+            total_cost: 0,
+            period_start: new Date().toISOString(),
+            period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+          warnings: billingData.warnings || [],
+        });
+        return;
+      }
+      
+      // Fallback: Empty state if API fails
       setData({
         billingAccount: {
-          id: "billing-account-id",
-          email: "user@example.com",
-          status: "active",
+          id: "",
+          email: "",
+          status: "inactive",
         },
         subscription: {
-          id: "sub-id",
-          planName: "Settler Core",
-          status: "active",
+          id: "",
+          planName: "",
+          status: "inactive",
           currentPeriodStart: new Date().toISOString(),
-          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          currentPeriodEnd: new Date().toISOString(),
         },
         usage: {
-          reconciliation_jobs: { current: 7500, limit: 10000 },
-          api_requests: { current: 85000, limit: 100000 },
-          webhook_events: { current: 45000, limit: 50000 },
+          reconciliation_jobs: { current: 0, limit: 0 },
+          api_requests: { current: 0, limit: 0 },
+          webhook_events: { current: 0, limit: 0 },
         },
         estimatedBill: {
-          base_subscription_cost: 49.95,
-          add_on_costs: 39.95,
-          usage_costs: 15.0,
-          total_cost: 104.9,
+          base_subscription_cost: 0,
+          add_on_costs: 0,
+          usage_costs: 0,
+          total_cost: 0,
           period_start: new Date().toISOString(),
           period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         },

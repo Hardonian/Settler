@@ -127,8 +127,12 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("AI data insights error:", error);
     return NextResponse.json(
-      { error: "Failed to generate insights" },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to generate insights',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

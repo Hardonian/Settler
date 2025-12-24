@@ -32,17 +32,25 @@ export async function POST(
     
     if (!success) {
       return NextResponse.json(
-        { error: 'Failed to acknowledge alert' },
-        { status: 500 }
-      );
+      {
+        success: false,
+        error: 'Failed to acknowledge alert',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
+    );
     }
     
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('[Acknowledge Alert API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to acknowledge alert' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to acknowledge alert',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

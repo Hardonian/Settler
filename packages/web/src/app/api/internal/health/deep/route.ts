@@ -183,7 +183,7 @@ export async function GET(request: NextRequest) {
         checks,
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

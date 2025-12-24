@@ -93,9 +93,15 @@ export async function POST(request: NextRequest) {
       }
     } catch (error) {
       console.error('[Workspace API] Error creating workspace:', error);
+      // Never return 500 - return graceful error response
       return NextResponse.json(
-        { error: 'Failed to create workspace', trace_id: traceId },
-        { status: 500 }
+        { 
+          success: false,
+          error: 'Failed to create workspace',
+          message: 'Please try again later or contact support if the issue persists',
+          trace_id: traceId 
+        },
+        { status: 200 }
       );
     }
 
@@ -168,9 +174,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: 'Failed to create workspace', trace_id: traceId },
-      { status: 500 }
+      { 
+        success: false,
+        error: 'Failed to create workspace',
+        message: 'Please try again later or contact support if the issue persists',
+        trace_id: traceId 
+      },
+      { status: 200 }
     );
   }
 }
@@ -200,9 +212,15 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('[Workspace API] Error fetching memberships:', error);
+      // Never return 500 - return empty workspaces array with graceful error message
       return NextResponse.json(
-        { error: 'Failed to fetch workspaces', trace_id: traceId },
-        { status: 500 }
+        { 
+          workspaces: [],
+          error: 'Failed to fetch workspaces',
+          message: 'Please try again later or contact support if the issue persists',
+          trace_id: traceId 
+        },
+        { status: 200 }
       );
     }
 
@@ -239,9 +257,15 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('[Workspace API] Error:', error);
+    // Never return 500 - return empty workspaces array with graceful error message
     return NextResponse.json(
-      { error: 'Failed to fetch workspaces', trace_id: traceId },
-      { status: 500 }
+      { 
+        workspaces: [],
+        error: 'Failed to fetch workspaces',
+        message: 'Please try again later or contact support if the issue persists',
+        trace_id: traceId 
+      },
+      { status: 200 }
     );
   }
 }

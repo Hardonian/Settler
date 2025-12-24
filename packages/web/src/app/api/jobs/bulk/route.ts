@@ -207,13 +207,18 @@ export async function POST(request: NextRequest) {
       duration,
     });
 
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: 'Failed to perform bulk action',
+        success: false,
+        error: 'Failed to perform bulk action',
+        message: 'Please try again later or contact support if the issue persists',
         details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        results: [],
+        successCount: 0,
+        failureCount: 0,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

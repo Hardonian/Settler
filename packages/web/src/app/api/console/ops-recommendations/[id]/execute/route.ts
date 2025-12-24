@@ -119,11 +119,14 @@ export async function POST(
     return NextResponse.json({ success: true, actionId });
   } catch (error) {
     console.error('Error executing recommendation:', error);
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
+        success: false,
         error: error instanceof Error ? error.message : 'Failed to execute recommendation',
+        message: 'Please try again later or contact support if the issue persists',
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

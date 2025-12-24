@@ -32,18 +32,22 @@ export default function IntegrationConfigurationPage() {
     
     try {
       setIsLoading(true);
-      // In production, fetch from API
-      // Mock data
-      const mockConfig: IntegrationConfig = {
-        id: integrationId,
-        name: integrationId.charAt(0).toUpperCase() + integrationId.slice(1).replace(/-/g, " "),
-        description: `Configure ${integrationId} integration settings`,
-        is_connected: false,
-        config: {},
-        required_fields: ["api_key", "api_secret"],
+      // Fetch from API
+      const response = await fetch(`/api/integrations/${integrationId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch integration config');
+      }
+      const data = await response.json();
+      const integrationConfig: IntegrationConfig = {
+        id: data.id || integrationId,
+        name: data.name || integrationId.charAt(0).toUpperCase() + integrationId.slice(1).replace(/-/g, " "),
+        description: data.description || `Configure ${integrationId} integration settings`,
+        is_connected: data.is_connected || false,
+        config: data.config || {},
+        required_fields: data.required_fields || ["api_key", "api_secret"],
       };
-      setConfig(mockConfig);
-      setFormData(mockConfig.config);
+      setConfig(integrationConfig);
+      setFormData(integrationConfig.config);
     } catch (error) {
       console.error("Failed to fetch integration config:", error);
     } finally {

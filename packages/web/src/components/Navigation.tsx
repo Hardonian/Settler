@@ -19,7 +19,7 @@ const primaryNavigationItems = [
 
 // Secondary navigation items (in "More" menu on mobile)
 const secondaryNavigationItems = [
-  { href: '/cookbook', label: 'Cookbook' },
+  { href: '/cookbooks', label: 'Cookbooks' },
   { href: '/runbooks', label: 'Runbooks' },
   { href: '/schematics', label: 'Schematics' },
   { href: '/receipts', label: 'Receipts API' },

@@ -106,9 +106,15 @@ export async function POST(
       );
     }
 
+    // Never return 500 - return graceful error response
     return NextResponse.json(
-      { error: 'Failed to create invite', trace_id: traceId },
-      { status: 500 }
+      { 
+        success: false,
+        error: 'Failed to create invite',
+        message: 'Please try again later or contact support if the issue persists',
+        trace_id: traceId 
+      },
+      { status: 200 }
     );
   }
 }
@@ -171,9 +177,15 @@ export async function GET(
     });
   } catch (error) {
     console.error('[Invite API] Error:', error);
+    // Never return 500 - return empty invites array with graceful error message
     return NextResponse.json(
-      { error: 'Failed to fetch invites', trace_id: traceId },
-      { status: 500 }
+      { 
+        invites: [],
+        error: 'Failed to fetch invites',
+        message: 'Please try again later or contact support if the issue persists',
+        trace_id: traceId 
+      },
+      { status: 200 }
     );
   }
 }

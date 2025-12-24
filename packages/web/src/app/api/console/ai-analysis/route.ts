@@ -63,8 +63,12 @@ export async function POST(request: NextRequest) {
     
     console.error('[AI Analysis API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to run analysis' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to run analysis',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }

@@ -36,12 +36,15 @@ export async function GET(request: NextRequest) {
         return await handleAllExamples();
     }
   } catch (error) {
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
+        success: false,
         error: "Failed to execute example",
         message: error instanceof Error ? error.message : "Unknown error",
+        examples: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
@@ -72,12 +75,15 @@ export async function POST(request: NextRequest) {
       contentType: result.contentType,
     });
   } catch (error) {
+    // Never return 500 - return graceful error response
     return NextResponse.json(
       {
+        success: false,
         error: "Failed to upload file",
         message: error instanceof Error ? error.message : "Unknown error",
+        url: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

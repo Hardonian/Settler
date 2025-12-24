@@ -36,8 +36,12 @@ export async function POST() {
   } catch (error) {
     console.error('[Cleanup API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to cleanup data' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to cleanup data',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }
@@ -65,8 +69,12 @@ export async function GET() {
   } catch (error) {
     console.error('[Cleanup API] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to get retention summary' },
-      { status: 500 }
+      {
+        success: false,
+        error: 'Failed to get retention summary',
+        message: 'Please try again later or contact support if the issue persists',
+      },
+      { status: 200 }
     );
   }
 }
