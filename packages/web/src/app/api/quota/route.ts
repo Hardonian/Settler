@@ -47,24 +47,28 @@ export async function GET(_request: NextRequest) {
 
     const usageByType: Record<string, number> = {};
     if (usageEvents && Array.isArray(usageEvents)) {
-      usageEvents.forEach((event: any) => {
+      usageEvents.forEach((event: { event_type?: string; quantity?: number }) => {
         const eventType = event?.event_type || 'unknown';
-        const quantity = event?.quantity || 1;
+        const quantity = event?.quantity ?? 1;
         usageByType[eventType] = (usageByType[eventType] || 0) + quantity;
       });
     }
 
     // Determine limits based on plan (default to starter plan limits)
     // Check metadata or stripePriceId to infer plan
-    const planLimits: Record<string, number> = {
+    const planLimits = {
       starter: 10000,
       growth: 100000,
       enterprise: 1000000,
-    };
+    } as const;
     const metadata = subscription?.metadata as Record<string, any> | null;
     const plan = (metadata?.plan as string) || 'starter';
-    const planLimit = planLimits[plan];
-    const baseLimit: number = planLimit ?? planLimits.starter;
+    // Get plan limit with fallback to starter plan - ensure type safety
+    // Use type-safe access with explicit fallback
+    const planKey = plan as keyof typeof planLimits;
+    const planLimitValue = planLimits[planKey];
+    const starterLimit = planLimits.starter;
+    const baseLimit: number = planLimitValue ?? starterLimit;
 
     const quotas = [
       {

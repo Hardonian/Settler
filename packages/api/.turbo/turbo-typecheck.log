@@ -21,7 +21,7 @@ src/services/rule-optimizer.ts(73,12): error TS2345: Argument of type '(m: { amo
         Type 'Decimal | null' is not assignable to type 'number | null | undefined'.
           Type 'Decimal' is not assignable to type 'number'.
 npm error Lifecycle script `typecheck` failed with error:
-npm error code 1
+npm error code 2
 npm error path /workspace/packages/api
 npm error workspace @settler/api@1.0.0
 npm error location /workspace/packages/api
