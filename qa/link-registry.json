@@ -1,8 +1,43 @@
 {
-  "generatedAt": "2025-12-19T04:19:59.405Z",
-  "totalLinks": 395,
-  "uniquePaths": 101,
+  "generatedAt": "2025-12-24T00:33:09.504Z",
+  "totalLinks": 429,
+  "uniquePaths": 109,
   "links": [
+    {
+      "href": "/admin/database",
+      "source": "/workspace/packages/web/src/app/admin/database/[table]/page.tsx",
+      "line": 86,
+      "type": "link",
+      "normalizedHref": "/admin/database"
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/app/admin/error.tsx",
+      "line": 81,
+      "type": "link",
+      "normalizedHref": "/signup"
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/admin/error.tsx",
+      "line": 84,
+      "type": "link",
+      "normalizedHref": "/"
+    },
+    {
+      "href": "/admin",
+      "source": "/workspace/packages/web/src/app/admin/error.tsx",
+      "line": 93,
+      "type": "link",
+      "normalizedHref": "/admin"
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/admin/error.tsx",
+      "line": 96,
+      "type": "link",
+      "normalizedHref": "/"
+    },
     {
       "href": "/admin/experiments",
       "source": "/workspace/packages/web/src/app/admin/experiments/[id]/ExperimentDashboardClient.tsx",
@@ -27,56 +62,70 @@
     {
       "href": "/admin/experiments/new",
       "source": "/workspace/packages/web/src/app/admin/experiments/page.tsx",
-      "line": 19,
+      "line": 20,
       "type": "link",
       "normalizedHref": "/admin/experiments/new"
     },
     {
       "href": "/admin",
       "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-      "line": 18,
+      "line": 46,
       "type": "link",
       "normalizedHref": "/admin"
     },
     {
       "href": "/admin/pages",
       "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-      "line": 23,
+      "line": 51,
       "type": "link",
       "normalizedHref": "/admin/pages"
     },
     {
       "href": "/admin/experiments",
       "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-      "line": 28,
+      "line": 56,
       "type": "link",
       "normalizedHref": "/admin/experiments"
     },
     {
       "href": "/admin/branding",
       "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-      "line": 33,
+      "line": 61,
       "type": "link",
       "normalizedHref": "/admin/branding"
     },
     {
       "href": "/admin/flags",
       "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-      "line": 38,
+      "line": 66,
       "type": "link",
       "normalizedHref": "/admin/flags"
     },
     {
       "href": "/admin/webhooks",
       "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-      "line": 43,
+      "line": 71,
       "type": "link",
       "normalizedHref": "/admin/webhooks"
     },
     {
+      "href": "/admin/monitoring",
+      "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+      "line": 76,
+      "type": "link",
+      "normalizedHref": "/admin/monitoring"
+    },
+    {
+      "href": "/admin/analytics",
+      "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+      "line": 81,
+      "type": "link",
+      "normalizedHref": "/admin/analytics"
+    },
+    {
       "href": "/admin/settings",
       "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-      "line": 48,
+      "line": 86,
       "type": "link",
       "normalizedHref": "/admin/settings"
     },
@@ -118,7 +167,7 @@
     {
       "href": "/admin/pages/new",
       "source": "/workspace/packages/web/src/app/admin/pages/page.tsx",
-      "line": 32,
+      "line": 48,
       "type": "link",
       "normalizedHref": "/admin/pages/new"
     },
@@ -195,9 +244,16 @@
     {
       "href": "/pricing",
       "source": "/workspace/packages/web/src/app/console/billing/page.tsx",
-      "line": 321,
+      "line": 311,
       "type": "router",
       "normalizedHref": "/pricing"
+    },
+    {
+      "href": "/enterprise",
+      "source": "/workspace/packages/web/src/app/console/billing/page.tsx",
+      "line": 435,
+      "type": "router",
+      "normalizedHref": "/enterprise"
     },
     {
       "href": "/docs/sdk",
@@ -244,7 +300,21 @@
     {
       "href": "/",
       "source": "/workspace/packages/web/src/app/console/error.tsx",
-      "line": 48,
+      "line": 86,
+      "type": "link",
+      "normalizedHref": "/"
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/app/console/error.tsx",
+      "line": 95,
+      "type": "link",
+      "normalizedHref": "/console"
+    },
+    {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/console/error.tsx",
+      "line": 98,
       "type": "link",
       "normalizedHref": "/"
     },
@@ -300,147 +370,168 @@
     {
       "href": "/signup",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 87,
+      "line": 97,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
+      "href": "/",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 100,
+      "type": "link",
+      "normalizedHref": "/"
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 125,
+      "type": "link",
+      "normalizedHref": "/signup"
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 128,
+      "type": "link",
+      "normalizedHref": "/console/playground"
+    },
+    {
       "href": "/playground",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 134,
+      "line": 158,
       "type": "link",
       "normalizedHref": "/playground"
     },
     {
       "href": "/playground",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 142,
+      "line": 166,
       "type": "link",
       "normalizedHref": "/playground"
     },
     {
       "href": "/playground",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 150,
+      "line": 174,
       "type": "link",
       "normalizedHref": "/playground"
     },
     {
       "href": "/cookbook",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 170,
+      "line": 194,
       "type": "link",
       "normalizedHref": "/cookbook"
     },
     {
       "href": "/runbooks",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 173,
+      "line": 197,
       "type": "link",
       "normalizedHref": "/runbooks"
     },
     {
       "href": "/schematics",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 176,
+      "line": 200,
       "type": "link",
       "normalizedHref": "/schematics"
     },
     {
-      "href": "/playground",
+      "href": "/console/playground",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 192,
+      "line": 216,
       "type": "link",
-      "normalizedHref": "/playground"
+      "normalizedHref": "/console/playground"
     },
     {
       "href": "/signup",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 203,
+      "line": 227,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
-      "href": "/pricing",
-      "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 251,
-      "type": "link",
-      "normalizedHref": "/pricing"
-    },
-    {
-      "href": "/",
-      "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 254,
-      "type": "link",
-      "normalizedHref": "/"
-    },
-    {
       "href": "/docs",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 419,
+      "line": 420,
       "type": "link",
       "normalizedHref": "/docs"
     },
     {
       "href": "/playground",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 422,
+      "line": 423,
       "type": "link",
       "normalizedHref": "/playground"
     },
     {
+      "href": "/console/usage",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 443,
+      "type": "link",
+      "normalizedHref": "/console/usage"
+    },
+    {
       "href": "/console/api-keys",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 449,
+      "line": 458,
       "type": "link",
       "normalizedHref": "/console/api-keys"
     },
     {
       "href": "/console/receipts",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 463,
+      "line": 473,
       "type": "link",
       "normalizedHref": "/console/receipts"
     },
     {
       "href": "/console/feature-flags",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 477,
+      "line": 488,
       "type": "link",
       "normalizedHref": "/console/feature-flags"
     },
     {
       "href": "/console/api-keys",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 549,
+      "line": 508,
       "type": "link",
       "normalizedHref": "/console/api-keys"
     },
     {
-      "href": "/console/feature-flags",
+      "href": "/console/playground",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 558,
+      "line": 513,
       "type": "link",
-      "normalizedHref": "/console/feature-flags"
+      "normalizedHref": "/console/playground"
     },
     {
-      "href": "/console/docs",
+      "href": "/console/api-keys",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 567,
+      "line": 593,
       "type": "link",
-      "normalizedHref": "/console/docs"
+      "normalizedHref": "/console/api-keys"
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/console/page.tsx",
+      "line": 603,
+      "type": "link",
+      "normalizedHref": "/console/playground"
     },
     {
       "href": "/console/setup-check",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 623,
+      "line": 676,
       "type": "link",
       "normalizedHref": "/console/setup-check"
     },
     {
       "href": "/",
       "source": "/workspace/packages/web/src/app/console/page.tsx",
-      "line": 626,
+      "line": 679,
       "type": "link",
       "normalizedHref": "/"
     },
@@ -468,35 +559,35 @@
     {
       "href": "/console/playground/cli",
       "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-      "line": 21,
+      "line": 22,
       "type": "config",
       "normalizedHref": "/console/playground/cli"
     },
     {
       "href": "/console/playground/reconcile",
       "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-      "line": 30,
+      "line": 31,
       "type": "config",
       "normalizedHref": "/console/playground/reconcile"
     },
     {
       "href": "/console/playground/receipts",
       "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-      "line": 38,
+      "line": 39,
       "type": "config",
       "normalizedHref": "/console/playground/receipts"
     },
     {
       "href": "/console/playground/flags",
       "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-      "line": 46,
+      "line": 47,
       "type": "config",
       "normalizedHref": "/console/playground/flags"
     },
     {
       "href": "/console/playground/convert",
       "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-      "line": 54,
+      "line": 55,
       "type": "config",
       "normalizedHref": "/console/playground/convert"
     },
@@ -513,6 +604,13 @@
       "line": 308,
       "type": "link",
       "normalizedHref": "/console/billing"
+    },
+    {
+      "href": "/console/runs",
+      "source": "/workspace/packages/web/src/app/console/runs/[runId]/error.tsx",
+      "line": 53,
+      "type": "link",
+      "normalizedHref": "/console/runs"
     },
     {
       "href": "/console",
@@ -590,6 +688,34 @@
       "line": 171,
       "type": "router",
       "normalizedHref": "/console/site"
+    },
+    {
+      "href": "/console/tables",
+      "source": "/workspace/packages/web/src/app/console/tables/[table]/page.tsx",
+      "line": 206,
+      "type": "link",
+      "normalizedHref": "/console/tables"
+    },
+    {
+      "href": "/console/workflows",
+      "source": "/workspace/packages/web/src/app/console/workflows/[id]/page.tsx",
+      "line": 110,
+      "type": "link",
+      "normalizedHref": "/console/workflows"
+    },
+    {
+      "href": "/console/workflows",
+      "source": "/workspace/packages/web/src/app/console/workflows/new/page.tsx",
+      "line": 56,
+      "type": "link",
+      "normalizedHref": "/console/workflows"
+    },
+    {
+      "href": "/console/workflows/new",
+      "source": "/workspace/packages/web/src/app/console/workflows/page.tsx",
+      "line": 113,
+      "type": "link",
+      "normalizedHref": "/console/workflows/new"
     },
     {
       "href": "/playground",
@@ -692,42 +818,49 @@
     {
       "href": "/dashboard/addons",
       "source": "/workspace/packages/web/src/app/dashboard/integrations/page.tsx",
-      "line": 242,
+      "line": 331,
       "type": "router",
       "normalizedHref": "/dashboard/addons"
     },
     {
       "href": "/dashboard/jobs",
-      "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
-      "line": 124,
+      "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/exceptions/page.tsx",
+      "line": 190,
       "type": "link",
       "normalizedHref": "/dashboard/jobs"
     },
     {
       "href": "/dashboard/jobs",
       "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
-      "line": 157,
+      "line": 144,
       "type": "link",
       "normalizedHref": "/dashboard/jobs"
     },
     {
       "href": "/dashboard/jobs",
       "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
-      "line": 175,
+      "line": 177,
+      "type": "link",
+      "normalizedHref": "/dashboard/jobs"
+    },
+    {
+      "href": "/dashboard/jobs",
+      "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
+      "line": 195,
       "type": "link",
       "normalizedHref": "/dashboard/jobs"
     },
     {
       "href": "/console/playground",
       "source": "/workspace/packages/web/src/app/dashboard/jobs/page.tsx",
-      "line": 157,
+      "line": 151,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
       "href": "/console/playground",
       "source": "/workspace/packages/web/src/app/dashboard/jobs/page.tsx",
-      "line": 203,
+      "line": 197,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
@@ -772,6 +905,13 @@
       "line": 292,
       "type": "link",
       "normalizedHref": "/docs"
+    },
+    {
+      "href": "/docs/status",
+      "source": "/workspace/packages/web/src/app/docs/api/page.tsx",
+      "line": 165,
+      "type": "link",
+      "normalizedHref": "/docs/status"
     },
     {
       "href": "/docs",
@@ -874,58 +1014,121 @@
     {
       "href": "/docs/integrations/stripe",
       "source": "/workspace/packages/web/src/app/docs/integrations/page.tsx",
-      "line": 11,
+      "line": 14,
       "type": "config",
       "normalizedHref": "/docs/integrations/stripe"
     },
     {
       "href": "/docs/integrations/shopify",
       "source": "/workspace/packages/web/src/app/docs/integrations/page.tsx",
-      "line": 12,
+      "line": 15,
       "type": "config",
       "normalizedHref": "/docs/integrations/shopify"
     },
     {
       "href": "/docs/integrations/quickbooks",
       "source": "/workspace/packages/web/src/app/docs/integrations/page.tsx",
-      "line": 13,
+      "line": 16,
       "type": "config",
       "normalizedHref": "/docs/integrations/quickbooks"
     },
     {
       "href": "/docs/integrations/paypal",
       "source": "/workspace/packages/web/src/app/docs/integrations/page.tsx",
-      "line": 14,
+      "line": 17,
       "type": "config",
       "normalizedHref": "/docs/integrations/paypal"
     },
     {
       "href": "/docs/getting-started",
       "source": "/workspace/packages/web/src/app/docs/page.tsx",
-      "line": 30,
+      "line": 49,
       "type": "link",
       "normalizedHref": "/docs/getting-started"
     },
     {
       "href": "/docs/quickstart",
       "source": "/workspace/packages/web/src/app/docs/page.tsx",
-      "line": 45,
+      "line": 64,
       "type": "link",
       "normalizedHref": "/docs/quickstart"
     },
     {
       "href": "/docs/api",
       "source": "/workspace/packages/web/src/app/docs/page.tsx",
-      "line": 60,
+      "line": 79,
       "type": "link",
       "normalizedHref": "/docs/api"
     },
     {
       "href": "/docs/auth",
       "source": "/workspace/packages/web/src/app/docs/page.tsx",
-      "line": 75,
+      "line": 94,
       "type": "link",
       "normalizedHref": "/docs/auth"
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+      "line": 26,
+      "type": "config",
+      "normalizedHref": "/console"
+    },
+    {
+      "href": "/console/playground/reconcile",
+      "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+      "line": 54,
+      "type": "config",
+      "normalizedHref": "/console/playground/reconcile"
+    },
+    {
+      "href": "/console/playground/receipts",
+      "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+      "line": 71,
+      "type": "config",
+      "normalizedHref": "/console/playground/receipts"
+    },
+    {
+      "href": "/console",
+      "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+      "line": 84,
+      "type": "config",
+      "normalizedHref": "/console"
+    },
+    {
+      "href": "/console/playground",
+      "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+      "line": 100,
+      "type": "link",
+      "normalizedHref": "/console/playground"
+    },
+    {
+      "href": "/docs/api",
+      "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+      "line": 140,
+      "type": "link",
+      "normalizedHref": "/docs/api"
+    },
+    {
+      "href": "/docs/integrations",
+      "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+      "line": 141,
+      "type": "link",
+      "normalizedHref": "/docs/integrations"
+    },
+    {
+      "href": "/docs/auth",
+      "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+      "line": 142,
+      "type": "link",
+      "normalizedHref": "/docs/auth"
+    },
+    {
+      "href": "/console/api-playground",
+      "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+      "line": 143,
+      "type": "link",
+      "normalizedHref": "/console/api-playground"
     },
     {
       "href": "/docs",
@@ -1201,18 +1404,11 @@
       "normalizedHref": "/enterprise/dashboard"
     },
     {
-      "href": "/status",
+      "href": "/",
       "source": "/workspace/packages/web/src/app/error.tsx",
-      "line": 112,
+      "line": 64,
       "type": "link",
-      "normalizedHref": "/status"
-    },
-    {
-      "href": "/support",
-      "source": "/workspace/packages/web/src/app/error.tsx",
-      "line": 117,
-      "type": "link",
-      "normalizedHref": "/support"
+      "normalizedHref": "/"
     },
     {
       "href": "/docs/api",
@@ -1238,37 +1434,44 @@
     {
       "href": "/signup",
       "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-      "line": 174,
+      "line": 86,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
       "href": "/console/playground",
       "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-      "line": 177,
+      "line": 89,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
       "href": "/console/playground",
       "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-      "line": 398,
+      "line": 164,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
       "href": "/docs",
       "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-      "line": 401,
+      "line": 167,
       "type": "link",
       "normalizedHref": "/docs"
     },
     {
-      "href": "/docs",
+      "href": "/signup",
       "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-      "line": 404,
+      "line": 192,
       "type": "link",
-      "normalizedHref": "/docs"
+      "normalizedHref": "/signup"
+    },
+    {
+      "href": "/pricing",
+      "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
+      "line": 195,
+      "type": "link",
+      "normalizedHref": "/pricing"
     },
     {
       "href": "/docs",
@@ -1406,23 +1609,16 @@
     {
       "href": "/",
       "source": "/workspace/packages/web/src/app/not-found.tsx",
-      "line": 20,
+      "line": 30,
       "type": "link",
       "normalizedHref": "/"
     },
     {
       "href": "/docs",
       "source": "/workspace/packages/web/src/app/not-found.tsx",
-      "line": 23,
+      "line": 33,
       "type": "link",
       "normalizedHref": "/docs"
-    },
-    {
-      "href": "/status",
-      "source": "/workspace/packages/web/src/app/not-found.tsx",
-      "line": 26,
-      "type": "link",
-      "normalizedHref": "/status"
     },
     {
       "href": "/",
@@ -1462,44 +1658,37 @@
     {
       "href": "/signup",
       "source": "/workspace/packages/web/src/app/page.tsx",
-      "line": 203,
+      "line": 127,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
-      "href": "/docs",
+      "href": "/console/playground",
       "source": "/workspace/packages/web/src/app/page.tsx",
-      "line": 214,
+      "line": 138,
       "type": "link",
-      "normalizedHref": "/docs"
+      "normalizedHref": "/console/playground"
     },
     {
-      "href": "/docs/sdk",
+      "href": "/pricing",
       "source": "/workspace/packages/web/src/app/page.tsx",
-      "line": 317,
+      "line": 243,
       "type": "link",
-      "normalizedHref": "/docs/sdk"
+      "normalizedHref": "/pricing"
     },
     {
-      "href": "/architecture",
+      "href": "/signup",
       "source": "/workspace/packages/web/src/app/page.tsx",
-      "line": 350,
+      "line": 265,
       "type": "link",
-      "normalizedHref": "/architecture"
+      "normalizedHref": "/signup"
     },
     {
-      "href": "/why-settler",
+      "href": "/console/playground",
       "source": "/workspace/packages/web/src/app/page.tsx",
-      "line": 412,
+      "line": 275,
       "type": "link",
-      "normalizedHref": "/why-settler"
-    },
-    {
-      "href": "/playground",
-      "source": "/workspace/packages/web/src/app/playground/error.tsx",
-      "line": 48,
-      "type": "link",
-      "normalizedHref": "/playground"
+      "normalizedHref": "/console/playground"
     },
     {
       "href": "/",
@@ -1532,7 +1721,7 @@
     {
       "href": "/",
       "source": "/workspace/packages/web/src/app/pricing/error.tsx",
-      "line": 48,
+      "line": 51,
       "type": "link",
       "normalizedHref": "/"
     },
@@ -1735,7 +1924,7 @@
     {
       "href": "/",
       "source": "/workspace/packages/web/src/app/trust/error.tsx",
-      "line": 48,
+      "line": 51,
       "type": "link",
       "normalizedHref": "/"
     },
@@ -1866,100 +2055,100 @@
       "normalizedHref": "/console/playground"
     },
     {
-      "href": "/docs",
-      "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 12,
-      "type": "config",
-      "normalizedHref": "/docs"
-    },
-    {
-      "href": "/cookbook",
-      "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 13,
-      "type": "config",
-      "normalizedHref": "/cookbook"
-    },
-    {
-      "href": "/runbooks",
-      "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 14,
-      "type": "config",
-      "normalizedHref": "/runbooks"
-    },
-    {
-      "href": "/schematics",
-      "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 15,
-      "type": "config",
-      "normalizedHref": "/schematics"
-    },
-    {
-      "href": "/receipts",
-      "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 16,
-      "type": "config",
-      "normalizedHref": "/receipts"
-    },
-    {
-      "href": "/feature-flags",
-      "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 17,
-      "type": "config",
-      "normalizedHref": "/feature-flags"
-    },
-    {
       "href": "/console",
       "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 18,
+      "line": 14,
       "type": "config",
       "normalizedHref": "/console"
     },
     {
       "href": "/playground",
       "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 19,
+      "line": 15,
       "type": "config",
       "normalizedHref": "/playground"
     },
     {
+      "href": "/docs",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 16,
+      "type": "config",
+      "normalizedHref": "/docs"
+    },
+    {
       "href": "/pricing",
       "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 20,
+      "line": 17,
       "type": "config",
       "normalizedHref": "/pricing"
     },
     {
+      "href": "/cookbook",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 22,
+      "type": "config",
+      "normalizedHref": "/cookbook"
+    },
+    {
+      "href": "/runbooks",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 23,
+      "type": "config",
+      "normalizedHref": "/runbooks"
+    },
+    {
+      "href": "/schematics",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 24,
+      "type": "config",
+      "normalizedHref": "/schematics"
+    },
+    {
+      "href": "/receipts",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 25,
+      "type": "config",
+      "normalizedHref": "/receipts"
+    },
+    {
+      "href": "/feature-flags",
+      "source": "/workspace/packages/web/src/components/Navigation.tsx",
+      "line": 26,
+      "type": "config",
+      "normalizedHref": "/feature-flags"
+    },
+    {
       "href": "/enterprise",
       "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 21,
+      "line": 27,
       "type": "config",
       "normalizedHref": "/enterprise"
     },
     {
       "href": "/community",
       "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 22,
+      "line": 28,
       "type": "config",
       "normalizedHref": "/community"
     },
     {
       "href": "/support",
       "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 23,
+      "line": 29,
       "type": "config",
       "normalizedHref": "/support"
     },
     {
       "href": "/console/playground",
       "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 109,
+      "line": 158,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
       "href": "/console/playground",
       "source": "/workspace/packages/web/src/components/Navigation.tsx",
-      "line": 183,
+      "line": 256,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
@@ -2078,79 +2267,142 @@
     {
       "href": "/console",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 35,
+      "line": 39,
       "type": "config",
       "normalizedHref": "/console"
     },
     {
+      "href": "/console/api-test",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 40,
+      "type": "config",
+      "normalizedHref": "/console/api-test"
+    },
+    {
+      "href": "/console/api-playground",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 41,
+      "type": "config",
+      "normalizedHref": "/console/api-playground"
+    },
+    {
+      "href": "/console/tables",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 42,
+      "type": "config",
+      "normalizedHref": "/console/tables"
+    },
+    {
+      "href": "/console/api-logs",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 43,
+      "type": "config",
+      "normalizedHref": "/console/api-logs"
+    },
+    {
+      "href": "/console/activity",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 44,
+      "type": "config",
+      "normalizedHref": "/console/activity"
+    },
+    {
+      "href": "/console/workflows",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 45,
+      "type": "config",
+      "normalizedHref": "/console/workflows"
+    },
+    {
+      "href": "/console/control-plane",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 46,
+      "type": "config",
+      "normalizedHref": "/console/control-plane"
+    },
+    {
+      "href": "/console/inspector",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 47,
+      "type": "config",
+      "normalizedHref": "/console/inspector"
+    },
+    {
       "href": "/console/api-keys",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 36,
+      "line": 48,
       "type": "config",
       "normalizedHref": "/console/api-keys"
     },
     {
       "href": "/console/usage",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 37,
+      "line": 49,
       "type": "config",
       "normalizedHref": "/console/usage"
     },
     {
       "href": "/console/performance",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 38,
+      "line": 50,
       "type": "config",
       "normalizedHref": "/console/performance"
     },
     {
       "href": "/console/insights",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 39,
+      "line": 51,
       "type": "config",
       "normalizedHref": "/console/insights"
     },
     {
       "href": "/console/webhooks",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 40,
+      "line": 52,
       "type": "config",
       "normalizedHref": "/console/webhooks"
     },
     {
       "href": "/console/billing",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 41,
+      "line": 53,
       "type": "config",
       "normalizedHref": "/console/billing"
     },
     {
       "href": "/console/receipts",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 42,
+      "line": 54,
       "type": "config",
       "normalizedHref": "/console/receipts"
     },
     {
       "href": "/console/feature-flags",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 43,
+      "line": 55,
       "type": "config",
       "normalizedHref": "/console/feature-flags"
     },
     {
       "href": "/console/site",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 44,
+      "line": 56,
       "type": "config",
       "normalizedHref": "/console/site"
     },
     {
       "href": "/console/docs",
       "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-      "line": 45,
+      "line": 57,
       "type": "config",
       "normalizedHref": "/console/docs"
+    },
+    {
+      "href": "/console/admin/tenants",
+      "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+      "line": 61,
+      "type": "config",
+      "normalizedHref": "/console/admin/tenants"
     },
     {
       "href": "/signup",
@@ -2232,98 +2484,98 @@
     {
       "href": "/docs/getting-started",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 29,
+      "line": 28,
       "type": "config",
       "normalizedHref": "/docs/getting-started"
     },
     {
       "href": "/docs/quickstart",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 34,
+      "line": 33,
       "type": "config",
       "normalizedHref": "/docs/quickstart"
     },
     {
       "href": "/docs/api",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 39,
+      "line": 38,
       "type": "config",
       "normalizedHref": "/docs/api"
     },
     {
       "href": "/docs/sdk",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 44,
+      "line": 43,
       "type": "config",
       "normalizedHref": "/docs/sdk"
     },
     {
       "href": "/docs/sdk/nodejs",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 47,
+      "line": 46,
       "type": "config",
       "normalizedHref": "/docs/sdk/nodejs"
     },
     {
       "href": "/docs/sdk/python",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 48,
+      "line": 47,
       "type": "config",
       "normalizedHref": "/docs/sdk/python"
     },
     {
       "href": "/docs/sdk/go",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 49,
+      "line": 48,
       "type": "config",
       "normalizedHref": "/docs/sdk/go"
     },
     {
       "href": "/docs/sdk/ruby",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 50,
+      "line": 49,
       "type": "config",
       "normalizedHref": "/docs/sdk/ruby"
     },
     {
       "href": "/docs/integrations",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 55,
+      "line": 54,
       "type": "config",
       "normalizedHref": "/docs/integrations"
     },
     {
       "href": "/docs/auth",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 60,
+      "line": 59,
       "type": "config",
       "normalizedHref": "/docs/auth"
     },
     {
       "href": "/docs/webhooks",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 65,
+      "line": 64,
       "type": "config",
       "normalizedHref": "/docs/webhooks"
     },
     {
       "href": "/docs/status",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 70,
+      "line": 69,
       "type": "config",
       "normalizedHref": "/docs/status"
     },
     {
       "href": "/docs/errors",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 75,
+      "line": 74,
       "type": "config",
       "normalizedHref": "/docs/errors"
     },
     {
       "href": "/docs",
       "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-      "line": 86,
+      "line": 85,
       "type": "link",
       "normalizedHref": "/docs"
     },
@@ -2344,7 +2596,7 @@
     {
       "href": "/console",
       "source": "/workspace/packages/web/src/components/landing/FeatureShowcase.tsx",
-      "line": 203,
+      "line": 227,
       "type": "link",
       "normalizedHref": "/console"
     },
@@ -2358,14 +2610,14 @@
     {
       "href": "/pricing",
       "source": "/workspace/packages/web/src/components/marketing/UrgencyBanner.tsx",
-      "line": 104,
+      "line": 100,
       "type": "link",
       "normalizedHref": "/pricing"
     },
     {
       "href": "/signup",
       "source": "/workspace/packages/web/src/components/marketing/UrgencyBanner.tsx",
-      "line": 137,
+      "line": 133,
       "type": "link",
       "normalizedHref": "/signup"
     },
@@ -2414,23 +2666,30 @@
     {
       "href": "/console/api-keys",
       "source": "/workspace/packages/web/src/components/onboarding/WelcomeBanner.tsx",
-      "line": 78,
+      "line": 81,
       "type": "link",
       "normalizedHref": "/console/api-keys"
     },
     {
       "href": "/console/playground",
       "source": "/workspace/packages/web/src/components/onboarding/WelcomeBanner.tsx",
-      "line": 83,
+      "line": 86,
       "type": "link",
       "normalizedHref": "/console/playground"
     },
     {
       "href": "/docs",
       "source": "/workspace/packages/web/src/components/onboarding/WelcomeBanner.tsx",
-      "line": 88,
+      "line": 91,
       "type": "link",
       "normalizedHref": "/docs"
+    },
+    {
+      "href": "/signup",
+      "source": "/workspace/packages/web/src/components/pricing/PricingCalculator.tsx",
+      "line": 139,
+      "type": "link",
+      "normalizedHref": "/signup"
     },
     {
       "href": "/enterprise",
@@ -2594,27 +2853,6 @@
       "normalizedHref": "/pricing"
     },
     {
-      "href": "/docs/observability-architecture.md",
-      "source": "/workspace/packages/web/src/lib/observability/README.md",
-      "line": 36,
-      "type": "markdown",
-      "normalizedHref": "/docs/observability-architecture.md"
-    },
-    {
-      "href": "/docs/event-catalog.md",
-      "source": "/workspace/packages/web/src/lib/observability/README.md",
-      "line": 37,
-      "type": "markdown",
-      "normalizedHref": "/docs/event-catalog.md"
-    },
-    {
-      "href": "/docs/diagnostics-playbook.md",
-      "source": "/workspace/packages/web/src/lib/observability/README.md",
-      "line": 38,
-      "type": "markdown",
-      "normalizedHref": "/docs/diagnostics-playbook.md"
-    },
-    {
       "href": "/signup",
       "source": "/workspace/packages/web/src/lib/personalization.ts",
       "line": 42,
@@ -2772,24 +3010,33 @@
   "paths": [
     "/",
     "/admin",
+    "/admin/analytics",
     "/admin/branding",
+    "/admin/database",
     "/admin/experiments",
     "/admin/experiments/new",
     "/admin/flags",
+    "/admin/monitoring",
     "/admin/pages",
     "/admin/pages/new",
     "/admin/settings",
     "/admin/webhooks",
-    "/architecture",
     "/changelog",
     "/community",
     "/community/contributors",
     "/console",
+    "/console/activity",
+    "/console/admin/tenants",
     "/console/api-keys",
+    "/console/api-logs",
+    "/console/api-playground",
+    "/console/api-test",
     "/console/billing",
+    "/console/control-plane",
     "/console/docs",
     "/console/feature-flags",
     "/console/insights",
+    "/console/inspector",
     "/console/performance",
     "/console/playground",
     "/console/playground/cli",
@@ -2798,13 +3045,17 @@
     "/console/playground/receipts",
     "/console/playground/reconcile",
     "/console/receipts",
+    "/console/runs",
     "/console/setup-check",
     "/console/site",
     "/console/site/branding",
     "/console/site/experiments",
     "/console/site/navigation",
+    "/console/tables",
     "/console/usage",
     "/console/webhooks",
+    "/console/workflows",
+    "/console/workflows/new",
     "/cookbook",
     "/cookbooks",
     "/dashboard",
@@ -2819,9 +3070,7 @@
     "/docs/api",
     "/docs/auth",
     "/docs/cli",
-    "/docs/diagnostics-playbook.md",
     "/docs/errors",
-    "/docs/event-catalog.md",
     "/docs/examples",
     "/docs/getting-started",
     "/docs/integrations",
@@ -2829,7 +3078,6 @@
     "/docs/integrations/quickbooks",
     "/docs/integrations/shopify",
     "/docs/integrations/stripe",
-    "/docs/observability-architecture.md",
     "/docs/quickstart",
     "/docs/sdk",
     "/docs/sdk/go",
@@ -2858,7 +3106,6 @@
     "/runbooks",
     "/schematics",
     "/signup",
-    "/status",
     "/support",
     "/support/articles/billing",
     "/support/articles/first-job",
@@ -2869,10 +3116,346 @@
     "/support/articles/stripe-setup",
     "/support/articles/troubleshooting",
     "/support/articles/upgrade",
-    "/support/contact",
-    "/why-settler"
+    "/support/contact"
   ],
   "linksByPath": {
+    "/admin/database": [
+      {
+        "href": "/admin/database",
+        "source": "/workspace/packages/web/src/app/admin/database/[table]/page.tsx",
+        "line": 86,
+        "type": "link",
+        "normalizedHref": "/admin/database"
+      }
+    ],
+    "/signup": [
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/admin/error.tsx",
+        "line": 81,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 97,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 125,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 227,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/docs/getting-started/page.tsx",
+        "line": 23,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
+        "line": 86,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
+        "line": 192,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/invite/[token]/page.tsx",
+        "line": 97,
+        "type": "router",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/page.tsx",
+        "line": 127,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/page.tsx",
+        "line": 265,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
+        "line": 184,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
+        "line": 253,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/components/console/ConsolePublicOverview.tsx",
+        "line": 64,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/components/console/ConsolePublicOverview.tsx",
+        "line": 143,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/components/marketing/UrgencyBanner.tsx",
+        "line": 133,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/components/marketing/ValueProposition.tsx",
+        "line": 116,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/components/pricing/PricingCalculator.tsx",
+        "line": 139,
+        "type": "link",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/components/pricing/PricingWithFeatures.tsx",
+        "line": 117,
+        "type": "router",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/components/pricing/PricingWithFeatures.tsx",
+        "line": 147,
+        "type": "router",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/lib/personalization.ts",
+        "line": 42,
+        "type": "config",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup?source=paid",
+        "source": "/workspace/packages/web/src/lib/personalization.ts",
+        "line": 48,
+        "type": "config",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup?ref=referral",
+        "source": "/workspace/packages/web/src/lib/personalization.ts",
+        "line": 54,
+        "type": "config",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/lib/personalization.ts",
+        "line": 60,
+        "type": "config",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup?source=social",
+        "source": "/workspace/packages/web/src/lib/personalization.ts",
+        "line": 66,
+        "type": "config",
+        "normalizedHref": "/signup"
+      },
+      {
+        "href": "/signup",
+        "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+        "line": 105,
+        "type": "config",
+        "normalizedHref": "/signup"
+      }
+    ],
+    "/": [
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/admin/error.tsx",
+        "line": 84,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/admin/error.tsx",
+        "line": 96,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/console/error.tsx",
+        "line": 86,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/console/error.tsx",
+        "line": 98,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/console/not-found.tsx",
+        "line": 34,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 100,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 679,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/console/setup-check/page.tsx",
+        "line": 244,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/console/site/navigation/page.tsx",
+        "line": 79,
+        "type": "config",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/error.tsx",
+        "line": 64,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/invite/[token]/page.tsx",
+        "line": 174,
+        "type": "router",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/not-found.tsx",
+        "line": 30,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/offline/page.tsx",
+        "line": 33,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/playground/error.tsx",
+        "line": 51,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/playground/not-found.tsx",
+        "line": 37,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/pricing/error.tsx",
+        "line": 51,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/trust/error.tsx",
+        "line": 51,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
+        "line": 157,
+        "type": "link",
+        "normalizedHref": "/"
+      },
+      {
+        "href": "/",
+        "source": "/workspace/packages/web/src/components/env/EnvErrorPanel.tsx",
+        "line": 62,
+        "type": "link",
+        "normalizedHref": "/"
+      }
+    ],
+    "/admin": [
+      {
+        "href": "/admin",
+        "source": "/workspace/packages/web/src/app/admin/error.tsx",
+        "line": 93,
+        "type": "link",
+        "normalizedHref": "/admin"
+      },
+      {
+        "href": "/admin",
+        "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+        "line": 46,
+        "type": "link",
+        "normalizedHref": "/admin"
+      }
+    ],
     "/admin/experiments": [
       {
         "href": "/admin/experiments",
@@ -2898,7 +3481,7 @@
       {
         "href": "/admin/experiments",
         "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-        "line": 28,
+        "line": 56,
         "type": "link",
         "normalizedHref": "/admin/experiments"
       }
@@ -2907,25 +3490,16 @@
       {
         "href": "/admin/experiments/new",
         "source": "/workspace/packages/web/src/app/admin/experiments/page.tsx",
-        "line": 19,
+        "line": 20,
         "type": "link",
         "normalizedHref": "/admin/experiments/new"
-      }
-    ],
-    "/admin": [
-      {
-        "href": "/admin",
-        "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-        "line": 18,
-        "type": "link",
-        "normalizedHref": "/admin"
       }
     ],
     "/admin/pages": [
       {
         "href": "/admin/pages",
         "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-        "line": 23,
+        "line": 51,
         "type": "link",
         "normalizedHref": "/admin/pages"
       },
@@ -2962,7 +3536,7 @@
       {
         "href": "/admin/branding",
         "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-        "line": 33,
+        "line": 61,
         "type": "link",
         "normalizedHref": "/admin/branding"
       },
@@ -2978,7 +3552,7 @@
       {
         "href": "/admin/flags",
         "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-        "line": 38,
+        "line": 66,
         "type": "link",
         "normalizedHref": "/admin/flags"
       }
@@ -2987,16 +3561,34 @@
       {
         "href": "/admin/webhooks",
         "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-        "line": 43,
+        "line": 71,
         "type": "link",
         "normalizedHref": "/admin/webhooks"
+      }
+    ],
+    "/admin/monitoring": [
+      {
+        "href": "/admin/monitoring",
+        "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+        "line": 76,
+        "type": "link",
+        "normalizedHref": "/admin/monitoring"
+      }
+    ],
+    "/admin/analytics": [
+      {
+        "href": "/admin/analytics",
+        "source": "/workspace/packages/web/src/app/admin/layout.tsx",
+        "line": 81,
+        "type": "link",
+        "normalizedHref": "/admin/analytics"
       }
     ],
     "/admin/settings": [
       {
         "href": "/admin/settings",
         "source": "/workspace/packages/web/src/app/admin/layout.tsx",
-        "line": 48,
+        "line": 86,
         "type": "link",
         "normalizedHref": "/admin/settings"
       }
@@ -3005,7 +3597,7 @@
       {
         "href": "/admin/pages/new",
         "source": "/workspace/packages/web/src/app/admin/pages/page.tsx",
-        "line": 32,
+        "line": 48,
         "type": "link",
         "normalizedHref": "/admin/pages/new"
       }
@@ -3084,7 +3676,7 @@
       {
         "href": "/console/billing",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 41,
+        "line": 53,
         "type": "config",
         "normalizedHref": "/console/billing"
       },
@@ -3108,6 +3700,13 @@
         "href": "/console",
         "source": "/workspace/packages/web/src/app/billing/success/page.tsx",
         "line": 116,
+        "type": "link",
+        "normalizedHref": "/console"
+      },
+      {
+        "href": "/console",
+        "source": "/workspace/packages/web/src/app/console/error.tsx",
+        "line": 95,
         "type": "link",
         "normalizedHref": "/console"
       },
@@ -3141,6 +3740,20 @@
       },
       {
         "href": "/console",
+        "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+        "line": 26,
+        "type": "config",
+        "normalizedHref": "/console"
+      },
+      {
+        "href": "/console",
+        "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+        "line": 84,
+        "type": "config",
+        "normalizedHref": "/console"
+      },
+      {
+        "href": "/console",
         "source": "/workspace/packages/web/src/app/playground/not-found.tsx",
         "line": 34,
         "type": "link",
@@ -3170,14 +3783,14 @@
       {
         "href": "/console",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 18,
+        "line": 14,
         "type": "config",
         "normalizedHref": "/console"
       },
       {
         "href": "/console",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 35,
+        "line": 39,
         "type": "config",
         "normalizedHref": "/console"
       },
@@ -3191,7 +3804,7 @@
       {
         "href": "/console",
         "source": "/workspace/packages/web/src/components/landing/FeatureShowcase.tsx",
-        "line": 203,
+        "line": 227,
         "type": "link",
         "normalizedHref": "/console"
       },
@@ -3236,8 +3849,15 @@
       },
       {
         "href": "/docs/integrations",
+        "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+        "line": 141,
+        "type": "link",
+        "normalizedHref": "/docs/integrations"
+      },
+      {
+        "href": "/docs/integrations",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 55,
+        "line": 54,
         "type": "config",
         "normalizedHref": "/docs/integrations"
       }
@@ -3274,7 +3894,7 @@
       {
         "href": "/docs",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 419,
+        "line": 420,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -3379,14 +3999,7 @@
       {
         "href": "/docs",
         "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-        "line": 401,
-        "type": "link",
-        "normalizedHref": "/docs"
-      },
-      {
-        "href": "/docs",
-        "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-        "line": 404,
+        "line": 167,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -3400,7 +4013,7 @@
       {
         "href": "/docs",
         "source": "/workspace/packages/web/src/app/not-found.tsx",
-        "line": 23,
+        "line": 33,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -3408,13 +4021,6 @@
         "href": "/docs",
         "source": "/workspace/packages/web/src/app/oss/page.tsx",
         "line": 268,
-        "type": "link",
-        "normalizedHref": "/docs"
-      },
-      {
-        "href": "/docs",
-        "source": "/workspace/packages/web/src/app/page.tsx",
-        "line": 214,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -3449,7 +4055,7 @@
       {
         "href": "/docs",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 12,
+        "line": 16,
         "type": "config",
         "normalizedHref": "/docs"
       },
@@ -3463,14 +4069,14 @@
       {
         "href": "/docs",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 86,
+        "line": 85,
         "type": "link",
         "normalizedHref": "/docs"
       },
       {
         "href": "/docs",
         "source": "/workspace/packages/web/src/components/onboarding/WelcomeBanner.tsx",
-        "line": 88,
+        "line": 91,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -3528,7 +4134,7 @@
       {
         "href": "/community",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 22,
+        "line": 28,
         "type": "config",
         "normalizedHref": "/community"
       },
@@ -3551,15 +4157,8 @@
       {
         "href": "/pricing",
         "source": "/workspace/packages/web/src/app/console/billing/page.tsx",
-        "line": 321,
+        "line": 311,
         "type": "router",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
-        "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 251,
-        "type": "link",
         "normalizedHref": "/pricing"
       },
       {
@@ -3578,8 +4177,22 @@
       },
       {
         "href": "/pricing",
+        "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
+        "line": 195,
+        "type": "link",
+        "normalizedHref": "/pricing"
+      },
+      {
+        "href": "/pricing",
         "source": "/workspace/packages/web/src/app/oss/page.tsx",
         "line": 265,
+        "type": "link",
+        "normalizedHref": "/pricing"
+      },
+      {
+        "href": "/pricing",
+        "source": "/workspace/packages/web/src/app/page.tsx",
+        "line": 243,
         "type": "link",
         "normalizedHref": "/pricing"
       },
@@ -3593,7 +4206,7 @@
       {
         "href": "/pricing",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 20,
+        "line": 17,
         "type": "config",
         "normalizedHref": "/pricing"
       },
@@ -3698,7 +4311,7 @@
       {
         "href": "/pricing",
         "source": "/workspace/packages/web/src/components/marketing/UrgencyBanner.tsx",
-        "line": 104,
+        "line": 100,
         "type": "link",
         "normalizedHref": "/pricing"
       },
@@ -3736,6 +4349,85 @@
         "line": 56,
         "type": "config",
         "normalizedHref": "/pricing"
+      }
+    ],
+    "/enterprise": [
+      {
+        "href": "/enterprise",
+        "source": "/workspace/packages/web/src/app/console/billing/page.tsx",
+        "line": 435,
+        "type": "router",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise",
+        "source": "/workspace/packages/web/src/app/enterprise/dashboard/page.tsx",
+        "line": 34,
+        "type": "config",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise",
+        "source": "/workspace/packages/web/src/components/Navigation.tsx",
+        "line": 27,
+        "type": "config",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise",
+        "source": "/workspace/packages/web/src/components/marketing/InvestorPitch.tsx",
+        "line": 114,
+        "type": "link",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise",
+        "source": "/workspace/packages/web/src/components/pricing/PricingWithFeatures.tsx",
+        "line": 115,
+        "type": "router",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise#demo-form",
+        "source": "/workspace/packages/web/src/components/sales/DemoBookingWidget.tsx",
+        "line": 45,
+        "type": "link",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise#demo-form",
+        "source": "/workspace/packages/web/src/components/sales/DemoBookingWidget.tsx",
+        "line": 106,
+        "type": "link",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise",
+        "source": "/workspace/packages/web/src/components/support/FloatingHelpButton.tsx",
+        "line": 40,
+        "type": "config",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise",
+        "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
+        "line": 28,
+        "type": "config",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise",
+        "source": "/workspace/packages/web/src/lib/personalization.ts",
+        "line": 103,
+        "type": "config",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise",
+        "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
+        "line": 57,
+        "type": "config",
+        "normalizedHref": "/enterprise"
       }
     ],
     "/docs/sdk": [
@@ -3783,13 +4475,6 @@
       },
       {
         "href": "/docs/sdk",
-        "source": "/workspace/packages/web/src/app/page.tsx",
-        "line": 317,
-        "type": "link",
-        "normalizedHref": "/docs/sdk"
-      },
-      {
-        "href": "/docs/sdk",
         "source": "/workspace/packages/web/src/components/DeveloperResources.tsx",
         "line": 75,
         "type": "config",
@@ -3798,7 +4483,7 @@
       {
         "href": "/docs/sdk",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 44,
+        "line": 43,
         "type": "config",
         "normalizedHref": "/docs/sdk"
       }
@@ -3830,14 +4515,21 @@
       {
         "href": "/console/api-keys",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 449,
+        "line": 458,
         "type": "link",
         "normalizedHref": "/console/api-keys"
       },
       {
         "href": "/console/api-keys",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 549,
+        "line": 508,
+        "type": "link",
+        "normalizedHref": "/console/api-keys"
+      },
+      {
+        "href": "/console/api-keys",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 593,
         "type": "link",
         "normalizedHref": "/console/api-keys"
       },
@@ -3851,14 +4543,14 @@
       {
         "href": "/console/api-keys",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 36,
+        "line": 48,
         "type": "config",
         "normalizedHref": "/console/api-keys"
       },
       {
         "href": "/console/api-keys",
         "source": "/workspace/packages/web/src/components/onboarding/WelcomeBanner.tsx",
-        "line": 78,
+        "line": 81,
         "type": "link",
         "normalizedHref": "/console/api-keys"
       }
@@ -3876,6 +4568,34 @@
         "source": "/workspace/packages/web/src/app/console/onboarding/page.tsx",
         "line": 328,
         "type": "router",
+        "normalizedHref": "/console/playground"
+      },
+      {
+        "href": "/console/playground",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 128,
+        "type": "link",
+        "normalizedHref": "/console/playground"
+      },
+      {
+        "href": "/console/playground",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 216,
+        "type": "link",
+        "normalizedHref": "/console/playground"
+      },
+      {
+        "href": "/console/playground",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 513,
+        "type": "link",
+        "normalizedHref": "/console/playground"
+      },
+      {
+        "href": "/console/playground",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 603,
+        "type": "link",
         "normalizedHref": "/console/playground"
       },
       {
@@ -3902,14 +4622,14 @@
       {
         "href": "/console/playground",
         "source": "/workspace/packages/web/src/app/dashboard/jobs/page.tsx",
-        "line": 157,
+        "line": 151,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
       {
         "href": "/console/playground",
         "source": "/workspace/packages/web/src/app/dashboard/jobs/page.tsx",
-        "line": 203,
+        "line": 197,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
@@ -3938,6 +4658,13 @@
         "href": "/console/playground",
         "source": "/workspace/packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
         "line": 254,
+        "type": "link",
+        "normalizedHref": "/console/playground"
+      },
+      {
+        "href": "/console/playground",
+        "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+        "line": 100,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
@@ -3979,14 +4706,14 @@
       {
         "href": "/console/playground",
         "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-        "line": 177,
+        "line": 89,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
       {
         "href": "/console/playground",
         "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-        "line": 398,
+        "line": 164,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
@@ -3994,6 +4721,20 @@
         "href": "/console/playground",
         "source": "/workspace/packages/web/src/app/oss/page.tsx",
         "line": 285,
+        "type": "link",
+        "normalizedHref": "/console/playground"
+      },
+      {
+        "href": "/console/playground",
+        "source": "/workspace/packages/web/src/app/page.tsx",
+        "line": 138,
+        "type": "link",
+        "normalizedHref": "/console/playground"
+      },
+      {
+        "href": "/console/playground",
+        "source": "/workspace/packages/web/src/app/page.tsx",
+        "line": 275,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
@@ -4007,21 +4748,21 @@
       {
         "href": "/console/playground",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 109,
+        "line": 158,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
       {
         "href": "/console/playground",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 183,
+        "line": 256,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
       {
         "href": "/console/playground",
         "source": "/workspace/packages/web/src/components/onboarding/WelcomeBanner.tsx",
-        "line": 83,
+        "line": 86,
         "type": "link",
         "normalizedHref": "/console/playground"
       },
@@ -4084,113 +4825,6 @@
         "normalizedHref": "/cookbooks"
       }
     ],
-    "/": [
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/console/error.tsx",
-        "line": 48,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/console/not-found.tsx",
-        "line": 34,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 254,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 626,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/console/setup-check/page.tsx",
-        "line": 244,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/console/site/navigation/page.tsx",
-        "line": 79,
-        "type": "config",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/invite/[token]/page.tsx",
-        "line": 174,
-        "type": "router",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/not-found.tsx",
-        "line": 20,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/offline/page.tsx",
-        "line": 33,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/playground/error.tsx",
-        "line": 51,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/playground/not-found.tsx",
-        "line": 37,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/pricing/error.tsx",
-        "line": 48,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/trust/error.tsx",
-        "line": 48,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
-        "line": 157,
-        "type": "link",
-        "normalizedHref": "/"
-      },
-      {
-        "href": "/",
-        "source": "/workspace/packages/web/src/components/env/EnvErrorPanel.tsx",
-        "line": 62,
-        "type": "link",
-        "normalizedHref": "/"
-      }
-    ],
     "/console/playground/receipts": [
       {
         "href": "/console/playground/receipts",
@@ -4202,7 +4836,14 @@
       {
         "href": "/console/playground/receipts",
         "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-        "line": 38,
+        "line": 39,
+        "type": "config",
+        "normalizedHref": "/console/playground/receipts"
+      },
+      {
+        "href": "/console/playground/receipts",
+        "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+        "line": 71,
         "type": "config",
         "normalizedHref": "/console/playground/receipts"
       },
@@ -4232,186 +4873,44 @@
       {
         "href": "/console/playground/reconcile",
         "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-        "line": 30,
+        "line": 31,
         "type": "config",
         "normalizedHref": "/console/playground/reconcile"
-      }
-    ],
-    "/signup": [
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 87,
-        "type": "link",
-        "normalizedHref": "/signup"
       },
       {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 203,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/app/docs/getting-started/page.tsx",
-        "line": 23,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/app/how-it-works/page.tsx",
-        "line": 174,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/app/invite/[token]/page.tsx",
-        "line": 97,
-        "type": "router",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/app/page.tsx",
-        "line": 203,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
-        "line": 184,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/app/use-cases/[slug]/page.tsx",
-        "line": 253,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/components/console/ConsolePublicOverview.tsx",
-        "line": 64,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/components/console/ConsolePublicOverview.tsx",
-        "line": 143,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/components/marketing/UrgencyBanner.tsx",
-        "line": 137,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/components/marketing/ValueProposition.tsx",
-        "line": 116,
-        "type": "link",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/components/pricing/PricingWithFeatures.tsx",
-        "line": 117,
-        "type": "router",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/components/pricing/PricingWithFeatures.tsx",
-        "line": 147,
-        "type": "router",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/lib/personalization.ts",
-        "line": 42,
-        "type": "config",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup?source=paid",
-        "source": "/workspace/packages/web/src/lib/personalization.ts",
-        "line": 48,
-        "type": "config",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup?ref=referral",
-        "source": "/workspace/packages/web/src/lib/personalization.ts",
+        "href": "/console/playground/reconcile",
+        "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
         "line": 54,
         "type": "config",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/lib/personalization.ts",
-        "line": 60,
-        "type": "config",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup?source=social",
-        "source": "/workspace/packages/web/src/lib/personalization.ts",
-        "line": 66,
-        "type": "config",
-        "normalizedHref": "/signup"
-      },
-      {
-        "href": "/signup",
-        "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
-        "line": 105,
-        "type": "config",
-        "normalizedHref": "/signup"
+        "normalizedHref": "/console/playground/reconcile"
       }
     ],
     "/playground": [
       {
         "href": "/playground",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 134,
+        "line": 158,
         "type": "link",
         "normalizedHref": "/playground"
       },
       {
         "href": "/playground",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 142,
+        "line": 166,
         "type": "link",
         "normalizedHref": "/playground"
       },
       {
         "href": "/playground",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 150,
+        "line": 174,
         "type": "link",
         "normalizedHref": "/playground"
       },
       {
         "href": "/playground",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 192,
-        "type": "link",
-        "normalizedHref": "/playground"
-      },
-      {
-        "href": "/playground",
-        "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 422,
+        "line": 423,
         "type": "link",
         "normalizedHref": "/playground"
       },
@@ -4438,13 +4937,6 @@
       },
       {
         "href": "/playground",
-        "source": "/workspace/packages/web/src/app/playground/error.tsx",
-        "line": 48,
-        "type": "link",
-        "normalizedHref": "/playground"
-      },
-      {
-        "href": "/playground",
         "source": "/workspace/packages/web/src/app/playground/not-found.tsx",
         "line": 31,
         "type": "link",
@@ -4460,7 +4952,7 @@
       {
         "href": "/playground",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 19,
+        "line": 15,
         "type": "config",
         "normalizedHref": "/playground"
       },
@@ -4504,7 +4996,7 @@
       {
         "href": "/cookbook",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 170,
+        "line": 194,
         "type": "link",
         "normalizedHref": "/cookbook"
       },
@@ -4525,7 +5017,7 @@
       {
         "href": "/cookbook",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 13,
+        "line": 22,
         "type": "config",
         "normalizedHref": "/cookbook"
       }
@@ -4534,14 +5026,14 @@
       {
         "href": "/runbooks",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 173,
+        "line": 197,
         "type": "link",
         "normalizedHref": "/runbooks"
       },
       {
         "href": "/runbooks",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 14,
+        "line": 23,
         "type": "config",
         "normalizedHref": "/runbooks"
       }
@@ -4550,30 +5042,46 @@
       {
         "href": "/schematics",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 176,
+        "line": 200,
         "type": "link",
         "normalizedHref": "/schematics"
       },
       {
         "href": "/schematics",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 15,
+        "line": 24,
         "type": "config",
         "normalizedHref": "/schematics"
+      }
+    ],
+    "/console/usage": [
+      {
+        "href": "/console/usage",
+        "source": "/workspace/packages/web/src/app/console/page.tsx",
+        "line": 443,
+        "type": "link",
+        "normalizedHref": "/console/usage"
+      },
+      {
+        "href": "/console/usage",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 49,
+        "type": "config",
+        "normalizedHref": "/console/usage"
       }
     ],
     "/console/receipts": [
       {
         "href": "/console/receipts",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 463,
+        "line": 473,
         "type": "link",
         "normalizedHref": "/console/receipts"
       },
       {
         "href": "/console/receipts",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 42,
+        "line": 54,
         "type": "config",
         "normalizedHref": "/console/receipts"
       }
@@ -4582,46 +5090,23 @@
       {
         "href": "/console/feature-flags",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 477,
-        "type": "link",
-        "normalizedHref": "/console/feature-flags"
-      },
-      {
-        "href": "/console/feature-flags",
-        "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 558,
+        "line": 488,
         "type": "link",
         "normalizedHref": "/console/feature-flags"
       },
       {
         "href": "/console/feature-flags",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 43,
+        "line": 55,
         "type": "config",
         "normalizedHref": "/console/feature-flags"
-      }
-    ],
-    "/console/docs": [
-      {
-        "href": "/console/docs",
-        "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 567,
-        "type": "link",
-        "normalizedHref": "/console/docs"
-      },
-      {
-        "href": "/console/docs",
-        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 45,
-        "type": "config",
-        "normalizedHref": "/console/docs"
       }
     ],
     "/console/setup-check": [
       {
         "href": "/console/setup-check",
         "source": "/workspace/packages/web/src/app/console/page.tsx",
-        "line": 623,
+        "line": 676,
         "type": "link",
         "normalizedHref": "/console/setup-check"
       },
@@ -4644,7 +5129,7 @@
       {
         "href": "/console/playground/cli",
         "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-        "line": 21,
+        "line": 22,
         "type": "config",
         "normalizedHref": "/console/playground/cli"
       }
@@ -4653,7 +5138,7 @@
       {
         "href": "/console/playground/flags",
         "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-        "line": 46,
+        "line": 47,
         "type": "config",
         "normalizedHref": "/console/playground/flags"
       },
@@ -4676,9 +5161,18 @@
       {
         "href": "/console/playground/convert",
         "source": "/workspace/packages/web/src/app/console/playground/page.tsx",
-        "line": 54,
+        "line": 55,
         "type": "config",
         "normalizedHref": "/console/playground/convert"
+      }
+    ],
+    "/console/runs": [
+      {
+        "href": "/console/runs",
+        "source": "/workspace/packages/web/src/app/console/runs/[runId]/error.tsx",
+        "line": 53,
+        "type": "link",
+        "normalizedHref": "/console/runs"
       }
     ],
     "/console/site": [
@@ -4713,7 +5207,7 @@
       {
         "href": "/console/site",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 44,
+        "line": 56,
         "type": "config",
         "normalizedHref": "/console/site"
       }
@@ -4750,6 +5244,54 @@
         "line": 237,
         "type": "link",
         "normalizedHref": "/console/site/navigation"
+      }
+    ],
+    "/console/tables": [
+      {
+        "href": "/console/tables",
+        "source": "/workspace/packages/web/src/app/console/tables/[table]/page.tsx",
+        "line": 206,
+        "type": "link",
+        "normalizedHref": "/console/tables"
+      },
+      {
+        "href": "/console/tables",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 42,
+        "type": "config",
+        "normalizedHref": "/console/tables"
+      }
+    ],
+    "/console/workflows": [
+      {
+        "href": "/console/workflows",
+        "source": "/workspace/packages/web/src/app/console/workflows/[id]/page.tsx",
+        "line": 110,
+        "type": "link",
+        "normalizedHref": "/console/workflows"
+      },
+      {
+        "href": "/console/workflows",
+        "source": "/workspace/packages/web/src/app/console/workflows/new/page.tsx",
+        "line": 56,
+        "type": "link",
+        "normalizedHref": "/console/workflows"
+      },
+      {
+        "href": "/console/workflows",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 45,
+        "type": "config",
+        "normalizedHref": "/console/workflows"
+      }
+    ],
+    "/console/workflows/new": [
+      {
+        "href": "/console/workflows/new",
+        "source": "/workspace/packages/web/src/app/console/workflows/page.tsx",
+        "line": 113,
+        "type": "link",
+        "normalizedHref": "/console/workflows/new"
       }
     ],
     "/dashboard/billing": [
@@ -4813,7 +5355,7 @@
       {
         "href": "/dashboard/addons",
         "source": "/workspace/packages/web/src/app/dashboard/integrations/page.tsx",
-        "line": 242,
+        "line": 331,
         "type": "router",
         "normalizedHref": "/dashboard/addons"
       }
@@ -4821,22 +5363,29 @@
     "/dashboard/jobs": [
       {
         "href": "/dashboard/jobs",
-        "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
-        "line": 124,
+        "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/exceptions/page.tsx",
+        "line": 190,
         "type": "link",
         "normalizedHref": "/dashboard/jobs"
       },
       {
         "href": "/dashboard/jobs",
         "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
-        "line": 157,
+        "line": 144,
         "type": "link",
         "normalizedHref": "/dashboard/jobs"
       },
       {
         "href": "/dashboard/jobs",
         "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
-        "line": 175,
+        "line": 177,
+        "type": "link",
+        "normalizedHref": "/dashboard/jobs"
+      },
+      {
+        "href": "/dashboard/jobs",
+        "source": "/workspace/packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
+        "line": 195,
         "type": "link",
         "normalizedHref": "/dashboard/jobs"
       },
@@ -4846,6 +5395,22 @@
         "line": 172,
         "type": "link",
         "normalizedHref": "/dashboard/jobs"
+      }
+    ],
+    "/docs/status": [
+      {
+        "href": "/docs/status",
+        "source": "/workspace/packages/web/src/app/docs/api/page.tsx",
+        "line": 165,
+        "type": "link",
+        "normalizedHref": "/docs/status"
+      },
+      {
+        "href": "/docs/status",
+        "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
+        "line": 69,
+        "type": "config",
+        "normalizedHref": "/docs/status"
       }
     ],
     "/docs/quickstart": [
@@ -4859,7 +5424,7 @@
       {
         "href": "/docs/quickstart",
         "source": "/workspace/packages/web/src/app/docs/page.tsx",
-        "line": 45,
+        "line": 64,
         "type": "link",
         "normalizedHref": "/docs/quickstart"
       },
@@ -4880,7 +5445,7 @@
       {
         "href": "/docs/quickstart",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 34,
+        "line": 33,
         "type": "config",
         "normalizedHref": "/docs/quickstart"
       }
@@ -4896,7 +5461,14 @@
       {
         "href": "/docs/api",
         "source": "/workspace/packages/web/src/app/docs/page.tsx",
-        "line": 60,
+        "line": 79,
+        "type": "link",
+        "normalizedHref": "/docs/api"
+      },
+      {
+        "href": "/docs/api",
+        "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+        "line": 140,
         "type": "link",
         "normalizedHref": "/docs/api"
       },
@@ -4931,7 +5503,7 @@
       {
         "href": "/docs/api",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 39,
+        "line": 38,
         "type": "config",
         "normalizedHref": "/docs/api"
       }
@@ -4950,13 +5522,6 @@
         "href": "/support",
         "source": "/workspace/packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
         "line": 251,
-        "type": "link",
-        "normalizedHref": "/support"
-      },
-      {
-        "href": "/support",
-        "source": "/workspace/packages/web/src/app/error.tsx",
-        "line": 117,
         "type": "link",
         "normalizedHref": "/support"
       },
@@ -4998,7 +5563,7 @@
       {
         "href": "/support",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 23,
+        "line": 29,
         "type": "config",
         "normalizedHref": "/support"
       },
@@ -5042,7 +5607,7 @@
       {
         "href": "/docs/integrations/stripe",
         "source": "/workspace/packages/web/src/app/docs/integrations/page.tsx",
-        "line": 11,
+        "line": 14,
         "type": "config",
         "normalizedHref": "/docs/integrations/stripe"
       }
@@ -5051,7 +5616,7 @@
       {
         "href": "/docs/integrations/shopify",
         "source": "/workspace/packages/web/src/app/docs/integrations/page.tsx",
-        "line": 12,
+        "line": 15,
         "type": "config",
         "normalizedHref": "/docs/integrations/shopify"
       }
@@ -5060,7 +5625,7 @@
       {
         "href": "/docs/integrations/quickbooks",
         "source": "/workspace/packages/web/src/app/docs/integrations/page.tsx",
-        "line": 13,
+        "line": 16,
         "type": "config",
         "normalizedHref": "/docs/integrations/quickbooks"
       }
@@ -5069,7 +5634,7 @@
       {
         "href": "/docs/integrations/paypal",
         "source": "/workspace/packages/web/src/app/docs/integrations/page.tsx",
-        "line": 14,
+        "line": 17,
         "type": "config",
         "normalizedHref": "/docs/integrations/paypal"
       }
@@ -5078,7 +5643,7 @@
       {
         "href": "/docs/getting-started",
         "source": "/workspace/packages/web/src/app/docs/page.tsx",
-        "line": 30,
+        "line": 49,
         "type": "link",
         "normalizedHref": "/docs/getting-started"
       },
@@ -5092,7 +5657,7 @@
       {
         "href": "/docs/getting-started",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 29,
+        "line": 28,
         "type": "config",
         "normalizedHref": "/docs/getting-started"
       }
@@ -5101,16 +5666,39 @@
       {
         "href": "/docs/auth",
         "source": "/workspace/packages/web/src/app/docs/page.tsx",
-        "line": 75,
+        "line": 94,
+        "type": "link",
+        "normalizedHref": "/docs/auth"
+      },
+      {
+        "href": "/docs/auth",
+        "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+        "line": 142,
         "type": "link",
         "normalizedHref": "/docs/auth"
       },
       {
         "href": "/docs/auth",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 60,
+        "line": 59,
         "type": "config",
         "normalizedHref": "/docs/auth"
+      }
+    ],
+    "/console/api-playground": [
+      {
+        "href": "/console/api-playground",
+        "source": "/workspace/packages/web/src/app/docs/quickstart/page.tsx",
+        "line": 143,
+        "type": "link",
+        "normalizedHref": "/console/api-playground"
+      },
+      {
+        "href": "/console/api-playground",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 41,
+        "type": "config",
+        "normalizedHref": "/console/api-playground"
       }
     ],
     "/docs/sdk/nodejs": [
@@ -5138,7 +5726,7 @@
       {
         "href": "/docs/sdk/nodejs",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 47,
+        "line": 46,
         "type": "config",
         "normalizedHref": "/docs/sdk/nodejs"
       }
@@ -5161,7 +5749,7 @@
       {
         "href": "/docs/sdk/python",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 48,
+        "line": 47,
         "type": "config",
         "normalizedHref": "/docs/sdk/python"
       }
@@ -5184,7 +5772,7 @@
       {
         "href": "/docs/sdk/go",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 49,
+        "line": 48,
         "type": "config",
         "normalizedHref": "/docs/sdk/go"
       }
@@ -5200,7 +5788,7 @@
       {
         "href": "/docs/sdk/ruby",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 50,
+        "line": 49,
         "type": "config",
         "normalizedHref": "/docs/sdk/ruby"
       }
@@ -5332,78 +5920,6 @@
         "normalizedHref": "/edge-ai"
       }
     ],
-    "/enterprise": [
-      {
-        "href": "/enterprise",
-        "source": "/workspace/packages/web/src/app/enterprise/dashboard/page.tsx",
-        "line": 34,
-        "type": "config",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise",
-        "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 21,
-        "type": "config",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise",
-        "source": "/workspace/packages/web/src/components/marketing/InvestorPitch.tsx",
-        "line": 114,
-        "type": "link",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise",
-        "source": "/workspace/packages/web/src/components/pricing/PricingWithFeatures.tsx",
-        "line": 115,
-        "type": "router",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise#demo-form",
-        "source": "/workspace/packages/web/src/components/sales/DemoBookingWidget.tsx",
-        "line": 45,
-        "type": "link",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise#demo-form",
-        "source": "/workspace/packages/web/src/components/sales/DemoBookingWidget.tsx",
-        "line": 106,
-        "type": "link",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise",
-        "source": "/workspace/packages/web/src/components/support/FloatingHelpButton.tsx",
-        "line": 40,
-        "type": "config",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise",
-        "source": "/workspace/packages/web/src/components/tenant/TenantNavigation.tsx",
-        "line": 28,
-        "type": "config",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise",
-        "source": "/workspace/packages/web/src/lib/personalization.ts",
-        "line": 103,
-        "type": "config",
-        "normalizedHref": "/enterprise"
-      },
-      {
-        "href": "/enterprise",
-        "source": "/workspace/packages/web/src/lib/tenant/setup.ts",
-        "line": 57,
-        "type": "config",
-        "normalizedHref": "/enterprise"
-      }
-    ],
     "/enterprise/dashboard": [
       {
         "href": "/enterprise/dashboard",
@@ -5411,22 +5927,6 @@
         "line": 155,
         "type": "link",
         "normalizedHref": "/enterprise/dashboard"
-      }
-    ],
-    "/status": [
-      {
-        "href": "/status",
-        "source": "/workspace/packages/web/src/app/error.tsx",
-        "line": 112,
-        "type": "link",
-        "normalizedHref": "/status"
-      },
-      {
-        "href": "/status",
-        "source": "/workspace/packages/web/src/app/not-found.tsx",
-        "line": 26,
-        "type": "link",
-        "normalizedHref": "/status"
       }
     ],
     "/support/contact": [
@@ -5548,24 +6048,6 @@
         "normalizedHref": "/legal/license"
       }
     ],
-    "/architecture": [
-      {
-        "href": "/architecture",
-        "source": "/workspace/packages/web/src/app/page.tsx",
-        "line": 350,
-        "type": "link",
-        "normalizedHref": "/architecture"
-      }
-    ],
-    "/why-settler": [
-      {
-        "href": "/why-settler",
-        "source": "/workspace/packages/web/src/app/page.tsx",
-        "line": 412,
-        "type": "link",
-        "normalizedHref": "/why-settler"
-      }
-    ],
     "/support/articles/quick-start": [
       {
         "href": "/support/articles/quick-start",
@@ -5683,7 +6165,7 @@
       {
         "href": "/receipts",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 16,
+        "line": 25,
         "type": "config",
         "normalizedHref": "/receipts"
       },
@@ -5706,7 +6188,7 @@
       {
         "href": "/feature-flags",
         "source": "/workspace/packages/web/src/components/Navigation.tsx",
-        "line": 17,
+        "line": 26,
         "type": "config",
         "normalizedHref": "/feature-flags"
       },
@@ -5745,25 +6227,61 @@
       {
         "href": "/console/insights",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 39,
+        "line": 51,
         "type": "config",
         "normalizedHref": "/console/insights"
       }
     ],
-    "/console/usage": [
+    "/console/api-test": [
       {
-        "href": "/console/usage",
+        "href": "/console/api-test",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 37,
+        "line": 40,
         "type": "config",
-        "normalizedHref": "/console/usage"
+        "normalizedHref": "/console/api-test"
+      }
+    ],
+    "/console/api-logs": [
+      {
+        "href": "/console/api-logs",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 43,
+        "type": "config",
+        "normalizedHref": "/console/api-logs"
+      }
+    ],
+    "/console/activity": [
+      {
+        "href": "/console/activity",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 44,
+        "type": "config",
+        "normalizedHref": "/console/activity"
+      }
+    ],
+    "/console/control-plane": [
+      {
+        "href": "/console/control-plane",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 46,
+        "type": "config",
+        "normalizedHref": "/console/control-plane"
+      }
+    ],
+    "/console/inspector": [
+      {
+        "href": "/console/inspector",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 47,
+        "type": "config",
+        "normalizedHref": "/console/inspector"
       }
     ],
     "/console/performance": [
       {
         "href": "/console/performance",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 38,
+        "line": 50,
         "type": "config",
         "normalizedHref": "/console/performance"
       }
@@ -5772,34 +6290,43 @@
       {
         "href": "/console/webhooks",
         "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
-        "line": 40,
+        "line": 52,
         "type": "config",
         "normalizedHref": "/console/webhooks"
+      }
+    ],
+    "/console/docs": [
+      {
+        "href": "/console/docs",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 57,
+        "type": "config",
+        "normalizedHref": "/console/docs"
+      }
+    ],
+    "/console/admin/tenants": [
+      {
+        "href": "/console/admin/tenants",
+        "source": "/workspace/packages/web/src/components/console/ConsoleLayout.tsx",
+        "line": 61,
+        "type": "config",
+        "normalizedHref": "/console/admin/tenants"
       }
     ],
     "/docs/webhooks": [
       {
         "href": "/docs/webhooks",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 65,
+        "line": 64,
         "type": "config",
         "normalizedHref": "/docs/webhooks"
-      }
-    ],
-    "/docs/status": [
-      {
-        "href": "/docs/status",
-        "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 70,
-        "type": "config",
-        "normalizedHref": "/docs/status"
       }
     ],
     "/docs/errors": [
       {
         "href": "/docs/errors",
         "source": "/workspace/packages/web/src/components/docs/DocsSidebar.tsx",
-        "line": 75,
+        "line": 74,
         "type": "config",
         "normalizedHref": "/docs/errors"
       }
@@ -5811,33 +6338,6 @@
         "line": 32,
         "type": "config",
         "normalizedHref": "/dashboard/user"
-      }
-    ],
-    "/docs/observability-architecture.md": [
-      {
-        "href": "/docs/observability-architecture.md",
-        "source": "/workspace/packages/web/src/lib/observability/README.md",
-        "line": 36,
-        "type": "markdown",
-        "normalizedHref": "/docs/observability-architecture.md"
-      }
-    ],
-    "/docs/event-catalog.md": [
-      {
-        "href": "/docs/event-catalog.md",
-        "source": "/workspace/packages/web/src/lib/observability/README.md",
-        "line": 37,
-        "type": "markdown",
-        "normalizedHref": "/docs/event-catalog.md"
-      }
-    ],
-    "/docs/diagnostics-playbook.md": [
-      {
-        "href": "/docs/diagnostics-playbook.md",
-        "source": "/workspace/packages/web/src/lib/observability/README.md",
-        "line": 38,
-        "type": "markdown",
-        "normalizedHref": "/docs/diagnostics-playbook.md"
       }
     ]
   }
