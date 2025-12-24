@@ -62,8 +62,9 @@ export async function GET(_request: NextRequest) {
       enterprise: 1000000,
     };
     const metadata = subscription?.metadata as Record<string, any> | null;
-    const plan = metadata?.plan || 'starter';
-    const baseLimit: number = planLimits[plan as string] ?? planLimits.starter;
+    const plan = (metadata?.plan as string) || 'starter';
+    const planLimit = planLimits[plan];
+    const baseLimit: number = planLimit !== undefined ? planLimit : planLimits.starter;
 
     const quotas = [
       {
