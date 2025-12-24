@@ -109,24 +109,35 @@ export async function POST(request: NextRequest) {
     
     // Create the job in the database
     // Store rules and options in metadata if schema doesn't support them directly
+    if (!auth?.userId) {
+      return NextResponse.json(
+        { error: 'User ID required' },
+        { status: 400 }
+      );
+    }
+
     const job = await prisma.reconJob.create({
       data: {
         tenantId: billingAccount.tenantId,
+        userId: auth.userId,
         name: body.name || 'Reconciliation Job',
         description: body.description || null,
         sourceAdapter: body.sourceAdapter,
+        sourceConfigEncrypted: JSON.stringify(body.sourceConfig || {}),
         targetAdapter: body.targetAdapter,
+        targetConfigEncrypted: JSON.stringify(body.targetConfig || {}),
         status: 'queued',
+        validationRules: body.rules || [],
+        scheduleCron: body.scheduleCron || null,
+        scheduleTimezone: body.scheduleTimezone || 'UTC',
         metadata: {
-          rules: body.rules || [],
           options: body.options || {},
-          scheduleCron: body.scheduleCron || null,
-          scheduleTimezone: body.scheduleTimezone || null,
         },
       },
     });
 
     const metadata = job.metadata as Record<string, any> | null;
+    const validationRules = job.validationRules as any[] | null;
     const jobResponse = {
       id: job.id,
       jobId: job.id,
@@ -134,7 +145,7 @@ export async function POST(request: NextRequest) {
       status: job.status,
       sourceAdapter: job.sourceAdapter,
       targetAdapter: job.targetAdapter,
-      rules: metadata?.rules || [],
+      rules: validationRules || [],
       options: metadata?.options || {},
       createdAt: job.createdAt.toISOString(),
       message: 'Reconciliation job created successfully. Processing will begin shortly.',
