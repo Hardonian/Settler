@@ -103,7 +103,14 @@ function useSubscriptionStatus() {
       .catch((err) => {
         console.error('Failed to refresh subscription:', err);
         setLoading(false);
-        return subscriptionCache.data;
+        // Return fallback if cache is empty
+        const fallback: SubscriptionStatus = subscriptionCache.data || {
+          tier: 'unsubscribed',
+          hasSubscription: false,
+          isPaid: false,
+          isEnterprise: false,
+        };
+        return fallback;
       });
     subscriptionCache.promise = promise;
   }, []);

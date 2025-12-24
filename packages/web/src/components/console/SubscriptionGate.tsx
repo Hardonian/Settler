@@ -52,14 +52,14 @@ export function SubscriptionGate({
       setSubscription(data);
     } catch (err) {
       console.error('Failed to load subscription:', err);
-      setError('Unable to verify subscription status');
       // Default to unsubscribed on error (fail closed for security)
-      setSubscription({
+      const fallback: SubscriptionStatus = {
         tier: 'unsubscribed',
         hasSubscription: false,
         isPaid: false,
         isEnterprise: false,
-      });
+      };
+      setSubscription(fallback);
     } finally {
       setLoading(false);
     }
@@ -100,7 +100,6 @@ export function SubscriptionGate({
         requiredTier={requiredTier}
         showValueProp={showValueProp}
         benefits={benefits}
-        onRetry={loadSubscription}
       />
     );
   }
