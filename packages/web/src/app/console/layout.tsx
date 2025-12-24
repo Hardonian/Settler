@@ -12,9 +12,10 @@
 import { ConsoleLayout } from '@/components/console/ConsoleLayout';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { requireConsoleAccess } from '@/lib/auth/console-gate';
+import { getConsoleAccessStatus } from '@/lib/auth/console-gate';
 import { validateSupabaseEnv } from '@/lib/env/validator';
 import { EnvErrorPanel } from '@/components/env/EnvErrorPanel';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -48,21 +49,35 @@ export default async function ConsoleRootLayout({
       );
     }
 
-    // CRITICAL: Server-side auth + subscription gate
-    // This will redirect unauthenticated users to sign-in
-    // and non-subscribers to pricing
-    // If access is allowed, this returns null (doesn't throw)
-    await requireConsoleAccess();
-
-    // If we reach here, user is authenticated and has subscription
-    // Render the console layout
-    return (
-      <>
-        <Navigation />
-        <ConsoleLayout>{children}</ConsoleLayout>
-        <Footer />
-      </>
-    );
+    // CRITICAL: Check console access status without redirecting
+    // This allows unauthenticated users to see public view on /console
+    // The console page itself handles showing public vs authenticated content
+    // For authenticated users with subscription, show full ConsoleLayout
+    // For unauthenticated users, show basic layout so page can render public view
+    
+    const accessStatus = await getConsoleAccessStatus();
+    
+    if (accessStatus.allowed) {
+      // User is authenticated and has subscription - show full console layout
+      return (
+        <>
+          <Navigation />
+          <ConsoleLayout>{children}</ConsoleLayout>
+          <Footer />
+        </>
+      );
+    } else {
+      // User is not authenticated or doesn't have subscription
+      // Allow rendering so page can show public view or upgrade prompts
+      // Don't use ConsoleLayout wrapper for unauthenticated users
+      return (
+        <>
+          <Navigation />
+          {children}
+          <Footer />
+        </>
+      );
+    }
   } catch (error) {
     // requireConsoleAccess uses redirect() which throws NextResponse
     // This is expected behavior - re-throw redirects
