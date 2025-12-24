@@ -2,17 +2,18 @@
  * Console Layout
  * 
  * Wraps all console pages with the console layout and navigation.
- * All console routes require authentication and subscription.
+ * Allows unauthenticated users to see a free view with upsell triggers.
+ * Authenticated users without subscription see upgrade prompts.
  * 
- * CRITICAL: This layout enforces server-side auth + subscription gating.
- * Unauthenticated users are redirected to sign-in.
- * Users without subscription are redirected to pricing.
+ * CRITICAL: This layout allows public access but gates features based on auth/subscription.
+ * Unauthenticated users see free view with sign-up CTAs.
+ * Authenticated users without subscription see upgrade prompts.
  */
 
 import { ConsoleLayout } from '@/components/console/ConsoleLayout';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { requireConsoleAccess } from '@/lib/auth/console-gate';
+import { getConsoleAccessStatus } from '@/lib/auth/console-gate';
 import { validateSupabaseEnv } from '@/lib/env/validator';
 import { EnvErrorPanel } from '@/components/env/EnvErrorPanel';
 
@@ -48,25 +49,22 @@ export default async function ConsoleRootLayout({
       );
     }
 
-    // CRITICAL: Server-side auth + subscription gate
-    // This will redirect unauthenticated users to sign-in
-    // and non-subscribers to pricing
-    // If access is allowed, this returns null (doesn't throw)
-    try {
-      await requireConsoleAccess();
-    } catch (redirectError) {
-      // requireConsoleAccess uses redirect() which throws NextResponse
-      // This is expected behavior - re-throw redirects
-      if (redirectError && typeof redirectError === 'object' && 'digest' in redirectError) {
-        throw redirectError; // Re-throw Next.js redirects
-      }
-      // If it's not a redirect, log and continue to show error page
-      console.error('[Console Layout] requireConsoleAccess failed:', redirectError);
-      throw redirectError; // Re-throw to be caught by outer catch
+    // Check console access status (doesn't redirect, just returns status)
+    // This allows unauthenticated users to see the free view
+    const accessStatus = await getConsoleAccessStatus();
+    
+    // Log access status for monitoring
+    if (!accessStatus.allowed) {
+      console.log('[Console Layout] Access status:', {
+        ...logContext,
+        reason: accessStatus.reason,
+        allowed: false,
+      });
     }
 
-    // If we reach here, user is authenticated and has subscription
-    // Render the console layout
+    // Always render the console layout - pages will handle their own gating
+    // Unauthenticated users will see free view with upsell triggers
+    // Authenticated users without subscription will see upgrade prompts
     return (
       <>
         <Navigation />
@@ -75,12 +73,6 @@ export default async function ConsoleRootLayout({
       </>
     );
   } catch (error) {
-    // requireConsoleAccess uses redirect() which throws NextResponse
-    // This is expected behavior - re-throw redirects
-    if (error && typeof error === 'object' && 'digest' in error) {
-      throw error; // Re-throw Next.js redirects
-    }
-    
     // Log unexpected errors for debugging (server-side only, no secrets)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const duration = Date.now() - startTime;
@@ -96,10 +88,11 @@ export default async function ConsoleRootLayout({
     
     // Show friendly error page instead of crashing
     // This ensures the route never returns 500, even on unexpected errors
+    // Still allow users to see the console with error state
     return (
       <>
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+        <ConsoleLayout>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="text-center">
               <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
@@ -124,7 +117,7 @@ export default async function ConsoleRootLayout({
               </div>
             </div>
           </div>
-        </div>
+        </ConsoleLayout>
         <Footer />
       </>
     );

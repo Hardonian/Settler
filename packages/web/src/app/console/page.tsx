@@ -111,7 +111,7 @@ async function ConsoleOverviewContent() {
     if (!user || isSafeMode()) {
       return (
         <div className="space-y-8">
-          {/* Public Minimal Console */}
+          {/* Public Minimal Console with Upsell Triggers */}
           <div className="text-center space-y-4 py-8">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
               Settler Developer Console
@@ -121,14 +121,60 @@ async function ConsoleOverviewContent() {
               Sign in for full access to all features, or explore our public tools below.
             </p>
             <div className="flex items-center justify-center gap-4 mt-6">
-              <Button asChild>
-                <Link href="/signup">Sign In / Sign Up</Link>
+              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+                <Link href="/signup">Get Started Free</Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" size="lg" asChild>
                 <Link href="/console/playground">Try Playground</Link>
               </Button>
             </div>
           </div>
+
+          {/* Upsell Banner - Premium Features */}
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-blue-600 dark:text-blue-400">✨</span>
+                Unlock Full Console Access
+              </CardTitle>
+              <CardDescription>
+                Get unlimited API calls, advanced analytics, and priority support
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 mt-0.5">✓</span>
+                  <div>
+                    <div className="font-semibold text-sm">Unlimited API Calls</div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">No usage limits</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 mt-0.5">✓</span>
+                  <div>
+                    <div className="font-semibold text-sm">Advanced Analytics</div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">Usage insights & trends</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 mt-0.5">✓</span>
+                  <div>
+                    <div className="font-semibold text-sm">Priority Support</div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">24/7 assistance</div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2 justify-center">
+                <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                  <Link href="/pricing">View Pricing</Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/signup">Start Free Trial</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Live Status Widget */}
           <Card>
@@ -212,20 +258,97 @@ async function ConsoleOverviewContent() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/console/playground">Try Playground</Link>
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button asChild size="lg" variant="secondary">
+                  <Link href="/console/playground">Try Playground</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="bg-white/10 hover:bg-white/20 border-white/20 text-white">
+                  <Link href="/signup">Sign Up for Full Access</Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Sign In CTA */}
-          <div className="text-center py-4">
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
-              Sign in for full access to API keys, usage analytics, and saved workflows.
+          {/* Feature Comparison - Upsell Trigger */}
+          <Card>
+            <CardHeader>
+              <CardTitle>What You Get with Full Access</CardTitle>
+              <CardDescription>Compare free vs. paid features</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-semibold mb-3 text-slate-700 dark:text-slate-300">Free Access</h3>
+                  <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-500">✓</span>
+                      <span>Public playground tools</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-500">✓</span>
+                      <span>Documentation access</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-slate-400">✗</span>
+                      <span className="line-through">API key management</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-slate-400">✗</span>
+                      <span className="line-through">Usage analytics</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-slate-400">✗</span>
+                      <span className="line-through">Saved workflows</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-3 text-blue-600 dark:text-blue-400">Full Access</h3>
+                  <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-500">✓</span>
+                      <span>Everything in free, plus:</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-500">✓</span>
+                      <span>Unlimited API keys</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-500">✓</span>
+                      <span>Real-time usage analytics</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-500">✓</span>
+                      <span>Save & share workflows</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-500">✓</span>
+                      <span>Priority support</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-6 text-center">
+                <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+                  <Link href="/signup">Get Started Free</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Final Sign In CTA */}
+          <div className="text-center py-6 border-t border-slate-200 dark:border-slate-800">
+            <p className="text-slate-600 dark:text-slate-400 mb-4 font-medium">
+              Ready to unlock the full power of Settler?
             </p>
-            <Button asChild>
-              <Link href="/signup">Sign In / Sign Up</Link>
-            </Button>
+            <div className="flex gap-3 justify-center">
+              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+                <Link href="/signup">Sign Up Free</Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/pricing">View Plans</Link>
+              </Button>
+            </div>
           </div>
         </div>
       );
