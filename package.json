@@ -54,6 +54,7 @@
     "qa:dom-reality:inspect": "tsx scripts/dom-reality-inspector.ts",
     "qa:dom-reality:ci": "tsx scripts/dom-reality-ci-integration.ts",
     "qa:dom-reality:check-env": "tsx scripts/load-env-for-tests.ts",
+    "qa:reality": "tsx scripts/qa-reality-unified.ts",
     "qa:all": "npm run qa:routes && npm run qa:links && npm run qa:smoke && npm run qa:visual && npm run qa:a11y && npm run qa:dom-reality",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",

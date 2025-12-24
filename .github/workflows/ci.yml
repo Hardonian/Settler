@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Validate environment variable schema
@@ -73,7 +73,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Run comprehensive repository integrity check
@@ -90,7 +90,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Validate ESLint config dependencies
@@ -114,7 +114,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Run Settler Doctor
@@ -186,7 +186,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Run database migrations
@@ -228,7 +228,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Run npm audit
@@ -268,7 +268,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Generate route registry
@@ -296,7 +296,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
@@ -339,7 +339,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - uses: actions/setup-python@v4
         with:
@@ -391,7 +391,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
@@ -434,7 +434,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
@@ -477,7 +477,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - run: npm run build
@@ -497,7 +497,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Run canonical production check
@@ -515,7 +515,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Run smoke tests
@@ -564,7 +564,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Run database migrations

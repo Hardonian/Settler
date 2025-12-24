@@ -3,7 +3,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Settler Enterprise** is a commercial SaaS platform for financial reconciliation, receipt parsing, and deterministic compliance. It provides enterprise teams with a complete, managed solution for automating financial data reconciliation across multiple systems.
+**Settler** automates financial reconciliation at $0.01 per transaction. Connect Stripe, Shopify, and other payment systems to automatically match transactions and catch accounting errors. Clear limits, usage-based pricing, and a rules engine that improves match rates over time.
 
 ## 🚀 Quick Start
 

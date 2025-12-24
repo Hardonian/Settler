@@ -48,11 +48,13 @@ export async function requireConsoleAccess(): Promise<null> {
     // User is authenticated and has subscription - allow access
     return null;
   } catch (error) {
-    // If subscription check fails, log but allow access
-    // This prevents 500s from blocking legitimate users
+    // CRITICAL: Fail closed - do not allow access if subscription check fails
+    // This prevents revenue leakage. Show friendly error instead of granting access.
     console.error('[requireConsoleAccess] Subscription check failed:', error);
-    // Allow access - subscription gate is best-effort
-    return null;
+    
+    // Redirect to pricing with error message
+    const upgradeUrl = `/pricing?next=${encodeURIComponent('/console')}&error=subscription_check_failed`;
+    redirect(upgradeUrl);
   }
 }
 
@@ -88,8 +90,12 @@ export async function getConsoleAccessStatus(): Promise<ConsoleAccessResult> {
       return { allowed: true };
     } catch (error) {
       console.error('[getConsoleAccessStatus] Subscription check failed:', error);
-      // Fail open - allow access if subscription check fails
-      return { allowed: true };
+      // CRITICAL: Fail closed - deny access if subscription check fails
+      return {
+        allowed: false,
+        reason: 'subscription_check_failed',
+        redirectTo: `/pricing?next=${encodeURIComponent('/console')}&error=subscription_check_failed`,
+      };
     }
   } catch (error) {
     console.error('[getConsoleAccessStatus] Auth check failed:', error);
