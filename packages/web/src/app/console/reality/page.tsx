@@ -27,21 +27,32 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 async function RealityDashboardContent() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  try {
+    const supabase = await createClient();
+    let user = null;
+    let authError = null;
+    
+    try {
+      const authResult = await supabase.auth.getUser();
+      user = authResult.data?.user ?? null;
+      authError = authResult.error;
+    } catch (error) {
+      console.error('[Reality Dashboard] Auth check failed:', error);
+      authError = error as Error;
+    }
 
-  if (!user) {
-    return (
-      <div className="p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Unauthorized</CardTitle>
-            <CardDescription>You must be logged in to view the Reality Dashboard.</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
+    if (authError || !user) {
+      return (
+        <div className="p-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Unauthorized</CardTitle>
+              <CardDescription>You must be logged in to view the Reality Dashboard.</CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      );
+    }
 
   // Check admin access
   const isAdmin = user.user_metadata?.role === 'admin' || user.email?.endsWith('@settler.dev');
@@ -315,6 +326,22 @@ async function RealityDashboardContent() {
       )}
     </div>
   );
+  } catch (error) {
+    // CRITICAL: Never throw errors - always return a valid React component
+    console.error('[Reality Dashboard] Unexpected error:', error);
+    return (
+      <div className="p-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Error Loading Dashboard</CardTitle>
+            <CardDescription>
+              We encountered an error while loading the Reality Dashboard. Please try again later.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
 }
 
 export default function RealityDashboardPage() {

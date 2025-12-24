@@ -67,7 +67,8 @@ export default async function ConsoleRootLayout({
     // requireConsoleAccess uses redirect() which throws NextResponse
     // This is expected behavior - re-throw redirects
     if (error && typeof error === 'object' && 'digest' in error) {
-      throw error; // Re-throw Next.js redirects
+      // This is a Next.js redirect - re-throw it so Next.js handles it properly
+      throw error;
     }
     
     // Log unexpected errors for debugging (server-side only, no secrets)
@@ -83,8 +84,9 @@ export default async function ConsoleRootLayout({
       ...(process.env.NODE_ENV === 'development' && errorStack ? { stack: errorStack } : {}),
     });
     
-    // Show friendly error page instead of crashing
+    // CRITICAL: Never throw errors from layout - always return a valid React component
     // This ensures the route never returns 500, even on unexpected errors
+    // Show friendly error page instead of crashing
     return (
       <>
         <Navigation />

@@ -20,10 +20,118 @@ let clientCacheTimestamp = 0;
 const CLIENT_CACHE_TTL = 60000; // 1 minute
 
 /**
+ * Create a safe mock Supabase client that handles all operations gracefully
+ * Used when environment variables are missing to prevent crashes
+ * 
+ * CRITICAL: This mock client must match Supabase's actual API structure
+ * to prevent runtime errors when methods are called on it
+ */
+function createSafeMockClient(): SupabaseClient<Database> {
+  // Create a mock error that matches Supabase's error structure
+  const mockError = {
+    message: 'Supabase configuration missing',
+    status: 500,
+    name: 'ConfigurationError',
+    details: 'Required environment variables are not configured',
+    hint: 'Please configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  };
+
+  // Create mock responses that match Supabase's response structure
+  const mockAuthResponse = {
+    data: { user: null, session: null },
+    error: mockError,
+  };
+
+  const mockQueryResponse = {
+    data: null,
+    error: mockError,
+    count: null,
+    status: 500,
+    statusText: 'Configuration Error',
+  };
+
+  // Create a chainable query builder mock
+  const createQueryBuilder = () => ({
+    select: () => ({
+      eq: () => ({
+        single: async () => mockQueryResponse,
+        maybeSingle: async () => mockQueryResponse,
+        limit: () => ({
+          order: () => ({
+            maybeSingle: async () => mockQueryResponse,
+          }),
+          maybeSingle: async () => mockQueryResponse,
+        }),
+      }),
+      in: () => ({
+        order: () => ({
+          limit: () => ({
+            maybeSingle: async () => mockQueryResponse,
+          }),
+        }),
+      }),
+      order: () => ({
+        limit: () => ({
+          maybeSingle: async () => mockQueryResponse,
+        }),
+      }),
+      maybeSingle: async () => mockQueryResponse,
+      single: async () => mockQueryResponse,
+    }),
+    insert: () => ({
+      select: async () => mockQueryResponse,
+    }),
+    update: () => ({
+      eq: () => ({
+        select: async () => mockQueryResponse,
+      }),
+      select: async () => mockQueryResponse,
+    }),
+    delete: () => ({
+      eq: () => ({
+        select: async () => mockQueryResponse,
+      }),
+    }),
+  });
+
+  return {
+    auth: {
+      getUser: async () => mockAuthResponse,
+      getSession: async () => mockAuthResponse,
+      signOut: async () => mockAuthResponse,
+      signInWithPassword: async () => mockAuthResponse,
+      signUp: async () => mockAuthResponse,
+      resetPasswordForEmail: async () => mockAuthResponse,
+      updateUser: async () => mockAuthResponse,
+      refreshSession: async () => mockAuthResponse,
+      onAuthStateChange: () => ({ 
+        data: { subscription: null }, 
+        error: null 
+      }),
+    },
+    from: () => createQueryBuilder(),
+    // Add other Supabase client methods that might be called
+    rpc: async () => mockQueryResponse,
+    storage: {
+      from: () => ({
+        upload: async () => ({ data: null, error: mockError }),
+        download: async () => ({ data: null, error: mockError }),
+        list: async () => ({ data: null, error: mockError }),
+        remove: async () => ({ data: null, error: mockError }),
+        getPublicUrl: () => ({ data: { publicUrl: '' } }),
+      }),
+    },
+  } as unknown as SupabaseClient<Database>;
+}
+
+/**
  * Get Supabase server client for authenticated requests
  * Uses cookies for session management
  * Gracefully handles errors to prevent page crashes
  * Optimized with connection reuse
+ * 
+ * CRITICAL: Never returns an invalid client - always returns a working client
+ * that handles operations gracefully even when env vars are missing
  */
 export async function createClient(): Promise<SupabaseClient<Database>> {
   // Use validator to get env vars with proper error handling
@@ -35,13 +143,13 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
     supabaseUrl = env.url;
     supabaseAnonKey = env.anonKey;
   } catch (error) {
-    // Log error but don't crash - return a safe fallback client
+    // Log error but don't crash - return a safe mock client
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[Supabase] Failed to get environment variables:', errorMessage);
     
-    // Return a minimal mock client that will fail gracefully on operations
+    // Return a proper mock client that handles all operations gracefully
     // This prevents hard 500s while still allowing the page to render
-    return {} as SupabaseClient<Database>;
+    return createSafeMockClient();
   }
 
   // Reuse cached client if available and fresh
@@ -56,24 +164,31 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
     cookieStore = await cookies();
   } catch (error) {
     console.error("Failed to get cookies:", error);
-    // Return a client with empty cookie handlers if cookies() fails
-    const fallbackClient = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
-      cookies: {
-        get() {
-          return undefined;
+    // If cookies() fails, try to create client with no-op cookie handlers
+    // If that also fails, return safe mock client
+    try {
+      const fallbackClient = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+        cookies: {
+          get() {
+            return undefined;
+          },
+          set() {
+            /* no-op */
+          },
+          remove() {
+            /* no-op */
+          },
         },
-        set() {
-          /* no-op */
-        },
-        remove() {
-          /* no-op */
-        },
-      },
-    }) as SupabaseClient<Database>;
-    
-    cachedClient = fallbackClient;
-    clientCacheTimestamp = now;
-    return fallbackClient;
+      }) as SupabaseClient<Database>;
+      
+      cachedClient = fallbackClient;
+      clientCacheTimestamp = now;
+      return fallbackClient;
+    } catch (clientError) {
+      console.error('[Supabase] Failed to create client with fallback cookies:', clientError);
+      // Last resort: return safe mock client
+      return createSafeMockClient();
+    }
   }
 
   const client = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
@@ -132,15 +247,15 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[Supabase Admin] Failed to get Supabase URL:', errorMessage);
-    return {} as SupabaseClient<Database>;
+    return createSafeMockClient();
   }
   
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
   if (!supabaseServiceRoleKey) {
     console.warn("Supabase SERVICE_ROLE_KEY not set - admin features may not work");
-    // Return a minimal mock client that will fail gracefully
-    return {} as SupabaseClient<Database>;
+    // Return a proper mock client that handles operations gracefully
+    return createSafeMockClient();
   }
 
   // Reuse cached admin client if available and fresh
@@ -176,9 +291,9 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
     return adminClient;
   } catch (error) {
     console.error("Failed to create Supabase admin client:", error);
-    // Return a minimal mock client to prevent crashes
-    // This will fail on actual operations but won't crash the page
-    const fallbackClient = {} as SupabaseClient<Database>;
+    // Return a proper mock client to prevent crashes
+    // This will handle operations gracefully without crashing
+    const fallbackClient = createSafeMockClient();
     cachedAdminClient = fallbackClient;
     adminClientCacheTimestamp = now;
     return fallbackClient;
