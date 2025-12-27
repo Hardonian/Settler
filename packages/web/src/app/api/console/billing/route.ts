@@ -13,7 +13,6 @@ import { getAccountPlanCode } from '@/domain/billing/entitlements';
 import { getPlanConfig } from '@/domain/billing/planConfig';
 import { withApiWrapper } from '@/middleware/api-wrapper';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine

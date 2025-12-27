@@ -32,8 +32,8 @@ export async function recordUsageEvent(event: UsageEvent): Promise<void> {
     const supabase = await createClient();
 
     // Insert usage event
-    const { error } = await supabase
-      .from('usage_events')
+    const { error } = await (supabase
+      .from('usage_events') as any)
       .insert({
         billing_account_id: event.billingAccountId,
         tenant_id: event.tenantId || null,
@@ -106,8 +106,8 @@ export async function getCurrentUsage(
     : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
   // Get usage from usage_events
-  const { data, error } = await supabase
-    .from('usage_events')
+  const { data, error } = await (supabase
+    .from('usage_events') as any)
     .select('quantity, event_type')
     .eq('billing_account_id', billingAccountId)
     .eq('event_type', 'reconciliation_transaction')
@@ -124,7 +124,7 @@ export async function getCurrentUsage(
     };
   }
 
-  const totalTransactions = data?.reduce((sum, event) => {
+  const totalTransactions = (data as Array<{ quantity: number | string }>)?.reduce((sum, event) => {
     return sum + Number(event.quantity || 0);
   }, 0) || 0;
 
