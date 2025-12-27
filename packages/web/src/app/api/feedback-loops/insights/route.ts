@@ -7,11 +7,12 @@
 
 import { NextResponse } from 'next/server';
 import { getLatestInsights } from '@/lib/feedback-loops/usage-insights';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET() {
+export const GET = withUniversalBillingGate(async function GET() {
   try {
     const insights = await getLatestInsights(10);
     return NextResponse.json({ insights });
@@ -26,4 +27,4 @@ export async function GET() {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

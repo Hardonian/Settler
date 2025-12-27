@@ -8,10 +8,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { requireWorkspaceMembership } from '@/lib/authz';
 import { createLogger } from '@/lib/logger';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const runtime = 'nodejs';
 
-export async function GET(
+export const GET = withUniversalBillingGate(async function GET(
   _request: NextRequest,
   { params }: { params: { runId: string } }
 ) {
@@ -69,4 +70,4 @@ export async function GET(
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

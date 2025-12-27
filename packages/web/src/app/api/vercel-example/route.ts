@@ -13,13 +13,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { kv, cacheGet, cacheSet } from "@/lib/vercel/kv";
 import { edgeConfig, getFeatureFlagFromEdgeConfig } from "@/lib/vercel/edge-config";
 import { blob } from "@/lib/vercel/blob";
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET - Example usage of all Vercel SDKs
  */
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const action = searchParams.get("action") || "all";
 
@@ -47,12 +48,12 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });
 
 /**
  * POST - Example file upload using Blob storage
  */
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });
 
 async function handleKvExample() {
   // Example 1: Simple key-value storage

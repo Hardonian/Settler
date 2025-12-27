@@ -14,6 +14,7 @@ import { requestSizeLimits } from '@/middleware/request-size-limit';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 import { logAuditEvent } from '@/lib/audit/logger';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
+import { freeRoute } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -41,7 +42,7 @@ function isValidOriginUrl(url: unknown): boolean {
   }
 }
 
-export async function POST(request: NextRequest) {
+export const POST = freeRoute(async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
@@ -164,4 +165,4 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+});

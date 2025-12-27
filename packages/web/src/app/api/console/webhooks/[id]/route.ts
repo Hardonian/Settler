@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { updateWebhook, deleteWebhook } from '@/lib/webhooks/manager';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -16,7 +17,7 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function PATCH(
+export const PATCH = withUniversalBillingGate(async function PATCH(
   request: NextRequest,
   { params }: RouteParams
 ) {
@@ -43,9 +44,9 @@ export async function PATCH(
     const errorMessage = error instanceof Error ? error.message : 'Failed to update webhook';
     return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
-}
+}, { feature: 'PATCH API' });
 
-export async function DELETE(
+export const DELETE = withUniversalBillingGate(async function DELETE(
   request: NextRequest,
   { params }: RouteParams
 ) {
@@ -67,4 +68,4 @@ export async function DELETE(
     const errorMessage = error instanceof Error ? error.message : 'Failed to delete webhook';
     return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
-}
+}, { feature: 'DELETE API' });

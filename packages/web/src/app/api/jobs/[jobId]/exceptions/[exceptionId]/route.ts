@@ -21,6 +21,7 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { logAuditEvent } from '@/lib/audit/logger';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -39,7 +40,7 @@ const ReviewActionSchema = z.object({
  * PATCH /api/jobs/[jobId]/exceptions/[exceptionId]
  * Review and update exception status
  */
-export async function PATCH(
+export const PATCH = withUniversalBillingGate(async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ jobId: string; exceptionId: string }> }
 ) {
@@ -381,4 +382,4 @@ export async function PATCH(
       { status: 200 }
     );
   }
-}
+}, { feature: 'PATCH API' });

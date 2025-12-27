@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { metrics } from '@settler/adapters/src/metrics/prometheus';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -9,7 +10,7 @@ export const runtime = 'nodejs';
  * 
  * Exports Prometheus metrics endpoint
  */
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Optional: Add authentication for production
     const authHeader = request.headers.get('authorization');
@@ -38,4 +39,4 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

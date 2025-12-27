@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getTraceId } from '@/lib/observability/trace';
 import { prisma } from '@/shared/db/prismaClient';
 import { z } from 'zod';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -22,7 +23,7 @@ const createWorkspaceSchema = z.object({
 /**
  * POST /api/workspaces - Create a new workspace
  */
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   const traceId = getTraceId(request);
   
   try {
@@ -185,12 +186,12 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });
 
 /**
  * GET /api/workspaces - List user's workspaces
  */
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   const traceId = getTraceId(request);
   
   try {
@@ -268,4 +269,4 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

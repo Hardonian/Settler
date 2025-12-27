@@ -8,11 +8,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { getRecentActivities } from '@/lib/console/activity-logger';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Authenticate using unified auth (session or API key)
     await requireAuth(request);
@@ -28,4 +29,4 @@ export async function GET(request: NextRequest) {
     // Return empty array instead of 500
     return NextResponse.json({ activities: [] });
   }
-}
+}, { feature: 'GET API' });

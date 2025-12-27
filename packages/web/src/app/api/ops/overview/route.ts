@@ -7,11 +7,12 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/api/auth-gate';
 import { prisma } from '@/shared/db/prismaClient';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: Request) {
+export const GET = withUniversalBillingGate(async function GET(request: Request) {
   const adminCheck = await requireAdmin(request as any);
   if (!adminCheck.isAdmin) {
     return adminCheck.error!;
@@ -102,4 +103,4 @@ export async function GET(request: Request) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

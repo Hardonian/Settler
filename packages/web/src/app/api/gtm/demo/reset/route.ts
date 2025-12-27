@@ -9,8 +9,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { resetDemoTenant, isDemoTenant } from '@/lib/gtm/demo-data';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
-export async function POST(request: Request) {
+export const POST = withUniversalBillingGate(async function POST(request: Request) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -58,4 +59,4 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

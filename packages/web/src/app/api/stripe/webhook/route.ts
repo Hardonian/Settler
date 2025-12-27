@@ -18,6 +18,7 @@ import { trackWebhookMetric } from '@/lib/monitoring/metrics';
 import { requestSizeLimits } from '@/middleware/request-size-limit';
 import { getTraceId } from '@/lib/observability/trace';
 import { logger } from '@/lib/observability/logger';
+// NOTE: Webhooks don't use billing gates - they're authenticated via Stripe signature
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // CRITICAL: Must be Node.js runtime for Prisma
@@ -131,6 +132,7 @@ function extractBillingAccountId(event: Stripe.Event): string | null {
   return null;
 }
 
+// Webhook route - authenticated via Stripe signature, not billing gate
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const traceId = await getTraceId(request);

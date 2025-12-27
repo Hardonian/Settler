@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { revokeApiKey } from '@/domain/console/apiKeys';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -15,7 +16,7 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function DELETE(
+export const DELETE = withUniversalBillingGate(async function DELETE(
   request: NextRequest,
   { params }: RouteParams
 ) {
@@ -44,4 +45,4 @@ export async function DELETE(
       { status: 200 }
     );
   }
-}
+}, { feature: 'DELETE API' });

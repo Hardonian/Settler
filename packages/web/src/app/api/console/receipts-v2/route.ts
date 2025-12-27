@@ -9,6 +9,7 @@ import { requireAuth } from '@/lib/api/unified-auth';
 import { createReceipt, listReceipts, verifyReceiptChain } from '@/lib/server/settler/receipts';
 import { getPrimaryTenant } from '@/lib/supabase/tenant-helpers';
 import { z } from 'zod';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -28,7 +29,7 @@ const CreateReceiptSchema = z.object({
   }),
 });
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     // Authenticate
     await requireAuth(request);
@@ -80,9 +81,9 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });
 
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Authenticate
     await requireAuth(request);
@@ -113,4 +114,4 @@ export async function GET(request: NextRequest) {
     console.error('[Receipts V2 API] Error:', error);
     return NextResponse.json({ receipts: [] }, { status: 200 });
   }
-}
+}, { feature: 'GET API' });

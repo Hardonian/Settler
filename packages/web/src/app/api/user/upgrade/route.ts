@@ -5,11 +5,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendPaidWelcomeEmail, LifecycleUser } from "@settler/api/lib/email-lifecycle";
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -74,4 +75,4 @@ export async function POST(request: NextRequest) {
       message: "Please try again later or contact support"
     }, { status: 200 });
   }
-}
+}, { feature: 'POST API' });

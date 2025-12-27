@@ -1,7 +1,9 @@
 /**
- * Plan Configuration
+ * Plan Configuration (DEPRECATED - Use pricing-simple.ts instead)
  *
- * Defines feature access levels for free, trial, and paid plans
+ * This file is kept for backward compatibility but pricing-simple.ts is the source of truth.
+ * 
+ * @deprecated Use pricing-simple.ts for new code
  */
 
 export type PlanType = "free" | "trial" | "commercial" | "enterprise";

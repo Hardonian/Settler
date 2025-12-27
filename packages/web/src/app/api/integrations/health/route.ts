@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { publicRoute } from '@/middleware/billing-gate-universal';
 
 export const dynamic = "force-dynamic";
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export async function GET() {
+export const GET = publicRoute(async function GET() {
   try {
     const supabase = await createClient();
     const {
@@ -78,4 +79,4 @@ export async function GET() {
       degraded: true,
     }, { status: 200 });
   }
-}
+});;

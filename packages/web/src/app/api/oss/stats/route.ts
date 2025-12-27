@@ -5,8 +5,9 @@
 
 import { NextResponse } from 'next/server';
 import { getCacheHeaders } from '@/lib/performance/cache-strategies';
+import { publicRoute } from '@/middleware/billing-gate-universal';
 
-export async function GET() {
+export const GET = publicRoute(async function GET() {
   try {
     // TODO: Fetch from database and aggregate
     // For now, return mock data that matches the expected structure
@@ -90,4 +91,4 @@ export async function GET() {
       { status: 200 }
     );
   }
-}
+});;

@@ -13,6 +13,7 @@ import { validateInputManifest } from '@/lib/ingest/manifest';
 import { requireWorkspaceMembership } from '@/lib/authz';
 import { createLogger, generateCorrelationId } from '@/lib/logger';
 import { z } from 'zod';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 const CreateRunSchema = z.object({
   workspace_id: z.string().uuid(),
@@ -23,7 +24,7 @@ const CreateRunSchema = z.object({
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   const logger = createLogger();
   const correlationId = generateCorrelationId();
 
@@ -137,6 +138,32 @@ export async function POST(request: NextRequest) {
       // Don't fail the request - job can be retried
     }
 
+    // Track usage: Reconciliation run creation
+    try {
+      const { trackReconciliationTransaction } = await import('@/middleware/usage-tracking');
+      // Get billing account from workspace/tenant
+      const { data: billingAccount } = await (supabase
+        .from('billing_accounts' as any)
+        .select('id, tenant_id, user_id')
+        .eq('tenant_id', validated.workspace_id)
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .single() as any);
+      
+      if (billingAccount) {
+        await trackReconciliationTransaction(
+          billingAccount.id,
+          billingAccount.tenant_id || validated.workspace_id,
+          billingAccount.user_id || user.id,
+          1, // Run creation = 1 usage event
+          undefined // Will be set when run processes transactions
+        );
+      }
+    } catch (usageError) {
+      // Don't fail run creation if usage tracking fails
+      logger.warn('Usage tracking failed', { error: usageError });
+    }
+
     logger.info('Created run', {
       runId: run.id,
       workspaceId: validated.workspace_id,
@@ -173,4 +200,4 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

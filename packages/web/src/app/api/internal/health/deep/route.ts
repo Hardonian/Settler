@@ -23,6 +23,12 @@ interface HealthCheck {
   details?: Record<string, unknown>;
 }
 
+
+// SECURITY: This route is secured via:
+// - Vercel Cron Secret (for cron routes)
+// - Service Role API Key (for internal routes)
+// - Not using billing gates (system/internal use)
+
 export async function GET(request: NextRequest) {
   const logger = createLogger();
 

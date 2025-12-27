@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getCorrelationId, addCorrelationHeaders } from '@/lib/monitoring/correlation';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -19,7 +20,7 @@ export const runtime = 'nodejs';
 /**
  * GET - Returns empty state (AI tokens deprecated)
  */
-export async function GET() {
+export const GET = withUniversalBillingGate(async function GET() {
   const correlationId = await getCorrelationId();
 
   try {
@@ -55,13 +56,13 @@ export async function GET() {
     );
     return addCorrelationHeaders(response, correlationId);
   }
-}
+}, { feature: 'GET API' });
 
 /**
  * POST - Purchase AI token add-on
  * DEPRECATED: Returns error
  */
-export async function POST(_request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(_request: NextRequest) {
   const correlationId = await getCorrelationId();
 
   try {
@@ -94,4 +95,4 @@ export async function POST(_request: NextRequest) {
     );
     return addCorrelationHeaders(response, correlationId);
   }
-}
+}, { feature: 'POST API' });

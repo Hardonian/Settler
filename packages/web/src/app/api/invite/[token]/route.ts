@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getTraceId } from '@/lib/observability/trace';
 import { prisma } from '@/shared/db/prismaClient';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -16,7 +17,7 @@ export const runtime = 'nodejs';
 /**
  * GET /api/invite/[token] - Get invite details
  */
-export async function GET(
+export const GET = withUniversalBillingGate(async function GET(
   request: NextRequest,
   { params }: { params: { token: string } }
 ) {
@@ -79,12 +80,12 @@ export async function GET(
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });
 
 /**
  * POST /api/invite/[token] - Accept invite
  */
-export async function POST(
+export const POST = withUniversalBillingGate(async function POST(
   request: NextRequest,
   { params }: { params: { token: string } }
 ) {
@@ -189,4 +190,4 @@ export async function POST(
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

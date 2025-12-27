@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { prisma } from '@/shared/db/prismaClient';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -15,7 +16,7 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(
+export const GET = withUniversalBillingGate(async function GET(
   request: NextRequest,
   { params }: RouteParams
 ) {
@@ -111,4 +112,4 @@ export async function GET(
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

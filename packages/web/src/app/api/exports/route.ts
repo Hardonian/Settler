@@ -15,6 +15,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -32,7 +33,7 @@ const ExportRequestSchema = z.object({
  * POST /api/exports
  * Create an export
  */
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   const startTime = Date.now();
   
   try {
@@ -171,7 +172,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });
 
 /**
  * Process export asynchronously
@@ -318,7 +319,7 @@ async function processExport(
  * GET /api/exports
  * List exports
  */
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Authenticate
     let tenantId: string | null = null;
@@ -384,4 +385,4 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

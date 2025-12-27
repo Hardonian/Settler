@@ -7,8 +7,9 @@
 import { NextResponse } from 'next/server';
 import { calculateROI } from '@/lib/gtm/value-events';
 import { createClient } from '@/lib/supabase/server';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
-export async function GET(request: Request) {
+export const GET = withUniversalBillingGate(async function GET(request: Request) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -49,4 +50,4 @@ export async function GET(request: Request) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

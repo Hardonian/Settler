@@ -7,11 +7,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUserUsageAlerts } from '@/lib/alerts/usage-alerts';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET() {
+export const GET = withUniversalBillingGate(async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -27,4 +28,4 @@ export async function GET() {
     console.error('[Usage Alerts API] Error:', error);
     return NextResponse.json({ alerts: [] });
   }
-}
+}, { feature: 'GET API' });

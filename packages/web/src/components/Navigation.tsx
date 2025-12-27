@@ -8,14 +8,23 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 // Primary navigation items (always visible)
-const primaryNavigationItems = [
-  { href: '/console', label: 'Console' },
-  { href: '/playground', label: 'Playground' },
-  { href: '/docs', label: 'Docs' },
-  { href: '/pricing', label: 'Pricing' },
-];
+const getPrimaryNavigationItems = (isAuthenticated: boolean) => {
+  const items = [
+    { href: '/playground', label: 'Playground' },
+    { href: '/docs', label: 'Docs' },
+    { href: '/pricing', label: 'Pricing' },
+  ];
+  
+  // Only show Console if user is authenticated
+  if (isAuthenticated) {
+    items.unshift({ href: '/console', label: 'Console' });
+  }
+  
+  return items;
+};
 
 // Secondary navigation items (in "More" menu on mobile)
 const secondaryNavigationItems = [
@@ -29,13 +38,15 @@ const secondaryNavigationItems = [
   { href: '/support', label: 'Support' },
 ];
 
-// Combined for desktop (all items visible)
-const navigationItems = [...primaryNavigationItems, ...secondaryNavigationItems];
-
 export function Navigation() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { isAuthenticated, loading } = useAuth();
+  
+  // Get navigation items based on auth status
+  const primaryNavigationItems = getPrimaryNavigationItems(isAuthenticated);
+  const navigationItems = [...primaryNavigationItems, ...secondaryNavigationItems];
 
   // Focus trap for mobile menu
   useEffect(() => {
@@ -125,27 +136,42 @@ export function Navigation() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 flex-shrink-0" aria-label="Desktop navigation">
-              {navigationItems.map((item) => {
-                const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      'text-sm lg:text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap',
-                      isActive && 'text-primary-600 dark:text-primary-400 font-medium',
-                      'transition-colors duration-200 ease-out',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                      'focus-visible:ring-offset-background',
-                      'rounded px-2 py-1',
-                      'motion-reduce:transition-none'
-                    )}
-                    aria-current={isActive ? 'page' : undefined}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
+              {loading ? (
+                // Show placeholder while loading auth state
+                <>
+                  {['Playground', 'Docs', 'Pricing'].map((label) => (
+                    <div
+                      key={label}
+                      className="text-sm lg:text-base text-muted-foreground whitespace-nowrap rounded px-2 py-1"
+                      aria-hidden="true"
+                    >
+                      {label}
+                    </div>
+                  ))}
+                </>
+              ) : (
+                navigationItems.map((item) => {
+                  const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'text-sm lg:text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap',
+                        isActive && 'text-primary-600 dark:text-primary-400 font-medium',
+                        'transition-colors duration-200 ease-out',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                        'focus-visible:ring-offset-background',
+                        'rounded px-2 py-1',
+                        'motion-reduce:transition-none'
+                      )}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })
+              )}
               <div className="ml-2">
                 <DarkModeToggle />
               </div>
@@ -194,7 +220,21 @@ export function Navigation() {
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
                         Main
                       </p>
-                      {primaryNavigationItems.map((item) => {
+                      {loading ? (
+                        // Show placeholder while loading
+                        <>
+                          {['Playground', 'Docs', 'Pricing'].map((label) => (
+                            <div
+                              key={label}
+                              className="text-base text-muted-foreground rounded px-3 py-2 min-h-[44px] flex items-center"
+                              aria-hidden="true"
+                            >
+                              {label}
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        primaryNavigationItems.map((item) => {
                         const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
                         return (
                           <Link
@@ -215,7 +255,8 @@ export function Navigation() {
                             {item.label}
                           </Link>
                         );
-                      })}
+                      })
+                      )}
                     </nav>
                     
                     {/* Secondary Navigation */}

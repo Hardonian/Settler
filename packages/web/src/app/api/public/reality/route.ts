@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { publicRoute } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -14,7 +15,7 @@ export const runtime = 'nodejs';
 /**
  * GET /api/public/reality
  */
-export async function GET(_request: NextRequest) {
+export const GET = publicRoute(async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     
@@ -100,4 +101,4 @@ export async function GET(_request: NextRequest) {
       timestamp: new Date().toISOString(),
     }, { status: 200 }); // Return 200 to prevent page crash
   }
-}
+});;
