@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
 
 export const POST = withUniversalBillingGate(async function POST(
   request: NextRequest,
-  { params }, { feature: 'POST API' });: { params: { providerId: string } }
+  { params }: { params: { providerId: string } }
 ) {
   try {
     const supabase = await createClient();
@@ -124,4 +124,4 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

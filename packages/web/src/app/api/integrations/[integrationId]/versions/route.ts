@@ -4,7 +4,10 @@ import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime
 
-export const GET = withUniversalBillingGate(function GET(request: NextRequest, { params }, { feature: 'GET API' });: { params: { integrationId: string } }) {
+export const GET = withUniversalBillingGate(async function GET(
+  request: NextRequest,
+  { params }: { params: { integrationId: string } }
+) {
   try {
     const { integrationId: _integrationId } = params;
     const searchParams = request.nextUrl.searchParams;
@@ -38,4 +41,4 @@ export const GET = withUniversalBillingGate(function GET(request: NextRequest, {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

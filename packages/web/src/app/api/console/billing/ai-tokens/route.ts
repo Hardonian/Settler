@@ -20,7 +20,7 @@ export const runtime = 'nodejs';
 /**
  * GET - Returns empty state (AI tokens deprecated)
  */
-export const GET = withUniversalBillingGate(export async function GET() {
+export const GET = withUniversalBillingGate(async function GET() {
   const correlationId = await getCorrelationId();
 
   try {
@@ -62,7 +62,7 @@ export const GET = withUniversalBillingGate(export async function GET() {
  * POST - Purchase AI token add-on
  * DEPRECATED: Returns error
  */
-export const POST = withUniversalBillingGate(export async function POST(_request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(_request: NextRequest) {
   const correlationId = await getCorrelationId();
 
   try {

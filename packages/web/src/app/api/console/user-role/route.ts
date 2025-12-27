@@ -7,7 +7,7 @@ import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 /**
  * Get current user's role in their tenant and super admin status
  */
-export const GET = withUniversalBillingGate(export async function GET() {
+export const GET = withUniversalBillingGate(async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();

@@ -18,7 +18,7 @@ interface RouteParams {
 
 export const GET = withUniversalBillingGate(async function GET(
   request: NextRequest,
-  { params }, { feature: 'GET API' });: RouteParams
+  { params }: RouteParams
 ) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
@@ -112,4 +112,4 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

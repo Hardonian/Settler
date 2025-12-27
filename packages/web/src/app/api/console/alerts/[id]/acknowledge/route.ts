@@ -11,9 +11,9 @@ import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const POST = withUniversalBillingGate(export async function POST(
+export const POST = withUniversalBillingGate(async function POST(
   request: NextRequest,
-  { params }, { feature: 'POST API' });: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     // Authenticate
@@ -54,4 +54,4 @@ export const POST = withUniversalBillingGate(export async function POST(
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

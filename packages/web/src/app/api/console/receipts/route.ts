@@ -14,7 +14,7 @@ import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/console/receipts', method: 'GET' });
   

@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 
 export const GET = withUniversalBillingGate(async function GET(
   request: NextRequest,
-  { params }, { feature: 'GET API' });: { params: { providerId: string } }
+  { params }: { params: { providerId: string } }
 ) {
   try {
     const supabase = await createClient();
@@ -135,4 +135,4 @@ export const GET = withUniversalBillingGate(async function GET(
       )
     );
   }
-}
+}, { feature: 'GET API' });

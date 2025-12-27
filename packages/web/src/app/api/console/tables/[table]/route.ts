@@ -16,7 +16,7 @@ import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
  * Supports all tables in public schema and other application schemas
  */
 
-export const GET = withUniversalBillingGate(export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Check subscription access
     const subscription = await getSubscriptionStatus();
@@ -154,7 +154,7 @@ export const GET = withUniversalBillingGate(export async function GET(request: N
   }
 }, { feature: 'GET API' });
 
-export const POST = withUniversalBillingGate(export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     // Check subscription access for editing
     const subscription = await getSubscriptionStatus();
@@ -226,7 +226,7 @@ export const POST = withUniversalBillingGate(export async function POST(request:
   }
 }, { feature: 'POST API' });
 
-export const PATCH = withUniversalBillingGate(export async function PATCH(request: NextRequest) {
+export const PATCH = withUniversalBillingGate(async function PATCH(request: NextRequest) {
   try {
     // Check subscription access for editing
     const subscription = await getSubscriptionStatus();
@@ -307,7 +307,7 @@ export const PATCH = withUniversalBillingGate(export async function PATCH(reques
   }
 }, { feature: 'PATCH API' });
 
-export const DELETE = withUniversalBillingGate(export async function DELETE(request: NextRequest) {
+export const DELETE = withUniversalBillingGate(async function DELETE(request: NextRequest) {
   try {
     // Check subscription access for editing
     const subscription = await getSubscriptionStatus();

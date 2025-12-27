@@ -18,9 +18,9 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export const GET = withUniversalBillingGate(export async function GET(
+export const GET = withUniversalBillingGate(async function GET(
   request: NextRequest,
-  { params }, { feature: 'GET API' });: RouteParams
+  { params }: RouteParams
 ) {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/console/receipts/[id]', method: 'GET' });
@@ -97,4 +97,4 @@ export const GET = withUniversalBillingGate(export async function GET(
     );
     return addCorrelationHeaders(response, correlationId);
   }
-}
+}, { feature: 'GET API' });

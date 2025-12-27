@@ -236,7 +236,7 @@ export const POST = freeRoute(async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-});
+});;
 
 function getUnitCategory(unit: string): string {
   const lengthUnits = ['m', 'ft', 'km', 'mi'];

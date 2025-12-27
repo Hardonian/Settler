@@ -170,4 +170,4 @@ export const GET = publicRoute(async function GET() {
   // Always return 200 with status details
   const response = NextResponse.json(result, { status: 200 });
   return addCorrelationHeaders(response, correlationId);
-});
+});;

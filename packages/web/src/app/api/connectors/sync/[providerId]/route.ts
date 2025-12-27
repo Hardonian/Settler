@@ -15,7 +15,7 @@ export const maxDuration = 300; // 5 minutes for sync operations
 
 export const POST = withUniversalBillingGate(async function POST(
   request: NextRequest,
-  { params }, { feature: 'POST API' });: { params: { providerId: string } }
+  { params }: { params: { providerId: string } }
 ) {
   const logger = await createLogger({ route: '/api/connectors/sync', method: 'POST' });
   const correlationId = await getCorrelationId();
@@ -165,4 +165,4 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

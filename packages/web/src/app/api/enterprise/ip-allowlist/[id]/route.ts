@@ -7,7 +7,7 @@ export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
 export const DELETE = withUniversalBillingGate(async function DELETE(
   _request: NextRequest,
-  { params }, { feature: 'DELETE API' });: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -36,4 +36,4 @@ export const DELETE = withUniversalBillingGate(async function DELETE(
       { status: 200 }
     );
   }
-}
+}, { feature: 'DELETE API' });

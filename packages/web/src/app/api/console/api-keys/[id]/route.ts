@@ -16,9 +16,9 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export const DELETE = withUniversalBillingGate(export async function DELETE(
+export const DELETE = withUniversalBillingGate(async function DELETE(
   request: NextRequest,
-  { params }, { feature: 'DELETE API' });: RouteParams
+  { params }: RouteParams
 ) {
   try {
     // Authenticate using unified auth (session or API key)
@@ -45,4 +45,4 @@ export const DELETE = withUniversalBillingGate(export async function DELETE(
       { status: 200 }
     );
   }
-}
+}, { feature: 'DELETE API' });

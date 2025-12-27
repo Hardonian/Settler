@@ -25,7 +25,7 @@ const RunReconciliationSchema = z.object({
   })).optional(),
 });
 
-export const POST = withUniversalBillingGate(export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     // Authenticate
     await requireAuth(request);
@@ -79,7 +79,7 @@ export const POST = withUniversalBillingGate(export async function POST(request:
   }
 }, { feature: 'POST API' });
 
-export const GET = withUniversalBillingGate(export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Authenticate
     await requireAuth(request);

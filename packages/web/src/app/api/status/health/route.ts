@@ -165,4 +165,4 @@ export const GET = publicRoute(async function GET() {
       { status: 200 }
     );
   }
-});
+});;

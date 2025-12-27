@@ -18,7 +18,7 @@ interface RouteParams {
 
 export const PATCH = withUniversalBillingGate(async function PATCH(
   request: NextRequest,
-  { params }, { feature: 'PATCH API' });: RouteParams
+  { params }: RouteParams
 ) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
@@ -107,4 +107,4 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
       { status: 200 }
     );
   }
-}
+}, { feature: 'PATCH API' });

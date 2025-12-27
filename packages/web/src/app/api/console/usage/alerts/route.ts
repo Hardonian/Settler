@@ -12,7 +12,7 @@ import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(export async function GET() {
+export const GET = withUniversalBillingGate(async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

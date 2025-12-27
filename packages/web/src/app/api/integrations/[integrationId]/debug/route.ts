@@ -7,7 +7,7 @@ export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
 export const POST = withUniversalBillingGate(async function POST(
   request: NextRequest,
-  { params }, { feature: 'POST API' });: { params: { integrationId: string } }
+  { params }: { params: { integrationId: string } }
 ) {
   try {
     const supabase = await createClient();
@@ -49,4 +49,4 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

@@ -197,4 +197,4 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
 
   response.headers.set('x-trace-id', traceId);
   return response;
-});
+});;

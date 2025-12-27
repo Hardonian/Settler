@@ -17,7 +17,7 @@ export const runtime = 'nodejs';
 /**
  * GET /api/console/costs
  */
-export const GET = withUniversalBillingGate(export async function GET() {
+export const GET = withUniversalBillingGate(async function GET() {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/console/costs', method: 'GET' });
   

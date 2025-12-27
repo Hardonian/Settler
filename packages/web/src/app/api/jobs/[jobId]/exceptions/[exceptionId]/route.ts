@@ -42,7 +42,7 @@ const ReviewActionSchema = z.object({
  */
 export const PATCH = withUniversalBillingGate(async function PATCH(
   request: NextRequest,
-  { params }, { feature: 'PATCH API' });: { params: Promise<{ jobId: string; exceptionId: string }> }
+  { params }: { params: Promise<{ jobId: string; exceptionId: string }> }
 ) {
   const startTime = Date.now();
   
@@ -382,4 +382,4 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
       { status: 200 }
     );
   }
-}
+}, { feature: 'PATCH API' });

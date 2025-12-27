@@ -21,4 +21,4 @@ export const GET = publicRoute(async function GET() {
     documentation: 'https://settler.dev/docs/api',
     support: 'https://settler.dev/support',
   });
-});
+});;

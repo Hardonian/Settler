@@ -173,4 +173,4 @@ export const GET = publicRoute(async function GET() {
 
   // Always return 200, even if unhealthy, to prevent 500 errors
   return NextResponse.json(health, { status: 200 });
-});
+});;

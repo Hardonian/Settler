@@ -11,7 +11,7 @@ export const runtime = 'nodejs';
  * CRITICAL: Never returns 500 - always returns 200 with fallback status
  * This prevents client-side errors from breaking the console UI
  */
-export const GET = withUniversalBillingGate(export async function GET() {
+export const GET = withUniversalBillingGate(async function GET() {
   try {
     const status = await getSubscriptionStatus();
     return NextResponse.json(status);

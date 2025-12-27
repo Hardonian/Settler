@@ -79,4 +79,4 @@ export const GET = publicRoute(async function GET() {
       degraded: true,
     }, { status: 200 });
   }
-});
+});;

@@ -19,7 +19,7 @@ export const runtime = 'nodejs';
  */
 export const GET = withUniversalBillingGate(async function GET(
   request: NextRequest,
-  { params }, { feature: 'GET API' });: { params: { token: string } }
+  { params }: { params: { token: string } }
 ) {
   const traceId = getTraceId(request);
   
@@ -80,14 +80,14 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });
 
 /**
  * POST /api/invite/[token] - Accept invite
  */
 export const POST = withUniversalBillingGate(async function POST(
   request: NextRequest,
-  { params }, { feature: 'POST API' });: { params: { token: string } }
+  { params }: { params: { token: string } }
 ) {
   const traceId = getTraceId(request);
   
@@ -190,4 +190,4 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

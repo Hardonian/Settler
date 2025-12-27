@@ -13,7 +13,7 @@ import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     const authContext = await requireAuth(request);
     
@@ -39,7 +39,7 @@ export const GET = withUniversalBillingGate(export async function GET(request: N
   }
 }, { feature: 'GET API' });
 
-export const POST = withUniversalBillingGate(export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const authContext = await requireAuth(request);
     

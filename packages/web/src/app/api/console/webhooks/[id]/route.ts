@@ -17,9 +17,9 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export const PATCH = withUniversalBillingGate(export async function PATCH(
+export const PATCH = withUniversalBillingGate(async function PATCH(
   request: NextRequest,
-  { params }, { feature: 'PATCH API' });: RouteParams
+  { params }: RouteParams
 ) {
   try {
     const authContext = await requireAuth(request);
@@ -44,11 +44,11 @@ export const PATCH = withUniversalBillingGate(export async function PATCH(
     const errorMessage = error instanceof Error ? error.message : 'Failed to update webhook';
     return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
-}
+}, { feature: 'PATCH API' });
 
-export const DELETE = withUniversalBillingGate(export async function DELETE(
+export const DELETE = withUniversalBillingGate(async function DELETE(
   request: NextRequest,
-  { params }, { feature: 'DELETE API' });: RouteParams
+  { params }: RouteParams
 ) {
   try {
     const authContext = await requireAuth(request);
@@ -68,4 +68,4 @@ export const DELETE = withUniversalBillingGate(export async function DELETE(
     const errorMessage = error instanceof Error ? error.message : 'Failed to delete webhook';
     return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
-}
+}, { feature: 'DELETE API' });

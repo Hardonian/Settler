@@ -101,4 +101,4 @@ export const GET = publicRoute(async function GET(_request: NextRequest) {
       timestamp: new Date().toISOString(),
     }, { status: 200 }); // Return 200 to prevent page crash
   }
-});
+});;

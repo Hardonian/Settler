@@ -65,7 +65,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
 export const GET = withUniversalBillingGate(async function GET(
   _request: NextRequest,
-  { params }, { feature: 'GET API' });: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -143,4 +143,4 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

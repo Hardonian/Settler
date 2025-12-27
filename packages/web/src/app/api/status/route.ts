@@ -79,7 +79,7 @@ export const GET = publicRoute(async function GET(request: NextRequest): Promise
     errorResponse.headers.set('Cache-Control', 'no-store');
     return addCorsHeaders(errorResponse, request);
   }
-});
+});;
 
 /**
  * Check database health

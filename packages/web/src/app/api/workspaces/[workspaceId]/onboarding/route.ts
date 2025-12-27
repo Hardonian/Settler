@@ -24,7 +24,7 @@ const completeStepSchema = z.object({
  */
 export const GET = withUniversalBillingGate(async function GET(
   request: NextRequest,
-  { params }, { feature: 'GET API' });: { params: { workspaceId: string } }
+  { params }: { params: { workspaceId: string } }
 ) {
   const traceId = getTraceId(request);
   
@@ -164,14 +164,14 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });
 
 /**
  * POST /api/workspaces/[workspaceId]/onboarding/complete - Complete a step
  */
 export const POST = withUniversalBillingGate(async function POST(
   request: NextRequest,
-  { params }, { feature: 'POST API' });: { params: { workspaceId: string } }
+  { params }: { params: { workspaceId: string } }
 ) {
   const traceId = getTraceId(request);
   
@@ -284,7 +284,7 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });
 
 // Onboarding steps definition
 const ONBOARDING_STEPS = [

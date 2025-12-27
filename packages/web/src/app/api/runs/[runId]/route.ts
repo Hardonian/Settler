@@ -14,7 +14,7 @@ export const runtime = 'nodejs';
 
 export const GET = withUniversalBillingGate(async function GET(
   _request: NextRequest,
-  { params }, { feature: 'GET API' });: { params: { runId: string } }
+  { params }: { params: { runId: string } }
 ) {
   const logger = createLogger({ runId: params.runId });
 
@@ -70,4 +70,4 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });
