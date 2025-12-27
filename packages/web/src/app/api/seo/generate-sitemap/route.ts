@@ -4,8 +4,9 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
-export async function GET(_request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(_request: NextRequest) {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
     
@@ -91,4 +92,4 @@ ${integrations
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

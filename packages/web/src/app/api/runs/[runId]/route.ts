@@ -8,12 +8,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { requireWorkspaceMembership } from '@/lib/authz';
 import { createLogger } from '@/lib/logger';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const runtime = 'nodejs';
 
-export async function GET(
+export const GET = withUniversalBillingGate(async function GET(
   _request: NextRequest,
-  { params }: { params: { runId: string } }
+  { params }, { feature: 'GET API' });: { params: { runId: string } }
 ) {
   const logger = createLogger({ runId: params.runId });
 

@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getCurrentPeriodCosts } from '@/lib/cost/visibility';
 import { prisma } from '@/shared/db/prismaClient';
 import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -16,7 +17,7 @@ export const runtime = 'nodejs';
 /**
  * GET /api/console/costs
  */
-export async function GET() {
+export const GET = withUniversalBillingGate(export async function GET() {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/console/costs', method: 'GET' });
   
@@ -74,4 +75,4 @@ export async function GET() {
     );
     return addCorrelationHeaders(response, correlationId);
   }
-}
+}, { feature: 'GET API' });

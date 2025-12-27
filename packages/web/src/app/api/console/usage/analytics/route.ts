@@ -12,11 +12,12 @@ import { getCurrentUsage } from '@/lib/usage/tracking';
 import { getAccountPlanCode } from '@/domain/billing/entitlements';
 import { getPlanConfig } from '@/domain/billing/planConfig';
 import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(export async function GET(request: NextRequest) {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/console/usage/analytics', method: 'GET' });
 
@@ -246,4 +247,4 @@ export async function GET(request: NextRequest) {
     );
     return addCorrelationHeaders(response, correlationId);
   }
-}
+}, { feature: 'GET API' });

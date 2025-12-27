@@ -11,11 +11,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { listApiKeys, createApiKey, CreateApiKeyInput } from '@/domain/console/apiKeys';
 import { handleApiError } from '@/lib/api/error-handler';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Authenticate using unified auth (session or API key)
     await requireAuth(request);
@@ -26,9 +27,9 @@ export async function GET(request: NextRequest) {
     // Use unified error handler (returns 200 with error envelope)
     return handleApiError(error, 'Failed to fetch API keys');
   }
-}
+}, { feature: 'GET API' });
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     // Authenticate using unified auth (session or API key)
     await requireAuth(request);
@@ -45,4 +46,4 @@ export async function POST(request: NextRequest) {
     // Use unified error handler (returns 200 with error envelope)
     return handleApiError(error, 'Failed to create API key');
   }
-}
+}, { feature: 'POST API' });

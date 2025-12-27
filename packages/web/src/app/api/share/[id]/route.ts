@@ -6,8 +6,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { nanoid } from "nanoid";
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -60,11 +61,11 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });
 
-export async function GET(
+export const GET = withUniversalBillingGate(async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }, { feature: 'GET API' });: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;

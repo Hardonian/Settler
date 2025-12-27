@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime
 
-export function GET(request: NextRequest, { params }: { params: { integrationId: string } }) {
+export const GET = withUniversalBillingGate(function GET(request: NextRequest, { params }, { feature: 'GET API' });: { params: { integrationId: string } }) {
   try {
     const { integrationId: _integrationId } = params;
     const searchParams = request.nextUrl.searchParams;

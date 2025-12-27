@@ -16,6 +16,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -83,9 +84,9 @@ interface ExceptionResponse {
  * GET /api/jobs/[jobId]/exceptions
  * Get exceptions (unmatched transactions and conflicts) for a job
  */
-export async function GET(
+export const GET = withUniversalBillingGate(async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ jobId: string }> }
+  { params }, { feature: 'GET API' });: { params: Promise<{ jobId: string }> }
 ) {
   const startTime = Date.now();
   

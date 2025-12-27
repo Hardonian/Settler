@@ -9,6 +9,7 @@ import { requireAuth } from '@/lib/api/unified-auth';
 import { runReconciliation, getReconciliationSummary, listReconciliationItems } from '@/lib/server/settler/reconciliation';
 import { getPrimaryTenant } from '@/lib/supabase/tenant-helpers';
 import { z } from 'zod';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -24,7 +25,7 @@ const RunReconciliationSchema = z.object({
   })).optional(),
 });
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(export async function POST(request: NextRequest) {
   try {
     // Authenticate
     await requireAuth(request);
@@ -76,9 +77,9 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });
 
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(export async function GET(request: NextRequest) {
   try {
     // Authenticate
     await requireAuth(request);
@@ -118,4 +119,4 @@ export async function GET(request: NextRequest) {
     console.error('[Reconciliation API] Error:', error);
     return NextResponse.json({ reconciliations: [] }, { status: 200 });
   }
-}
+}, { feature: 'GET API' });

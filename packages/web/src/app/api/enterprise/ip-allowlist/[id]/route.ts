@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export async function DELETE(
+export const DELETE = withUniversalBillingGate(async function DELETE(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }, { feature: 'DELETE API' });: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();

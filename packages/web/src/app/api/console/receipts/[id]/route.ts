@@ -9,6 +9,7 @@ import { requireAuth } from '@/lib/api/unified-auth';
 import { prisma } from '@/shared/db/prismaClient';
 import { getReceiptDetail } from '@/domain/console/receipts';
 import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -17,9 +18,9 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(
+export const GET = withUniversalBillingGate(export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }, { feature: 'GET API' });: RouteParams
 ) {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/console/receipts/[id]', method: 'GET' });

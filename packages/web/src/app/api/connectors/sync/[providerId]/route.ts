@@ -7,14 +7,15 @@ import { generateIdempotencyKey } from '@/lib/idempotency/key';
 import { checkIdempotencyKey, createIdempotencyKey, completeIdempotencyKey, failIdempotencyKey } from '@/lib/idempotency/store';
 import { createLogger } from '@/lib/logger';
 import { getCorrelationId } from '@/lib/monitoring/correlation';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes for sync operations
 
-export async function POST(
+export const POST = withUniversalBillingGate(async function POST(
   request: NextRequest,
-  { params }: { params: { providerId: string } }
+  { params }, { feature: 'POST API' });: { params: { providerId: string } }
 ) {
   const logger = await createLogger({ route: '/api/connectors/sync', method: 'POST' });
   const correlationId = await getCorrelationId();

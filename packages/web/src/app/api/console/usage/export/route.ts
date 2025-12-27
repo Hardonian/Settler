@@ -7,11 +7,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -116,4 +117,4 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });

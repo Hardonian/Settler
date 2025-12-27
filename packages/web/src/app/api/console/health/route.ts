@@ -7,11 +7,12 @@
 import { NextResponse } from 'next/server';
 import { performHealthCheck } from '@/lib/monitoring/health-check';
 import { getActiveAlerts, runAllAlertChecks } from '@/lib/monitoring/alerts';
+import { publicRoute } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET() {
+export const GET = publicRoute(async function GET() {
   try {
     const health = await performHealthCheck();
     const alerts = await runAllAlertChecks();
@@ -41,4 +42,4 @@ export async function GET() {
       { status: 200 }
     );
   }
-}
+});

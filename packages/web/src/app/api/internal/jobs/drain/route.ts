@@ -15,6 +15,12 @@ const DRAIN_SECRET = process.env.JOB_DRAIN_SECRET || '';
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes
 
+
+// SECURITY: This route is secured via:
+// - Vercel Cron Secret (for cron routes)
+// - Service Role API Key (for internal routes)
+// - Not using billing gates (system/internal use)
+
 export async function POST(request: NextRequest) {
   const logger = createLogger();
 

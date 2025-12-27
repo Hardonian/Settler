@@ -16,6 +16,7 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { logAuditEvent, type AuditAction } from '@/lib/audit/logger';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -30,7 +31,7 @@ const BulkActionSchema = z.object({
  * POST /api/jobs/bulk
  * Perform bulk actions on jobs
  */
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   const startTime = Date.now();
   
   try {
@@ -221,4 +222,4 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

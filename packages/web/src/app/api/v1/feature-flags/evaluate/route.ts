@@ -9,11 +9,12 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { recordServiceUsage } from '@/shared/usage/usageEvent';
 import { evaluateFlag } from '@/domain/featureFlags/evaluator';
 import type { Environment } from '@/domain/featureFlags/types';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
     let auth;
@@ -117,4 +118,4 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

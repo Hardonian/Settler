@@ -10,11 +10,12 @@ import { metricsCollector } from "@/lib/observability/metrics";
 import { getTraceId } from "@/lib/observability/trace";
 import { logger } from "@/lib/observability/logger";
 import { requireAuth } from "@/lib/api/auth-gate";
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
   const traceId = await getTraceId(request);
 
   // Require authentication for metrics endpoint
@@ -51,4 +52,4 @@ export async function GET(request: NextRequest) {
 
   response.headers.set("x-trace-id", traceId);
   return response;
-}
+}, { feature: 'GET API' });

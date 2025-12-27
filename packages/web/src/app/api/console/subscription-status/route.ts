@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSubscriptionStatus } from '@/lib/get-subscription-status';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -10,7 +11,7 @@ export const runtime = 'nodejs';
  * CRITICAL: Never returns 500 - always returns 200 with fallback status
  * This prevents client-side errors from breaking the console UI
  */
-export async function GET() {
+export const GET = withUniversalBillingGate(export async function GET() {
   try {
     const status = await getSubscriptionStatus();
     return NextResponse.json(status);
@@ -34,4 +35,4 @@ export async function GET() {
         : {}),
     });
   }
-}
+}, { feature: 'GET API' });

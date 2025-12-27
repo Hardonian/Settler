@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(
+export const GET = withUniversalBillingGate(async function GET(
   request: NextRequest,
-  { params }: { params: { providerId: string } }
+  { params }, { feature: 'GET API' });: { params: { providerId: string } }
 ) {
   try {
     const supabase = await createClient();

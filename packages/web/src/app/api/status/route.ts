@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addCorsHeaders, handleCors } from "@/lib/api/cors";
+import { publicRoute } from '@/middleware/billing-gate-universal';
 
 // Cache status for 30 seconds to reduce load while keeping it fresh
 export const revalidate = 30;
@@ -7,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma and Supabase
 export const maxDuration = 10; // 10 seconds max for health checks
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export const GET = publicRoute(async function GET(request: NextRequest): Promise<NextResponse> {
   // Handle CORS preflight
   const corsResponse = handleCors(request);
   if (corsResponse) return corsResponse;
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     errorResponse.headers.set('Cache-Control', 'no-store');
     return addCorsHeaders(errorResponse, request);
   }
-}
+});
 
 /**
  * Check database health

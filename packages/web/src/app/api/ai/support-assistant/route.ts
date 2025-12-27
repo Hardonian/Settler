@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 interface SupportRequest {
   question: string;
@@ -16,7 +17,7 @@ interface SupportRequest {
   userId?: string;
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -95,7 +96,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });
 
 async function generateSupportResponse(
   question: string,

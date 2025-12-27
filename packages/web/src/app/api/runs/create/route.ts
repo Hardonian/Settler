@@ -13,6 +13,7 @@ import { validateInputManifest } from '@/lib/ingest/manifest';
 import { requireWorkspaceMembership } from '@/lib/authz';
 import { createLogger, generateCorrelationId } from '@/lib/logger';
 import { z } from 'zod';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 const CreateRunSchema = z.object({
   workspace_id: z.string().uuid(),
@@ -23,7 +24,7 @@ const CreateRunSchema = z.object({
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   const logger = createLogger();
   const correlationId = generateCorrelationId();
 
@@ -199,4 +200,4 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

@@ -6,13 +6,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { acknowledgeAlert } from '@/lib/server/settler/alerts';
 import { getPrimaryTenant } from '@/lib/supabase/tenant-helpers';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function POST(
+export const POST = withUniversalBillingGate(export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }, { feature: 'POST API' });: { params: { id: string } }
 ) {
   try {
     // Authenticate

@@ -17,6 +17,7 @@ import { withRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/security/rate-limiter';
 import { withCache, CACHE_CONFIGS } from '@/lib/cache/api-cache';
 import { validatePagination } from '@/lib/security/request-validator';
 import { withApiLogging } from '@/middleware/api-logger';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';

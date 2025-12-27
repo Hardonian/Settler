@@ -8,8 +8,9 @@ import { createClient } from "@/lib/supabase/server";
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 import { savePreTestAnswers } from "@/lib/data/user-dashboard";
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -40,4 +41,4 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

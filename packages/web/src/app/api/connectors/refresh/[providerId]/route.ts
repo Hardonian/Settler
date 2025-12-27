@@ -3,13 +3,14 @@ import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 import { refreshTokenIfNeeded } from '@settler/adapters/src/token-refresh';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function POST(
+export const POST = withUniversalBillingGate(async function POST(
   request: NextRequest,
-  { params }: { params: { providerId: string } }
+  { params }, { feature: 'POST API' });: { params: { providerId: string } }
 ) {
   try {
     const supabase = await createClient();

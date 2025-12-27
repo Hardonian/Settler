@@ -8,6 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import {
   getOnboardingProgress,
   completeStep,
@@ -21,7 +22,7 @@ export const runtime = 'nodejs';
 /**
  * GET /api/onboarding/progress
  */
-export async function GET() {
+export const GET = withUniversalBillingGate(async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -72,12 +73,12 @@ export async function GET() {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });
 
 /**
  * POST /api/onboarding/progress/complete
  */
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -137,4 +138,4 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'POST API' });

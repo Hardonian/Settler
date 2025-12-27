@@ -8,11 +8,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { createWebhook, listWebhooks, CreateWebhookInput } from '@/lib/webhooks/manager';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(export async function GET(request: NextRequest) {
   try {
     const authContext = await requireAuth(request);
     
@@ -36,9 +37,9 @@ export async function GET(request: NextRequest) {
     console.error('[Webhooks API] Error:', error);
     return NextResponse.json({ webhooks: [] });
   }
-}
+}, { feature: 'GET API' });
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(export async function POST(request: NextRequest) {
   try {
     const authContext = await requireAuth(request);
     
@@ -74,4 +75,4 @@ export async function POST(request: NextRequest) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to create webhook';
     return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
-}
+}, { feature: 'POST API' });

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getSubscriptionStatus } from '@/lib/get-subscription-status';
 import { hasAccess } from '@/lib/subscription-access';
+import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 /**
  * Generic CRUD API Route for All Tables
@@ -15,7 +16,7 @@ import { hasAccess } from '@/lib/subscription-access';
  * Supports all tables in public schema and other application schemas
  */
 
-export async function GET(request: NextRequest) {
+export const GET = withUniversalBillingGate(export async function GET(request: NextRequest) {
   try {
     // Check subscription access
     const subscription = await getSubscriptionStatus();
@@ -151,9 +152,9 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'GET API' });
 
-export async function POST(request: NextRequest) {
+export const POST = withUniversalBillingGate(export async function POST(request: NextRequest) {
   try {
     // Check subscription access for editing
     const subscription = await getSubscriptionStatus();
@@ -223,9 +224,9 @@ export async function POST(request: NextRequest) {
       retryable: true,
     }, { status: 200 });
   }
-}
+}, { feature: 'POST API' });
 
-export async function PATCH(request: NextRequest) {
+export const PATCH = withUniversalBillingGate(export async function PATCH(request: NextRequest) {
   try {
     // Check subscription access for editing
     const subscription = await getSubscriptionStatus();
@@ -304,9 +305,9 @@ export async function PATCH(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'PATCH API' });
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = withUniversalBillingGate(export async function DELETE(request: NextRequest) {
   try {
     // Check subscription access for editing
     const subscription = await getSubscriptionStatus();
@@ -380,4 +381,4 @@ export async function DELETE(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, { feature: 'DELETE API' });
