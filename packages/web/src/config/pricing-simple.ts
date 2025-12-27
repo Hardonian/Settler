@@ -88,7 +88,7 @@ export function getPlan(planId: string): PricingPlan {
   const plan = PRICING_PLANS[planId];
   if (!plan) {
     // Default to free if plan not found
-    return PRICING_PLANS.free;
+    return PRICING_PLANS.free!; // Non-null assertion: 'free' is always defined
   }
   return plan;
 }
