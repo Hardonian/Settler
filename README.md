@@ -3,7 +3,15 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Settler** automates financial reconciliation at $0.01 per transaction. Connect Stripe, Shopify, and other payment systems to automatically match transactions and catch accounting errors. Clear limits, usage-based pricing, and a rules engine that improves match rates over time.
+**Settler** automates financial reconciliation at $0.01 per transaction. Connect Stripe, Shopify, and other payment systems to automatically match transactions and catch accounting errors.
+
+**Pricing:** 
+- **Free:** 100 transactions/month free, then $0.01 per transaction
+- **Starter:** $29/month + $0.01 per transaction over 1,000 included
+- **Growth:** $99/month + $0.01 per transaction over 10,000 included
+- **Enterprise:** Custom pricing with volume discounts
+
+See [config/pricing-simple.ts](config/pricing-simple.ts) for complete pricing details.
 
 ## 🚀 Quick Start
 

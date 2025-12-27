@@ -80,6 +80,33 @@ export async function runReconciliation(
       return null;
     }
 
+    // Track usage: Reconciliation job execution
+    // Note: Actual transaction count will be tracked when result completes
+    try {
+      const { trackReconciliationTransaction } = await import("@/middleware/usage-tracking");
+      // Get billing account from tenant
+      const { data: billingAccount } = await (supabase
+        .from("billing_accounts")
+        .select("id, user_id")
+        .eq("tenant_id", tenantId)
+        .eq("status", "active")
+        .is("deleted_at", null)
+        .single() as any);
+      
+      if (billingAccount) {
+        await trackReconciliationTransaction(
+          billingAccount.id,
+          tenantId,
+          billingAccount.user_id,
+          1, // Job execution = 1 usage event (will update with actual count on completion)
+          params.sourceId
+        );
+      }
+    } catch (usageError) {
+      // Don't fail reconciliation if usage tracking fails
+      console.error("[runReconciliation] Usage tracking failed:", usageError);
+    }
+
     // In production, this would trigger actual reconciliation processing
     // For now, return a summary with the result ID
     return {

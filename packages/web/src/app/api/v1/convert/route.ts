@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { recordServiceUsage } from '@/shared/usage/usageEvent';
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
+import { freeRoute } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -40,7 +41,7 @@ const CURRENCY_RATES: Record<string, number> = {
   CAD: 1.25,
 };
 
-export async function POST(request: NextRequest) {
+export const POST = freeRoute(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
     let auth;
@@ -235,7 +236,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+});
 
 function getUnitCategory(unit: string): string {
   const lengthUnits = ['m', 'ft', 'km', 'mi'];

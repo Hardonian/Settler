@@ -5,10 +5,11 @@
  */
 
 import { NextResponse } from 'next/server';
+import { publicRoute } from '@/middleware/billing-gate-universal';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export const GET = publicRoute(async function GET() {
   return NextResponse.json({
     version: '1.0.0',
     status: 'active',
@@ -20,4 +21,4 @@ export async function GET() {
     documentation: 'https://settler.dev/docs/api',
     support: 'https://settler.dev/support',
   });
-}
+});

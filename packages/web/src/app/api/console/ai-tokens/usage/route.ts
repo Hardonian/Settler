@@ -1,53 +1,26 @@
-/**
- * AI Tokens Usage API Route
- */
-
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/api/unified-auth';
-import { getPrimaryTenant } from '@/lib/supabase/tenant-helpers';
-import { getTokenUsage } from '@/lib/server/settler/ai-tokens';
+import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 
-export async function GET() {
-  try {
-    // Authenticate
-    await requireAuth({} as NextRequest);
-    
-    // Get tenant ID
-    const tenantId = await getPrimaryTenant();
-    if (!tenantId) {
-      return NextResponse.json(
-        { error: 'No tenant found' },
-        { status: 400 }
-      );
-    }
-    
-    // Get token usage
-    const usage = await getTokenUsage(tenantId);
-    
-    if (!usage) {
-      return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to get token usage',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
-    );
-    }
-    
-    return NextResponse.json({ usage });
-  } catch (error) {
-    console.error('[AI Tokens Usage API] Error:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to get token usage',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
+export async function GET(request: NextRequest) {
+  const subscriptionCheck = await requireActiveSubscription(request);
+  if (!subscriptionCheck.allowed) {
+    return subscriptionCheck.error || NextResponse.json(
+      { error: 'Subscription Required', message: 'This feature requires an active subscription' },
+      { status: 403 }
     );
   }
+  return NextResponse.json({ message: 'Feature temporarily unavailable' }, { status: 503 });
+}
+
+export async function POST(request: NextRequest) {
+  const subscriptionCheck = await requireActiveSubscription(request);
+  if (!subscriptionCheck.allowed) {
+    return subscriptionCheck.error || NextResponse.json(
+      { error: 'Subscription Required', message: 'This feature requires an active subscription' },
+      { status: 403 }
+    );
+  }
+  return NextResponse.json({ message: 'Feature temporarily unavailable' }, { status: 503 });
 }

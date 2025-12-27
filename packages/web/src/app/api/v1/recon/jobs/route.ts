@@ -136,6 +136,21 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Track usage: Job creation counts as 1 transaction (will track actual transactions when job executes)
+    try {
+      const { trackReconciliationTransaction } = await import('@/middleware/usage-tracking');
+      await trackReconciliationTransaction(
+        auth.billingAccountId,
+        billingAccount.tenantId,
+        auth.userId,
+        1, // Job creation = 1 usage event
+        body.sourceAdapter
+      );
+    } catch (usageError) {
+      // Don't fail job creation if usage tracking fails
+      console.error('[Recon Jobs API] Usage tracking failed:', usageError);
+    }
+
     const metadata = job.metadata as Record<string, any> | null;
     const validationRules = job.validationRules as any[] | null;
     const jobResponse = {
