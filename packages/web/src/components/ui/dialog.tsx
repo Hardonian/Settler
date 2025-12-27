@@ -141,11 +141,11 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-4 top-4 h-8 w-8 opacity-70 hover:opacity-100"
+          className="absolute right-4 top-4 h-8 w-8 min-h-[44px] min-w-[44px] opacity-70 hover:opacity-100"
           onClick={() => onOpenChange(false)}
           aria-label="Close dialog"
         >
-          <X className="h-4 w-4" />
+          <X className="h-4 w-4" aria-hidden="true" />
           <span className="sr-only">Close</span>
         </Button>
         {children}
