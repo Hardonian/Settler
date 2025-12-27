@@ -39,7 +39,7 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
           'inline-flex items-center rounded-full border font-semibold',
           'transition-colors',
           'leading-[1.4] whitespace-normal break-words',
-          'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           variants[variant],
           sizes[size],
           className

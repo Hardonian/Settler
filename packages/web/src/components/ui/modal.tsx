@@ -218,8 +218,10 @@ const Modal: React.FC<ModalProps> = ({
                 size="icon"
                 onClick={onClose}
                 aria-label="Close modal"
+                className="min-h-[44px] min-w-[44px]"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
+                <span className="sr-only">Close</span>
               </Button>
             )}
           </div>
