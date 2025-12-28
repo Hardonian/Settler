@@ -43,6 +43,7 @@ scripts/
 !scripts/vercel-prisma-postinstall.js
 !scripts/vercel-build-optimizer.js
 !scripts/vercel-install.sh
+!scripts/validate-api-routes.ts
 
 # Other
 .DS_Store

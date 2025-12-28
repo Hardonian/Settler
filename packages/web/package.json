@@ -9,7 +9,7 @@
     "dev": "next dev",
     "clean:build": "rm -rf .next dist out .next/tsconfig.tsbuildinfo",
     "prebuild": "cd ../.. && npm run prisma:generate && cd packages/web && npm run validate:prebuild && npm run validate:api-routes",
-    "validate:api-routes": "tsx ../../scripts/validate-api-routes.ts || echo '⚠️  API route validation skipped (script not found)'",
+    "validate:api-routes": "test -f ../../scripts/validate-api-routes.ts && tsx ../../scripts/validate-api-routes.ts || echo '⚠️  API route validation skipped (script not found)'",
     "build": "(test \"$VERCEL\" = \"1\" && test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || true) && NODE_OPTIONS='--max-old-space-size=4096' next build",
     "build:vercel": "(test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || echo '⚠️  Build optimizer script not available (expected in Vercel)') && NODE_OPTIONS='--max-old-space-size=4096' next build",
     "postinstall": "export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true",
