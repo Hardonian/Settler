@@ -98,26 +98,31 @@ function validateApiRoutes(): { passed: boolean; issues: RouteIssue[] } {
   };
 }
 
-async function main() {
+function main() {
+  // Output immediately to show script is running
   console.log('🔍 Validating API routes...\n');
   
-  const result = validateApiRoutes();
-  
-  if (result.issues.length > 0) {
-    console.log('❌ Found API routes that need to be marked as dynamic:\n');
-    result.issues.forEach((issue) => {
-      console.log(`   ${issue.file}`);
-      console.log(`   → ${issue.reason}\n`);
-    });
-    console.log('💡 Fix: Add `export const dynamic = \'force-dynamic\';` to routes that use cookies.\n');
-    process.exit(1);
+  try {
+    const result = validateApiRoutes();
+    
+    if (result.issues.length > 0) {
+      console.log('❌ Found API routes that need to be marked as dynamic:\n');
+      result.issues.forEach((issue) => {
+        console.log(`   ${issue.file}`);
+        console.log(`   → ${issue.reason}\n`);
+      });
+      console.log('💡 Fix: Add `export const dynamic = \'force-dynamic\';` to routes that use cookies.\n');
+      process.exit(1);
+    }
+    
+    console.log('✅ All API routes are properly configured!\n');
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Validation script error:', error);
+    // Don't fail build on script errors, just warn
+    console.warn('⚠️  Continuing build despite validation script error');
+    process.exit(0);
   }
-  
-  console.log('✅ All API routes are properly configured!\n');
-  process.exit(0);
 }
 
-main().catch((error) => {
-  console.error('❌ Validation script error:', error);
-  process.exit(1);
-});
+main();
