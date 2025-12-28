@@ -5,7 +5,7 @@
  * Includes growth, activation funnel, usage, revenue, billing health, risk, and support metrics.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
@@ -268,8 +268,8 @@ export async function generateDailyReport(): Promise<DailyReport> {
     },
   });
 
-  const usageRevenue = usageAggregates.reduce(
-    (sum: number, agg: { estimatedCost: number | null }) => sum + Number(agg.estimatedCost || 0),
+  const usageRevenue: number = usageAggregates.reduce(
+    (sum: number, agg: { estimatedCost: Prisma.Decimal | null }) => sum + Number(agg.estimatedCost || 0),
     0
   );
 
@@ -481,8 +481,8 @@ export async function generateDailyReport(): Promise<DailyReport> {
           revenue: mrr / activeSubscriptions.length, // Simplified
         })),
       topTenantsByUsage: tenantUsage
-        .filter((t: { tenantId: string | null; _sum: { totalQuantity: number | null } }) => t.tenantId)
-        .map((t: { tenantId: string | null; _sum: { totalQuantity: number | null } }) => ({
+        .filter((t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) => t.tenantId)
+        .map((t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) => ({
           tenantId: t.tenantId as string,
           usage: Number(t._sum.totalQuantity || 0),
         })),
