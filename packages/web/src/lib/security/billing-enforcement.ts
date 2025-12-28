@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/observability/logger';
+import { checkUserEntitlements } from './entitlement-checks';
 
 export interface BillingEnforcementResult {
   allowed: boolean;
@@ -178,6 +179,20 @@ export async function requireActiveSubscription(
         subscriptionStatus: sub.status === 'trialing' ? 'trialing' : 'active',
         billingAccountId: billingAccountTyped.id,
         planId: sub.plan_id || undefined,
+      };
+    }
+
+    // Additional entitlement check for past_due/unpaid accounts
+    const entitlementCheck = await checkUserEntitlements(billingAccountTyped.id);
+    if (!entitlementCheck.allowed && entitlementCheck.error) {
+      // If billing status is past_due or unpaid, return entitlement error
+      return {
+        allowed: false,
+        subscriptionStatus: sub.status === 'trialing' ? 'trialing' : 'active',
+        billingAccountId: billingAccountTyped.id,
+        planId: sub.plan_id || undefined,
+        error: entitlementCheck.error,
+        reason: entitlementCheck.entitlements.message || 'Entitlement check failed',
       };
     }
 

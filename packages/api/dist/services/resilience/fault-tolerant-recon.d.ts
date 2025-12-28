@@ -42,7 +42,7 @@ export declare class FaultTolerantRecon {
     /**
      * Fix-forward logic
      */
-    fixForward(jobId: string, _error: Error): Promise<{
+    fixForward(jobId: string, error: Error): Promise<{
         fixed: boolean;
         newState: Record<string, unknown> | null;
     }>;

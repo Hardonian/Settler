@@ -11,6 +11,7 @@ import { getTraceId } from '@/lib/observability/trace';
 import { prisma } from '@/shared/db/prismaClient';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -156,6 +157,20 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         billingAccount: true,
       },
     });
+
+    // Emit lifecycle events
+    if (workspace) {
+      // Tenant created
+      await emitLifecycleEventSafe(LifecycleEventType.TENANT_CREATED, {
+        userId: user.id,
+        tenantId: workspace.id,
+        billingAccountId: workspace.billingAccountId || undefined,
+        properties: {
+          workspace_name: validated.name,
+          workspace_slug: validated.slug,
+        },
+      });
+    }
 
     return NextResponse.json({
       workspace: {

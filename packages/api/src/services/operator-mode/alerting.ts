@@ -309,14 +309,29 @@ async function sendEmailAlert(
     severity: string;
   }
 ): Promise<void> {
-  // TODO: Integrate with email service (SendGrid, SES, etc.)
-  logInfo('Email alert sent', { alertId, ...alertData });
+  // Send email alert via Resend
+  try {
+    const { sendNotificationEmail } = await import('../../lib/email');
+    const recipientEmail = process.env.OPERATOR_EMAIL || 'operator@settler.dev';
+    
+    await sendNotificationEmail(
+      recipientEmail,
+      `Alert: ${alertData.ruleName} - ${alertData.severity}`,
+      `Metric: ${alertData.metric}\nValue: ${alertData.value}\nThreshold: ${alertData.threshold}\nSeverity: ${alertData.severity}`,
+      `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.settler.dev'}/admin/alerts/${alertId}`,
+      'View Alert'
+    );
+    
+    logInfo('Email alert sent', { alertId, recipient: recipientEmail, ...alertData });
+  } catch (emailError) {
+    logError('Failed to send email alert', emailError, { alertId });
+  }
   
   // Record notification
   await query(
     `INSERT INTO alert_notifications (alert_id, notification_type, recipient, status, sent_at)
      VALUES ($1, 'email', $2, 'sent', NOW())`,
-    [alertId, 'operator@settler.dev'] // Default recipient
+    [alertId, process.env.OPERATOR_EMAIL || 'operator@settler.dev']
   );
 }
 

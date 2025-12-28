@@ -19,12 +19,12 @@ Loaded Prisma config from prisma.config.ts.
 Prisma schema loaded from prisma/schema.prisma
 ┌─────────────────────────────────────────────────────────┐
 
-✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 189ms
+✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 191ms
 
-│  Update available 7.1.0 -> 7.2.0                        │
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+│  Update available 7.1.0 -> 7.2.0                        │
 
-Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
 
 │  Run the following to update                            │
 │    npm i --save-dev prisma@latest                       │
@@ -46,72 +46,117 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 typecheck:ci
 > tsc --noEmit --skipLibCheck
 
-src/app/api/admin/monitoring/alerts/route.ts(10,1): error TS6133: 'performHealthCheck' is declared but its value is never read.
-src/app/api/connectors/sync/[providerId]/route.ts(128,43): error TS2353: Object literal may only specify known properties, and 'correlationId' does not exist in type 'Error'.
-src/app/investor/proof/page.tsx(22,17): error TS6133: 'user' is declared but its value is never read.
-src/components/console/AdvancedAuditTrail.tsx(14,1): error TS6192: All imports in import declaration are unused.
-src/components/console/BulkOperations.tsx(16,1): error TS6133: 'Checkbox' is declared but its value is never read.
-src/components/console/EnhancedRulesEngine.tsx(19,28): error TS6133: 'Trash2' is declared but its value is never read.
-src/components/console/EnhancedRulesEngine.tsx(19,36): error TS6133: 'Copy' is declared but its value is never read.
-src/components/console/MultiSourceReconciliation.tsx(8,20): error TS6133: 'useEffect' is declared but its value is never read.
-src/components/console/MultiSourceReconciliation.tsx(16,1): error TS6133: 'Input' is declared but its value is never read.
-src/components/console/ProgressTracker.tsx(43,13): error TS7030: Not all code paths return a value.
-src/components/console/ReceiptMatching.tsx(8,20): error TS6133: 'useEffect' is declared but its value is never read.
-src/components/console/SLADashboard.tsx(18,39): error TS6133: 'TrendingUp' is declared but its value is never read.
-src/components/console/SLADashboard.tsx(18,51): error TS6133: 'TrendingDown' is declared but its value is never read.
-src/components/console/SLADashboard.tsx(43,10): error TS6133: 'agreements' is declared but its value is never read.
-src/components/console/SLADashboard.tsx(43,22): error TS6133: 'setAgreements' is declared but its value is never read.
-src/components/gtm/FunnelCTA.tsx(17,10): error TS6133: 'getCurrentFunnelStage' is declared but its value is never read.
-src/components/gtm/FunnelCTA.tsx(18,1): error TS6133: 'createClient' is declared but its value is never read.
-src/components/gtm/ROIProofBlock.tsx(15,10): error TS6133: 'calculateROI' is declared but its value is never read.
-src/hooks/useValueTracking.ts(13,1): error TS6133: 'createClient' is declared but its value is never read.
-src/lib/containment/middleware.ts(82,57): error TS2353: Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
-src/lib/containment/tenant-quotas.ts(60,9): error TS6133: 'oneMinuteAgo' is declared but its value is never read.
-src/lib/containment/tenant-quotas.ts(220,9): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 26 more.
-src/lib/gtm/funnels.ts(166,13): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 26 more.
-src/lib/gtm/value-events.ts(224,11): error TS2322: Type '{ [key: string]: unknown; sourceAdapter?: string | undefined; targetAdapter?: string | undefined; reconciliationId?: string | undefined; integrationId?: string | undefined; planTier?: string | undefined; }' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type '{ [key: string]: unknown; sourceAdapter?: string | undefined; targetAdapter?: string | undefined; reconciliationId?: string | undefined; integrationId?: string | undefined; planTier?: string | undefined; }' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 26 more.
-src/lib/idempotency/key.ts(81,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/lib/idempotency/key.ts(82,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/lib/idempotency/key.ts(83,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/lib/idempotency/key.ts(84,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/lib/idempotency/store.ts(112,9): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput | undefined'.
-  Type 'Record<string, unknown>' is missing the following properties from type 'readonly (InputJsonValue | null)[]': length, concat, join, slice, and 26 more.
-src/lib/jobs/idempotency.ts(8,1): error TS6133: 'prisma' is declared but its value is never read.
-src/lib/jobs/idempotency.ts(14,3): error TS6133: 'idempotencyKey' is declared but its value is never read.
-src/lib/jobs/idempotency.ts(15,3): error TS6133: 'workspaceId' is declared but its value is never read.
-src/lib/monitoring/reliability-metrics.ts(154,26): error TS18048: 'row' is possibly 'undefined'.
-src/lib/monitoring/reliability-metrics.ts(155,33): error TS18048: 'row' is possibly 'undefined'.
-src/lib/monitoring/reliability-metrics.ts(156,33): error TS18048: 'row' is possibly 'undefined'.
-src/lib/monitoring/reliability-metrics.ts(164,22): error TS18048: 'row' is possibly 'undefined'.
-src/lib/monitoring/reliability-metrics.ts(165,22): error TS18048: 'row' is possibly 'undefined'.
-src/lib/monitoring/reliability-metrics.ts(166,26): error TS18048: 'row' is possibly 'undefined'.
-src/lib/monitoring/reliability-metrics.ts(167,31): error TS18048: 'row' is possibly 'undefined'.
-src/lib/pricing-gate.ts(184,13): error TS6133: '_exhaustive' is declared but its value is never read.
-npm error Lifecycle script `typecheck:ci` failed with error:
-npm error code 2
-npm error path /workspace/packages/web
-npm error workspace @settler/web@1.0.0
-npm error location /workspace/packages/web
-npm error command failed
-npm error command sh -c tsc --noEmit --skipLibCheck
-npm error Lifecycle script `validate:prebuild` failed with error:
-npm error code 2
-npm error path /workspace/packages/web
-npm error workspace @settler/web@1.0.0
-npm error location /workspace/packages/web
-npm error command failed
-npm error command sh -c npm run typecheck:ci
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
+
+> @settler/web@1.0.0 validate:api-routes
+> tsx ../../scripts/validate-api-routes.ts || echo '⚠️  API route validation skipped (script not found)'
+
+🔍 Validating API routes...
+
+❌ Validation script error: Error: ENOENT: no such file or directory, stat '/workspace/packages/web/packages/web/src/app/api'
+    at statSync (node:fs:1739:25)
+    at validateApiRoutes (/workspace/scripts/validate-api-routes.ts:48:8)
+    at main (/workspace/scripts/validate-api-routes.ts:99:18)
+    at <anonymous> (/workspace/scripts/validate-api-routes.ts:115:1)
+    at Object.<anonymous> (/workspace/scripts/validate-api-routes.ts:118:2)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object.transformer (/workspace/node_modules/tsx/dist/register-D46fvsV_.cjs:3:1104)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/workspace/packages/web/packages/web/src/app/api'
+}
+⚠️  API route validation skipped (script not found)
+
+> @settler/web@1.0.0 build
+> (test "$VERCEL" = "1" && test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || true) && NODE_OPTIONS='--max-old-space-size=4096' next build
+
+  ▲ Next.js 14.2.33
+  - Experiments (use with caution):
+    · optimizeCss
+    · instrumentationHook
+
+   Creating an optimized production build ...
+   Downloading swc package @next/swc-linux-x64-gnu...
+error This project's package.json defines "packageManager": "yarn@npm@10.2.4". However the current global version of Yarn is 1.22.22.
+
+Presence of the "packageManager" field indicates that the project is meant to be used with Corepack, a tool included by default with all official Node.js distributions starting from 16.9 and 14.19.
+Corepack must currently be enabled by running corepack enable in your terminal. For more information, check out https://yarnpkg.com/corepack.
+   Downloading swc package @next/swc-linux-x64-musl...
+error This project's package.json defines "packageManager": "yarn@npm@10.2.4". However the current global version of Yarn is 1.22.22.
+
+Presence of the "packageManager" field indicates that the project is meant to be used with Corepack, a tool included by default with all official Node.js distributions starting from 16.9 and 14.19.
+Corepack must currently be enabled by running corepack enable in your terminal. For more information, check out https://yarnpkg.com/corepack.
+   Using tsconfig file: ./tsconfig.json
+ ⚠ Compiled with warnings
+
+./src/lib/ops/lifecycle-events.ts
+Module not found: Package path ./src/ops/activation-funnel is not exported from package /workspace/node_modules/@settler/api (see exports field in /workspace/node_modules/@settler/api/package.json)
+
+Import trace for requested module:
+./src/lib/ops/lifecycle-events.ts
+./src/app/api/connectors/callback/[providerId]/route.ts
+
+./src/lib/security/entitlement-checks.ts
+Module not found: Package path ./src/ops/billing-hardening is not exported from package /workspace/node_modules/@settler/api (see exports field in /workspace/node_modules/@settler/api/package.json)
+
+Import trace for requested module:
+./src/lib/security/entitlement-checks.ts
+./src/lib/security/billing-enforcement.ts
+./src/app/api/console/feature-flags/route.ts
+
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+Could not import billing hardening functions, using fallback implementation
+PrismaClientInitializationError: `PrismaClient` needs to be constructed with a non-empty, valid `PrismaClientOptions`:
+
+```
+new PrismaClient({
+  ...
+})
+```
+
+or
+
+```
+constructor() {
+  super({ ... });
+}
+```
+          
+    at new t (/workspace/node_modules/@prisma/client/runtime/client.js:70:960)
+    at 80455 (/workspace/packages/web/.next/server/app/api/admin/health/route.js:1:855)
+    at t (/workspace/packages/web/.next/server/webpack-runtime.js:1:143)
+    at r (/workspace/packages/web/.next/server/app/api/admin/health/route.js:1:7219)
+    at /workspace/packages/web/.next/server/app/api/admin/health/route.js:1:7262
+    at t.X (/workspace/packages/web/.next/server/webpack-runtime.js:1:2449)
+    at /workspace/packages/web/.next/server/app/api/admin/health/route.js:1:7232
+    at Object.<anonymous> (/workspace/packages/web/.next/server/app/api/admin/health/route.js:1:7290)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10) {
+  clientVersion: '7.1.0',
+  errorCode: undefined,
+  retryable: undefined
+}
+Could not import billing hardening functions, using fallback implementation
+
+> Build error occurred
+Error: Failed to collect page data for /api/admin/health
+    at /workspace/node_modules/next/dist/build/utils.js:1269:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  type: 'Error'
+}
 npm error Lifecycle script `build` failed with error:
-npm error code 2
+npm error code 1
 npm error path /workspace/packages/web
 npm error workspace @settler/web@1.0.0
 npm error location /workspace/packages/web
 npm error command failed
-npm error command sh -c cd ../.. && npm run prisma:generate && cd packages/web && npm run validate:prebuild && npm run validate:api-routes
+npm error command sh -c (test "$VERCEL" = "1" && test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || true) && NODE_OPTIONS='--max-old-space-size=4096' next build

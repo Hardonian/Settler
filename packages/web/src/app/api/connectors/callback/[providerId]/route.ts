@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
+import { prisma } from '@/shared/db/prismaClient';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -119,7 +121,48 @@ export const GET = withUniversalBillingGate(async function GET(
         status: 'connected',
         updated_at: new Date().toISOString(),
       })
-      .eq('id', connector.id);
+      .eq('id', typeof connector.id === 'string' ? connector.id : String(connector.id));
+
+    // Emit lifecycle event: provider connected
+    try {
+      // Check if this is the first provider connection for this tenant
+      const connectorIdStr = typeof connector.id === 'string' ? connector.id : String(connector.id);
+      const { data: otherConnectorsData } = await typedSupabase
+        .from('connectors')
+        .select('id')
+        .eq('tenant_id', tenantId)
+        .eq('status', 'connected')
+        .limit(10);
+      
+      // Filter out current connector manually since neq might not be available
+      const otherConnectors = Array.isArray(otherConnectorsData) 
+        ? otherConnectorsData.filter((c: any) => {
+            const cId = typeof c.id === 'string' ? c.id : String(c.id);
+            return cId !== connectorIdStr;
+          })
+        : [];
+      
+      const isFirstConnection = otherConnectors.length === 0;
+
+      // Get billing account for tenant
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { billingAccountId: true },
+      });
+
+      await emitLifecycleEventSafe(LifecycleEventType.PROVIDER_CONNECTED, {
+        userId: user.id,
+        tenantId,
+        billingAccountId: tenant?.billingAccountId || undefined,
+        properties: {
+          provider_id: providerId,
+          is_first_connection: isFirstConnection,
+        },
+      });
+    } catch (eventError) {
+      // Don't fail the connection if event emission fails
+      console.error('Failed to emit provider connected event:', eventError);
+    }
 
     return NextResponse.redirect(
       new URL('/dashboard/integrations?success=Connected successfully', request.url)

@@ -2,7 +2,7 @@
  * Cost Signal Engine Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { calculateCost, getCostBaseline } from '../../../../ops/cost_baselines';
 
 describe('Cost Signal Engine', () => {

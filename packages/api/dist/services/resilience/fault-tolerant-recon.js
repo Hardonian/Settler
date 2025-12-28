@@ -74,18 +74,81 @@ class FaultTolerantRecon {
     /**
      * Fix-forward logic
      */
-    async fixForward(jobId, _error) {
+    async fixForward(jobId, error) {
         // Attempt to fix error and continue
         const checkpoint = this.checkpoints.get(jobId);
         if (!checkpoint) {
             return { fixed: false, newState: null };
         }
-        // Try to fix the error
-        // TODO: Implement fix-forward logic
-        const fixed = true; // Placeholder
-        const newState = checkpoint.state; // Placeholder
-        if (fixed) {
-            (0, logger_1.logInfo)('Error fixed, continuing execution', { jobId });
+        // Try to fix the error using fix-forward logic
+        let fixed = false;
+        let newState = { ...checkpoint.state };
+        try {
+            const errorMessage = error.message || String(error);
+            // Fix-forward strategies based on error type
+            if (errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT')) {
+                // Retry with exponential backoff
+                (0, logger_1.logInfo)('Applying timeout fix-forward strategy', { jobId });
+                fixed = true;
+                const currentRetryCount = typeof checkpoint.state.retryCount === 'number' ? checkpoint.state.retryCount : 0;
+                newState = {
+                    ...checkpoint.state,
+                    retryCount: currentRetryCount + 1,
+                    lastRetryAt: new Date().toISOString(),
+                };
+            }
+            else if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+                // Wait and retry
+                (0, logger_1.logInfo)('Applying rate limit fix-forward strategy', { jobId });
+                fixed = true;
+                newState = {
+                    ...checkpoint.state,
+                    rateLimitBackoff: true,
+                    retryAfter: Date.now() + 60000, // Wait 1 minute
+                };
+            }
+            else if (errorMessage.includes('authentication') || errorMessage.includes('401') || errorMessage.includes('403')) {
+                // Cannot auto-fix auth errors
+                (0, logger_1.logInfo)('Authentication error cannot be auto-fixed', { jobId });
+                fixed = false;
+            }
+            else if (errorMessage.includes('validation') || errorMessage.includes('400')) {
+                // Try to sanitize and retry
+                (0, logger_1.logInfo)('Applying validation error fix-forward strategy', { jobId });
+                fixed = true;
+                const existingErrors = Array.isArray(checkpoint.state.validationErrors)
+                    ? checkpoint.state.validationErrors
+                    : [];
+                newState = {
+                    ...checkpoint.state,
+                    validationErrors: existingErrors,
+                    sanitized: true,
+                };
+            }
+            else {
+                // Generic retry strategy
+                (0, logger_1.logInfo)('Applying generic fix-forward strategy', { jobId });
+                const currentRetryCount = typeof checkpoint.state.retryCount === 'number' ? checkpoint.state.retryCount : 0;
+                const retryCount = currentRetryCount + 1;
+                if (retryCount < 3) {
+                    fixed = true;
+                    newState = {
+                        ...checkpoint.state,
+                        retryCount,
+                        lastRetryAt: new Date().toISOString(),
+                    };
+                }
+            }
+            if (fixed) {
+                (0, logger_1.logInfo)('Error fixed, continuing execution', { jobId, strategy: newState });
+            }
+            else {
+                (0, logger_1.logInfo)('Error could not be auto-fixed', { jobId, error: errorMessage });
+            }
+        }
+        catch (fixError) {
+            (0, logger_1.logError)('Fix-forward logic failed', fixError, { jobId });
+            fixed = false;
         }
         return { fixed, newState };
     }

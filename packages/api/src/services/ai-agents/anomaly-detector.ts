@@ -5,16 +5,19 @@
  */
 
 import { BaseAgent } from './orchestrator';
+import { logInfo, logError } from '../../utils/logger';
 
 export interface Anomaly {
   id: string;
   type: 'reconciliation' | 'security' | 'data_quality' | 'business_logic';
   severity: 'critical' | 'high' | 'medium' | 'low';
+  title?: string;
   description: string;
   detectedAt: Date;
-  evidence: Record<string, unknown>;
+  evidence?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
   confidence: number; // 0-100
-  recommendedAction: string;
+  recommendedAction?: string;
 }
 
 export class AnomalyDetectorAgent extends BaseAgent {
@@ -153,10 +156,117 @@ export class AnomalyDetectorAgent extends BaseAgent {
    * Detect security threats
    */
   private async detectSecurityThreats(): Promise<Anomaly[]> {
-    // TODO: Analyze API logs for security threats
-    // Check for API abuse, credential leaks, DDoS attacks, etc.
-    
-    return [];
+    const threats: Anomaly[] = [];
+
+    try {
+      // Analyze API logs for security threats
+      // Check for API abuse, credential leaks, DDoS attacks, etc.
+      
+      // Query recent API logs for suspicious patterns
+      // Note: UsageEvent table may not have all API logs - this is a simplified check
+      // Import PrismaClient dynamically to avoid circular dependencies
+      const { PrismaClient } = await import('@prisma/client');
+      const prisma = new PrismaClient();
+      
+      const recentLogs = await prisma.usageEvent.findMany({
+        where: {
+          timestamp: {
+            gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
+          },
+        },
+        select: {
+          id: true,
+          eventType: true,
+          metadata: true,
+          tenantId: true,
+          userId: true,
+          timestamp: true,
+        },
+        orderBy: {
+          timestamp: 'desc',
+        },
+        take: 1000,
+      });
+
+      // Check for rate limit violations (potential DDoS)
+      const rateLimitViolations = recentLogs.filter((log) => {
+        const sameTenant = recentLogs.filter((l) => l.tenantId === log.tenantId);
+        return sameTenant.length > 1000; // More than 1000 requests in 24h
+      });
+
+      if (rateLimitViolations.length > 0) {
+        threats.push({
+          id: `security-rate-limit-${Date.now()}`,
+          type: 'security',
+          severity: 'high',
+          title: 'Potential DDoS Attack Detected',
+          description: `Tenant ${rateLimitViolations[0]?.tenantId || 'unknown'} has exceeded rate limits`,
+          detectedAt: new Date(),
+          metadata: {
+            tenantId: rateLimitViolations[0]?.tenantId,
+            requestCount: rateLimitViolations.length,
+          },
+          confidence: 75,
+        });
+      }
+
+      // Check for authentication failures (potential brute force)
+      const authFailures = recentLogs.filter((log: { eventType?: string | null }) => 
+        log.eventType?.includes('auth_failed') || log.eventType?.includes('login_failed')
+      );
+
+      if (authFailures.length > 50) {
+        threats.push({
+          id: `security-auth-failures-${Date.now()}`,
+          type: 'security',
+          severity: 'medium',
+          title: 'Excessive Authentication Failures',
+          description: `${authFailures.length} authentication failures detected in last 24 hours`,
+          detectedAt: new Date(),
+          metadata: {
+            failureCount: authFailures.length,
+          },
+          confidence: 80,
+        });
+      }
+
+      // Check metadata for potential credential leaks
+      const potentialLeaks = recentLogs.filter((log: { metadata?: unknown }) => {
+        const metadataStr = JSON.stringify(log.metadata || {});
+        return metadataStr.includes('password') || 
+               metadataStr.includes('api_key') || 
+               metadataStr.includes('secret') ||
+               metadataStr.includes('token');
+      });
+
+      if (potentialLeaks.length > 0) {
+        threats.push({
+          id: `security-credential-leak-${Date.now()}`,
+          type: 'security',
+          severity: 'critical',
+          title: 'Potential Credential Leak Detected',
+          description: 'API logs contain potential sensitive credentials',
+          detectedAt: new Date(),
+          metadata: {
+            leakCount: potentialLeaks.length,
+          },
+          confidence: 90,
+        });
+      }
+
+      logInfo('Security threat detection completed', {
+        threatCount: threats.length,
+        rateLimitViolations: rateLimitViolations.length,
+        authFailures: authFailures.length,
+        potentialLeaks: potentialLeaks.length,
+      });
+      
+      await prisma.$disconnect();
+    } catch (error) {
+      logError('Failed to detect security threats', error);
+    }
+
+    return threats;
   }
 
   /**

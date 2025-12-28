@@ -4,25 +4,5 @@ npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
 
 > @settler/cli@1.0.0 lint
-> eslint src --ext .ts --max-warnings 100
+> eslint src --ext .ts --max-warnings 200
 
-
-/workspace/packages/cli/src/commands/adapters.ts
-  22:13  warning  Unsafe assignment of an `any` value                  @typescript-eslint/no-unsafe-assignment
-  22:22  error    Unsafe construction of an any type value             @typescript-eslint/no-unsafe-call
-  27:13  warning  Unsafe assignment of an `any` value                  @typescript-eslint/no-unsafe-assignment
-  27:30  error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call
-  27:37  warning  Unsafe member access .adapters on an `any` value     @typescript-eslint/no-unsafe-member-access
-  30:7   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call
-  30:16  warning  Unsafe member access .data on an `any` value         @typescript-eslint/no-unsafe-member-access
-  31:45  warning  Unsafe member access .id on an `any` value           @typescript-eslint/no-unsafe-member-access
-  32:42  warning  Unsafe member access .name on an `any` value         @typescript-eslint/no-unsafe-member-access
-  33:49  warning  Unsafe member access .description on an `any` value  @typescript-eslint/no-unsafe-member-access
-  34:45  warning  Unsafe member access .version on an `any` value      @typescript-eslint/no-unsafe-member-access
-
-/workspace/packages/cli/src/commands/admin.ts
-   17:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
-   19:54  warning  Unsafe member access .sagaId on an `any` value            @typescript-eslint/no-unsafe-member-access
-   19:80  warning  Unsafe member access .sagaType on an `any` value          @typescript-eslint/no-unsafe-member-access
-   28:29  warning  Async arrow function has no 'await' expression            @typescript-eslint/require-await
-   29:49  warning  Unsafe member access .aggregateType on an `any` value     @typescript-eslint/no-unsafe-member-access

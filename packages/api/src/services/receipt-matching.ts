@@ -81,8 +81,8 @@ export async function matchReceiptToTransaction(
           lte: windowEnd,
         },
         amount: {
-          gte: receipt.total - matchingConfig.amountTolerance,
-          lte: receipt.total + matchingConfig.amountTolerance,
+          gte: receipt.total ? Number(receipt.total) - matchingConfig.amountTolerance : undefined,
+          lte: receipt.total ? Number(receipt.total) + matchingConfig.amountTolerance : undefined,
         },
         currency: receipt.currency || 'USD',
       },
@@ -102,13 +102,12 @@ export async function matchReceiptToTransaction(
       matchReason: string;
     }
 
-    // Type assertion for transactions from Prisma query
-    type TransactionType = { id: string; amount: number | null | undefined; date: Date | null | undefined; description?: string | null };
-    const scores: ScoreResult[] = transactions.map((transaction: TransactionType) => {
-      const receiptTotal = Number(receipt.total ?? 0);
-      const transactionAmount = Number(transaction.amount ?? 0);
+    // Score each transaction
+    const scores: ScoreResult[] = transactions.map((transaction) => {
+      const receiptTotal = receipt.total ? Number(receipt.total) : 0;
+      const transactionAmount = transaction.amount ? Number(transaction.amount) : 0;
       const amountDiff = Math.abs(transactionAmount - receiptTotal);
-      const transactionDate = transaction.date ?? new Date();
+      const transactionDate = transaction.date || new Date();
       const dateDiff = Math.abs(
         (transactionDate.getTime() - receiptDate.getTime()) / (1000 * 60 * 60 * 24)
       );

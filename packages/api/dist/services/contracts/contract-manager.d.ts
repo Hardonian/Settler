@@ -26,9 +26,9 @@ export declare class ContractManager {
      */
     createContractVersion(tenantId: string, contractName: string, version: string, schema: ContractSchema): Promise<{
         id: string;
+        metadata: Prisma.JsonValue;
         createdAt: Date;
         updatedAt: Date;
-        metadata: Prisma.JsonValue;
         tenantId: string;
         version: string;
         isActive: boolean;

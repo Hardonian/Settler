@@ -186,9 +186,75 @@ export async function fetchExchangeRatesFromAPI(
   date: Date
 ): Promise<number | null> {
   try {
-    // TODO: Integrate with exchange rate API (e.g., exchangerate-api.com, fixer.io)
-    // For now, return null to indicate manual rate entry required
-    logInfo("Exchange rate API fetch not implemented", { fromCurrency, toCurrency, date });
+    // Use exchangerate-api.com (free tier: 1,500 requests/month)
+    // Alternative: fixer.io, currencylayer.com, openexchangerates.org
+    const apiKey = process.env.EXCHANGE_RATE_API_KEY;
+    const apiProvider = process.env.EXCHANGE_RATE_PROVIDER || 'exchangerate-api';
+
+    if (!apiKey) {
+      logInfo("Exchange rate API key not configured", { fromCurrency, toCurrency });
+      return null;
+    }
+
+    // Format date as YYYY-MM-DD
+    const dateStr = date.toISOString().split('T')[0];
+
+    let rate: number | null = null;
+
+    if (apiProvider === 'exchangerate-api' || apiProvider === 'exchangerate-api.com') {
+      // exchangerate-api.com (free tier)
+      const url = `https://api.exchangerate-api.com/v4/historical/${fromCurrency.toUpperCase()}/${dateStr}`;
+      
+      const response = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Exchange rate API returned ${response.status}`);
+      }
+
+      const data = await response.json() as { rates?: Record<string, number> };
+      rate = data.rates?.[toCurrency.toUpperCase()] || null;
+    } else if (apiProvider === 'fixer.io') {
+      // Fixer.io (requires API key)
+      const url = `http://data.fixer.io/${dateStr}?access_key=${apiKey}&base=${fromCurrency.toUpperCase()}&symbols=${toCurrency.toUpperCase()}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Fixer.io API returned ${response.status}`);
+      }
+
+      const data = await response.json() as { success?: boolean; rates?: Record<string, number> };
+      if (data.success && data.rates) {
+        rate = data.rates[toCurrency.toUpperCase()] || null;
+      }
+    } else if (apiProvider === 'openexchangerates') {
+      // Open Exchange Rates (requires API key)
+      const url = `https://openexchangerates.org/api/historical/${dateStr}.json?app_id=${apiKey}&base=${fromCurrency.toUpperCase()}&symbols=${toCurrency.toUpperCase()}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Open Exchange Rates API returned ${response.status}`);
+      }
+
+      const data = await response.json() as { rates?: Record<string, number> };
+      rate = data.rates?.[toCurrency.toUpperCase()] || null;
+    }
+
+    if (rate) {
+      logInfo("Exchange rate fetched successfully", {
+        fromCurrency,
+        toCurrency,
+        date: dateStr,
+        rate,
+        provider: apiProvider,
+      });
+      return rate;
+    }
+
+    logInfo("Exchange rate not found", { fromCurrency, toCurrency, date: dateStr });
     return null;
   } catch (error) {
     logError("Failed to fetch exchange rate from API", error, {

@@ -42,6 +42,7 @@ export declare class ReconCoreEngine {
     private applyMapping;
     /**
      * Perform reconciliation matching
+     * Integrates rules engine for improved match rates over time
      */
     private performReconciliation;
     /**
@@ -83,5 +84,9 @@ export declare class ReconCoreEngine {
      * Get billing account for tenant
      */
     private getBillingAccount;
+    /**
+     * Update job progress (idempotent)
+     */
+    private updateProgress;
 }
 //# sourceMappingURL=recon-core-engine.d.ts.map

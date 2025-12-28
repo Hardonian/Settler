@@ -22,6 +22,7 @@ import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { logAuditEvent } from '@/lib/audit/logger';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { emitExceptionResolvedEvent } from '@/lib/ops/exception-events';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -313,6 +314,21 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
       // Don't fail if audit logging fails
       console.error('[Exception Review API] Audit log failed:', error);
     });
+
+    // Emit lifecycle event: exception resolved (if reviewed and was previously unmatched)
+    if (updatedException.reviewed && !exception.reviewed && exception.matchType !== 'matched') {
+      try {
+        await emitExceptionResolvedEvent({
+          reconciliationMatchId: exceptionId,
+          tenantId: tenantId,
+          userId: userId,
+          reviewed: true,
+        });
+      } catch (eventError) {
+        // Don't fail if event emission fails
+        console.error('[Exception Review API] Failed to emit exception resolved event:', eventError);
+      }
+    }
 
     // Transform response
     const response = {

@@ -8,11 +8,13 @@ export interface Anomaly {
     id: string;
     type: 'reconciliation' | 'security' | 'data_quality' | 'business_logic';
     severity: 'critical' | 'high' | 'medium' | 'low';
+    title?: string;
     description: string;
     detectedAt: Date;
-    evidence: Record<string, unknown>;
+    evidence?: Record<string, unknown>;
+    metadata?: Record<string, unknown>;
     confidence: number;
-    recommendedAction: string;
+    recommendedAction?: string;
 }
 export declare class AnomalyDetectorAgent extends BaseAgent {
     id: string;

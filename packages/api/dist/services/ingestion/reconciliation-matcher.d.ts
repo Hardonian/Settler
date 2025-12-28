@@ -1,6 +1,7 @@
 /**
  * Reconciliation Matcher
- * Deterministic matching algorithm: exact amount + date window + fuzzy description
+ * Deterministic matching algorithm with ML enhancement fallback.
+ * Uses proprietary ML models trained on historical matches for improved accuracy.
  */
 import { MatchResult, ReconciliationConfig } from "./types";
 /**

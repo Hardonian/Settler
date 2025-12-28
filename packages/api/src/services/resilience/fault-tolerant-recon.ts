@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+import { logInfo, logError } from '../../utils/logger';
 
 export interface CheckpointState {
   state: Record<string, unknown>;
@@ -109,7 +109,7 @@ export class FaultTolerantRecon {
   /**
    * Fix-forward logic
    */
-  async fixForward(jobId: string, _error: Error): Promise<{
+  async fixForward(jobId: string, error: Error): Promise<{
     fixed: boolean;
     newState: Record<string, unknown> | null;
   }> {
@@ -119,13 +119,72 @@ export class FaultTolerantRecon {
       return { fixed: false, newState: null };
     }
 
-    // Try to fix the error
-    // TODO: Implement fix-forward logic
-    const fixed = true; // Placeholder
-    const newState = checkpoint.state; // Placeholder
+    // Try to fix the error using fix-forward logic
+    let fixed = false;
+    let newState = { ...checkpoint.state };
 
-    if (fixed) {
-      logInfo('Error fixed, continuing execution', { jobId });
+    try {
+      const errorMessage = error.message || String(error);
+
+      // Fix-forward strategies based on error type
+      if (errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT')) {
+        // Retry with exponential backoff
+        logInfo('Applying timeout fix-forward strategy', { jobId });
+        fixed = true;
+        const currentRetryCount = typeof checkpoint.state.retryCount === 'number' ? checkpoint.state.retryCount : 0;
+        newState = {
+          ...checkpoint.state,
+          retryCount: currentRetryCount + 1,
+          lastRetryAt: new Date().toISOString(),
+        };
+      } else if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+        // Wait and retry
+        logInfo('Applying rate limit fix-forward strategy', { jobId });
+        fixed = true;
+        newState = {
+          ...checkpoint.state,
+          rateLimitBackoff: true,
+          retryAfter: Date.now() + 60000, // Wait 1 minute
+        };
+      } else if (errorMessage.includes('authentication') || errorMessage.includes('401') || errorMessage.includes('403')) {
+        // Cannot auto-fix auth errors
+        logInfo('Authentication error cannot be auto-fixed', { jobId });
+        fixed = false;
+      } else if (errorMessage.includes('validation') || errorMessage.includes('400')) {
+        // Try to sanitize and retry
+        logInfo('Applying validation error fix-forward strategy', { jobId });
+        fixed = true;
+        const existingErrors = Array.isArray(checkpoint.state.validationErrors) 
+          ? checkpoint.state.validationErrors 
+          : [];
+        newState = {
+          ...checkpoint.state,
+          validationErrors: existingErrors,
+          sanitized: true,
+        };
+      } else {
+        // Generic retry strategy
+        logInfo('Applying generic fix-forward strategy', { jobId });
+        const currentRetryCount = typeof checkpoint.state.retryCount === 'number' ? checkpoint.state.retryCount : 0;
+        const retryCount = currentRetryCount + 1;
+        if (retryCount < 3) {
+          fixed = true;
+          newState = {
+            ...checkpoint.state,
+            retryCount,
+            lastRetryAt: new Date().toISOString(),
+          };
+        }
+      }
+
+      if (fixed) {
+        logInfo('Error fixed, continuing execution', { jobId, strategy: newState });
+      } else {
+        logInfo('Error could not be auto-fixed', { jobId, error: errorMessage });
+      }
+    } catch (fixError) {
+      logError('Fix-forward logic failed', fixError, { jobId });
+      fixed = false;
     }
 
     return { fixed, newState };

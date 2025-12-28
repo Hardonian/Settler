@@ -5,7 +5,7 @@
  * Part of Phase VIII: Future-Proof Architecture
  */
 import { EventEmitter } from 'events';
-export type EventType = 'recon.completed' | 'recon.failed' | 'validation.failed' | 'mapping.suggested' | 'drift.detected' | 'workflow.failed' | 'audit.ready' | 'contract.breaking_change' | 'usage.limit_exceeded' | 'agent.fallback';
+export type EventType = 'recon.completed' | 'recon.failed' | 'validation.failed' | 'mapping.suggested' | 'drift.detected' | 'workflow.failed' | 'audit.ready' | 'contract.breaking_change' | 'usage.limit_exceeded' | 'agent.fallback' | 'value.reconciliation_completed' | 'value.errors_prevented';
 export interface PlatformEvent {
     id: string;
     type: EventType;

@@ -14,6 +14,7 @@
 import { PrismaClient } from '@prisma/client';
 import { sendEmail, EmailTemplate } from '../../lib/email';
 import { getJobFailureTemplate, getJobCompletionTemplate } from '../email/job-templates';
+import { sendWebhookNotification } from './webhook-notifications';
 
 interface JobFailureNotificationParams {
   jobId: string;
@@ -132,8 +133,21 @@ export async function notifyJobFailure(
       console.error(`[JobFailureNotification] Audit log failed:`, auditError);
     }
 
-    // TODO: Send webhook notification if configured
-    // await sendWebhookNotification(...);
+    // Send webhook notification if configured
+    try {
+      await sendWebhookNotification(prisma, {
+        tenantId,
+        userId,
+        eventType: 'job_failed',
+        jobId,
+        resultId,
+        errorMessage,
+        jobName: job.name,
+      });
+    } catch (webhookError) {
+      console.error(`[JobFailureNotification] Webhook notification failed:`, webhookError);
+      // Don't throw - webhook failure shouldn't break notification flow
+    }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error(`[JobFailureNotification] Failed to send notification:`, errorMessage);
