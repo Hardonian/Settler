@@ -19,6 +19,7 @@
   },
   "scripts": {
     "prebuild": "cd ../.. && npm run prisma:generate || npx prisma generate || echo 'Warning: Prisma generate may have failed'",
+    "pretypecheck": "cd ../.. && npm run prisma:generate || npx prisma generate || echo 'Warning: Prisma generate may have failed'",
     "build": "npm run typecheck && tsc",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",

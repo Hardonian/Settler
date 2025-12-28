@@ -13,8 +13,6 @@
  * - Confidence scoring
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 
 interface MatchResult {
@@ -103,7 +101,7 @@ export async function matchReceiptToTransaction(
     }
 
     // Score each transaction
-    const scores: ScoreResult[] = transactions.map((transaction: { amount: number | null; date: Date | null }) => {
+    const scores: ScoreResult[] = transactions.map((transaction) => {
       const receiptTotal = receipt.total ? Number(receipt.total) : 0;
       const transactionAmount = transaction.amount ? Number(transaction.amount) : 0;
       const amountDiff = Math.abs(transactionAmount - receiptTotal);

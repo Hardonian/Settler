@@ -3,6 +3,28 @@ npm warn config `--include=optional` to include them.
 npm warn config
 npm warn config       Default value does install optional deps unless otherwise omitted.
 
+> @settler/api@1.0.0 pretypecheck
+> cd ../.. && npm run prisma:generate || npx prisma generate || echo 'Warning: Prisma generate may have failed'
+
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
+
+> settler-monorepo@1.0.0 prisma:generate
+> PRISMA_CLIENT_ENGINE_TYPE=binary PRISMA_ENGINES_MIRROR= prisma generate
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 251ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
 
