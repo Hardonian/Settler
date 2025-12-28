@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import type { Database } from '@/types/database.types';
 import { trackSignupComplete } from '@/lib/analytics/conversion';
+import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
 
 export interface SignUpResult {
   success: boolean;
@@ -117,7 +118,16 @@ export async function signUpUser(
       // Don't block signup if tracking fails
     });
 
-    // 5. Revalidate relevant paths
+    // 5. Emit lifecycle event: user signed up
+    await emitLifecycleEventSafe(LifecycleEventType.USER_SIGNED_UP, {
+      userId: authData.user.id,
+      properties: {
+        source: 'web_signup',
+        email: authData.user.email,
+      },
+    });
+
+    // 6. Revalidate relevant paths
     revalidatePath('/');
     revalidatePath('/dashboard');
 

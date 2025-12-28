@@ -12,6 +12,13 @@ const prisma = new PrismaClient();
 
 async function main() {
   try {
+    if (!process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL environment variable is not set.');
+      console.error('   Please set DATABASE_URL to your database connection string.');
+      console.error('   Example: export DATABASE_URL="postgresql://user:pass@host:5432/dbname"');
+      process.exit(1);
+    }
+
     console.log('📊 Generating Founder Weekly Report...\n');
     
     const report = await generateWeeklyReport();
@@ -38,6 +45,9 @@ async function main() {
     process.exit(0);
   } catch (error) {
     console.error('❌ Failed to generate weekly report:', error);
+    if (error instanceof Error && error.message.includes('PrismaClient')) {
+      console.error('\n💡 Tip: Make sure DATABASE_URL is set and points to a valid database.');
+    }
     process.exit(1);
   } finally {
     await prisma.$disconnect();
