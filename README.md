@@ -145,6 +145,70 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 Proprietary - See [LICENSE](LICENSE) for details.
 
+## 👨‍💼 Solo Operator Runbook
+
+### Daily Ops Commands
+
+```bash
+# Generate daily founder report
+npm run ops:daily
+
+# Generate weekly founder report
+npm run ops:weekly
+
+# Run comprehensive health check (lint, typecheck, routes, SLA, migrations)
+npm run ops:doctor
+
+# Generate billing evidence pack for a tenant
+npm run ops:billing:evidence --tenant <tenant-id>
+
+# Generate procurement pack for B2B sales
+npm run ops:procurement:pack
+
+# Run smoke tests
+npm run qa:smoke
+```
+
+### Daily Workflow
+
+1. **Morning (07:40 ET)**: Review daily report from GitHub Actions
+2. **Check Health**: Run `npm run ops:doctor` to verify system health
+3. **Monitor Activation**: Check `/console/admin/activation` for funnel metrics
+4. **Review Billing**: Check for past_due subscriptions and failed payments
+
+### Weekly Workflow
+
+1. **Monday Morning**: Review weekly report from GitHub Actions
+2. **Procurement Requests**: Generate procurement packs as needed
+3. **Billing Incidents**: Use `ops:billing:evidence` to gather evidence
+4. **Health Audit**: Run full `ops:doctor` check
+
+### On-Call in 10 Minutes
+
+1. **Check Status**: Visit `/status` for public status, `/api/admin/health` for detailed metrics
+2. **Review Alerts**: Check error spikes, webhook failures, reconciliation issues
+3. **Billing Issues**: Use `ops:billing:evidence` to gather tenant billing data
+4. **Quick Fixes**: 
+   - Webhook failures: Check StripeEvent table for failed events
+   - Reconciliation errors: Review ReconResult table for failed runs
+   - Database issues: Run `npm run prisma:status` to check migrations
+
+### Key Endpoints
+
+- **Public Status**: `/status` - System status for customers
+- **Admin Health**: `/api/admin/health` - Detailed internal health metrics
+- **Activation Funnel**: `/console/admin/activation` - Product-led growth metrics
+- **Billing Portal**: `/console/billing` - Customer billing management
+
+### Reports Location
+
+All reports are saved to `ops/reports/`:
+- `FOUNDERS_DAILY_REPORT.md` - Daily operational metrics
+- `FOUNDERS_WEEKLY_REPORT.md` - Weekly aggregated metrics
+- `DOCTOR_SUMMARY.md` - Health check results
+- `ops/packs/billing-evidence/` - Billing incident evidence packs
+- `ops/packs/procurement/` - B2B sales procurement packs
+
 ## 🆘 Support
 
 - **Documentation**: [docs/](docs/)
