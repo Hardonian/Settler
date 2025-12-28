@@ -52,6 +52,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JobSchedulerService = void 0;
 exports.getJobSchedulerService = getJobSchedulerService;
+const logger_1 = require("../../utils/logger");
 const recon_core_1 = require("../../services/recon-core");
 // Dynamic import for node-cron (allows graceful degradation)
 let cron = null;
@@ -60,8 +61,8 @@ try {
     cron = require('node-cron');
 }
 catch (error) {
-    console.warn('[JobScheduler] node-cron not installed. Scheduled jobs will not run.');
-    console.warn('[JobScheduler] Install with: npm install node-cron @types/node-cron');
+    (0, logger_1.logWarn)('[JobScheduler] node-cron not installed. Scheduled jobs will not run.');
+    (0, logger_1.logWarn)('[JobScheduler] Install with: npm install node-cron @types/node-cron');
 }
 class JobSchedulerService {
     prisma;
@@ -79,30 +80,30 @@ class JobSchedulerService {
      */
     async start() {
         if (this.isRunning) {
-            console.warn('[JobScheduler] Already running');
+            (0, logger_1.logWarn)('[JobScheduler] Already running');
             return;
         }
         if (!cron) {
-            console.error('[JobScheduler] Cannot start: node-cron not installed');
+            (0, logger_1.logError)('[JobScheduler] Cannot start: node-cron not installed');
             return;
         }
-        console.log('[JobScheduler] Starting scheduler...');
+        (0, logger_1.logInfo)('[JobScheduler] Starting scheduler...');
         this.isRunning = true;
         // Load and schedule all active jobs
         await this.loadAndScheduleJobs();
         // Set up health check (every minute)
         this.healthCheckInterval = setInterval(() => {
             this.healthCheck().catch((error) => {
-                console.error('[JobScheduler] Health check failed:', error);
+                (0, logger_1.logError)('[JobScheduler] Health check failed:', error);
             });
         }, 60000);
         // Reload jobs periodically (every 5 minutes) to pick up new/changed jobs
         this.reloadInterval = setInterval(async () => {
             await this.reloadJobs().catch((error) => {
-                console.error('[JobScheduler] Reload failed:', error);
+                (0, logger_1.logError)('[JobScheduler] Reload failed:', error);
             });
         }, 300000);
-        console.log('[JobScheduler] Scheduler started');
+        (0, logger_1.logInfo)('[JobScheduler] Scheduler started');
     }
     /**
      * Stop the scheduler
@@ -111,14 +112,14 @@ class JobSchedulerService {
         if (!this.isRunning) {
             return;
         }
-        console.log('[JobScheduler] Stopping scheduler...');
+        (0, logger_1.logInfo)('[JobScheduler] Stopping scheduler...');
         this.isRunning = false;
         // Stop all cron jobs
         for (const [jobId, { task }] of this.cronJobs.entries()) {
             if (task && typeof task.stop === 'function') {
                 task.stop();
             }
-            console.log(`[JobScheduler] Stopped cron job: ${jobId}`);
+            (0, logger_1.logInfo)(`[JobScheduler] Stopped cron job: ${jobId}`);
         }
         this.cronJobs.clear();
         // Clear intervals
@@ -130,7 +131,7 @@ class JobSchedulerService {
             clearInterval(this.reloadInterval);
             this.reloadInterval = null;
         }
-        console.log('[JobScheduler] Scheduler stopped');
+        (0, logger_1.logInfo)('[JobScheduler] Scheduler stopped');
     }
     /**
      * Load all scheduled jobs from database and schedule them
@@ -151,7 +152,7 @@ class JobSchedulerService {
                     tenantId: true,
                 },
             });
-            console.log(`[JobScheduler] Found ${jobs.length} scheduled jobs`);
+            (0, logger_1.logInfo)(`[JobScheduler] Found ${jobs.length} scheduled jobs`);
             for (const job of jobs) {
                 if (job.scheduleCron) {
                     await this.scheduleJob({
@@ -167,7 +168,7 @@ class JobSchedulerService {
             }
         }
         catch (error) {
-            console.error('[JobScheduler] Failed to load jobs:', error);
+            (0, logger_1.logError)('[JobScheduler] Failed to load jobs:', error);
             throw error;
         }
     }
@@ -217,7 +218,7 @@ class JobSchedulerService {
             }
         }
         catch (error) {
-            console.error('[JobScheduler] Failed to reload jobs:', error);
+            (0, logger_1.logError)('[JobScheduler] Failed to reload jobs:', error);
             throw error;
         }
     }
@@ -226,13 +227,13 @@ class JobSchedulerService {
      */
     async scheduleJob(job) {
         if (!cron) {
-            console.error('[JobScheduler] Cannot schedule job: node-cron not installed');
+            (0, logger_1.logError)('[JobScheduler] Cannot schedule job: node-cron not installed');
             return;
         }
         try {
             // Validate cron expression
             if (!cron.validate(job.scheduleCron)) {
-                console.error(`[JobScheduler] Invalid cron expression for job ${job.id}: ${job.scheduleCron}`);
+                (0, logger_1.logError)(`[JobScheduler] Invalid cron expression for job ${job.id}: ${job.scheduleCron}`);
                 return;
             }
             // Stop existing cron job if any
@@ -248,13 +249,13 @@ class JobSchedulerService {
                 timezone: job.scheduleTimezone || 'UTC',
             });
             this.cronJobs.set(job.id, { task, job });
-            console.log(`[JobScheduler] Scheduled job ${job.id} (${job.name})`, {
+            (0, logger_1.logInfo)(`[JobScheduler] Scheduled job ${job.id} (${job.name})`, {
                 cron: job.scheduleCron,
                 timezone: job.scheduleTimezone,
             });
         }
         catch (error) {
-            console.error(`[JobScheduler] Failed to schedule job ${job.id}:`, error);
+            (0, logger_1.logError)(`[JobScheduler] Failed to schedule job ${job.id}:`, error);
             throw error;
         }
     }
@@ -266,7 +267,7 @@ class JobSchedulerService {
         if (existing && existing.task) {
             existing.task.stop();
             this.cronJobs.delete(jobId);
-            console.log(`[JobScheduler] Unscheduled job ${jobId}`);
+            (0, logger_1.logInfo)(`[JobScheduler] Unscheduled job ${jobId}`);
         }
     }
     /**
@@ -274,7 +275,7 @@ class JobSchedulerService {
      */
     async executeJob(job) {
         const startTime = Date.now();
-        console.log(`[JobScheduler] Executing job ${job.id} (${job.name})`);
+        (0, logger_1.logInfo)(`[JobScheduler] Executing job ${job.id} (${job.name})`);
         try {
             // Verify job still exists and is active (idempotent check)
             const dbJob = await this.prisma.reconJob.findFirst({

@@ -113,6 +113,7 @@
     "ops:doctor": "tsx scripts/ops-doctor.ts",
     "ops:billing:evidence": "tsx scripts/ops-billing-evidence.ts",
     "ops:procurement:pack": "tsx scripts/ops-procurement-pack.ts",
+    "ops:audit": "tsx scripts/code-quality-audit.ts",
     "classify:json": "tsx scripts/classify.ts --json",
     "classify:strict": "tsx scripts/classify.ts --strict",
     "classify:fix-suggestions": "tsx scripts/classify-fix-suggestions.ts",

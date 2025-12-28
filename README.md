@@ -169,6 +169,9 @@ npm run ops:procurement:pack
 
 # Run smoke tests (key routes, webhooks, DB connectivity)
 npm run qa:smoke
+
+# Run comprehensive code quality audit (security, performance, error handling)
+npm run ops:audit
 ```
 
 ### Automated Reports

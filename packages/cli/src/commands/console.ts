@@ -17,11 +17,13 @@ const apiKeysCommand = new Command('api-keys')
   .description('Manage API keys');
 
 apiKeysCommand
-  .command('list')
+  .command('list' as const)
   .description('List all API keys')
   .action(async (options: { parent?: { apiKey?: string; baseUrl?: string } }) => {
-    const apiKey = process.env.SETTLER_API_KEY || options.parent?.apiKey || '';
-    const baseUrl = options.parent?.baseUrl || process.env.SETTLER_BASE_URL || 'https://api.settler.io';
+    const parentApiKey = options.parent?.apiKey;
+    const parentBaseUrl = options.parent?.baseUrl;
+    const apiKey = process.env.SETTLER_API_KEY || parentApiKey || '';
+    const baseUrl = parentBaseUrl || process.env.SETTLER_BASE_URL || 'https://api.settler.io';
     
     if (!apiKey) {
       console.error(chalk.red('Error: SETTLER_API_KEY environment variable not set'));
