@@ -45,7 +45,12 @@ function validateApiRoutes(): { passed: boolean; issues: RouteIssue[] } {
   const issues: RouteIssue[] = [];
   const apiDir = join(process.cwd(), 'packages/web/src/app/api');
   
-  if (!statSync(apiDir).isDirectory()) {
+  try {
+    if (!statSync(apiDir).isDirectory()) {
+      console.log('⚠️  API directory not found, skipping validation');
+      return { passed: true, issues: [] };
+    }
+  } catch (error) {
     console.log('⚠️  API directory not found, skipping validation');
     return { passed: true, issues: [] };
   }
