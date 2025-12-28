@@ -9,6 +9,8 @@ import { createClient } from '@/lib/supabase/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { PrismaClient } from '@prisma/client';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {

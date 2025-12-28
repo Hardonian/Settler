@@ -4,6 +4,8 @@ import { getUserRole } from '@/shared/auth/roles';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Get current user's role in their tenant and super admin status
  */

@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { requireWorkspaceMembership } from '@/lib/authz';
 import { createLogger } from '@/lib/logger';
+
+export const dynamic = 'force-dynamic';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
 export const runtime = 'nodejs';

@@ -8,6 +8,8 @@
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
 import { resetDemoTenant, isDemoTenant } from '@/lib/gtm/demo-data';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 

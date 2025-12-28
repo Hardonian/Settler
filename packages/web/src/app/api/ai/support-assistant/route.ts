@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
+export const dynamic = 'force-dynamic';
+
 interface SupportRequest {
   question: string;
   context?: {

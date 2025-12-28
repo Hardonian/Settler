@@ -13,6 +13,8 @@ import { validateInputManifest } from '@/lib/ingest/manifest';
 import { requireWorkspaceMembership } from '@/lib/authz';
 import { createLogger, generateCorrelationId } from '@/lib/logger';
 import { z } from 'zod';
+
+export const dynamic = 'force-dynamic';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
 import { prisma } from '@/shared/db/prismaClient';

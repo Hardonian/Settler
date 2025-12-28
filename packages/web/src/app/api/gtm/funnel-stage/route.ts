@@ -9,6 +9,8 @@ import { getCurrentFunnelStage } from '@/lib/gtm/funnels';
 import { createClient } from '@/lib/supabase/server';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
+export const dynamic = 'force-dynamic';
+
 export const GET = withUniversalBillingGate(async function GET(request: Request) {
   try {
     const supabase = await createClient();

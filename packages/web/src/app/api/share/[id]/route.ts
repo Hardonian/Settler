@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase/server";
 import { nanoid } from "nanoid";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
+export const dynamic = 'force-dynamic';
+
 export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();

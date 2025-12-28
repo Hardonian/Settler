@@ -12,6 +12,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createLogger } from '@/lib/logger';
 
+export const dynamic = 'force-dynamic';
+
 const DEEP_HEALTH_SECRET = process.env.DEEP_HEALTH_SECRET || '';
 
 export const runtime = 'nodejs';

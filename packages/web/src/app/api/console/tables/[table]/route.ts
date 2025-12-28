@@ -4,6 +4,8 @@ import { getSubscriptionStatus } from '@/lib/get-subscription-status';
 import { hasAccess } from '@/lib/subscription-access';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Generic CRUD API Route for All Tables
  * 
