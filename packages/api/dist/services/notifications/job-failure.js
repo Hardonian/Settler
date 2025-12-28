@@ -47,6 +47,7 @@ exports.notifyJobFailure = notifyJobFailure;
 exports.notifyJobCompletion = notifyJobCompletion;
 const email_1 = require("../../lib/email");
 const job_templates_1 = require("../email/job-templates");
+const webhook_notifications_1 = require("./webhook-notifications");
 /**
  * Notify user about job failure
  */
@@ -145,8 +146,22 @@ async function notifyJobFailure(prisma, params) {
             // Don't fail if audit logging fails
             console.error(`[JobFailureNotification] Audit log failed:`, auditError);
         }
-        // TODO: Send webhook notification if configured
-        // await sendWebhookNotification(...);
+        // Send webhook notification if configured
+        try {
+            await (0, webhook_notifications_1.sendWebhookNotification)(prisma, {
+                tenantId,
+                userId,
+                eventType: 'job_failed',
+                jobId,
+                resultId,
+                errorMessage,
+                jobName: job.name,
+            });
+        }
+        catch (webhookError) {
+            console.error(`[JobFailureNotification] Webhook notification failed:`, webhookError);
+            // Don't throw - webhook failure shouldn't break notification flow
+        }
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';

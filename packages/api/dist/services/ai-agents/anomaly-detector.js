@@ -4,9 +4,43 @@
  *
  * Detects anomalies in reconciliation data, API usage patterns, and security threats.
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AnomalyDetectorAgent = void 0;
 const orchestrator_1 = require("./orchestrator");
+const logger_1 = require("../../utils/logger");
 class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
     id = 'anomaly-detector';
     name = 'Anomaly & Exploit Detector';
@@ -117,9 +151,104 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
      * Detect security threats
      */
     async detectSecurityThreats() {
-        // TODO: Analyze API logs for security threats
-        // Check for API abuse, credential leaks, DDoS attacks, etc.
-        return [];
+        const threats = [];
+        try {
+            // Analyze API logs for security threats
+            // Check for API abuse, credential leaks, DDoS attacks, etc.
+            // Query recent API logs for suspicious patterns
+            // Note: UsageEvent table may not have all API logs - this is a simplified check
+            // Import PrismaClient dynamically to avoid circular dependencies
+            const { PrismaClient } = await Promise.resolve().then(() => __importStar(require('@prisma/client')));
+            const prisma = new PrismaClient();
+            const recentLogs = await prisma.usageEvent.findMany({
+                where: {
+                    timestamp: {
+                        gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
+                    },
+                },
+                select: {
+                    id: true,
+                    eventType: true,
+                    metadata: true,
+                    tenantId: true,
+                    userId: true,
+                    timestamp: true,
+                },
+                orderBy: {
+                    timestamp: 'desc',
+                },
+                take: 1000,
+            });
+            // Check for rate limit violations (potential DDoS)
+            const rateLimitViolations = recentLogs.filter((log) => {
+                const sameTenant = recentLogs.filter((l) => l.tenantId === log.tenantId);
+                return sameTenant.length > 1000; // More than 1000 requests in 24h
+            });
+            if (rateLimitViolations.length > 0) {
+                threats.push({
+                    id: `security-rate-limit-${Date.now()}`,
+                    type: 'security',
+                    severity: 'high',
+                    title: 'Potential DDoS Attack Detected',
+                    description: `Tenant ${rateLimitViolations[0]?.tenantId || 'unknown'} has exceeded rate limits`,
+                    detectedAt: new Date(),
+                    metadata: {
+                        tenantId: rateLimitViolations[0]?.tenantId,
+                        requestCount: rateLimitViolations.length,
+                    },
+                    confidence: 75,
+                });
+            }
+            // Check for authentication failures (potential brute force)
+            const authFailures = recentLogs.filter((log) => log.eventType?.includes('auth_failed') || log.eventType?.includes('login_failed'));
+            if (authFailures.length > 50) {
+                threats.push({
+                    id: `security-auth-failures-${Date.now()}`,
+                    type: 'security',
+                    severity: 'medium',
+                    title: 'Excessive Authentication Failures',
+                    description: `${authFailures.length} authentication failures detected in last 24 hours`,
+                    detectedAt: new Date(),
+                    metadata: {
+                        failureCount: authFailures.length,
+                    },
+                    confidence: 80,
+                });
+            }
+            // Check metadata for potential credential leaks
+            const potentialLeaks = recentLogs.filter((log) => {
+                const metadataStr = JSON.stringify(log.metadata || {});
+                return metadataStr.includes('password') ||
+                    metadataStr.includes('api_key') ||
+                    metadataStr.includes('secret') ||
+                    metadataStr.includes('token');
+            });
+            if (potentialLeaks.length > 0) {
+                threats.push({
+                    id: `security-credential-leak-${Date.now()}`,
+                    type: 'security',
+                    severity: 'critical',
+                    title: 'Potential Credential Leak Detected',
+                    description: 'API logs contain potential sensitive credentials',
+                    detectedAt: new Date(),
+                    metadata: {
+                        leakCount: potentialLeaks.length,
+                    },
+                    confidence: 90,
+                });
+            }
+            (0, logger_1.logInfo)('Security threat detection completed', {
+                threatCount: threats.length,
+                rateLimitViolations: rateLimitViolations.length,
+                authFailures: authFailures.length,
+                potentialLeaks: potentialLeaks.length,
+            });
+            await prisma.$disconnect();
+        }
+        catch (error) {
+            (0, logger_1.logError)('Failed to detect security threats', error);
+        }
+        return threats;
     }
     /**
      * Detect data quality issues

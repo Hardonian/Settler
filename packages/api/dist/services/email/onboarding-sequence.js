@@ -11,6 +11,7 @@ exports.processOnboardingEmails = processOnboardingEmails;
 const db_1 = require("../../db");
 const logger_1 = require("../../utils/logger");
 const tracker_1 = require("../onboarding/tracker");
+const email_1 = require("../../lib/email");
 /**
  * Send Day 0 welcome email
  */
@@ -26,20 +27,19 @@ async function sendDay0WelcomeEmail(userId) {
         const user = users[0];
         if (!user)
             return;
-        // In production, use actual email service (Resend, SendGrid, etc.)
         (0, logger_1.logInfo)("Sending Day 0 welcome email", {
             userId: user.id,
             email: user.email,
         });
-        // TODO: Integrate with email service
-        // await emailService.send({
-        //   to: user.email,
-        //   template: 'welcome-day-0',
-        //   data: {
-        //     name: user.name || 'there',
-        //     trialDays: 30
-        //   }
-        // });
+        // Send welcome email via Resend
+        try {
+            await (0, email_1.sendWelcomeEmail)(user.email, user.name || undefined, process.env.NEXT_PUBLIC_APP_URL || 'https://app.settler.dev');
+            (0, logger_1.logInfo)("Day 0 welcome email sent successfully", { userId: user.id, email: user.email });
+        }
+        catch (emailError) {
+            (0, logger_1.logError)("Failed to send Day 0 welcome email", emailError, { userId: user.id });
+            // Don't throw - email failure shouldn't break onboarding
+        }
     }
     catch (error) {
         (0, logger_1.logError)("Failed to send Day 0 welcome email", error, { userId });
@@ -65,16 +65,17 @@ async function sendDay1OnboardingEmail(userId) {
             email: user.email,
             nextStep: nextStep?.step,
         });
-        // TODO: Integrate with email service
-        // await emailService.send({
-        //   to: user.email,
-        //   template: 'onboarding-day-1',
-        //   data: {
-        //     name: user.name || 'there',
-        //     nextStep: nextStep?.step,
-        //     progress: progress?.completionPercentage || 0
-        //   }
-        // });
+        // Send Day 1 onboarding email
+        try {
+            const progressPercent = progress?.completionPercentage || 0;
+            const nextStepText = nextStep?.step || 'Get started';
+            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.settler.dev'}/dashboard`;
+            await (0, email_1.sendNotificationEmail)(user.email, 'Continue your Settler setup', `Hi ${user.name || 'there'},\n\nYou're ${progressPercent}% complete with onboarding. Your next step: ${nextStepText}.\n\nContinue your setup:`, dashboardUrl, 'Go to Dashboard', user.name || undefined);
+            (0, logger_1.logInfo)("Day 1 onboarding email sent successfully", { userId: user.id });
+        }
+        catch (emailError) {
+            (0, logger_1.logError)("Failed to send Day 1 onboarding email", emailError, { userId: user.id });
+        }
     }
     catch (error) {
         (0, logger_1.logError)("Failed to send Day 1 onboarding email", error, { userId });
@@ -99,15 +100,20 @@ async function sendDay3ActivationEmail(userId) {
             email: user.email,
             onboardingComplete: isComplete,
         });
-        // TODO: Integrate with email service
-        // await emailService.send({
-        //   to: user.email,
-        //   template: isComplete ? 'activation-complete' : 'activation-reminder',
-        //   data: {
-        //     name: user.name || 'there',
-        //     onboardingComplete: isComplete
-        //   }
-        // });
+        // Send Day 3 activation email
+        try {
+            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.settler.dev'}/dashboard`;
+            if (isComplete) {
+                await (0, email_1.sendNotificationEmail)(user.email, '🎉 Onboarding Complete!', `Hi ${user.name || 'there'},\n\nCongratulations! You've completed onboarding and your account is fully activated.\n\nStart reconciling:`, dashboardUrl, 'Go to Dashboard', user.name || undefined);
+            }
+            else {
+                await (0, email_1.sendNotificationEmail)(user.email, 'Complete your Settler setup', `Hi ${user.name || 'there'},\n\nYou're almost there! Complete your setup to start using Settler.\n\nFinish setup:`, dashboardUrl, 'Complete Setup', user.name || undefined);
+            }
+            (0, logger_1.logInfo)("Day 3 activation email sent successfully", { userId: user.id, isComplete });
+        }
+        catch (emailError) {
+            (0, logger_1.logError)("Failed to send Day 3 activation email", emailError, { userId: user.id });
+        }
     }
     catch (error) {
         (0, logger_1.logError)("Failed to send Day 3 activation email", error, { userId });
