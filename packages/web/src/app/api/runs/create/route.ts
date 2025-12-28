@@ -14,6 +14,8 @@ import { requireWorkspaceMembership } from '@/lib/authz';
 import { createLogger, generateCorrelationId } from '@/lib/logger';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
+import { prisma } from '@/shared/db/prismaClient';
 
 const CreateRunSchema = z.object({
   workspace_id: z.string().uuid(),
@@ -158,6 +160,33 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
           1, // Run creation = 1 usage event
           undefined // Will be set when run processes transactions
         );
+
+        // Emit lifecycle event: first reconciliation run
+        try {
+          // Check if this is the first reconciliation run for this tenant
+          const previousRuns = await prisma.reconciliationRun.count({
+            where: {
+              tenantId: validated.workspace_id,
+            },
+          });
+
+          const isFirstRun = previousRuns === 0;
+
+          if (isFirstRun) {
+            await emitLifecycleEventSafe(LifecycleEventType.RECON_FIRST_RUN, {
+              userId: user.id,
+              tenantId: validated.workspace_id,
+              billingAccountId: billingAccount.id,
+              properties: {
+                run_id: run.id,
+                correlation_id: correlationId,
+              },
+            });
+          }
+        } catch (eventError) {
+          // Don't fail run creation if event emission fails
+          logger.warn('Failed to emit reconciliation lifecycle event', { error: eventError });
+        }
       }
     } catch (usageError) {
       // Don't fail run creation if usage tracking fails

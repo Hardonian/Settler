@@ -7,15 +7,6 @@ npm warn config       Default value does install optional deps unless otherwise 
 > tsc --noEmit
 
 src/infrastructure/jobs/scheduler-service.ts(369,13): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type 'Without<ReconResultCreateInput, ReconResultUncheckedCreateInput> & ReconResultUncheckedCreateInput'.
-src/ops/reports/daily-report.ts(438,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/ops/reports/weekly-report.ts(503,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/ops/reports/weekly-report.ts(504,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/routes/ops/activation-funnel.ts(9,10): error TS2305: Module '"../../middleware/auth"' has no exported member 'requireAuth'.
-src/routes/ops/activation-funnel.ts(10,10): error TS2305: Module '"../../middleware/authorization"' has no exported member 'requireAdmin'.
-src/routes/ops/activation-funnel.ts(18,44): error TS7030: Not all code paths return a value.
 src/services/receipt-matching.ts(84,16): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 src/services/receipt-matching.ts(85,16): error TS2365: Operator '+' cannot be applied to types 'Decimal' and 'number'.
 src/services/receipt-matching.ts(107,52): error TS2345: Argument of type '(transaction: TransactionType) => { transactionId: string; confidence: number; amountDiff: number; dateDiff: number; matchReason: string; }' is not assignable to parameter of type '(value: { id: string; metadata: JsonValue; createdAt: Date; updatedAt: Date; tenantId: string; description: string | null; currency: string; amount: Decimal; date: Date; ... 6 more ...; reference: string | null; }, index: number, array: { ...; }[]) => { ...; }'.
@@ -29,10 +20,3 @@ src/services/rule-optimizer.ts(73,12): error TS2345: Argument of type '(m: { amo
       Types of property 'amountDiff' are incompatible.
         Type 'Decimal | null' is not assignable to type 'number | null | undefined'.
           Type 'Decimal' is not assignable to type 'number'.
-npm error Lifecycle script `typecheck` failed with error:
-npm error code 2
-npm error path /workspace/packages/api
-npm error workspace @settler/api@1.0.0
-npm error location /workspace/packages/api
-npm error command failed
-npm error command sh -c tsc --noEmit

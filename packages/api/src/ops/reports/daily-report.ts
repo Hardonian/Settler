@@ -35,7 +35,7 @@ try {
 const prisma = new PrismaClient();
 
 interface DailyReport {
-  date: string;
+  date: string; // Format: YYYY-MM-DD
   period: {
     start: string;
     end: string;
@@ -434,8 +434,13 @@ export async function generateDailyReport(): Promise<DailyReport> {
 
   const revenue = mrr / 30 + usageRevenue; // Daily revenue estimate
 
+  const dateStr = yesterdayStart.toISOString().split('T')[0];
+  if (!dateStr) {
+    throw new Error('Failed to format date');
+  }
+
   const report: DailyReport = {
-    date: yesterdayStart.toISOString().split('T')[0],
+    date: dateStr,
     period: {
       start: yesterdayStart.toISOString(),
       end: todayStart.toISOString(),
@@ -472,13 +477,13 @@ export async function generateDailyReport(): Promise<DailyReport> {
       topTenantsByRevenue: topTenantsByRevenue
         .filter((t) => t.tenantId)
         .map((t) => ({
-          tenantId: t.tenantId!,
+          tenantId: t.tenantId as string,
           revenue: mrr / activeSubscriptions.length, // Simplified
         })),
       topTenantsByUsage: tenantUsage
         .filter((t) => t.tenantId)
         .map((t) => ({
-          tenantId: t.tenantId!,
+          tenantId: t.tenantId as string,
           usage: Number(t._sum.totalQuantity || 0),
         })),
       failedPayments,

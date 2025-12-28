@@ -18,6 +18,7 @@ import { trackWebhookMetric } from '@/lib/monitoring/metrics';
 import { requestSizeLimits } from '@/middleware/request-size-limit';
 import { getTraceId } from '@/lib/observability/trace';
 import { logger } from '@/lib/observability/logger';
+import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
 // NOTE: Webhooks don't use billing gates - they're authenticated via Stripe signature
 
 export const dynamic = 'force-dynamic';
@@ -218,6 +219,29 @@ export async function POST(request: NextRequest) {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       
+      // Emit lifecycle event: checkout completed
+      if (billingAccountId) {
+        try {
+          const billingAccount = await prisma.billingAccount.findUnique({
+            where: { id: billingAccountId },
+            select: { userId: true, tenantId: true },
+          });
+
+          await emitLifecycleEventSafe(LifecycleEventType.BILLING_CHECKOUT_COMPLETED, {
+            userId: billingAccount?.userId || undefined,
+            tenantId: billingAccount?.tenantId || undefined,
+            billingAccountId,
+            properties: {
+              session_id: session.id,
+              mode: session.mode,
+            },
+          });
+        } catch (eventError) {
+          // Don't fail webhook processing if event emission fails
+          console.error('[Stripe Webhook] Failed to emit checkout completed event:', eventError);
+        }
+      }
+      
       if (session.mode === 'subscription' && session.subscription) {
         // Fetch the subscription to sync it
         const subscriptionId = typeof session.subscription === 'string'
@@ -251,6 +275,30 @@ export async function POST(request: NextRequest) {
       event.type === 'customer.subscription.deleted'
     ) {
       await syncSubscriptionFromWebhook(event);
+
+      // Emit lifecycle event: subscription canceled
+      if (event.type === 'customer.subscription.deleted' && billingAccountId) {
+        try {
+          const billingAccount = await prisma.billingAccount.findUnique({
+            where: { id: billingAccountId },
+            select: { userId: true, tenantId: true },
+          });
+
+          const subscription = event.data.object as Stripe.Subscription;
+
+          await emitLifecycleEventSafe(LifecycleEventType.BILLING_SUBSCRIPTION_CANCELED, {
+            userId: billingAccount?.userId || undefined,
+            tenantId: billingAccount?.tenantId || undefined,
+            billingAccountId,
+            properties: {
+              subscription_id: subscription.id,
+              canceled_at: subscription.canceled_at,
+            },
+          });
+        } catch (eventError) {
+          console.error('[Stripe Webhook] Failed to emit subscription canceled event:', eventError);
+        }
+      }
     }
 
     // Handle customer events (optional - for metadata updates)
@@ -309,6 +357,29 @@ export async function POST(request: NextRequest) {
           where: { stripeSubscriptionId: subscriptionIdString },
           data: { status: 'past_due' },
         });
+
+        // Emit lifecycle event: payment failed
+        if (billingAccountId) {
+          try {
+            const billingAccount = await prisma.billingAccount.findUnique({
+              where: { id: billingAccountId },
+              select: { userId: true, tenantId: true },
+            });
+
+            await emitLifecycleEventSafe(LifecycleEventType.BILLING_PAYMENT_FAILED, {
+              userId: billingAccount?.userId || undefined,
+              tenantId: billingAccount?.tenantId || undefined,
+              billingAccountId,
+              properties: {
+                invoice_id: invoice.id,
+                subscription_id: subscriptionIdString,
+                amount_due: invoice.amount_due,
+              },
+            });
+          } catch (eventError) {
+            console.error('[Stripe Webhook] Failed to emit payment failed event:', eventError);
+          }
+        }
       }
     }
 

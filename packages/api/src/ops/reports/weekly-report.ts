@@ -34,8 +34,8 @@ try {
 const prisma = new PrismaClient();
 
 interface WeeklyReport {
-  weekStart: string;
-  weekEnd: string;
+  weekStart: string; // Format: YYYY-MM-DD
+  weekEnd: string; // Format: YYYY-MM-DD
   generatedAt: string;
   growth: {
     newSignups: number;
@@ -499,9 +499,15 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
     recommendations.push('High failed payment rate - review payment processing and retry logic');
   }
 
+  const weekStartStr = weekStart.toISOString().split('T')[0];
+  const weekEndStr = weekEnd.toISOString().split('T')[0];
+  if (!weekStartStr || !weekEndStr) {
+    throw new Error('Failed to format dates');
+  }
+
   const report: WeeklyReport = {
-    weekStart: weekStart.toISOString().split('T')[0],
-    weekEnd: weekEnd.toISOString().split('T')[0],
+    weekStart: weekStartStr,
+    weekEnd: weekEndStr,
     generatedAt: new Date().toISOString(),
     growth: {
       newSignups,
@@ -539,7 +545,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
       topTenantsByUsage: tenantUsage
         .filter((t) => t.tenantId)
         .map((t) => ({
-          tenantId: t.tenantId!,
+          tenantId: t.tenantId as string,
           usage: Number(t._sum.totalQuantity || 0),
         })),
       failedPayments,

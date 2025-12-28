@@ -15,6 +15,7 @@ import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
 import { logAuditEvent } from '@/lib/audit/logger';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
 import { freeRoute } from '@/middleware/billing-gate-universal';
+import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -104,6 +105,26 @@ export const POST = freeRoute(async function POST(request: NextRequest) {
         { error: 'Cannot upgrade to starter plan. Please use customer portal to cancel subscription.' },
         { status: 400 }
       );
+    }
+
+    // Emit lifecycle event: checkout started
+    try {
+      const tenant = await prisma.tenant.findFirst({
+        where: { billingAccountId: billingAccount.id },
+        select: { id: true },
+      });
+
+      await emitLifecycleEventSafe(LifecycleEventType.BILLING_CHECKOUT_STARTED, {
+        userId: user.id,
+        tenantId: tenant?.id,
+        billingAccountId: billingAccount.id,
+        properties: {
+          plan_code: planCode,
+        },
+      });
+    } catch (eventError) {
+      // Don't fail checkout creation if event emission fails
+      console.error('[Stripe Checkout] Failed to emit checkout started event:', eventError);
     }
 
     // Create checkout session (already uses safe Stripe calls internally)
