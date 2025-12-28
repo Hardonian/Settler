@@ -37,14 +37,8 @@ tests/
 # CI/CD (not needed in deployment)
 .github/
 
-# Scripts - include only build-time scripts needed for Vercel builds
-# First, explicitly include the scripts we need
-!scripts/vercel-prisma-postinstall.js
-!scripts/vercel-build-optimizer.js
-!scripts/vercel-install.sh
-!scripts/validate-api-routes.ts
-# Then ignore everything else in scripts
-scripts/*
+# Scripts - we need build-time scripts, so we include the scripts directory
+# Individual scripts can be excluded below if needed, but build-time scripts must be available
 
 # Other
 .DS_Store
