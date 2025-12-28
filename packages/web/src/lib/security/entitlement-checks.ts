@@ -23,6 +23,18 @@ try {
   
   // Fallback implementation
   checkEntitlements = async (billingAccountId: string, _options?: any) => {
+    // Skip Prisma operations during build time if DATABASE_URL is not available
+    if (!process.env.DATABASE_URL) {
+      console.warn('DATABASE_URL not available, returning default entitlements');
+      return {
+        canRunRecon: true,
+        canCreateRecon: true,
+        canExport: true,
+        canViewReports: true,
+        canUseAPI: true,
+      };
+    }
+    
     const prisma = new PrismaClient();
     try {
       const account = await prisma.billingAccount.findUnique({
@@ -73,6 +85,12 @@ try {
   };
 
   getBillingStatus = async (billingAccountId: string) => {
+    // Skip Prisma operations during build time if DATABASE_URL is not available
+    if (!process.env.DATABASE_URL) {
+      console.warn('DATABASE_URL not available, returning default billing status');
+      return 'free';
+    }
+    
     const prisma = new PrismaClient();
     try {
       const account = await prisma.billingAccount.findUnique({
@@ -110,8 +128,6 @@ type EntitlementCheck = {
   message?: string;
   upgradeUrl?: string;
 };
-
-const prisma = new PrismaClient();
 
 export interface EntitlementCheckResult {
   allowed: boolean;
@@ -177,8 +193,6 @@ export async function checkUserEntitlements(
         { status: 500 }
       ),
     };
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -191,7 +205,5 @@ export async function getUserBillingStatus(billingAccountId: string): Promise<st
   } catch (error) {
     console.error('Billing status check failed:', error);
     return 'unknown';
-  } finally {
-    await prisma.$disconnect();
   }
 }

@@ -11,9 +11,16 @@ import { PrismaClient } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
-const prisma = new PrismaClient();
+// Lazy PrismaClient initialization to avoid build-time errors
+function getPrisma() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is required');
+  }
+  return new PrismaClient();
+}
 
 export async function GET(request: NextRequest) {
+  const prisma = getPrisma();
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
