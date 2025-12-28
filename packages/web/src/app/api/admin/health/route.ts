@@ -94,7 +94,7 @@ export async function GET(_request: NextRequest) {
     const components = {
       web: 'operational', // Would check actual web server
       api: 'operational', // Would check API server
-      db: await checkDatabaseHealth(),
+      db: await checkDatabaseHealth(prisma),
       stripeWebhooks: webhookFailures < 10 ? 'operational' : 'degraded',
       providerConnectors: 'operational', // Would check connector health
     };
@@ -126,7 +126,7 @@ export async function GET(_request: NextRequest) {
   }
 }
 
-async function checkDatabaseHealth(): Promise<'operational' | 'degraded' | 'down'> {
+async function checkDatabaseHealth(prisma: PrismaClient): Promise<'operational' | 'degraded' | 'down'> {
   try {
     await prisma.$queryRaw`SELECT 1`;
     return 'operational';
