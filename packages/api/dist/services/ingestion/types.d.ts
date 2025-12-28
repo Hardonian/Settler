@@ -38,25 +38,25 @@ export declare const NormalizedTransactionSchema: z.ZodObject<{
     externalId: z.ZodOptional<z.ZodString>;
     metadata: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, "strip", z.ZodTypeAny, {
-    date: Date;
-    amount: number;
     currency: string;
-    metadata?: Record<string, unknown> | undefined;
-    category?: string | undefined;
-    description?: string | undefined;
-    paymentMethod?: string | undefined;
-    reference?: string | undefined;
-    externalId?: string | undefined;
-}, {
-    date: Date;
     amount: number;
+    date: Date;
     metadata?: Record<string, unknown> | undefined;
+    description?: string | undefined;
     category?: string | undefined;
+    paymentMethod?: string | undefined;
+    externalId?: string | undefined;
+    reference?: string | undefined;
+}, {
+    amount: number;
+    date: Date;
+    metadata?: Record<string, unknown> | undefined;
     description?: string | undefined;
     currency?: string | undefined;
+    category?: string | undefined;
     paymentMethod?: string | undefined;
-    reference?: string | undefined;
     externalId?: string | undefined;
+    reference?: string | undefined;
 }>;
 export type NormalizedTransactionInput = z.infer<typeof NormalizedTransactionSchema>;
 /**

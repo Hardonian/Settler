@@ -22,7 +22,7 @@ export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
 }
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, striped = false, hover = false, size = 'default', ...props }, ref) => {
+  ({ className, striped = false, hover = false, size: _size = 'default', ...props }, ref) => {
     return (
       <div className="relative w-full overflow-auto">
         <table

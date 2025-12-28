@@ -1,13 +1,16 @@
 "use strict";
 /**
  * Reconciliation Matcher
- * Deterministic matching algorithm: exact amount + date window + fuzzy description
+ * Deterministic matching algorithm with ML enhancement fallback.
+ * Uses proprietary ML models trained on historical matches for improved accuracy.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.matchTransaction = matchTransaction;
 exports.runReconciliation = runReconciliation;
 const db_1 = require("../../db");
 const logger_1 = require("../../utils/logger");
+const ml_matching_engine_1 = require("../matching/ml-matching-engine");
+const enhanced_cross_customer_intelligence_1 = require("../matching/enhanced-cross-customer-intelligence");
 const DEFAULT_CONFIG = {
     dateWindowDays: 7,
     amountTolerance: 0.01,
@@ -132,6 +135,36 @@ async function matchTransaction(sourceTransactionId, targetTransactionIds, confi
                 dateDiff: daysDifference(source.date, exactMatch.date),
             };
         }
+    }
+    // Try ML matching engine (proprietary, creates data moat)
+    // This uses historical match data and cross-customer intelligence
+    try {
+        const sourceAdapter = await getSourceAdapter(sourceTransactionId);
+        const targetAdapters = await Promise.all(targetTransactionIds.map((id) => getSourceAdapter(id)));
+        // Use ML engine for first target adapter (most common case)
+        if (targetAdapters.length > 0) {
+            const mlPrediction = await ml_matching_engine_1.mlMatchingEngine.predictMatch(sourceTransactionId, targetTransactionIds, "", // tenantId will be extracted from transaction
+            sourceAdapter || "unknown", targetAdapters[0] || "unknown");
+            if (mlPrediction && mlPrediction.confidence > 0.7) {
+                // ML prediction is confident, use it
+                const bestTarget = targets.find((t) => targetTransactionIds.includes(t.id));
+                if (bestTarget) {
+                    return {
+                        sourceTransactionId: source.id,
+                        targetTransactionId: bestTarget.id,
+                        matchType: mlPrediction.matchType,
+                        confidence: mlPrediction.confidence,
+                        matchReason: `ML model prediction: ${mlPrediction.reasoning}`,
+                        amountDiff: Math.abs(source.amount - bestTarget.amount),
+                        dateDiff: daysDifference(source.date, bestTarget.date),
+                    };
+                }
+            }
+        }
+    }
+    catch (error) {
+        // Fall back to deterministic algorithm if ML fails
+        (0, logger_1.logError)("ML matching failed, falling back to deterministic", error);
     }
     // Filter by currency match
     const currencyMatchesFiltered = targets.filter((t) => t.currency === source.currency);
@@ -335,6 +368,29 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
             avgConfidence,
             traceId,
         });
+        // Record patterns for cross-customer intelligence (creates data moat)
+        for (const match of matches) {
+            if (match.targetTransactionId && match.matchType !== "unmatched") {
+                try {
+                    const sourceAdapter = await getSourceAdapter(match.sourceTransactionId);
+                    const targetAdapter = await getSourceAdapter(match.targetTransactionId);
+                    if (sourceAdapter && targetAdapter) {
+                        await enhanced_cross_customer_intelligence_1.enhancedCrossCustomerIntelligence.recordPattern(tenantId, {
+                            sourceAdapter,
+                            targetAdapter,
+                            matchType: match.matchType,
+                            confidence: match.confidence,
+                            amountDiff: match.amountDiff || 0,
+                            dateDiff: match.dateDiff || 0,
+                        });
+                    }
+                }
+                catch (error) {
+                    // Non-fatal - continue even if pattern recording fails
+                    (0, logger_1.logError)("Failed to record pattern", error);
+                }
+            }
+        }
         return runId;
     }
     catch (error) {
@@ -349,6 +405,26 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
             runId,
         ]);
         throw error;
+    }
+}
+/**
+ * Get source adapter for transaction
+ */
+async function getSourceAdapter(transactionId) {
+    try {
+        const result = await (0, db_1.query)(`SELECT si.connector_type
+      FROM normalized_transactions nt
+      JOIN ingestion_sources si ON si.id = nt.source_id
+      WHERE nt.id = $1
+      LIMIT 1`, [transactionId]);
+        if (result.length > 0) {
+            return result[0].connector_type;
+        }
+        return null;
+    }
+    catch (error) {
+        (0, logger_1.logError)("Failed to get source adapter", error, { transactionId });
+        return null;
     }
 }
 //# sourceMappingURL=reconciliation-matcher.js.map

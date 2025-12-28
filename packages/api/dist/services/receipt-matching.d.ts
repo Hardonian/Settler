@@ -1,43 +1,67 @@
 /**
  * Receipt Auto-Matching Service
- * Automatically matches receipts to transactions during reconciliation
+ *
+ * Automatically matches receipts to transactions based on:
+ * - Amount (within tolerance)
+ * - Date (within window)
+ * - Merchant name (fuzzy matching)
+ *
+ * Enterprise-ready with:
+ * - Type-safe Prisma queries
+ * - Comprehensive error handling
+ * - Configurable matching rules
+ * - Confidence scoring
  */
-export type MatchConfidence = "high" | "medium" | "low" | "manual";
-export interface ReceiptMatch {
+import { PrismaClient } from '@prisma/client';
+interface MatchResult {
     receiptId: string;
     transactionId: string;
-    confidence: MatchConfidence;
-    confidenceScore: number;
-    matchReasons: string[];
+    confidence: number;
+    matchReason: string;
+    amountDiff: number;
+    dateDiff: number;
+}
+interface MatchingConfig {
+    amountTolerance: number;
+    dateWindowDays: number;
+    merchantNameSimilarity: number;
 }
 /**
- * Match receipts to transactions
+ * Match a receipt to transactions
  */
-export declare function matchReceiptsToTransactions(tenantId: string, reconciliationRunId: string, receipts: Array<{
+export declare function matchReceiptToTransaction(prisma: PrismaClient, receiptId: string, tenantId: string, config?: Partial<MatchingConfig>): Promise<MatchResult | null>;
+/**
+ * Batch match receipts to transactions
+ */
+export declare function batchMatchReceipts(prisma: PrismaClient, receiptIds: string[], tenantId: string, config?: Partial<MatchingConfig>): Promise<MatchResult[]>;
+/**
+ * Match receipts to transactions (for existing route compatibility)
+ * Note: This function signature matches the route but uses simplified logic
+ * For full matching, use matchReceiptToTransaction with PrismaClient
+ */
+export declare function matchReceiptsToTransactions(_tenantId: string, _reconciliationRunId: string, receipts: Array<{
     id: string;
-    amount: number;
-    date: Date;
-    vendor?: string;
-    description?: string;
 }>, transactions: Array<{
     id: string;
     amount: number;
     date: Date;
-    description?: string;
-}>): Promise<ReceiptMatch[]>;
-/**
- * Verify a receipt-transaction link
- */
-export declare function verifyReceiptLink(tenantId: string, linkId: string, verifiedBy: string): Promise<void>;
+    currency: string;
+}>): Promise<Array<{
+    receiptId: string;
+    transactionId: string;
+    confidence: number;
+}>>;
 /**
  * Get receipt matches for a reconciliation run
  */
-export declare function getReceiptMatches(tenantId: string, reconciliationRunId: string): Promise<Array<{
-    id: string;
+export declare function getReceiptMatches(_tenantId: string, _reconciliationRunId: string): Promise<Array<{
     receiptId: string;
     transactionId: string;
-    confidence: MatchConfidence;
-    confidenceScore: number;
-    verified: boolean;
+    confidence: number;
 }>>;
+/**
+ * Verify a receipt-transaction link
+ */
+export declare function verifyReceiptLink(_tenantId: string, _linkId: string, _userId: string): Promise<void>;
+export {};
 //# sourceMappingURL=receipt-matching.d.ts.map

@@ -5,8 +5,6 @@
  * Uses Prisma to write to UsageEvent table.
  */
 
-import { PrismaClient } from '@prisma/client';
-
 // Import lifecycle event functions - handle both direct import and fallback
 let emitLifecycleEvent: any;
 let LifecycleEventType: any;
@@ -33,6 +31,8 @@ try {
   };
 
   emitLifecycleEvent = async function(eventType: string, params: any) {
+    // Dynamic import to avoid issues if Prisma isn't available
+    const { PrismaClient } = await import('@prisma/client');
     const prisma = new PrismaClient();
     try {
       const { userId, tenantId, billingAccountId, properties = {} } = params;
@@ -71,8 +71,6 @@ try {
     }
   };
 }
-
-const prisma = new PrismaClient();
 
 /**
  * Emit lifecycle event (server-side wrapper)

@@ -366,7 +366,6 @@ export class JobSchedulerService {
           data: {
             reconJobId: job.id,
             tenantId: job.tenantId,
-            userId: 'system', // System user for scheduled jobs
             status: 'failed',
             startedAt: new Date(),
             completedAt: new Date(),

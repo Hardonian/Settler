@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { TrendingUp, TrendingDown, Users, Link2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { TrendingUp, Users, Link2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface ActivationMetrics {
   signups: number;

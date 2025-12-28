@@ -22,7 +22,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     // Import jobs
     if (jobs && Array.isArray(jobs)) {
       for (const job of jobs) {
-        const { id, ...jobData } = job as any;
+        const { id: _id, ...jobData } = job as any;
         await supabase.from("reconciliation_jobs").upsert({
           ...jobData,
           user_id: user.id,

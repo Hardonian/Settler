@@ -5,6 +5,7 @@ const express_1 = require("express");
 const cache_1 = require("../utils/cache");
 const error_handler_1 = require("../utils/error-handler");
 const adapter_config_validator_1 = require("../utils/adapter-config-validator");
+const billing_gating_1 = require("../middleware/billing-gating");
 const router = (0, express_1.Router)();
 exports.adaptersRouter = router;
 // Get adapters from validator (UX-002)
@@ -52,7 +53,8 @@ router.get("/", async (_req, res) => {
     }
 });
 // Get adapter details (UX-002: Enhanced with schema)
-router.get("/:id", async (req, res) => {
+// CRITICAL: Enforce add-on purchase requirement for premium adapters
+router.get("/:id", (0, billing_gating_1.checkIntegrationAccess)(":id"), async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {

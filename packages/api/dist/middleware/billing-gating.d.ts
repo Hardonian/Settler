@@ -44,8 +44,9 @@ export declare function checkUsageQuotaForEvent(userId: string, eventType: strin
 }>;
 /**
  * Middleware to check integration access
+ * Supports dynamic integration ID from route params
  */
-export declare function checkIntegrationAccess(integrationId: string): (req: AuthRequest, res: Response, next: NextFunction) => Promise<void | Response<any, Record<string, any>>>;
+export declare function checkIntegrationAccess(integrationIdOrParam: string): (req: AuthRequest, res: Response, next: NextFunction) => Promise<void | Response<any, Record<string, any>>>;
 /**
  * Middleware to check pilot status and expiration
  * Use this to add pilot warnings/errors to responses

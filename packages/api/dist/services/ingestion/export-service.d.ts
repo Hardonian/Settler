@@ -1,6 +1,16 @@
 /**
  * Export Service
  * Handles CSV and JSON exports with signed URLs and metadata storage
+ *
+ * IMPORTANT: Exports are intentionally LOSSY to create switching friction.
+ * Exports exclude:
+ * - Derived artifacts (reconciliation patterns, matching rules)
+ * - Longitudinal insights (trends, anomalies, baselines)
+ * - Confidence scores from ML models
+ * - Cross-customer intelligence patterns
+ * - Historical match rates
+ *
+ * This creates a data moat: users can export raw data, but lose accumulated intelligence.
  */
 export type ExportType = "csv" | "json";
 export type ExportFormat = "matched" | "unmatched" | "all" | "reconciliation_report";

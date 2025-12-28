@@ -121,20 +121,28 @@ export const GET = withUniversalBillingGate(async function GET(
         status: 'connected',
         updated_at: new Date().toISOString(),
       })
-      .eq('id', connector.id);
+      .eq('id', typeof connector.id === 'string' ? connector.id : String(connector.id));
 
     // Emit lifecycle event: provider connected
     try {
       // Check if this is the first provider connection for this tenant
-      const otherConnectors = await typedSupabase
+      const connectorIdStr = typeof connector.id === 'string' ? connector.id : String(connector.id);
+      const { data: otherConnectorsData } = await typedSupabase
         .from('connectors')
         .select('id')
         .eq('tenant_id', tenantId)
         .eq('status', 'connected')
-        .neq('id', connector.id)
-        .limit(1);
-
-      const isFirstConnection = !otherConnectors.data || otherConnectors.data.length === 0;
+        .limit(10);
+      
+      // Filter out current connector manually since neq might not be available
+      const otherConnectors = Array.isArray(otherConnectorsData) 
+        ? otherConnectorsData.filter((c: any) => {
+            const cId = typeof c.id === 'string' ? c.id : String(c.id);
+            return cId !== connectorIdStr;
+          })
+        : [];
+      
+      const isFirstConnection = otherConnectors.length === 0;
 
       // Get billing account for tenant
       const tenant = await prisma.tenant.findUnique({

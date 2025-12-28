@@ -2,6 +2,16 @@
 /**
  * Export Service
  * Handles CSV and JSON exports with signed URLs and metadata storage
+ *
+ * IMPORTANT: Exports are intentionally LOSSY to create switching friction.
+ * Exports exclude:
+ * - Derived artifacts (reconciliation patterns, matching rules)
+ * - Longitudinal insights (trends, anomalies, baselines)
+ * - Confidence scores from ML models
+ * - Cross-customer intelligence patterns
+ * - Historical match rates
+ *
+ * This creates a data moat: users can export raw data, but lose accumulated intelligence.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createExport = createExport;
@@ -58,14 +68,15 @@ async function createExport(options) {
     }
 }
 /**
- * Export matched transactions to CSV
+ * Export matched transactions to CSV (LOSSY - excludes ML-derived fields)
  */
 async function exportMatchedToCSV(reconciliationRunId, tenantId) {
+    // LOSSY: Exclude confidence scores, match reasoning (ML-derived)
     const matches = await (0, db_1.query)(`SELECT 
       rm.id as match_id,
       rm.match_type,
-      rm.confidence,
-      rm.match_reason,
+      -- Excluded: rm.confidence (ML-derived, proprietary)
+      -- Excluded: rm.match_reason (contains ML insights)
       rm.amount_diff,
       rm.date_diff,
       st.id as source_id,
@@ -80,14 +91,18 @@ async function exportMatchedToCSV(reconciliationRunId, tenantId) {
       tt.date as target_date,
       tt.description as target_description,
       tt.external_id as target_external_id
+      -- Excluded: Derived artifacts, longitudinal insights, ML predictions
     FROM reconciliation_matches rm
     JOIN normalized_transactions st ON st.id = rm.source_transaction_id
     LEFT JOIN normalized_transactions tt ON tt.id = rm.target_transaction_id
     WHERE rm.run_id = $1 AND rm.tenant_id = $2 AND rm.target_transaction_id IS NOT NULL
-    ORDER BY rm.confidence DESC, st.date DESC`, [reconciliationRunId, tenantId]);
+    ORDER BY st.date DESC`, [reconciliationRunId, tenantId]);
     const csvRows = [];
-    // Header
-    csvRows.push("Match ID,Match Type,Confidence,Source ID,Source Amount,Source Currency,Source Date,Source Description,Target ID,Target Amount,Target Currency,Target Date,Target Description,Amount Diff,Date Diff");
+    // Warning header
+    csvRows.push("# WARNING: This export is LOSSY. Confidence scores, match reasoning, and ML-derived insights are excluded.");
+    csvRows.push("# These features are only available within Settler.");
+    // Header (excludes confidence and match_reason)
+    csvRows.push("Match ID,Match Type,Source ID,Source Amount,Source Currency,Source Date,Source Description,Target ID,Target Amount,Target Currency,Target Date,Target Description,Amount Diff,Date Diff");
     // Data rows
     for (const match of matches) {
         const row = match;
@@ -260,18 +275,30 @@ async function exportReconciliationReportToCSV(reconciliationRunId, tenantId) {
     return csvRows.join("\n");
 }
 /**
- * Export to JSON
+ * Export to JSON (LOSSY - excludes derived intelligence)
  */
 async function exportToJSON(options) {
     let data;
     if (options.format === "matched" && options.reconciliationRunId) {
+        // LOSSY: Exclude confidence scores, match reasoning, ML model predictions
         const matches = await (0, db_1.query)(`SELECT 
         rm.id as match_id,
         rm.match_type,
-        rm.confidence,
-        rm.match_reason,
-        st.*,
-        tt.*
+        -- Excluded: rm.confidence (ML-derived)
+        -- Excluded: rm.match_reason (contains ML insights)
+        st.id as source_id,
+        st.amount as source_amount,
+        st.currency as source_currency,
+        st.date as source_date,
+        st.description as source_description,
+        st.external_id as source_external_id,
+        tt.id as target_id,
+        tt.amount as target_amount,
+        tt.currency as target_currency,
+        tt.date as target_date,
+        tt.description as target_description,
+        tt.external_id as target_external_id
+        -- Excluded: Derived artifacts, longitudinal insights, ML confidence scores
       FROM reconciliation_matches rm
       JOIN normalized_transactions st ON st.id = rm.source_transaction_id
       LEFT JOIN normalized_transactions tt ON tt.id = rm.target_transaction_id
@@ -279,21 +306,49 @@ async function exportToJSON(options) {
         data = matches;
     }
     else if (options.format === "unmatched" && options.reconciliationRunId) {
-        const unmatched = await (0, db_1.query)(`SELECT st.*
+        // LOSSY: Exclude anomaly detection, pattern matching insights
+        const unmatched = await (0, db_1.query)(`SELECT 
+        st.id,
+        st.amount,
+        st.currency,
+        st.date,
+        st.description,
+        st.external_id,
+        st.category,
+        st.payment_method
+        -- Excluded: Anomaly scores, pattern matches, ML predictions
       FROM reconciliation_matches rm
       JOIN normalized_transactions st ON st.id = rm.source_transaction_id
       WHERE rm.run_id = $1 AND rm.tenant_id = $2 AND rm.target_transaction_id IS NULL`, [options.reconciliationRunId, options.tenantId]);
         data = unmatched;
     }
     else if (options.format === "all" && options.ingestionId) {
-        const transactions = await (0, db_1.query)(`SELECT * FROM normalized_transactions
+        // LOSSY: Exclude normalized metadata, derived fields
+        const transactions = await (0, db_1.query)(`SELECT 
+        id,
+        external_id,
+        amount,
+        currency,
+        date,
+        description,
+        category,
+        payment_method,
+        reference
+        -- Excluded: metadata (contains derived artifacts), normalized fields
+      FROM normalized_transactions
       WHERE ingestion_id = $1 AND tenant_id = $2`, [options.ingestionId, options.tenantId]);
         data = transactions;
     }
     else {
         throw new Error(`Invalid export format: ${options.format}`);
     }
-    return JSON.stringify(data, null, 2);
+    // Add lossy export warning
+    const exportData = {
+        warning: "This export is LOSSY. It excludes derived artifacts, longitudinal insights, confidence scores, and ML model predictions. These features are only available within Settler.",
+        exportedAt: new Date().toISOString(),
+        data,
+    };
+    return JSON.stringify(exportData, null, 2);
 }
 /**
  * Generate export file

@@ -1,7 +1,9 @@
 {
   "name": "@settler/api",
   "version": "1.0.0",
-  "description": "Settler API Server - Serverless reconciliation service",
+  "description": "Settler API Server - Serverless reconciliation service with enterprise-grade operations tooling",
+  "author": "Settler.dev",
+  "license": "PROPRIETARY",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {

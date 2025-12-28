@@ -147,27 +147,46 @@ Proprietary - See [LICENSE](LICENSE) for details.
 
 ## 👨‍💼 Solo Operator Runbook
 
+This repository includes comprehensive operational tooling designed for solo operators running a SaaS business. All commands are production-ready and safe to run in CI/CD.
+
 ### Daily Ops Commands
 
 ```bash
-# Generate daily founder report
+# Generate daily founder report (growth, activation, revenue, billing health)
 npm run ops:daily
 
-# Generate weekly founder report
+# Generate weekly founder report (week-over-week trends, recommendations)
 npm run ops:weekly
 
 # Run comprehensive health check (lint, typecheck, routes, SLA, migrations)
 npm run ops:doctor
 
-# Generate billing evidence pack for a tenant
+# Generate billing evidence pack for a tenant (for support/debugging)
 npm run ops:billing:evidence --tenant <tenant-id>
 
-# Generate procurement pack for B2B sales
+# Generate procurement pack for B2B sales (Terms, Privacy, DPA, Security)
 npm run ops:procurement:pack
 
-# Run smoke tests
+# Run smoke tests (key routes, webhooks, DB connectivity)
 npm run qa:smoke
 ```
+
+### Automated Reports
+
+Reports are automatically generated via GitHub Actions:
+- **Daily Reports**: Generated at 07:40 and 16:40 America/Toronto
+- **Weekly Reports**: Generated every Monday at 07:40 America/Toronto
+- **Artifacts**: All reports are uploaded as GitHub Actions artifacts
+
+Reports include:
+- Growth metrics (signups, activations, MRR)
+- Activation funnel (signup → tenant → provider → first recon)
+- Usage metrics (reconciliation runs, transactions processed)
+- Revenue metrics (MRR, ARR, churn, LTV)
+- Billing health (active subscriptions, payment failures, dunning)
+- Risk indicators (error rates, SLA violations)
+- Support metrics (open tickets, response times)
+- Cost proxies (API calls, database queries)
 
 ### Daily Workflow
 

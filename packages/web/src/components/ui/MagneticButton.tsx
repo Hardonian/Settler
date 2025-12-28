@@ -16,7 +16,7 @@ export function MagneticButton({
   children,
   className,
   magneticStrength = 0.3,
-  asChild = false,
+  asChild: _asChild = false,
   ...props
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);

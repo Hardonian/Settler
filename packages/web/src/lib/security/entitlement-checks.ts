@@ -4,27 +4,25 @@
  * Uses the new billing hardening functions for granular entitlement checks.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 // Import billing hardening functions - handle both direct import and dynamic import
 let checkEntitlements: any;
 let getBillingStatus: any;
-let EntitlementCheckType: any;
 
 try {
   // Try direct import first
   const billingHardening = require('@settler/api/src/ops/billing-hardening');
   checkEntitlements = billingHardening.checkEntitlements;
   getBillingStatus = billingHardening.getBillingStatus;
-  EntitlementCheckType = billingHardening.EntitlementCheck;
 } catch {
   // Fallback: implement inline if import fails
   // This ensures the code works even if the API package isn't built
   console.warn('Could not import billing hardening functions, using fallback implementation');
   
   // Fallback implementation
-  checkEntitlements = async (billingAccountId: string, options?: any) => {
+  checkEntitlements = async (billingAccountId: string, _options?: any) => {
     const prisma = new PrismaClient();
     try {
       const account = await prisma.billingAccount.findUnique({
@@ -126,14 +124,14 @@ export interface EntitlementCheckResult {
  */
 export async function checkUserEntitlements(
   billingAccountId: string,
-  requestedUsage?: {
+  _requestedUsage?: {
     service: string;
     quantity: number;
   }
 ): Promise<EntitlementCheckResult> {
   try {
     const entitlements = await checkEntitlements(billingAccountId, {
-      requestedUsage,
+      requestedUsage: _requestedUsage,
     });
 
     if (!entitlements.canUseAPI) {

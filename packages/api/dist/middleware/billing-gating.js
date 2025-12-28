@@ -470,8 +470,9 @@ async function checkUsageQuotaForEvent(userId, eventType, quantity = 1) {
 }
 /**
  * Middleware to check integration access
+ * Supports dynamic integration ID from route params
  */
-function checkIntegrationAccess(integrationId) {
+function checkIntegrationAccess(integrationIdOrParam) {
     return async (req, res, next) => {
         try {
             const userId = req.userId;
@@ -480,6 +481,11 @@ function checkIntegrationAccess(integrationId) {
                     error: "Unauthorized",
                     message: "Authentication required",
                 });
+            }
+            // Extract integration ID from route params if ":id" pattern used
+            let integrationId = integrationIdOrParam;
+            if (integrationIdOrParam === ":id" && req.params && req.params.id) {
+                integrationId = req.params.id;
             }
             // Check if integration is standard (included in base plan)
             const { data: addOn, error: addOnError } = await client_1.supabase

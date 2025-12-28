@@ -1,1 +1,1 @@
-{"version":3,"file":"adapters.d.ts","sourceRoot":"","sources":["../../src/routes/adapters.ts"],"names":[],"mappings":"AAKA,QAAA,MAAM,MAAM,4CAAW,CAAC;AA2FxB,OAAO,EAAE,MAAM,IAAI,cAAc,EAAE,CAAC"}
+{"version":3,"file":"adapters.d.ts","sourceRoot":"","sources":["../../src/routes/adapters.ts"],"names":[],"mappings":"AAOA,QAAA,MAAM,MAAM,4CAAW,CAAC;AA4FxB,OAAO,EAAE,MAAM,IAAI,cAAc,EAAE,CAAC"}
