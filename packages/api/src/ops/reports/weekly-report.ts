@@ -267,7 +267,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
   });
 
   const usageRevenue = usageAggregates.reduce(
-    (sum, agg) => sum + Number(agg.estimatedCost || 0),
+    (sum: number, agg: { estimatedCost: number | null }) => sum + Number(agg.estimatedCost || 0),
     0
   );
 
@@ -284,7 +284,7 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
   });
 
   const previousWeekRevenue = previousWeekUsageRevenue.reduce(
-    (sum, agg) => sum + Number(agg.estimatedCost || 0),
+    (sum: number, agg: { estimatedCost: number | null }) => sum + Number(agg.estimatedCost || 0),
     0
   );
 
@@ -543,8 +543,8 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
       usageRevenue,
       topTenantsByRevenue: [], // Simplified for now
       topTenantsByUsage: tenantUsage
-        .filter((t) => t.tenantId)
-        .map((t) => ({
+        .filter((t: { tenantId: string | null; _sum: { totalQuantity: number | null } }) => t.tenantId)
+        .map((t: { tenantId: string | null; _sum: { totalQuantity: number | null } }) => ({
           tenantId: t.tenantId as string,
           usage: Number(t._sum.totalQuantity || 0),
         })),

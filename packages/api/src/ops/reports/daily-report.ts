@@ -269,7 +269,7 @@ export async function generateDailyReport(): Promise<DailyReport> {
   });
 
   const usageRevenue = usageAggregates.reduce(
-    (sum, agg) => sum + Number(agg.estimatedCost || 0),
+    (sum: number, agg: { estimatedCost: number | null }) => sum + Number(agg.estimatedCost || 0),
     0
   );
 
@@ -475,14 +475,14 @@ export async function generateDailyReport(): Promise<DailyReport> {
       mrr,
       usageRevenue,
       topTenantsByRevenue: topTenantsByRevenue
-        .filter((t) => t.tenantId)
-        .map((t) => ({
+        .filter((t: { tenantId: string | null }) => t.tenantId)
+        .map((t: { tenantId: string | null }) => ({
           tenantId: t.tenantId as string,
           revenue: mrr / activeSubscriptions.length, // Simplified
         })),
       topTenantsByUsage: tenantUsage
-        .filter((t) => t.tenantId)
-        .map((t) => ({
+        .filter((t: { tenantId: string | null; _sum: { totalQuantity: number | null } }) => t.tenantId)
+        .map((t: { tenantId: string | null; _sum: { totalQuantity: number | null } }) => ({
           tenantId: t.tenantId as string,
           usage: Number(t._sum.totalQuantity || 0),
         })),
