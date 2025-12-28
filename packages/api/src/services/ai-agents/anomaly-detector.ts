@@ -165,7 +165,8 @@ export class AnomalyDetectorAgent extends BaseAgent {
       // Query recent API logs for suspicious patterns
       // Note: UsageEvent table may not have all API logs - this is a simplified check
       // Import PrismaClient dynamically to avoid circular dependencies
-      const { PrismaClient } = await import('@prisma/client');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { PrismaClient } = require('@prisma/client');
       const prisma = new PrismaClient();
       
       const recentLogs = await prisma.usageEvent.findMany({
@@ -189,8 +190,8 @@ export class AnomalyDetectorAgent extends BaseAgent {
       });
 
       // Check for rate limit violations (potential DDoS)
-      const rateLimitViolations = recentLogs.filter((log) => {
-        const sameTenant = recentLogs.filter((l) => l.tenantId === log.tenantId);
+      const rateLimitViolations = recentLogs.filter((log: { tenantId: string | null }) => {
+        const sameTenant = recentLogs.filter((l: { tenantId: string | null }) => l.tenantId === log.tenantId);
         return sameTenant.length > 1000; // More than 1000 requests in 24h
       });
 

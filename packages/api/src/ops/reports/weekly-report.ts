@@ -4,7 +4,7 @@
  * Generates comprehensive weekly operational reports aggregating daily metrics.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
@@ -266,8 +266,8 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
     },
   });
 
-  const usageRevenue = usageAggregates.reduce(
-    (sum, agg) => sum + Number(agg.estimatedCost || 0),
+  const usageRevenue: number = usageAggregates.reduce(
+    (sum: number, agg: { estimatedCost: Prisma.Decimal | null }) => sum + Number(agg.estimatedCost || 0),
     0
   );
 
@@ -283,8 +283,8 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
     },
   });
 
-  const previousWeekRevenue = previousWeekUsageRevenue.reduce(
-    (sum, agg) => sum + Number(agg.estimatedCost || 0),
+  const previousWeekRevenue: number = previousWeekUsageRevenue.reduce(
+    (sum: number, agg: { estimatedCost: Prisma.Decimal | null }) => sum + Number(agg.estimatedCost || 0),
     0
   );
 
@@ -543,8 +543,8 @@ export async function generateWeeklyReport(): Promise<WeeklyReport> {
       usageRevenue,
       topTenantsByRevenue: [], // Simplified for now
       topTenantsByUsage: tenantUsage
-        .filter((t) => t.tenantId)
-        .map((t) => ({
+        .filter((t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) => t.tenantId)
+        .map((t: { tenantId: string | null; _sum: { totalQuantity: Prisma.Decimal | null } }) => ({
           tenantId: t.tenantId as string,
           usage: Number(t._sum.totalQuantity || 0),
         })),

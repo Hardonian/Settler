@@ -9,9 +9,7 @@
  * - Actionable suggestions
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - PrismaClient is generated at build time
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 interface OptimizationSuggestion {
   type: 'amount_tolerance' | 'date_window' | 'fuzzy_threshold' | 'currency_conversion';
@@ -71,8 +69,8 @@ export async function suggestRuleOptimizations(
     // Analyze amount differences
     const amountDiffs = unmatchedMatches
       .map((m) => m.amountDiff)
-      .filter((d): d is NonNullable<typeof d> => d !== null && d !== undefined)
-      .map((d) => Math.abs(Number(d)));
+      .filter((d: Prisma.Decimal | null): d is Prisma.Decimal => d !== null && d !== undefined)
+      .map((d: Prisma.Decimal) => Math.abs(Number(d)));
 
     if (amountDiffs.length > 0) {
       const avgAmountDiff = amountDiffs.reduce((a: number, b: number) => a + b, 0) / amountDiffs.length;

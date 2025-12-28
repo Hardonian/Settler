@@ -46,7 +46,7 @@ export async function sendWebhookNotification(
     });
 
     // Filter webhooks that subscribe to this event type
-    const webhook = webhooks.find((wh) => {
+    const webhook = webhooks.find((wh: { events: unknown }) => {
       const events = Array.isArray(wh.events) ? wh.events : [];
       return events.includes(eventType);
     });

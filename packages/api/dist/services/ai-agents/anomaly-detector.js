@@ -4,39 +4,6 @@
  *
  * Detects anomalies in reconciliation data, API usage patterns, and security threats.
  */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AnomalyDetectorAgent = void 0;
 const orchestrator_1 = require("./orchestrator");
@@ -158,7 +125,8 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
             // Query recent API logs for suspicious patterns
             // Note: UsageEvent table may not have all API logs - this is a simplified check
             // Import PrismaClient dynamically to avoid circular dependencies
-            const { PrismaClient } = await Promise.resolve().then(() => __importStar(require('@prisma/client')));
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const { PrismaClient } = require('@prisma/client');
             const prisma = new PrismaClient();
             const recentLogs = await prisma.usageEvent.findMany({
                 where: {
