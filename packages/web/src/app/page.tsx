@@ -84,56 +84,70 @@ const reconciliation = await client.reconciliations.create({
 
         {/* Hero Section */}
         <section 
-          className="relative pt-8 sm:pt-16 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[85vh] sm:min-h-[90vh] flex items-center"
+          className="relative pt-12 sm:pt-20 lg:pt-24 pb-20 sm:pb-24 lg:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex items-center"
           aria-labelledby="hero-heading"
         >
           <ParallaxBackground>
             <ParallaxBlobs count={3} />
           </ParallaxBackground>
           
+          {/* Grid pattern background */}
           <div 
             className="absolute inset-0 bg-grid-slate-200 dark:bg-grid-slate-800 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.3))] -z-10"
             aria-hidden="true"
           />
           
-          <div className="max-w-7xl mx-auto relative z-10">
+          {/* Subtle gradient overlay for depth */}
+          <div 
+            className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-50/50 dark:to-slate-900/30 -z-10"
+            aria-hidden="true"
+          />
+          
+          <div className="max-w-7xl mx-auto relative z-10 w-full">
             <HeroAnimationWrapper>
-              <div className="text-center">
-                <TextRevealHeading
-                  as="h1"
-                  id="hero-heading"
-                  text="Reconciliation is a System Behavior, Not a Human Task"
-                  className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent leading-tight"
-                  delay={0}
-                  staggerDelay={0.02}
-                  splitBy="words"
-                />
+              <div className="text-center max-w-5xl mx-auto">
+                {/* Main headline with constrained width for readability */}
+                <div className="mb-6 sm:mb-8 lg:mb-10">
+                  <TextRevealHeading
+                    as="h1"
+                    id="hero-heading"
+                    text="Reconciliation is a System Behavior, Not a Human Task"
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[4.5rem] font-bold mb-4 sm:mb-5 lg:mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-100 dark:to-white bg-clip-text text-transparent leading-[1.1] tracking-tight px-2"
+                    delay={0}
+                    staggerDelay={0.02}
+                    splitBy="words"
+                  />
+                </div>
                 
-                <TextReveal
-                  text="Match transactions across 50+ platforms automatically."
-                  className="text-lg md:text-xl lg:text-2xl text-slate-700 dark:text-slate-300 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed"
-                  delay={0.2}
-                  staggerDelay={0.01}
-                  splitBy="words"
-                />
+                {/* Subheadline with optimal reading width */}
+                <div className="mb-10 sm:mb-12 lg:mb-14 px-4">
+                  <TextReveal
+                    text="Match transactions across 50+ platforms automatically."
+                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal"
+                    delay={0.2}
+                    staggerDelay={0.01}
+                    splitBy="words"
+                  />
+                </div>
                 
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-10 md:mb-12">
+                {/* CTA buttons with clear hierarchy */}
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center mb-12 sm:mb-14 lg:mb-16 px-4">
                   <Button 
                     size="lg" 
                     asChild 
-                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 sm:px-10 py-5 sm:py-6 text-base sm:text-lg font-semibold shadow-xl hover:shadow-blue-500/30 transition-all transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 sm:px-12 py-6 sm:py-7 text-lg sm:text-xl font-semibold shadow-2xl hover:shadow-blue-500/40 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-4 focus-visible:ring-offset-background min-h-[56px] sm:min-h-[60px]"
                     onClick={() => trackCTA('Start Free Trial', { location: 'hero' })}
                   >
                     <Link href="/signup" className="flex items-center justify-center gap-2">
                       <span>Start Free Trial</span>
-                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+                      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden="true" />
                     </Link>
                   </Button>
                   <Button 
                     size="lg" 
                     variant="outline" 
                     asChild 
-                    className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="w-full sm:w-auto px-8 sm:px-10 py-6 sm:py-7 text-lg sm:text-xl border-2 border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 hover:border-slate-400 dark:hover:border-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-4 focus-visible:ring-offset-background min-h-[56px] sm:min-h-[60px] font-medium"
                   >
                     <Link href="/console/playground">
                       Try Playground
@@ -142,7 +156,7 @@ const reconciliation = await client.reconciliations.create({
                 </div>
 
                 {/* Credibility Strip - Trust Badges Only */}
-                <div className="max-w-4xl mx-auto mb-12">
+                <div className="max-w-5xl mx-auto px-4">
                   <EnhancedTrustBadges />
                 </div>
               </div>

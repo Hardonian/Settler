@@ -7,9 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/shared/db/prismaClient';
 
 export async function GET(request: NextRequest) {
   try {
@@ -165,7 +163,6 @@ export async function GET(request: NextRequest) {
       { error: 'Failed to retrieve activation funnel metrics' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
+  // Note: Using shared Prisma singleton - don't disconnect (handles connection pooling)
 }
