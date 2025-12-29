@@ -6,6 +6,7 @@
 
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { prisma as sharedPrisma } from '@/shared/db/prismaClient';
 
 // Import billing hardening functions - handle both direct import and dynamic import
 let checkEntitlements: any;
@@ -111,7 +112,8 @@ type EntitlementCheck = {
   upgradeUrl?: string;
 };
 
-const prisma = new PrismaClient();
+// Use shared Prisma client singleton
+const prisma = sharedPrisma;
 
 export interface EntitlementCheckResult {
   allowed: boolean;
@@ -177,9 +179,8 @@ export async function checkUserEntitlements(
         { status: 500 }
       ),
     };
-  } finally {
-    await prisma.$disconnect();
   }
+  // Note: Using shared Prisma singleton - don't disconnect
 }
 
 /**
@@ -191,7 +192,6 @@ export async function getUserBillingStatus(billingAccountId: string): Promise<st
   } catch (error) {
     console.error('Billing status check failed:', error);
     return 'unknown';
-  } finally {
-    await prisma.$disconnect();
   }
+  // Note: Using shared Prisma singleton - don't disconnect
 }
