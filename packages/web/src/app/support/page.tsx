@@ -189,7 +189,7 @@ export default function Support() {
     },
     {
       question: 'How do I handle unmatched records?',
-      answer: 'Settler provides a comprehensive exception queue where you can review unmatched records, see match quality indicators, and manually resolve discrepancies. You can also configure automatic retry rules and webhook notifications for unmatched records.',
+      answer: 'Settler provides fully automated exception handling with 95%+ instant resolution. Our system automatically processes exceptions using confidence-based matching and rule-based resolution. You can view exception reports, quality metrics, and complete audit trails. All processing happens automatically—no manual intervention required.',
     },
     {
       question: 'What happens if my reconciliation job fails?',

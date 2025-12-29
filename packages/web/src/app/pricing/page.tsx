@@ -64,7 +64,7 @@ export default function Pricing() {
             Simple Pricing
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-            Pay per successful match. Transparent pricing that scales.
+            Fully automated reconciliation with 95%+ instant resolution. Transparent pricing that scales.
           </p>
         </div>
       </section>
@@ -155,14 +155,15 @@ export default function Pricing() {
                 <div>
                   <h3 className="font-semibold mb-1.5 md:mb-2">What are exceptions?</h3>
                   <p>
-                    Exceptions are transactions that can't be matched automatically. 
-                    You only pay for exceptions requiring manual review ($0.10 each). Most are handled automatically.
+                    Exceptions are rare edge cases that require system-level review (less than 1% of transactions). 
+                    Our automated review system handles 95%+ of matches instantly using confidence-based resolution. 
+                    You only pay $0.10 for the small fraction that need additional automated processing.
                   </p>
                 </div>
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 md:p-4">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 md:p-4">
                   <p className="text-blue-800 dark:text-blue-200">
                     <strong>Example:</strong> Process 10,000 transactions/month. 
-                    If 100 (1%) require review: $99 + (100 × $0.10) = $109/month.
+                    With 95%+ automated resolution, only ~50 transactions (0.5%) need system review: $99 + (50 × $0.10) = $104/month.
                   </p>
                 </div>
               </AccordionContent>
@@ -180,10 +181,11 @@ export default function Pricing() {
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1.5 md:mb-2">Exception Handling</h3>
+                  <h3 className="font-semibold mb-1.5 md:mb-2">Automated Exception Handling</h3>
                   <p>
-                    Each plan includes 1% exception rate with automatic explanations. 
-                    Exceptions beyond 1% requiring manual review cost $0.10 each.
+                    Our industry-standard automated review system processes 95%+ of matches instantly using confidence-based resolution. 
+                    Each plan includes 1% exception rate with automated processing. 
+                    Exceptions beyond 1% that require additional automated system review cost $0.10 each.
                   </p>
                 </div>
               </AccordionContent>

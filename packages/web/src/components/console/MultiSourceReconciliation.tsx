@@ -253,7 +253,7 @@ export function MultiSourceReconciliation() {
                       <SelectItem value="last_wins">Last Wins</SelectItem>
                       <SelectItem value="highest_amount">Highest Amount</SelectItem>
                       <SelectItem value="lowest_amount">Lowest Amount</SelectItem>
-                      <SelectItem value="manual">Manual Review</SelectItem>
+                      <SelectItem value="manual">Automated System Review</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

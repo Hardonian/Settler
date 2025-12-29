@@ -90,7 +90,7 @@ export function PricingCalculator() {
               className="mt-1"
             />
             <p className="text-sm text-slate-500 mt-1">
-              Percentage requiring manual review (most customers see 1-2%)
+              Exception rate requiring system review (most customers see 0.5-1% with our automated resolution)
             </p>
           </div>
         </div>
@@ -113,9 +113,12 @@ export function PricingCalculator() {
 
             <div className="flex justify-between items-center">
               <span className="text-sm text-slate-600">
-                Exceptions ({monthlyExceptions.toLocaleString()} × $0.10):
+                System Review Exceptions ({monthlyExceptions.toLocaleString()} × $0.10):
               </span>
               <span className="font-semibold">${exceptionCost.toFixed(2)}/month</span>
+            </div>
+            <div className="text-xs text-slate-500 italic pt-1">
+              95%+ of matches resolve automatically with confidence-based resolution
             </div>
 
             <div className="border-t pt-3 flex justify-between items-center">

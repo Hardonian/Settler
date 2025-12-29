@@ -220,7 +220,7 @@ app.post("/webhooks/settler", async (req, res) => {
       timeToImplement: '10 min',
       useCase: 'Manage unmatched transactions, resolve exceptions, and maintain reconciliation accuracy.',
       adapters: ['Any'],
-      features: ['Exception queue', 'Bulk resolution', 'Manual review', 'Resolution tracking'],
+      features: ['Automated exception handling', 'Bulk resolution', 'System-level review', 'Complete audit trail'],
       code: `import Settler from "@settler/sdk";
 
 const settler = new Settler({

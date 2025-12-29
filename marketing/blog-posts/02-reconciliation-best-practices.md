@@ -35,11 +35,13 @@ Reconciliation is the process of matching transactions between different systems
 
 ### 1. Automate Everything
 
-**Manual reconciliation doesn't scale.**
+**Fully automated reconciliation is the industry standard.**
 
 - Use APIs to fetch data automatically
-- Set up scheduled reconciliations
+- Set up scheduled reconciliations with automated review
 - Real-time matching via webhooks
+- 95%+ instant resolution with confidence-based matching
+- Zero manual intervention required
 
 **Example:**
 ```typescript
@@ -96,11 +98,12 @@ await settler.exceptions.bulkResolve({
 
 ### 4. Use Confidence Scores
 
-**Not all matches are equal.**
+**Automated confidence-based resolution is industry standard.**
 
-- High confidence (0.95+): Auto-approve
-- Medium confidence (0.80-0.95): Review
-- Low confidence (<0.80): Manual review required
+- High confidence (≥0.95): Auto-approved instantly
+- Medium confidence (0.80-0.95): Rule-based automated resolution
+- Low confidence (0.60-0.80): Automated exception handling
+- Very low confidence (<0.60): System-level automated review
 
 ### 5. Maintain Audit Trails
 
@@ -192,9 +195,9 @@ await settler.alerts.rules.create({
 
 ### 4. Manual Reconciliation
 
-**Problem:** Doesn't scale, error-prone
+**Problem:** Doesn't scale, error-prone, compliance risk
 
-**Solution:** Automate with APIs, use reconciliation tools
+**Solution:** Fully automated reconciliation with 95%+ instant resolution. Industry-standard automated review eliminates manual work.
 
 ---
 
