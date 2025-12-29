@@ -17,19 +17,13 @@ npm warn config       Default value does install optional deps unless otherwise 
 Loaded Prisma config from prisma.config.ts.
 
 Prisma schema loaded from prisma/schema.prisma
-┌─────────────────────────────────────────────────────────┐
 
-✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 191ms
+✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 195ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
-│  Update available 7.1.0 -> 7.2.0                        │
 
 Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
 
-│  Run the following to update                            │
-│    npm i --save-dev prisma@latest                       │
-│    npm i @prisma/client@latest                          │
-└─────────────────────────────────────────────────────────┘
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
 npm warn config
@@ -77,7 +71,7 @@ npm warn config       Default value does install optional deps unless otherwise 
 > @settler/web@1.0.0 build
 > (test "$VERCEL" = "1" && test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || true) && NODE_OPTIONS='--max-old-space-size=4096' next build
 
-  ▲ Next.js 14.2.33
+  ▲ Next.js 14.2.35
   - Experiments (use with caution):
     · optimizeCss
     · instrumentationHook
@@ -109,54 +103,377 @@ Module not found: Package path ./src/ops/billing-hardening is not exported from 
 Import trace for requested module:
 ./src/lib/security/entitlement-checks.ts
 ./src/lib/security/billing-enforcement.ts
-./src/app/api/console/feature-flags/route.ts
+./src/app/api/console/ai-analysis/route.ts
 
    Skipping linting
    Checking validity of types ...
    Collecting page data ...
 Could not import billing hardening functions, using fallback implementation
-PrismaClientInitializationError: `PrismaClient` needs to be constructed with a non-empty, valid `PrismaClientOptions`:
-
-```
-new PrismaClient({
-  ...
-})
-```
-
-or
-
-```
-constructor() {
-  super({ ... });
-}
-```
-          
-    at new t (/workspace/node_modules/@prisma/client/runtime/client.js:70:960)
-    at 80455 (/workspace/packages/web/.next/server/app/api/admin/health/route.js:1:855)
-    at t (/workspace/packages/web/.next/server/webpack-runtime.js:1:143)
-    at r (/workspace/packages/web/.next/server/app/api/admin/health/route.js:1:7219)
-    at /workspace/packages/web/.next/server/app/api/admin/health/route.js:1:7262
-    at t.X (/workspace/packages/web/.next/server/webpack-runtime.js:1:2449)
-    at /workspace/packages/web/.next/server/app/api/admin/health/route.js:1:7232
-    at Object.<anonymous> (/workspace/packages/web/.next/server/app/api/admin/health/route.js:1:7290)
-    at Module._compile (node:internal/modules/cjs/loader:1706:14)
-    at Object..js (node:internal/modules/cjs/loader:1839:10) {
-  clientVersion: '7.1.0',
-  errorCode: undefined,
-  retryable: undefined
-}
 Could not import billing hardening functions, using fallback implementation
+Could not import billing hardening functions, using fallback implementation
+Could not import activation funnel functions, using fallback implementation
+2025-12-29T03:22:28.590Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
+2025-12-29T03:22:28.591Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
+2025-12-29T03:22:28.591Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
+Could not import activation funnel functions, using fallback implementation
+⚠️  Environment variables not available during build (will be available at runtime):
+  - Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL - Supabase project URL
+  - Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY - Supabase anonymous key
+  - Missing required environment variable: SUPABASE_SERVICE_ROLE_KEY - Supabase service role key (for admin operations)
+[Node Version] Node.js version 24.0.0 or higher is required. Current version: v22.21.1. Please upgrade Node.js.
+⚠️  Environment variables not available during build (will be available at runtime):
+  - Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL - Supabase project URL
+  - Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY - Supabase anonymous key
+  - Missing required environment variable: SUPABASE_SERVICE_ROLE_KEY - Supabase service role key (for admin operations)
+[Node Version] Node.js version 24.0.0 or higher is required. Current version: v22.21.1. Please upgrade Node.js.
+ ⚠ Using edge runtime on a page currently disables static generation for that page
+⚠️  Environment variables not available during build (will be available at runtime):
+  - Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL - Supabase project URL
+  - Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY - Supabase anonymous key
+  - Missing required environment variable: SUPABASE_SERVICE_ROLE_KEY - Supabase service role key (for admin operations)
+[Node Version] Node.js version 24.0.0 or higher is required. Current version: v22.21.1. Please upgrade Node.js.
+Could not import activation funnel functions, using fallback implementation
+   Generating static pages (0/162) ...
+[Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
+[Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
+Time 3.103889
+Time 3.266414
+[Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
+[Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
+[Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
+[Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
+   Generating static pages (40/162) 
+   Generating static pages (80/162) 
+   Generating static pages (121/162) 
+ ✓ Generating static pages (162/162)
+[Prisma] Closing database connections...
+[Prisma] Closing database connections...
+[Prisma] Closing database connections...
+[Prisma] Closing database connections...
+[Prisma] Closing database connections...
+[Prisma] Closing database connections...
+   Finalizing page optimization ...
+   Collecting build traces ...
 
-> Build error occurred
-Error: Failed to collect page data for /api/admin/health
-    at /workspace/node_modules/next/dist/build/utils.js:1269:15
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
-  type: 'Error'
-}
-npm error Lifecycle script `build` failed with error:
-npm error code 1
-npm error path /workspace/packages/web
-npm error workspace @settler/web@1.0.0
-npm error location /workspace/packages/web
-npm error command failed
-npm error command sh -c (test "$VERCEL" = "1" && test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || true) && NODE_OPTIONS='--max-old-space-size=4096' next build
+Route (app)                                             Size     First Load JS
+┌ ƒ /                                                   12 kB           226 kB
+├ ƒ /_not-found                                         209 B          87.8 kB
+├ ƒ /[slug]                                             3.06 kB         127 kB
+├ ƒ /admin                                              207 B          96.5 kB
+├ ƒ /admin/analytics                                    5.45 kB         129 kB
+├ ƒ /admin/branding                                     209 B          87.8 kB
+├ ƒ /admin/database                                     2.77 kB         163 kB
+├ ƒ /admin/database/[table]                             1.45 kB        97.8 kB
+├ ƒ /admin/experiments                                  1.13 kB        97.5 kB
+├ ƒ /admin/experiments/[id]                             4.7 kB          108 kB
+├ ƒ /admin/experiments/new                              4.35 kB         137 kB
+├ ƒ /admin/flags                                        209 B          87.8 kB
+├ ƒ /admin/metrics                                      3.19 kB         169 kB
+├ ƒ /admin/monitoring                                   6.03 kB         101 kB
+├ ƒ /admin/pages                                        3.04 kB         107 kB
+├ ƒ /admin/pages/[id]/editor                            3.44 kB         128 kB
+├ ƒ /admin/pages/new                                    3.23 kB         107 kB
+├ ƒ /admin/settings                                     208 B          87.8 kB
+├ ƒ /admin/webhooks                                     209 B          87.8 kB
+├ ƒ /api/admin/health                                   0 B                0 B
+├ ƒ /api/ai/data-insights                               0 B                0 B
+├ ƒ /api/ai/onboarding-assistant                        0 B                0 B
+├ ƒ /api/ai/support-assistant                           0 B                0 B
+├ ƒ /api/ai/troubleshooting                             0 B                0 B
+├ ƒ /api/billing/dispute                                0 B                0 B
+├ ƒ /api/billing/payment-recovery                       0 B                0 B
+├ ƒ /api/billing/retry-payment                          0 B                0 B
+├ ƒ /api/connectors/backfill/[providerId]               0 B                0 B
+├ ƒ /api/connectors/callback/[providerId]               0 B                0 B
+├ ƒ /api/connectors/connect/[providerId]                0 B                0 B
+├ ƒ /api/connectors/disconnect/[providerId]             0 B                0 B
+├ ƒ /api/connectors/refresh/[providerId]                0 B                0 B
+├ ƒ /api/connectors/sync/[providerId]                   0 B                0 B
+├ ƒ /api/connectors/test/[providerId]                   0 B                0 B
+├ ƒ /api/connectors/webhook/[providerId]                0 B                0 B
+├ ƒ /api/console/activities                             0 B                0 B
+├ ƒ /api/console/ai-analysis                            0 B                0 B
+├ ƒ /api/console/ai-tokens/usage                        0 B                0 B
+├ ƒ /api/console/alerts                                 0 B                0 B
+├ ƒ /api/console/alerts/[id]/acknowledge                0 B                0 B
+├ ƒ /api/console/analytics/datasets                     0 B                0 B
+├ ƒ /api/console/analytics/pivot                        0 B                0 B
+├ ƒ /api/console/analytics/rollup                       0 B                0 B
+├ ƒ /api/console/analytics/saved-views                  0 B                0 B
+├ ƒ /api/console/api-keys                               0 B                0 B
+├ ƒ /api/console/api-keys/[id]                          0 B                0 B
+├ ƒ /api/console/api-logs                               0 B                0 B
+├ ƒ /api/console/billing                                0 B                0 B
+├ ƒ /api/console/billing/ai-tokens                      0 B                0 B
+├ ƒ /api/console/costs                                  0 B                0 B
+├ ƒ /api/console/feature-flags                          0 B                0 B
+├ ƒ /api/console/feature-flags/[id]/environments/[env]  0 B                0 B
+├ ƒ /api/console/health                                 0 B                0 B
+├ ƒ /api/console/insights                               0 B                0 B
+├ ƒ /api/console/meaningful-changes                     0 B                0 B
+├ ƒ /api/console/metrics                                0 B                0 B
+├ ƒ /api/console/performance                            0 B                0 B
+├ ƒ /api/console/reality                                0 B                0 B
+├ ƒ /api/console/receipts                               0 B                0 B
+├ ƒ /api/console/receipts-v2                            0 B                0 B
+├ ƒ /api/console/receipts/[id]                          0 B                0 B
+├ ƒ /api/console/reconciliation                         0 B                0 B
+├ ƒ /api/console/subscription                           0 B                0 B
+├ ƒ /api/console/subscription-status                    0 B                0 B
+├ ƒ /api/console/support/tickets                        0 B                0 B
+├ ƒ /api/console/support/triage                         0 B                0 B
+├ ƒ /api/console/tables/[table]                         0 B                0 B
+├ ƒ /api/console/tenants                                0 B                0 B
+├ ƒ /api/console/usage                                  0 B                0 B
+├ ƒ /api/console/usage/alerts                           0 B                0 B
+├ ƒ /api/console/usage/analytics                        0 B                0 B
+├ ƒ /api/console/usage/export                           0 B                0 B
+├ ƒ /api/console/usage/warnings                         0 B                0 B
+├ ƒ /api/console/user-role                              0 B                0 B
+├ ƒ /api/console/webhooks                               0 B                0 B
+├ ƒ /api/console/webhooks/[id]                          0 B                0 B
+├ ƒ /api/cron/check-reliability-alerts                  0 B                0 B
+├ ƒ /api/cron/daily-cost-rollup                         0 B                0 B
+├ ƒ /api/cron/email-lifecycle                           0 B                0 B
+├ ƒ /api/cron/low-activity                              0 B                0 B
+├ ƒ /api/cron/monthly-summary                           0 B                0 B
+├ ƒ /api/data/export                                    0 B                0 B
+├ ƒ /api/data/import                                    0 B                0 B
+├ ƒ /api/docs/openapi                                   0 B                0 B
+├ ƒ /api/enterprise/contact                             0 B                0 B
+├ ƒ /api/enterprise/ip-allowlist                        0 B                0 B
+├ ƒ /api/enterprise/ip-allowlist/[id]                   0 B                0 B
+├ ƒ /api/exports                                        0 B                0 B
+├ ƒ /api/feedback-loops/insights                        0 B                0 B
+├ ƒ /api/gtm/demo/reset                                 0 B                0 B
+├ ƒ /api/gtm/funnel-stage                               0 B                0 B
+├ ƒ /api/gtm/roi                                        0 B                0 B
+├ ƒ /api/health                                         0 B                0 B
+├ ƒ /api/health/console                                 0 B                0 B
+├ ƒ /api/health/stripe                                  0 B                0 B
+├ ƒ /api/image-optimize                                 0 B                0 B
+├ ƒ /api/integrations/[integrationId]/debug             0 B                0 B
+├ ƒ /api/integrations/[integrationId]/test              0 B                0 B
+├ ƒ /api/integrations/[integrationId]/upgrade           0 B                0 B
+├ ƒ /api/integrations/[integrationId]/versions          0 B                0 B
+├ ƒ /api/integrations/analytics                         0 B                0 B
+├ ƒ /api/integrations/health                            0 B                0 B
+├ ƒ /api/internal/health/deep                           0 B                0 B
+├ ƒ /api/internal/jobs/drain                            0 B                0 B
+├ ƒ /api/invite/[token]                                 0 B                0 B
+├ ƒ /api/jobs/[jobId]                                   0 B                0 B
+├ ƒ /api/jobs/[jobId]/exceptions                        0 B                0 B
+├ ƒ /api/jobs/[jobId]/exceptions/[exceptionId]          0 B                0 B
+├ ƒ /api/jobs/[jobId]/progress                          0 B                0 B
+├ ƒ /api/jobs/bulk                                      0 B                0 B
+├ ƒ /api/metrics                                        0 B                0 B
+├ ƒ /api/metrics/prometheus                             0 B                0 B
+├ ƒ /api/milestones                                     0 B                0 B
+├ ƒ /api/onboarding/progress                            0 B                0 B
+├ ƒ /api/onboarding/progress/skip                       0 B                0 B
+├ ƒ /api/ops/activation-funnel                          0 B                0 B
+├ ƒ /api/ops/customers                                  0 B                0 B
+├ ƒ /api/ops/edge-functions                             0 B                0 B
+├ ƒ /api/ops/overview                                   0 B                0 B
+├ ƒ /api/ops/retry-queues                               0 B                0 B
+├ ƒ /api/ops/system-health                              0 B                0 B
+├ ○ /api/oss/stats                                      0 B                0 B
+├ ƒ /api/pricing/experiments                            0 B                0 B
+├ ƒ /api/projects                                       0 B                0 B
+├ ƒ /api/projects/snapshots                             0 B                0 B
+├ ƒ /api/projects/snapshots/[snapshotId]/export         0 B                0 B
+├ ƒ /api/projects/snapshots/[snapshotId]/rollback       0 B                0 B
+├ ƒ /api/public/reality                                 0 B                0 B
+├ ƒ /api/quota                                          0 B                0 B
+├ ƒ /api/rbac/roles                                     0 B                0 B
+├ ƒ /api/rbac/users                                     0 B                0 B
+├ ƒ /api/referrals                                      0 B                0 B
+├ ƒ /api/runs/[runId]                                   0 B                0 B
+├ ƒ /api/runs/create                                    0 B                0 B
+├ ƒ /api/seo/generate-sitemap                           0 B                0 B
+├ ƒ /api/share/[id]                                     0 B                0 B
+├ ƒ /api/status                                         0 B                0 B
+├ ƒ /api/status/health                                  0 B                0 B
+├ ƒ /api/stripe/checkout                                0 B                0 B
+├ ƒ /api/stripe/portal                                  0 B                0 B
+├ ƒ /api/stripe/webhook                                 0 B                0 B
+├ ƒ /api/support/canned-responses                       0 B                0 B
+├ ƒ /api/support/report-issue                           0 B                0 B
+├ ƒ /api/support/tickets                                0 B                0 B
+├ ƒ /api/user/checklist                                 0 B                0 B
+├ ƒ /api/user/pre-test                                  0 B                0 B
+├ ƒ /api/user/upgrade                                   0 B                0 B
+├ ƒ /api/user/value-moments                             0 B                0 B
+├ ƒ /api/v1                                             0 B                0 B
+├ ƒ /api/v1/convert                                     0 B                0 B
+├ ƒ /api/v1/feature-flags                               0 B                0 B
+├ ƒ /api/v1/feature-flags/[id]                          0 B                0 B
+├ ƒ /api/v1/feature-flags/evaluate                      0 B                0 B
+├ ƒ /api/v1/receipts                                    0 B                0 B
+├ ƒ /api/v1/receipts/[id]                               0 B                0 B
+├ ƒ /api/v1/recon/jobs                                  0 B                0 B
+├ ƒ /api/vercel-example                                 0 B                0 B
+├ ƒ /api/workspaces                                     0 B                0 B
+├ ƒ /api/workspaces/[workspaceId]/invites               0 B                0 B
+├ ƒ /api/workspaces/[workspaceId]/onboarding            0 B                0 B
+├ ƒ /architecture                                       14.1 kB         185 kB
+├ ƒ /benchmarks                                         1.63 kB         168 kB
+├ ƒ /billing/success                                    2.87 kB         107 kB
+├ ƒ /changelog                                          1.63 kB         168 kB
+├ ● /changelog/[slug]                                   1.63 kB         168 kB
+├   ├ /changelog/2025-12-11-trust-layer
+├   ├ /changelog/2025-11-15-receipts-api
+├   ├ /changelog/2025-10-01-node-sdk-v1
+├   └ /changelog/2025-09-10-recon-rules
+├ ƒ /community                                          5.47 kB         172 kB
+├ ƒ /community/contributors                             6.2 kB          217 kB
+├ ƒ /comparison                                         6.22 kB         217 kB
+├ ƒ /console                                            14.9 kB         124 kB
+├ ƒ /console/activity                                   4.24 kB        99.2 kB
+├ ƒ /console/admin/activation                           2.95 kB        97.9 kB
+├ ƒ /console/admin/tenants                              4.02 kB         108 kB
+├ ƒ /console/ai-analysis                                8.39 kB         152 kB
+├ ƒ /console/alerts-view                                5.67 kB         109 kB
+├ ƒ /console/analytics                                  7.88 kB         135 kB
+├ ƒ /console/api-keys                                   7.22 kB         108 kB
+├ ƒ /console/api-logs                                   4.95 kB         129 kB
+├ ƒ /console/api-playground                             9 kB            142 kB
+├ ƒ /console/api-playground/collections                 3.88 kB         108 kB
+├ ƒ /console/api-test                                   3.63 kB         100 kB
+├ ƒ /console/approvals                                  6.23 kB         136 kB
+├ ƒ /console/audit-trail                                5 kB            106 kB
+├ ƒ /console/billing                                    7.08 kB         170 kB
+├ ƒ /console/briefings                                  2.45 kB         106 kB
+├ ƒ /console/bulk-operations                            7.49 kB         137 kB
+├ ƒ /console/changes                                    4.63 kB         108 kB
+├ ƒ /console/control-plane                              5.29 kB         100 kB
+├ ƒ /console/costs                                      2.5 kB         97.5 kB
+├ ƒ /console/docs                                       9.33 kB         153 kB
+├ ƒ /console/feature-flags                              4.67 kB         105 kB
+├ ƒ /console/feature-flags-policy                       6.45 kB         139 kB
+├ ƒ /console/ingestion/[ingestionId]                    6.13 kB         101 kB
+├ ƒ /console/insights                                   5.07 kB         138 kB
+├ ƒ /console/inspector                                  5.05 kB         100 kB
+├ ƒ /console/multi-source-reconciliation                5.98 kB         130 kB
+├ ƒ /console/onboarding                                 6.92 kB         102 kB
+├ ƒ /console/ops                                        7.83 kB         106 kB
+├ ƒ /console/performance                                4.75 kB         108 kB
+├ ƒ /console/playground                                 3.38 kB         112 kB
+├ ƒ /console/playground/cli                             5.57 kB         157 kB
+├ ƒ /console/playground/convert                         3.08 kB         155 kB
+├ ƒ /console/playground/flags                           4.37 kB         156 kB
+├ ƒ /console/playground/receipts                        4.96 kB         152 kB
+├ ƒ /console/playground/reconcile                       7.91 kB         159 kB
+├ ƒ /console/reality                                    208 B          87.8 kB
+├ ƒ /console/receipt-matching                           4.83 kB        99.8 kB
+├ ƒ /console/receipts                                   5.52 kB         115 kB
+├ ƒ /console/receipts-hash                              5.89 kB         110 kB
+├ ƒ /console/reconciliation-view                        7.25 kB         111 kB
+├ ƒ /console/reconciliation/[runId]                     4.06 kB          99 kB
+├ ƒ /console/rules-engine                               6.96 kB         131 kB
+├ ƒ /console/runs/[runId]                               5.13 kB         100 kB
+├ ƒ /console/setup-check                                207 B          96.5 kB
+├ ƒ /console/site                                       6.11 kB         139 kB
+├ ƒ /console/site/branding                              5.16 kB         100 kB
+├ ƒ /console/site/experiments                           4.55 kB         108 kB
+├ ƒ /console/site/experiments/[id]                      3.38 kB        98.3 kB
+├ ƒ /console/site/navigation                            4.59 kB         128 kB
+├ ƒ /console/site/pages/[id]                            5.4 kB          130 kB
+├ ƒ /console/sla                                        7.75 kB         137 kB
+├ ƒ /console/support                                    5.67 kB         104 kB
+├ ƒ /console/tables                                     3.06 kB         156 kB
+├ ƒ /console/tables/[table]                             3.71 kB         100 kB
+├ ƒ /console/usage                                      3.92 kB         105 kB
+├ ƒ /console/webhooks                                   6.23 kB         116 kB
+├ ƒ /console/workflows                                  6.16 kB         110 kB
+├ ƒ /console/workflows/[id]                             5.54 kB         138 kB
+├ ƒ /console/workflows/new                              5.12 kB         138 kB
+├ ƒ /cookbook                                           5.59 kB         177 kB
+├ ƒ /cookbooks                                          5.59 kB         177 kB
+├ ƒ /dashboard                                          686 B           167 kB
+├ ƒ /dashboard/addons                                   5.75 kB         101 kB
+├ ƒ /dashboard/billing                                  7.2 kB          102 kB
+├ ƒ /dashboard/billing/invoices                         2.84 kB         170 kB
+├ ƒ /dashboard/billing/payment-methods                  3.1 kB          171 kB
+├ ƒ /dashboard/integrations                             15.3 kB         167 kB
+├ ƒ /dashboard/integrations/[integrationId]             3.54 kB        98.5 kB
+├ ƒ /dashboard/integrations/[integrationId]/logs        3.81 kB         156 kB
+├ ƒ /dashboard/jobs                                     3.82 kB         175 kB
+├ ƒ /dashboard/jobs/[jobId]                             5.24 kB         176 kB
+├ ƒ /dashboard/jobs/[jobId]/exceptions                  4.53 kB         176 kB
+├ ƒ /dashboard/usage                                    6.67 kB         105 kB
+├ ƒ /dashboard/user                                     10.1 kB         176 kB
+├ ƒ /docs                                               2.56 kB         112 kB
+├ ƒ /docs/api                                           1.99 kB         106 kB
+├ ƒ /docs/auth                                          1.97 kB        96.9 kB
+├ ƒ /docs/cli                                           1.62 kB         172 kB
+├ ƒ /docs/errors                                        1.97 kB        96.9 kB
+├ ƒ /docs/examples                                      209 B          87.8 kB
+├ ƒ /docs/getting-started                               207 B          96.5 kB
+├ ƒ /docs/integrations                                  2.79 kB         174 kB
+├ ƒ /docs/integrations/[integrationId]                  4.53 kB         172 kB
+├ ƒ /docs/quickstart                                    1.99 kB         106 kB
+├ ƒ /docs/sdk                                           1.34 kB         167 kB
+├ ƒ /docs/sdk/go                                        4.68 kB         172 kB
+├ ƒ /docs/sdk/nodejs                                    5.58 kB         173 kB
+├ ƒ /docs/sdk/python                                    5.2 kB          173 kB
+├ ƒ /docs/sdk/ruby                                      4.36 kB         172 kB
+├ ƒ /docs/status                                        209 B          87.8 kB
+├ ƒ /docs/webhooks                                      1.97 kB        96.9 kB
+├ ƒ /edge-ai                                            207 B          96.5 kB
+├ ƒ /edge-ai/nodes                                      207 B          96.5 kB
+├ ƒ /edge-ai/nodes/[nodeId]                             3.51 kB         175 kB
+├ ƒ /edge-ai/nodes/new                                  4.1 kB          137 kB
+├ ƒ /enterprise                                         6.88 kB         183 kB
+├ ƒ /enterprise/dashboard                               9.36 kB         177 kB
+├ ƒ /feature-flags                                      687 B           167 kB
+├ ƒ /founder                                            1.63 kB         168 kB
+├ ƒ /how-it-works                                       4.55 kB         215 kB
+├ ƒ /integrations/request                               4.36 kB         172 kB
+├ ƒ /investor/proof                                     209 B          87.8 kB
+├ ƒ /investor/reality                                   209 B          87.8 kB
+├ ƒ /invite/[token]                                     2.9 kB         97.9 kB
+├ ƒ /legal                                              975 B           167 kB
+├ ƒ /legal/aup                                          1.63 kB         168 kB
+├ ƒ /legal/cookies                                      1.63 kB         168 kB
+├ ƒ /legal/dpa                                          1.63 kB         168 kB
+├ ƒ /legal/license                                      1.63 kB         168 kB
+├ ƒ /legal/privacy                                      1.63 kB         168 kB
+├ ƒ /legal/subprocessors                                1.63 kB         168 kB
+├ ƒ /legal/terms                                        1.63 kB         168 kB
+├ ƒ /mobile                                             5.76 kB         234 kB
+├ ƒ /offline                                            686 B           167 kB
+├ ƒ /opengraph-image                                    0 B                0 B
+├ ƒ /oss                                                687 B           167 kB
+├ ƒ /oss/stats                                          3.05 kB         171 kB
+├ ƒ /playground                                         5.06 kB         181 kB
+├ ƒ /pricing                                            5.31 kB         173 kB
+├ ƒ /proof                                              1.63 kB         168 kB
+├ ƒ /react-settler-demo                                 20.8 kB         327 kB
+├ ƒ /realtime-dashboard                                 2.68 kB         170 kB
+├ ƒ /receipts                                           687 B           167 kB
+├ ƒ /roadmap                                            1.63 kB         168 kB
+├ ○ /robots.txt                                         0 B                0 B
+├ ƒ /runbooks                                           5.51 kB         173 kB
+├ ƒ /schematics                                         5.47 kB         173 kB
+├ ƒ /security                                           3.27 kB         175 kB
+├ ƒ /signup                                             687 B           167 kB
+├ ○ /sitemap.xml                                        0 B                0 B
+├ ƒ /status                                             3.68 kB         171 kB
+├ ƒ /support                                            5.78 kB         176 kB
+├ ƒ /support/category/[categoryId]                      2.16 kB         170 kB
+├ ƒ /support/contact                                    3.9 kB          171 kB
+├ ƒ /trust                                              1.63 kB         168 kB
+├ ƒ /use-cases/[slug]                                   686 B           167 kB
+├ ƒ /vision                                             1.63 kB         168 kB
+└ ƒ /why-settler                                        975 B           167 kB
++ First Load JS shared by all                           87.6 kB
+  ├ chunks/1528-046d5dd4ba05b28f.js                     31.9 kB
+  ├ chunks/1dd3208c-4c79370c9908e0ca.js                 53.6 kB
+  └ other shared chunks (total)                         2.11 kB
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses getStaticProps)
+ƒ  (Dynamic)  server-rendered on demand
+
