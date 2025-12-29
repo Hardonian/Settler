@@ -222,10 +222,17 @@ async function processPendingReviews(
   return results;
 }
 
+interface MatchRecord {
+  amount_diff: number | null;
+  date_diff: number | null;
+  match_type: string;
+  confidence: number;
+}
+
 /**
  * Apply rule-based resolution
  */
-function applyRuleBasedResolution(match: any): { action: string; rule: string } {
+function applyRuleBasedResolution(match: MatchRecord): { action: string; rule: string } {
   const amountDiff = match.amount_diff ? Math.abs(Number(match.amount_diff)) : null;
   const dateDiff = match.date_diff ? Math.abs(Number(match.date_diff)) : null;
 
@@ -262,7 +269,7 @@ function applyRuleBasedResolution(match: any): { action: string; rule: string } 
 /**
  * Handle exceptions
  */
-function handleException(match: any): { action: string; rule: string } {
+function handleException(match: MatchRecord): { action: string; rule: string } {
   const amountDiff = match.amount_diff ? Math.abs(Number(match.amount_diff)) : null;
   const dateDiff = match.date_diff ? Math.abs(Number(match.date_diff)) : null;
 

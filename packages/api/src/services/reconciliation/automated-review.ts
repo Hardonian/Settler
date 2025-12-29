@@ -10,8 +10,9 @@
  * - GAAP/IFRS: Multi-field matching with tolerances
  */
 
-import { query, transaction } from "../../db";
+import { query } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
+import { v4 as uuidv4 } from "uuid";
 
 export interface ReconciliationMatch {
   id: string;
@@ -428,7 +429,7 @@ async function logAuditTrail(params: {
 }): Promise<string> {
   // Check if recon_audits table exists (it might be in Supabase schema)
   // For now, we'll use reconciliation_runs metadata or create audit entry
-  const auditId = require("uuid").v4();
+  const auditId = uuidv4();
 
   try {
     // Try to insert into recon_audits if it exists

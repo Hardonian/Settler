@@ -10,3 +10,4 @@ export { TestimonialCarousel } from './TestimonialCarousel';
 export { InfographicSection } from './InfographicSection';
 export { ROICalculator } from './ROICalculator';
 export { ComparisonTable } from './ComparisonTable';
+export { AutomationHighlight } from './AutomationHighlight';
