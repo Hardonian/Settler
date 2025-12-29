@@ -493,6 +493,38 @@ export async function runReconciliation(
       traceId,
     });
 
+    // Automatically trigger review process (industry best practice)
+    try {
+      const { autoReviewRun } = await import("../reconciliation/automated-review");
+      const reviewStats = await autoReviewRun(runId, tenantId);
+      logInfo("Automated review completed", {
+        runId,
+        tenantId,
+        ...reviewStats,
+        traceId,
+      });
+
+      // Check quality metrics and generate alerts
+      const { checkQualityThresholds } = await import("../reconciliation/quality-monitor");
+      const alerts = await checkQualityThresholds(runId, tenantId);
+      if (alerts.length > 0) {
+        logInfo("Quality alerts generated", {
+          runId,
+          tenantId,
+          alertCount: alerts.length,
+          alerts: alerts.map(a => ({ type: a.alertType, severity: a.severity })),
+          traceId,
+        });
+      }
+    } catch (reviewError) {
+      // Non-fatal: log error but don't fail reconciliation
+      logError("Automated review failed (non-fatal)", reviewError, {
+        runId,
+        tenantId,
+        traceId,
+      });
+    }
+
     // Record patterns for cross-customer intelligence (creates data moat)
     for (const match of matches) {
       if (match.targetTransactionId && match.matchType !== "unmatched") {

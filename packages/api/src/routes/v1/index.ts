@@ -28,6 +28,7 @@ import auditTrailRouter from './audit-trail';
 import advancedMatchingRulesRouter from './advanced-matching-rules';
 import customIntegrationsRouter from './custom-integrations';
 import dedicatedInfrastructureRouter from './dedicated-infrastructure';
+import automatedReviewRouter from './automated-review';
 
 export const v1Router = Router();
 
@@ -48,6 +49,7 @@ v1Router.use('/currency', currencyRouter);
 v1Router.use('/ingestion', ingestionRouter);
 v1Router.use('/reconciliation', reconciliationRouter);
 v1Router.use('/ingestion/exports', ingestionExportsRouter);
+v1Router.use('/automated-review', automatedReviewRouter);
 
 // Phase 1: Core Features
 v1Router.use('/multi-source-reconciliation', multiSourceReconciliationRouter);

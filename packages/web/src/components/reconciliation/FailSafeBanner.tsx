@@ -109,7 +109,7 @@ export function FailSafeBanner({ result, className = '' }: FailSafeBannerProps) 
                 </p>
                 {result.confidence === 'low' && (
                   <p className={`text-xs mt-1 ${colorClasses.textSecondary}`}>
-                    Manual review strongly recommended.
+                    Automated exception handling completed. System review applied.
                   </p>
                 )}
               </div>

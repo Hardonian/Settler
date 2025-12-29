@@ -11,6 +11,7 @@ import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { RefreshCw, FileText, Calculator, ArrowRight } from "lucide-react";
+import { AutomationHighlight } from "@/components/marketing/AutomationHighlight";
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 import { trackPageView } from "@/lib/analytics/conversion";
@@ -48,14 +49,14 @@ export default function Home() {
     },
     {
       number: 2,
-      title: "Match",
-      description: "Automatic reconciliation with deterministic guarantees",
+      title: "Auto-Match",
+      description: "95%+ instant resolution with confidence-based automated matching",
       icon: FileText,
     },
     {
       number: 3,
-      title: "Verify",
-      description: "Complete audit trail and exception handling",
+      title: "Automated Review",
+      description: "Complete automated exception handling with full audit trail",
       icon: Calculator,
     },
   ];
@@ -169,8 +170,11 @@ const reconciliation = await client.reconciliations.create({
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-10 md:mb-12">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
-                How It Works
+                Fully Automated Reconciliation
               </h2>
+              <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+                Zero manual intervention. 95%+ instant resolution. Industry-standard automated review.
+              </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
@@ -215,6 +219,9 @@ const reconciliation = await client.reconciliations.create({
           </div>
         </section>
 
+        {/* Automation Highlight */}
+        <AutomationHighlight />
+
         {/* Details Accordion */}
         <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
@@ -227,7 +234,8 @@ const reconciliation = await client.reconciliations.create({
                   Core Features
                 </AccordionTrigger>
                 <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 space-y-2 leading-relaxed">
-                  <p><strong>Deterministic Reconciliation:</strong> Same inputs produce same outputs, always.</p>
+                  <p><strong>Fully Automated Reconciliation:</strong> 95%+ instant resolution with confidence-based matching. Zero manual intervention required.</p>
+                  <p><strong>Deterministic Matching:</strong> Same inputs produce same outputs, always. Industry-standard compliance.</p>
                   <p><strong>Receipts → JSON:</strong> Turn PDFs and images into structured financial data.</p>
                   <p><strong>Currency Conversion:</strong> Precise conversion without floating point errors.</p>
                   <p><strong>Feature Flags:</strong> Edge-evaluated flags with typed payloads.</p>

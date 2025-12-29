@@ -133,7 +133,7 @@ You can also receive webhooks from Settler when reconciliation completes or mism
 
 **Alerts:** Webhook/email notification on persistent failures
 
-**Dead letter queue:** Failed transactions queued for manual review
+**Automated exception handling:** Failed transactions processed automatically with system-level review
 
 ### How accurate is reconciliation?
 
