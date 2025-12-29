@@ -51,16 +51,16 @@ export function Navigation() {
   
   // Close "More" menu when clicking outside
   useEffect(() => {
+    if (!moreMenuOpen) return;
+    
     const handleClickOutside = (event: MouseEvent) => {
       if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
         setMoreMenuOpen(false);
       }
     };
     
-    if (moreMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [moreMenuOpen]);
   
   // Close "More" menu on route change
