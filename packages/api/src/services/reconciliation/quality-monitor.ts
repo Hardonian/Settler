@@ -107,7 +107,6 @@ export async function calculateQualityMetrics(
     const systemFlaggedMatches = parseInt(stats.system_flagged);
 
     // Calculate metrics
-    const totalTransactions = run.source_count + run.target_count;
     const matchedTransactions = run.matched_count;
     const unmatchedTransactions = run.unmatched_source_count + run.unmatched_target_count;
     const totalProcessed = matchedTransactions + unmatchedTransactions;

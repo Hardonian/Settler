@@ -22,6 +22,14 @@ router.post("/run/:runId", async (req: AuthRequest, res: Response) => {
     const { runId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!runId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "runId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const stats = await autoReviewRun(runId, tenantId);
 
     logInfo("Automated review triggered", {
@@ -61,6 +69,14 @@ router.post("/match/:matchId", async (req: AuthRequest, res: Response) => {
     const { matchId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!matchId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "matchId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const result = await autoReviewMatch(matchId, tenantId);
 
     return res.json({
@@ -92,6 +108,14 @@ router.get("/run/:runId/statistics", async (req: AuthRequest, res: Response) => 
     const { runId } = req.params;
     const tenantId = req.tenantId!;
 
+    if (!runId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "runId is required",
+        traceId: req.traceId,
+      });
+    }
+
     const stats = await getReviewStatistics(runId, tenantId);
 
     return res.json({
@@ -119,6 +143,14 @@ router.get("/run/:runId/quality", async (req: AuthRequest, res: Response) => {
   try {
     const { runId } = req.params;
     const tenantId = req.tenantId!;
+
+    if (!runId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "runId is required",
+        traceId: req.traceId,
+      });
+    }
 
     const metrics = await calculateQualityMetrics(runId, tenantId);
     const alerts = await checkQualityThresholds(runId, tenantId);
@@ -149,6 +181,14 @@ router.get("/run/:runId/report", async (req: AuthRequest, res: Response) => {
   try {
     const { runId } = req.params;
     const tenantId = req.tenantId!;
+
+    if (!runId) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "runId is required",
+        traceId: req.traceId,
+      });
+    }
 
     const report = await generateQualityReport(runId, tenantId);
 

@@ -4,6 +4,39 @@
  * Deterministic matching algorithm with ML enhancement fallback.
  * Uses proprietary ML models trained on historical matches for improved accuracy.
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.matchTransaction = matchTransaction;
 exports.runReconciliation = runReconciliation;
@@ -368,6 +401,37 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
             avgConfidence,
             traceId,
         });
+        // Automatically trigger review process (industry best practice)
+        try {
+            const { autoReviewRun } = await Promise.resolve().then(() => __importStar(require("../reconciliation/automated-review")));
+            const reviewStats = await autoReviewRun(runId, tenantId);
+            (0, logger_1.logInfo)("Automated review completed", {
+                runId,
+                tenantId,
+                ...reviewStats,
+                traceId,
+            });
+            // Check quality metrics and generate alerts
+            const { checkQualityThresholds } = await Promise.resolve().then(() => __importStar(require("../reconciliation/quality-monitor")));
+            const alerts = await checkQualityThresholds(runId, tenantId);
+            if (alerts.length > 0) {
+                (0, logger_1.logInfo)("Quality alerts generated", {
+                    runId,
+                    tenantId,
+                    alertCount: alerts.length,
+                    alerts: alerts.map(a => ({ type: a.alertType, severity: a.severity })),
+                    traceId,
+                });
+            }
+        }
+        catch (reviewError) {
+            // Non-fatal: log error but don't fail reconciliation
+            (0, logger_1.logError)("Automated review failed (non-fatal)", reviewError, {
+                runId,
+                tenantId,
+                traceId,
+            });
+        }
         // Record patterns for cross-customer intelligence (creates data moat)
         for (const match of matches) {
             if (match.targetTransactionId && match.matchType !== "unmatched") {

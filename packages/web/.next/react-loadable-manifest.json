@@ -10,7 +10,7 @@
   "app/page.tsx -> @/components/AnimatedCodeBlock": {
     "id": 63584,
     "files": [
-      "static/chunks/3584.162f416aee361b24.js"
+      "static/chunks/3584.6d111db0620a660f.js"
     ]
   },
   "app/page.tsx -> @/components/EnhancedTrustBadges": {
@@ -24,8 +24,8 @@
     "id": 69269,
     "files": [
       "static/chunks/294-dd07821692e85003.js",
-      "static/chunks/2602-c84414ff49f287a2.js",
-      "static/chunks/9269.3221abeae73a9fef.js"
+      "static/chunks/2602-8f92dd96c3e33852.js",
+      "static/chunks/9269.9e9990ae0afcc16a.js"
     ]
   }
 }
