@@ -70,7 +70,7 @@ export async function executeReconciliationWithFailSafe(
 
       if (result.conflicts > result.total * 0.1) {
         partial = true;
-        warnings.push('High conflict rate detected. Manual review strongly recommended.');
+        warnings.push('High conflict rate detected. Automated exception handling will process conflicts.');
       }
     } catch (reconciliationError) {
       // Fail-safe: Return partial results if available
