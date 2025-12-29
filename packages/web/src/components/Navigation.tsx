@@ -222,7 +222,7 @@ export function Navigation() {
                     {/* Dropdown menu */}
                     {moreMenuOpen && (
                       <div
-                        className="absolute top-full right-0 mt-2 w-56 bg-background border border-border rounded-lg shadow-lg py-2 z-50"
+                        className="absolute top-full right-0 mt-2 w-56 bg-background border border-border rounded-lg shadow-xl py-2 z-[200] backdrop-blur-sm"
                         role="menu"
                         aria-orientation="vertical"
                       >
@@ -233,7 +233,7 @@ export function Navigation() {
                               key={item.href}
                               href={item.href}
                               className={cn(
-                                'block px-4 py-2 text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent',
+                                'block px-4 py-2.5 text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent',
                                 isActive && 'text-primary-600 dark:text-primary-400 font-medium bg-accent/50',
                                 'transition-colors duration-150 ease-out',
                                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset'

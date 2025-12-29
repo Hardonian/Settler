@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ConsoleGate } from "@/components/ConsoleGate";
 import Link from "next/link";
 import { 
   AlertTriangle, 
@@ -16,7 +17,9 @@ import {
   Database,
   Server,
   Activity,
-  Shield
+  Shield,
+  Terminal,
+  Code2
 } from "lucide-react";
 
 export default function Runbooks() {
@@ -26,7 +29,7 @@ export default function Runbooks() {
     {
       id: 'debug-500',
       title: 'Debugging 500 Errors',
-      description: 'Systematic approach to diagnosing and resolving server errors.',
+      description: 'Systematic approach to diagnosing and resolving server errors with comprehensive logging and monitoring.',
       severity: 'critical',
       icon: AlertTriangle,
       steps: [
@@ -37,12 +40,13 @@ export default function Runbooks() {
         'Test API endpoints individually',
         'Check for rate limiting or quota issues',
       ],
-      tags: ['errors', 'debugging', 'server'],
+      tags: ['Errors', 'Debugging', 'Server'],
+      consolePath: '/console/ops',
     },
     {
       id: 'env-check',
       title: 'Environment Variable Validation',
-      description: 'Verify all required environment variables are configured.',
+      description: 'Verify all required environment variables are configured correctly across all environments.',
       severity: 'high',
       icon: CheckCircle,
       steps: [
@@ -52,12 +56,13 @@ export default function Runbooks() {
         'Test environment-specific configurations',
         'Document any missing variables',
       ],
-      tags: ['configuration', 'environment', 'setup'],
+      tags: ['Configuration', 'Environment', 'Setup'],
+      consolePath: '/console/ops',
     },
     {
       id: 'database-health',
       title: 'Database Health Check',
-      description: 'Verify database connectivity and performance.',
+      description: 'Verify database connectivity, performance metrics, and identify potential bottlenecks.',
       severity: 'high',
       icon: Database,
       steps: [
@@ -68,12 +73,13 @@ export default function Runbooks() {
         'Check disk space and memory usage',
         'Review replication lag (if applicable)',
       ],
-      tags: ['database', 'health', 'monitoring'],
+      tags: ['Database', 'Health', 'Monitoring'],
+      consolePath: '/console/ops',
     },
     {
       id: 'deployment-check',
       title: 'Deployment Verification',
-      description: 'Verify successful deployment and rollback procedures.',
+      description: 'Verify successful deployment and establish rollback procedures for production releases.',
       severity: 'medium',
       icon: Server,
       steps: [
@@ -84,12 +90,13 @@ export default function Runbooks() {
         'Verify feature flags are correct',
         'Document any issues for rollback',
       ],
-      tags: ['deployment', 'verification', 'ci-cd'],
+      tags: ['Deployment', 'Verification', 'CI/CD'],
+      consolePath: '/console/ops',
     },
     {
       id: 'api-health',
       title: 'API Health Monitoring',
-      description: 'Monitor API endpoints and detect issues early.',
+      description: 'Monitor API endpoints and detect issues early with comprehensive performance tracking.',
       severity: 'medium',
       icon: Activity,
       steps: [
@@ -100,12 +107,13 @@ export default function Runbooks() {
         'Verify API key authentication',
         'Review usage quotas',
       ],
-      tags: ['api', 'monitoring', 'health'],
+      tags: ['API', 'Monitoring', 'Health'],
+      consolePath: '/console/analytics',
     },
     {
       id: 'security-audit',
       title: 'Security Audit Checklist',
-      description: 'Regular security checks and best practices.',
+      description: 'Regular security checks and best practices to maintain compliance and protect your infrastructure.',
       severity: 'critical',
       icon: Shield,
       steps: [
@@ -116,7 +124,8 @@ export default function Runbooks() {
         'Verify SSL/TLS certificates',
         'Check for dependency vulnerabilities',
       ],
-      tags: ['security', 'audit', 'compliance'],
+      tags: ['Security', 'Audit', 'Compliance'],
+      consolePath: '/console/ops',
     },
   ];
 
@@ -162,34 +171,34 @@ export default function Runbooks() {
               return (
                 <Card
                   key={runbook.id}
-                  className="h-full cursor-pointer bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-200 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700"
+                  className="group h-full cursor-pointer bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-xl hover:border-blue-400 dark:hover:border-blue-600 hover:-translate-y-1"
                   onClick={() => setSelectedRunbook(runbook.id)}
                 >
-                  <div className="flex flex-col h-full">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 p-2.5 mb-4 flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-white" />
+                  <div className="flex flex-col h-full p-6">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 p-3 mb-5 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Icon className="w-6 h-6 text-white" />
                     </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className={getSeverityColor(runbook.severity)}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge className={`${getSeverityColor(runbook.severity)} font-semibold uppercase tracking-wide text-xs px-2.5 py-1`}>
                         {runbook.severity}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                    <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white leading-tight">
                       {runbook.title}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-400 mb-4 flex-grow text-sm leading-relaxed">
+                    <p className="text-slate-600 dark:text-slate-400 mb-5 flex-grow text-sm leading-relaxed min-h-[3rem]">
                       {runbook.description}
                     </p>
-                    <div className="flex flex-wrap gap-2 mb-2">
+                    <div className="flex flex-wrap gap-2 mb-4">
                       {runbook.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
+                        <Badge key={tag} variant="outline" className="text-xs font-medium px-2.5 py-1 border-slate-300 dark:border-slate-700">
                           {tag}
                         </Badge>
                       ))}
                     </div>
                     <Button
                       variant="ghost"
-                      className="w-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="w-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium mt-auto"
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedRunbook(runbook.id);
@@ -242,59 +251,72 @@ export default function Runbooks() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="font-semibold text-slate-900 dark:text-white mb-4">Steps</h4>
-                <ol className="list-decimal list-inside space-y-3 text-slate-600 dark:text-slate-400">
+                <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Terminal className="w-5 h-5" />
+                  Execution Steps
+                </h4>
+                <ol className="list-decimal list-inside space-y-3 text-slate-700 dark:text-slate-300 pl-2">
                   {selectedRunbookData.steps.map((step, idx) => (
-                    <li key={idx} className="text-sm">{step}</li>
+                    <li key={idx} className="text-sm leading-relaxed">{step}</li>
                   ))}
                 </ol>
               </div>
-              <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-                <Button
-                  asChild
-                  className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100"
-                >
-                  <Link href="/console">Open Console</Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-slate-300 dark:border-slate-700"
-                  asChild
-                >
-                  <Link href="/docs">View Docs</Link>
-                </Button>
-              </div>
+              <ConsoleGate consolePath={selectedRunbookData.consolePath || '/console/ops'}>
+                <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+                  <Button
+                    asChild
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+                  >
+                    <Link href={selectedRunbookData.consolePath || '/console/ops'}>
+                      <Code2 className="w-4 h-4 mr-2" />
+                      Open in Console
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-slate-300 dark:border-slate-700"
+                    asChild
+                  >
+                    <Link href="/docs">View Docs</Link>
+                  </Button>
+                </div>
+              </ConsoleGate>
             </CardContent>
           </Card>
         </div>
       )}
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-semibold mb-3 text-slate-900 dark:text-white">
-            Need help with operations?
+          <h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+            Need Help With Operations?
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Access the Developer Console for advanced monitoring and management tools.
+          <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
+            Access the Developer Console for advanced monitoring, management tools, and real-time operational insights.
           </p>
-          <div className="flex gap-3 justify-center">
-            <Button
-              asChild
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-            >
-              <Link href="/console">Open Console</Link>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-slate-300 dark:border-slate-700"
-              asChild
-            >
-              <Link href="/support">Get Support</Link>
-            </Button>
-          </div>
+          <ConsoleGate consolePath="/console/ops">
+            <div className="flex gap-3 justify-center">
+              <Button
+                asChild
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+              >
+                <Link href="/console/ops">
+                  <Terminal className="w-5 h-5 mr-2" />
+                  Open Console
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-slate-300 dark:border-slate-700"
+                asChild
+              >
+                <Link href="/support">Get Support</Link>
+              </Button>
+            </div>
+          </ConsoleGate>
         </div>
       </section>
 

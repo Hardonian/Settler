@@ -10,6 +10,7 @@ import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedCodeBlock } from "@/components/AnimatedCodeBlock";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { AnimatedHero } from "@/components/AnimatedHero";
+import { ConsoleGate } from "@/components/ConsoleGate";
 import Link from "next/link";
 import { 
   ShoppingCart, 
@@ -503,34 +504,36 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
               return (
                 <Card
                   key={cookbook.id}
-                  className="h-full cursor-pointer bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-200 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700"
+                  className="group h-full cursor-pointer bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-xl hover:border-blue-400 dark:hover:border-blue-600 hover:-translate-y-1"
                   onClick={() => setSelectedCookbook(cookbook.id)}
                 >
-                  <div className="flex flex-col h-full">
-                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${cookbook.gradient} p-2.5 mb-4 flex items-center justify-center`}>
-                      <Icon className="w-5 h-5 text-white" />
+                  <div className="flex flex-col h-full p-6">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cookbook.gradient} p-3 mb-5 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-6 h-6 text-white" />
                     </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-xs">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wide px-2.5 py-1 border-slate-300 dark:border-slate-700">
                         {cookbook.category}
                       </Badge>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wide px-2.5 py-1 border-slate-300 dark:border-slate-700">
                         {cookbook.difficulty}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
+                    <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white leading-tight">
                       {cookbook.title}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-400 mb-4 flex-grow text-sm leading-relaxed">
+                    <p className="text-slate-600 dark:text-slate-400 mb-5 flex-grow text-sm leading-relaxed min-h-[3rem]">
                       {cookbook.description}
                     </p>
-                    <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
-                      <span>⏱️ {cookbook.timeToImplement}</span>
-                      <span>{cookbook.adapters.join(' → ')}</span>
+                    <div className="flex items-center justify-between text-xs font-medium text-slate-500 dark:text-slate-400 mb-4 pb-3 border-b border-slate-200 dark:border-slate-700">
+                      <span className="flex items-center gap-1">
+                        <span className="text-base">⏱️</span> {cookbook.timeToImplement}
+                      </span>
+                      <span className="font-mono">{cookbook.adapters.join(' → ')}</span>
                     </div>
                     <Button
                       variant="ghost"
-                      className="w-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="w-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium mt-auto"
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedCookbook(cookbook.id);
@@ -611,52 +614,56 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
                   language="typescript"
                 />
               </div>
-              <div className="flex gap-3">
-                <Button
-                  asChild
-                  className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100"
-                >
-                  <Link href="/playground">Try in Playground</Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-slate-300 dark:border-slate-700"
-                  asChild
-                >
-                  <Link href="/docs">View Docs</Link>
-                </Button>
-              </div>
+              <ConsoleGate consolePath="/console/playground">
+                <div className="flex gap-3">
+                  <Button
+                    asChild
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+                  >
+                    <Link href="/console/playground">Try in Console</Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-slate-300 dark:border-slate-700"
+                    asChild
+                  >
+                    <Link href="/docs">View Docs</Link>
+                  </Button>
+                </div>
+              </ConsoleGate>
             </CardContent>
           </Card>
         </div>
       )}
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-slate-800 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-semibold mb-3 text-slate-900 dark:text-white">
-            Ready to build your workflow?
+          <h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+            Ready to Build Your Workflow?
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Start with a cookbook recipe or build your own custom reconciliation workflow in minutes.
+          <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
+            Start with a cookbook recipe or build your own custom reconciliation workflow in minutes using the Developer Console.
           </p>
-          <div className="flex gap-3 justify-center">
-            <Button
-              asChild
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-            >
-              <Link href="/playground">Try Playground</Link>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-slate-300 dark:border-slate-700"
-              asChild
-            >
-              <Link href="/playground">Try Playground</Link>
-            </Button>
-          </div>
+          <ConsoleGate consolePath="/console/playground">
+            <div className="flex gap-3 justify-center">
+              <Button
+                asChild
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+              >
+                <Link href="/console/playground">Access Console</Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-slate-300 dark:border-slate-700"
+                asChild
+              >
+                <Link href="/pricing">View Pricing</Link>
+              </Button>
+            </div>
+          </ConsoleGate>
         </div>
       </section>
 
