@@ -3,8 +3,8 @@
  * Complete database integration for analytics events
  */
 
-// Use shared Prisma client singleton for build-time safety
-import { prisma } from '@/shared/db/prismaClient';
+// TODO: Import prisma when implementing database persistence:
+// import { prisma } from '@/shared/db/prismaClient';
 
 /**
  * Save analytics event to database

@@ -6,7 +6,6 @@
 
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { prisma as sharedPrisma } from '@/shared/db/prismaClient';
 
 // Import billing hardening functions - handle both direct import and dynamic import
 let checkEntitlements: any;
@@ -111,9 +110,6 @@ type EntitlementCheck = {
   message?: string;
   upgradeUrl?: string;
 };
-
-// Use shared Prisma client singleton
-const prisma = sharedPrisma;
 
 export interface EntitlementCheckResult {
   allowed: boolean;
