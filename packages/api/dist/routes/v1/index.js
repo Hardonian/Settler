@@ -33,6 +33,7 @@ const audit_trail_1 = __importDefault(require("./audit-trail"));
 const advanced_matching_rules_1 = __importDefault(require("./advanced-matching-rules"));
 const custom_integrations_1 = __importDefault(require("./custom-integrations"));
 const dedicated_infrastructure_1 = __importDefault(require("./dedicated-infrastructure"));
+const automated_review_1 = __importDefault(require("./automated-review"));
 exports.v1Router = (0, express_1.Router)();
 // Mount v1 routes
 exports.v1Router.use('/webhooks/receive', receive_1.default);
@@ -49,6 +50,7 @@ exports.v1Router.use('/currency', currency_1.default);
 exports.v1Router.use('/ingestion', ingestion_1.default);
 exports.v1Router.use('/reconciliation', reconciliation_1.default);
 exports.v1Router.use('/ingestion/exports', ingestion_exports_1.default);
+exports.v1Router.use('/automated-review', automated_review_1.default);
 // Phase 1: Core Features
 exports.v1Router.use('/multi-source-reconciliation', multi_source_reconciliation_1.default);
 exports.v1Router.use('/approvals', approvals_1.default);
