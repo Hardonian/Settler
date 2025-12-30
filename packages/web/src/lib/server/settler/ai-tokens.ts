@@ -7,6 +7,8 @@
 import { createClient } from "@/lib/supabase/server";
 import type { TenantId } from "@/lib/domain/types";
 import type { Database } from "@/types/database.types";
+import { prisma } from "@/shared/db/prismaClient";
+import { determineSubscriptionTier, type SubscriptionTier } from "@/lib/subscription-access";
 
 export interface TokenUsage {
   used: number;
@@ -37,11 +39,37 @@ export async function getTokenUsage(tenantId: TenantId): Promise<TokenUsage | nu
       // RPC may not exist, RLS policies handle isolation
     }
 
-    // Get subscription tier (mock for now - integrate with actual billing)
-    // Free: 1 per week, Pro: 10 per month, Enterprise: unlimited
-    const tier = "free"; // TODO: Get from subscription
+    // Get subscription tier from billing account
+    const billingAccount = await prisma.billingAccount.findFirst({
+      where: { tenantId },
+      include: {
+        subscriptions: {
+          where: {
+            status: { in: ["active", "trialing", "past_due"] },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
+      },
+    });
 
-    const limits: Record<string, TokenUsage> = {
+    const subscriptionTier = determineSubscriptionTier(
+      billingAccount?.subscriptions[0] || null,
+      billingAccount
+    );
+
+    // Map subscription tier to AI token limits
+    // Free/unsubscribed: 1 per week, Paid: 10 per month, Enterprise: unlimited
+    const tierMap: Record<SubscriptionTier, "free" | "pro" | "enterprise"> = {
+      unsubscribed: "free",
+      subscribed_unpaid: "free",
+      subscribed_paid: "pro",
+      enterprise: "enterprise",
+    };
+
+    const tier = tierMap[subscriptionTier] || "free";
+
+    const limits: Record<"free" | "pro" | "enterprise", TokenUsage> = {
       free: {
         used: 0,
         limit: 1,

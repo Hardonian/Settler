@@ -18,11 +18,11 @@ Loaded Prisma config from prisma.config.ts.
 
 Prisma schema loaded from prisma/schema.prisma
 
-✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 359ms
+✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 326ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
 
 
 > @settler/api@1.0.0 typecheck

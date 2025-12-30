@@ -6,17 +6,23 @@
 /**
  * Gets the crypto implementation (Node.js or Web Crypto API)
  */
-function getCrypto(): {
-  createHmac: (algorithm: string, secret: string) => {
+interface CryptoModule {
+  createHmac: (
+    algorithm: string,
+    secret: string
+  ) => {
     update: (data: string) => void;
     digest: (encoding: string) => string;
   };
   timingSafeEqual?: (a: Buffer, b: Buffer) => boolean;
-} {
+}
+
+function getCrypto(): CryptoModule {
   // Node.js environment
   if (typeof require !== "undefined") {
     try {
-      const crypto = require("crypto");
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const crypto = require("crypto") as CryptoModule;
       return crypto;
     } catch {
       // Fall through to Web Crypto API
@@ -33,12 +39,12 @@ function getCrypto(): {
 
 /**
  * Verifies a webhook signature using HMAC-SHA256
- * 
+ *
  * @param payload - The raw request body (as string or Buffer)
  * @param signature - The signature from the X-Settler-Signature header
  * @param secret - Your webhook secret
  * @returns true if the signature is valid, false otherwise
- * 
+ *
  * @example
  * ```typescript
  * const isValid = verifyWebhookSignature(
@@ -70,7 +76,7 @@ export function verifyWebhookSignature(
   try {
     const crypto = getCrypto();
     const hmac = crypto.createHmac("sha256", secret);
-    
+
     // Convert payload to string
     let payloadString: string;
     if (typeof payload === "string") {
@@ -82,7 +88,7 @@ export function verifyWebhookSignature(
     } else {
       payloadString = String(payload);
     }
-    
+
     hmac.update(payloadString);
     const calculatedSignature = hmac.digest("hex");
 
@@ -110,7 +116,7 @@ export function verifyWebhookSignature(
 
 /**
  * Extracts the timestamp from a webhook signature header
- * 
+ *
  * @param signature - The signature from the X-Settler-Signature header
  * @returns The timestamp in milliseconds, or null if not found
  */
@@ -127,7 +133,7 @@ export function extractWebhookTimestamp(signature: string): number | null {
 
 /**
  * Verifies webhook signature and checks timestamp to prevent replay attacks
- * 
+ *
  * @param payload - The raw request body
  * @param signature - The signature from the X-Settler-Signature header
  * @param secret - Your webhook secret
