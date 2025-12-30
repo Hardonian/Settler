@@ -1,0 +1,68 @@
+/**
+ * XState Hooks
+ * 
+ * Ergonomic hooks for consuming state machines in React
+ */
+
+import { useMachine, useSelector } from '@xstate/react';
+import { ActorRefFrom, AnyStateMachine } from 'xstate';
+import { isPendingState, isSuccessState, isErrorState, isIdleState } from './types';
+
+/**
+ * Hook to use a state machine with common selectors
+ */
+export function useMachineState<TMachine extends AnyStateMachine>(
+  machine: TMachine,
+  options?: Parameters<typeof useMachine>[1]
+) {
+  const [state, send, actor] = useMachine(machine, options);
+
+  const isPending = useSelector(actor, (s) => isPendingState(s.value));
+  const isSuccess = useSelector(actor, (s) => isSuccessState(s.value));
+  const isError = useSelector(actor, (s) => isErrorState(s.value));
+  const isIdle = useSelector(actor, (s) => isIdleState(s.value));
+
+  return {
+    state,
+    send,
+    actor,
+    isPending,
+    isSuccess,
+    isError,
+    isIdle,
+  };
+}
+
+/**
+ * Hook to select specific state value
+ */
+export function useStateValue<TMachine extends AnyStateMachine>(
+  actor: ActorRefFrom<TMachine>
+) {
+  return useSelector(actor, (state) => state.value);
+}
+
+/**
+ * Hook to select context value
+ */
+export function useContextValue<TMachine extends AnyStateMachine>(
+  actor: ActorRefFrom<TMachine>,
+  selector?: (context: ActorRefFrom<TMachine>['getSnapshot'] extends () => infer S ? S extends { context: infer C } ? C : never : never) => unknown
+) {
+  if (selector) {
+    return useSelector(actor, (state) => selector(state.context));
+  }
+  return useSelector(actor, (state) => state.context);
+}
+
+/**
+ * Hook to check if machine can receive an event
+ */
+export function useCanReceiveEvent<TMachine extends AnyStateMachine>(
+  actor: ActorRefFrom<TMachine>,
+  eventType: string
+) {
+  return useSelector(actor, (state) => {
+    return state.can({ type: eventType } as any);
+  });
+}
