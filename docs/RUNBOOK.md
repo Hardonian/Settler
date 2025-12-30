@@ -1,310 +1,582 @@
-# Settler Runbook
+# Operational Runbook - Settler Enterprise
 
-This runbook provides step-by-step procedures for common incidents and operational tasks.
+**Last Updated:** December 2024  
+**Status:** Production-Ready
 
-## Table of Contents
+---
 
-- [Common Incidents](#common-incidents)
-- [Diagnosis with trace_id](#diagnosis-with-trace_id)
-- [Rollback Procedures](#rollback-procedures)
-- [Emergency Contacts](#emergency-contacts)
+## Quick Reference
 
-## Common Incidents
+**Emergency Contacts:**
+- On-Call: [oncall@settler.dev]
+- Escalation: [escalation@settler.dev]
 
-### Webhook Failing
+**Key URLs:**
+- Production: https://settler.dev
+- Status Page: https://status.settler.dev
+- Admin Health: https://settler.dev/api/admin/health
+- System Health: https://settler.dev/api/ops/system-health
 
-**Symptoms:**
-- Stripe webhooks not processing
-- Subscription status not updating
-- Billing events not reflected in system
+---
 
-**Diagnosis:**
-1. Check Stripe webhook logs:
+## 1. Deployment Procedures
+
+### Standard Deployment
+
+**Prerequisites:**
+- All tests passing (`npm run test`)
+- Lint passing (`npm run lint`)
+- Typecheck passing (`npm run typecheck`)
+- Build successful (`npm run build`)
+
+**Deployment Steps:**
+
+1. **Pre-Deployment Checks**
    ```bash
-   # View recent webhook events in Stripe dashboard
-   # Or check database:
-   SELECT * FROM stripe_events 
-   WHERE status = 'failed' 
-   ORDER BY created_at DESC 
-   LIMIT 10;
+   npm run validate:all
+   npm run check:production
    ```
 
-2. Check application logs for trace_id:
+2. **Deploy to Vercel**
    ```bash
-   # Search logs for failed webhook events
-   grep "Stripe webhook processing failed" logs/*.log
+   # Via GitHub (automatic on merge to main)
+   # Or manually:
+   vercel --prod
    ```
 
-3. Verify webhook secret:
-   ```bash
-   # Check environment variable
-   echo $STRIPE_WEBHOOK_SECRET
-   ```
+3. **Post-Deployment Verification**
+   - Check health endpoint: `GET /api/health`
+   - Check admin health: `GET /api/admin/health`
+   - Verify key routes: `/`, `/console`, `/api/v1/`
+   - Monitor error rates in Sentry
 
-**Resolution:**
-1. Check webhook endpoint is accessible:
-   ```bash
-   curl -X POST https://settler.dev/api/stripe/webhook \
-     -H "stripe-signature: test" \
-     -d '{}'
-   ```
+**Rollback Procedure:**
+```bash
+# Via Vercel dashboard:
+# 1. Go to Deployments
+# 2. Find previous successful deployment
+# 3. Click "Promote to Production"
+```
 
-2. Verify webhook secret matches Stripe dashboard
+### Database Migrations
 
-3. Replay failed events:
-   ```sql
-   -- Mark failed events for retry
-   UPDATE stripe_events 
-   SET status = 'received' 
-   WHERE status = 'failed' 
-   AND created_at > NOW() - INTERVAL '24 hours';
-   ```
+**Prerequisites:**
+- Backup database
+- Test migration on staging
+- Review migration SQL
 
-4. Test webhook locally:
-   ```bash
-   npm run stripe:test checkout.session.completed
-   ```
+**Migration Steps:**
 
-### Database Down
-
-**Symptoms:**
-- 503 errors on API endpoints
-- Health check shows database error
-- Application logs show connection errors
-
-**Diagnosis:**
-1. Check health endpoint:
-   ```bash
-   curl https://settler.dev/api/health
-   ```
-
-2. Check database connectivity:
-   ```bash
-   npm run doctor
-   ```
-
-3. Check Supabase status:
-   - Visit Supabase dashboard
-   - Check connection pool status
-   - Review recent errors
-
-**Resolution:**
-1. Check database URL:
-   ```bash
-   echo $DATABASE_URL
-   echo $SUPABASE_DATABASE_URL
-   ```
-
-2. Verify network connectivity:
-   ```bash
-   # Test connection
-   psql $DATABASE_URL -c "SELECT 1"
-   ```
-
-3. Check connection pool limits:
-   - Review Supabase dashboard for connection pool usage
-   - Consider increasing pool size if needed
-
-4. Restart application if needed:
-   - Vercel: Redeploy
-   - Self-hosted: Restart service
-
-### Environment Variables Missing
-
-**Symptoms:**
-- Application fails to start
-- Features not working
-- Health check shows missing env vars
-
-**Diagnosis:**
-1. Run doctor script:
-   ```bash
-   npm run doctor
-   ```
-
-2. Check Vercel environment variables:
-   - Visit Vercel dashboard
-   - Check project settings → Environment Variables
-
-3. Check application logs for missing env errors
-
-**Resolution:**
-1. Identify missing variables:
-   ```bash
-   npm run doctor
-   ```
-
-2. Add missing variables to Vercel:
-   - Go to Project Settings → Environment Variables
-   - Add required variables
-   - Redeploy
-
-3. For local development:
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with required values
-   ```
-
-### 500 Error Spike
-
-**Symptoms:**
-- High error rate in monitoring
-- Users reporting errors
-- Application logs show many 500s
-
-**Diagnosis:**
-1. Check error logs with trace_id:
-   ```bash
-   # Search logs for recent errors
-   grep "ERROR" logs/*.log | tail -100
-   ```
-
-2. Check metrics endpoint:
-   ```bash
-   curl https://settler.dev/api/metrics \
-     -H "Authorization: Bearer $METRICS_AUTH_TOKEN"
-   ```
-
-3. Review error patterns:
-   - Group by trace_id
-   - Identify common routes
-   - Check for database errors
-
-**Resolution:**
-1. Identify root cause:
-   - Check most common error messages
-   - Review stack traces
-   - Check database query performance
-
-2. Apply hotfix if needed:
-   - Deploy fix to staging first
-   - Verify fix works
-   - Deploy to production
-
-3. Monitor after fix:
-   - Watch error rate decrease
-   - Verify affected users can use system
-
-## Diagnosis with trace_id
-
-All requests include a `trace_id` that can be used to correlate logs across services.
-
-### Finding trace_id
-
-1. **From API response:**
-   ```bash
-   curl -v https://settler.dev/api/health
-   # Look for x-trace-id header
-   ```
-
-2. **From error response:**
-   ```json
-   {
-     "error": "Something went wrong",
-     "trace_id": "abc123...",
-     "timestamp": "2026-01-30T12:00:00Z"
-   }
-   ```
-
-3. **From browser:**
-   - Check Network tab → Response Headers → `x-trace-id`
-   - Check localStorage → `trace-id` cookie
-
-### Using trace_id
-
-1. **Search logs:**
-   ```bash
-   grep "trace_id.*abc123" logs/*.log
-   ```
-
-2. **Query database:**
-   ```sql
-   SELECT * FROM audit_log 
-   WHERE trace_id = 'abc123...'
-   ORDER BY created_at;
-   ```
-
-3. **Check Stripe events:**
-   ```sql
-   SELECT * FROM stripe_events 
-   WHERE metadata->>'trace_id' = 'abc123...';
-   ```
-
-## Rollback Procedures
-
-### Code Rollback
-
-1. **Identify last known good version:**
-   ```bash
-   git log --oneline -10
-   ```
-
-2. **Create rollback branch:**
-   ```bash
-   git checkout -b rollback-$(date +%Y%m%d)
-   git revert <commit-hash>
-   git push origin rollback-$(date +%Y%m%d)
-   ```
-
-3. **Deploy rollback:**
-   - Create PR from rollback branch
-   - Merge to main
-   - Vercel will auto-deploy
-
-### Database Migration Rollback
-
-1. **Identify migration to rollback:**
-   ```bash
-   # List applied migrations
-   npm run db:migrate:status
-   ```
-
-2. **Create rollback migration:**
+1. **Create Migration**
    ```bash
    npm run db:new
-   # Edit migration file to reverse changes
    ```
 
-3. **Apply rollback:**
+2. **Test Locally**
    ```bash
-   npm run db:migrate:apply
+   npm run db:reset
+   npm run db:migrate:local
    ```
 
-### Feature Flag Rollback
-
-1. **Disable feature flag:**
-   ```sql
-   UPDATE feature_flags 
-   SET enabled = false 
-   WHERE id = 'feature-id';
-   ```
-
-2. **Or via API:**
+3. **Apply to Production**
    ```bash
-   curl -X PATCH https://settler.dev/api/v1/feature-flags/feature-id \
-     -H "Authorization: Bearer $API_KEY" \
-     -d '{"enabled": false}'
+   # Via Supabase dashboard or CLI:
+   supabase db push --include-all
    ```
 
-## Emergency Contacts
+4. **Verify Migration**
+   ```bash
+   npm run db:verify
+   ```
 
-- **On-Call Engineer**: Check PagerDuty
-- **CTO**: [Contact Info]
-- **Support**: support@settler.dev
-- **Stripe Support**: https://support.stripe.com
+**Rollback Procedure:**
+- Create reverse migration
+- Apply reverse migration
+- Verify data integrity
 
-## Monitoring
+---
 
-- **Application Logs**: Vercel Dashboard → Logs
-- **Database**: Supabase Dashboard
-- **Stripe**: Stripe Dashboard → Webhooks
-- **Metrics**: `/api/metrics` endpoint (requires auth)
+## 2. Monitoring & Alerting
 
-## Post-Incident
+### Health Checks
 
-After resolving an incident:
+**Endpoints:**
+- `/api/health` - Basic health check
+- `/api/admin/health` - Detailed health metrics
+- `/api/ops/system-health` - System health dashboard
 
-1. Document what happened
-2. Identify root cause
-3. Create follow-up tasks to prevent recurrence
-4. Update this runbook if needed
+**Expected Responses:**
+- Status: 200 OK
+- Response time: <100ms
+- Database: Connected
+- Redis: Connected (if configured)
+
+### Key Metrics
+
+**API Metrics:**
+- Request rate (RPS)
+- Error rate (<1% target)
+- Latency (p95 <200ms target)
+- Success rate (>99% target)
+
+**Business Metrics:**
+- Reconciliations/hour
+- Match rate (>80% target)
+- Failure rate (<5% target)
+- Active tenants
+
+**Infrastructure Metrics:**
+- Database connection pool (<80% utilization)
+- Redis memory usage
+- Vercel function invocations
+- Error rate by endpoint
+
+### Alerting
+
+**Critical Alerts:**
+- Error rate >5% for 5+ minutes
+- p95 latency >500ms for 5+ minutes
+- Database connection failures
+- Health check failures
+
+**Warning Alerts:**
+- Error rate >1% for 10+ minutes
+- p95 latency >200ms for 10+ minutes
+- High database connection pool usage
+- Unusual API patterns
+
+---
+
+## 3. Incident Response
+
+### Incident Severity Levels
+
+**P0 - Critical:**
+- Service completely down
+- Data loss or corruption
+- Security breach
+- Response time: Immediate
+
+**P1 - High:**
+- Major feature broken
+- High error rate (>10%)
+- Performance degradation
+- Response time: <15 minutes
+
+**P2 - Medium:**
+- Minor feature broken
+- Moderate error rate (1-10%)
+- Response time: <1 hour
+
+**P3 - Low:**
+- Cosmetic issues
+- Low error rate (<1%)
+- Response time: <4 hours
+
+### Incident Response Process
+
+1. **Acknowledge** - Acknowledge alert/incident
+2. **Assess** - Determine severity and impact
+3. **Communicate** - Notify team and stakeholders
+4. **Investigate** - Identify root cause
+5. **Remediate** - Fix issue or implement workaround
+6. **Verify** - Confirm resolution
+7. **Document** - Create post-mortem
+
+### Common Incidents
+
+#### High Error Rate
+
+**Symptoms:**
+- Error rate >5% for 5+ minutes
+- Increased Sentry alerts
+
+**Investigation:**
+1. Check Sentry for error patterns
+2. Check health endpoints
+3. Review recent deployments
+4. Check database connectivity
+5. Check external API status
+
+**Remediation:**
+- Rollback recent deployment if needed
+- Scale infrastructure if needed
+- Enable circuit breakers
+- Contact support for external APIs
+
+#### High Latency
+
+**Symptoms:**
+- p95 latency >200ms for 5+ minutes
+- User complaints about slowness
+
+**Investigation:**
+1. Identify slow endpoints
+2. Check database query performance
+3. Check cache hit rates
+4. Check external API latency
+5. Check infrastructure resources
+
+**Remediation:**
+- Optimize slow queries
+- Increase cache TTL
+- Scale infrastructure
+- Enable caching for slow endpoints
+
+#### Database Issues
+
+**Symptoms:**
+- Database connection errors
+- High connection pool usage
+- Slow queries
+
+**Investigation:**
+1. Check database health
+2. Review slow queries
+3. Check connection pool usage
+4. Review recent migrations
+
+**Remediation:**
+- Scale database if needed
+- Optimize slow queries
+- Increase connection pool
+- Rollback problematic migrations
+
+---
+
+## 4. Daily Operations
+
+### Morning Checklist
+
+1. **Review Alerts**
+   - Check Sentry for overnight errors
+   - Review health check status
+   - Check error rates
+
+2. **Review Metrics**
+   - API performance (latency, error rate)
+   - Business metrics (reconciliations, match rate)
+   - Infrastructure metrics (database, Redis)
+
+3. **Review Logs**
+   - Check for unusual patterns
+   - Review error logs
+   - Check access logs
+
+### Weekly Checklist
+
+1. **Performance Review**
+   - Review API performance trends
+   - Identify slow endpoints
+   - Review database query performance
+
+2. **Security Review**
+   - Review access logs
+   - Check for suspicious activity
+   - Review error patterns
+
+3. **Capacity Planning**
+   - Review usage trends
+   - Plan for scaling
+   - Review infrastructure costs
+
+### Monthly Checklist
+
+1. **Security Audit**
+   - Review access logs
+   - Check for vulnerabilities
+   - Review compliance status
+
+2. **Performance Optimization**
+   - Identify optimization opportunities
+   - Review slow queries
+   - Optimize API endpoints
+
+3. **Cost Review**
+   - Review infrastructure costs
+   - Optimize resource usage
+   - Plan for cost optimization
+
+---
+
+## 5. Troubleshooting
+
+### Common Issues
+
+#### API Returns 500 Errors
+
+**Check:**
+1. Health endpoint: `GET /api/health`
+2. Sentry for error details
+3. Recent deployments
+4. Database connectivity
+
+**Fix:**
+- Rollback if recent deployment
+- Check database connection
+- Review error logs
+
+#### Slow API Responses
+
+**Check:**
+1. Database query performance
+2. Cache hit rates
+3. External API latency
+4. Infrastructure resources
+
+**Fix:**
+- Optimize slow queries
+- Increase caching
+- Scale infrastructure
+- Enable CDN caching
+
+#### Database Connection Errors
+
+**Check:**
+1. Database health
+2. Connection pool usage
+3. Network connectivity
+4. Recent migrations
+
+**Fix:**
+- Scale database
+- Increase connection pool
+- Check network
+- Rollback migrations if needed
+
+---
+
+## 6. Maintenance Windows
+
+### Scheduled Maintenance
+
+**Frequency:** Monthly (first Sunday of month, 2-4 AM UTC)
+
+**Procedure:**
+1. Notify users 7 days in advance
+2. Put system in maintenance mode
+3. Apply updates/migrations
+4. Verify system health
+5. Exit maintenance mode
+6. Notify users of completion
+
+### Emergency Maintenance
+
+**Procedure:**
+1. Notify users immediately
+2. Put system in maintenance mode
+3. Apply fixes
+4. Verify system health
+5. Exit maintenance mode
+6. Notify users of completion
+
+---
+
+## 7. Backup & Recovery
+
+### Backup Strategy
+
+**Database:**
+- Automated daily backups
+- Point-in-time recovery available
+- Retention: 30 days
+
+**Code:**
+- Git repository (GitHub)
+- Automated backups
+- Retention: Unlimited
+
+**Configuration:**
+- Environment variables in Vercel
+- Secrets in Supabase
+- Documented in runbook
+
+### Recovery Procedures
+
+**Database Recovery:**
+1. Identify point-in-time for recovery
+2. Restore from backup
+3. Verify data integrity
+4. Test application functionality
+
+**Code Recovery:**
+1. Identify commit to restore
+2. Deploy previous version
+3. Verify functionality
+4. Monitor for issues
+
+---
+
+## 8. Security Procedures
+
+### Security Incidents
+
+**Response:**
+1. Isolate affected systems
+2. Assess impact
+3. Notify security team
+4. Investigate root cause
+5. Remediate vulnerabilities
+6. Document incident
+
+### Access Management
+
+**User Access:**
+- Review quarterly
+- Remove unused access
+- Audit access logs
+
+**API Keys:**
+- Rotate quarterly
+- Monitor usage
+- Revoke unused keys
+
+**Secrets:**
+- Rotate annually
+- Monitor access
+- Document rotation
+
+---
+
+## 9. Performance Optimization
+
+### API Optimization
+
+**Strategies:**
+- Enable caching for slow endpoints
+- Optimize database queries
+- Use CDN for static assets
+- Implement pagination
+- Use database indexes
+
+### Database Optimization
+
+**Strategies:**
+- Review slow queries
+- Add indexes
+- Optimize queries
+- Use connection pooling
+- Monitor query performance
+
+### Infrastructure Optimization
+
+**Strategies:**
+- Right-size resources
+- Use caching effectively
+- Optimize bundle size
+- Use CDN
+- Monitor costs
+
+---
+
+## 10. On-Call Procedures
+
+### On-Call Rotation
+
+**Schedule:** Weekly rotation
+**Contact:** [oncall@settler.dev]
+**Escalation:** [escalation@settler.dev]
+
+### On-Call Responsibilities
+
+1. **Monitor Alerts**
+   - Respond to P0/P1 alerts immediately
+   - Acknowledge all alerts
+   - Escalate if needed
+
+2. **Investigate Issues**
+   - Use runbook procedures
+   - Document findings
+   - Communicate status
+
+3. **Resolve Issues**
+   - Follow remediation procedures
+   - Verify resolution
+   - Document incident
+
+### Escalation Path
+
+1. **On-Call Engineer** - First responder
+2. **Engineering Lead** - Escalate if unresolved in 30 minutes
+3. **CTO/Founder** - Escalate for P0 incidents
+
+---
+
+## 11. Post-Incident Procedures
+
+### Post-Mortem Process
+
+**Timeline:**
+- Within 24 hours: Initial post-mortem
+- Within 1 week: Detailed post-mortem
+- Within 2 weeks: Action items completed
+
+**Post-Mortem Template:**
+1. **Incident Summary**
+   - What happened
+   - When it happened
+   - Impact assessment
+
+2. **Timeline**
+   - Detection time
+   - Response time
+   - Resolution time
+
+3. **Root Cause**
+   - Primary cause
+   - Contributing factors
+
+4. **Remediation**
+   - Immediate fixes
+   - Long-term fixes
+   - Prevention measures
+
+5. **Action Items**
+   - Short-term (1 week)
+   - Long-term (1 month)
+   - Owner assignments
+
+---
+
+## 12. Useful Commands
+
+### Health Checks
+```bash
+# Basic health
+curl https://settler.dev/api/health
+
+# Admin health
+curl https://settler.dev/api/admin/health
+
+# System health
+curl https://settler.dev/api/ops/system-health
+```
+
+### Database
+```bash
+# Check migrations
+npm run db:verify
+
+# Check connection
+npm run db:check
+
+# Run migrations
+npm run db:migrate:prod
+```
+
+### Monitoring
+```bash
+# Check logs (Vercel)
+vercel logs
+
+# Check Sentry
+# Via Sentry dashboard
+
+# Check metrics
+# Via Grafana/Prometheus
+```
+
+---
+
+**Last Updated:** December 2024  
+**Next Review:** Quarterly
