@@ -26,15 +26,15 @@ export class ReceiptsClient {
   constructor(private client: SettlerClient) {}
 
   async parse(file: string, options?: { forceOcr?: boolean }): Promise<Receipt> {
-    const body: any = {};
-    if (file.startsWith('http')) {
-        body.url = file;
+    const body: { url?: string; content?: string; options?: { forceOcr?: boolean } } = {};
+    if (file.startsWith("http")) {
+      body.url = file;
     } else {
-        body.content = file;
+      body.content = file;
     }
 
     if (options) {
-        body.options = options;
+      body.options = options;
     }
 
     return this.client.request<Receipt>("POST", "/v1/receipts/parse", { body });

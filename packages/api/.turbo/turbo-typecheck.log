@@ -18,12 +18,18 @@ Loaded Prisma config from prisma.config.ts.
 
 Prisma schema loaded from prisma/schema.prisma
 
-✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 359ms
+✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 461ms
+┌─────────────────────────────────────────────────────────┐
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+│  Update available 7.1.0 -> 7.2.0                        │
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
 
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
 
 > @settler/api@1.0.0 typecheck
 > tsc --noEmit
