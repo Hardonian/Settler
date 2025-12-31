@@ -230,32 +230,30 @@ export const onboardingMachine = setup({
     events: {} as OnboardingEvents,
   },
   guards: {
-    isValidWorkspaceForm,
-    isValidInviteForm,
-    hasWorkspaceId: ({ context }) => !!context.workspaceId,
-    isComplete: ({ context }) => context.progress >= 100,
+    isValidWorkspaceForm: ({ context }: { context: OnboardingContext }) => {
+      return isValidWorkspaceForm(context);
+    },
+    isValidInviteForm: ({ context }: { context: OnboardingContext }) => {
+      return isValidInviteForm(context);
+    },
+    hasWorkspaceId: ({ context }: { context: OnboardingContext }) => !!context.workspaceId,
+    isComplete: ({ context }: { context: OnboardingContext }) => context.progress >= 100,
   },
   actors: {
-    loadProgress: ({ input }: { input: string }) => {
-      return fromPromise(async () => {
-        return loadProgress(input);
-      });
-    },
-    createWorkspace: ({ input }: { input: { name: string; slug: string } }) => {
-      return fromPromise(async () => {
-        return createWorkspace(input);
-      });
-    },
-    completeStep: ({
+    loadProgress: fromPromise(({ input }: { input: string }) => {
+      return loadProgress(input);
+    }),
+    createWorkspace: fromPromise(({ input }: { input: { name: string; slug: string } }) => {
+      return createWorkspace(input);
+    }),
+    completeStep: fromPromise(({
       input,
     }: {
       input: { workspaceId: string; stepId: string };
     }) => {
-      return fromPromise(async () => {
-        return completeStep(input.workspaceId, input.stepId);
-      });
-    },
-    sendInvite: ({
+      return completeStep(input.workspaceId, input.stepId);
+    }),
+    sendInvite: fromPromise(({
       input,
     }: {
       input: {
@@ -264,13 +262,11 @@ export const onboardingMachine = setup({
         role: 'admin' | 'member' | 'viewer';
       };
     }) => {
-      return fromPromise(async () => {
-        return sendInvite(input.workspaceId, {
-          email: input.email,
-          role: input.role,
-        });
+      return sendInvite(input.workspaceId, {
+        email: input.email,
+        role: input.role,
       });
-    },
+    }),
   },
 }).createMachine({
   id: 'onboarding',

@@ -4,7 +4,7 @@
  * Common types and utilities for state machines
  */
 
-import { EventObject, StateValue } from 'xstate';
+import { StateValue } from 'xstate';
 
 /**
  * Standard async state values

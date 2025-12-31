@@ -16,24 +16,6 @@ import type { UXEventType } from '@/lib/ux-events/types';
 import { Reveal } from '@/components/motion/Reveal';
 
 export default function UXEventsPage() {
-  const [events, setEvents] = useState<UXEventType[]>([]);
-  const [stats, setStats] = useState(getEventStats());
-  const [autoRefresh, setAutoRefresh] = useState(true);
-
-  useEffect(() => {
-    const updateEvents = () => {
-      setEvents(getRecentEvents(100));
-      setStats(getEventStats());
-    };
-
-    updateEvents();
-
-    if (autoRefresh) {
-      const interval = setInterval(updateEvents, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [autoRefresh]);
-
   // Only show in development
   if (process.env.NODE_ENV !== 'development') {
     return (
@@ -70,6 +52,8 @@ function UXEventsContent() {
       const interval = setInterval(updateEvents, 1000);
       return () => clearInterval(interval);
     }
+    
+    return undefined;
   }, [autoRefresh]);
 
   const getEventColor = (type: string) => {

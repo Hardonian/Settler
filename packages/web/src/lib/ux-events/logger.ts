@@ -5,7 +5,7 @@
  * No PII, no secrets.
  */
 
-import type { UXEvent, UXEventType, UXEventMetadata } from './types';
+import type { UXEventType, UXEventMetadata } from './types';
 
 /**
  * Maximum events to store locally
@@ -17,29 +17,27 @@ const MAX_LOCAL_EVENTS = 100;
  */
 let localEvents: UXEventType[] = [];
 
-/**
- * Get metadata for current context
- */
-function getMetadata(): UXEventMetadata {
-  if (typeof window === 'undefined') {
-    return {};
-  }
-
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  
-  let screenSize: 'mobile' | 'tablet' | 'desktop' = 'desktop';
-  if (window.innerWidth < 768) {
-    screenSize = 'mobile';
-  } else if (window.innerWidth < 1024) {
-    screenSize = 'tablet';
-  }
-
-  return {
-    reducedMotion,
-    screenSize,
-    userAgent: navigator.userAgent.split(' ').slice(0, 3).join(' '), // Sanitized
-  };
-}
+// Metadata function kept for future use when backend analytics is implemented
+// function getMetadata(): UXEventMetadata {
+//   if (typeof window === 'undefined') {
+//     return {};
+//   }
+//
+//   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+//   
+//   let screenSize: 'mobile' | 'tablet' | 'desktop' = 'desktop';
+//   if (window.innerWidth < 768) {
+//     screenSize = 'mobile';
+//   } else if (window.innerWidth < 1024) {
+//     screenSize = 'tablet';
+//   }
+//
+//   return {
+//     reducedMotion,
+//     screenSize,
+//     userAgent: navigator.userAgent.split(' ').slice(0, 3).join(' '), // Sanitized
+//   };
+// }
 
 /**
  * Generate unique event ID
@@ -61,7 +59,7 @@ function getCurrentRoute(): string {
 /**
  * Log a UX event
  */
-export function logUXEvent(event: Omit<UXEventType, 'id' | 'timestamp' | 'route'>): void {
+export function logUXEvent(event: Omit<UXEventType, 'id' | 'timestamp' | 'route'> | Partial<UXEventType> & { type: UXEventType['type'] }): void {
   const fullEvent: UXEventType = {
     ...event,
     id: generateEventId(),

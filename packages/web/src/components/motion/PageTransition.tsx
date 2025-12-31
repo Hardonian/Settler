@@ -12,7 +12,18 @@ import { motion, MotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { pageTransition } from '@/lib/motion/variants';
 
-export interface PageTransitionProps extends React.HTMLAttributes<HTMLDivElement> {
+// Exclude motion-specific props that conflict with HTML attributes
+type MotionConflictKeys = 
+  | 'onDrag' 
+  | 'onDragStart' 
+  | 'onDragEnd' 
+  | 'onAnimationStart' 
+  | 'onAnimationComplete'
+  | 'onUpdate'
+  | 'onLayoutAnimationStart'
+  | 'onLayoutAnimationComplete';
+
+export interface PageTransitionProps extends Omit<React.HTMLAttributes<HTMLDivElement>, MotionConflictKeys> {
   /**
    * Transition key - change this to trigger transition
    */
