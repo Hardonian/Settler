@@ -5,7 +5,7 @@
  * No PII, no secrets.
  */
 
-import type { UXEventType, UXEventMetadata } from './types';
+import type { UXEventType } from './types';
 
 /**
  * Maximum events to store locally

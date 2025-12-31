@@ -47,7 +47,7 @@ export class PlaidDriver implements ConnectorDriver {
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
     // Plaid uses Link SDK on frontend, but we can generate a link token
-    const config = options as unknown as { clientId: string; secret: string; environment: string };
+    const config = options as unknown as { clientId: string; secret: string; environment: string; webhook_url?: string };
     const apiUrl = this.getApiUrl(config.environment);
 
     const response = await fetch(`${apiUrl}/link/token/create`, {
@@ -66,7 +66,7 @@ export class PlaidDriver implements ConnectorDriver {
         country_codes: ['US', 'CA'],
         language: 'en',
         redirect_uri: options.redirectUri,
-        webhook: (config as any).webhook_url,
+        ...(config.webhook_url && { webhook: config.webhook_url }),
       }),
     });
 
@@ -79,7 +79,7 @@ export class PlaidDriver implements ConnectorDriver {
       );
     }
 
-    const data = await response.json();
+    const data = await response.json() as { link_token: string };
     // Return link token - frontend will use Plaid Link SDK
     return data.link_token;
   }
@@ -124,6 +124,7 @@ export class PlaidDriver implements ConnectorDriver {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async refreshToken(
     _refreshToken: string,
     _config?: Record<string, unknown>

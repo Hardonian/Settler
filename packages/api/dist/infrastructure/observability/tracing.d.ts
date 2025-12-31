@@ -1,14 +1,16 @@
 /**
  * OpenTelemetry Distributed Tracing
  * Sets up distributed tracing for the application
+ *
+ * Note: OpenTelemetry packages are optional dependencies.
+ * If not installed, tracing functions will be no-ops.
  */
-import { Span } from '@opentelemetry/api';
 export declare function initializeTracing(): void;
 export declare function shutdownTracing(): Promise<void>;
 /**
  * Create a span for a function execution
  */
-export declare function traceFunction<T>(name: string, fn: (span: Span) => Promise<T>, attributes?: Record<string, string | number | boolean>): Promise<T>;
+export declare function traceFunction<T>(name: string, fn: (span: any) => Promise<T>, attributes?: Record<string, string | number | boolean>): Promise<T>;
 /**
  * Create a database span
  */
@@ -24,7 +26,7 @@ export declare function traceQueue<T>(queueName: string, operation: string, fn: 
 /**
  * Create a business span (for domain-specific operations)
  */
-export declare function traceBusiness<T>(operation: string, fn: (span: Span) => Promise<T>, attributes?: Record<string, string | number | boolean>, tenantId?: string): Promise<T>;
+export declare function traceBusiness<T>(operation: string, fn: (span: any) => Promise<T>, attributes?: Record<string, string | number | boolean>, tenantId?: string): Promise<T>;
 /**
  * Get the current trace ID
  */

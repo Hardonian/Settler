@@ -90,7 +90,7 @@ export const demoFormMachine = setup({
     },
   },
   actors: {
-    submitForm: fromPromise((input: DemoFormContext['formData']) => {
+    submitForm: fromPromise(({ input }: { input: DemoFormContext['formData'] }) => {
       return submitForm(input);
     }),
   },

@@ -30,6 +30,7 @@ class EbayDriver {
         };
         return (urls[env] ?? urls.sandbox);
     }
+    // eslint-disable-next-line @typescript-eslint/require-await
     async getAuthUrl(options) {
         const config = options;
         const apiUrl = this.getApiUrl(config.environment);

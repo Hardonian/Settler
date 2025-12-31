@@ -23,7 +23,7 @@ class AmazonSellerDriver {
         optionalConfig: ['sp_api_client_id', 'sp_api_client_secret', 'sp_api_refresh_token', 'sp_api_role_arn'],
     };
     async testConnection(options) {
-        const { credentials, config: _config } = options;
+        const { credentials } = options;
         // If SP-API credentials provided, test API connection
         if (credentials.sp_api_client_id && credentials.sp_api_client_secret) {
             try {
@@ -109,9 +109,11 @@ class AmazonSellerDriver {
                     // This is simplified - actual implementation would parse various event types
                     for (const event of eventsData.payload?.FinancialEvents || []) {
                         if (event.ShipmentEventList) {
+                            // Extract payout information from shipment events
+                            // This is a simplified mapping - future implementation will parse shipment events
+                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
                             for (const _shipment of event.ShipmentEventList) {
-                                // Extract payout information from shipment events
-                                // This is a simplified mapping
+                                // TODO: Parse shipment events into payouts
                             }
                         }
                     }
