@@ -27,10 +27,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev'),
   title: {
-    default: "Settler - Financial Infrastructure for Developers",
+    default: "Settler - Stop Spending Hours on Month-End Reconciliation",
     template: "%s | Settler",
   },
-  description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags. Reconcile anything, parse receipts to JSON, and manage entitlements with one typed SDK.",
+  description: "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail. No manual work.",
   keywords: [
     "reconciliation API",
     "financial reconciliation",
@@ -70,8 +70,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://settler.dev",
     siteName: "Settler",
-    title: "Settler - Financial Infrastructure for Developers",
-    description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
+    title: "Settler - Stop Spending Hours on Month-End Reconciliation",
+    description: "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail.",
     images: [
       {
         url: getImageUrl('ogImage'),
@@ -83,8 +83,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Settler - Financial Infrastructure for Developers",
-    description: "The API Infrastructure for Financial Evidence, Deterministic Computation, and Developer Flags.",
+    title: "Settler - Stop Spending Hours on Month-End Reconciliation",
+    description: "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail.",
     images: [getImageUrl('twitterCard')],
     creator: "@settler_io",
   },

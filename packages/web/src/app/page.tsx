@@ -43,20 +43,20 @@ export default function Home() {
   const howItWorksSteps = [
     {
       number: 1,
-      title: "Connect",
-      description: "Link Stripe, Shopify, QuickBooks, and 50+ platforms",
+      title: "Connect Your Systems",
+      description: "Link Stripe, Shopify, QuickBooks, and 50+ platforms. One-time setup, runs automatically.",
       icon: RefreshCw,
     },
     {
       number: 2,
-      title: "Auto-Match",
-      description: "95%+ instant resolution with confidence-based automated matching",
+      title: "Automatic Matching",
+      description: "95%+ of transactions match instantly. No manual work. Deterministic results every time.",
       icon: FileText,
     },
     {
       number: 3,
-      title: "Automated Review",
-      description: "Complete automated exception handling with full audit trail",
+      title: "Review & Export",
+      description: "Review the 5% that need attention. Export complete audit trail for compliance.",
       icon: Calculator,
     },
   ];
@@ -112,7 +112,7 @@ const reconciliation = await client.reconciliations.create({
                   <TextRevealHeading
                     as="h1"
                     id="hero-heading"
-                    text="Reconciliation is a System Behavior, Not a Human Task"
+                    text="Stop Spending Hours on Month-End Reconciliation"
                     className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[4.5rem] font-bold mb-4 sm:mb-5 lg:mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-100 dark:to-white bg-clip-text text-transparent leading-[1.1] tracking-tight px-2"
                     delay={0}
                     staggerDelay={0.02}
@@ -123,7 +123,7 @@ const reconciliation = await client.reconciliations.create({
                 {/* Subheadline with optimal reading width */}
                 <div className="mb-10 sm:mb-12 lg:mb-14 px-4">
                   <TextReveal
-                    text="Match transactions across 50+ platforms automatically."
+                    text="For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail. No manual work."
                     className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal"
                     delay={0.2}
                     staggerDelay={0.01}
@@ -170,10 +170,10 @@ const reconciliation = await client.reconciliations.create({
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-10 md:mb-12">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
-                Fully Automated Reconciliation
+                What You Get: Hours Back, Audit Risk Reduced
               </h2>
               <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-                Zero manual intervention. 95%+ instant resolution. Industry-standard automated review.
+                Before Settler: 8-16 hours per month manually matching transactions. After Settler: 15 minutes reviewing automated matches. Complete audit trail for compliance.
               </p>
             </div>
             
@@ -202,10 +202,10 @@ const reconciliation = await client.reconciliations.create({
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-10 md:mb-12">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
-                Simple API, Powerful Results
+                Built for B2B SaaS Operators
               </h2>
               <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                Get started in minutes
+                If you're manually reconciling Stripe payments, Shopify orders, or QuickBooks entries at month-end, this is for you. If you're building a fintech app, this is not for you.
               </p>
             </div>
             <SpotlightCard className="p-0 overflow-hidden shadow-xl md:shadow-2xl">
@@ -234,11 +234,11 @@ const reconciliation = await client.reconciliations.create({
                   Core Features
                 </AccordionTrigger>
                 <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 space-y-2 leading-relaxed">
-                  <p><strong>Fully Automated Reconciliation:</strong> 95%+ instant resolution with confidence-based matching. Zero manual intervention required.</p>
-                  <p><strong>Deterministic Matching:</strong> Same inputs produce same outputs, always. Industry-standard compliance.</p>
-                  <p><strong>Receipts → JSON:</strong> Turn PDFs and images into structured financial data.</p>
-                  <p><strong>Currency Conversion:</strong> Precise conversion without floating point errors.</p>
-                  <p><strong>Feature Flags:</strong> Edge-evaluated flags with typed payloads.</p>
+                  <p><strong>Automated Transaction Matching:</strong> Match Stripe payments to Shopify orders automatically. 95%+ instant resolution. No manual work.</p>
+                  <p><strong>Deterministic Results:</strong> Same inputs produce same outputs, always. Audit-ready for compliance.</p>
+                  <p><strong>Receipt Parsing:</strong> Turn PDF receipts into structured JSON for expense tracking.</p>
+                  <p><strong>Complete Audit Trail:</strong> Every match, exception, and resolution logged for compliance.</p>
+                  <p><strong>50+ Platform Integrations:</strong> Stripe, Shopify, QuickBooks, PayPal, Square, Xero, and more.</p>
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="integrations">
@@ -246,7 +246,7 @@ const reconciliation = await client.reconciliations.create({
                   Integrations
                 </AccordionTrigger>
                 <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <p>Stripe, Shopify, PayPal, QuickBooks, Square, WooCommerce, BigCommerce, Adyen, Xero, and 50+ platforms.</p>
+                  <p>Payment processors: Stripe, PayPal, Square, Adyen. E-commerce: Shopify, WooCommerce, BigCommerce. Accounting: QuickBooks, Xero. And 50+ more platforms. See <Link href="/docs/integrations" className="text-blue-600 dark:text-blue-400 hover:underline">full list</Link>.</p>
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="security">
@@ -254,7 +254,7 @@ const reconciliation = await client.reconciliations.create({
                   Security & Compliance
                 </AccordionTrigger>
                 <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <p>SOC 2 Type II ready, bank-level encryption, complete audit trails. ISO compliant.</p>
+                  <p>Tenant-isolated data (RLS enforced), AES-256 encryption at rest, TLS 1.3 in transit, complete audit logs. SOC 2 Type II planned Q3 2026. <Link href="/security" className="text-blue-600 dark:text-blue-400 hover:underline">Security details</Link>.</p>
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="pricing">
@@ -273,10 +273,10 @@ const reconciliation = await client.reconciliations.create({
         <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white">
-              Ready to Get Started?
+              Stop Manual Reconciliation. Start Automating.
             </h2>
             <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-              Start your free trial—no credit card required.
+              14-day free trial. No credit card required. See results in your first reconciliation run.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <Button 
