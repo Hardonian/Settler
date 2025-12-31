@@ -17,8 +17,7 @@
     "@supabase/supabase-js": "^2.39.0",
     "zod": "^3.22.4",
     "stripe": "^14.21.0",
-    "@shopify/shopify-api": "^9.4.0",
-    "@paypal/checkout-server-sdk": "^1.0.3"
+    "@shopify/shopify-api": "^9.4.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
