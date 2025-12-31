@@ -61,10 +61,10 @@ export default function Pricing() {
       <section className="px-4 sm:px-6 lg:px-8 pt-8 pb-10 md:pb-12">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 text-slate-900 dark:text-white leading-tight">
-            Simple Pricing
+            Pricing That Pays for Itself
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-            Fully automated reconciliation with 95%+ instant resolution. Transparent pricing that scales.
+            Stop spending 8-16 hours per month on manual reconciliation. Starting at $99/month, you'll save time and reduce audit risk.
           </p>
         </div>
       </section>
@@ -145,27 +145,30 @@ export default function Pricing() {
                 How It Works
               </AccordionTrigger>
               <AccordionContent className="text-sm md:text-base text-slate-600 dark:text-slate-300 space-y-3 md:space-y-4 leading-relaxed">
-                <div>
-                  <h3 className="font-semibold mb-1.5 md:mb-2">What is a reconciliation?</h3>
-                  <p>
-                    A reconciliation matches one transaction to another (e.g., Stripe payment to Shopify order). 
-                    Each match counts as one reconciliation. Runs automatically.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1.5 md:mb-2">What are exceptions?</h3>
-                  <p>
-                    Exceptions are rare edge cases that require system-level review (less than 1% of transactions). 
-                    Our automated review system handles 95%+ of matches instantly using confidence-based resolution. 
-                    You only pay $0.10 for the small fraction that need additional automated processing.
-                  </p>
-                </div>
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 md:p-4">
-                  <p className="text-blue-800 dark:text-blue-200">
-                    <strong>Example:</strong> Process 10,000 transactions/month. 
-                    With 95%+ automated resolution, only ~50 transactions (0.5%) need system review: $99 + (50 × $0.10) = $104/month.
-                  </p>
-                </div>
+                  <div>
+                    <h3 className="font-semibold mb-1.5 md:mb-2">What is a reconciliation?</h3>
+                    <p>
+                      A reconciliation matches one transaction to another (e.g., Stripe payment to Shopify order). 
+                      Each match counts as one reconciliation. Runs automatically on schedule or on-demand.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1.5 md:mb-2">What are exceptions?</h3>
+                    <p>
+                      Exceptions are the small fraction of transactions (typically less than 1%) that need additional automated review. 
+                      95%+ of transactions match instantly with no manual work. 
+                      Exceptions beyond your plan's included 1% cost $0.10 each for automated processing.
+                    </p>
+                  </div>
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 md:p-4">
+                    <p className="text-blue-800 dark:text-blue-200">
+                      <strong>Example:</strong> Process 10,000 transactions/month. 
+                      95% match instantly (9,500 transactions). 1% included exceptions (100 transactions). 
+                      If you have 150 exceptions total, you pay for 50 extra: $99 + (50 × $0.10) = $104/month.
+                      <strong className="block mt-2">ROI:</strong> If manual reconciliation takes 8 hours/month at $50/hour = $400/month. 
+                      Settler costs $104/month. <strong>You save $296/month ($3,552/year).</strong>
+                    </p>
+                  </div>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="pricing-details">
@@ -177,15 +180,23 @@ export default function Pricing() {
                   <h3 className="font-semibold mb-1.5 md:mb-2">Base Pricing</h3>
                   <p>
                     Each plan includes a monthly reconciliation volume. If you exceed your plan's volume, 
-                    you'll be prompted to upgrade.
+                    you'll be prompted to upgrade. Volume resets monthly. Unused volume doesn't roll over.
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1.5 md:mb-2">Automated Exception Handling</h3>
+                  <h3 className="font-semibold mb-1.5 md:mb-2">Exception Pricing</h3>
                   <p>
-                    Our industry-standard automated review system processes 95%+ of matches instantly using confidence-based resolution. 
-                    Each plan includes 1% exception rate with automated processing. 
-                    Exceptions beyond 1% that require additional automated system review cost $0.10 each.
+                    95%+ of transactions match instantly with no manual work. Each plan includes 1% exception rate (automated processing included). 
+                    Exceptions beyond 1% cost $0.10 each for automated system review. 
+                    Most customers have less than 1% exceptions, so they pay only the base plan price.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-1.5 md:mb-2">Value Proposition</h3>
+                  <p>
+                    Manual reconciliation takes 8-16 hours per month. At $50/hour, that's $400-800/month in labor costs. 
+                    Settler automates 95%+ of the work, reducing manual time to 15-30 minutes. 
+                    Even at $99/month, you save $300-700/month in labor costs alone, plus reduce audit risk and improve accuracy.
                   </p>
                 </div>
               </AccordionContent>

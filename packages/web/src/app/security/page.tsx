@@ -31,11 +31,10 @@ export default function SecurityPage() {
       <section className="px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
-            Security is our foundation
+            Security & Data Handling
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-300 mb-8">
-            Settler is built from the ground up with enterprise-grade security, 
-            compliance, and data privacy as first-class citizens.
+            How we protect your financial data, enforce tenant isolation, handle failures, and meet compliance requirements. Written for engineers and operators.
           </p>
         </div>
       </section>
@@ -96,50 +95,55 @@ export default function SecurityPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="p-6">
               <Lock className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Encryption at Rest & Transit</h3>
+                <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Encryption at Rest & Transit</h3>
               <p className="text-slate-600 dark:text-slate-400">
-                All data is encrypted using AES-256 at rest and TLS 1.3 in transit. 
-                We use AWS KMS for key management with regular rotation.
+                AES-256 encryption at rest (Supabase managed). TLS 1.3 in transit (enforced by Vercel edge). 
+                Key management via Supabase KMS with automatic rotation. No application-level encryption keys stored in code or environment variables.
               </p>
             </div>
             <div className="p-6">
               <Server className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Data Retention & Deletion</h3>
+                <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Data Retention & Deletion</h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Customer data is retained according to configurable policies. 
-                We support hard deletion with cryptographic erasure verification.
+                Data retained indefinitely unless account deleted. Account deletion: 30-day grace period (soft delete), then hard deletion from production and backups. 
+                Cryptographic erasure verification available for Enterprise (proof that data cannot be recovered).
               </p>
             </div>
             <div className="p-6">
               <Eye className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Audit Logging</h3>
+                <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Audit Logging</h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Comprehensive immutable audit logs for all sensitive actions. 
-                Available for export to your SIEM via our Enterprise API.
+                Immutable audit logs for all sensitive actions (data access, exports, deletions, configuration changes). 
+                Stored in separate table with RLS. Exportable via API (<code className="text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">GET /api/v1/audit-logs</code>). 
+                SIEM integration available for Enterprise (webhook or API polling).
               </p>
             </div>
             <div className="p-6">
               <RefreshCcw className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Disaster Recovery</h3>
+                <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Disaster Recovery</h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Multi-region backups with point-in-time recovery. 
-                Regularly tested RPO/RTO targets ensure business continuity.
+                Daily automated backups (Supabase managed). Point-in-time recovery (PITR) available. 
+                RPO: 24 hours. RTO: 4 hours (target). Backup restoration tested quarterly. 
+                Multi-region replication available for Enterprise.
               </p>
             </div>
             <div className="p-6">
               <Shield className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Infrastructure Security</h3>
+                <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Infrastructure Security</h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Zero-trust network architecture. Automated vulnerability scanning 
-                and dependency auditing in CI/CD pipelines.
+                Serverless architecture (Vercel + Supabase). No persistent servers to harden. 
+                Dependency scanning in CI/CD (npm audit, Dependabot). 
+                Automated security headers (CSP, HSTS, X-Frame-Options) via middleware.
               </p>
             </div>
             <div className="p-6">
               <FileKey className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Access Control</h3>
+                <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Access Control</h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Strict least-privilege access policies. 
-                SAML SSO and MFA enforcement available for all accounts.
+                Authentication via Supabase Auth (email/password, OAuth). 
+                API keys for programmatic access (scoped to tenant). 
+                Row-Level Security (RLS) enforces tenant isolation at database level. 
+                SAML SSO and MFA available for Enterprise.
               </p>
             </div>
           </div>
@@ -155,24 +159,23 @@ export default function SecurityPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
               <Database className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Data Processing</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Data Processing & Isolation</h3>
               <ul className="space-y-3 text-slate-600 dark:text-slate-300">
-                <li>• Customer data is processed only for the purpose of providing reconciliation services</li>
-                <li>• Data is stored in tenant-isolated databases with Row-Level Security (RLS)</li>
-                <li>• No cross-tenant data access is possible at the database or application layer</li>
-                <li>• Data residency options available (US, EU) for enterprise customers</li>
-                <li>• Customer data is never used for AI model training without explicit consent</li>
+                <li>• <strong>Tenant Isolation:</strong> Row-Level Security (RLS) policies enforce tenant boundaries at the database level. Every query is filtered by <code className="text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">tenant_id</code>. Cross-tenant access is architecturally impossible.</li>
+                <li>• <strong>Data Purpose:</strong> Customer data is processed only for reconciliation services. No secondary use. No AI model training without explicit consent.</li>
+                <li>• <strong>Data Residency:</strong> US by default. EU data residency available for Enterprise customers (separate Supabase project in EU region).</li>
+                <li>• <strong>Encryption:</strong> AES-256 at rest (Supabase managed), TLS 1.3 in transit. Keys managed by Supabase KMS with automatic rotation.</li>
+                <li>• <strong>Backup & Retention:</strong> Daily backups retained for 30 days. Point-in-time recovery available. Hard deletion after 30-day grace period.</li>
               </ul>
             </div>
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
               <Users className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Data Access & Export</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Data Access, Export & Deletion</h3>
               <ul className="space-y-3 text-slate-600 dark:text-slate-300">
-                <li>• Full account data export available via API (`GET /api/v1/tenant/data-export`)</li>
-                <li>• GDPR/CCPA compliant data export in JSON or CSV format</li>
-                <li>• Customer data deletion with 30-day grace period and scheduled hard deletion</li>
-                <li>• Audit logs capture all data access and export operations</li>
-                <li>• Self-service data management available in the console</li>
+                <li>• <strong>Data Export:</strong> Full account data export via <code className="text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">GET /api/v1/tenant/data-export</code>. JSON or CSV format. GDPR/CCPA compliant. Includes all reconciliations, jobs, exceptions, and audit logs.</li>
+                <li>• <strong>Data Deletion:</strong> Account deletion triggers 30-day grace period (soft delete). After 30 days, hard deletion removes all data from production and backups. Cryptographic erasure verification available for Enterprise.</li>
+                <li>• <strong>Audit Logging:</strong> All data access, exports, and deletions logged with timestamp, user ID, IP address, and action type. Immutable logs stored separately from application data.</li>
+                <li>• <strong>Self-Service:</strong> Export and deletion available in console (<code className="text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">/dashboard/user</code>). No manual intervention required.</li>
               </ul>
             </div>
           </div>
@@ -229,24 +232,24 @@ export default function SecurityPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
               <AlertTriangle className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Response Process</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Incident Response Process</h3>
               <ol className="space-y-3 text-slate-600 dark:text-slate-300 list-decimal list-inside">
-                <li>Detection and initial assessment within 1 hour</li>
-                <li>Containment and mitigation actions immediately</li>
-                <li>Root cause analysis and impact assessment</li>
-                <li>Customer notification within 72 hours for incidents affecting customer data</li>
-                <li>Post-incident review and process improvements</li>
+                <li><strong>Detection:</strong> Automated monitoring (Sentry, Supabase alerts, Vercel logs) + manual reports. Initial assessment within 1 hour.</li>
+                <li><strong>Containment:</strong> Immediate isolation of affected systems. API rate limiting, IP blocking, or tenant-level suspension if needed.</li>
+                <li><strong>Investigation:</strong> Root cause analysis using audit logs, error traces, and system metrics. Impact assessment (affected tenants, data types, time window).</li>
+                <li><strong>Notification:</strong> Customer notification within 72 hours for incidents affecting customer data (GDPR requirement). Status page updates for all incidents.</li>
+                <li><strong>Remediation:</strong> Fix deployed, systems verified, monitoring enhanced. Post-incident review documented. Process improvements implemented.</li>
               </ol>
             </div>
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700">
               <Globe className="w-8 h-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Communication</h3>
+              <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Communication & Reporting</h3>
               <ul className="space-y-3 text-slate-600 dark:text-slate-300">
-                <li>• Security incidents reported to: <a href="mailto:security@settler.dev" className="text-blue-600 dark:text-blue-400 hover:underline">security@settler.dev</a></li>
-                <li>• Status page: <a href="/status" className="text-blue-600 dark:text-blue-400 hover:underline">settler.dev/status</a></li>
-                <li>• Enterprise customers receive direct notification via account contacts</li>
-                <li>• Public disclosure follows responsible disclosure principles</li>
-                <li>• Incident reports available upon request for enterprise customers</li>
+                <li>• <strong>Security Reports:</strong> <a href="mailto:security@settler.dev" className="text-blue-600 dark:text-blue-400 hover:underline">security@settler.dev</a>. PGP key available on request.</li>
+                <li>• <strong>Status Page:</strong> <a href="/status" className="text-blue-600 dark:text-blue-400 hover:underline">settler.dev/status</a>. Real-time system status, incident updates, scheduled maintenance.</li>
+                <li>• <strong>Enterprise Notifications:</strong> Direct email to account contacts for incidents affecting customer data. Incident reports with technical details available upon request.</li>
+                <li>• <strong>Disclosure Policy:</strong> Responsible disclosure for security vulnerabilities. Public disclosure after remediation (typically 90 days).</li>
+                <li>• <strong>Security.txt:</strong> <a href="/.well-known/security.txt" className="text-blue-600 dark:text-blue-400 hover:underline">/.well-known/security.txt</a> for security researchers.</li>
               </ul>
             </div>
           </div>
