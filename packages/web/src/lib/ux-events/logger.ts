@@ -17,30 +17,27 @@ const MAX_LOCAL_EVENTS = 100;
  */
 let localEvents: UXEventType[] = [];
 
-/**
- * Get metadata for current context
- * @internal - kept for future use
- */
-function _getMetadata(): UXEventMetadata {
-  if (typeof window === 'undefined') {
-    return {};
-  }
-
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  
-  let screenSize: 'mobile' | 'tablet' | 'desktop' = 'desktop';
-  if (window.innerWidth < 768) {
-    screenSize = 'mobile';
-  } else if (window.innerWidth < 1024) {
-    screenSize = 'tablet';
-  }
-
-  return {
-    reducedMotion,
-    screenSize,
-    userAgent: navigator.userAgent.split(' ').slice(0, 3).join(' '), // Sanitized
-  };
-}
+// Metadata function kept for future use when backend analytics is implemented
+// function getMetadata(): UXEventMetadata {
+//   if (typeof window === 'undefined') {
+//     return {};
+//   }
+//
+//   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+//   
+//   let screenSize: 'mobile' | 'tablet' | 'desktop' = 'desktop';
+//   if (window.innerWidth < 768) {
+//     screenSize = 'mobile';
+//   } else if (window.innerWidth < 1024) {
+//     screenSize = 'tablet';
+//   }
+//
+//   return {
+//     reducedMotion,
+//     screenSize,
+//     userAgent: navigator.userAgent.split(' ').slice(0, 3).join(' '), // Sanitized
+//   };
+// }
 
 /**
  * Generate unique event ID

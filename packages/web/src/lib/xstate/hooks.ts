@@ -17,10 +17,10 @@ export function useMachineState<TMachine extends AnyStateMachine>(
 ) {
   const [state, send, actor] = useMachine(machine, options);
 
-  const isPending = useSelector(actor, (s) => isPendingState(s.value as string));
-  const isSuccess = useSelector(actor, (s) => isSuccessState(s.value as string));
-  const isError = useSelector(actor, (s) => isErrorState(s.value as string));
-  const isIdle = useSelector(actor, (s) => isIdleState(s.value as string));
+  const isPending = useSelector(actor, (s: any) => isPendingState(s.value as string));
+  const isSuccess = useSelector(actor, (s: any) => isSuccessState(s.value as string));
+  const isError = useSelector(actor, (s: any) => isErrorState(s.value as string));
+  const isIdle = useSelector(actor, (s: any) => isIdleState(s.value as string));
 
   return {
     state,

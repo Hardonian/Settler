@@ -90,7 +90,7 @@ export const demoFormMachine = setup({
     },
   },
   actors: {
-    submitForm: fromPromise(({ input }: { input: DemoFormContext['formData'] }) => {
+    submitForm: fromPromise((input: DemoFormContext['formData']) => {
       return submitForm(input);
     }),
   },
@@ -203,7 +203,7 @@ export const demoFormMachine = setup({
       entry: assign({ error: null }),
       invoke: {
         src: 'submitForm',
-        input: ({ context }) => ({ input: context.formData }),
+        input: ({ context }) => context.formData,
         onDone: {
           target: 'success',
           actions: assign({
