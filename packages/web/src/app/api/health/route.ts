@@ -161,6 +161,59 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
     // Database is optional, so don't mark as unhealthy if it fails
   }
 
+  // Backend contract verification (server-only, using service role)
+  try {
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (serviceRoleKey) {
+      const serviceClient = createClient(
+        process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey
+      );
+
+      // Quick checks for critical tables
+      const criticalTables = ['tenants', 'billing_accounts', 'subscriptions'];
+      const tableChecks: Record<string, boolean> = {};
+
+      for (const table of criticalTables) {
+        try {
+          const { error } = await Promise.race([
+            serviceClient.from(table).select('id').limit(0),
+            new Promise<never>((_, reject) => 
+              setTimeout(() => reject(new Error('Table check timeout')), 3000)
+            ),
+          ]);
+
+          tableChecks[table] = !error || error.code === 'PGRST116'; // PGRST116 = no rows, which is fine
+        } catch (e) {
+          tableChecks[table] = false;
+        }
+      }
+
+      const allTablesOk = Object.values(tableChecks).every(v => v);
+      checks.backendContract = {
+        status: allTablesOk ? 'ok' : 'error',
+        message: allTablesOk 
+          ? 'Critical tables accessible' 
+          : `Missing tables: ${Object.entries(tableChecks).filter(([_, ok]) => !ok).map(([t]) => t).join(', ')}`,
+      };
+
+      if (!allTablesOk) {
+        overallStatus = overallStatus === 'healthy' ? 'degraded' : 'unhealthy';
+      }
+    } else {
+      checks.backendContract = {
+        status: 'error',
+        message: 'Service role key not available for backend verification',
+      };
+    }
+  } catch (error) {
+    checks.backendContract = {
+      status: 'error',
+      message: `Backend verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    };
+    // Don't mark as unhealthy - this is diagnostic only
+  }
+
   const statusCode = overallStatus === 'unhealthy' ? 503 : 200;
 
   // Log health check (non-blocking)

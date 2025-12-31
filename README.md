@@ -65,6 +65,7 @@ pnpm dev
 - [Deployment Guide](DEPLOYMENT_CHECKLIST.md)
 - [Monitoring & Alerts](docs/monitoring.md)
 - [Troubleshooting](docs/troubleshooting.md)
+- [Backend Contract Verification](docs/backend-contract-verification.md)
 
 ## 🎯 Core Features
 
