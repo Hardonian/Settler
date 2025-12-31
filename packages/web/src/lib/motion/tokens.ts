@@ -54,7 +54,6 @@ export const motionEasing = {
 export const motionSprings = {
   /** Gentle spring - subtle bounce */
   gentle: {
-    type: 'spring' as const,
     stiffness: 200,
     damping: 20,
     mass: 1,
@@ -62,7 +61,6 @@ export const motionSprings = {
   
   /** Default spring - balanced */
   default: {
-    type: 'spring' as const,
     stiffness: 300,
     damping: 30,
     mass: 1,
@@ -70,7 +68,6 @@ export const motionSprings = {
   
   /** Snappy spring - quick response */
   snappy: {
-    type: 'spring' as const,
     stiffness: 400,
     damping: 25,
     mass: 0.8,
@@ -78,7 +75,6 @@ export const motionSprings = {
   
   /** Bouncy spring - playful */
   bouncy: {
-    type: 'spring' as const,
     stiffness: 300,
     damping: 15,
     mass: 1,
@@ -86,7 +82,6 @@ export const motionSprings = {
   
   /** Stiff spring - minimal bounce */
   stiff: {
-    type: 'spring' as const,
     stiffness: 500,
     damping: 40,
     mass: 1,
@@ -165,7 +160,6 @@ export function getReducedMotionSpring(spring: SpringOptions): SpringOptions {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReducedMotion) {
     return {
-      type: 'spring',
       stiffness: 1000,
       damping: 100,
       mass: 1,

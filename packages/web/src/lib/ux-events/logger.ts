@@ -5,7 +5,7 @@
  * No PII, no secrets.
  */
 
-import type { UXEvent, UXEventType, UXEventMetadata } from './types';
+import type { UXEventType, UXEventMetadata } from './types';
 
 /**
  * Maximum events to store locally
@@ -19,8 +19,9 @@ let localEvents: UXEventType[] = [];
 
 /**
  * Get metadata for current context
+ * @internal - kept for future use
  */
-function getMetadata(): UXEventMetadata {
+function _getMetadata(): UXEventMetadata {
   if (typeof window === 'undefined') {
     return {};
   }
@@ -61,7 +62,7 @@ function getCurrentRoute(): string {
 /**
  * Log a UX event
  */
-export function logUXEvent(event: Omit<UXEventType, 'id' | 'timestamp' | 'route'>): void {
+export function logUXEvent(event: Omit<UXEventType, 'id' | 'timestamp' | 'route'> | Partial<UXEventType> & { type: UXEventType['type'] }): void {
   const fullEvent: UXEventType = {
     ...event,
     id: generateEventId(),

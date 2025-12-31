@@ -12,7 +12,18 @@ import { motion, MotionProps, useInView } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { fadeUp, fade, scale, fadeDown } from '@/lib/motion/variants';
 
-export interface RevealProps extends React.HTMLAttributes<HTMLDivElement> {
+// Exclude motion-specific props that conflict with HTML attributes
+type MotionConflictKeys = 
+  | 'onDrag' 
+  | 'onDragStart' 
+  | 'onDragEnd' 
+  | 'onAnimationStart' 
+  | 'onAnimationComplete'
+  | 'onUpdate'
+  | 'onLayoutAnimationStart'
+  | 'onLayoutAnimationComplete';
+
+export interface RevealProps extends Omit<React.HTMLAttributes<HTMLDivElement>, MotionConflictKeys> {
   /**
    * Animation variant
    * @default 'fadeUp'

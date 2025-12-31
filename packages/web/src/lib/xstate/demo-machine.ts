@@ -6,7 +6,7 @@
  */
 
 import { setup, assign, fromPromise } from 'xstate';
-import { AsyncContext, AsyncState } from './types';
+import { AsyncContext } from './types';
 
 /**
  * Context for the demo form machine
@@ -81,20 +81,18 @@ export const demoFormMachine = setup({
     events: {} as DemoFormEvents,
   },
   guards: {
-    isFormValid: ({ context }) => {
+    isFormValid: ({ context }: { context: DemoFormContext }) => {
       const validation = validateForm(context.formData);
       return validation.isValid;
     },
-    hasValidationErrors: ({ context }) => {
+    hasValidationErrors: ({ context }: { context: DemoFormContext }) => {
       return Object.keys(context.validationErrors).length > 0;
     },
   },
   actors: {
-    submitForm: ({ input }: { input: DemoFormContext['formData'] }) => {
-      return fromPromise(async () => {
-        return submitForm(input);
-      });
-    },
+    submitForm: fromPromise(({ input }: { input: DemoFormContext['formData'] }) => {
+      return submitForm(input);
+    }),
   },
 }).createMachine({
   id: 'demoForm',
@@ -139,11 +137,16 @@ export const demoFormMachine = setup({
         },
         SUBMIT: [
           {
-            guard: 'isFormValid',
+            guard: ({ context }: { context: DemoFormContext }) => {
+              const validation = validateForm(context.formData);
+              return validation.isValid;
+            },
             target: 'submitting',
           },
           {
-            guard: 'hasValidationErrors',
+            guard: ({ context }: { context: DemoFormContext }) => {
+              return Object.keys(context.validationErrors).length > 0;
+            },
             target: 'validationError',
           },
         ],
@@ -188,7 +191,10 @@ export const demoFormMachine = setup({
           }),
         },
         SUBMIT: {
-          guard: 'isFormValid',
+          guard: ({ context }: { context: DemoFormContext }) => {
+            const validation = validateForm(context.formData);
+            return validation.isValid;
+          },
           target: 'submitting',
         },
       },
@@ -212,7 +218,7 @@ export const demoFormMachine = setup({
         },
       },
       on: {
-        CANCEL: {
+        RESET: {
           target: 'idle',
         },
       },

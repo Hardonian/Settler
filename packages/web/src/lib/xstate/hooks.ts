@@ -17,10 +17,10 @@ export function useMachineState<TMachine extends AnyStateMachine>(
 ) {
   const [state, send, actor] = useMachine(machine, options);
 
-  const isPending = useSelector(actor, (s) => isPendingState(s.value));
-  const isSuccess = useSelector(actor, (s) => isSuccessState(s.value));
-  const isError = useSelector(actor, (s) => isErrorState(s.value));
-  const isIdle = useSelector(actor, (s) => isIdleState(s.value));
+  const isPending = useSelector(actor, (s) => isPendingState(s.value as string));
+  const isSuccess = useSelector(actor, (s) => isSuccessState(s.value as string));
+  const isError = useSelector(actor, (s) => isErrorState(s.value as string));
+  const isIdle = useSelector(actor, (s) => isIdleState(s.value as string));
 
   return {
     state,
@@ -39,7 +39,7 @@ export function useMachineState<TMachine extends AnyStateMachine>(
 export function useStateValue<TMachine extends AnyStateMachine>(
   actor: ActorRefFrom<TMachine>
 ) {
-  return useSelector(actor, (state) => state.value);
+  return useSelector(actor, (state) => (state as any).value);
 }
 
 /**
@@ -47,12 +47,12 @@ export function useStateValue<TMachine extends AnyStateMachine>(
  */
 export function useContextValue<TMachine extends AnyStateMachine>(
   actor: ActorRefFrom<TMachine>,
-  selector?: (context: ActorRefFrom<TMachine>['getSnapshot'] extends () => infer S ? S extends { context: infer C } ? C : never : never) => unknown
+  selector?: (context: any) => unknown
 ) {
   if (selector) {
-    return useSelector(actor, (state) => selector(state.context));
+    return useSelector(actor, (state: any) => selector(state.context));
   }
-  return useSelector(actor, (state) => state.context);
+  return useSelector(actor, (state: any) => state.context);
 }
 
 /**
@@ -62,7 +62,7 @@ export function useCanReceiveEvent<TMachine extends AnyStateMachine>(
   actor: ActorRefFrom<TMachine>,
   eventType: string
 ) {
-  return useSelector(actor, (state) => {
-    return state.can({ type: eventType } as any);
+  return useSelector(actor, (state: any) => {
+    return (state.can && typeof state.can === 'function') ? state.can({ type: eventType } as any) : false;
   });
 }
