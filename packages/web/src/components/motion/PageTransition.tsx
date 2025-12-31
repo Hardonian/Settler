@@ -42,9 +42,9 @@ const PageTransition = React.forwardRef<HTMLDivElement, PageTransitionProps>(
       <motion.div
         key={transitionKey}
         ref={ref}
-        {...motionProps}
         className={cn('w-full', className)}
         {...props}
+        {...motionProps}
       >
         {children}
       </motion.div>

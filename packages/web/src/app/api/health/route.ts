@@ -10,7 +10,7 @@
  * NON-NEGOTIABLE: Never crashes, always returns JSON
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { getTraceId } from '@/lib/observability/trace';
 import { logger } from '@/lib/observability/logger';
@@ -165,10 +165,7 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
   try {
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (serviceRoleKey) {
-      const serviceClient = createClient(
-        process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        serviceRoleKey
-      );
+      const serviceClient = await createAdminClient();
 
       // Quick checks for critical tables
       const criticalTables = ['tenants', 'billing_accounts', 'subscriptions'];
