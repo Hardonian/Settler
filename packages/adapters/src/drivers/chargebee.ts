@@ -219,6 +219,7 @@ export class ChargebeeDriver implements ConnectorDriver {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async handleWebhook(
     _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
     _credentials: Record<string, unknown>

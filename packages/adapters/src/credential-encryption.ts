@@ -26,7 +26,7 @@ export async function encryptCredentials(
     });
 
     if (!error && data) {
-      return data; // Return vault reference
+      return data as string; // Return vault reference
     }
   } catch (error) {
     console.warn('Supabase Vault not available, using application-level encryption');
@@ -72,7 +72,7 @@ export async function decryptCredentials(
     });
 
     if (!error && data) {
-      return JSON.parse(data);
+      return JSON.parse(data as string) as Record<string, unknown>;
     }
   } catch (error) {
     // Not a vault reference, try application-level decryption
@@ -98,7 +98,7 @@ export async function decryptCredentials(
         decipher.final(),
       ]);
       
-      return JSON.parse(decrypted.toString('utf8'));
+      return JSON.parse(decrypted.toString('utf8')) as Record<string, unknown>;
     } catch (error) {
       console.error('Decryption failed:', error);
       throw new Error('Failed to decrypt credentials');
@@ -107,7 +107,7 @@ export async function decryptCredentials(
 
   // Fallback: Base64 decoding
   try {
-    return JSON.parse(Buffer.from(encryptedCredentials, 'base64').toString('utf8'));
+    return JSON.parse(Buffer.from(encryptedCredentials, 'base64').toString('utf8')) as Record<string, unknown>;
   } catch (error) {
     throw new Error('Failed to decode credentials');
   }

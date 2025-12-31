@@ -22,6 +22,7 @@ class EtsyDriver {
         requiredConfig: ['client_id', 'client_secret'],
         optionalConfig: ['redirect_uri', 'webhook_secret'],
     };
+    // eslint-disable-next-line @typescript-eslint/require-await
     async getAuthUrl(options) {
         const config = options;
         const params = new URLSearchParams({

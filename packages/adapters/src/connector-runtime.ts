@@ -858,7 +858,7 @@ export class ConnectorRuntime {
 
         // Map balances to ensure accountId is present (required by saveNormalizedData)
         const balancesWithAccountId = result.balances?.map((bal) => ({
-          accountId: (bal as any).accountId || '',
+          accountId: bal.accountId || '',
           balanceCents: bal.balanceCents,
           availableBalanceCents: bal.availableBalanceCents,
           currency: bal.currency,

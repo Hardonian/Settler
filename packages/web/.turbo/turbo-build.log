@@ -18,11 +18,11 @@ Loaded Prisma config from prisma.config.ts.
 
 Prisma schema loaded from prisma/schema.prisma
 
-✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 195ms
+✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 186ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
 
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
@@ -50,16 +50,6 @@ npm warn config       Default value does install optional deps unless otherwise 
     · instrumentationHook
 
    Creating an optimized production build ...
-   Downloading swc package @next/swc-linux-x64-gnu...
-error This project's package.json defines "packageManager": "yarn@npm@10.2.4". However the current global version of Yarn is 1.22.22.
-
-Presence of the "packageManager" field indicates that the project is meant to be used with Corepack, a tool included by default with all official Node.js distributions starting from 16.9 and 14.19.
-Corepack must currently be enabled by running corepack enable in your terminal. For more information, check out https://yarnpkg.com/corepack.
-   Downloading swc package @next/swc-linux-x64-musl...
-error This project's package.json defines "packageManager": "yarn@npm@10.2.4". However the current global version of Yarn is 1.22.22.
-
-Presence of the "packageManager" field indicates that the project is meant to be used with Corepack, a tool included by default with all official Node.js distributions starting from 16.9 and 14.19.
-Corepack must currently be enabled by running corepack enable in your terminal. For more information, check out https://yarnpkg.com/corepack.
    Using tsconfig file: ./tsconfig.json
  ⚠ Compiled with warnings
 
@@ -85,10 +75,9 @@ Could not import billing hardening functions, using fallback implementation
 Could not import billing hardening functions, using fallback implementation
 Could not import billing hardening functions, using fallback implementation
 Could not import activation funnel functions, using fallback implementation
-2025-12-31T04:11:40.510Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
-2025-12-31T04:11:40.510Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
-2025-12-31T04:11:40.511Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
-Could not import activation funnel functions, using fallback implementation
+2025-12-31T04:16:50.963Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
+2025-12-31T04:16:50.964Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
+2025-12-31T04:16:50.964Z [[33mwarn[39m]: RESEND_API_KEY not set - email sending will be disabled {"service":"settler-api","environment":"production"}
 Could not import activation funnel functions, using fallback implementation
 ⚠️  Environment variables not available during build (will be available at runtime):
   - Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL - Supabase project URL
@@ -106,13 +95,14 @@ Could not import activation funnel functions, using fallback implementation
   - Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY - Supabase anonymous key
   - Missing required environment variable: SUPABASE_SERVICE_ROLE_KEY - Supabase service role key (for admin operations)
 [Node Version] Node.js version 24.0.0 or higher is required. Current version: v22.21.1. Please upgrade Node.js.
+Could not import activation funnel functions, using fallback implementation
    Generating static pages (0/165) ...
 [Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
 [Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
-Time 3.348106
-Time 3.43083
+Time 4.054301
 [Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
 [Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
+Time 3.117567
 [Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
 [Supabase] Failed to get environment variables: Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
    Generating static pages (41/165) 
@@ -146,8 +136,8 @@ Route (app)                                             Size     First Load JS
 ├ ƒ /admin/pages                                        3.52 kB         107 kB
 ├ ƒ /admin/pages/[id]/editor                            3.44 kB         128 kB
 ├ ƒ /admin/pages/new                                    3.72 kB         107 kB
-├ ƒ /admin/settings                                     208 B          87.8 kB
-├ ƒ /admin/webhooks                                     209 B          87.8 kB
+├ ƒ /admin/settings                                     209 B          87.8 kB
+├ ƒ /admin/webhooks                                     208 B          87.8 kB
 ├ ƒ /api/admin/health                                   0 B                0 B
 ├ ƒ /api/ai/data-insights                               0 B                0 B
 ├ ƒ /api/ai/onboarding-assistant                        0 B                0 B
@@ -338,7 +328,7 @@ Route (app)                                             Size     First Load JS
 ├ ƒ /console/playground/flags                           4.98 kB         156 kB
 ├ ƒ /console/playground/receipts                        3.02 kB         152 kB
 ├ ƒ /console/playground/reconcile                       8.78 kB         160 kB
-├ ƒ /console/reality                                    208 B          87.8 kB
+├ ƒ /console/reality                                    209 B          87.8 kB
 ├ ƒ /console/receipt-matching                           5.3 kB         99.7 kB
 ├ ƒ /console/receipts                                   6.02 kB         115 kB
 ├ ƒ /console/receipts-hash                              6.39 kB         109 kB
@@ -382,7 +372,7 @@ Route (app)                                             Size     First Load JS
 ├ ƒ /docs/auth                                          2.45 kB        96.8 kB
 ├ ƒ /docs/cli                                           1.63 kB         172 kB
 ├ ƒ /docs/errors                                        2.45 kB        96.8 kB
-├ ƒ /docs/examples                                      209 B          87.8 kB
+├ ƒ /docs/examples                                      210 B          87.8 kB
 ├ ƒ /docs/getting-started                               207 B          96.5 kB
 ├ ƒ /docs/integrations                                  2.79 kB         174 kB
 ├ ƒ /docs/integrations/[integrationId]                  4.53 kB         172 kB

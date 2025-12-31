@@ -32,7 +32,7 @@ export class AmazonSellerDriver implements ConnectorDriver {
   };
 
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
-    const { credentials, config: _config } = options;
+    const { credentials } = options;
     
     // If SP-API credentials provided, test API connection
     if (credentials.sp_api_client_id && credentials.sp_api_client_secret) {
@@ -141,9 +141,11 @@ export class AmazonSellerDriver implements ConnectorDriver {
           // This is simplified - actual implementation would parse various event types
           for (const event of eventsData.payload?.FinancialEvents || []) {
             if (event.ShipmentEventList) {
+              // Extract payout information from shipment events
+              // This is a simplified mapping - future implementation will parse shipment events
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               for (const _shipment of event.ShipmentEventList) {
-                // Extract payout information from shipment events
-                // This is a simplified mapping
+                // TODO: Parse shipment events into payouts
               }
             }
           }
