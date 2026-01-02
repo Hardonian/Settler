@@ -8,7 +8,6 @@
  */
 
 import { randomBytes } from 'crypto';
-import { headers } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 const TRACE_ID_HEADER = 'x-trace-id';
@@ -42,14 +41,20 @@ export async function getTraceId(request?: NextRequest | Request): Promise<strin
   }
 
   // Try to get from Next.js headers (server-side)
+  // Use dynamic import to avoid bundling next/headers in client components
+  // This prevents build errors when trace.ts is imported by client components
   try {
-    const headersList = await headers();
-    const headerTraceId = headersList.get(TRACE_ID_HEADER);
-    if (headerTraceId) {
-      return headerTraceId;
+    // Only attempt to use headers() in server context (not in browser)
+    if (typeof window === 'undefined' && typeof process !== 'undefined') {
+      const { headers: getHeaders } = await import('next/headers');
+      const headersList = await getHeaders();
+      const headerTraceId = headersList.get(TRACE_ID_HEADER);
+      if (headerTraceId) {
+        return headerTraceId;
+      }
     }
   } catch {
-    // Not in server context, continue
+    // Not in server context or headers() unavailable, continue to generate new ID
   }
 
   // Generate new trace ID
