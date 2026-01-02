@@ -13,6 +13,7 @@ import type {
   SourceId,
 } from "@/lib/domain/types";
 import { calculateImpact, generateExplanation } from "@/lib/judgment/rules";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 export interface ReconciliationParams {
   sourceId: SourceId;
@@ -35,7 +36,10 @@ export async function runReconciliation(
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[runReconciliation] User not authenticated");
+      await safeLogger.warn("[runReconciliation] User not authenticated", {
+        tenantId,
+        sourceId: params.sourceId,
+      });
       return null;
     }
 
@@ -150,7 +154,11 @@ export async function runReconciliation(
       }
     } catch (usageError) {
       // Don't fail reconciliation if usage tracking fails
-      console.error("[runReconciliation] Usage tracking failed:", usageError);
+      await safeLogger.error("[runReconciliation] Usage tracking failed", {
+        tenantId,
+        error: usageError instanceof Error ? usageError.message : String(usageError),
+        stack: usageError instanceof Error ? usageError.stack : undefined,
+      });
     }
 
     // Return summary
@@ -166,7 +174,12 @@ export async function runReconciliation(
       completedAt: result.completedAt || undefined,
     };
   } catch (error) {
-    console.error("[runReconciliation] Unexpected error:", error);
+    await safeLogger.error("[runReconciliation] Unexpected error", {
+      tenantId,
+      sourceId: params.sourceId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return null;
   }
 }
@@ -186,7 +199,10 @@ export async function getReconciliationSummary(
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[getReconciliationSummary] User not authenticated");
+      await safeLogger.warn("[getReconciliationSummary] User not authenticated", {
+        tenantId,
+        reconciliationId,
+      });
       return null;
     }
 
@@ -199,7 +215,10 @@ export async function getReconciliationSummary(
     });
 
     if (!result) {
-      console.error("[getReconciliationSummary] Reconciliation run not found");
+      await safeLogger.warn("[getReconciliationSummary] Reconciliation run not found", {
+        tenantId,
+        reconciliationId,
+      });
       return null;
     }
 
@@ -218,7 +237,12 @@ export async function getReconciliationSummary(
       completedAt: result.completedAt || undefined,
     };
   } catch (error) {
-    console.error("[getReconciliationSummary] Unexpected error:", error);
+    await safeLogger.error("[getReconciliationSummary] Unexpected error", {
+      tenantId,
+      reconciliationId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return null;
   }
 }
@@ -238,7 +262,10 @@ export async function listReconciliationItems(
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[listReconciliationItems] User not authenticated");
+      await safeLogger.warn("[listReconciliationItems] User not authenticated", {
+        tenantId,
+        reconciliationId,
+      });
       return [];
     }
 
@@ -321,7 +348,12 @@ export async function listReconciliationItems(
 
     return items;
   } catch (error) {
-    console.error("[listReconciliationItems] Unexpected error:", error);
+    await safeLogger.error("[listReconciliationItems] Unexpected error", {
+      tenantId,
+      reconciliationId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return [];
   }
 }

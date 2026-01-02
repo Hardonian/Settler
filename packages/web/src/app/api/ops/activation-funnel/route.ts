@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { safeLogger } from '@/lib/observability/safe-logger';
 import { createClient } from '@/lib/supabase/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { prisma } from '@/shared/db/prismaClient';
@@ -158,7 +159,10 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Failed to get activation funnel metrics:', error);
+    await safeLogger.error('[Activation Funnel] Failed to get metrics', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
       { 
         error: 'Failed to retrieve activation funnel metrics',

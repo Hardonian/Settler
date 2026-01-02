@@ -20,12 +20,11 @@ export async function POST(request: NextRequest) {
     let auth;
     let isAuthenticated = false;
     
-    try {
-      auth = await authenticateApiKey(request);
+    auth = await authenticateApiKey(request);
+    if (auth) {
       isAuthenticated = true;
-    } catch (error) {
-      // Unauthenticated access allowed for playground - will return demo response
     }
+    // Unauthenticated access allowed for playground (graceful degradation)
 
     // For unauthenticated users, return demo response
     if (!isAuthenticated) {
@@ -118,12 +117,11 @@ export async function GET(request: NextRequest) {
     let auth;
     let isAuthenticated = false;
     
-    try {
-      auth = await authenticateApiKey(request);
+    auth = await authenticateApiKey(request);
+    if (auth) {
       isAuthenticated = true;
-    } catch (error) {
-      // Unauthenticated access allowed for playground - will return demo response
     }
+    // Unauthenticated access allowed for playground (graceful degradation)
 
     // For unauthenticated users, return demo response
     if (!isAuthenticated) {

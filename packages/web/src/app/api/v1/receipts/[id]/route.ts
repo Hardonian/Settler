@@ -24,12 +24,11 @@ export const GET = withUniversalBillingGate(async function GET(
     // Try to authenticate, but allow unauthenticated access for playground
     let isAuthenticated = false;
     
-    try {
-      await authenticateApiKey(request);
+    const authResult = await authenticateApiKey(request);
+    if (authResult) {
       isAuthenticated = true;
-    } catch (error) {
-      // Unauthenticated access allowed for playground - will return demo response
     }
+    // Unauthenticated access allowed for playground (graceful degradation)
 
     const { id } = await params;
 

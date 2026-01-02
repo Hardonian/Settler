@@ -25,12 +25,21 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
   try {
     const supabase = await createClient();
     const { error } = await supabase.from('tenants').select('id').limit(1);
-    if (error) throw error;
-    diagnostics.push({
-      name: 'Supabase Connection',
-      status: 'ok',
-      message: 'Connected successfully',
-    });
+    if (error) {
+      // Log error but don't throw - graceful degradation
+      diagnostics.push({
+        name: 'Supabase Connection',
+        status: 'error',
+        message: error.message || 'Connection failed',
+      });
+      // Continue to next check instead of throwing
+    } else {
+      diagnostics.push({
+        name: 'Supabase Connection',
+        status: 'ok',
+        message: 'Connected successfully',
+      });
+    }
   } catch (error) {
     diagnostics.push({
       name: 'Supabase Connection',

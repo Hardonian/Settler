@@ -70,7 +70,12 @@ async function getPreviousReceiptHash(
     const { data } = (await query.maybeSingle()) as { data: ReceiptRow | null };
     return data?.hash;
   } catch (error) {
-    console.error("[getPreviousReceiptHash] Error:", error);
+    await safeLogger.error("[getPreviousReceiptHash] Error", {
+      tenantId,
+      sourceId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return undefined;
   }
 }
@@ -99,7 +104,7 @@ export async function createReceipt(
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[createReceipt] User not authenticated");
+      await safeLogger.warn("[createReceipt] User not authenticated", { tenantId });
       return null;
     }
 
@@ -139,7 +144,10 @@ export async function createReceipt(
       .single()) as { data: ReceiptRow | null; error: any };
 
     if (error || !receipt) {
-      console.error("[createReceipt] Error:", error);
+      await safeLogger.error("[createReceipt] Error", {
+        tenantId,
+        error: error?.message || String(error),
+      });
       return null;
     }
 
@@ -160,7 +168,11 @@ export async function createReceipt(
       createdAt: new Date(receipt.created_at),
     };
   } catch (error) {
-    console.error("[createReceipt] Unexpected error:", error);
+    await safeLogger.error("[createReceipt] Unexpected error", {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return null;
   }
 }
@@ -231,7 +243,11 @@ export async function verifyReceiptChain(
       issues,
     };
   } catch (error) {
-    console.error("[verifyReceiptChain] Unexpected error:", error);
+    await safeLogger.error("[verifyReceiptChain] Unexpected error", {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return { valid: false, issues: ["Verification error"] };
   }
 }
@@ -248,7 +264,7 @@ export async function listReceipts(tenantId: TenantId, limit: number = 50): Prom
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[listReceipts] User not authenticated");
+      await safeLogger.warn("[listReceipts] User not authenticated", { tenantId });
       return [];
     }
 
@@ -268,7 +284,10 @@ export async function listReceipts(tenantId: TenantId, limit: number = 50): Prom
       .limit(Math.min(limit, 100))) as { data: ReceiptRow[] | null; error: any };
 
     if (error) {
-      console.error("[listReceipts] Error:", error);
+      await safeLogger.error("[listReceipts] Error", {
+        tenantId,
+        error: error.message || String(error),
+      });
       return [];
     }
 
@@ -289,7 +308,11 @@ export async function listReceipts(tenantId: TenantId, limit: number = 50): Prom
       createdAt: new Date(r.created_at),
     }));
   } catch (error) {
-    console.error("[listReceipts] Unexpected error:", error);
+    await safeLogger.error("[listReceipts] Unexpected error", {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return [];
   }
 }

@@ -47,12 +47,11 @@ export const POST = freeRoute(async function POST(request: NextRequest) {
     let auth;
     let isAuthenticated = false;
     
-    try {
-      auth = await authenticateApiKey(request);
+    auth = await authenticateApiKey(request);
+    if (auth) {
       isAuthenticated = true;
-    } catch (error) {
-      // Unauthenticated access allowed for playground
     }
+    // Unauthenticated access allowed for playground (graceful degradation)
 
     // For unauthenticated users, allow basic conversions (demo mode)
     if (!isAuthenticated) {

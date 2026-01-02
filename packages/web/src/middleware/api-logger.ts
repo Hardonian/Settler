@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logApiCall } from '@/domain/console/api-logs';
 import { sanitizeApiData } from '@/lib/privacy/pii-filter';
 import { createClient } from '@/lib/supabase/server';
+import { safeLogger } from '@/lib/observability/safe-logger';
 
 export interface ApiLogContext {
   tenantId?: string;
@@ -42,8 +43,11 @@ async function getTenantFromRequest(_request: NextRequest): Promise<string | und
     }
     
     return undefined;
-  } catch (error) {
-    console.error('[api-logger] Failed to get tenant:', error);
+    } catch (error) {
+      await safeLogger.error('[api-logger] Failed to get tenant', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     return undefined;
   }
 }
@@ -179,7 +183,10 @@ export async function logApiRequest(
     });
   } catch (error) {
     // Don't let logging errors break the request
-    console.error('[api-logger] Failed to log API call:', error);
+    await safeLogger.error('[api-logger] Failed to log API call', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
   }
 }
 
@@ -224,8 +231,11 @@ export function withApiLogging(
     }
     
     // Log the API call (async, don't wait)
-    logApiRequest(request, response, context).catch(err => {
-      console.error('[api-logger] Failed to log request:', err);
+    logApiRequest(request, response, context).catch(async (err) => {
+      await safeLogger.error('[api-logger] Failed to log request', {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
     });
     
     return response;

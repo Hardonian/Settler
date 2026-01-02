@@ -47,9 +47,10 @@ export function extractApiKey(request: NextRequest): string | null {
 /**
  * Validate API key and return auth context
  */
-export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext> {
+export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext | null> {
   if (!apiKey.startsWith('rk_')) {
-    throw new Error('Invalid API key format');
+    // Return null instead of throwing - graceful degradation
+    return null;
   }
 
   // Extract prefix for database lookup
@@ -65,7 +66,8 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext>
     .single();
 
   if (error || !keyRecords) {
-    throw new Error('Invalid API key');
+    // Return null instead of throwing - graceful degradation
+    return null;
   }
 
   const key = keyRecords as {
@@ -80,16 +82,19 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext>
   // Verify full key against hash
   const isValid = await verifyApiKey(apiKey, key.key_hash);
   if (!isValid) {
-    throw new Error('Invalid API key');
+    // Return null instead of throwing - graceful degradation
+    return null;
   }
 
   // Check if key is revoked or expired
   if (key.revoked_at) {
-    throw new Error('API key has been revoked');
+    // Return null instead of throwing - graceful degradation
+    return null;
   }
 
   if (key.expires_at && new Date(key.expires_at) < new Date()) {
-    throw new Error('API key has expired');
+    // Return null instead of throwing - graceful degradation
+    return null;
   }
 
   // Get billing account for user (if exists)
@@ -122,10 +127,11 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext>
  */
 export async function authenticateApiKey(
   request: NextRequest
-): Promise<ApiKeyAuthContext> {
+): Promise<ApiKeyAuthContext | null> {
   const apiKey = extractApiKey(request);
   if (!apiKey) {
-    throw new Error('API key required in X-API-Key header or Authorization: Bearer <key>');
+    // Return null instead of throwing - graceful degradation
+    return null;
   }
   return validateApiKey(apiKey);
 }

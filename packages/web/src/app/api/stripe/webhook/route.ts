@@ -19,6 +19,7 @@ import { requestSizeLimits } from '@/middleware/request-size-limit';
 import { getTraceId } from '@/lib/observability/trace';
 import { logger } from '@/lib/observability/logger';
 import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
+import { safeLogger } from '@/lib/observability/safe-logger';
 // NOTE: Webhooks don't use billing gates - they're authenticated via Stripe signature
 
 export const dynamic = 'force-dynamic';
@@ -35,7 +36,11 @@ async function isEventProcessed(eventId: string): Promise<boolean> {
     });
     return existing !== null && existing.status === 'processed';
   } catch (error) {
-    console.error('[Stripe Webhook] Error checking event idempotency:', error);
+    await safeLogger.error('[Stripe Webhook] Error checking event idempotency', {
+      eventId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     // On error, assume not processed to allow retry
     return false;
   }
@@ -61,7 +66,7 @@ async function recordEventReceived(
   } catch (error: any) {
     // If unique violation, event was already received (idempotent)
     if (error?.code === 'P2002') {
-      console.warn('[Stripe Webhook] Event already received:', eventId);
+      await safeLogger.debug('[Stripe Webhook] Event already received', { eventId });
       return;
     }
     throw error;
@@ -167,7 +172,7 @@ export async function POST(request: NextRequest) {
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    console.error('[Stripe Webhook] STRIPE_WEBHOOK_SECRET not configured');
+    await safeLogger.error('[Stripe Webhook] STRIPE_WEBHOOK_SECRET not configured');
     // Configuration error - return 503 (service unavailable) instead of 500
     // This indicates misconfiguration, not a transient error
     return NextResponse.json(
@@ -183,7 +188,10 @@ export async function POST(request: NextRequest) {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     const error = err as Error;
-    console.error('[Stripe Webhook] Signature verification failed:', error.message);
+    await safeLogger.error('[Stripe Webhook] Signature verification failed', {
+      error: error.message,
+      stack: error.stack,
+    });
     return NextResponse.json(
       { error: `Webhook Error: ${error.message}` },
       { status: 400 }
@@ -207,7 +215,11 @@ export async function POST(request: NextRequest) {
   try {
     await recordEventReceived(event.id, event.type, JSON.parse(body));
   } catch (error) {
-    console.error('[Stripe Webhook] Failed to record event:', error);
+    await safeLogger.error('[Stripe Webhook] Failed to record event', {
+      eventId: event.id,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     // Continue processing - event might have been recorded in parallel
   }
 
@@ -238,7 +250,11 @@ export async function POST(request: NextRequest) {
           });
         } catch (eventError) {
           // Don't fail webhook processing if event emission fails
-          console.error('[Stripe Webhook] Failed to emit checkout completed event:', eventError);
+          await safeLogger.error('[Stripe Webhook] Failed to emit checkout completed event', {
+            eventId: event.id,
+            error: eventError instanceof Error ? eventError.message : String(eventError),
+            stack: eventError instanceof Error ? eventError.stack : undefined,
+          });
         }
       }
       
@@ -262,8 +278,14 @@ export async function POST(request: NextRequest) {
             },
           } as Stripe.Event);
         } catch (error) {
-          console.error('[Stripe Webhook] Failed to sync subscription from checkout:', error);
-          throw error;
+          await safeLogger.error('[Stripe Webhook] Failed to sync subscription from checkout', {
+            eventId: event.id,
+            subscriptionId,
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+          });
+          // Don't throw - log and continue (graceful degradation)
+          // Webhook will be marked as failed but won't crash
         }
       }
     }
@@ -296,7 +318,11 @@ export async function POST(request: NextRequest) {
             },
           });
         } catch (eventError) {
-          console.error('[Stripe Webhook] Failed to emit subscription canceled event:', eventError);
+          await safeLogger.error('[Stripe Webhook] Failed to emit subscription canceled event', {
+            eventId: event.id,
+            error: eventError instanceof Error ? eventError.message : String(eventError),
+            stack: eventError instanceof Error ? eventError.stack : undefined,
+          });
         }
       }
     }
@@ -324,7 +350,7 @@ export async function POST(request: NextRequest) {
         ? subscriptionId 
         : subscriptionId?.id || null;
       
-      console.info('[Stripe Webhook] Invoice payment succeeded', {
+      await safeLogger.info('[Stripe Webhook] Invoice payment succeeded', {
         invoiceId: invoice.id,
         subscriptionId: subscriptionIdString,
       });
@@ -346,7 +372,7 @@ export async function POST(request: NextRequest) {
         ? subscriptionId 
         : subscriptionId?.id || null;
       
-      console.warn('[Stripe Webhook] Invoice payment failed', {
+      await safeLogger.warn('[Stripe Webhook] Invoice payment failed', {
         invoiceId: invoice.id,
         subscriptionId: subscriptionIdString,
       });
@@ -377,7 +403,11 @@ export async function POST(request: NextRequest) {
               },
             });
           } catch (eventError) {
-            console.error('[Stripe Webhook] Failed to emit payment failed event:', eventError);
+            await safeLogger.error('[Stripe Webhook] Failed to emit payment failed event', {
+              eventId: event.id,
+              error: eventError instanceof Error ? eventError.message : String(eventError),
+              stack: eventError instanceof Error ? eventError.stack : undefined,
+            });
           }
         }
       }
@@ -395,7 +425,11 @@ export async function POST(request: NextRequest) {
         });
       } catch (error) {
         // Non-critical - just log
-        console.warn('[Stripe Webhook] Failed to update billing account ID:', error);
+        await safeLogger.warn('[Stripe Webhook] Failed to update billing account ID', {
+          eventId: event.id,
+          billingAccountId,
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
 

@@ -26,13 +26,15 @@ export function createClient(): ReturnType<typeof createBrowserClient<Database>>
       // Server-side during build - return a minimal mock
       return {} as ReturnType<typeof createBrowserClient<Database>>;
     }
-    // Client-side but missing env vars - log error once
+    // Client-side but missing env vars - log error once (gracefully)
     const validation = validateSupabaseEnv();
     if (!validation.isValid && typeof window !== 'undefined') {
-      console.error(
-        '[Supabase Client] Missing environment variables:',
-        validation.missing.join(', ')
-      );
+      // Use safe logger - don't throw
+      safeLogger.error('[Supabase Client] Missing environment variables', {
+        missing: validation.missing,
+      }).catch(() => {
+        // Silently fail if logging fails
+      });
     }
   }
 

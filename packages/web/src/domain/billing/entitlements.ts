@@ -8,6 +8,7 @@
 import { prisma } from '@/shared/db/prismaClient';
 import { getPlanConfig, PlanCode, ServiceCode, mapLegacyPlanId } from './planConfig';
 import { getAccountUsage } from './usageService';
+import { safeLogger } from '@/lib/observability/safe-logger';
 
 // Re-export ServiceCode for middleware
 export type { ServiceCode } from './planConfig';
@@ -36,7 +37,11 @@ export async function getAccountPlanCode(
 ): Promise<PlanCode> {
   // Validate input
   if (!isValidBillingAccountId(billingAccountId)) {
-    throw new Error('Invalid billing account ID');
+    await safeLogger.error('[getAccountPlanCode] Invalid billing account ID', {
+      billingAccountId: String(billingAccountId),
+    });
+    // Return default plan instead of throwing
+    return 'starter';
   }
 
   // Get active subscription with optimized query
@@ -71,12 +76,36 @@ export async function checkEntitlement(
 ): Promise<EntitlementResult> {
   // Validate inputs
   if (!isValidBillingAccountId(billingAccountId)) {
-    throw new Error('Invalid billing account ID');
+    await safeLogger.error('[checkEntitlement] Invalid billing account ID', {
+      billingAccountId: String(billingAccountId),
+      service,
+    });
+    // Return denied instead of throwing
+    return {
+      allowed: false,
+      reason: 'plan_not_supported',
+      remainingQuota: 0,
+      currentUsage: 0,
+      limit: 0,
+      planCode: 'starter',
+    };
   }
 
   // Only reconciliation and exceptions are tracked
   if (!['reconcile', 'exceptions'].includes(service)) {
-    throw new Error(`Invalid service code: ${service}. Only 'reconcile' and 'exceptions' are supported.`);
+    await safeLogger.error('[checkEntitlement] Invalid service code', {
+      billingAccountId,
+      service,
+    });
+    // Return denied instead of throwing
+    return {
+      allowed: false,
+      reason: 'plan_not_supported',
+      remainingQuota: 0,
+      currentUsage: 0,
+      limit: 0,
+      planCode: 'starter',
+    };
   }
 
   // Get plan code
@@ -104,10 +133,10 @@ export async function checkEntitlement(
   } catch (error) {
     // If usage calculation fails, log error and fail closed for paid plans
     // Fail open only for starter/free plans to avoid blocking legitimate users
-    // eslint-disable-next-line no-console
-    console.error('[Entitlements] Failed to get account usage:', {
+    await safeLogger.error('[Entitlements] Failed to get account usage', {
       billingAccountId,
       error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
     });
     
     // For starter plan, fail open (graceful degradation)
@@ -184,8 +213,7 @@ export async function canUseService(
   } catch (error) {
     // Fail closed on errors for paid features - log and deny access
     // This prevents abuse if entitlement system is down
-    // eslint-disable-next-line no-console
-    console.error('[Entitlements] Error checking service entitlement:', {
+    await safeLogger.error('[Entitlements] Error checking service entitlement', {
       billingAccountId,
       service,
       error: error instanceof Error ? error.message : 'Unknown error',

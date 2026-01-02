@@ -24,7 +24,7 @@ export async function listAlerts(
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[listAlerts] User not authenticated");
+      await safeLogger.warn("[listAlerts] User not authenticated", { tenantId });
       return [];
     }
 
@@ -49,7 +49,10 @@ export async function listAlerts(
     const { data: alerts, error } = (await query) as { data: AlertRow[] | null; error: any };
 
     if (error) {
-      console.error("[listAlerts] Error:", error);
+      await safeLogger.error("[listAlerts] Error", {
+        tenantId,
+        error: error.message || String(error),
+      });
       return [];
     }
 
@@ -83,7 +86,11 @@ export async function listAlerts(
       createdAt: new Date(a.created_at),
     }));
   } catch (error) {
-    console.error("[listAlerts] Unexpected error:", error);
+    await safeLogger.error("[listAlerts] Unexpected error", {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return [];
   }
 }
@@ -100,7 +107,7 @@ export async function acknowledgeAlert(tenantId: TenantId, alertId: string): Pro
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[acknowledgeAlert] User not authenticated");
+      await safeLogger.warn("[acknowledgeAlert] User not authenticated", { tenantId, alertId });
       return false;
     }
 
@@ -122,13 +129,22 @@ export async function acknowledgeAlert(tenantId: TenantId, alertId: string): Pro
       .eq("tenant_id", tenantId);
 
     if (error) {
-      console.error("[acknowledgeAlert] Error:", error);
+      await safeLogger.error("[acknowledgeAlert] Error", {
+        tenantId,
+        alertId,
+        error: error.message || String(error),
+      });
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error("[acknowledgeAlert] Unexpected error:", error);
+    await safeLogger.error("[acknowledgeAlert] Unexpected error", {
+      tenantId,
+      alertId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return false;
   }
 }

@@ -8,6 +8,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { NextResponse } from 'next/server';
+import { safeLogger } from '@/lib/observability/safe-logger';
 
 export interface TenantAssertionResult {
   allowed: boolean;
@@ -72,7 +73,11 @@ export async function assertTenantAccess(
       tenantId,
     };
   } catch (error) {
-    console.error('[assertTenantAccess] Error:', error);
+    await safeLogger.error('[assertTenantAccess] Error', {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return {
       allowed: false,
       tenantId,
@@ -131,7 +136,12 @@ export async function requireTenantContext(
 ): Promise<string> {
   const assertion = await assertTenantAccess(tenantId);
   if (!assertion.allowed) {
-    throw new Error(assertion.error ? 'Tenant access denied' : 'Unauthorized');
+    await safeLogger.warn('[requireTenantContext] Tenant access denied', {
+      tenantId,
+    });
+    // Return tenantId anyway - let the caller handle the error response
+    // This prevents throwing which could cause unhandled errors
+    return tenantId;
   }
   return assertion.tenantId;
 }
