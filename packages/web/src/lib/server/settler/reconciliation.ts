@@ -80,8 +80,90 @@ export async function runReconciliation(
       return null;
     }
 
+    // Get transactions for matching
+    // For 10% scope: match transactions from ingestion source against receipts
+    const { prisma } = await import("@/shared/db/prismaClient");
+    
+    // Get source transactions (from the ingestion source)
+    const sourceTransactions = await prisma.normalizedTransaction.findMany({
+      where: {
+        tenantId,
+        sourceId: params.sourceId,
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    // Get target transactions (receipts - from different source or same source with different type)
+    // For 10% scope, we'll match against receipts uploaded separately
+    // In production, this would be configurable (bank vs receipts, etc.)
+    const targetTransactions = await prisma.normalizedTransaction.findMany({
+      where: {
+        tenantId,
+        sourceId: { not: params.sourceId }, // Different source (e.g., receipts)
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    // Run deterministic matching
+    const { runDeterministicMatching } = await import("@/lib/reconciliation/deterministic-matcher");
+    
+    const matchResult = await runDeterministicMatching(
+      tenantId,
+      result.id,
+      sourceTransactions.map(t => ({
+        id: t.id,
+        amount: Number(t.amount),
+        date: t.date,
+        description: t.description,
+        currency: t.currency,
+      })),
+      targetTransactions.map(t => ({
+        id: t.id,
+        amount: Number(t.amount),
+        date: t.date,
+        description: t.description,
+        currency: t.currency,
+      })),
+      {
+        amountTolerance: params.rules?.find(r => r.field === 'amount')?.tolerance || 0.01,
+        dateWindowDays: params.rules?.find(r => r.field === 'date')?.window ? 
+          parseInt(params.rules.find(r => r.field === 'date')!.window!.replace('days', '')) : 3,
+        requireExactMerchant: true,
+      }
+    );
+
+    // Update reconciliation run with results
+    const totalAmountSource = sourceTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+    const totalAmountTarget = targetTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+    const matchedAmount = matchResult.matches
+      .filter(m => m.matchType !== 'unmatched')
+      .reduce((sum, m) => {
+        const sourceTx = sourceTransactions.find(t => t.id === m.sourceTransactionId);
+        return sum + (sourceTx ? Number(sourceTx.amount) : 0);
+      }, 0);
+
+    await prisma.reconciliationRun.update({
+      where: { id: result.id },
+      data: {
+        status: 'completed',
+        completedAt: new Date(),
+        sourceCount: sourceTransactions.length,
+        targetCount: targetTransactions.length,
+        matchedCount: matchResult.matchedCount,
+        unmatchedSourceCount: matchResult.unmatchedCount,
+        unmatchedTargetCount: targetTransactions.length - matchResult.matchedCount,
+        totalAmountSource,
+        totalAmountTarget,
+        totalAmountMatched: matchedAmount,
+        totalAmountUnmatched: totalAmountSource - matchedAmount,
+        currency: sourceTransactions[0]?.currency || 'USD',
+        confidenceAvg: matchResult.matches.length > 0
+          ? matchResult.matches.reduce((sum, m) => sum + m.confidence, 0) / matchResult.matches.length
+          : null,
+      },
+    });
+
     // Track usage: Reconciliation job execution
-    // Note: Actual transaction count will be tracked when result completes
     try {
       const { trackReconciliationTransaction } = await import("@/middleware/usage-tracking");
       // Get billing account from tenant
@@ -98,7 +180,7 @@ export async function runReconciliation(
           billingAccount.id,
           tenantId,
           billingAccount.user_id,
-          1, // Job execution = 1 usage event (will update with actual count on completion)
+          sourceTransactions.length, // Track actual transaction count
           params.sourceId
         );
       }
@@ -107,16 +189,15 @@ export async function runReconciliation(
       console.error("[runReconciliation] Usage tracking failed:", usageError);
     }
 
-    // In production, this would trigger actual reconciliation processing
-    // For now, return a summary with the result ID
+    // Return summary
     return {
       id: result.id,
       tenantId,
       sourceId: params.sourceId,
-      status: "running",
-      totalDelta: 0,
-      currency: "USD",
-      mismatchCount: 0,
+      status: "completed",
+      totalDelta: totalAmountSource - totalAmountTarget,
+      currency: sourceTransactions[0]?.currency || "USD",
+      mismatchCount: matchResult.unmatchedCount,
       startedAt: new Date(result.started_at),
     };
   } catch (error) {
