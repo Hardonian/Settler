@@ -5,7 +5,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { safeLogger } from '@/lib/observability/safe-logger';
 import { prisma } from '@/shared/db/prismaClient';
 import { logger } from '@/lib/observability/logger';
 

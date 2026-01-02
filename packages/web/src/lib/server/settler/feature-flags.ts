@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { FlagKey, FlagValue, TenantId } from "@/lib/domain/types";
 import { FLAG_REGISTRY } from "@/lib/flags/registry";
 import type { Database } from "@/types/database.types";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 /**
  * Get feature flags for a tenant

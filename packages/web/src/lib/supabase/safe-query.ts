@@ -44,7 +44,7 @@ export async function safeQuery<T>(
         errorMessage.includes('does not exist') ||
         errorMessage.includes('relation') && errorMessage.includes('does not exist')
       ) {
-        await safeLogger.debug('[SafeQuery] Table does not exist, returning empty result', { table });
+        await safeLogger.debug('[SafeQuery] Table does not exist, returning empty result', { errorCode, errorMessage });
         return {
           data: defaultValue,
           error: null, // Don't treat missing table as error
@@ -59,7 +59,7 @@ export async function safeQuery<T>(
         errorMessage.includes('permission denied') ||
         errorMessage.includes('RLS')
       ) {
-        await safeLogger.debug('[SafeQuery] Permission denied by RLS, returning empty result', { table });
+        await safeLogger.debug('[SafeQuery] Permission denied by RLS, returning empty result', { errorCode, errorMessage });
         return {
           data: defaultValue,
           error: null, // RLS blocks are expected, not errors
@@ -106,7 +106,6 @@ export async function safeQuery<T>(
     // Unexpected error - log but don't throw
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     await safeLogger.error('[SafeQuery] Unexpected error', {
-      table,
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
     });

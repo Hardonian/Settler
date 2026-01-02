@@ -6,6 +6,7 @@
 
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { safeLogger } from '@/lib/observability/safe-logger';
 
 // Import billing hardening functions - handle both direct import and dynamic import
 let checkEntitlements: any;

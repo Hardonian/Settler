@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createHash } from "crypto";
 import type { Receipt, TenantId, Evidence } from "@/lib/domain/types";
 import type { Database } from "@/types/database.types";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 /**
  * Canonicalize JSON for stable hashing

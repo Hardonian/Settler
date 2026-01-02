@@ -96,27 +96,36 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
         userId = auth.userId || null;
       } else {
         // Try Supabase auth as fallback (graceful degradation)
-      try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          userId = user.id;
-          // Get tenant from billing account
-          const billingAccount = await prisma.billingAccount.findFirst({
-            where: { userId: user.id },
-            select: { tenantId: true },
-          });
-          tenantId = billingAccount?.tenantId || null;
+        try {
+          const supabase = await createClient();
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            userId = user.id;
+            // Get tenant from billing account
+            const billingAccount = await prisma.billingAccount.findFirst({
+              where: { userId: user.id },
+              select: { tenantId: true },
+            });
+            tenantId = billingAccount?.tenantId || null;
+          }
+        } catch (supabaseError) {
+          return NextResponse.json(
+            {
+              error: 'Unauthorized',
+              message: 'Authentication required',
+            },
+            { status: 401 }
+          );
         }
-      } catch (supabaseError) {
-        return NextResponse.json(
-          {
-            error: 'Unauthorized',
-            message: 'Authentication required',
-          },
-          { status: 401 }
-        );
       }
+    } catch (authError) {
+      return NextResponse.json(
+        {
+          error: 'Unauthorized',
+          message: 'Authentication required',
+        },
+        { status: 401 }
+      );
     }
 
     if (!tenantId || !userId) {

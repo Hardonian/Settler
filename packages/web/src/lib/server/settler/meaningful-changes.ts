@@ -13,6 +13,7 @@ import {
   getSourceReliabilityScore,
 } from "@/lib/judgment/rules";
 import type { Database } from "@/types/database.types";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 export interface MeaningfulChangesFilters {
   severity?: "info" | "warning" | "critical";
