@@ -1,6 +1,0 @@
-<svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="40" height="40" rx="8" transform="translate(5 5)" fill="#2563EB"/>
-<path d="M25 15L15 25L25 35" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M35 15L25 25L35 35" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="55" y="32" font-family="Inter, sans-serif" font-size="24" font-weight="bold" fill="#0F172A">Settler</text>
-</svg>
