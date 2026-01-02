@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, AlertCircle, Clock } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
 interface DiagnosticItem {
@@ -24,7 +24,7 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
   // Check Supabase connection
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('tenants').select('id').limit(1);
+    const { error } = await supabase.from('tenants').select('id').limit(1);
     if (error) throw error;
     diagnostics.push({
       name: 'Supabase Connection',

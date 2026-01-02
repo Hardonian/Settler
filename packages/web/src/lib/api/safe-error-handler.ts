@@ -21,8 +21,8 @@ export interface SafeErrorResponse {
  * Normalize errors to safe responses
  * Never throws - always returns NextResponse
  */
-export function normalizeError(error: unknown, context?: string): NextResponse<SafeErrorResponse> {
-  const traceId = getTraceId();
+export async function normalizeError(error: unknown, context?: string): Promise<NextResponse<SafeErrorResponse>> {
+  const traceId = await getTraceId();
   
   // Log error for observability
   const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -122,7 +122,7 @@ export function safeRouteHandler<T extends (...args: any[]) => Promise<NextRespo
     try {
       return await handler(...args);
     } catch (error) {
-      return normalizeError(error, context);
+      return await normalizeError(error, context);
     }
   }) as T;
 }
@@ -140,7 +140,7 @@ export async function safeServerAction<T>(
     return { success: true, data };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const traceId = getTraceId();
+    const traceId = await getTraceId();
     
     logger.error(`Server Action Error${context ? ` in ${context}` : ''}`, {
       trace_id: traceId,
