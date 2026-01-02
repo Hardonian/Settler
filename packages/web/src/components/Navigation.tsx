@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -15,29 +15,29 @@ import { getImageUrl } from "@/lib/images/image-config";
 // Primary navigation items (always visible on desktop)
 const getPrimaryNavigationItems = (isAuthenticated: boolean) => {
   const items = [
-    { href: '/playground', label: 'Playground' },
-    { href: '/docs', label: 'Docs' },
-    { href: '/pricing', label: 'Pricing' },
+    { href: "/playground", label: "Playground" },
+    { href: "/docs", label: "Docs" },
+    { href: "/pricing", label: "Pricing" },
   ];
-  
+
   // Only show Console if user is authenticated
   if (isAuthenticated) {
-    items.unshift({ href: '/console', label: 'Console' });
+    items.unshift({ href: "/console", label: "Console" });
   }
-  
+
   return items;
 };
 
 // Secondary navigation items (in "More" dropdown on desktop, accordion on mobile)
 const secondaryNavigationItems = [
-  { href: '/cookbooks', label: 'Cookbooks' },
-  { href: '/runbooks', label: 'Runbooks' },
-  { href: '/schematics', label: 'Schematics' },
-  { href: '/receipts', label: 'Receipts API' },
-  { href: '/feature-flags', label: 'Feature Flags' },
-  { href: '/enterprise', label: 'Enterprise' },
-  { href: '/community', label: 'Community' },
-  { href: '/support', label: 'Support' },
+  { href: "/cookbooks", label: "Cookbooks" },
+  { href: "/runbooks", label: "Runbooks" },
+  { href: "/schematics", label: "Schematics" },
+  { href: "/receipts", label: "Receipts API" },
+  { href: "/feature-flags", label: "Feature Flags" },
+  { href: "/enterprise", label: "Enterprise" },
+  { href: "/community", label: "Community" },
+  { href: "/support", label: "Support" },
 ];
 
 export function Navigation() {
@@ -47,24 +47,24 @@ export function Navigation() {
   const menuRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, loading } = useAuth();
-  
+
   // Get navigation items based on auth status
   const primaryNavigationItems = getPrimaryNavigationItems(isAuthenticated);
-  
+
   // Close "More" menu when clicking outside
   useEffect(() => {
     if (!moreMenuOpen) return;
-    
+
     const handleClickOutside = (event: MouseEvent) => {
       if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
         setMoreMenuOpen(false);
       }
     };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [moreMenuOpen]);
-  
+
   // Close "More" menu on route change
   useEffect(() => {
     setMoreMenuOpen(false);
@@ -87,7 +87,7 @@ export function Navigation() {
 
     // Trap focus within menu
     const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
 
       const focusableElements = menu.querySelectorAll(
         'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -108,10 +108,10 @@ export function Navigation() {
       }
     };
 
-    document.addEventListener('keydown', handleTabKey);
+    document.addEventListener("keydown", handleTabKey);
     return () => {
       clearTimeout(timer);
-      document.removeEventListener('keydown', handleTabKey);
+      document.removeEventListener("keydown", handleTabKey);
     };
   }, [mobileMenuOpen]);
 
@@ -119,10 +119,10 @@ export function Navigation() {
     <>
       <nav
         className={cn(
-          'fixed top-0 left-0 right-0 w-full z-[100]',
-          'bg-background/80 backdrop-blur-lg',
-          'border-b border-border',
-          'supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]'
+          "fixed top-0 left-0 right-0 w-full z-[100]",
+          "bg-background/80 backdrop-blur-lg",
+          "border-b border-border",
+          "supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]"
         )}
         role="navigation"
         aria-label="Main navigation"
@@ -132,15 +132,15 @@ export function Navigation() {
             <Link
               href="/"
               className={cn(
-                'flex items-center flex-shrink-0',
-                'transition-transform hover:scale-105',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                'rounded'
+                "flex items-center flex-shrink-0",
+                "transition-transform hover:scale-105",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                "rounded"
               )}
               aria-label="Settler homepage"
             >
               <Image
-                src={getImageUrl('logoMain', undefined, true)}
+                src={getImageUrl("logoMain", undefined, true)}
                 alt="Settler Logo"
                 width={130}
                 height={34}
@@ -150,11 +150,14 @@ export function Navigation() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 flex-shrink-0" aria-label="Desktop navigation">
+            <nav
+              className="hidden lg:flex items-center gap-6 xl:gap-8 flex-shrink-0"
+              aria-label="Desktop navigation"
+            >
               {loading ? (
                 // Show placeholder while loading auth state
                 <>
-                  {['Playground', 'Docs', 'Pricing'].map((label) => (
+                  {["Playground", "Docs", "Pricing"].map((label) => (
                     <div
                       key={label}
                       className="text-sm xl:text-base text-muted-foreground whitespace-nowrap rounded px-2 py-1"
@@ -168,52 +171,56 @@ export function Navigation() {
                 <>
                   {/* Primary navigation items */}
                   {primaryNavigationItems.map((item) => {
-                    const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                    const isActive =
+                      pathname === item.href || pathname?.startsWith(item.href + "/");
                     return (
                       <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                          'text-sm xl:text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap',
-                          isActive && 'text-primary-600 dark:text-primary-400 font-medium',
-                          'transition-colors duration-200 ease-out',
-                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                          'focus-visible:ring-offset-background',
-                          'rounded px-2 py-1',
-                          'motion-reduce:transition-none'
+                          "text-sm xl:text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap",
+                          isActive && "text-primary-600 dark:text-primary-400 font-medium",
+                          "transition-colors duration-200 ease-out",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                          "focus-visible:ring-offset-background",
+                          "rounded px-2 py-1",
+                          "motion-reduce:transition-none"
                         )}
-                        aria-current={isActive ? 'page' : undefined}
+                        aria-current={isActive ? "page" : undefined}
                       >
                         {item.label}
                       </Link>
                     );
                   })}
-                  
+
                   {/* More dropdown menu */}
                   <div className="relative" ref={moreMenuRef}>
                     <button
                       type="button"
                       onClick={() => setMoreMenuOpen(!moreMenuOpen)}
                       className={cn(
-                        'text-sm xl:text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap',
-                        'transition-colors duration-200 ease-out',
-                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                        'focus-visible:ring-offset-background',
-                        'rounded px-2 py-1 flex items-center gap-1',
-                        'motion-reduce:transition-none',
-                        moreMenuOpen && 'text-primary-600 dark:text-primary-400'
+                        "text-sm xl:text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap",
+                        "transition-colors duration-200 ease-out",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                        "focus-visible:ring-offset-background",
+                        "rounded px-2 py-1 flex items-center gap-1",
+                        "motion-reduce:transition-none",
+                        moreMenuOpen && "text-primary-600 dark:text-primary-400"
                       )}
                       aria-expanded={moreMenuOpen}
                       aria-haspopup="true"
                       aria-label="More navigation options"
                     >
                       More
-                      <ChevronDown className={cn(
-                        'w-4 h-4 transition-transform duration-200',
-                        moreMenuOpen && 'rotate-180'
-                      )} aria-hidden="true" />
+                      <ChevronDown
+                        className={cn(
+                          "w-4 h-4 transition-transform duration-200",
+                          moreMenuOpen && "rotate-180"
+                        )}
+                        aria-hidden="true"
+                      />
                     </button>
-                    
+
                     {/* Dropdown menu */}
                     {moreMenuOpen && (
                       <div
@@ -222,20 +229,22 @@ export function Navigation() {
                         aria-orientation="vertical"
                       >
                         {secondaryNavigationItems.map((item) => {
-                          const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                          const isActive =
+                            pathname === item.href || pathname?.startsWith(item.href + "/");
                           return (
                             <Link
                               key={item.href}
                               href={item.href}
                               className={cn(
-                                'block px-4 py-2 text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent',
-                                isActive && 'text-primary-600 dark:text-primary-400 font-medium bg-accent/50',
-                                'transition-colors duration-150 ease-out',
-                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset'
+                                "block px-4 py-2 text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent",
+                                isActive &&
+                                  "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
+                                "transition-colors duration-150 ease-out",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                               )}
                               role="menuitem"
                               onClick={() => setMoreMenuOpen(false)}
-                              aria-current={isActive ? 'page' : undefined}
+                              aria-current={isActive ? "page" : undefined}
                             >
                               {item.label}
                             </Link>
@@ -246,28 +255,26 @@ export function Navigation() {
                   </div>
                 </>
               )}
-              
+
               {/* Right side actions */}
               <div className="flex items-center gap-3 ml-2">
                 <DarkModeToggle />
-                <Button
-                  asChild
-                  variant="default"
-                  size="default"
-                  className="whitespace-nowrap"
-                >
+                <Button asChild variant="default" size="default" className="whitespace-nowrap">
                   <Link href="/console/playground" aria-label="Get started with Settler">
                     Get Started
                   </Link>
                 </Button>
               </div>
             </nav>
-            
+
             {/* Tablet Navigation (md breakpoint) - Simplified */}
-            <nav className="hidden md:flex lg:hidden items-center gap-4 flex-shrink-0" aria-label="Tablet navigation">
+            <nav
+              className="hidden md:flex lg:hidden items-center gap-4 flex-shrink-0"
+              aria-label="Tablet navigation"
+            >
               {loading ? (
                 <>
-                  {['Playground', 'Docs', 'Pricing'].map((label) => (
+                  {["Playground", "Docs", "Pricing"].map((label) => (
                     <div
                       key={label}
                       className="text-sm text-muted-foreground whitespace-nowrap rounded px-2 py-1"
@@ -280,19 +287,20 @@ export function Navigation() {
               ) : (
                 <>
                   {primaryNavigationItems.slice(0, 3).map((item) => {
-                    const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                    const isActive =
+                      pathname === item.href || pathname?.startsWith(item.href + "/");
                     return (
                       <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                          'text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap',
-                          isActive && 'text-primary-600 dark:text-primary-400 font-medium',
-                          'transition-colors duration-200 ease-out',
-                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                          'rounded px-2 py-1'
+                          "text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap",
+                          isActive && "text-primary-600 dark:text-primary-400 font-medium",
+                          "transition-colors duration-200 ease-out",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                          "rounded px-2 py-1"
                         )}
-                        aria-current={isActive ? 'page' : undefined}
+                        aria-current={isActive ? "page" : undefined}
                       >
                         {item.label}
                       </Link>
@@ -302,12 +310,7 @@ export function Navigation() {
               )}
               <div className="flex items-center gap-2 ml-2">
                 <DarkModeToggle />
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="whitespace-nowrap"
-                >
+                <Button asChild variant="default" size="sm" className="whitespace-nowrap">
                   <Link href="/console/playground">Get Started</Link>
                 </Button>
               </div>
@@ -320,12 +323,12 @@ export function Navigation() {
                 <SheetTrigger asChild>
                   <button
                     className={cn(
-                      'p-2 rounded-md min-w-[44px] min-h-[44px] flex items-center justify-center',
-                      'text-muted-foreground hover:bg-muted',
-                      'transition-colors duration-200 ease-out',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                      'focus-visible:ring-offset-background',
-                      'motion-reduce:transition-none'
+                      "p-2 rounded-md min-w-[44px] min-h-[44px] flex items-center justify-center",
+                      "text-muted-foreground hover:bg-muted",
+                      "transition-colors duration-200 ease-out",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      "focus-visible:ring-offset-background",
+                      "motion-reduce:transition-none"
                     )}
                     aria-label="Open menu"
                     aria-expanded={mobileMenuOpen}
@@ -349,7 +352,7 @@ export function Navigation() {
                       {loading ? (
                         // Show placeholder while loading
                         <>
-                          {['Playground', 'Docs', 'Pricing'].map((label) => (
+                          {["Playground", "Docs", "Pricing"].map((label) => (
                             <div
                               key={label}
                               className="text-base text-muted-foreground rounded-lg px-4 py-3 min-h-[48px] flex items-center"
@@ -361,61 +364,68 @@ export function Navigation() {
                         </>
                       ) : (
                         primaryNavigationItems.map((item) => {
-                        const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
-                        return (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                              'text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
-                              isActive && 'text-primary-600 dark:text-primary-400 font-medium bg-accent/50',
-                              'transition-colors duration-200 ease-out',
-                              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                              'focus-visible:ring-offset-background',
-                              'rounded-lg px-4 py-3 min-h-[48px] flex items-center',
-                              'hover:bg-accent/50',
-                              'motion-reduce:transition-none'
-                            )}
-                            onClick={() => setMobileMenuOpen(false)}
-                            aria-current={isActive ? 'page' : undefined}
-                          >
-                            {item.label}
-                          </Link>
-                        );
-                      })
+                          const isActive =
+                            pathname === item.href || pathname?.startsWith(item.href + "/");
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              className={cn(
+                                "text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400",
+                                isActive &&
+                                  "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
+                                "transition-colors duration-200 ease-out",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                                "focus-visible:ring-offset-background",
+                                "rounded-lg px-4 py-3 min-h-[48px] flex items-center",
+                                "hover:bg-accent/50",
+                                "motion-reduce:transition-none"
+                              )}
+                              onClick={() => setMobileMenuOpen(false)}
+                              aria-current={isActive ? "page" : undefined}
+                            >
+                              {item.label}
+                            </Link>
+                          );
+                        })
                       )}
                     </nav>
-                    
+
                     {/* Secondary Navigation */}
-                    <nav className="flex flex-col space-y-1 pt-6 border-t border-border" aria-label="Mobile secondary navigation">
+                    <nav
+                      className="flex flex-col space-y-1 pt-6 border-t border-border"
+                      aria-label="Mobile secondary navigation"
+                    >
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 mb-2">
                         More
                       </p>
                       {secondaryNavigationItems.map((item) => {
-                        const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                        const isActive =
+                          pathname === item.href || pathname?.startsWith(item.href + "/");
                         return (
                           <Link
                             key={item.href}
                             href={item.href}
                             className={cn(
-                              'text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400',
-                              isActive && 'text-primary-600 dark:text-primary-400 font-medium bg-accent/50',
-                              'transition-colors duration-200 ease-out',
-                              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                              'focus-visible:ring-offset-background',
-                              'rounded-lg px-4 py-3 min-h-[48px] flex items-center',
-                              'hover:bg-accent/50',
-                              'motion-reduce:transition-none'
+                              "text-base text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400",
+                              isActive &&
+                                "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
+                              "transition-colors duration-200 ease-out",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                              "focus-visible:ring-offset-background",
+                              "rounded-lg px-4 py-3 min-h-[48px] flex items-center",
+                              "hover:bg-accent/50",
+                              "motion-reduce:transition-none"
                             )}
                             onClick={() => setMobileMenuOpen(false)}
-                            aria-current={isActive ? 'page' : undefined}
+                            aria-current={isActive ? "page" : undefined}
                           >
                             {item.label}
                           </Link>
                         );
                       })}
                     </nav>
-                    
+
                     <div className="pt-4 border-t border-border">
                       <Button
                         asChild
@@ -436,7 +446,10 @@ export function Navigation() {
         </div>
       </nav>
       {/* Spacer to prevent content from going under fixed header */}
-      <div className="h-16 supports-[padding:max(0px)]:h-[calc(4rem+env(safe-area-inset-top))]" aria-hidden="true" />
+      <div
+        className="h-16 supports-[padding:max(0px)]:h-[calc(4rem+env(safe-area-inset-top))]"
+        aria-hidden="true"
+      />
     </>
   );
 }
