@@ -1,5 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import { StatusIndicator } from "@/components/monitoring/StatusIndicator";
+import { getImageUrl } from "@/lib/images/image-config";
 
 export function Footer() {
   return (
@@ -13,12 +15,14 @@ export function Footer() {
               className="flex items-center space-x-2 mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
               aria-label="Settler homepage"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-electric-indigo rounded-lg flex items-center justify-center" aria-hidden="true">
-                <span className="text-white font-bold text-lg">S</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-electric-indigo bg-clip-text text-transparent">
-                Settler
-              </span>
+              <Image
+                src={getImageUrl('logoMain', undefined, true)}
+                alt="Settler Logo"
+                width={130}
+                height={34}
+                className="h-8 w-auto"
+                priority
+              />
             </Link>
             <p className="text-sm text-muted-foreground">
               Reconciliation-as-a-Service API. Automate financial data reconciliation across all platforms.

@@ -17,6 +17,7 @@ export interface ImageConfig {
   alt: string;
   category: ImageCategory;
   mimeType: string;
+  webpPath?: string; // Optional WebP version for better performance
 }
 
 /**
@@ -26,28 +27,31 @@ export interface ImageConfig {
 const SETTLER_IMAGES_CONFIG = {
   // Favicons
   favicon: {
-    path: '/assets/images/favicons/favicon.svg',
-    width: 64,
-    height: 64,
+    path: '/assets/images/settler-favicon.png',
+    width: 680,
+    height: 680,
     alt: 'Settler Favicon',
     category: 'favicon' as const,
-    mimeType: 'image/svg+xml',
+    mimeType: 'image/png',
+    webpPath: '/assets/images/settler-favicon.webp',
   },
   favicon192: {
-    path: '/assets/images/favicons/favicon.svg',
+    path: '/assets/images/settler-favicon.png',
     width: 192,
     height: 192,
     alt: 'Settler Icon 192x192',
     category: 'favicon' as const,
-    mimeType: 'image/svg+xml',
+    mimeType: 'image/png',
+    webpPath: '/assets/images/settler-favicon.webp',
   },
   favicon512: {
-    path: '/assets/images/favicons/favicon.svg',
+    path: '/assets/images/settler-favicon.png',
     width: 512,
     height: 512,
     alt: 'Settler Icon 512x512',
     category: 'favicon' as const,
-    mimeType: 'image/svg+xml',
+    mimeType: 'image/png',
+    webpPath: '/assets/images/settler-favicon.webp',
   },
 
   // Social Media Images
@@ -70,12 +74,22 @@ const SETTLER_IMAGES_CONFIG = {
 
   // Logos
   logoMain: {
-    path: '/assets/images/logos/settler-logo.svg',
-    width: 200,
-    height: 50,
+    path: '/assets/images/Settler-logo.png',
+    width: 1303,
+    height: 339,
     alt: 'Settler Logo',
     category: 'logo' as const,
-    mimeType: 'image/svg+xml',
+    mimeType: 'image/png',
+    webpPath: '/assets/images/Settler-logo.webp',
+  },
+  logoSEO: {
+    path: '/assets/images/Settler_seo.png',
+    width: 1073,
+    height: 357,
+    alt: 'Settler SEO Logo',
+    category: 'logo' as const,
+    mimeType: 'image/png',
+    webpPath: '/assets/images/Settler_seo.webp',
   },
 
   // Thumbnails
@@ -105,10 +119,12 @@ export function getImageConfig(key: keyof typeof SETTLER_IMAGES): ImageConfig {
 /**
  * Get full URL for an image
  */
-export function getImageUrl(key: keyof typeof SETTLER_IMAGES, baseUrl?: string): string {
+export function getImageUrl(key: keyof typeof SETTLER_IMAGES, baseUrl?: string, preferWebP: boolean = false): string {
   const config = getImageConfig(key);
   const base = baseUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev';
-  return `${base}${config.path}`;
+  // Use WebP if available and preferred (for better performance)
+  const imagePath = preferWebP && config.webpPath ? config.webpPath : config.path;
+  return `${base}${imagePath}`;
 }
 
 /**

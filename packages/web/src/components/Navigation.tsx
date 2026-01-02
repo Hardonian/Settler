@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { getImageUrl } from "@/lib/images/image-config";
 
 // Primary navigation items (always visible on desktop)
 const getPrimaryNavigationItems = (isAuthenticated: boolean) => {
@@ -130,28 +132,21 @@ export function Navigation() {
             <Link
               href="/"
               className={cn(
-                'flex items-center space-x-2 flex-shrink-0',
+                'flex items-center flex-shrink-0',
                 'transition-transform hover:scale-105',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 'rounded'
               )}
               aria-label="Settler homepage"
             >
-              <div
-                className={cn(
-                  'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
-                  'bg-gradient-to-br from-primary-600 to-electric-indigo'
-                )}
-                aria-hidden="true"
-              >
-                <span className="text-white font-bold text-lg">S</span>
-              </div>
-              <span className={cn(
-                'text-xl font-bold whitespace-nowrap',
-                'bg-gradient-to-r from-primary-600 to-electric-indigo bg-clip-text text-transparent'
-              )}>
-                Settler
-              </span>
+              <Image
+                src={getImageUrl('logoMain', undefined, true)}
+                alt="Settler Logo"
+                width={130}
+                height={34}
+                className="h-8 w-auto"
+                priority
+              />
             </Link>
 
             {/* Desktop Navigation */}

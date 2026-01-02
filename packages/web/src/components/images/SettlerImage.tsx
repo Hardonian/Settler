@@ -6,7 +6,7 @@
  */
 
 import Image from 'next/image';
-import { getImageConfig, type SettlerImageKey } from '@/lib/images/image-config';
+import { getImageConfig, getImageUrl, type SettlerImageKey } from '@/lib/images/image-config';
 import { type ImageProps } from 'next/image';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,7 @@ interface SettlerImageProps extends Omit<ImageProps, 'src' | 'alt' | 'width' | '
   className?: string;
   priority?: boolean;
   responsive?: boolean; // Enable responsive behavior (default: true)
+  preferWebP?: boolean; // Use WebP version if available (default: true for better performance)
 }
 
 /**
@@ -34,9 +35,12 @@ export function SettlerImage({
   className,
   priority = false,
   responsive = true,
+  preferWebP = true,
   ...props
 }: SettlerImageProps) {
   const config = getImageConfig(imageKey);
+  // Use WebP if available and preferred for better performance
+  const imageSrc = preferWebP && config.webpPath ? config.webpPath : config.path;
 
   const responsiveClasses = responsive
     ? 'w-full h-auto max-w-full object-contain md:object-cover'
@@ -45,7 +49,7 @@ export function SettlerImage({
   return (
     <div className={cn('relative overflow-hidden', responsive && 'w-full')}>
       <Image
-        src={config.path}
+        src={imageSrc}
         alt={config.alt}
         width={config.width}
         height={config.height}
