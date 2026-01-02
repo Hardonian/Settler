@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Alert, TenantId } from "@/lib/domain/types";
 import { generateExplanation } from "@/lib/judgment/rules";
 import type { Database } from "@/types/database.types";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 /**
  * List alerts for a tenant

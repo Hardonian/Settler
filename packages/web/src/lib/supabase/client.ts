@@ -11,6 +11,7 @@
 import { createBrowserClient } from '@supabase/ssr';
 import { Database } from '@/types/database.types';
 import { validateSupabaseEnv } from '@/lib/env/validator';
+import { safeLogger } from '@/lib/observability/safe-logger';
 
 /**
  * Get Supabase browser client for client-side operations

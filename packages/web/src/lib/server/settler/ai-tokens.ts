@@ -9,6 +9,7 @@ import type { TenantId } from "@/lib/domain/types";
 import type { Database } from "@/types/database.types";
 import { prisma } from "@/shared/db/prismaClient";
 import { determineSubscriptionTier, type SubscriptionTier } from "@/lib/subscription-access";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 export interface TokenUsage {
   used: number;
