@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getImageUrl } from "@/lib/images/image-config";
+import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 // Primary navigation items (always visible on desktop)
 const getPrimaryNavigationItems = (isAuthenticated: boolean) => {
@@ -135,18 +135,31 @@ export function Navigation() {
                 "flex items-center flex-shrink-0",
                 "transition-transform hover:scale-105",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                "rounded"
+                "rounded relative group"
               )}
               aria-label="Settler homepage"
             >
-              <Image
-                src={getImageUrl("logoMain", undefined, true)}
-                alt="Settler Logo"
-                width={130}
-                height={34}
-                className="h-8 w-auto"
-                priority
-              />
+              <div className="relative overflow-hidden rounded">
+                <Image
+                  src={SETTLER_IMAGES.logoMain.webpPath || SETTLER_IMAGES.logoMain.path}
+                  alt="Settler Logo"
+                  width={130}
+                  height={34}
+                  className="h-8 w-auto relative z-10 transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg"
+                  priority
+                  onError={(e) => {
+                    // Fallback to PNG if WebP fails
+                    const target = e.target as HTMLImageElement;
+                    if (target.src.includes(".webp")) {
+                      target.src = SETTLER_IMAGES.logoMain.path;
+                    }
+                  }}
+                />
+                {/* Shine effect overlay */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-shine" />
+                </div>
+              </div>
             </Link>
 
             {/* Desktop Navigation */}

@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Shine animation for logo */
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
+  }
+}
+
+.animate-shine {
+  animation: shine 2s ease-in-out infinite;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -41,11 +55,11 @@
   .glass {
     @apply backdrop-blur-md bg-white/40 dark:bg-white/5 border border-slate-200/60 dark:border-white/5;
   }
-  
+
   .glass-strong {
     @apply backdrop-blur-lg bg-white/60 dark:bg-white/10 border border-slate-200/70 dark:border-white/10;
   }
-  
+
   .glass-subtle {
     @apply backdrop-blur-sm bg-white/30 dark:bg-white/5 border border-slate-200/50 dark:border-white/5;
   }
@@ -55,7 +69,7 @@
   * {
     @apply border-border;
   }
-  
+
   html {
     /* Prevent horizontal scroll on mobile */
     overflow-x: hidden;
@@ -63,11 +77,17 @@
     /* Fluid typography base - scales with viewport */
     font-size: clamp(14px, 1.5vw + 0.5rem, 16px);
   }
-  
+
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family:
+      var(--font-inter),
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
     /* Typography: enforce minimum line-height for readability */
     line-height: 1.5;
     /* Prevent horizontal scroll */
@@ -76,55 +96,73 @@
     /* Ensure content doesn't overflow */
     position: relative;
   }
-  
+
   /* Typography: Ensure all text elements have minimum line-height and proper wrapping */
-  p, span, div, li, td, th, label, input, textarea, select, button {
+  p,
+  span,
+  div,
+  li,
+  td,
+  th,
+  label,
+  input,
+  textarea,
+  select,
+  button {
     line-height: 1.5;
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
-  
+
   /* Fluid heading typography - scales smoothly from mobile to desktop */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     line-height: 1.4;
     /* Prevent text overflow */
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
-  
+
   /* Fluid heading sizes using clamp for responsive scaling */
   h1 {
     font-size: clamp(1.875rem, 5vw + 0.5rem, 3rem); /* 30px - 48px */
   }
-  
+
   h2 {
     font-size: clamp(1.5rem, 4vw + 0.5rem, 2.25rem); /* 24px - 36px */
   }
-  
+
   h3 {
     font-size: clamp(1.25rem, 3vw + 0.5rem, 1.875rem); /* 20px - 30px */
   }
-  
+
   h4 {
     font-size: clamp(1.125rem, 2vw + 0.5rem, 1.5rem); /* 18px - 24px */
   }
-  
+
   h5 {
     font-size: clamp(1rem, 1.5vw + 0.5rem, 1.25rem); /* 16px - 20px */
   }
-  
+
   h6 {
     font-size: clamp(0.875rem, 1vw + 0.5rem, 1rem); /* 14px - 16px */
   }
-  
+
   /* Code elements: Use mono font stack with fluid sizing */
-  code, pre, kbd, samp {
-    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: "JetBrains Mono", "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
     line-height: 1.5;
     /* Fluid code font size */
     font-size: clamp(0.8125rem, 1vw + 0.25rem, 0.875rem); /* 13px - 14px */
   }
-  
+
   /* Ensure code blocks don't overflow - mobile-friendly */
   pre {
     overflow-x: auto;
@@ -136,31 +174,41 @@
     /* Prevent horizontal scroll on mobile */
     max-width: 100%;
   }
-  
+
   /* Inline code: ensure proper contrast and sizing */
   code:not(pre code) {
     @apply bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-1.5 py-0.5 rounded;
     font-size: clamp(0.8125rem, 1vw + 0.25rem, 0.875rem); /* 13px - 14px */
   }
-  
+
   /* Ensure all containers respect viewport width */
-  main, section, article, aside, nav, header, footer {
+  main,
+  section,
+  article,
+  aside,
+  nav,
+  header,
+  footer {
     max-width: 100%;
     overflow-x: hidden;
   }
-  
+
   /* Mobile-first touch targets - minimum 44x44px for accessibility */
-  button, a, input[type="button"], input[type="submit"], [role="button"] {
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"],
+  [role="button"] {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Responsive images - prevent overflow */
   img {
     max-width: 100%;
     height: auto;
   }
-  
+
   /* Ensure tables are scrollable on mobile */
   table {
     display: block;
@@ -168,7 +216,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   @media (min-width: 640px) {
     table {
       display: table;
@@ -203,11 +251,11 @@ html {
   .will-change-transform {
     will-change: transform;
   }
-  
+
   .will-change-opacity {
     will-change: opacity;
   }
-  
+
   .gpu-accelerated {
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -229,7 +277,7 @@ html {
 
 /* Focus visible for accessibility */
 :focus-visible {
-  outline: 2px solid theme('colors.primary.600');
+  outline: 2px solid theme("colors.primary.600");
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -240,7 +288,7 @@ html {
   left: -9999px;
   z-index: 999;
   padding: 1em;
-  background-color: theme('colors.primary.600');
+  background-color: theme("colors.primary.600");
   color: white;
   text-decoration: none;
 }
@@ -274,15 +322,20 @@ html {
 
 @keyframes glow {
   0% {
-    box-shadow: 0 0 5px rgba(6, 182, 212, 0.5), 0 0 10px rgba(6, 182, 212, 0.3);
+    box-shadow:
+      0 0 5px rgba(6, 182, 212, 0.5),
+      0 0 10px rgba(6, 182, 212, 0.3);
   }
   100% {
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.8), 0 0 30px rgba(168, 85, 247, 0.5);
+    box-shadow:
+      0 0 20px rgba(6, 182, 212, 0.8),
+      0 0 30px rgba(168, 85, 247, 0.5);
   }
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -322,7 +375,7 @@ html {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .animate-shimmer {
     animation: none;
   }
