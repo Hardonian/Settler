@@ -80,11 +80,13 @@ export async function requireAuth(request: NextRequest): Promise<{
       error: NextResponse.json(
         {
           error: "Authentication check failed",
+          message: "Unable to verify authentication. Please try again or contact support.",
           code: ErrorCode.INTERNAL_ERROR,
           trace_id: traceId,
           timestamp: new Date().toISOString(),
+          retryable: true,
         },
-        { status: 500 }
+        { status: 401 }
       ),
     };
   }
@@ -155,11 +157,13 @@ export async function requireAdmin(request: NextRequest): Promise<{
       error: NextResponse.json(
         {
           error: "Admin check failed",
+          message: "Unable to verify admin status. Please try again or contact support.",
           code: ErrorCode.INTERNAL_ERROR,
           trace_id: traceId,
           timestamp: new Date().toISOString(),
+          retryable: true,
         },
-        { status: 500 }
+        { status: 403 }
       ),
     };
   }

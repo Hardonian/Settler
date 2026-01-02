@@ -169,10 +169,11 @@ export async function checkUserEntitlements(
       error: NextResponse.json(
         {
           error: 'Entitlement Check Failed',
-          message: 'Unable to verify access permissions',
+          message: 'Unable to verify access permissions. Please try again or contact support.',
           code: 'ENTITLEMENT_CHECK_FAILED',
+          retryable: true,
         },
-        { status: 500 }
+        { status: 403 }
       ),
     };
   }

@@ -102,21 +102,36 @@ export async function checkEntitlement(
   try {
     usage = await getAccountUsage(billingAccountId);
   } catch (error) {
-    // If usage calculation fails, allow the request but log error
+    // If usage calculation fails, log error and fail closed for paid plans
+    // Fail open only for starter/free plans to avoid blocking legitimate users
     // eslint-disable-next-line no-console
     console.error('[Entitlements] Failed to get account usage:', {
       billingAccountId,
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    // Fail open - allow request if usage calculation fails
-    return {
-      allowed: true,
-      reason: 'within_limits',
-      remainingQuota: Number.MAX_SAFE_INTEGER,
-      currentUsage: 0,
-      limit: Number.MAX_SAFE_INTEGER,
-      planCode,
-    };
+    
+    // For starter plan, fail open (graceful degradation)
+    // For paid plans, fail closed (prevent abuse)
+    if (planCode === 'starter') {
+      return {
+        allowed: true,
+        reason: 'within_limits',
+        remainingQuota: Number.MAX_SAFE_INTEGER,
+        currentUsage: 0,
+        limit: Number.MAX_SAFE_INTEGER,
+        planCode,
+      };
+    } else {
+      // Paid plans: fail closed on usage calculation error
+      return {
+        allowed: false,
+        reason: 'over_quota', // Treat as over quota to be safe
+        remainingQuota: 0,
+        currentUsage: 0,
+        limit: 0,
+        planCode,
+      };
+    }
   }
 
   // Get limit for this service
@@ -167,13 +182,18 @@ export async function canUseService(
     const result = await checkEntitlement(billingAccountId, service);
     return result.allowed;
   } catch (error) {
-    // Fail open on errors - allow request if entitlement check fails
+    // Fail closed on errors for paid features - log and deny access
+    // This prevents abuse if entitlement system is down
     // eslint-disable-next-line no-console
     console.error('[Entitlements] Error checking service entitlement:', {
       billingAccountId,
       service,
       error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
     });
-    return true;
+    
+    // Fail closed - deny access if entitlement check fails
+    // This is safer than failing open for paid features
+    return false;
   }
 }

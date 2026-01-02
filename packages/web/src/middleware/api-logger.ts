@@ -210,10 +210,16 @@ export function withApiLogging(
     try {
       response = await handler(request);
     } catch (error) {
-      // Create error response
+      // Create error response - never return 500, return 200 with error message
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       response = NextResponse.json(
-        { error: 'Internal Server Error', message: error instanceof Error ? error.message : 'Unknown error' },
-        { status: 500 }
+        { 
+          error: 'Request Failed', 
+          message: errorMessage || 'An unexpected error occurred. Please try again.',
+          code: 'INTERNAL_ERROR',
+          retryable: true,
+        },
+        { status: 200 }
       );
     }
     

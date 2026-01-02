@@ -111,8 +111,10 @@ export async function GET(_request: NextRequest) {
       {
         status: 'error',
         error: 'Failed to retrieve performance metrics',
+        message: 'Unable to retrieve performance metrics. Please try again later.',
+        retryable: true,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
