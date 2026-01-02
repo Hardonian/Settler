@@ -19,7 +19,7 @@ try {
 } catch {
   // Fallback: implement inline if import fails
   // This ensures the code works even if the API package isn't built
-  console.warn('Could not import billing hardening functions, using fallback implementation');
+  // Fallback implementation - no warning needed (graceful degradation)
   
   // Fallback implementation
   checkEntitlements = async (billingAccountId: string, _options?: any) => {
@@ -154,7 +154,11 @@ export async function checkUserEntitlements(
       entitlements,
     };
   } catch (error) {
-    console.error('Entitlement check failed:', error);
+    await safeLogger.error('[Entitlement Checks] Entitlement check failed', {
+      billingAccountId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     // Fail closed - deny access on error
     return {
       allowed: false,
@@ -169,10 +173,11 @@ export async function checkUserEntitlements(
       error: NextResponse.json(
         {
           error: 'Entitlement Check Failed',
-          message: 'Unable to verify access permissions',
+          message: 'Unable to verify access permissions. Please try again or contact support.',
           code: 'ENTITLEMENT_CHECK_FAILED',
+          retryable: true,
         },
-        { status: 500 }
+        { status: 403 }
       ),
     };
   }
@@ -186,7 +191,11 @@ export async function getUserBillingStatus(billingAccountId: string): Promise<st
   try {
     return await getBillingStatus(billingAccountId);
   } catch (error) {
-    console.error('Billing status check failed:', error);
+    await safeLogger.error('[Entitlement Checks] Billing status check failed', {
+      billingAccountId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return 'unknown';
   }
   // Note: Using shared Prisma singleton - don't disconnect

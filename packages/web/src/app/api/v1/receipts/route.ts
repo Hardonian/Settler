@@ -65,11 +65,11 @@ export async function POST(request: NextRequest) {
     let auth: Awaited<ReturnType<typeof authenticateApiKey>> | undefined;
     let isAuthenticated = false;
     
-    try {
-      auth = await authenticateApiKey(request);
+    auth = await authenticateApiKey(request);
+    if (auth) {
       isAuthenticated = true;
       logger.info('API key authenticated', { correlationId, userId: auth.userId, apiKeyId: auth.apiKeyId });
-    } catch (error) {
+    } else {
       // Unauthenticated access allowed for playground - will return demo response
       logger.info('Unauthenticated access for playground', { correlationId });
       auth = undefined;

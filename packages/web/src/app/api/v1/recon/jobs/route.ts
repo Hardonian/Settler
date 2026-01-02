@@ -23,13 +23,11 @@ export async function POST(request: NextRequest) {
     let auth;
     let isAuthenticated = false;
     
-    try {
-      auth = await authenticateApiKey(request);
+    auth = await authenticateApiKey(request);
+    if (auth) {
       isAuthenticated = true;
-    } catch (error) {
-      // Unauthenticated access allowed for playground
-      // Will return demo response
     }
+    // Unauthenticated access allowed for playground (graceful degradation)
 
     // Parse request body
     let body;
@@ -216,13 +214,13 @@ export async function GET(request: NextRequest) {
     let tenantId: string | null = null;
     let userId: string | null = null;
     
-    try {
-      const auth = await authenticateApiKey(request);
+    const auth = await authenticateApiKey(request);
+    if (auth) {
       isAuthenticated = true;
       tenantId = auth.tenantId || null;
       userId = auth.userId || null;
-    } catch (error) {
-      // Try Supabase auth as fallback
+    } else {
+      // Try Supabase auth as fallback (graceful degradation)
       try {
         const { createClient } = await import('@/lib/supabase/server');
         const supabase = await createClient();

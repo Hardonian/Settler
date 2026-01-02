@@ -13,6 +13,7 @@ import { cookies } from "next/headers";
 import { Database } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseEnv } from "@/lib/env/validator";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 // Client cache to reuse connections
 let cachedClient: SupabaseClient<Database> | null = null;
@@ -37,7 +38,10 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
   } catch (error) {
     // Log error but don't crash - return a safe fallback client
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[Supabase] Failed to get environment variables:', errorMessage);
+    await safeLogger.error('[Supabase] Failed to get environment variables', {
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     
     // Return a proper mock client that won't throw on method calls
     // This prevents hard 500s while still allowing the page to render
@@ -62,7 +66,10 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
   try {
     cookieStore = await cookies();
   } catch (error) {
-    console.error("Failed to get cookies:", error);
+    await safeLogger.error('[Supabase] Failed to get cookies', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     // Return a client with empty cookie handlers if cookies() fails
     const fallbackClient = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
       cookies: {
@@ -89,7 +96,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
         try {
           return cookieStore.get(name)?.value;
         } catch (error) {
-          console.warn("Failed to get cookie:", error);
+          // Silently fail - cookie access is optional
           return undefined;
         }
       },
@@ -138,14 +145,17 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
     supabaseUrl = env.url;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[Supabase Admin] Failed to get Supabase URL:', errorMessage);
+    await safeLogger.error('[Supabase Admin] Failed to get Supabase URL', {
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return {} as SupabaseClient<Database>;
   }
   
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
   if (!supabaseServiceRoleKey) {
-    console.warn("Supabase SERVICE_ROLE_KEY not set - admin features may not work");
+    await safeLogger.warn('[Supabase Admin] SERVICE_ROLE_KEY not set - admin features may not work');
     // Return a minimal mock client that will fail gracefully
     return {} as SupabaseClient<Database>;
   }
@@ -182,7 +192,10 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
 
     return adminClient;
   } catch (error) {
-    console.error("Failed to create Supabase admin client:", error);
+    await safeLogger.error('[Supabase Admin] Failed to create admin client', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     // Return a minimal mock client to prevent crashes
     // This will fail on actual operations but won't crash the page
     const fallbackClient = {} as SupabaseClient<Database>;

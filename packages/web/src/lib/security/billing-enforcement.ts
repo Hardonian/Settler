@@ -208,16 +208,17 @@ export async function requireActiveSubscription(
       stack: error instanceof Error ? error.stack : undefined,
     });
 
-    // Fail closed - deny access on error
+    // Fail closed - deny access on error, but return 403 not 500
     return {
       allowed: false,
       error: NextResponse.json(
         {
           error: 'Subscription Check Failed',
-          message: 'Unable to verify subscription status',
+          message: 'Unable to verify subscription status. Please try again or contact support.',
           code: 'SUBSCRIPTION_CHECK_FAILED',
+          retryable: true,
         },
-        { status: 500 }
+        { status: 403 }
       ),
       reason: 'Error checking subscription',
     };
@@ -382,10 +383,11 @@ export async function requireAddOn(
       error: NextResponse.json(
         {
           error: 'Add-On Check Failed',
-          message: 'Unable to verify add-on purchase',
+          message: 'Unable to verify add-on purchase. Please try again or contact support.',
           code: 'ADD_ON_CHECK_FAILED',
+          retryable: true,
         },
-        { status: 500 }
+        { status: 403 }
       ),
       reason: 'Error checking add-on',
     };

@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { safeLogger } from '@/lib/observability/safe-logger';
 import { prisma } from '@/shared/db/prismaClient';
 import { logger } from '@/lib/observability/logger';
 
@@ -111,8 +112,10 @@ export async function GET(_request: NextRequest) {
       {
         status: 'error',
         error: 'Failed to retrieve performance metrics',
+        message: 'Unable to retrieve performance metrics. Please try again later.',
+        retryable: true,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

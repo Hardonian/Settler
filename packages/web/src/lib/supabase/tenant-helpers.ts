@@ -6,6 +6,7 @@
  */
 
 import { createClient } from './server';
+import { safeLogger } from '@/lib/observability/safe-logger';
 
 /**
  * Check if the current authenticated user is a member of a tenant
@@ -33,16 +34,23 @@ export async function isTenantMember(tenantId: string): Promise<boolean> {
     if (error) {
       // If table doesn't exist, return false (graceful degradation)
       if (error.code === '42P01' || error.message.includes('does not exist')) {
-        console.warn('[isTenantMember] tenant_users table does not exist');
+        await safeLogger.debug('[isTenantMember] tenant_users table does not exist');
         return false;
       }
-      console.error('[isTenantMember] Error checking membership:', error);
+      await safeLogger.error('[isTenantMember] Error checking membership', {
+        tenantId,
+        error: error.message || String(error),
+      });
       return false;
     }
     
     return data !== null;
   } catch (error) {
-    console.error('[isTenantMember] Unexpected error:', error);
+    await safeLogger.error('[isTenantMember] Unexpected error', {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return false;
   }
 }
@@ -68,16 +76,21 @@ export async function getUserTenants(): Promise<string[]> {
     
     if (error) {
       if (error.code === '42P01' || error.message.includes('does not exist')) {
-        console.warn('[getUserTenants] tenant_users table does not exist');
+        await safeLogger.debug('[getUserTenants] tenant_users table does not exist');
         return [];
       }
-      console.error('[getUserTenants] Error fetching tenants:', error);
+      await safeLogger.error('[getUserTenants] Error fetching tenants', {
+        error: error.message || String(error),
+      });
       return [];
     }
     
     return (data || []).map((row: { tenant_id: string }) => row.tenant_id);
   } catch (error) {
-    console.error('[getUserTenants] Unexpected error:', error);
+    await safeLogger.error('[getUserTenants] Unexpected error', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return [];
   }
 }
@@ -112,7 +125,10 @@ export async function getPrimaryTenant(): Promise<string | null> {
     const tenants = await getUserTenants();
     return tenants.length > 0 ? (tenants[0] ?? null) : null;
   } catch (error) {
-    console.error('[getPrimaryTenant] Unexpected error:', error);
+    await safeLogger.error('[getPrimaryTenant] Unexpected error', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return null;
   }
 }

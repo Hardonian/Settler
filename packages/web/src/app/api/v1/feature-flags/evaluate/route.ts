@@ -20,12 +20,11 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     let auth;
     let isAuthenticated = false;
     
-    try {
-      auth = await authenticateApiKey(request);
+    auth = await authenticateApiKey(request);
+    if (auth) {
       isAuthenticated = true;
-    } catch (error) {
-      // Unauthenticated access allowed for playground - will return demo response
     }
+    // Unauthenticated access allowed for playground (graceful degradation)
 
     const body = await request.json();
     const { flagKey, environment, context } = body;

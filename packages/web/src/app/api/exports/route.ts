@@ -44,10 +44,11 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
     try {
       auth = await authenticateApiKey(request);
-      tenantId = auth.tenantId || null;
-      userId = auth.userId || null;
-    } catch (error) {
-      // Try Supabase auth as fallback
+      if (auth) {
+        tenantId = auth.tenantId || null;
+        userId = auth.userId || null;
+      } else {
+        // Try Supabase auth as fallback (graceful degradation)
       try {
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
@@ -325,20 +326,25 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     let tenantId: string | null = null;
     let userId: string | null = null;
 
-    try {
-      const auth = await authenticateApiKey(request);
+    const auth = await authenticateApiKey(request);
+    if (auth) {
       tenantId = auth.tenantId || null;
       userId = auth.userId || null;
-    } catch (error) {
-      const supabase = await createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        userId = user.id;
-        const billingAccount = await prisma.billingAccount.findFirst({
-          where: { userId: user.id },
-          select: { tenantId: true },
-        });
-        tenantId = billingAccount?.tenantId || null;
+    } else {
+      // Try Supabase auth as fallback (graceful degradation)
+      try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          userId = user.id;
+          const billingAccount = await prisma.billingAccount.findFirst({
+            where: { userId: user.id },
+            select: { tenantId: true },
+          });
+          tenantId = billingAccount?.tenantId || null;
+        }
+      } catch (error) {
+        // Supabase auth failed - will return 401 below
       }
     }
 

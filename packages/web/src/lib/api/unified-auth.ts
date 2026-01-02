@@ -52,17 +52,20 @@ export async function authenticateRequest(
       }
       
       const context = await executeWithRetry(() => authenticateApiKey(modifiedRequest));
-      return {
-        type: 'api_key',
-        userId: context.userId,
-        billingAccountId: context.billingAccountId,
-        tenantId: context.tenantId,
-        apiKeyId: context.apiKeyId,
-        scopes: context.scopes,
-      };
+      if (context) {
+        return {
+          type: 'api_key',
+          userId: context.userId,
+          billingAccountId: context.billingAccountId,
+          tenantId: context.tenantId,
+          apiKeyId: context.apiKeyId,
+          scopes: context.scopes,
+        };
+      }
+      // API key invalid, try session auth (graceful degradation)
     } catch (error) {
-      // API key invalid, try session auth
-      // Don't log here to avoid noise
+      // API key validation failed, try session auth
+      // Don't log here to avoid noise - graceful degradation
     }
   }
 

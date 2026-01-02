@@ -100,11 +100,13 @@ export async function requireSubscriptionTier(
       error: NextResponse.json(
         {
           error: 'Subscription check failed',
+          message: 'Unable to verify subscription status. Please try again or contact support.',
           code: ErrorCode.INTERNAL_ERROR,
           trace_id: traceId,
           timestamp: new Date().toISOString(),
+          retryable: true,
         },
-        { status: 500 }
+        { status: 403 }
       ),
     };
   }

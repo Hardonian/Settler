@@ -25,13 +25,13 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
     let auth: Awaited<ReturnType<typeof authenticateApiKey>> | undefined;
     let isAuthenticated = false;
     
-    try {
-      auth = await authenticateApiKey(request);
+    auth = await authenticateApiKey(request);
+    if (auth) {
       isAuthenticated = true;
-    } catch (error) {
-      // Unauthenticated access allowed for playground - will return demo response
+    } else {
       auth = undefined;
     }
+    // Unauthenticated access allowed for playground (graceful degradation)
 
     const { id } = await params;
     const body = await request.json();

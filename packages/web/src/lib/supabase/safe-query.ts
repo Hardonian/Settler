@@ -10,6 +10,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { safeLogger } from '@/lib/observability/safe-logger';
 
 export interface SafeQueryResult<T> {
   data: T | null;
@@ -43,7 +44,7 @@ export async function safeQuery<T>(
         errorMessage.includes('does not exist') ||
         errorMessage.includes('relation') && errorMessage.includes('does not exist')
       ) {
-        console.warn('[SafeQuery] Table does not exist, returning empty result');
+        await safeLogger.debug('[SafeQuery] Table does not exist, returning empty result', { table });
         return {
           data: defaultValue,
           error: null, // Don't treat missing table as error
@@ -58,7 +59,7 @@ export async function safeQuery<T>(
         errorMessage.includes('permission denied') ||
         errorMessage.includes('RLS')
       ) {
-        console.warn('[SafeQuery] Permission denied by RLS, returning empty result');
+        await safeLogger.debug('[SafeQuery] Permission denied by RLS, returning empty result', { table });
         return {
           data: defaultValue,
           error: null, // RLS blocks are expected, not errors
@@ -79,7 +80,7 @@ export async function safeQuery<T>(
       }
       
       // Other errors - log but return default
-      console.error('[SafeQuery] Query error:', {
+      await safeLogger.error('[SafeQuery] Query error', {
         code: errorCode,
         message: errorMessage,
       });
@@ -104,7 +105,11 @@ export async function safeQuery<T>(
   } catch (error) {
     // Unexpected error - log but don't throw
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[SafeQuery] Unexpected error:', errorMessage);
+    await safeLogger.error('[SafeQuery] Unexpected error', {
+      table,
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     
     return {
       data: defaultValue,

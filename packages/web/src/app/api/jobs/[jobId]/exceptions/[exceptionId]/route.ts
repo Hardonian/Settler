@@ -91,10 +91,11 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
 
     try {
       auth = await authenticateApiKey(request);
-      tenantId = auth.tenantId || null;
-      userId = auth.userId || null;
-    } catch (error) {
-      // Try Supabase auth as fallback
+      if (auth) {
+        tenantId = auth.tenantId || null;
+        userId = auth.userId || null;
+      } else {
+        // Try Supabase auth as fallback (graceful degradation)
       try {
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();

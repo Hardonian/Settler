@@ -21,7 +21,7 @@ export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> 
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[getFeatureFlags] User not authenticated");
+      await safeLogger.warn("[getFeatureFlags] User not authenticated", { tenantId });
       return [];
     }
 
@@ -39,7 +39,10 @@ export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> 
       .eq("tenant_id", tenantId)) as { data: FeatureFlagRow[] | null; error: any };
 
     if (error) {
-      console.error("[getFeatureFlags] Error:", error);
+      await safeLogger.error("[getFeatureFlags] Error", {
+        tenantId,
+        error: error.message || String(error),
+      });
       // Return defaults from registry
       return Object.values(FLAG_REGISTRY)
         .filter((flag) => flag.scope === "tenant")
@@ -80,7 +83,11 @@ export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> 
 
     return Array.from(flagMap.values());
   } catch (error) {
-    console.error("[getFeatureFlags] Unexpected error:", error);
+    await safeLogger.error("[getFeatureFlags] Unexpected error", {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     // Return defaults on error
     return Object.values(FLAG_REGISTRY)
       .filter((flag) => flag.scope === "tenant")
@@ -109,20 +116,25 @@ export async function setFeatureFlag(
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[setFeatureFlag] User not authenticated");
+      await safeLogger.warn("[setFeatureFlag] User not authenticated", { tenantId, key });
       return false;
     }
 
     // Validate flag exists in registry
     const flagDef = FLAG_REGISTRY[key];
     if (!flagDef) {
-      console.warn("[setFeatureFlag] Unknown flag key:", key);
+      await safeLogger.warn("[setFeatureFlag] Unknown flag key", { tenantId, key });
       return false;
     }
 
     // Validate value type
     if (typeof value !== flagDef.type && flagDef.type !== "json") {
-      console.warn("[setFeatureFlag] Value type mismatch:", key, typeof value, flagDef.type);
+      await safeLogger.warn("[setFeatureFlag] Value type mismatch", {
+        tenantId,
+        key,
+        expectedType: flagDef.type,
+        actualType: typeof value,
+      });
       return false;
     }
 
@@ -162,13 +174,22 @@ export async function setFeatureFlag(
     );
 
     if (error) {
-      console.error("[setFeatureFlag] Error:", error);
+      await safeLogger.error("[setFeatureFlag] Error", {
+        tenantId,
+        key,
+        error: error.message || String(error),
+      });
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error("[setFeatureFlag] Unexpected error:", error);
+    await safeLogger.error("[setFeatureFlag] Unexpected error", {
+      tenantId,
+      key,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return false;
   }
 }

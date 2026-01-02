@@ -38,7 +38,7 @@ export async function listMeaningfulChanges(
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.warn("[listMeaningfulChanges] User not authenticated");
+      await safeLogger.warn("[listMeaningfulChanges] User not authenticated", { tenantId });
       return [];
     }
 
@@ -66,7 +66,10 @@ export async function listMeaningfulChanges(
       .range(offset, offset + limit - 1)) as { data: ReconResultRow[] | null; error: any };
 
     if (reconError) {
-      console.error("[listMeaningfulChanges] Error querying recon_results:", reconError);
+      await safeLogger.error("[listMeaningfulChanges] Error querying recon_results", {
+        tenantId,
+        error: reconError?.message || String(reconError),
+      });
     }
 
     // Query drift events (using meaningful_changes table)
@@ -78,7 +81,10 @@ export async function listMeaningfulChanges(
       .range(offset, offset + limit - 1)) as { data: MeaningfulChangeRow[] | null; error: any };
 
     if (driftError) {
-      console.error("[listMeaningfulChanges] Error querying drift_events:", driftError);
+      await safeLogger.error("[listMeaningfulChanges] Error querying drift_events", {
+        tenantId,
+        error: driftError?.message || String(driftError),
+      });
     }
 
     // Transform to MeaningfulChange objects
@@ -189,7 +195,11 @@ export async function listMeaningfulChanges(
 
     return changes.slice(0, limit);
   } catch (error) {
-    console.error("[listMeaningfulChanges] Unexpected error:", error);
+    await safeLogger.error("[listMeaningfulChanges] Unexpected error", {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return [];
   }
 }

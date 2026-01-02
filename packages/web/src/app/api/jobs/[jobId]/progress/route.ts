@@ -74,11 +74,12 @@ export const GET = withUniversalBillingGate(async function GET(
     let tenantId: string | null = null;
     let userId: string | null = null;
 
-    try {
-      auth = await authenticateApiKey(request);
+    auth = await authenticateApiKey(request);
+    if (auth) {
       tenantId = auth.tenantId || null;
       userId = auth.userId || null;
-    } catch (error) {
+    } else {
+      // Try Supabase auth as fallback (graceful degradation)
       try {
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();

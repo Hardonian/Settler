@@ -112,7 +112,11 @@ export async function getTokenUsage(tenantId: TenantId): Promise<TokenUsage | nu
 
     return tokenUsage;
   } catch (error) {
-    console.error("[getTokenUsage] Error:", error);
+    await safeLogger.error("[getTokenUsage] Error", {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return null;
   }
 }
@@ -193,7 +197,11 @@ export async function consumeTokens(tenantId: TenantId, tokens: number): Promise
 
     return true;
   } catch (error) {
-    console.error("[consumeTokens] Error:", error);
+    await safeLogger.error("[consumeTokens] Error", {
+      tenantId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return false;
   }
 }

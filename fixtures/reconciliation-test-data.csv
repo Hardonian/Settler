@@ -1,0 +1,17 @@
+date,amount,description,currency,source
+2025-01-01,100.00,Starbucks Coffee,USD,bank
+2025-01-01,100.00,Starbucks Coffee,USD,receipt
+2025-01-02,45.50,Amazon Purchase,USD,bank
+2025-01-02,45.51,Amazon Purchase,USD,receipt
+2025-01-03,25.00,Uber Ride,USD,bank
+2025-01-05,25.00,Uber Ride,USD,receipt
+2025-01-10,200.00,Office Supplies,USD,bank
+2025-01-11,200.00,Office Supplies,USD,receipt
+2025-01-15,75.25,Grocery Store,USD,bank
+2025-01-15,75.24,Grocery Store,USD,receipt
+2025-01-20,150.00,Restaurant Dinner,USD,bank
+2025-01-23,150.00,Restaurant Dinner,USD,receipt
+2025-01-25,50.00,Gas Station,USD,bank
+2025-01-28,50.00,Gas Station,USD,receipt
+2025-02-01,300.00,Unmatched Bank Transaction,USD,bank
+2025-02-05,500.00,Unmatched Receipt Transaction,USD,receipt
