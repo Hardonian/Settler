@@ -36,8 +36,8 @@ export const GET = withSecurity(
       .from('recon_runs') as any)
       .select('*')
       .eq('id', params.runId)
-      .single() as Promise<{ data: { workspace_id: string } | null; error: { message?: string } | null }>);
-    const { data: run, error: runError } = runResult;
+      .single();
+    const { data: run, error: runError } = runResult as { data: { workspace_id: string } | null; error: { message?: string } | null };
 
     if (runError || !run) {
       return NextResponse.json(
@@ -55,8 +55,8 @@ export const GET = withSecurity(
       .select('*')
       .eq('run_id', params.runId)
       .order('created_at', { ascending: false })
-      .limit(100) as Promise<{ data: Array<Record<string, unknown>> | null }>;
-    const { data: events } = eventsResult;
+      .limit(100);
+    const { data: events } = eventsResult as { data: Array<Record<string, unknown>> | null };
 
     return NextResponse.json({
       run,

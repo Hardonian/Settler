@@ -11,7 +11,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem, stepTransition } from "@/lib/motion/variants";
 import { loadReceipts, loadTransactions } from "../lib/data/loader";
 import { matchReceiptToTransaction } from "../lib/matching/engine";
-import type { Receipt, MatchResult } from "../lib/data/types";
 
 type PipelineStep = "select" | "extract" | "normalize" | "match" | "resolve";
 

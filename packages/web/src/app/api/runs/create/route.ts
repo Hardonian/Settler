@@ -68,8 +68,8 @@ export const POST = withSecurity(
       .select('*')
       .eq('workspace_id', validated.workspace_id)
       .eq('idempotency_key', validated.idempotency_key)
-      .single() as Promise<{ data: { id: string } | null; error: { message?: string } | null }>;
-    const { data: existing } = existingResult;
+      .single();
+    const { data: existing } = existingResult as { data: { id: string } | null; error: { message?: string } | null };
 
     if (existing) {
       logger.info('Returning existing run (idempotency)', {
@@ -96,8 +96,8 @@ export const POST = withSecurity(
         name: validated.name || 'Reconciliation Run',
       } as Record<string, unknown>)
       .select()
-      .single() as Promise<{ data: { id: string } | null; error: { message?: string } | null }>;
-    const { data: run, error: createError } = runResult;
+      .single();
+    const { data: run, error: createError } = runResult as { data: { id: string } | null; error: { message?: string } | null };
 
     if (createError || !run) {
       logger.error('Failed to create run', createError as Error);
