@@ -8,7 +8,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, FileText, Settings, Flag, Palette, FlaskConical, BarChart3, Activity } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, Flag, Palette, FlaskConical, BarChart3, Activity, AlertTriangle, PlayCircle, FileSearch, Shield } from 'lucide-react';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { redirect } from 'next/navigation';
 
@@ -43,51 +43,80 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
         
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 px-2">
+            Operations
+          </div>
           <Link href="/admin">
             <Button variant="ghost" className="w-full justify-start gap-2">
-              <LayoutDashboard size={18} /> Dashboard
+              <LayoutDashboard size={18} /> Overview
             </Button>
           </Link>
-          <Link href="/admin/pages">
+          <Link href="/admin/ops">
             <Button variant="ghost" className="w-full justify-start gap-2">
-              <FileText size={18} /> Pages
+              <Activity size={18} /> Ops Console
             </Button>
           </Link>
-          <Link href="/admin/experiments">
+          <Link href="/admin/exceptions">
             <Button variant="ghost" className="w-full justify-start gap-2">
-              <FlaskConical size={18} /> Experiments
+              <AlertTriangle size={18} /> Exceptions
             </Button>
           </Link>
-          <Link href="/admin/branding">
+          <Link href="/admin/runs">
             <Button variant="ghost" className="w-full justify-start gap-2">
-              <Palette size={18} /> Branding
+              <PlayCircle size={18} /> Runs
             </Button>
           </Link>
-          <Link href="/admin/flags">
+          <Link href="/admin/audit">
             <Button variant="ghost" className="w-full justify-start gap-2">
-              <Flag size={18} /> Feature Flags
+              <FileSearch size={18} /> Audit Trail
             </Button>
           </Link>
-          <Link href="/admin/webhooks">
-            <Button variant="ghost" className="w-full justify-start gap-2">
-              <FlaskConical size={18} /> Webhooks
-            </Button>
-          </Link>
-          <Link href="/admin/monitoring">
-            <Button variant="ghost" className="w-full justify-start gap-2">
-              <Activity size={18} /> Monitoring
-            </Button>
-          </Link>
-          <Link href="/admin/analytics">
-            <Button variant="ghost" className="w-full justify-start gap-2">
-              <BarChart3 size={18} /> Analytics
-            </Button>
-          </Link>
-          <Link href="/admin/settings">
-            <Button variant="ghost" className="w-full justify-start gap-2">
-              <Settings size={18} /> Settings
-            </Button>
-          </Link>
+          
+          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+            <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 px-2">
+              Configuration
+            </div>
+            <Link href="/admin/pages">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <FileText size={18} /> Pages
+              </Button>
+            </Link>
+            <Link href="/admin/experiments">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <FlaskConical size={18} /> Experiments
+              </Button>
+            </Link>
+            <Link href="/admin/branding">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Palette size={18} /> Branding
+              </Button>
+            </Link>
+            <Link href="/admin/flags">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Flag size={18} /> Feature Flags
+              </Button>
+            </Link>
+            <Link href="/admin/webhooks">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <FlaskConical size={18} /> Webhooks
+              </Button>
+            </Link>
+            <Link href="/admin/monitoring">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Activity size={18} /> Monitoring
+              </Button>
+            </Link>
+            <Link href="/admin/analytics">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <BarChart3 size={18} /> Analytics
+              </Button>
+            </Link>
+            <Link href="/admin/settings">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Settings size={18} /> Settings
+              </Button>
+            </Link>
+          </div>
         </nav>
         
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">

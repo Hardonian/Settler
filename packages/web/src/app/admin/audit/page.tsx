@@ -1,0 +1,163 @@
+/**
+ * Admin Audit Trail Page
+ * 
+ * Audit trail explorer with filters and export preview.
+ */
+
+'use client';
+
+import { useState } from 'react';
+import { useAdminAudit } from '@/lib/admin/hooks/use-admin-metrics';
+import { AuditItem } from '@/lib/admin/metrics/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { FileSearch, Download, Search, Filter } from 'lucide-react';
+
+export default function AdminAuditPage() {
+  const [ruleIdFilter, setRuleIdFilter] = useState('');
+  const [sourceFilter, setSourceFilter] = useState('');
+  const [actorFilter, setActorFilter] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: auditData, isLoading } = useAdminAudit({
+    ruleId: ruleIdFilter || undefined,
+    source: sourceFilter || undefined,
+    actor: actorFilter || undefined,
+    limit: 100,
+  });
+
+  const filteredItems = auditData?.items?.filter(item => {
+    if (searchQuery && !item.action.toLowerCase().includes(searchQuery.toLowerCase()) && !item.auditType.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    return true;
+  }) || [];
+
+  return (
+    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Audit Trail</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
+            Complete audit log explorer and export
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <Button variant="outline">
+            <Download className="w-4 h-4 mr-2" />
+            Export Preview
+          </Button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Input
+              placeholder="Rule ID"
+              value={ruleIdFilter}
+              onChange={(e) => setRuleIdFilter(e.target.value)}
+            />
+            <Input
+              placeholder="Source"
+              value={sourceFilter}
+              onChange={(e) => setSourceFilter(e.target.value)}
+            />
+            <Input
+              placeholder="Actor ID"
+              value={actorFilter}
+              onChange={(e) => setActorFilter(e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Audit List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Audit Entries ({filteredItems.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+              Loading audit trail...
+            </div>
+          ) : filteredItems.length === 0 ? (
+            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+              No audit entries found
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredItems.map((item) => (
+                <AuditRow key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function AuditRow({ item }: { item: AuditItem }) {
+  return (
+    <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="outline">{item.auditType}</Badge>
+            <span className="font-medium text-slate-900 dark:text-white">
+              {item.action}
+            </span>
+          </div>
+          <div className="text-sm text-slate-500 dark:text-slate-400 space-y-1">
+            {item.entityType && (
+              <div>
+                <span className="font-medium">Entity:</span> {item.entityType}
+                {item.entityId && <span className="ml-2 font-mono text-xs">{item.entityId.slice(0, 8)}</span>}
+              </div>
+            )}
+            {item.userId && (
+              <div>
+                <span className="font-medium">Actor:</span> <span className="font-mono text-xs">{item.userId.slice(0, 8)}</span>
+              </div>
+            )}
+            <div>
+              <span className="font-medium">Time:</span> {new Date(item.createdAt).toLocaleString()}
+            </div>
+            {item.ipAddress && (
+              <div>
+                <span className="font-medium">IP:</span> {item.ipAddress}
+              </div>
+            )}
+          </div>
+          {item.changes && Object.keys(item.changes).length > 0 && (
+            <details className="mt-2">
+              <summary className="text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
+                View Changes
+              </summary>
+              <pre className="mt-2 text-xs bg-slate-100 dark:bg-slate-800 p-3 rounded overflow-auto">
+                {JSON.stringify(item.changes, null, 2)}
+              </pre>
+            </details>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
