@@ -7,20 +7,26 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+
+// Fix: Add missing import for downloadFile
+import { downloadFile } from '@/lib/admin/utils/export';
 import { useAdminExceptions, useAdminStream } from '@/lib/admin/hooks/use-admin-metrics';
+import { useKeyboardShortcuts } from '@/lib/admin/hooks/use-keyboard-shortcuts';
 import { ExceptionItem } from '@/lib/admin/metrics/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertCircle, CheckCircle2, Clock, Search, Filter } from 'lucide-react';
+import { KeyboardShortcutsHelp } from '@/lib/admin/hooks/use-keyboard-shortcuts';
 
 export default function AdminOpsConsole() {
   const [selectedException, setSelectedException] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [severityFilter, setSeverityFilter] = useState<string>('all');
+  const selectedIndexRef = useRef<number>(0);
 
   // Fetch exceptions
   const { data: exceptionsData, isLoading } = useAdminExceptions({
@@ -43,9 +49,71 @@ export default function AdminOpsConsole() {
   }, [exceptionsData, searchQuery, statusFilter, severityFilter]);
 
   const selectedExceptionData = useMemo(() => {
-    if (!selectedException) return null;
+    if (!selectedException) {
+      // Auto-select first exception if none selected
+      if (filteredExceptions.length > 0) {
+        return filteredExceptions[0];
+      }
+      return null;
+    }
     return filteredExceptions.find(ex => ex.id === selectedException) || null;
   }, [selectedException, filteredExceptions]);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onNext: () => {
+      if (filteredExceptions.length === 0) return;
+      selectedIndexRef.current = Math.min(
+        selectedIndexRef.current + 1,
+        filteredExceptions.length - 1
+      );
+      setSelectedException(filteredExceptions[selectedIndexRef.current]?.id || null);
+    },
+    onPrevious: () => {
+      if (filteredExceptions.length === 0) return;
+      selectedIndexRef.current = Math.max(selectedIndexRef.current - 1, 0);
+      setSelectedException(filteredExceptions[selectedIndexRef.current]?.id || null);
+    },
+    onSelect: () => {
+      if (selectedExceptionData) {
+        // Already viewing details, could trigger action
+      }
+    },
+    onResolve: () => {
+      if (selectedExceptionData) {
+        handleResolve(selectedExceptionData.id);
+      }
+    },
+    onEscalate: () => {
+      if (selectedExceptionData) {
+        handleEscalate(selectedExceptionData.id);
+      }
+    },
+    enabled: true,
+  });
+
+  // Update selected index when exceptions change
+  useEffect(() => {
+    if (selectedException && filteredExceptions.length > 0) {
+      const index = filteredExceptions.findIndex(ex => ex.id === selectedException);
+      if (index >= 0) {
+        selectedIndexRef.current = index;
+      }
+    } else if (filteredExceptions.length > 0 && !selectedException) {
+      setSelectedException(filteredExceptions[0].id);
+      selectedIndexRef.current = 0;
+    }
+  }, [filteredExceptions, selectedException]);
+
+  const handleResolve = async (id: string) => {
+    // TODO: Implement resolve API call
+    console.log('Resolving exception:', id);
+  };
+
+  const handleEscalate = async (id: string) => {
+    // TODO: Implement escalate API call
+    console.log('Escalating exception:', id);
+  };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -138,13 +206,18 @@ export default function AdminOpsConsole() {
             </div>
           ) : (
             <div className="divide-y divide-slate-200 dark:divide-slate-800">
-              {filteredExceptions.map((ex) => (
+              {filteredExceptions.map((ex, index) => (
                 <button
                   key={ex.id}
-                  onClick={() => setSelectedException(ex.id)}
-                  className={`w-full p-4 text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${
-                    selectedException === ex.id ? 'bg-slate-100 dark:bg-slate-800' : ''
+                  onClick={() => {
+                    setSelectedException(ex.id);
+                    selectedIndexRef.current = index;
+                  }}
+                  className={`w-full p-4 text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    selectedException === ex.id ? 'bg-slate-100 dark:bg-slate-800 ring-2 ring-blue-500' : ''
                   }`}
+                  aria-selected={selectedException === ex.id}
+                  role="option"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -181,11 +254,53 @@ export default function AdminOpsConsole() {
           </div>
         )}
       </div>
+      <KeyboardShortcutsHelp />
     </div>
   );
 }
 
 function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
+  const [isResolving, setIsResolving] = useState(false);
+  const [isEscalating, setIsEscalating] = useState(false);
+
+  const handleResolve = async () => {
+    setIsResolving(true);
+    try {
+      const response = await fetch(`/api/admin/exceptions/${exception.id}/resolve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resolutionNotes: 'Resolved via admin console' }),
+      });
+      if (response.ok) {
+        // Toast would be shown here
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Failed to resolve:', error);
+    } finally {
+      setIsResolving(false);
+    }
+  };
+
+  const handleEscalate = async () => {
+    setIsEscalating(true);
+    try {
+      const response = await fetch(`/api/admin/exceptions/${exception.id}/escalate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ escalationReason: 'Escalated via admin console' }),
+      });
+      if (response.ok) {
+        // Toast would be shown here
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Failed to escalate:', error);
+    } finally {
+      setIsEscalating(false);
+    }
+  };
+
   return (
     <div className="flex-1 overflow-y-auto p-6">
       <Card>
@@ -244,14 +359,24 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
           )}
 
           <div className="flex gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
-            <Button variant="default" size="sm">
-              Mark Resolved
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={handleResolve}
+              disabled={isResolving || exception.status === 'resolved'}
+            >
+              {isResolving ? 'Resolving...' : 'Mark Resolved (r)'}
             </Button>
             <Button variant="outline" size="sm">
               Create Adjustment
             </Button>
-            <Button variant="outline" size="sm">
-              Escalate
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleEscalate}
+              disabled={isEscalating}
+            >
+              {isEscalating ? 'Escalating...' : 'Escalate (e)'}
             </Button>
           </div>
         </CardContent>

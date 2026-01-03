@@ -13,6 +13,7 @@ import { useTickScheduler } from '@/lib/admin/hooks/use-tick-scheduler';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Clock, DollarSign, Activity } from 'lucide-react';
 import Link from 'next/link';
 
@@ -72,6 +73,19 @@ export default function AdminDashboard() {
 
       {/* KPI Tiles */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {isLoading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-32" />
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <>
         <KPITile
           title="Matched %"
           value={kpis?.matchedPercent.toFixed(1) || '0.0'}
@@ -113,6 +127,8 @@ export default function AdminDashboard() {
           icon={<AlertTriangle className="w-5 h-5" />}
           isLoading={isLoading}
         />
+          </>
+        )}
       </div>
 
       {/* Exception Heatmap */}

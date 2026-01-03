@@ -231,9 +231,11 @@ export default function AdminRunDetailPage({ params }: { params: Promise<{ runId
         <Button variant="outline">
           Export Report
         </Button>
-        <Button variant="outline">
-          Compare with Previous Run
-        </Button>
+        <Link href={`/admin/runs/compare?run1=${runId}&run2=${runsData?.items?.[1]?.id || ''}`}>
+          <Button variant="outline">
+            Compare with Previous Run
+          </Button>
+        </Link>
       </div>
     </div>
   );

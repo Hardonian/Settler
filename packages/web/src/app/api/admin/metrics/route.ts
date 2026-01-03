@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { MetricsQueryParamsSchema, MetricsSnapshotSchema } from '@/lib/admin/metrics/types';
 import { getDateRange, aggregateKPIMetrics, aggregateTrendData, aggregateExceptionHeatmap, getRecentActivity } from '@/lib/admin/metrics/aggregation';
+import { metricsCache, cacheKeys } from '@/lib/admin/cache/metrics-cache';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -35,6 +36,13 @@ export async function GET(request: NextRequest) {
 
     const { start, end } = getDateRange(params.range, params.startDate ? new Date(params.startDate) : undefined, params.endDate ? new Date(params.endDate) : undefined);
 
+    // Check cache
+    const cacheKey = cacheKeys.metrics(params.range, params.tenantId);
+    const cached = metricsCache.get<ReturnType<typeof MetricsSnapshotSchema.parse>>(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
+
     // Aggregate metrics
     const [kpis, matchedTrend, exceptionsTrend, volumeTrend, resolveTrend, heatmap, activity] = await Promise.all([
       aggregateKPIMetrics(params.tenantId || null, start, end),
@@ -60,6 +68,9 @@ export async function GET(request: NextRequest) {
       exceptionHeatmap: heatmap,
       recentActivity: activity,
     });
+
+    // Cache result (30s TTL)
+    metricsCache.set(cacheKey, snapshot, 30 * 1000);
 
     return NextResponse.json(snapshot);
   } catch (error) {

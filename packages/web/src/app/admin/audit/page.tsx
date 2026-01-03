@@ -9,11 +9,12 @@
 import { useState } from 'react';
 import { useAdminAudit } from '@/lib/admin/hooks/use-admin-metrics';
 import { AuditItem } from '@/lib/admin/metrics/types';
+import { exportAuditToCSV, exportAuditToJSON, downloadFile } from '@/lib/admin/utils/export';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { FileSearch, Download, Search, Filter } from 'lucide-react';
+import { FileSearch, Download, Search, Filter, FileDown } from 'lucide-react';
 
 export default function AdminAuditPage() {
   const [ruleIdFilter, setRuleIdFilter] = useState('');
@@ -46,10 +47,37 @@ export default function AdminAuditPage() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Export Preview
-          </Button>
+          <div className="relative group">
+            <Button variant="outline">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+              <button
+                onClick={() => {
+                  if (filteredItems.length > 0) {
+                    const csv = exportAuditToCSV(filteredItems);
+                    downloadFile(csv, `audit-${new Date().toISOString().split('T')[0]}.csv`);
+                  }
+                }}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+              >
+                <FileDown className="w-4 h-4" />
+                Export as CSV
+              </button>
+              <button
+                onClick={() => {
+                  if (filteredItems.length > 0) {
+                    exportAuditToJSON(filteredItems);
+                  }
+                }}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+              >
+                <FileDown className="w-4 h-4" />
+                Export as JSON
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

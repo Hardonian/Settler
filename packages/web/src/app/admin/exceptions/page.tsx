@@ -9,11 +9,12 @@
 import { useState } from 'react';
 import { useAdminExceptions, useAdminStream } from '@/lib/admin/hooks/use-admin-metrics';
 import { ExceptionItem } from '@/lib/admin/metrics/types';
+import { exportExceptionsToCSV, exportExceptionsToJSON, downloadFile } from '@/lib/admin/utils/export';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { AlertCircle, CheckCircle2, Clock, Search, Filter, Download } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Clock, Search, Filter, Download, FileDown } from 'lucide-react';
 
 export default function AdminExceptionsPage() {
   const [selectedExceptions, setSelectedExceptions] = useState<Set<string>>(new Set());
@@ -78,10 +79,37 @@ export default function AdminExceptionsPage() {
               Batch Actions ({selectedExceptions.size})
             </Button>
           )}
-          <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
+          <div className="relative group">
+            <Button variant="outline" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+              <button
+                onClick={() => {
+                  if (filteredExceptions.length > 0) {
+                    const csv = exportExceptionsToCSV(filteredExceptions);
+                    downloadFile(csv, `exceptions-${new Date().toISOString().split('T')[0]}.csv`);
+                  }
+                }}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+              >
+                <FileDown className="w-4 h-4" />
+                Export as CSV
+              </button>
+              <button
+                onClick={() => {
+                  if (filteredExceptions.length > 0) {
+                    exportExceptionsToJSON(filteredExceptions);
+                  }
+                }}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center gap-2"
+              >
+                <FileDown className="w-4 h-4" />
+                Export as JSON
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -209,9 +237,11 @@ function ExceptionRow({
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={(e) => e.stopPropagation()}>
-            View
-          </Button>
+          <Link href={`/admin/exceptions/${exception.id}`}>
+            <Button variant="outline" size="sm" onClick={(e) => e.stopPropagation()}>
+              View
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
