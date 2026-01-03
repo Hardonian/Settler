@@ -110,7 +110,10 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, {
+  rateLimit: { maxRequests: 100, windowMs: 60 * 1000 },
+  requireAuth: false, // Allow playground access
+});
 
 export const GET = withSecurity(async function GET(request: NextRequest) {
   try {

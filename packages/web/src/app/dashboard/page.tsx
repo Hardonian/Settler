@@ -142,7 +142,7 @@ async function DashboardMetrics() {
     };
 
     return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black">
       <Navigation />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
         <div className="text-center mb-12">
@@ -208,19 +208,20 @@ async function DashboardMetrics() {
 
         {/* Additional Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-            <div className="flex items-center gap-3 mb-4">
-              <MessageSquare className="w-6 h-6 text-blue-600 dark:text-electric-cyan" />
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                Total Published Posts
-              </h3>
-            </div>
-            <p className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-              <AnimatedNumber value={metrics.totalPosts} />
-            </p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Community content across all categories
-            </p>
+          <HoverCard>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3 mb-4">
+                <MessageSquare className="w-6 h-6 text-blue-600 dark:text-electric-cyan" />
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  Total Published Posts
+                </h3>
+              </div>
+              <p className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+                <AnimatedNumber value={metrics.totalPosts} />
+              </p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Community content across all categories
+              </p>
             </div>
           </HoverCard>
 
@@ -293,7 +294,8 @@ async function DashboardMetrics() {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+          <HoverCard>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-3 mb-4">
               <Package className="w-6 h-6 text-slate-700 dark:text-slate-300" />
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
@@ -321,7 +323,7 @@ async function DashboardMetrics() {
         </div>
       </div>
       <Footer />
-    </div>
+      </div>
     );
   } catch (error) {
     appLogger.error('Error in DashboardMetrics', error);
