@@ -320,6 +320,7 @@ async function DashboardMetrics() {
               Data from NPM Registry API (with demo fallback if unavailable)
             </p>
           </div>
+          </HoverCard>
         </div>
       </div>
       <Footer />
