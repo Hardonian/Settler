@@ -11,6 +11,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
+import { logError } from "../utils/logger";
 
 export interface EdgeFunctionSecurityConfig {
   requireHMAC?: boolean;
@@ -46,7 +47,7 @@ export async function validateHMACSignature(
       ["sign"]
     );
   } catch (error) {
-    console.error("Failed to import HMAC key:", error);
+    logError("Failed to import HMAC key", error);
     return false;
   }
 

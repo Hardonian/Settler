@@ -8,6 +8,7 @@ import { ProfilingIntegration } from '@sentry/profiling-node';
 import { Request, Response, NextFunction } from 'express';
 import { validatedConfig } from '../config/validation';
 import { AuthRequest } from './auth';
+import { logInfo } from '../utils/logger';
 
 let sentryInitialized = false;
 
@@ -20,7 +21,7 @@ export function initializeSentry(): void {
   }
 
   if (!validatedConfig.sentry.dsn) {
-    console.log('Sentry DSN not configured, skipping Sentry initialization');
+    logInfo('Sentry DSN not configured, skipping Sentry initialization');
     return;
   }
 
@@ -44,7 +45,7 @@ export function initializeSentry(): void {
   });
 
   sentryInitialized = true;
-  console.log('Sentry initialized');
+  logInfo('Sentry initialized');
 }
 
 /**

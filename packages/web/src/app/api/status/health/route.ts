@@ -8,6 +8,7 @@
 import { createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -36,7 +37,7 @@ export const GET = publicRoute(async function GET() {
     
     // Fallback: Query individual views if RPC doesn't exist
     if (error) {
-      console.warn('RPC function not available, using fallback:', error);
+      appLogger.warn('RPC function not available, using fallback', { error: error instanceof Error ? error.message : String(error) });
       const [kpi1, kpi2, kpi3] = await Promise.all([
         supabase.from('kpi_new_users_week').select('count').single(),
         supabase.from('kpi_actions_last_hour').select('count').single(),
@@ -147,7 +148,7 @@ export const GET = publicRoute(async function GET() {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Health check error:', error);
+    appLogger.error('Health check error', error);
     // Never return 500 - return degraded status with graceful error message
     return NextResponse.json(
       {

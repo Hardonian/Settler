@@ -9,6 +9,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import * as crypto from "crypto";
+import { logError } from "../utils/logger";
 
 export interface IntegrationCredential {
   id: string;
@@ -167,7 +168,7 @@ export async function checkIntegrationQuota(
 
   if (error && error.code !== "PGRST116") {
     // Error other than "not found"
-    console.error("Error checking quota:", error);
+    logError("Error checking quota", error);
     return { allowed: false, current: 0, limit };
   }
 
@@ -235,7 +236,7 @@ export async function recordIntegrationQuotaUsage(
   });
 
   if (error) {
-    console.error("Error recording quota usage:", error);
+    logError("Error recording quota usage", error);
   }
 }
 
@@ -311,7 +312,7 @@ export async function updateIntegrationHealth(
   );
 
   if (error) {
-    console.error("Error updating integration health:", error);
+    logError("Error updating integration health", error);
   }
 }
 

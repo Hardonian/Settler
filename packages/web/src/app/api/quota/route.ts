@@ -139,7 +139,12 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
 
     // Handle usage query errors gracefully
     if (usageError) {
-      console.warn("Error fetching usage events:", usageError);
+      // Use dynamic import to avoid circular dependencies
+      import('@/lib/utils/logger').then(({ appLogger }) => {
+        appLogger.warn("Error fetching usage events", { error: usageError.message });
+      }).catch(() => {
+        // Silent fail if logger unavailable
+      });
     }
 
     const usageByType = parseUsageEvents(usageEvents);

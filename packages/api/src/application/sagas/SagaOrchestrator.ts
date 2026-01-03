@@ -7,6 +7,7 @@ import { Pool } from 'pg';
 import { pool } from '../../db';
 import { IEventStore } from '../../infrastructure/eventsourcing/EventStore';
 import { IEventBus } from '../../infrastructure/events/IEventBus';
+import { logError } from '../../utils/logger';
 
 export enum SagaStatus {
   RUNNING = 'running',
@@ -112,7 +113,7 @@ export class SagaOrchestrator {
 
     // Start executing the saga
     this.executeSaga(state).catch((error) => {
-      console.error(`Saga ${sagaId} failed:`, error);
+      logError(`Saga ${sagaId} failed`, error);
     });
 
     return sagaId;
@@ -162,9 +163,11 @@ export class SagaOrchestrator {
           // Step succeeded
           state.data = { ...state.data, ...result.data };
           await this.recordStepComplete(state, step.name);
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorName = error instanceof Error ? error.name : 'UnknownError';
           // Handle timeout or unexpected errors
-          if (step.timeoutMs && error.name === 'TimeoutError') {
+          if (step.timeoutMs && errorName === 'TimeoutError') {
             await this.handleStepTimeout(state, step);
             return;
           }
@@ -174,9 +177,9 @@ export class SagaOrchestrator {
             await this.compensate(state, step.name);
           }
 
-          await this.markSagaFailed(state, error.message);
+          await this.markSagaFailed(state, errorMessage);
           if (saga.onFailure) {
-            await saga.onFailure(state, error);
+            await saga.onFailure(state, error instanceof Error ? error : new Error(errorMessage));
           }
           return;
         }
@@ -187,10 +190,11 @@ export class SagaOrchestrator {
       if (saga.onComplete) {
         await saga.onComplete(state);
       }
-    } catch (error: any) {
-      await this.markSagaFailed(state, error.message);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      await this.markSagaFailed(state, errorMessage);
       if (saga.onFailure) {
-        await saga.onFailure(state, error);
+        await saga.onFailure(state, error instanceof Error ? error : new Error(errorMessage));
       }
     }
   }
@@ -224,12 +228,14 @@ export class SagaOrchestrator {
         }
 
         lastError = result;
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorName = error instanceof Error ? error.name : 'UnknownError';
         lastError = {
           success: false,
           error: {
-            type: error.name || 'UnknownError',
-            message: error.message,
+            type: errorName,
+            message: errorMessage,
             retryable: attempt < maxRetries,
           },
         };
@@ -282,7 +288,7 @@ export class SagaOrchestrator {
             await step.compensate(state);
             await this.recordStepCompensated(state, step.name);
           } catch (error) {
-            console.error(`Compensation failed for step ${step.name}:`, error);
+            logError(`Compensation failed for step ${step.name}`, error);
             // Continue with other compensations
           }
         }

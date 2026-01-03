@@ -52,7 +52,12 @@ export async function GET(request: NextRequest) {
     const params = ExceptionsQueryParamsSchema.parse(rawParams);
 
     // Build where clause
-    const whereClause: any = {};
+    const whereClause: {
+      tenantId?: string;
+      severity?: string;
+      driftType?: string;
+      acknowledged?: boolean;
+    } = {};
     if (params.tenantId) {
       whereClause.tenantId = params.tenantId;
     }

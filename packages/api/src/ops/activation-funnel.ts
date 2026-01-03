@@ -69,14 +69,24 @@ export async function emitLifecycleEvent(
       });
       if (!user) {
         // Would need user email - skip for now if not available
-        console.warn(`Cannot emit lifecycle event ${eventType}: no billing account found`);
+        // Use dynamic import to avoid circular dependencies
+        import('../utils/logger').then(({ logWarn }) => {
+          logWarn(`Cannot emit lifecycle event ${eventType}: no billing account found`);
+        }).catch(() => {
+          // Silent fail if logger unavailable
+        });
         return;
       }
       finalBillingAccountId = user.id;
     }
 
     if (!finalBillingAccountId) {
-      console.warn(`Cannot emit lifecycle event ${eventType}: no billing account ID available`);
+      // Use dynamic import to avoid circular dependencies
+      import('../utils/logger').then(({ logWarn }) => {
+        logWarn(`Cannot emit lifecycle event ${eventType}: no billing account ID available`);
+      }).catch(() => {
+        // Silent fail if logger unavailable
+      });
       return;
     }
 
@@ -89,14 +99,19 @@ export async function emitLifecycleEvent(
         eventType,
         quantity: 1,
         unit: 'event',
-        metadata: properties as any,
+        metadata: properties as Record<string, unknown>,
         timestamp: new Date(),
         aggregated: false,
       },
     });
   } catch (error) {
     // Don't throw - event tracking should never break the main flow
-    console.error(`Failed to emit lifecycle event ${eventType}:`, error);
+    // Use dynamic import to avoid circular dependencies
+    import('../utils/logger').then(({ logError }) => {
+      logError(`Failed to emit lifecycle event ${eventType}`, error);
+    }).catch(() => {
+      // Silent fail if logger unavailable
+    });
   }
 }
 
@@ -110,7 +125,13 @@ export async function getActivationFunnelMetrics(params: {
 }) {
   const { startDate, endDate, tenantId } = params;
 
-  const where: any = {
+  const where: {
+    timestamp: {
+      gte: Date;
+      lt: Date;
+    };
+    tenantId?: string;
+  } = {
     timestamp: {
       gte: startDate,
       lt: endDate,

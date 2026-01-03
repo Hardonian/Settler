@@ -10,11 +10,14 @@ import { recordServiceUsage } from '@/shared/usage/usageEvent';
 import { evaluateFlag } from '@/domain/featureFlags/evaluator';
 import type { Environment } from '@/domain/featureFlags/types';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
     let auth;
@@ -102,7 +105,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     });
   } catch (error) {
     // Never return 500 - always return 200 with demo evaluation for playground
-    console.error('Error evaluating feature flag:', error);
+    appLogger.error('Error evaluating feature flag', error);
     return NextResponse.json(
       {
         value: false,
@@ -117,4 +120,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

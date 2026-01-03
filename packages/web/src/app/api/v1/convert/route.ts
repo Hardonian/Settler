@@ -9,6 +9,8 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { recordServiceUsage } from '@/shared/usage/usageEvent';
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
 import { freeRoute } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -41,7 +43,8 @@ const CURRENCY_RATES: Record<string, number> = {
   CAD: 1.25,
 };
 
-export const POST = freeRoute(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  freeRoute(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
     let auth;
@@ -225,7 +228,7 @@ export const POST = freeRoute(async function POST(request: NextRequest) {
     });
   } catch (error) {
     // Never return 500 - always return 200 with error info for playground
-    console.error('Convert API error:', error);
+    appLogger.error('Convert API error', error);
     return NextResponse.json(
       {
         error: 'Failed to perform conversion',
@@ -235,7 +238,9 @@ export const POST = freeRoute(async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-});
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);
 
 function getUnitCategory(unit: string): string {
   const lengthUnits = ['m', 'ft', 'km', 'mi'];

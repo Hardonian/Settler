@@ -15,6 +15,8 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -48,7 +50,8 @@ interface ProgressResponse {
  * GET /api/jobs/[jobId]/progress
  * Get job progress
  */
-export const GET = withUniversalBillingGate(async function GET(
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ jobId: string }> }
 ) {
@@ -200,7 +203,7 @@ export const GET = withUniversalBillingGate(async function GET(
 
     // Log successful request
     const duration = Date.now() - startTime;
-    console.log('[Job Progress API] Success', {
+    appLogger.info('[Job Progress API] Success', {
       jobId,
       tenantId,
       userId,
@@ -214,7 +217,7 @@ export const GET = withUniversalBillingGate(async function GET(
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
 
-    console.error('[Job Progress API] Error', {
+    appLogger.error('[Job Progress API] Error', error, {
       error: errorMessage,
       stack: errorStack,
       duration,
@@ -231,4 +234,6 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

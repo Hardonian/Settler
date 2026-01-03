@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { prisma } from '@/shared/db/prismaClient';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -16,7 +18,8 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export const GET = withUniversalBillingGate(async function GET(
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(
   request: NextRequest,
   { params }: RouteParams
 ) {
@@ -80,7 +83,14 @@ export const GET = withUniversalBillingGate(async function GET(
       total: receipt.total,
       paymentMethod: receipt.paymentMethod,
       confidenceScore: receipt.confidenceScore,
-      items: receipt.items.map((item: any) => ({
+      items: receipt.items.map((item: {
+        id: string;
+        name: string;
+        quantity: number | null;
+        unitPrice: number | null;
+        lineTotal: number | null;
+        category: string | null;
+      }) => ({
         id: item.id,
         name: item.name,
         quantity: item.quantity ? Number(item.quantity) : 0,
@@ -93,7 +103,7 @@ export const GET = withUniversalBillingGate(async function GET(
     });
   } catch (error) {
     // Never return 500 - always return 200 with demo response for playground
-    console.error('Error fetching receipt:', error);
+    appLogger.error('Error fetching receipt', error);
     return NextResponse.json(
       {
         id: `demo_error_${Date.now()}`,
@@ -111,4 +121,6 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

@@ -7,6 +7,7 @@ import { Request, Response, NextFunction } from 'express';
 import compression from 'compression';
 import * as zlib from 'zlib';
 import { promisify } from 'util';
+import { logError } from '../utils/logger';
 
 const brotliCompress = promisify(zlib.brotliCompress);
 
@@ -83,7 +84,7 @@ export async function brotliCompressionMiddleware(
       })
       .catch((error: unknown) => {
         // Fallback to uncompressed
-        console.error('Brotli compression failed:', error);
+        logError('Brotli compression failed', error);
         originalSend.call(this, body);
       });
 

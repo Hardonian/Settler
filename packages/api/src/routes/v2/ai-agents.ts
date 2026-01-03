@@ -9,6 +9,7 @@ import { agentOrchestrator } from '../../services/ai-agents/orchestrator';
 import { InfrastructureOptimizerAgent } from '../../services/ai-agents/infrastructure-optimizer';
 import { AnomalyDetectorAgent } from '../../services/ai-agents/anomaly-detector';
 import { handleRouteError } from '../../utils/error-handler';
+import { logError } from '../../utils/logger';
 
 const router = Router();
 
@@ -20,7 +21,9 @@ agentOrchestrator.registerAgent(infrastructureOptimizer);
 agentOrchestrator.registerAgent(anomalyDetector);
 
 // Initialize all agents on startup
-agentOrchestrator.initializeAll().catch(console.error);
+agentOrchestrator.initializeAll().catch((error) => {
+  logError('Failed to initialize AI agents', error);
+});
 
 /**
  * GET /api/v2/ai-agents
