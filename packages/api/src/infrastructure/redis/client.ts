@@ -97,7 +97,7 @@ export const cache = {
       }
     } catch (error) {
       // Use dynamic import to avoid circular dependencies
-      import('../utils/logger').then(({ logError }) => {
+      import('../../utils/logger').then(({ logError }) => {
         logError('Redis get error', error);
       }).catch(() => {
         // Silent fail if logger unavailable
@@ -130,7 +130,7 @@ export const cache = {
       }
     } catch (error) {
       // Use dynamic import to avoid circular dependencies
-      import('../utils/logger').then(({ logError }) => {
+      import('../../utils/logger').then(({ logError }) => {
         logError('Redis set error', error);
       }).catch(() => {
         // Silent fail if logger unavailable
@@ -149,7 +149,7 @@ export const cache = {
       await client.del(key);
     } catch (error) {
       // Use dynamic import to avoid circular dependencies
-      import('../utils/logger').then(({ logError }) => {
+      import('../../utils/logger').then(({ logError }) => {
         logError('Redis del error', error);
       }).catch(() => {
         // Silent fail if logger unavailable
@@ -174,7 +174,7 @@ export const cache = {
       }
     } catch (error) {
       // Use dynamic import to avoid circular dependencies
-      import('../utils/logger').then(({ logError }) => {
+      import('../../utils/logger').then(({ logError }) => {
         logError('Redis exists error', error);
       }).catch(() => {
         // Silent fail if logger unavailable

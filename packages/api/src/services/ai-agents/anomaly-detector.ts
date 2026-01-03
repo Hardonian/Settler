@@ -5,7 +5,7 @@
  */
 
 import { BaseAgent } from './orchestrator';
-import { logInfo, logError } from '../../utils/logger';
+import { logInfo, logError, logWarn } from '../../utils/logger';
 
 export interface Anomaly {
   id: string;

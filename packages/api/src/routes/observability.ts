@@ -232,8 +232,8 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
 observabilityRouter.get("/traces", async (req: Request, res: Response) => {
   try {
     // Reserved for future user/tenant filtering
-    const _userId = (req as AuthenticatedRequest).userId;
-    const _tenantId = (req as AuthenticatedRequest).tenantId;
+    void (req as AuthenticatedRequest).userId;
+    void (req as AuthenticatedRequest).tenantId;
     // Reserved for future tracing backend integration
     void req.query.traceId;
     void req.query.jobId;

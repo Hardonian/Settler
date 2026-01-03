@@ -34,7 +34,7 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
           this.emit('node_updated', payload);
           this.notifySubscribers(jobId, {
             type: (payload.eventType === 'INSERT' ? 'node_added' : 'node_updated') as RealTimeUpdate['type'],
-            data: payload.new as ReconciliationNode,
+            data: payload.new as unknown as ReconciliationNode,
             timestamp: new Date(),
           });
         }
@@ -59,7 +59,7 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
           this.emit('edge_updated', payload);
           this.notifySubscribers(jobId, {
             type: (payload.eventType === 'INSERT' ? 'edge_added' : 'edge_updated') as RealTimeUpdate['type'],
-            data: payload.new as ReconciliationEdge,
+            data: payload.new as unknown as ReconciliationEdge,
             timestamp: new Date(),
           });
         }

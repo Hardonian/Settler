@@ -9,7 +9,7 @@
  */
 
 import { BaseAgent } from './orchestrator';
-import { logError } from '../../utils/logger';
+import { logError, logInfo } from '../../utils/logger';
 
 export interface OptimizationOpportunity {
   id: string;
