@@ -13,6 +13,7 @@ import { getAccountPlanCode } from '@/domain/billing/entitlements';
 import { getPlanConfig } from '@/domain/billing/planConfig';
 import { withApiWrapper } from '@/middleware/api-wrapper';
 import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -73,10 +74,8 @@ async function getBillingHandler(_request: NextRequest) {
     try {
       planCode = await getAccountPlanCode(billingAccount.id);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('[Console Billing] Error getting plan code:', {
+      appLogger.error('[Console Billing] Error getting plan code', error, {
         billingAccountId: billingAccount.id,
-        error: error instanceof Error ? error.message : 'Unknown error',
       });
       planCode = 'starter';
     }
@@ -88,10 +87,8 @@ async function getBillingHandler(_request: NextRequest) {
     try {
       usage = await getAccountUsage(billingAccount.id);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('[Console Billing] Error getting account usage:', {
+      appLogger.error('[Console Billing] Error getting account usage', error, {
         billingAccountId: billingAccount.id,
-        error: error instanceof Error ? error.message : 'Unknown error',
       });
       // Return zero usage on error
       usage = {
@@ -143,8 +140,7 @@ async function getBillingHandler(_request: NextRequest) {
       usage: usageWithLimits,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('[Console Billing] Error fetching billing data:', {
+    appLogger.error('[Console Billing] Error fetching billing data', error, {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });

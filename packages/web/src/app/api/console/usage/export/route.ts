@@ -62,7 +62,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     });
 
     if (events.length >= maxEvents) {
-      console.warn(`[Usage Export] Limited to ${maxEvents} events for export`);
+      appLogger.warn(`[Usage Export] Limited to ${maxEvents} events for export`, { maxEvents, eventCount: events.length });
     }
 
     if (format === 'csv') {
@@ -107,7 +107,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       });
     }
   } catch (error) {
-    console.error('[Usage Export] Error:', error);
+    appLogger.error('[Usage Export] Error', error);
     return NextResponse.json(
       {
         success: false,

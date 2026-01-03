@@ -3,11 +3,14 @@ import { createClient } from '@/lib/supabase/server';
 import { getUserRole } from '@/shared/auth/roles';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 /**
  * Get current user's role in their tenant and super admin status
  */
-export const GET = withUniversalBillingGate(async function GET() {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -25,8 +28,8 @@ export const GET = withUniversalBillingGate(async function GET() {
       isSuperAdmin: isAdmin,
       userId: user.id,
     });
-  } catch (error: any) {
-    console.error('Error getting user role:', error);
+  } catch (error: unknown) {
+    appLogger.error('Error getting user role', error);
     // Never return 500 - return default role with error message
     return NextResponse.json(
       { 
@@ -39,4 +42,6 @@ export const GET = withUniversalBillingGate(async function GET() {
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

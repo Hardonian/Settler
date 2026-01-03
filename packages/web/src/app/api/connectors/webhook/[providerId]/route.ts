@@ -4,6 +4,8 @@ import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 import { verifyWebhook } from '@settler/adapters/src/webhook-verification';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -71,7 +73,7 @@ export const POST = withUniversalBillingGate(async function POST(
       });
 
     if (webhookError) {
-      console.error('Failed to store webhook event:', webhookError);
+      appLogger.error('Failed to store webhook event', webhookError);
     }
 
     // TODO: Verify webhook signature based on provider
@@ -84,7 +86,7 @@ export const POST = withUniversalBillingGate(async function POST(
       message: 'Webhook received',
     });
   } catch (error) {
-    console.error('Error in webhook route:', error);
+    appLogger.error('Error in webhook route', error);
     // Never return 500 - return graceful error response (webhooks should retry via their own mechanism)
     return NextResponse.json(
       {

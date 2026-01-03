@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { revokeApiKey } from '@/domain/console/apiKeys';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -16,7 +18,8 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export const DELETE = withUniversalBillingGate(async function DELETE(
+export const DELETE = withSecurity(
+  withUniversalBillingGate(async function DELETE(
   request: NextRequest,
   { params }: RouteParams
 ) {
@@ -37,7 +40,7 @@ export const DELETE = withUniversalBillingGate(async function DELETE(
     if (error instanceof Error && error.message.includes('Permission denied')) {
       return NextResponse.json({ error: error.message }, { status: 403 });
     }
-    console.error('[Console API Keys] Error revoking:', error);
+    appLogger.error('[Console API Keys] Error revoking', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to revoke API key';
     // Return 200 with error instead of 500
     return NextResponse.json(
@@ -45,4 +48,6 @@ export const DELETE = withUniversalBillingGate(async function DELETE(
       { status: 200 }
     );
   }
-}, { feature: 'DELETE API' });
+}, { feature: 'DELETE API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

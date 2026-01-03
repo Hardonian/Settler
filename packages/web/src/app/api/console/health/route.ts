@@ -8,11 +8,14 @@ import { NextResponse } from 'next/server';
 import { performHealthCheck } from '@/lib/monitoring/health-check';
 import { getActiveAlerts, runAllAlertChecks } from '@/lib/monitoring/alerts';
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = publicRoute(async function GET() {
+export const GET = withSecurity(
+  publicRoute(async function GET() {
   try {
     const health = await performHealthCheck();
     const alerts = await runAllAlertChecks();
@@ -24,7 +27,7 @@ export const GET = publicRoute(async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('[health] Error:', error);
+    appLogger.error('[health] Error', error);
     // Never return 500 - return degraded health status
     return NextResponse.json(
       {
@@ -42,4 +45,6 @@ export const GET = publicRoute(async function GET() {
       { status: 200 }
     );
   }
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

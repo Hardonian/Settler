@@ -61,6 +61,7 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
         ]);
         
         // Check if result has error property
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const error = (queryResult as any)?.error;
         if (error && error.code !== 'PGRST116') {
           // PGRST116 is "no rows returned" which is fine for health check
@@ -86,6 +87,7 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
           ),
         ]);
         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const rpcError = (rpcResult_race as any)?.error;
         if (rpcError) {
           // RPC might be blocked by RLS for anon users - this is expected
@@ -222,7 +224,12 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
     });
   } catch (logError) {
     // Don't fail health check if logging fails
-    console.warn('[Health] Failed to log health check:', logError);
+    // Use dynamic import to avoid circular dependencies
+    import('@/lib/utils/logger').then(({ appLogger }) => {
+      appLogger.warn('[Health] Failed to log health check', { error: logError });
+    }).catch(() => {
+      // Silent fail if logger unavailable
+    });
   }
 
   const response = NextResponse.json(

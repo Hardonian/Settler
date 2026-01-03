@@ -148,7 +148,7 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
       limits: planLimits,
     });
   } catch (error) {
-    console.error("Usage warnings error:", error);
+    appLogger.error("Usage warnings error", error);
     // Return 200 with empty warnings instead of 500 to prevent UI crash
     return NextResponse.json(
       {

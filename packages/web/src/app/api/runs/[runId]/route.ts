@@ -30,11 +30,12 @@ export const GET = withUniversalBillingGate(async function GET(
     }
 
     // Get run
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: run, error: runError } = await (supabase
       .from('recon_runs' as any)
       .select('*')
       .eq('id', params.runId)
-      .single() as any);
+      .single() as { data: { workspace_id: string } | null; error: { message?: string } | null });
 
     if (runError || !run) {
       return NextResponse.json(
@@ -47,12 +48,13 @@ export const GET = withUniversalBillingGate(async function GET(
     await requireWorkspaceMembership(run.workspace_id);
 
     // Get events
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: events } = await (supabase
       .from('run_events' as any)
       .select('*')
       .eq('run_id', params.runId)
       .order('created_at', { ascending: false })
-      .limit(100) as any);
+      .limit(100) as { data: Array<Record<string, unknown>> | null });
 
     return NextResponse.json({
       run,

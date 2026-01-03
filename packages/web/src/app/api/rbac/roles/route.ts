@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = "force-dynamic";
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const GET = withUniversalBillingGate(async function GET(_request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -39,7 +42,7 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
 
     const roleCounts: Record<string, number> = {};
     if (tenantUsers && Array.isArray(tenantUsers)) {
-      tenantUsers.forEach((tu: any) => {
+      tenantUsers.forEach((tu: { role?: string }) => {
         const role = tu?.role || 'member';
         roleCounts[role] = (roleCounts[role] || 0) + 1;
       });
@@ -86,7 +89,7 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
 
     return NextResponse.json({ roles });
   } catch (error) {
-    console.error("Error in roles GET:", error);
+    appLogger.error("Error in roles GET", error);
     // Never return 500 - return empty roles array with graceful error message
     return NextResponse.json({ 
       roles: [],
@@ -94,4 +97,6 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
       message: "Please try again later"
     }, { status: 200 });
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

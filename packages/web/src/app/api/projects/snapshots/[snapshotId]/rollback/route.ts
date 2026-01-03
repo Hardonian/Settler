@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const POST = withUniversalBillingGate(async function POST(_request: NextRequest, { params }: { params: { snapshotId: string } }) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(_request: NextRequest, { params }: { params: { snapshotId: string } }) {
   try {
     const supabase = await createClient();
     const {
@@ -35,13 +38,14 @@ export const POST = withUniversalBillingGate(async function POST(_request: NextR
     // Restore project data based on type
     if (project_type === "job") {
       const { error: updateError } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .from("reconciliation_jobs" as any)
-        .update(snapshot_data as any as never)
+        .update(snapshot_data as Record<string, unknown> as never)
         .eq("id", project_id)
         .eq("user_id", user.id);
 
       if (updateError) {
-        console.error("Error rolling back job:", updateError);
+        appLogger.error("Error rolling back job", updateError);
         return NextResponse.json(
       {
         success: false,
@@ -54,12 +58,12 @@ export const POST = withUniversalBillingGate(async function POST(_request: NextR
     } else if (project_type === "integration") {
       const { error: updateError } = await supabase
         .from("integration_credentials")
-        .update(snapshot_data as any as never)
+        .update(snapshot_data as Record<string, unknown> as never)
         .eq("id", project_id)
         .eq("user_id", user.id);
 
       if (updateError) {
-        console.error("Error rolling back integration:", updateError);
+        appLogger.error("Error rolling back integration", updateError);
         return NextResponse.json(
       {
         success: false,
@@ -73,7 +77,7 @@ export const POST = withUniversalBillingGate(async function POST(_request: NextR
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error in rollback:", error);
+    appLogger.error("Error in rollback", error);
     return NextResponse.json(
       {
         success: false,
@@ -83,4 +87,6 @@ export const POST = withUniversalBillingGate(async function POST(_request: NextR
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
+);

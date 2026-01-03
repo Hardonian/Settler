@@ -4,6 +4,8 @@ import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 import { ConnectorRuntime, RuntimeConfig } from '@settler/adapters/src/connector-runtime';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -79,7 +81,7 @@ export const POST = withUniversalBillingGate(async function POST(
       message: `Backfilled data from ${since} to ${until || 'now'}`,
     });
   } catch (error) {
-    console.error('Error in backfill route:', error);
+    appLogger.error('Error in backfill route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
       {

@@ -42,16 +42,31 @@ export async function POST(request: NextRequest) {
     const targetDate =
       body.date || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    console.log(`[Daily Rollup] Starting rollup for ${targetDate}`);
+    // Use dynamic import to avoid circular dependencies in cron jobs
+    import('@/lib/utils/logger').then(({ appLogger }) => {
+      appLogger.info(`[Daily Rollup] Starting rollup for ${targetDate}`);
+    }).catch(() => {
+      // Silent fail if logger unavailable
+    });
 
     // Derive cost inputs from events
     const costInputs = await deriveCostInputsFromEvents(targetDate);
-    console.log(`[Daily Rollup] Derived ${costInputs.length} cost inputs`);
+    // Use dynamic import to avoid circular dependencies in cron jobs
+    import('@/lib/utils/logger').then(({ appLogger }) => {
+      appLogger.info(`[Daily Rollup] Derived ${costInputs.length} cost inputs`);
+    }).catch(() => {
+      // Silent fail if logger unavailable
+    });
     await storeCostInputs(costInputs);
 
     // Calculate daily cost rollup
     const costRollup = await calculateDailyCostRollup(targetDate);
-    console.log(`[Daily Rollup] Cost rollup: $${costRollup.totalCostEst.toFixed(2)}`);
+    // Use dynamic import to avoid circular dependencies in cron jobs
+    import('@/lib/utils/logger').then(({ appLogger }) => {
+      appLogger.info(`[Daily Rollup] Cost rollup: $${costRollup.totalCostEst.toFixed(2)}`);
+    }).catch(() => {
+      // Silent fail if logger unavailable
+    });
     await storeCostRollup(costRollup);
 
     // Calculate usage rollup
@@ -103,13 +118,18 @@ export async function POST(request: NextRequest) {
         total_errors: errors,
         avg_response_time_ms: Math.round(avgResponseTime),
         p95_response_time_ms: Math.round(p95ResponseTime || 0),
-      } as any,
+      } as Record<string, unknown>,
       {
         onConflict: 'date',
       }
     );
 
-    console.log(`[Daily Rollup] Usage rollup: ${activeOrgs.size} orgs, ${activeUsers.size} users`);
+    // Use dynamic import to avoid circular dependencies in cron jobs
+    import('@/lib/utils/logger').then(({ appLogger }) => {
+      appLogger.info(`[Daily Rollup] Usage rollup: ${activeOrgs.size} orgs, ${activeUsers.size} users`);
+    }).catch(() => {
+      // Silent fail if logger unavailable
+    });
 
     return NextResponse.json({
       success: true,
@@ -130,7 +150,12 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('[Daily Rollup] Error:', error);
+    // Use dynamic import to avoid circular dependencies in cron jobs
+    import('@/lib/utils/logger').then(({ appLogger }) => {
+      appLogger.error('[Daily Rollup] Error', error);
+    }).catch(() => {
+      // Silent fail if logger unavailable
+    });
     // Never return 500 - return graceful error for cron retry
     return NextResponse.json(
       {

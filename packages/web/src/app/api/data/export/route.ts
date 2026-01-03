@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = "force-dynamic";
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
@@ -19,7 +21,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     const searchParams = request.nextUrl.searchParams;
     const type = searchParams.get("type") || "all";
 
-    const exportData: Record<string, any> = {
+    const exportData: Record<string, unknown> = {
       exportedAt: new Date().toISOString(),
       userId: user.id,
     };
@@ -56,7 +58,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       },
     });
   } catch (error) {
-    console.error("Error in export GET:", error);
+    appLogger.error("Error in export GET", error);
     return NextResponse.json(
       {
         success: false,

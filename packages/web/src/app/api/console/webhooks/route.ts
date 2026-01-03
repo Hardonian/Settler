@@ -9,11 +9,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api/unified-auth';
 import { createWebhook, listWebhooks, CreateWebhookInput } from '@/lib/webhooks/manager';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     const authContext = await requireAuth(request);
     
@@ -34,12 +37,15 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    console.error('[Webhooks API] Error:', error);
+    appLogger.error('[Webhooks API] Error', error);
     return NextResponse.json({ webhooks: [] });
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const authContext = await requireAuth(request);
     
@@ -75,4 +81,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     const errorMessage = error instanceof Error ? error.message : 'Failed to create webhook';
     return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

@@ -136,7 +136,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
             remaining: usage.remaining === -1 ? -1 : usage.remaining,
           };
         } catch (error) {
-          console.error(`[Usage API] Error getting usage for ${service}:`, error);
+          appLogger.error(`[Usage API] Error getting usage for ${service}`, error);
           // Continue with other services
         }
       }

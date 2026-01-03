@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getSubscriptionStatus } from '@/lib/get-subscription-status';
 import { hasAccess } from '@/lib/subscription-access';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 /**
  * Generic CRUD API Route for All Tables
@@ -112,7 +114,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     const { data, error, count } = await query;
     
     if (error) {
-      console.error('Error fetching table data:', error);
+      appLogger.error('Error fetching table data', error);
       // Never return 500 - return empty data with professional error message
       return NextResponse.json(
         { 
@@ -135,13 +137,13 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       limit,
       offset 
     });
-  } catch (error: any) {
-    console.error('Error fetching table data:', error);
+  } catch (error: unknown) {
+    appLogger.error('Error fetching table data', error);
     // Never return 500 - return empty data with professional error message
     return NextResponse.json(
       { 
         error: 'Unable to retrieve table data',
-        message: error?.message || 'An unexpected error occurred while fetching table data.',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred while fetching table data.',
         actionable: 'Please verify your connection and try again. If the problem persists, contact support at support@settler.dev.',
         data: [],
         count: 0,
@@ -200,7 +202,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       .single();
     
     if (error) {
-      console.error('Direct insert error:', error);
+      appLogger.error('Direct insert error', error);
       // Never return 500 - return actionable error message
       return NextResponse.json(
         { 
@@ -215,7 +217,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     
     return NextResponse.json({ data }, { status: 201 });
   } catch (error: any) {
-    console.error('Error creating record:', error);
+    appLogger.error('Error creating record', error);
     // Never return 500 - return actionable error message
     return NextResponse.json({ 
       error: 'Unable to create record',
@@ -278,7 +280,7 @@ export const PATCH = withUniversalBillingGate(async function PATCH(request: Next
       .single();
     
     if (error) {
-      console.error('Update error:', error);
+      appLogger.error('Update error', error);
       // Never return 500 - return actionable error message
       return NextResponse.json(
         { 
@@ -293,7 +295,7 @@ export const PATCH = withUniversalBillingGate(async function PATCH(request: Next
     
     return NextResponse.json({ data });
   } catch (error: any) {
-    console.error('Error updating record:', error);
+    appLogger.error('Error updating record', error);
     // Never return 500 - return actionable error message
     return NextResponse.json(
       { 
@@ -352,7 +354,7 @@ export const DELETE = withUniversalBillingGate(async function DELETE(request: Ne
       .eq('id', id);
     
     if (error) {
-      console.error('Delete error:', error);
+      appLogger.error('Delete error', error);
       // Never return 500 - return actionable error message
       return NextResponse.json(
         { 
@@ -368,7 +370,7 @@ export const DELETE = withUniversalBillingGate(async function DELETE(request: Ne
     
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error deleting record:', error);
+    appLogger.error('Error deleting record', error);
     // Never return 500 - return actionable error message
     return NextResponse.json(
       { 

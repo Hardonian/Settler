@@ -6,6 +6,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 interface SupportRequest {
   question: string;
@@ -17,7 +19,8 @@ interface SupportRequest {
   userId?: string;
 }
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -85,7 +88,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       related_docs: aiResponse.relatedDocs,
     });
   } catch (error) {
-    console.error("AI support assistant error:", error);
+    appLogger.error("AI support assistant error", error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
       { 
@@ -96,7 +99,9 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);
 
 async function generateSupportResponse(
   question: string,

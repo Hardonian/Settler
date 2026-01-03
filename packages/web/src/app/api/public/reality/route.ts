@@ -8,6 +8,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -15,7 +17,8 @@ export const runtime = 'nodejs';
 /**
  * GET /api/public/reality
  */
-export const GET = publicRoute(async function GET(_request: NextRequest) {
+export const GET = withSecurity(
+  publicRoute(async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     
@@ -27,7 +30,7 @@ export const GET = publicRoute(async function GET(_request: NextRequest) {
       .order('category', { ascending: true });
 
     if (metricsError) {
-      console.error('Error fetching public reality metrics:', metricsError);
+      appLogger.error('Error fetching public reality metrics', metricsError);
       // Return safe defaults instead of error
       return NextResponse.json({
         uptime_proxy: null,
@@ -90,7 +93,7 @@ export const GET = publicRoute(async function GET(_request: NextRequest) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Error in public reality API:', error);
+    appLogger.error('Error in public reality API', error);
     // Return safe defaults
     return NextResponse.json({
       uptime_proxy: null,
@@ -101,4 +104,6 @@ export const GET = publicRoute(async function GET(_request: NextRequest) {
       timestamp: new Date().toISOString(),
     }, { status: 200 }); // Return 200 to prevent page crash
   }
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

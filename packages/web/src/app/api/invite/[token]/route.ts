@@ -10,6 +10,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getTraceId } from '@/lib/observability/trace';
 import { prisma } from '@/shared/db/prismaClient';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -17,7 +19,8 @@ export const runtime = 'nodejs';
 /**
  * GET /api/invite/[token] - Get invite details
  */
-export const GET = withUniversalBillingGate(async function GET(
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(
   request: NextRequest,
   { params }: { params: { token: string } }
 ) {
@@ -68,7 +71,7 @@ export const GET = withUniversalBillingGate(async function GET(
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Invite API] Error:', error);
+    appLogger.error('[Invite API] Error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
       { 
@@ -80,12 +83,15 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);
 
 /**
  * POST /api/invite/[token] - Accept invite
  */
-export const POST = withUniversalBillingGate(async function POST(
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(
   request: NextRequest,
   { params }: { params: { token: string } }
 ) {
@@ -129,11 +135,12 @@ export const POST = withUniversalBillingGate(async function POST(
 
     // Verify email matches (optional check - can be relaxed)
     if (invite.email !== user.email) {
-      console.warn(`[Invite API] Email mismatch: invite=${invite.email}, user=${user.email}`);
+      appLogger.warn(`[Invite API] Email mismatch`, { inviteEmail: invite.email, userEmail: user.email });
       // Continue anyway - user might have changed email
     }
 
     // Add user to tenant using Supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: membershipError } = await (supabase
       .from('tenant_users') as any)
       .upsert({
@@ -161,6 +168,7 @@ export const POST = withUniversalBillingGate(async function POST(
     });
 
     // Track event
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase.rpc as any)('track_onboarding_event', {
       p_tenant_id: invite.tenantId,
       p_user_id: user.id,
@@ -178,7 +186,7 @@ export const POST = withUniversalBillingGate(async function POST(
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Invite API] Error:', error);
+    appLogger.error('[Invite API] Error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
       { 
@@ -190,4 +198,6 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
+);

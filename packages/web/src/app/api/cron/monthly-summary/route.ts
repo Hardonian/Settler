@@ -29,9 +29,17 @@ export async function GET(request: NextRequest) {
     const supabase = await createAdminClient();
 
     // Get paid users
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: users, error } = (await supabase.rpc(
       "get_paid_users_for_monthly_summary" as any
-    )) as { data: any[] | null; error: any };
+    )) as { data: Array<{
+      id: string;
+      email: string;
+      name?: string;
+      industry?: string;
+      company_name?: string;
+      plan_type?: string;
+    }> | null; error: { message?: string } | null };
 
     if (error) {
       logger.error("Failed to fetch paid users", error instanceof Error ? error : new Error(String(error)));
@@ -81,10 +89,11 @@ export async function GET(request: NextRequest) {
 
         await sendMonthlySummaryEmail(lifecycleUser, metrics);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await supabase.rpc("update_email_sent", {
           p_user_id: user.id,
           p_email_type: "monthly_summary",
-        } as any);
+        } as Record<string, unknown>);
 
         results.processed++;
         results.emails.push(user.email);

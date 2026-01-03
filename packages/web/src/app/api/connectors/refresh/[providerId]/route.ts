@@ -4,6 +4,8 @@ import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 import { refreshTokenIfNeeded } from '@settler/adapters/src/token-refresh';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -112,7 +114,7 @@ export const POST = withUniversalBillingGate(async function POST(
       result,
     });
   } catch (error) {
-    console.error('Error in refresh route:', error);
+    appLogger.error('Error in refresh route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
       {

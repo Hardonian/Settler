@@ -264,6 +264,7 @@ export async function GET(request: NextRequest) {
           await sendTrialEndedEmail(lifecycleUser);
 
           // Update plan to free if not upgraded
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (supabase.from("profiles") as any)
             .update({ plan_type: "free" })
             .eq("id", user.id)
