@@ -134,7 +134,7 @@ export default function AdminAuditPage() {
             )
           ) : (
             <div className="space-y-3">
-              {filteredItems.map((item) => (
+              {filteredItems.map((item: AuditItem) => (
                 <AuditRow key={item.id} item={item} />
               ))}
             </div>

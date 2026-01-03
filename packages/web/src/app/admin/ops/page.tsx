@@ -9,8 +9,6 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 
-// Fix: Add missing import for downloadFile
-import { downloadFile } from '@/lib/admin/utils/export';
 import { useAdminExceptions, useAdminStream } from '@/lib/admin/hooks/use-admin-metrics';
 import { useKeyboardShortcuts } from '@/lib/admin/hooks/use-keyboard-shortcuts';
 import { ExceptionItem } from '@/lib/admin/metrics/types';
@@ -57,7 +55,7 @@ export default function AdminOpsConsole() {
       }
       return null;
     }
-    return filteredExceptions.find(ex => ex.id === selectedException) || null;
+    return filteredExceptions.find((ex: ExceptionItem) => ex.id === selectedException) || null;
   }, [selectedException, filteredExceptions]);
 
   // Keyboard shortcuts
@@ -96,7 +94,7 @@ export default function AdminOpsConsole() {
   // Update selected index when exceptions change
   useEffect(() => {
     if (selectedException && filteredExceptions.length > 0) {
-      const index = filteredExceptions.findIndex(ex => ex.id === selectedException);
+      const index = filteredExceptions.findIndex((ex: ExceptionItem) => ex.id === selectedException);
       if (index >= 0) {
         selectedIndexRef.current = index;
       }

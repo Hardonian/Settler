@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
-import { StreamEventSchema, HealthDeltaSchema, StreamEvent } from '@/lib/admin/metrics/types';
+import { HealthDeltaSchema, StreamEvent } from '@/lib/admin/metrics/types';
 import { prisma } from '@/shared/db/prismaClient';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';

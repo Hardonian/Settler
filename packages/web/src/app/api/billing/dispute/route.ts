@@ -23,8 +23,8 @@ export const POST = withSecurity(
     const { invoiceId, amount, reason, description } = body;
 
     // Create dispute record
-    const { data, error } = await (supabase
-      .from("billing_disputes")
+    const { data, error } = await ((supabase
+      .from("billing_disputes") as any)
       .insert({
         user_id: user.id,
         invoice_id: invoiceId,
@@ -32,9 +32,9 @@ export const POST = withSecurity(
         reason,
         description,
         status: "pending",
-      }) as any)
+      })
       .select()
-      .single();
+      .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
 
     if (error) {
       appLogger.error("Error creating dispute", error);

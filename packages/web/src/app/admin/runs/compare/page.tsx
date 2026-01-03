@@ -10,7 +10,6 @@ import { use, useState } from 'react';
 import { useAdminRuns } from '@/lib/admin/hooks/use-admin-metrics';
 import { ReconciliationRun } from '@/lib/admin/metrics/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import Link from 'next/link';
