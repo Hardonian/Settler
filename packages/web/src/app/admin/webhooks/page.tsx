@@ -12,6 +12,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { redirect } from 'next/navigation';
 import { CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { adminLogger } from '@/lib/admin/utils/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,7 +55,7 @@ async function getWebhookEvents(limit: number = 50): Promise<WebhookEvent[]> {
       billingAccountId: e.billingAccountId,
     }));
   } catch (error) {
-    console.error('[Admin Webhooks] Error fetching events:', error);
+    adminLogger.error('Error fetching webhook events', error);
     return [];
   }
 }
@@ -70,7 +71,7 @@ async function getWebhookStats() {
 
     return { total, processed, failed, pending };
   } catch (error) {
-    console.error('[Admin Webhooks] Error fetching stats:', error);
+    adminLogger.error('Error fetching webhook stats', error);
     return { total: 0, processed: 0, failed: 0, pending: 0 };
   }
 }
@@ -93,7 +94,7 @@ async function WebhookInboxContent() {
       redirect('/signup?next=' + encodeURIComponent('/admin/webhooks'));
     }
   } catch (error) {
-    console.error('[Admin Webhooks] Auth check error:', error);
+    adminLogger.error('Auth check error in webhooks page', error);
     redirect('/signup');
   }
 
@@ -106,7 +107,7 @@ async function WebhookInboxContent() {
       getWebhookStats(),
     ]);
   } catch (error) {
-    console.error('[Admin Webhooks] Error loading data:', error);
+    adminLogger.error('Error loading webhooks data', error);
     // Continue with empty data - error already logged
   }
 

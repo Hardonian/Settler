@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { getExperiments } from '@/app/actions/experiments';
+import { adminLogger } from '@/lib/admin/utils/logger';
 
 export default async function ExperimentsList() {
   try {
@@ -68,7 +69,7 @@ export default async function ExperimentsList() {
   } catch (error) {
     // Top-level error boundary for admin experiments
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[Admin Experiments] Error:', errorMessage);
+    adminLogger.error('Error in admin experiments page', new Error(errorMessage));
     
     return (
       <div className="p-8">

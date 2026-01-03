@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { adminLogger } from '@/lib/admin/utils/logger';
+import { adminLogger } from '@/lib/admin/utils/logger';
 
 /**
  * Admin Error Boundary
@@ -29,12 +31,10 @@ export default function AdminError({
       ...(process.env.NODE_ENV === 'development' && error.stack ? { stack: error.stack } : {}),
     };
     
-    console.error('[Admin Error Boundary]', errorInfo);
-    
-    // In production, send to error tracking service
-    if (process.env.NODE_ENV === 'production') {
-      // Error tracking integrated via monitoring/alerts system
-    }
+    // Log error via adminLogger
+    adminLogger.error('Admin error page', error, {
+      digest: error.digest,
+    });
   }, [error]);
 
   // Determine if this is an auth error

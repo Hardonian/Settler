@@ -12,6 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { PricingCalculator } from "@/components/pricing/PricingCalculator";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
+import { TrustBadges } from "@/components/shared/trust-badges";
+import { LimitedTimeBanner } from "@/components/shared/urgency-banner";
+import { HoverCard } from "@/components/admin/microinteractions";
 import {
   Accordion,
   AccordionContent,
@@ -20,6 +24,9 @@ import {
 } from "@/components/ui/accordion";
 
 export default function Pricing() {
+  // Limited time offer expires in 7 days
+  const offerExpiresAt = new Date();
+  offerExpiresAt.setDate(offerExpiresAt.getDate() + 7);
   const plans = [
     {
       name: 'Starter',
@@ -54,8 +61,9 @@ export default function Pricing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
-      <Navigation />
+    <ErrorBoundary context="Pricing Page">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+        <Navigation />
 
       {/* Hero */}
       <section className="px-4 sm:px-6 lg:px-8 pt-8 pb-10 md:pb-12">
@@ -66,6 +74,19 @@ export default function Pricing() {
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
             Stop spending 8-16 hours per month on manual reconciliation. Starting at $99/month, you'll save time and reduce audit risk.
           </p>
+          <div className="flex justify-center mb-4">
+            <TrustBadges />
+          </div>
+        </div>
+      </section>
+
+      {/* Limited Time Offer Banner */}
+      <section className="px-4 sm:px-6 lg:px-8 pb-6">
+        <div className="max-w-4xl mx-auto">
+          <LimitedTimeBanner 
+            expiresAt={offerExpiresAt}
+            message="Get 20% off your first 3 months when you sign up today."
+          />
         </div>
       </section>
 
@@ -74,10 +95,10 @@ export default function Pricing() {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
             {plans.map((plan, index) => (
-              <Card
-                key={index}
-                className={`relative ${plan.popular ? 'border-2 border-blue-500 shadow-xl' : ''}`}
-              >
+              <HoverCard key={index}>
+                <Card
+                  className={`relative transition-all duration-200 ${plan.popular ? 'border-2 border-blue-500 shadow-xl' : ''}`}
+                >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-blue-600 text-white">Most Popular</Badge>
@@ -121,7 +142,8 @@ export default function Pricing() {
                     </Link>
                   </Button>
                 </CardContent>
-              </Card>
+                </Card>
+              </HoverCard>
             ))}
           </div>
         </div>
@@ -225,6 +247,7 @@ export default function Pricing() {
       </section>
 
       <Footer />
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }

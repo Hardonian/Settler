@@ -26,6 +26,10 @@ import { UsageWarningBanner } from '@/components/console/UsageWarningBanner';
 import { GuidedTourClient } from '@/components/console/GuidedTourClient';
 import { UsageInsightsPanel } from '@/components/console/UsageInsightsPanel';
 import { RBACGate } from '@/lib/rbac-gate';
+import { appLogger } from '@/lib/utils/logger';
+import { HoverCard } from '@/components/admin/microinteractions';
+import { ErrorBoundary } from '@/components/shared/error-boundary';
+import { PageLoadingSkeleton } from '@/components/shared/loading-state';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -41,12 +45,12 @@ async function ConsoleOverviewContent() {
       userAgent: typeof process !== 'undefined' ? 'server' : 'client',
     };
     
-    console.log('[Console] Request started', logContext);
+    appLogger.info('Console request started', logContext);
     
     // Environment safety check using validator
     const envValidation = validateSupabaseEnv();
     if (!envValidation.isValid) {
-      console.warn('[Console] Missing environment variables', {
+      appLogger.warn('Missing environment variables', {
         ...logContext,
         missingVars: envValidation.missing,
       });
@@ -60,13 +64,13 @@ async function ConsoleOverviewContent() {
       user = authResult.data?.user;
       
       if (authResult.error) {
-        console.error('[Console] Auth error', {
+        appLogger.error('Console auth error', undefined, {
           ...logContext,
           error: authResult.error.message,
           code: authResult.error.status,
         });
       } else if (user) {
-        console.log('[Console] User authenticated', {
+        appLogger.info('User authenticated', {
           ...logContext,
           userId: user.id,
           email: user.email ? '***' : undefined, // Don't log full email
@@ -74,7 +78,7 @@ async function ConsoleOverviewContent() {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('[Console] Failed to get user', {
+      appLogger.error('Failed to get user', undefined, {
         ...logContext,
         error: errorMessage,
       });
@@ -373,7 +377,7 @@ async function ConsoleOverviewContent() {
           ),
         ]);
       } catch (prismaError) {
-        console.error('[Console] Prisma query failed:', prismaError);
+        appLogger.error('Prisma query failed', prismaError);
         // Don't throw - continue with null billingAccount
         billingAccount = null;
       }
@@ -395,14 +399,14 @@ async function ConsoleOverviewContent() {
             ),
           ]);
         } catch (createError) {
-          console.error('[Console] Failed to create billing account:', createError);
+          appLogger.error('Failed to create billing account', createError);
           // Don't crash - continue with null billingAccount
           billingAccount = null;
         }
       }
     }
   } catch (error) {
-    console.error('[Console] Failed to load Prisma or fetch billing account:', error);
+    appLogger.error('Failed to load Prisma or fetch billing account', error);
     // Continue without billing account - use user.id as fallback
     billingAccount = null;
   }
@@ -429,18 +433,18 @@ async function ConsoleOverviewContent() {
         // Don't re-throw - Promise.allSettled handles all errors gracefully
         // Auth errors are already handled by the layout, so we can safely return empty array
         if (err instanceof Error && err.message.includes('Unauthorized')) {
-          console.warn('[Console] listApiKeys: User not authenticated, returning empty array');
+          appLogger.warn('listApiKeys: User not authenticated, returning empty array');
           return [];
         }
-        console.error('[Console] listApiKeys error:', err);
+        appLogger.error('listApiKeys error', err);
         return [];
       }),
       listReceipts(billingAccountId, 5).catch((err) => {
-        console.error('[Console] listReceipts error:', err);
+        appLogger.error('listReceipts error', err);
         return [];
       }),
       listFeatureFlags(billingAccountId).catch((err) => {
-        console.error('[Console] listFeatureFlags error:', err);
+        appLogger.error('listFeatureFlags error', err);
         return [];
       }),
       getUsageSummary(
@@ -448,7 +452,7 @@ async function ConsoleOverviewContent() {
         new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
         new Date()
       ).catch((err) => {
-        console.error('[Console] getUsageSummary error:', err);
+        appLogger.error('getUsageSummary error', err);
         return {
           totalCalls: 0,
           byService: {},
@@ -462,28 +466,28 @@ async function ConsoleOverviewContent() {
     if (apiKeysResult.status === 'fulfilled') {
       apiKeys = apiKeysResult.value;
     } else {
-      console.error('[Console] Failed to fetch API keys:', apiKeysResult.reason);
+      appLogger.error('Failed to fetch API keys', apiKeysResult.reason);
     }
 
     if (receiptsResult.status === 'fulfilled') {
       receipts = receiptsResult.value;
     } else {
-      console.error('[Console] Failed to fetch receipts:', receiptsResult.reason);
+      appLogger.error('Failed to fetch receipts', receiptsResult.reason);
     }
 
     if (flagsResult.status === 'fulfilled') {
       flags = flagsResult.value;
     } else {
-      console.error('[Console] Failed to fetch feature flags:', flagsResult.reason);
+      appLogger.error('Failed to fetch feature flags', flagsResult.reason);
     }
 
     if (usageSummaryResult.status === 'fulfilled') {
       usageSummary = usageSummaryResult.value;
     } else {
-      console.error('[Console] Failed to fetch usage summary:', usageSummaryResult.reason);
+      appLogger.error('Failed to fetch usage summary', usageSummaryResult.reason);
     }
   } catch (error) {
-    console.error('[Console] Error fetching overview data:', error);
+    appLogger.error('Error fetching overview data', error);
     // Continue with empty/default values - page will still render
   }
 
@@ -500,7 +504,7 @@ async function ConsoleOverviewContent() {
 
   // Log successful page load
   const duration = Date.now() - startTime;
-  console.log('[Console] Page loaded successfully', {
+  appLogger.info('Console page loaded successfully', {
     route: '/console',
     timestamp: new Date().toISOString(),
     duration,
@@ -744,7 +748,7 @@ async function ConsoleOverviewContent() {
     const duration = Date.now() - startTime;
     
     // Structured error logging (server-side only, no secrets)
-    console.error('[Console] Unhandled error', {
+    appLogger.error('Console unhandled error', error, {
       route: '/console',
       timestamp: new Date().toISOString(),
       error: errorMessage,
@@ -810,17 +814,10 @@ async function ConsoleOverviewContent() {
 
 export default function ConsoleOverviewPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-electric-cyan mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Loading console...</p>
-          </div>
-        </div>
-      }
-    >
-      <ConsoleOverviewContent />
-    </Suspense>
+    <ErrorBoundary context="Console Overview">
+      <Suspense fallback={<PageLoadingSkeleton />}>
+        <ConsoleOverviewContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
