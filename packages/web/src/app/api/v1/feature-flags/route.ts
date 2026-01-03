@@ -11,6 +11,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { FlagType } from '@/domain/featureFlags/types';
 import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
 import { withSecurity } from '@/lib/middleware/api-security';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
