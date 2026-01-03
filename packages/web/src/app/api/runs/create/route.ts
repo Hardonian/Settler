@@ -95,7 +95,7 @@ export const POST = withSecurity(
         name: validated.name || 'Reconciliation Run',
       } as Record<string, unknown>)
       .select()
-      .single() as { data: { id: string } | null; error: { message?: string } | null });
+      .single() as Promise<{ data: { id: string } | null; error: { message?: string } | null }>;
 
     if (createError || !run) {
       logger.error('Failed to create run', createError as Error);
