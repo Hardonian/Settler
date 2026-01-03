@@ -186,7 +186,7 @@ export class PrioritizedQueue {
       }).catch(() => {
         // Fallback if logger fails
         // eslint-disable-next-line no-console
-        console.log(`Job ${job.id} completed in queue ${this.queueName}`);
+        logInfo(`Job ${job.id} completed in queue ${this.queueName}`, { jobId: job.id, queueName: this.queueName });
       });
     });
 
@@ -196,7 +196,7 @@ export class PrioritizedQueue {
       }).catch(() => {
         // Fallback if logger fails
         // eslint-disable-next-line no-console
-        console.error(`Job ${job?.id} failed in queue ${this.queueName}:`, err);
+        logError(`Job ${job?.id} failed in queue ${this.queueName}`, err, { jobId: job?.id, queueName: this.queueName });
       });
     });
   }

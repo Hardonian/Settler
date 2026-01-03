@@ -146,12 +146,12 @@ export async function notifyJobFailure(
         jobName: job.name,
       });
     } catch (webhookError) {
-      console.error(`[JobFailureNotification] Webhook notification failed:`, webhookError);
+      logError(`[JobFailureNotification] Webhook notification failed`, webhookError);
       // Don't throw - webhook failure shouldn't break notification flow
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error(`[JobFailureNotification] Failed to send notification:`, errorMessage);
+    logError(`[JobFailureNotification] Failed to send notification`, error, { errorMessage });
     // Don't throw - notification failure shouldn't break job execution
   }
 }
@@ -230,7 +230,7 @@ export async function notifyJobCompletion(
       await sendEmail(emailTemplate);
     }
   } catch (error) {
-    console.error(`[JobCompletionNotification] Failed:`, error);
+    logError(`[JobCompletionNotification] Failed`, error);
     // Don't throw
   }
 }

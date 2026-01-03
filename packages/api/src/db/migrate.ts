@@ -266,14 +266,14 @@ if (require.main === module) {
       } else {
         // CLI usage - console is acceptable here
         // eslint-disable-next-line no-console
-        console.log('All migrations completed successfully');
+        logInfo('All migrations completed successfully');
         process.exit(0);
       }
     })
     .catch((error) => {
       // CLI usage - console is acceptable here
       // eslint-disable-next-line no-console
-      console.error('Migration process failed:', error);
+      logError('Migration process failed', error);
       process.exit(1);
     });
 }

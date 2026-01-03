@@ -231,7 +231,7 @@ export async function GET(request: NextRequest) {
             }
           }
         } catch (error) {
-          console.error('[SSE Stream] Polling error:', error);
+          appLogger.error('[SSE Stream] Polling error', error);
           sendHealth('reconnecting', null);
         }
       }, 2000); // Poll every 2 seconds

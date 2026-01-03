@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addCorsHeaders, handleCors } from "@/lib/api/cors";
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
 
 // Cache status for 30 seconds to reduce load while keeping it fresh
 export const revalidate = 30;
@@ -64,7 +65,7 @@ export const GET = publicRoute(async function GET(request: NextRequest): Promise
     // Add CORS headers
     return addCorsHeaders(response, request);
   } catch (error) {
-    console.error("Error in status GET:", error);
+    appLogger.error("Error in status GET", error);
     // Never return 500 - return degraded status with graceful error message
     const errorResponse = NextResponse.json(
       { 

@@ -316,7 +316,11 @@ export class AnomalyDetectorAgent extends BaseAgent {
    */
   private async sendAlert(anomaly: Anomaly): Promise<void> {
     // TODO: Send to alerting system (PagerDuty, Slack, etc.)
-    console.log(`ALERT: ${anomaly.severity.toUpperCase()} - ${anomaly.description}`);
+    logWarn(`ALERT: ${anomaly.severity.toUpperCase()} - ${anomaly.description}`, {
+      severity: anomaly.severity,
+      description: anomaly.description,
+      anomalyId: anomaly.id,
+    });
     this.emit('alert_sent', anomaly);
   }
 }

@@ -298,7 +298,7 @@ export class JobSchedulerService {
       });
 
       if (!dbJob) {
-        console.warn(`[JobScheduler] Job ${job.id} no longer exists or is inactive, unscheduling`);
+        logWarn(`[JobScheduler] Job ${job.id} no longer exists or is inactive, unscheduling`, { jobId: job.id });
         await this.unscheduleJob(job.id);
         return;
       }
@@ -318,9 +318,9 @@ export class JobSchedulerService {
         const runningDuration = Date.now() - runningResult.startedAt.getTime();
         // If job has been running for more than 1 hour, consider it stuck
         if (runningDuration > 3600000) {
-          console.warn(`[JobScheduler] Job ${job.id} appears stuck, allowing new execution`);
+          logWarn(`[JobScheduler] Job ${job.id} appears stuck, allowing new execution`, { jobId: job.id, runningDuration });
         } else {
-          console.warn(`[JobScheduler] Job ${job.id} is already running, skipping`);
+          logWarn(`[JobScheduler] Job ${job.id} is already running, skipping`, { jobId: job.id });
           return;
         }
       }
@@ -334,7 +334,8 @@ export class JobSchedulerService {
       });
 
       const duration = Date.now() - startTime;
-      console.log(`[JobScheduler] Job ${job.id} executed successfully`, {
+      logInfo(`[JobScheduler] Job ${job.id} executed successfully`, {
+        jobId: job.id,
         resultId: result.id,
         duration,
       });
@@ -355,7 +356,8 @@ export class JobSchedulerService {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       const errorStack = error instanceof Error ? error.stack : undefined;
 
-      console.error(`[JobScheduler] Job ${job.id} execution failed:`, {
+      logError(`[JobScheduler] Job ${job.id} execution failed`, error, {
+        jobId: job.id,
         error: errorMessage,
         stack: errorStack,
         duration,
@@ -384,7 +386,7 @@ export class JobSchedulerService {
         });
         failedResultId = failedResult.id;
       } catch (createError) {
-        console.error(`[JobScheduler] Failed to create error result for job ${job.id}:`, createError);
+        logError(`[JobScheduler] Failed to create error result for job ${job.id}`, createError);
       }
 
       // Send failure notification
@@ -401,7 +403,7 @@ export class JobSchedulerService {
           });
         } catch (notificationError) {
           // Don't fail if notification fails
-          console.error(`[JobScheduler] Failed to send failure notification:`, notificationError);
+          logError(`[JobScheduler] Failed to send failure notification`, notificationError);
         }
       }
 
@@ -422,10 +424,10 @@ export class JobSchedulerService {
 
       // Log health status (only if there are jobs to avoid spam)
       if (activeJobCount > 0) {
-        console.log(`[JobScheduler] Health check OK - ${activeJobCount} active jobs`);
+        logInfo(`[JobScheduler] Health check OK - ${activeJobCount} active jobs`, { activeJobCount });
       }
     } catch (error) {
-      console.error('[JobScheduler] Health check failed:', error);
+      logError('[JobScheduler] Health check failed', error);
     }
   }
 

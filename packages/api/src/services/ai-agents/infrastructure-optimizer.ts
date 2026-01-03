@@ -116,7 +116,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     for (const opportunity of opportunities) {
       if (opportunity.recommendedAction === 'auto-apply' && opportunity.expectedImpact.riskLevel === 'low') {
         await this.applyOptimization(opportunity).catch(error => {
-          console.error(`Failed to apply optimization ${opportunity.id}:`, error);
+          logError(`Failed to apply optimization ${opportunity.id}`, error);
         });
       }
     }
@@ -203,7 +203,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
    */
   private async applyOptimization(opportunity: OptimizationOpportunity): Promise<void> {
     // TODO: Implement actual optimization logic
-    console.log(`Applying optimization: ${opportunity.id}`);
+    logInfo(`Applying optimization: ${opportunity.id}`, { opportunityId: opportunity.id });
     this.emit('optimization_applied', opportunity);
   }
 

@@ -6,8 +6,11 @@
 import { NextResponse } from 'next/server';
 import { getCacheHeaders } from '@/lib/performance/cache-strategies';
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
-export const GET = publicRoute(async function GET() {
+export const GET = withSecurity(
+  publicRoute(async function GET() {
   try {
     // TODO: Fetch from database and aggregate
     // For now, return mock data that matches the expected structure
@@ -74,7 +77,7 @@ export const GET = publicRoute(async function GET() {
       }
     );
   } catch (error) {
-    console.error('Failed to fetch OSS stats:', error);
+    appLogger.error('Failed to fetch OSS stats', error);
     // Never return 500 - return empty stats with graceful error message
     return NextResponse.json(
       {
@@ -91,4 +94,6 @@ export const GET = publicRoute(async function GET() {
       { status: 200 }
     );
   }
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

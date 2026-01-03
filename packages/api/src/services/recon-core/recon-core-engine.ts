@@ -278,7 +278,7 @@ export class ReconCoreEngine {
           }
         } catch (valueError) {
           // Log but don't throw - value tracking should never break reconciliation
-          console.error('[ReconCoreEngine] Failed to emit value events:', valueError);
+          logError('[ReconCoreEngine] Failed to emit value events', valueError);
         }
       }
 
@@ -314,7 +314,7 @@ export class ReconCoreEngine {
           });
         } catch (notificationError) {
           // Don't fail job execution if notification fails
-          console.error('[ReconCoreEngine] Failed to send completion notification:', notificationError);
+          logError('[ReconCoreEngine] Failed to send completion notification', notificationError);
         }
       }
 
@@ -337,7 +337,7 @@ export class ReconCoreEngine {
         });
       } catch (notificationError) {
         // Don't fail if notification fails
-        console.error('[ReconCoreEngine] Failed to send failure notification:', notificationError);
+        logError('[ReconCoreEngine] Failed to send failure notification', notificationError);
       }
 
       // Update result with error
@@ -527,7 +527,7 @@ export class ReconCoreEngine {
         }));
       } catch (rulesError) {
         // Log but continue - rules are optional
-        console.warn('[ReconCoreEngine] Failed to load rules, continuing without rules:', rulesError);
+        logWarn('[ReconCoreEngine] Failed to load rules, continuing without rules', { error: rulesError });
       }
     }
 
@@ -577,7 +577,7 @@ export class ReconCoreEngine {
                   )
                 `;
               } catch (ruleError) {
-                console.warn('[ReconCoreEngine] Failed to record rule usage:', ruleError);
+                logWarn('[ReconCoreEngine] Failed to record rule usage', { error: ruleError });
               }
 
               matches.push({
@@ -911,7 +911,7 @@ export class ReconCoreEngine {
       });
     } catch (error) {
       // Don't fail job execution if progress update fails
-      console.error(`[ReconCoreEngine] Failed to update progress for result ${resultId}:`, error);
+      logError(`[ReconCoreEngine] Failed to update progress for result ${resultId}`, error);
     }
   }
 }

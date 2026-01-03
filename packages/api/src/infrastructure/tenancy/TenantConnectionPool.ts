@@ -33,7 +33,7 @@ export class TenantConnectionPool {
       }).catch(() => {
         // Fallback if logger fails
         // eslint-disable-next-line no-console
-        console.error('Unexpected error on idle client', err);
+        logError('Unexpected error on idle client', err);
       });
     });
   }

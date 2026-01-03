@@ -100,7 +100,7 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
     });
   } catch (error) {
     // Never return 500 - always return 200 with error info for playground
-    console.error('Error creating feature flag:', error);
+    appLogger.error('Error creating feature flag', error);
     return NextResponse.json(
       {
         error: 'Failed to create feature flag',
