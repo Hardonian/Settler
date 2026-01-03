@@ -14,6 +14,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { logError } from '../utils/logger';
 
 interface MatchResult {
   receiptId: string;
@@ -160,7 +161,7 @@ export async function matchReceiptToTransaction(
 
     return null;
   } catch (error) {
-    console.error(`[ReceiptMatching] Failed to match receipt ${receiptId}:`, error);
+    logError(`[ReceiptMatching] Failed to match receipt ${receiptId}`, error);
     return null;
   }
 }

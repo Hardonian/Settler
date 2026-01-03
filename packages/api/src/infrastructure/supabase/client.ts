@@ -23,6 +23,8 @@ function createSupabaseClient(): SupabaseClient {
       throw new Error('Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_ANON_KEY environment variables.');
     }
     // In development, create a mock client that will fail gracefully
+    // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+    // eslint-disable-next-line no-console
     console.warn('⚠️  Supabase not configured. Some features may not work.');
     return createClient('https://placeholder.supabase.co', 'placeholder-key', {
       db: { schema: 'public' },
@@ -141,9 +143,9 @@ export async function checkSupabaseHealth(): Promise<{
 /**
  * Helper function to execute SQL queries with retry logic
  */
-export async function executeSQL<T = any>(
+export async function executeSQL<T = unknown>(
   query: string,
-  params?: any[]
+  params?: unknown[]
 ): Promise<T[]> {
   const pRetry = require('p-retry');
   
@@ -174,9 +176,11 @@ export async function executeSQL<T = any>(
       retries: 3,
       minTimeout: 1000,
       maxTimeout: 5000,
-      onFailedAttempt: (error: { attemptNumber: number; message: string }) => {
-        console.warn(`Supabase query retry attempt ${error.attemptNumber}: ${error.message}`);
-      },
+        onFailedAttempt: (error: { attemptNumber: number; message: string }) => {
+          // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+          // eslint-disable-next-line no-console
+          console.warn(`Supabase query retry attempt ${error.attemptNumber}: ${error.message}`);
+        },
     }
   );
 }
@@ -208,6 +212,8 @@ export async function initializeSupabaseExtensions(): Promise<void> {
           });
         } catch {
           // Extension might already exist or not be available
+          // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+          // eslint-disable-next-line no-console
           console.warn('pgvector extension not available or already enabled');
         }
 
@@ -217,6 +223,8 @@ export async function initializeSupabaseExtensions(): Promise<void> {
             sql: 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";',
           });
         } catch {
+          // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+          // eslint-disable-next-line no-console
           console.warn('uuid-ossp extension not available or already enabled');
         }
       },
@@ -225,11 +233,15 @@ export async function initializeSupabaseExtensions(): Promise<void> {
         minTimeout: 1000,
         maxTimeout: 5000,
         onFailedAttempt: (error: { attemptNumber: number; message: string }) => {
+          // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+          // eslint-disable-next-line no-console
           console.warn(`Supabase extension initialization retry ${error.attemptNumber}: ${error.message}`);
         },
       }
     );
   } catch (error) {
+    // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+    // eslint-disable-next-line no-console
     console.warn('Failed to initialize Supabase extensions after retries:', error);
     // Don't throw - extensions may already exist
   }

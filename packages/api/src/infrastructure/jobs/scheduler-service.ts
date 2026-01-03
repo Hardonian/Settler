@@ -46,6 +46,7 @@ interface ScheduledJob {
 export class JobSchedulerService {
   private prisma: PrismaClient;
   private reconEngine: ReconCoreEngine;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cronJobs: Map<string, { task: any; job: ScheduledJob }> = new Map();
   private isRunning = false;
   private healthCheckInterval: NodeJS.Timeout | null = null;

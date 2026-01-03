@@ -15,6 +15,8 @@ const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_TOKEN;
 
 if (!redisUrl || !redisToken) {
+  // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+  // eslint-disable-next-line no-console
   console.warn('Redis not configured. Some features will be disabled.');
 }
 
@@ -31,6 +33,7 @@ export const redis = redisUrl && redisToken
 /**
  * Fallback Redis client using ioredis (for local development)
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ioredisClient: any = null;
 
 if (!redis && process.env.REDIS_HOST) {
@@ -48,9 +51,13 @@ if (!redis && process.env.REDIS_HOST) {
     });
 
     ioredisClient.on('error', (err: Error) => {
+      // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+      // eslint-disable-next-line no-console
       console.error('Redis connection error:', err);
     });
   } catch (error) {
+    // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+    // eslint-disable-next-line no-console
     console.warn('Failed to initialize Redis client:', error);
   }
 }
@@ -58,6 +65,7 @@ if (!redis && process.env.REDIS_HOST) {
 /**
  * Get Redis client (Upstash or ioredis fallback)
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getRedisClient(): Redis | any {
   return redis || ioredisClient;
 }
@@ -76,7 +84,7 @@ export const cache = {
   /**
    * Get value from cache
    */
-  async get<T = any>(key: string): Promise<T | null> {
+  async get<T = unknown>(key: string): Promise<T | null> {
     const client = getRedisClient();
     if (!client) return null;
 
@@ -96,7 +104,7 @@ export const cache = {
   /**
    * Set value in cache
    */
-  async set(key: string, value: any, ttlSeconds?: number): Promise<void> {
+  async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
     const client = getRedisClient();
     if (!client) return;
 
@@ -116,6 +124,8 @@ export const cache = {
         }
       }
     } catch (error) {
+      // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+      // eslint-disable-next-line no-console
       console.error('Redis set error:', error);
     }
   },
@@ -130,6 +140,8 @@ export const cache = {
     try {
       await client.del(key);
     } catch (error) {
+      // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+      // eslint-disable-next-line no-console
       console.error('Redis del error:', error);
     }
   },
@@ -150,6 +162,8 @@ export const cache = {
         return result === 1;
       }
     } catch (error) {
+      // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+      // eslint-disable-next-line no-console
       console.error('Redis exists error:', error);
       return false;
     }

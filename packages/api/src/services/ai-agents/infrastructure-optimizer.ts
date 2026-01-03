@@ -9,6 +9,7 @@
  */
 
 import { BaseAgent } from './orchestrator';
+import { logError } from '../../utils/logger';
 
 export interface OptimizationOpportunity {
   id: string;
@@ -37,7 +38,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     setInterval(() => {
       if (this.enabled) {
         this.analyzeInfrastructure().catch(error => {
-          console.error('Infrastructure analysis failed:', error);
+          logError('Infrastructure analysis failed', error);
         });
       }
     }, 3600000); // Every hour
@@ -74,7 +75,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
       lastExecution?: Date;
       metrics?: Record<string, unknown>;
     } = {
-      enabled: (this as any).enabled,
+      enabled: this.enabled,
     };
     if (this.lastOptimization) {
       status.lastExecution = this.lastOptimization;

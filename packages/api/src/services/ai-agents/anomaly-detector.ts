@@ -39,7 +39,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
     setInterval(() => {
       if (this.enabled) {
         this.detectAnomalies().catch(error => {
-          console.error('Anomaly detection failed:', error);
+          logError('Anomaly detection failed', error);
         });
       }
     }, 60000); // Every minute
@@ -77,7 +77,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
       lastExecution?: Date;
       metrics?: Record<string, unknown>;
     } = {
-      enabled: (this as any).enabled,
+      enabled: this.enabled,
     };
     if (this.lastDetection) {
       status.lastExecution = this.lastDetection;

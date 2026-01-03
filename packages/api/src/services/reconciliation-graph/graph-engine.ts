@@ -7,6 +7,7 @@
 
 import { ReconciliationNode, ReconciliationEdge, ReconciliationGraph, GraphQuery, RealTimeUpdate } from './types';
 import { EventEmitter } from 'events';
+import { logError } from '../../utils/logger';
 
 export class ReconciliationGraphEngine extends EventEmitter {
   private graphs: Map<string, ReconciliationGraph> = new Map();
@@ -309,7 +310,7 @@ export class ReconciliationGraphEngine extends EventEmitter {
         try {
           callback(update);
         } catch (error) {
-          console.error('Error notifying subscriber:', error);
+          logError('Error notifying subscriber', error);
         }
       });
     }

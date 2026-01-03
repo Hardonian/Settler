@@ -10,6 +10,7 @@
  */
 
 import { PrismaClient, Prisma } from '@prisma/client';
+import { logError } from '../utils/logger';
 
 interface OptimizationSuggestion {
   type: 'amount_tolerance' | 'date_window' | 'fuzzy_threshold' | 'currency_conversion';
@@ -132,7 +133,7 @@ export async function suggestRuleOptimizations(
 
     return suggestions.sort((a, b) => b.expectedImprovement - a.expectedImprovement);
   } catch (error) {
-    console.error(`[RuleOptimizer] Failed to analyze job ${jobId}:`, error);
+    logError(`[RuleOptimizer] Failed to analyze job ${jobId}`, error);
     return suggestions;
   }
 }

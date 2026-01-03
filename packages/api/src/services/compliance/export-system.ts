@@ -5,6 +5,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { logError } from '../../utils/logger';
 
 export interface ComplianceExport {
   id: string;
@@ -110,7 +111,7 @@ export class ComplianceExportSystem extends EventEmitter {
 
     // Process export asynchronously
     this.processExport(export_).catch(error => {
-      console.error(`Failed to process export ${export_.id}:`, error);
+      logError(`Failed to process export ${export_.id}`, error);
       export_.status = 'failed';
       this.emit('export_failed', export_);
     });
@@ -142,7 +143,7 @@ export class ComplianceExportSystem extends EventEmitter {
       export_.downloadUrl = downloadUrl;
 
       this.emit('export_completed', export_);
-    } catch (error: any) {
+    } catch (error: unknown) {
       export_.status = 'failed';
       this.emit('export_failed', { export_, error });
       throw error;
