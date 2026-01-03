@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { adminLogger } from '@/lib/admin/utils/logger';
-import { adminLogger } from '@/lib/admin/utils/logger';
 
 /**
  * Admin Error Boundary

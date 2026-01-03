@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import { useAdminRuns, useAdminStream } from '@/lib/admin/hooks/use-admin-metrics';
 import { ReconciliationRun } from '@/lib/admin/metrics/types';
-import { exportRunsToCSV, exportRunsToJSON } from '@/lib/admin/utils/export';
+import { exportRunsToCSV, exportRunsToJSON, downloadFile } from '@/lib/admin/utils/export';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

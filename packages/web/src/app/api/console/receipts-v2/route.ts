@@ -10,6 +10,8 @@ import { createReceipt, listReceipts, verifyReceiptChain } from '@/lib/server/se
 import { getPrimaryTenant } from '@/lib/supabase/tenant-helpers';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';

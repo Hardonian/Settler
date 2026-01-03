@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertCircle, CheckCircle2, Clock, Search, Filter, Download, FileDown } from 'lucide-react';
 import { NoExceptionsEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
+import Link from 'next/link';
 
 export default function AdminExceptionsPage() {
   const [selectedExceptions, setSelectedExceptions] = useState<Set<string>>(new Set());

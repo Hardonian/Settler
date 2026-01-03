@@ -22,7 +22,7 @@ export default function ExceptionDetailPage({ params }: { params: Promise<{ id: 
   const exception = exceptionsData?.items?.find(ex => ex.id === id);
 
   // Mock AI recommendation (would come from API in real implementation)
-  const aiRecommendation: AIRecommendation = exception ? {
+  const aiRecommendation: AIRecommendation | null = exception ? {
     type: 'mismatch',
     confidence: 0.85,
     explanation: 'Amount mismatch detected between source and target transactions. The difference suggests a potential fee or tax adjustment.',

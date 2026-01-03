@@ -30,14 +30,14 @@ export default function CompareRunsPage({
   const run1 = runsData?.items?.find(r => r.id === run1Id);
   const run2 = runsData?.items?.find(r => r.id === run2Id);
 
-  const getDiff = (val1: number, val2: number) => {
-    if (val1 === 0 && val2 === 0) return { value: 0, percent: 0, trend: 'neutral' };
+  const getDiff = (val1: number, val2: number): { value: number; percent: number; trend: 'down' | 'up' | 'neutral' } => {
+    if (val1 === 0 && val2 === 0) return { value: 0, percent: 0, trend: 'neutral' as const };
     const diff = val2 - val1;
     const percent = val1 > 0 ? (diff / val1) * 100 : (diff > 0 ? 100 : -100);
     return {
       value: diff,
       percent: Math.abs(percent),
-      trend: diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral',
+      trend: (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral') as 'down' | 'up' | 'neutral',
     };
   };
 
