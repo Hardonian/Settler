@@ -10,6 +10,7 @@ import { ExecutiveDashboard } from '@/components/console/ExecutiveDashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { adminLogger } from '@/lib/admin/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -43,7 +44,7 @@ async function AdminMetricsContent() {
       );
     }
   } catch (error) {
-    console.error('[Admin Metrics] Error:', error);
+    adminLogger.error('Error in admin metrics page', error);
     return (
       <div className="text-center py-12">
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 max-w-md mx-auto">

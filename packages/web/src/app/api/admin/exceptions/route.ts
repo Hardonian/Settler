@@ -9,12 +9,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { ExceptionsQueryParamsSchema, ExceptionItemSchema } from '@/lib/admin/metrics/types';
 import { prisma } from '@/shared/db/prismaClient';
+import { rateLimiter, getRateLimitKey } from '@/lib/admin/security/rate-limit';
+import { sanitizeSearchQuery } from '@/lib/admin/security/input-validation';
+import { adminLogger } from '@/lib/admin/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting
+    const rateLimitKey = getRateLimitKey(request);
+    const rateLimit = rateLimiter.check(rateLimitKey, 60, 60 * 1000);
+    
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too Many Requests', message: 'Rate limit exceeded' },
+        { status: 429 }
+      );
+    }
+
     // Check admin access
     const adminCheck = await isSuperAdmin();
     if (!adminCheck) {
@@ -24,16 +38,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Parse query params
+    // Parse and validate query params
     const { searchParams } = new URL(request.url);
-    const params = ExceptionsQueryParamsSchema.parse({
+    const rawParams = {
       status: searchParams.get('status') || undefined,
       severity: searchParams.get('severity') || undefined,
-      source: searchParams.get('source') || undefined,
+      source: searchParams.get('source') ? sanitizeSearchQuery(searchParams.get('source')!) : undefined,
       tenantId: searchParams.get('tenantId') || undefined,
       limit: searchParams.get('limit') || '50',
       offset: searchParams.get('offset') || '0',
-    });
+    };
+    
+    const params = ExceptionsQueryParamsSchema.parse(rawParams);
 
     // Build where clause
     const whereClause: any = {};
@@ -113,9 +129,15 @@ export async function GET(request: NextRequest) {
       total,
       limit: params.limit,
       offset: params.offset,
+    }, {
+      headers: {
+        'X-RateLimit-Limit': '60',
+        'X-RateLimit-Remaining': String(rateLimit.remaining),
+        'X-RateLimit-Reset': String(rateLimit.resetAt),
+      },
     });
   } catch (error) {
-    console.error('[Admin Exceptions] Error:', error);
+    adminLogger.error('Failed to retrieve exceptions', error);
     
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(

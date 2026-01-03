@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertCircle, CheckCircle2, Clock, Search, Filter } from 'lucide-react';
 import { KeyboardShortcutsHelp } from '@/lib/admin/hooks/use-keyboard-shortcuts';
+import { adminLogger } from '@/lib/admin/utils/logger';
 
 export default function AdminOpsConsole() {
   const [selectedException, setSelectedException] = useState<string | null>(null);
@@ -106,13 +107,43 @@ export default function AdminOpsConsole() {
   }, [filteredExceptions, selectedException]);
 
   const handleResolve = async (id: string) => {
-    // TODO: Implement resolve API call
-    console.log('Resolving exception:', id);
+    try {
+      const response = await fetch(`/api/admin/exceptions/${id}/resolve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resolutionNotes: 'Resolved via ops console' }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to resolve exception');
+      }
+      // Refresh data
+      window.location.reload();
+    } catch (error) {
+      // Error handling would trigger toast notification
+      if (error instanceof Error) {
+        adminLogger.error('Failed to resolve exception', error, { exceptionId: id });
+      }
+    }
   };
 
   const handleEscalate = async (id: string) => {
-    // TODO: Implement escalate API call
-    console.log('Escalating exception:', id);
+    try {
+      const response = await fetch(`/api/admin/exceptions/${id}/escalate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ escalationReason: 'Escalated via ops console' }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to escalate exception');
+      }
+      // Refresh data
+      window.location.reload();
+    } catch (error) {
+      // Error handling would trigger toast notification
+      if (error instanceof Error) {
+        adminLogger.error('Failed to escalate exception', error, { exceptionId: id });
+      }
+    }
   };
 
   const getSeverityColor = (severity: string) => {
@@ -138,9 +169,9 @@ export default function AdminOpsConsole() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900" id="main-content">
       {/* Left Panel: Exception List */}
-      <div className="w-1/2 border-r border-slate-200 dark:border-slate-800 flex flex-col">
+      <div className="w-full lg:w-1/2 border-r border-slate-200 dark:border-slate-800 flex flex-col">
         {/* Header */}
         <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
           <div className="flex items-center justify-between mb-4">
@@ -213,11 +244,19 @@ export default function AdminOpsConsole() {
                     setSelectedException(ex.id);
                     selectedIndexRef.current = index;
                   }}
-                  className={`w-full p-4 text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full p-4 text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     selectedException === ex.id ? 'bg-slate-100 dark:bg-slate-800 ring-2 ring-blue-500' : ''
                   }`}
                   aria-selected={selectedException === ex.id}
                   role="option"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedException(ex.id);
+                      selectedIndexRef.current = index;
+                    }
+                  }}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -245,7 +284,7 @@ export default function AdminOpsConsole() {
       </div>
 
       {/* Right Panel: Exception Detail */}
-      <div className="w-1/2 flex flex-col">
+      <div className="w-full lg:w-1/2 flex flex-col">
         {selectedExceptionData ? (
           <ExceptionDetail exception={selectedExceptionData} />
         ) : (
@@ -276,7 +315,7 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
         window.location.reload();
       }
     } catch (error) {
-      console.error('Failed to resolve:', error);
+      adminLogger.error('Failed to resolve exception', error);
     } finally {
       setIsResolving(false);
     }
@@ -295,7 +334,7 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
         window.location.reload();
       }
     } catch (error) {
-      console.error('Failed to escalate:', error);
+      adminLogger.error('Failed to escalate exception', error);
     } finally {
       setIsEscalating(false);
     }

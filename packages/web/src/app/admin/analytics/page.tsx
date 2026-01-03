@@ -1,5 +1,7 @@
 'use client';
 
+import { adminLogger } from '@/lib/admin/utils/logger';
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,13 +57,13 @@ export default function AdminAnalyticsPage() {
       if (kpisResult.success) {
         setKpis(kpisResult.data || null);
       } else {
-        console.warn('[Admin Analytics] KPIs fetch failed:', kpisResult.error);
+        adminLogger.warn('KPIs fetch failed', { error: kpisResult.error });
       }
       
       if (workspacesResult.success) {
         setWorkspaces(workspacesResult.data?.workspaces || []);
       } else {
-        console.warn('[Admin Analytics] Workspaces fetch failed:', workspacesResult.error);
+        adminLogger.warn('Workspaces fetch failed', { error: workspacesResult.error });
       }
       
       // Only set error if both fail
@@ -70,7 +72,7 @@ export default function AdminAnalyticsPage() {
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      console.error('[Admin Analytics] Error loading data:', errorMessage);
+      adminLogger.error('Error loading analytics data', new Error(errorMessage));
       setError('Failed to load analytics data. Please try again.');
     } finally {
       setLoading(false);

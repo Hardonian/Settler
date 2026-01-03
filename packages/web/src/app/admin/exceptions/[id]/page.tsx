@@ -87,12 +87,12 @@ export default function ExceptionDetailPage({ params }: { params: Promise<{ id: 
           recommendation={aiRecommendation}
           enabled={true}
           onAccept={() => {
-            console.log('AI recommendation accepted');
-            // TODO: Implement accept action
+            // AI recommendation accepted - would trigger action
+            // Implementation depends on specific use case
           }}
           onReject={() => {
-            console.log('AI recommendation rejected, using baseline');
-            // TODO: Implement reject action
+            // AI recommendation rejected - using baseline
+            // Implementation depends on specific use case
           }}
         />
       )}

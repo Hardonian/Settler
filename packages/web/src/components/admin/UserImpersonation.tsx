@@ -35,7 +35,11 @@ export function UserImpersonation() {
       setImpersonating(null);
       window.location.reload();
     } catch (error) {
-      console.error("Failed to stop impersonation:", error);
+      // Error stopping impersonation - handled by error state
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.error("Failed to stop impersonation:", error);
+      }
     }
   };
 

@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FileSearch, Download, Search, Filter, FileDown } from 'lucide-react';
+import { NoAuditEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
 
 export default function AdminAuditPage() {
   const [ruleIdFilter, setRuleIdFilter] = useState('');
@@ -126,9 +127,11 @@ export default function AdminAuditPage() {
               Loading audit trail...
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-              No audit entries found
-            </div>
+            searchQuery || ruleIdFilter || sourceFilter || actorFilter ? (
+              <NoResultsEmptyState searchQuery={searchQuery} />
+            ) : (
+              <NoAuditEmptyState />
+            )
           ) : (
             <div className="space-y-3">
               {filteredItems.map((item) => (

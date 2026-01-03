@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Edit, FilePlus } from 'lucide-react';
 import { getPages } from '@/app/actions/admin';
-import { DeletePageButton } from './DeletePageButton'; // We'll create this small client component
+import { DeletePageButton } from './DeletePageButton';
+import { adminLogger } from '@/lib/admin/utils/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -105,7 +106,7 @@ export default async function PagesList() {
   } catch (error) {
     // Top-level error boundary for admin pages
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[Admin Pages] Error:', errorMessage);
+    adminLogger.error('Error in admin pages page', new Error(errorMessage));
     
     return (
       <div className="p-8">

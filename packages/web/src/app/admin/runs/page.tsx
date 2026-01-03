@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PlayCircle, CheckCircle2, XCircle, Clock, Search, Filter, Download, FileDown } from 'lucide-react';
 import Link from 'next/link';
+import { NoRunsEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
 
 export default function AdminRunsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -159,9 +160,11 @@ export default function AdminRunsPage() {
               Loading runs...
             </div>
           ) : filteredRuns.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-              No runs found
-            </div>
+            searchQuery || statusFilter !== 'all' ? (
+              <NoResultsEmptyState searchQuery={searchQuery} />
+            ) : (
+              <NoRunsEmptyState />
+            )
           ) : (
             <div className="space-y-3">
               {filteredRuns.map((run) => (

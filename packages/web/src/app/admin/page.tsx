@@ -14,6 +14,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SecurityBadge, SystemStatusCard, LastUpdatedBadge } from '@/components/admin/trust-signals';
+import { UsageWarning } from '@/components/admin/urgency-indicators';
+import { HoverCard, AnimatedNumber, PulseIndicator } from '@/components/admin/microinteractions';
 import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Clock, DollarSign, Activity } from 'lucide-react';
 import Link from 'next/link';
 
@@ -32,28 +35,40 @@ export default function AdminDashboard() {
   }, true);
 
   const kpis = metrics?.kpis;
+  const lastUpdated = metrics?.timestamp ? new Date(metrics.timestamp) : new Date();
 
   return (
-    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen" id="main-content">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Admin Dashboard</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Admin Dashboard</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm sm:text-base">
             Real-time oversight and reconciliation operations
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+          {/* Trust Signals */}
+          <div className="flex items-center gap-2">
+            <SecurityBadge />
+            <SystemStatusCard status={connectionState === 'connected' ? 'operational' : 'degraded'} />
+          </div>
+
           {/* Connection Status */}
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${
-              connectionState === 'connected' ? 'bg-green-500' :
-              connectionState === 'reconnecting' ? 'bg-yellow-500' : 'bg-red-500'
-            }`} />
-            <span className="text-sm text-slate-600 dark:text-slate-400">
+            <PulseIndicator active={connectionState === 'connected'} color="green" />
+            <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               {connectionState === 'connected' ? 'Live' : connectionState}
             </span>
+            {latency && (
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                ({latency}ms)
+              </span>
+            )}
           </div>
+
+          {/* Last Updated */}
+          <LastUpdatedBadge timestamp={lastUpdated} />
 
           {/* Time Range Selector */}
           <div className="flex gap-2">
@@ -63,6 +78,8 @@ export default function AdminDashboard() {
                 variant={timeRange === range ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setTimeRange(range)}
+                aria-pressed={timeRange === range}
+                aria-label={`Select ${range} time range`}
               >
                 {range}
               </Button>
@@ -71,8 +88,17 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Usage Warning (if applicable) */}
+      {kpis && kpis.totalVolume > 0 && (
+        <UsageWarning 
+          current={kpis.totalVolume} 
+          limit={1000000} 
+          type="usage"
+        />
+      )}
+
       {/* KPI Tiles */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
@@ -139,33 +165,38 @@ export default function AdminDashboard() {
         <CardContent>
           {isLoading ? (
             <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-              Loading heatmap...
+              <Skeleton className="h-4 w-32 mx-auto mb-2" />
+              <Skeleton className="h-4 w-24 mx-auto" />
             </div>
           ) : metrics?.exceptionHeatmap && metrics.exceptionHeatmap.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {metrics.exceptionHeatmap.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg"
-                >
-                  <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
-                    {item.source}
+                <HoverCard key={idx}>
+                  <div
+                    className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg transition-all"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${item.source} exceptions: ${item.count} ${item.severity}`}
+                  >
+                    <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                      {item.source}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        className={
+                          item.severity === 'critical' ? 'bg-red-100 text-red-800' :
+                          item.severity === 'warn' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-blue-100 text-blue-800'
+                        }
+                      >
+                        {item.severity}
+                      </Badge>
+                      <span className="text-lg font-semibold text-slate-900 dark:text-white">
+                        <AnimatedNumber value={item.count} />
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      className={
-                        item.severity === 'critical' ? 'bg-red-100 text-red-800' :
-                        item.severity === 'warn' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
-                      }
-                    >
-                      {item.severity}
-                    </Badge>
-                    <span className="text-lg font-semibold text-slate-900 dark:text-white">
-                      {item.count}
-                    </span>
-                  </div>
-                </div>
+                </HoverCard>
               ))}
             </div>
           ) : (
@@ -183,23 +214,28 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-              Loading activity...
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
             </div>
           ) : metrics?.recentActivity && metrics.recentActivity.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3" role="list" aria-label="Recent activity">
               {metrics.recentActivity.map((activity) => (
                 <div
                   key={activity.id}
                   className="flex items-start gap-3 p-3 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  role="listitem"
                 >
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />
+                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" aria-hidden="true" />
                   <div className="flex-1">
                     <div className="text-sm text-slate-900 dark:text-white">
                       {activity.message}
                     </div>
                     <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      {new Date(activity.timestamp).toLocaleString()}
+                      <time dateTime={activity.timestamp}>
+                        {new Date(activity.timestamp).toLocaleString()}
+                      </time>
                     </div>
                   </div>
                 </div>
@@ -214,15 +250,21 @@ export default function AdminDashboard() {
       </Card>
 
       {/* Quick Actions */}
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-3 sm:gap-4">
         <Link href="/admin/ops">
-          <Button>View Ops Console</Button>
+          <Button aria-label="View operations console">
+            View Ops Console
+          </Button>
         </Link>
         <Link href="/admin/runs">
-          <Button variant="outline">View Runs</Button>
+          <Button variant="outline" aria-label="View reconciliation runs">
+            View Runs
+          </Button>
         </Link>
         <Link href="/admin/audit">
-          <Button variant="outline">View Audit Trail</Button>
+          <Button variant="outline" aria-label="View audit trail">
+            View Audit Trail
+          </Button>
         </Link>
       </div>
     </div>
@@ -247,48 +289,58 @@ function KPITile({
   href?: string;
 }) {
   const content = (
-    <Card className={href ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            {title}
-          </CardTitle>
-          {icon}
-        </div>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="h-8 w-20 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-        ) : (
-          <div className="flex items-baseline gap-2">
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">
-              {value}
-            </div>
-            {unit && (
-              <span className="text-sm text-slate-500 dark:text-slate-400">
-                {unit}
-              </span>
-            )}
-            {trend && (
-              <div className={`ml-auto ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                {trend === 'up' ? (
-                  <TrendingUp className="w-4 h-4" />
-                ) : (
-                  <TrendingDown className="w-4 h-4" />
-                )}
-              </div>
-            )}
+    <HoverCard>
+      <Card className={href ? 'cursor-pointer' : ''} role={href ? 'link' : undefined}>
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              {title}
+            </CardTitle>
+            <div aria-hidden="true">{icon}</div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <Skeleton className="h-8 w-32" />
+          ) : (
+            <div className="flex items-baseline gap-2">
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                {value}
+              </div>
+              {unit && (
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  {unit}
+                </span>
+              )}
+              {trend && (
+                <div className={`ml-auto ${trend === 'up' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`} aria-label={`Trending ${trend}`}>
+                  {trend === 'up' ? (
+                    <TrendingUp className="w-4 h-4" aria-hidden="true" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4" aria-hidden="true" />
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </HoverCard>
   );
 
   if (href) {
-    return <Link href={href}>{content}</Link>;
+    return (
+      <Link href={href} aria-label={`${title}: ${value}${unit || ''}`}>
+        {content}
+      </Link>
+    );
   }
 
-  return content;
+  return (
+    <div aria-label={`${title}: ${value}${unit || ''}`}>
+      {content}
+    </div>
+  );
 }
 
 function formatDuration(ms: number): string {

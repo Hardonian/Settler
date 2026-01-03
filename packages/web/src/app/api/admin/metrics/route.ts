@@ -10,18 +10,51 @@ import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { MetricsQueryParamsSchema, MetricsSnapshotSchema } from '@/lib/admin/metrics/types';
 import { getDateRange, aggregateKPIMetrics, aggregateTrendData, aggregateExceptionHeatmap, getRecentActivity } from '@/lib/admin/metrics/aggregation';
 import { metricsCache, cacheKeys } from '@/lib/admin/cache/metrics-cache';
+import { rateLimiter, getRateLimitKey } from '@/lib/admin/security/rate-limit';
+import { adminLogger } from '@/lib/admin/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting
+    const rateLimitKey = getRateLimitKey(request);
+    const rateLimit = rateLimiter.check(rateLimitKey, 60, 60 * 1000); // 60 requests per minute
+    
+    if (!rateLimit.allowed) {
+      adminLogger.warn('Rate limit exceeded', { key: rateLimitKey });
+      return NextResponse.json(
+        { 
+          error: 'Too Many Requests', 
+          message: 'Rate limit exceeded. Please try again later.',
+          retryAfter: Math.ceil((rateLimit.resetAt - Date.now()) / 1000),
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil((rateLimit.resetAt - Date.now()) / 1000)),
+            'X-RateLimit-Limit': '60',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': String(rateLimit.resetAt),
+          },
+        }
+      );
+    }
+
     // Check admin access
     const adminCheck = await isSuperAdmin();
     if (!adminCheck) {
       return NextResponse.json(
         { error: 'Forbidden', message: 'Super admin access required' },
-        { status: 403 }
+        { 
+          status: 403,
+          headers: {
+            'X-RateLimit-Limit': '60',
+            'X-RateLimit-Remaining': String(rateLimit.remaining),
+            'X-RateLimit-Reset': String(rateLimit.resetAt),
+          },
+        }
       );
     }
 
@@ -72,9 +105,15 @@ export async function GET(request: NextRequest) {
     // Cache result (30s TTL)
     metricsCache.set(cacheKey, snapshot, 30 * 1000);
 
-    return NextResponse.json(snapshot);
+    return NextResponse.json(snapshot, {
+      headers: {
+        'X-RateLimit-Limit': '60',
+        'X-RateLimit-Remaining': String(rateLimit.remaining),
+        'X-RateLimit-Reset': String(rateLimit.resetAt),
+      },
+    });
   } catch (error) {
-    console.error('[Admin Metrics] Error:', error);
+    adminLogger.error('Failed to retrieve metrics', error);
     
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(

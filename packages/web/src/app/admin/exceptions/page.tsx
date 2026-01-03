@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertCircle, CheckCircle2, Clock, Search, Filter, Download, FileDown } from 'lucide-react';
+import { NoExceptionsEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
 
 export default function AdminExceptionsPage() {
   const [selectedExceptions, setSelectedExceptions] = useState<Set<string>>(new Set());
@@ -164,9 +165,11 @@ export default function AdminExceptionsPage() {
               Loading exceptions...
             </div>
           ) : filteredExceptions.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-              No exceptions found
-            </div>
+            searchQuery || statusFilter !== 'all' || severityFilter !== 'all' ? (
+              <NoResultsEmptyState searchQuery={searchQuery} />
+            ) : (
+              <NoExceptionsEmptyState />
+            )
           ) : (
             <div className="space-y-2">
               {filteredExceptions.map((ex) => (

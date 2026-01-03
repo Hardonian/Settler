@@ -261,7 +261,11 @@ export function useAdminStream(
               break;
           }
         } catch (error) {
-          console.error('[Admin Stream] Error parsing event:', error);
+          // Error parsing event - non-critical, continue processing
+          if (process.env.NODE_ENV === 'development') {
+            // eslint-disable-next-line no-console
+            console.error('[Admin Stream] Error parsing event:', error);
+          }
         }
       };
     };
