@@ -1,0 +1,142 @@
+[
+  {
+    "id": "demo_shopify_001",
+    "source": "shopify",
+    "shopify_order_id": "gid://shopify/Order/5001",
+    "shopify_order_number": "1001",
+    "amount": 129.99,
+    "currency": "USD",
+    "timestamp": "2024-01-15T10:32:00Z",
+    "status": "completed",
+    "customer_email": "customer@example.com",
+    "line_items": [
+      {
+        "id": "li_001",
+        "title": "Pro Plan - Monthly",
+        "quantity": 1,
+        "price": 129.99
+      }
+    ],
+    "fulfillment_status": "fulfilled",
+    "metadata": {
+      "payment_gateway": "stripe"
+    }
+  },
+  {
+    "id": "demo_shopify_002",
+    "source": "shopify",
+    "shopify_order_id": "gid://shopify/Order/5002",
+    "shopify_order_number": "1002",
+    "amount": 49.99,
+    "currency": "USD",
+    "timestamp": "2024-01-16T14:22:00Z",
+    "status": "completed",
+    "customer_email": "buyer@example.com",
+    "line_items": [
+      {
+        "id": "li_002",
+        "title": "Add-on Package",
+        "quantity": 1,
+        "price": 49.99
+      }
+    ],
+    "fulfillment_status": "fulfilled",
+    "metadata": {}
+  },
+  {
+    "id": "demo_shopify_003",
+    "source": "shopify",
+    "shopify_order_id": "gid://shopify/Order/5003",
+    "shopify_order_number": "1003",
+    "amount": 299.00,
+    "currency": "USD",
+    "timestamp": "2024-01-17T09:18:00Z",
+    "status": "completed",
+    "customer_email": "enterprise@example.com",
+    "line_items": [
+      {
+        "id": "li_003",
+        "title": "Enterprise Plan - Annual",
+        "quantity": 1,
+        "price": 299.00
+      }
+    ],
+    "fulfillment_status": "fulfilled",
+    "metadata": {
+      "payment_gateway": "stripe"
+    }
+  },
+  {
+    "id": "demo_shopify_004",
+    "source": "shopify",
+    "shopify_order_id": "gid://shopify/Order/5004",
+    "shopify_order_number": "1004",
+    "amount": 79.99,
+    "currency": "USD",
+    "timestamp": "2024-01-18T16:47:00Z",
+    "status": "refunded",
+    "customer_email": "refund@example.com",
+    "line_items": [
+      {
+        "id": "li_004",
+        "title": "Refunded Item",
+        "quantity": 1,
+        "price": 79.99
+      }
+    ],
+    "fulfillment_status": "cancelled",
+    "metadata": {
+      "refund_reason": "customer_request"
+    }
+  },
+  {
+    "id": "demo_shopify_005",
+    "source": "shopify",
+    "shopify_order_id": "gid://shopify/Order/5005",
+    "shopify_order_number": "1005",
+    "amount": 199.50,
+    "currency": "USD",
+    "timestamp": "2024-01-19T11:32:00Z",
+    "status": "completed",
+    "customer_email": "quarterly@example.com",
+    "line_items": [
+      {
+        "id": "li_005",
+        "title": "Pro Plan - Quarterly",
+        "quantity": 1,
+        "price": 199.50
+      }
+    ],
+    "fulfillment_status": "fulfilled",
+    "metadata": {
+      "payment_gateway": "stripe"
+    }
+  },
+  {
+    "id": "demo_shopify_006",
+    "source": "shopify",
+    "shopify_order_id": "gid://shopify/Order/5006",
+    "shopify_order_number": "1006",
+    "amount": 150.00,
+    "currency": "USD",
+    "timestamp": "2024-01-20T13:00:00Z",
+    "status": "completed",
+    "customer_email": "partial@example.com",
+    "line_items": [
+      {
+        "id": "li_006a",
+        "title": "Item A",
+        "quantity": 1,
+        "price": 100.00
+      },
+      {
+        "id": "li_006b",
+        "title": "Item B",
+        "quantity": 1,
+        "price": 50.00
+      }
+    ],
+    "fulfillment_status": "partial",
+    "metadata": {}
+  }
+]

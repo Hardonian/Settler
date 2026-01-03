@@ -1,0 +1,77 @@
+[
+  {
+    "id": "demo_qb_001",
+    "source": "quickbooks",
+    "qb_entry_id": "QB-JE-2024-001",
+    "qb_entry_type": "JournalEntry",
+    "amount": 125.94,
+    "currency": "USD",
+    "timestamp": "2024-01-15T10:35:00Z",
+    "status": "completed",
+    "account_name": "Accounts Receivable",
+    "memo": "Stripe payment - Pro Plan monthly subscription",
+    "metadata": {
+      "reference": "ch_3QxYz1234567890abcdef"
+    }
+  },
+  {
+    "id": "demo_qb_002",
+    "source": "quickbooks",
+    "qb_entry_id": "QB-JE-2024-002",
+    "qb_entry_type": "JournalEntry",
+    "amount": 48.24,
+    "currency": "USD",
+    "timestamp": "2024-01-16T14:25:00Z",
+    "status": "completed",
+    "account_name": "Accounts Receivable",
+    "memo": "Stripe payment - One-time purchase",
+    "metadata": {
+      "reference": "ch_3QxYz9876543210fedcba"
+    }
+  },
+  {
+    "id": "demo_qb_003",
+    "source": "quickbooks",
+    "qb_entry_id": "QB-JE-2024-003",
+    "qb_entry_type": "JournalEntry",
+    "amount": 290.03,
+    "currency": "USD",
+    "timestamp": "2024-01-17T09:20:00Z",
+    "status": "completed",
+    "account_name": "Accounts Receivable",
+    "memo": "Stripe payment - Enterprise annual subscription",
+    "metadata": {
+      "reference": "ch_3QxYz5555555555aaaaaa"
+    }
+  },
+  {
+    "id": "demo_qb_004",
+    "source": "quickbooks",
+    "qb_entry_id": "QB-INV-2024-001",
+    "qb_entry_type": "Invoice",
+    "amount": 129.99,
+    "currency": "USD",
+    "timestamp": "2024-01-15T10:00:00Z",
+    "status": "completed",
+    "account_name": "Accounts Receivable",
+    "memo": "Invoice #1001 - Pro Plan",
+    "metadata": {
+      "invoice_number": "INV-1001"
+    }
+  },
+  {
+    "id": "demo_qb_005",
+    "source": "quickbooks",
+    "qb_entry_id": "QB-INV-2024-002",
+    "qb_entry_type": "Invoice",
+    "amount": 199.50,
+    "currency": "USD",
+    "timestamp": "2024-01-19T11:00:00Z",
+    "status": "completed",
+    "account_name": "Accounts Receivable",
+    "memo": "Invoice #1005 - Pro Plan Quarterly",
+    "metadata": {
+      "invoice_number": "INV-1005"
+    }
+  }
+]

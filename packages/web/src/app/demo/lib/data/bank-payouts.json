@@ -1,0 +1,77 @@
+[
+  {
+    "id": "demo_bank_001",
+    "source": "bank_payout",
+    "payout_id": "po_3QxYz1234567890abcdef",
+    "amount": 125.94,
+    "currency": "USD",
+    "timestamp": "2024-01-16T08:00:00Z",
+    "status": "completed",
+    "bank_account_last4": "4242",
+    "description": "Stripe payout - Daily batch",
+    "metadata": {
+      "stripe_payout_id": "po_3QxYz1234567890abcdef",
+      "arrival_date": "2024-01-16"
+    }
+  },
+  {
+    "id": "demo_bank_002",
+    "source": "bank_payout",
+    "payout_id": "po_3QxYz9876543210fedcba",
+    "amount": 48.24,
+    "currency": "USD",
+    "timestamp": "2024-01-17T08:00:00Z",
+    "status": "completed",
+    "bank_account_last4": "4242",
+    "description": "Stripe payout - Daily batch",
+    "metadata": {
+      "stripe_payout_id": "po_3QxYz9876543210fedcba",
+      "arrival_date": "2024-01-17"
+    }
+  },
+  {
+    "id": "demo_bank_003",
+    "source": "bank_payout",
+    "payout_id": "po_3QxYz5555555555aaaaaa",
+    "amount": 290.03,
+    "currency": "USD",
+    "timestamp": "2024-01-18T08:00:00Z",
+    "status": "completed",
+    "bank_account_last4": "4242",
+    "description": "Stripe payout - Daily batch",
+    "metadata": {
+      "stripe_payout_id": "po_3QxYz5555555555aaaaaa",
+      "arrival_date": "2024-01-18"
+    }
+  },
+  {
+    "id": "demo_bank_004",
+    "source": "bank_payout",
+    "payout_id": "po_3QxYz1111111111bbbbbb",
+    "amount": 77.19,
+    "currency": "USD",
+    "timestamp": "2024-01-19T08:00:00Z",
+    "status": "completed",
+    "bank_account_last4": "4242",
+    "description": "Stripe payout - Daily batch (includes refund)",
+    "metadata": {
+      "stripe_payout_id": "po_3QxYz1111111111bbbbbb",
+      "arrival_date": "2024-01-19"
+    }
+  },
+  {
+    "id": "demo_bank_005",
+    "source": "bank_payout",
+    "payout_id": "po_3QxYz2222222222cccccc",
+    "amount": 193.27,
+    "currency": "USD",
+    "timestamp": "2024-01-20T08:00:00Z",
+    "status": "completed",
+    "bank_account_last4": "4242",
+    "description": "Stripe payout - Daily batch",
+    "metadata": {
+      "stripe_payout_id": "po_3QxYz2222222222cccccc",
+      "arrival_date": "2024-01-20"
+    }
+  }
+]

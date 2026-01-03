@@ -43,6 +43,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     '/cookbooks',
     '/runbooks',
     '/schematics',
+    '/demo', // Demo routes are public and unauthenticated
   ];
   
   const isPublicRoute = publicRoutes.some(route => 
