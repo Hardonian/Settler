@@ -28,7 +28,8 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
     const tenantId = (req as AuthenticatedRequest).tenantId;
 
     if (!userId || !tenantId) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
     }
 
     // Get job metrics
@@ -149,7 +150,8 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
     const tenantId = (req as AuthenticatedRequest).tenantId;
 
     if (!userId || !tenantId) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
     }
 
     const {
@@ -230,8 +232,8 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
 observabilityRouter.get("/traces", async (req: Request, res: Response) => {
   try {
     // Reserved for future user/tenant filtering
-    const userId = (req as AuthenticatedRequest).userId;
-    const tenantId = (req as AuthenticatedRequest).tenantId;
+    const _userId = (req as AuthenticatedRequest).userId;
+    const _tenantId = (req as AuthenticatedRequest).tenantId;
     // Reserved for future tracing backend integration
     void req.query.traceId;
     void req.query.jobId;
