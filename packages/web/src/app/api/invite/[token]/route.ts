@@ -153,7 +153,7 @@ export const POST = withSecurity(
       });
 
     if (membershipError) {
-      console.error('[Invite API] Error adding user to tenant:', membershipError);
+      appLogger.error('[Invite API] Error adding user to tenant', membershipError);
       throw membershipError;
     }
 

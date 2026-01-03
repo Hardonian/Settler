@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const DELETE = withUniversalBillingGate(async function DELETE(
+export const DELETE = withSecurity(
+  withUniversalBillingGate(async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -26,7 +29,7 @@ export const DELETE = withUniversalBillingGate(async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error in ip-allowlist DELETE:", error);
+    appLogger.error("Error in ip-allowlist DELETE", error);
     return NextResponse.json(
       {
         success: false,
@@ -36,4 +39,6 @@ export const DELETE = withUniversalBillingGate(async function DELETE(
       { status: 200 }
     );
   }
-}, { feature: 'DELETE API' });
+}, { feature: 'DELETE API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

@@ -96,7 +96,12 @@ export const cache = {
         return value ? JSON.parse(value) : null;
       }
     } catch (error) {
-      console.error('Redis get error:', error);
+      // Use dynamic import to avoid circular dependencies
+      import('../utils/logger').then(({ logError }) => {
+        logError('Redis get error', error);
+      }).catch(() => {
+        // Silent fail if logger unavailable
+      });
       return null;
     }
   },
@@ -124,9 +129,12 @@ export const cache = {
         }
       }
     } catch (error) {
-      // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-      // eslint-disable-next-line no-console
-      console.error('Redis set error:', error);
+      // Use dynamic import to avoid circular dependencies
+      import('../utils/logger').then(({ logError }) => {
+        logError('Redis set error', error);
+      }).catch(() => {
+        // Silent fail if logger unavailable
+      });
     }
   },
 
@@ -140,9 +148,12 @@ export const cache = {
     try {
       await client.del(key);
     } catch (error) {
-      // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-      // eslint-disable-next-line no-console
-      console.error('Redis del error:', error);
+      // Use dynamic import to avoid circular dependencies
+      import('../utils/logger').then(({ logError }) => {
+        logError('Redis del error', error);
+      }).catch(() => {
+        // Silent fail if logger unavailable
+      });
     }
   },
 
@@ -162,9 +173,12 @@ export const cache = {
         return result === 1;
       }
     } catch (error) {
-      // Note: Can't use logger here as it may depend on Redis - use console for initialization only
-      // eslint-disable-next-line no-console
-      console.error('Redis exists error:', error);
+      // Use dynamic import to avoid circular dependencies
+      import('../utils/logger').then(({ logError }) => {
+        logError('Redis exists error', error);
+      }).catch(() => {
+        // Silent fail if logger unavailable
+      });
       return false;
     }
   },

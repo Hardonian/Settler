@@ -8,8 +8,11 @@ import { NextResponse } from 'next/server';
 import { getCurrentFunnelStage } from '@/lib/gtm/funnels';
 import { createClient } from '@/lib/supabase/server';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
-export const GET = withUniversalBillingGate(async function GET(request: Request) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: Request) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -28,7 +31,7 @@ export const GET = withUniversalBillingGate(async function GET(request: Request)
 
     return NextResponse.json({ stage });
   } catch (error) {
-    console.error('[Funnel Stage API] Error:', error);
+    appLogger.error('[Funnel Stage API] Error', error);
     return NextResponse.json(
       {
         success: false,
@@ -38,4 +41,6 @@ export const GET = withUniversalBillingGate(async function GET(request: Request)
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const POST = withUniversalBillingGate(async function POST(
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(
   request: NextRequest,
   { params }: { params: { integrationId: string } }
 ) {
@@ -39,7 +42,7 @@ export const POST = withUniversalBillingGate(async function POST(
 
     return NextResponse.json(debugResult);
   } catch (error) {
-    console.error("Error in debug POST:", error);
+    appLogger.error("Error in debug POST", error);
     return NextResponse.json(
       {
         success: false,
@@ -49,4 +52,6 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

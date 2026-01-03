@@ -184,7 +184,7 @@ async function initializeSupabaseExtensions(): Promise<void> {
 
     await pool.end();
   } catch (error: unknown) {
-    logWarn('Supabase extension initialization warning', error);
+    logWarn('Supabase extension initialization warning', error instanceof Error ? error : new Error(String(error)));
     // Don't fail if extensions can't be initialized
   }
 }

@@ -9,8 +9,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { prisma } from '@/shared/db/prismaClient';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
-export async function GET(_request: NextRequest) {
+export const GET = withSecurity(async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -105,21 +107,23 @@ export async function GET(_request: NextRequest) {
       ],
     });
   } catch (error) {
-    console.error('Failed to get admin health:', error);
+    appLogger.error('Failed to get admin health', error);
     return NextResponse.json(
       { error: 'Failed to retrieve health metrics' },
       { status: 500 }
     );
   }
   // Note: Using shared Prisma singleton - don't disconnect (handles connection pooling)
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
 async function checkDatabaseHealth(): Promise<'operational' | 'degraded' | 'down'> {
   try {
     await prisma.$queryRaw`SELECT 1`;
     return 'operational';
   } catch (error) {
-    console.error('Database health check failed:', error);
+    appLogger.error('Database health check failed', error);
     return 'degraded';
   }
 }

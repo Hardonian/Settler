@@ -191,7 +191,7 @@ export const POST = withSecurity(
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Workspace API] Error:', error);
+    appLogger.error('[Workspace API] Error', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -286,7 +286,7 @@ export const GET = withSecurity(
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Workspace API] Error:', error);
+    appLogger.error('[Workspace API] Error', error);
     // Never return 500 - return empty workspaces array with graceful error message
     return NextResponse.json(
       { 

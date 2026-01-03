@@ -5,7 +5,7 @@
  * Uses existing UsageEvent table for event storage.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -99,7 +99,7 @@ export async function emitLifecycleEvent(
         eventType,
         quantity: 1,
         unit: 'event',
-        metadata: properties as Record<string, unknown>,
+        metadata: properties as Prisma.InputJsonValue,
         timestamp: new Date(),
         aggregated: false,
       },

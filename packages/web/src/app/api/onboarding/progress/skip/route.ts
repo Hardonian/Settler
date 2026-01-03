@@ -12,11 +12,14 @@ import {
   getAllStepsWithStatus,
   type OnboardingStep,
 } from '@/lib/onboarding/service';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -65,7 +68,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       steps,
     });
   } catch (error) {
-    console.error('[Onboarding API] Error:', error);
+    appLogger.error('[Onboarding API] Error', error);
     return NextResponse.json(
       {
         success: false,
@@ -75,4 +78,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

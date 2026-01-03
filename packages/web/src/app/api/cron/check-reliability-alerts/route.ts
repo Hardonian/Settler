@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { sendAlert, shouldSendAlert } from '@/lib/alerts/reliability-alerts';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!alertsResponse.ok) {
-      console.error('[Cron Alerts] Failed to fetch alerts:', alertsResponse.status);
+      appLogger.error('[Cron Alerts] Failed to fetch alerts', new Error(`Status: ${alertsResponse.status}`));
       return NextResponse.json({ 
         error: 'Failed to fetch alerts',
         checked: false,
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('[Cron Alerts] Error:', error);
+    appLogger.error('[Cron Alerts] Error', error);
     // Don't fail the cron job - return success but log error
     return NextResponse.json({
       checked: false,

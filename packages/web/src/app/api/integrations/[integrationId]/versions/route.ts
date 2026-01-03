@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime
 
-export const GET = withUniversalBillingGate(async function GET(
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(
   request: NextRequest,
   { params }: { params: { integrationId: string } }
 ) {
@@ -31,7 +34,7 @@ export const GET = withUniversalBillingGate(async function GET(
 
     return NextResponse.json(versionInfo);
   } catch (error) {
-    console.error("Error in versions GET:", error);
+    appLogger.error("Error in versions GET", error);
     return NextResponse.json(
       {
         success: false,
@@ -41,4 +44,6 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

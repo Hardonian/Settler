@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const POST = withUniversalBillingGate(async function POST(
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(
   _request: NextRequest,
   { params }: { params: { integrationId: string } }
 ) {
@@ -41,7 +44,8 @@ export const POST = withUniversalBillingGate(async function POST(
     // 5. Rollback on failure
 
     // For now, just update version
-    const integrationData = integration as any;
+    const integrationData = integration as { id: string };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: updateError } = await (supabase.from("integration_credentials") as any)
       .update({
         version: "2.1.0",
@@ -50,7 +54,7 @@ export const POST = withUniversalBillingGate(async function POST(
       .eq("id", integrationData.id);
 
     if (updateError) {
-      console.error("Error upgrading integration:", updateError);
+      appLogger.error("Error upgrading integration", updateError);
       return NextResponse.json(
       {
         success: false,
@@ -63,7 +67,7 @@ export const POST = withUniversalBillingGate(async function POST(
 
     return NextResponse.json({ success: true, version: "2.1.0" });
   } catch (error) {
-    console.error("Error in upgrade POST:", error);
+    appLogger.error("Error in upgrade POST", error);
     return NextResponse.json(
       {
         success: false,
@@ -73,4 +77,6 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
+);

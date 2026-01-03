@@ -8,11 +8,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { triageTicket, storeTriageResult } from '@/lib/services/triage-engine';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -62,7 +65,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       .single();
 
     if (ticketError || !ticket) {
-      console.error('Failed to create ticket:', ticketError);
+      appLogger.error('Failed to create ticket', ticketError);
       return NextResponse.json(
       {
         success: false,
@@ -102,7 +105,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         })
         .eq('id', ticketData.id);
     } catch (triageError) {
-      console.error('Auto-triage failed (non-fatal):', triageError);
+      appLogger.error('Auto-triage failed (non-fatal)', triageError);
       // Continue even if triage fails
     }
 
@@ -116,7 +119,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       },
     });
   } catch (error) {
-    console.error('Report issue error:', error);
+    appLogger.error('Report issue error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
       { 
@@ -127,4 +130,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);
