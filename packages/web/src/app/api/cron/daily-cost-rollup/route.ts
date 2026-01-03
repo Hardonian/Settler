@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
         : 0;
 
     // Store usage rollup
-    await supabase.from('ops_usage_daily_rollups').upsert(
+    await (supabase.from('ops_usage_daily_rollups') as any).upsert(
       {
         date: targetDate,
         active_orgs: activeOrgs.size,

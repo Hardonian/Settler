@@ -83,14 +83,7 @@ export const GET = withSecurity(
       total: receipt.total,
       paymentMethod: receipt.paymentMethod,
       confidenceScore: receipt.confidenceScore,
-      items: receipt.items.map((item: {
-        id: string;
-        name: string;
-        quantity: number | null;
-        unitPrice: number | null;
-        lineTotal: number | null;
-        category: string | null;
-      }) => ({
+      items: receipt.items.map((item) => ({
         id: item.id,
         name: item.name,
         quantity: item.quantity ? Number(item.quantity) : 0,

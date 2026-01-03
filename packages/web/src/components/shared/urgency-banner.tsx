@@ -6,7 +6,7 @@
 
 'use client';
 
-import { AlertTriangle, Clock, TrendingUp, Zap } from 'lucide-react';
+import { Clock, TrendingUp, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

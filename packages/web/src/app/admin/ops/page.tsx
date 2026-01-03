@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { AlertCircle, CheckCircle2, Clock, Search, Filter } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Clock, Search } from 'lucide-react';
 import { KeyboardShortcutsHelp } from '@/lib/admin/hooks/use-keyboard-shortcuts';
 import { adminLogger } from '@/lib/admin/utils/logger';
 
@@ -41,7 +41,7 @@ export default function AdminOpsConsole() {
   const filteredExceptions = useMemo(() => {
     if (!exceptionsData?.items) return [];
     
-    return exceptionsData.items.filter(ex => {
+    return exceptionsData.items.filter((ex: ExceptionItem) => {
       if (statusFilter !== 'all' && ex.status !== statusFilter) return false;
       if (severityFilter !== 'all' && ex.severity !== severityFilter) return false;
       if (searchQuery && !ex.reason.toLowerCase().includes(searchQuery.toLowerCase())) return false;
@@ -237,7 +237,7 @@ export default function AdminOpsConsole() {
             </div>
           ) : (
             <div className="divide-y divide-slate-200 dark:divide-slate-800">
-              {filteredExceptions.map((ex, index) => (
+              {filteredExceptions.map((ex: ExceptionItem, index: number) => (
                 <button
                   key={ex.id}
                   onClick={() => {

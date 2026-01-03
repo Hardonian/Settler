@@ -7,8 +7,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { withRateLimit } from '@/lib/api/rate-limit';
-import { validateQuery, validateBody } from '@/lib/api/input-validation';
-import { appLogger } from '@/lib/utils/logger';
 
 export interface SecurityOptions {
   rateLimit?: {

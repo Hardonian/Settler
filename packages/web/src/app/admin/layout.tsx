@@ -8,7 +8,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, FileText, Settings, Flag, Palette, FlaskConical, BarChart3, Activity, AlertTriangle, PlayCircle, FileSearch, Shield } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, Flag, Palette, FlaskConical, BarChart3, Activity, AlertTriangle, PlayCircle, FileSearch } from 'lucide-react';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { redirect } from 'next/navigation';
 import { AdminErrorBoundary } from '@/components/admin/error-boundary';

@@ -38,7 +38,7 @@ export type KPIMetrics = z.infer<typeof KPIMetricsSchema>;
 // ============================================================================
 
 export const TrendPointSchema = z.object({
-  timestamp: z.string().datetime(),
+  timestamp: z.string(),
   value: z.number(),
 });
 export type TrendPoint = z.infer<typeof TrendPointSchema>;
@@ -69,9 +69,9 @@ export type ExceptionHeatmap = z.infer<typeof ExceptionHeatmapSchema>;
 export const ActivityFeedItemSchema = z.object({
   id: z.string().uuid(),
   type: z.enum(['run_completed', 'exception_created', 'exception_resolved', 'match_reviewed', 'export_created']),
-  timestamp: z.string().datetime(),
+  timestamp: z.string(),
   message: z.string(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 export type ActivityFeedItem = z.infer<typeof ActivityFeedItemSchema>;
 
@@ -80,7 +80,7 @@ export type ActivityFeedItem = z.infer<typeof ActivityFeedItemSchema>;
 // ============================================================================
 
 export const MetricsSnapshotSchema = z.object({
-  timestamp: z.string().datetime(),
+  timestamp: z.string(),
   range: TimeRangeSchema,
   kpis: KPIMetricsSchema,
   trends: TrendDataSchema,
@@ -110,7 +110,7 @@ export const ExceptionItemSchema = z.object({
   reason: z.string(),
   ruleId: z.string().nullable(),
   detectorId: z.string().nullable(),
-  evidence: z.record(z.unknown()).optional(),
+  evidence: z.record(z.string(), z.unknown()).optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
   reviewedBy: z.string().uuid().nullable(),
@@ -142,7 +142,7 @@ export const ReconciliationRunSchema = z.object({
   confidenceAvg: z.number().min(0).max(1).nullable(),
   errorMessage: z.string().nullable(),
   traceId: z.string().nullable(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
@@ -160,12 +160,12 @@ export const AuditItemSchema = z.object({
   action: z.string(),
   entityType: z.string().nullable(),
   entityId: z.string().uuid().nullable(),
-  changes: z.record(z.unknown()).nullable(),
-  beforeState: z.record(z.unknown()).nullable(),
-  afterState: z.record(z.unknown()).nullable(),
+  changes: z.record(z.string(), z.unknown()).nullable(),
+  beforeState: z.record(z.string(), z.unknown()).nullable(),
+  afterState: z.record(z.string(), z.unknown()).nullable(),
   ipAddress: z.string().nullable(),
   userAgent: z.string().nullable(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   createdAt: z.string().datetime(),
 });
 export type AuditItem = z.infer<typeof AuditItemSchema>;
@@ -177,7 +177,7 @@ export type AuditItem = z.infer<typeof AuditItemSchema>;
 export const MetricsDeltaSchema = z.object({
   type: z.literal('metrics_delta'),
   kpis: KPIMetricsSchema.partial(),
-  timestamp: z.string().datetime(),
+  timestamp: z.string(),
 });
 export type MetricsDelta = z.infer<typeof MetricsDeltaSchema>;
 
@@ -192,14 +192,14 @@ export const ExceptionsDeltaSchema = z.object({
     resolved: z.number().int().min(0),
     exported: z.number().int().min(0),
   }).optional(),
-  timestamp: z.string().datetime(),
+  timestamp: z.string(),
 });
 export type ExceptionsDelta = z.infer<typeof ExceptionsDeltaSchema>;
 
 export const RunDeltaSchema = z.object({
   type: z.literal('run_delta'),
   run: ReconciliationRunSchema,
-  timestamp: z.string().datetime(),
+  timestamp: z.string(),
 });
 export type RunDelta = z.infer<typeof RunDeltaSchema>;
 
@@ -207,7 +207,7 @@ export const HealthDeltaSchema = z.object({
   type: z.literal('health'),
   status: z.enum(['connected', 'reconnecting', 'offline']),
   latency: z.number().min(0).nullable(),
-  timestamp: z.string().datetime(),
+  timestamp: z.string(),
 });
 export type HealthDelta = z.infer<typeof HealthDeltaSchema>;
 

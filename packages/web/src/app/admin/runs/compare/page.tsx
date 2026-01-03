@@ -7,7 +7,6 @@
 'use client';
 
 import { use, useState } from 'react';
-import React from 'react';
 import { useAdminRuns } from '@/lib/admin/hooks/use-admin-metrics';
 import { ReconciliationRun } from '@/lib/admin/metrics/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,8 +26,8 @@ export default function CompareRunsPage({
 
   const { data: runsData } = useAdminRuns({ limit: 1000 });
   
-  const run1 = runsData?.items?.find(r => r.id === run1Id);
-  const run2 = runsData?.items?.find(r => r.id === run2Id);
+  const run1 = runsData?.items?.find((r: { id: string }) => r.id === run1Id);
+  const run2 = runsData?.items?.find((r: { id: string }) => r.id === run2Id);
 
   const getDiff = (val1: number, val2: number): { value: number; percent: number; trend: 'down' | 'up' | 'neutral' } => {
     if (val1 === 0 && val2 === 0) return { value: 0, percent: 0, trend: 'neutral' as const };
@@ -78,7 +77,7 @@ export default function CompareRunsPage({
                 className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"
               >
                 <option value="">Select run...</option>
-                {runsData?.items?.map(run => (
+                {runsData?.items?.map((run: ReconciliationRun) => (
                   <option key={run.id} value={run.id}>
                     {run.name || run.id.slice(0, 8)} - {run.status} - {new Date(run.startedAt).toLocaleDateString()}
                   </option>
@@ -93,7 +92,7 @@ export default function CompareRunsPage({
                 className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"
               >
                 <option value="">Select run...</option>
-                {runsData?.items?.map(run => (
+                {runsData?.items?.map((run: ReconciliationRun) => (
                   <option key={run.id} value={run.id}>
                     {run.name || run.id.slice(0, 8)} - {run.status} - {new Date(run.startedAt).toLocaleDateString()}
                   </option>

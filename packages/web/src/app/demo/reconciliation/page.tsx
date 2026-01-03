@@ -10,13 +10,12 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeUp, staggerContainer, staggerItem, stepTransition } from "@/lib/motion/variants";
 import {
-  loadTransactions,
   getSourceTransactions,
   getTargetTransactions,
   enrichTransaction,
 } from "../lib/data/loader";
 import { matchTransactions, DEFAULT_MATCHING_RULES } from "../lib/matching/engine";
-import type { Transaction, MatchResult } from "../lib/data/types";
+import type { MatchResult } from "../lib/data/types";
 
 type RunState = "before" | "running" | "after";
 
@@ -65,13 +64,14 @@ export default function ReconciliationDemoPage() {
     ];
 
     let stepIndex = 0;
-    const runSteps = () => {
+    const runSteps = (): void => {
       if (stepIndex < steps.length) {
-        setCurrentStep(stepIndex);
+        const currentStepIndex = stepIndex;
+        setCurrentStep(currentStepIndex);
         setTimeout(() => {
           stepIndex++;
           runSteps();
-        }, steps[stepIndex].delay);
+        }, steps[currentStepIndex]?.delay ?? 0);
       } else {
         setRunState("after");
       }

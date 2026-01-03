@@ -74,7 +74,7 @@ export async function aggregateKPIMetrics(
   // Get confidence stats
   const confidences = runs
     .map(r => r.confidenceAvg)
-    .filter((c): c is number => c !== null && c !== undefined)
+    .filter((c): c is NonNullable<typeof c> => c !== null && c !== undefined)
     .map(c => Number(c));
   const confidenceAvg = confidences.length > 0
     ? confidences.reduce((sum, c) => sum + c, 0) / confidences.length

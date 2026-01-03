@@ -83,14 +83,14 @@ export const POST = withSecurity(
     const body = await request.json();
     const { title, content, category, tags } = body;
 
-    const { data, error } = await supabase
-      .from("canned_responses")
+    const { data, error } = await (supabase
+      .from("canned_responses") as any)
       .insert({
         title,
         content,
         category,
         tags: tags || [],
-      } as Record<string, unknown>)
+      })
       .select()
       .single();
 

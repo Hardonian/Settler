@@ -318,15 +318,20 @@ export function matchReceiptToTransaction(
   };
 
   for (const transaction of transactions) {
+    // Create a transaction-like object from receipt for matching
+    // Use stripe as base type since receipt is not in Transaction union
+    const receiptTransaction: Transaction = {
+      id: receipt.vendor_name,
+      source: "stripe" as const,
+      stripe_charge_id: receipt.vendor_name,
+      amount: receipt.amount,
+      currency: "USD",
+      timestamp: receipt.date,
+      status: "completed" as const,
+    };
+    
     const match = matchWithRule(
-      {
-        id: receipt.vendor_name,
-        source: "receipt",
-        amount: receipt.amount,
-        currency: "USD",
-        timestamp: receipt.date,
-        status: "completed",
-      } as Transaction,
+      receiptTransaction,
       transaction,
       rule
     );

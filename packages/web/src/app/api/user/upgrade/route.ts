@@ -24,7 +24,8 @@ export const POST = withSecurity(
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const { planType } = await request.json();
+    const { planType: rawPlanType } = await request.json();
+    const planType = rawPlanType as string;
 
     if (!["commercial", "enterprise"].includes(planType)) {
       return NextResponse.json({ error: "Invalid plan type" }, { status: 400 });

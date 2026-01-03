@@ -27,7 +27,6 @@ import { GuidedTourClient } from '@/components/console/GuidedTourClient';
 import { UsageInsightsPanel } from '@/components/console/UsageInsightsPanel';
 import { RBACGate } from '@/lib/rbac-gate';
 import { appLogger } from '@/lib/utils/logger';
-import { HoverCard } from '@/components/admin/microinteractions';
 import { ErrorBoundary } from '@/components/shared/error-boundary';
 import { PageLoadingSkeleton } from '@/components/shared/loading-state';
 

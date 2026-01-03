@@ -84,16 +84,15 @@ export async function GET(request: NextRequest) {
           firstName: user.name?.split(" ")[0],
           industry: user.industry,
           companyName: user.company_name,
-          planType: user.plan_type,
+          planType: user.plan_type as "free" | "enterprise" | "trial" | "commercial" | undefined,
         };
 
         await sendMonthlySummaryEmail(lifecycleUser, metrics);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await supabase.rpc("update_email_sent", {
+        await (supabase.rpc("update_email_sent", {
           p_user_id: user.id,
           p_email_type: "monthly_summary",
-        } as Record<string, unknown>);
+        }) as Promise<unknown>);
 
         results.processed++;
         results.emails.push(user.email);

@@ -23,7 +23,7 @@ export const POST = withSecurity(
     const { invoiceId, amount, reason, description } = body;
 
     // Create dispute record
-    const { data, error } = await supabase
+    const { data, error } = await (supabase
       .from("billing_disputes")
       .insert({
         user_id: user.id,
@@ -32,7 +32,7 @@ export const POST = withSecurity(
         reason,
         description,
         status: "pending",
-      } as Record<string, unknown>)
+      }) as any)
       .select()
       .single();
 

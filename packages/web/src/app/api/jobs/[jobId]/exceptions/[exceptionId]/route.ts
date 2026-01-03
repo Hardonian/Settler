@@ -17,6 +17,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/db/prismaClient';
+import { Prisma } from '@prisma/client';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
@@ -216,7 +217,7 @@ export const PATCH = withSecurity(
       reviewed: boolean;
       reviewedBy: string;
       reviewedAt: Date;
-      metadata: Record<string, unknown>;
+      metadata: Prisma.InputJsonValue;
       targetTransactionId?: string | null;
       matchType?: string;
       confidence?: number;
@@ -229,7 +230,7 @@ export const PATCH = withSecurity(
         reviewComment: comment,
         reviewAction: action,
         reviewedAt: new Date().toISOString(),
-      },
+      } as Prisma.InputJsonValue,
     };
 
     // Handle different actions
@@ -263,9 +264,9 @@ export const PATCH = withSecurity(
     } else if (action === 'mark_expected') {
       updateData.matchType = 'expected_unmatched';
       updateData.metadata = {
-        ...updateData.metadata,
+        ...(updateData.metadata as Record<string, unknown>),
         expectedUnmatched: true,
-      };
+      } as Prisma.InputJsonValue;
     }
 
     // Update exception (idempotent - can be called multiple times safely)
@@ -286,7 +287,20 @@ export const PATCH = withSecurity(
           },
         },
       },
-    });
+    }) as Awaited<ReturnType<typeof prisma.reconciliationMatch.update<{
+      include: {
+        sourceTransaction: {
+          select: {
+            id: true;
+            amount: true;
+            currency: true;
+            date: true;
+            description: true;
+            externalId: true;
+          };
+        };
+      };
+    }>>>;
 
     // Fetch target transaction if exists
     let targetTransaction = null;

@@ -60,12 +60,12 @@ export const POST = withSecurity(
 
     // Update user lifecycle if this is an activation milestone
     if (milestoneType === "first_successful_run") {
-      await supabase.from("user_lifecycle").upsert({
+      await (supabase.from("user_lifecycle") as any).upsert({
         user_id: user.id,
         first_successful_setup_at: new Date().toISOString(),
         current_stage: "activation",
         updated_at: new Date().toISOString(),
-      } as Record<string, unknown>);
+      });
     }
 
     return NextResponse.json({ achieved: true, milestone: data });

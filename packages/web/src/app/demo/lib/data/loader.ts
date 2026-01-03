@@ -19,7 +19,6 @@ import {
 import {
   hashTransaction,
   deterministicAuditTrailId,
-  deterministicTimestamp,
 } from "./deterministic";
 
 // Import JSON data

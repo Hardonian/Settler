@@ -5,7 +5,6 @@ import { getConnectorDriver } from '@settler/adapters/src/drivers';
 import { refreshTokenIfNeeded } from '@settler/adapters/src/token-refresh';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
