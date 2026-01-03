@@ -18,7 +18,8 @@ import { withSecurity } from '@/lib/middleware/api-security';
  * Supports all tables in public schema and other application schemas
  */
 
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Check subscription access
     const subscription = await getSubscriptionStatus();
@@ -62,6 +63,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       const orderBy = searchParams.get('orderBy') || 'created_at';
       const orderAsc = searchParams.get('orderAsc') === 'true';
       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: rpcData, error: rpcError } = await supabase.rpc('get_table_records', {
         p_table_schema: schema,
         p_table_name: table,
@@ -154,9 +156,12 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     // Check subscription access for editing
     const subscription = await getSubscriptionStatus();
@@ -180,6 +185,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     
     // Try RPC function first
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: rpcData, error: rpcError } = await supabase.rpc('create_table_record', {
         p_table_schema: schema,
         p_table_name: table,
@@ -216,19 +222,22 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     }
     
     return NextResponse.json({ data }, { status: 201 });
-  } catch (error: any) {
-    appLogger.error('Error creating record', error);
+  } catch (error: unknown) {
+    appLogger.error('Error creating record', error instanceof Error ? error : new Error(String(error)));
     // Never return 500 - return actionable error message
     return NextResponse.json({ 
       error: 'Unable to create record',
-      message: error.message || 'An unexpected error occurred. Please try again.',
+      message: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.',
       actionable: 'If this problem persists, please contact support at support@settler.dev.',
       retryable: true,
     }, { status: 200 });
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);
 
-export const PATCH = withUniversalBillingGate(async function PATCH(request: NextRequest) {
+export const PATCH = withSecurity(
+  withUniversalBillingGate(async function PATCH(request: NextRequest) {
   try {
     // Check subscription access for editing
     const subscription = await getSubscriptionStatus();
@@ -253,6 +262,7 @@ export const PATCH = withUniversalBillingGate(async function PATCH(request: Next
     
     // Try RPC function first
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: rpcData, error: rpcError } = await supabase.rpc('update_table_record', {
         p_table_schema: schema,
         p_table_name: table,
@@ -294,22 +304,25 @@ export const PATCH = withUniversalBillingGate(async function PATCH(request: Next
     }
     
     return NextResponse.json({ data });
-  } catch (error: any) {
-    appLogger.error('Error updating record', error);
+  } catch (error: unknown) {
+    appLogger.error('Error updating record', error instanceof Error ? error : new Error(String(error)));
     // Never return 500 - return actionable error message
     return NextResponse.json(
       { 
         error: 'Unable to update record',
-        message: error?.message || 'An unexpected error occurred while updating the record.',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred while updating the record.',
         actionable: 'Please verify your data format and try again. If the problem persists, contact support at support@settler.dev.',
         retryable: true,
       },
       { status: 200 }
     );
   }
-}, { feature: 'PATCH API' });
+}, { feature: 'PATCH API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);
 
-export const DELETE = withUniversalBillingGate(async function DELETE(request: NextRequest) {
+export const DELETE = withSecurity(
+  withUniversalBillingGate(async function DELETE(request: NextRequest) {
   try {
     // Check subscription access for editing
     const subscription = await getSubscriptionStatus();
@@ -333,6 +346,7 @@ export const DELETE = withUniversalBillingGate(async function DELETE(request: Ne
     
     // Try RPC function first
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: rpcError } = await supabase.rpc('delete_table_record', {
         p_table_schema: schema,
         p_table_name: table,
@@ -369,13 +383,13 @@ export const DELETE = withUniversalBillingGate(async function DELETE(request: Ne
     }
     
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    appLogger.error('Error deleting record', error);
+  } catch (error: unknown) {
+    appLogger.error('Error deleting record', error instanceof Error ? error : new Error(String(error)));
     // Never return 500 - return actionable error message
     return NextResponse.json(
       { 
         error: 'Unable to delete record',
-        message: error?.message || 'An unexpected error occurred while deleting the record.',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred while deleting the record.',
         actionable: 'Please verify your connection and try again. If the problem persists, contact support at support@settler.dev.',
         success: false,
         retryable: true,
@@ -383,4 +397,6 @@ export const DELETE = withUniversalBillingGate(async function DELETE(request: Ne
       { status: 200 }
     );
   }
-}, { feature: 'DELETE API' });
+}, { feature: 'DELETE API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

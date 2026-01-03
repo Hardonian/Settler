@@ -9,6 +9,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -35,7 +36,8 @@ interface HealthCheckResult {
   timestamp: string;
 }
 
-export const GET = publicRoute(async function GET() {
+export const GET = withSecurity(
+  publicRoute(async function GET() {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/health/stripe', method: 'GET' });
   
@@ -170,4 +172,6 @@ export const GET = publicRoute(async function GET() {
   // Always return 200 with status details
   const response = NextResponse.json(result, { status: 200 });
   return addCorrelationHeaders(response, correlationId);
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   const subscriptionCheck = await requireActiveSubscription(request);
   if (!subscriptionCheck.allowed) {
     return subscriptionCheck.error || NextResponse.json(
@@ -12,9 +13,11 @@ export async function GET(request: NextRequest) {
     );
   }
   return NextResponse.json({ message: 'Feature temporarily unavailable' }, { status: 503 });
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
-export async function POST(request: NextRequest) {
+export const POST = withSecurity(async function POST(request: NextRequest) {
   const subscriptionCheck = await requireActiveSubscription(request);
   if (!subscriptionCheck.allowed) {
     return subscriptionCheck.error || NextResponse.json(
@@ -23,4 +26,6 @@ export async function POST(request: NextRequest) {
     );
   }
   return NextResponse.json({ message: 'Feature temporarily unavailable' }, { status: 503 });
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

@@ -43,6 +43,7 @@ export const GET = withSecurity(
     }
 
     // Check user is member of workspace
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')
@@ -195,6 +196,7 @@ export const POST = withSecurity(
     }
 
     // Check user is member of workspace
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')

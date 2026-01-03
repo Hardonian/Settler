@@ -16,11 +16,13 @@ import { getTraceId } from '@/lib/observability/trace';
 import { logger } from '@/lib/observability/logger';
 import { validateSupabaseEnv } from '@/lib/env/validator';
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = publicRoute(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  publicRoute(async function GET(request: NextRequest) {
   const traceId = await getTraceId(request);
   const checks: Record<string, { status: 'ok' | 'error'; message?: string }> = {};
   let overallStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
@@ -254,4 +256,6 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
 
   response.headers.set('x-trace-id', traceId);
   return response;
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

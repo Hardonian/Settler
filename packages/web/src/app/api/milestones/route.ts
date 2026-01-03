@@ -41,6 +41,7 @@ export const POST = withSecurity(
         user_id: user.id,
         milestone_type: milestoneType,
         milestone_data: metadata || {},
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
       .select()
       .single();

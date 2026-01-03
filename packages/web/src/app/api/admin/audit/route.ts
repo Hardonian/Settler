@@ -10,11 +10,12 @@ import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { AuditQueryParamsSchema, AuditItemSchema } from '@/lib/admin/metrics/types';
 import { prisma } from '@/shared/db/prismaClient';
 import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   try {
     // Check admin access
     const adminCheck = await isSuperAdmin();
@@ -121,4 +122,6 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

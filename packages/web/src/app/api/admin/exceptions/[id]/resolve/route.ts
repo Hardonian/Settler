@@ -8,11 +8,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { prisma } from '@/shared/db/prismaClient';
 import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function POST(
+export const POST = withSecurity(async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -52,4 +53,6 @@ export async function POST(
       { status: 500 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

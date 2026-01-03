@@ -289,6 +289,7 @@ export async function refreshMaterializedView(viewName: string): Promise<void> {
   try {
     await query(`REFRESH MATERIALIZED VIEW CONCURRENTLY ${viewName}`);
     logInfo('Materialized view refreshed', { viewName });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // If CONCURRENTLY fails (no unique index), try without it
     if (error.message.includes('CONCURRENTLY')) {

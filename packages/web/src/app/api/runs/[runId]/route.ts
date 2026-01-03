@@ -9,10 +9,12 @@ import { createClient } from '@/lib/supabase/server';
 import { requireWorkspaceMembership } from '@/lib/authz';
 import { createLogger } from '@/lib/logger';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET(
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(
   _request: NextRequest,
   { params }: { params: { runId: string } }
 ) {
@@ -72,4 +74,6 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

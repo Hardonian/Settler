@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
 import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -18,7 +19,7 @@ export const maxDuration = 60;
  * POST /api/v1/recon/jobs
  * Create a reconciliation job
  */
-export async function POST(request: NextRequest) {
+export const POST = withSecurity(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but don't fail if unauthenticated (for playground)
     let auth;
@@ -181,7 +182,9 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
+);
 
 /**
  * GET /api/v1/recon/jobs
@@ -194,7 +197,7 @@ export async function POST(request: NextRequest) {
  * - Pagination support
  * - Filtering by status
  */
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   try {
@@ -368,4 +371,6 @@ export async function GET(request: NextRequest) {
       error: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
     }, { status: 200 });
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

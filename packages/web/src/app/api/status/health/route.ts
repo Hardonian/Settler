@@ -9,6 +9,7 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { publicRoute } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -21,7 +22,8 @@ interface KPIHealthStatus {
   allCylindersFiring: boolean;
 }
 
-export const GET = publicRoute(async function GET() {
+export const GET = withSecurity(
+  publicRoute(async function GET() {
   try {
     const supabase = await createAdminClient();
 
@@ -166,4 +168,6 @@ export const GET = publicRoute(async function GET() {
       { status: 200 }
     );
   }
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

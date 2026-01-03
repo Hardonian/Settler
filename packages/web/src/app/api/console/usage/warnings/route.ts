@@ -6,11 +6,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET(_request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -167,7 +170,9 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
 function getPlanLimits(planType: string) {
   switch (planType) {

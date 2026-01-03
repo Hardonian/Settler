@@ -42,7 +42,8 @@ export const GET = withSecurity(
     }
 
     // Extract key metrics
-    const metricsArray = (metrics || []) as Array<{ name: string; value: any; status: string }>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const metricsArray = (metrics || []) as Array<{ name: string; value: any; status: string }>; // value can be any type from database
     const hard500Metric = metricsArray.find((m) => m.name === 'hard_500_count');
     const { data: lastIncidentData } = await supabase
       .from('reality_events')

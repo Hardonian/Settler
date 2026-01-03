@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { processJobs } from '@/lib/jobs/worker';
 import { processRunJob } from '@/lib/jobs/handlers/run-processor';
 import { createLogger } from '@/lib/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 const DRAIN_SECRET = process.env.JOB_DRAIN_SECRET || '';
 
@@ -21,7 +22,7 @@ export const maxDuration = 300; // 5 minutes
 // - Service Role API Key (for internal routes)
 // - Not using billing gates (system/internal use)
 
-export async function POST(request: NextRequest) {
+export const POST = withSecurity(async function POST(request: NextRequest) {
   const logger = createLogger();
 
   // Verify secret
@@ -65,13 +66,17 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: false }
+);
 
 // Allow GET for health checks
-export async function GET() {
+export const GET = withSecurity(async function GET() {
   return NextResponse.json({
     status: 'ok',
     endpoint: '/api/internal/jobs/drain',
     method: 'POST',
   });
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

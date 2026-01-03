@@ -9,8 +9,9 @@ import { safeLogger } from '@/lib/observability/safe-logger';
 import { createClient } from '@/lib/supabase/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { prisma } from '@/shared/db/prismaClient';
+import { withSecurity } from '@/lib/middleware/api-security';
 
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -47,6 +48,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {
       timestamp: {
         gte: start,
@@ -173,4 +175,6 @@ export async function GET(request: NextRequest) {
     );
   }
   // Note: Using shared Prisma singleton - don't disconnect (handles connection pooling)
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

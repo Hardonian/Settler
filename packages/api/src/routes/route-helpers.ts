@@ -22,6 +22,7 @@ export function mountVersionedRoutes(
   app: Express,
   path: string,
   router: Router,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...middleware: Array<(req: any, res: any, next: any) => void>
 ): void {
   app.use(`/api/v1${path}`, ...middleware, router);
@@ -42,6 +43,7 @@ export function mountRoute(
   version: 'v1' | 'v2',
   path: string,
   router: Router,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...middleware: Array<(req: any, res: any, next: any) => void>
 ): void {
   app.use(`/api/${version}${path}`, ...middleware, router);

@@ -12,11 +12,13 @@ import { requireAuth } from '@/lib/api/unified-auth';
 import { listApiKeys, createApiKey, CreateApiKeyInput } from '@/domain/console/apiKeys';
 import { handleApiError } from '@/lib/api/error-handler';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Authenticate using unified auth (session or API key)
     await requireAuth(request);
@@ -27,9 +29,12 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     // Use unified error handler (returns 200 with error envelope)
     return handleApiError(error, 'Failed to fetch API keys');
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     // Authenticate using unified auth (session or API key)
     await requireAuth(request);
@@ -46,4 +51,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     // Use unified error handler (returns 200 with error envelope)
     return handleApiError(error, 'Failed to create API key');
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

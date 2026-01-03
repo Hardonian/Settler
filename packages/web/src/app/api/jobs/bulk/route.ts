@@ -18,6 +18,7 @@ import { z } from 'zod';
 import { logAuditEvent, type AuditAction } from '@/lib/audit/logger';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -32,7 +33,8 @@ const BulkActionSchema = z.object({
  * POST /api/jobs/bulk
  * Perform bulk actions on jobs
  */
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   const startTime = Date.now();
   
   try {
@@ -233,4 +235,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
+);
