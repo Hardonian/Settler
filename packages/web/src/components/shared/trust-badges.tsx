@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Shield, Lock, CheckCircle2, Award } from 'lucide-react';
+import { Shield, Lock, Award } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export function SecurityBadge() {

@@ -34,7 +34,7 @@ interface AIAssistProps {
  * AI Assist Card Component
  */
 export function AIAssistCard({ recommendation, onAccept, onReject, enabled = true }: AIAssistProps) {
-  const [showDetails, setShowDetails] = useState(false);
+  const [_showDetails, _setShowDetails] = useState(false);
 
   if (!enabled) {
     return (

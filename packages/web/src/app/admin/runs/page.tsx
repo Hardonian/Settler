@@ -8,13 +8,13 @@
 
 import { useState } from 'react';
 import { useAdminRuns, useAdminStream } from '@/lib/admin/hooks/use-admin-metrics';
-import { ReconciliationRun } from '@/lib/admin/metrics/types';
-import { exportRunsToCSV, exportRunsToJSON } from '@/lib/admin/utils/export';
+import type { ReconciliationRun } from '@/lib/admin/metrics/types';
+import { exportRunsToCSV, exportRunsToJSON, downloadFile } from '@/lib/admin/utils/export';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { PlayCircle, CheckCircle2, XCircle, Clock, Search, Filter, Download, FileDown } from 'lucide-react';
+import { PlayCircle, CheckCircle2, XCircle, Clock, Search, Download, FileDown } from 'lucide-react';
 import Link from 'next/link';
 import { NoRunsEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
 
@@ -29,7 +29,7 @@ export default function AdminRunsPage() {
 
   const { connectionState } = useAdminStream(['runs'], undefined, true);
 
-  const filteredRuns = runsData?.items?.filter(run => {
+  const filteredRuns = runsData?.items?.filter((run: ReconciliationRun) => {
     if (searchQuery && !run.name?.toLowerCase().includes(searchQuery.toLowerCase()) && !run.id.includes(searchQuery)) {
       return false;
     }
@@ -167,7 +167,7 @@ export default function AdminRunsPage() {
             )
           ) : (
             <div className="space-y-3">
-              {filteredRuns.map((run) => (
+              {filteredRuns.map((run: ReconciliationRun) => (
                 <RunRow
                   key={run.id}
                   run={run}

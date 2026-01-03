@@ -12,17 +12,17 @@ import { AIAssistCard, AIRecommendation } from '@/components/admin/ai-assist';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ExceptionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   
   const { data: exceptionsData } = useAdminExceptions({ limit: 1000 });
-  const exception = exceptionsData?.items?.find(ex => ex.id === id);
+  const exception = exceptionsData?.items?.find((ex: { id: string }) => ex.id === id);
 
   // Mock AI recommendation (would come from API in real implementation)
-  const aiRecommendation: AIRecommendation = exception ? {
+  const aiRecommendation: AIRecommendation | null = exception ? {
     type: 'mismatch',
     confidence: 0.85,
     explanation: 'Amount mismatch detected between source and target transactions. The difference suggests a potential fee or tax adjustment.',

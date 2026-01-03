@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, FileText, CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { fadeUp, staggerContainer, staggerItem, stepTransition } from "@/lib/motion/variants";
+import { staggerContainer, staggerItem, stepTransition } from "@/lib/motion/variants";
 import { loadReceipts, loadTransactions } from "../lib/data/loader";
 import { matchReceiptToTransaction } from "../lib/matching/engine";
 import type { Receipt, MatchResult } from "../lib/data/types";

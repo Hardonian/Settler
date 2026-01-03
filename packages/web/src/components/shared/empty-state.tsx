@@ -6,7 +6,7 @@
 
 'use client';
 
-import { FileSearch, Inbox, Search, AlertCircle, Package } from 'lucide-react';
+import { Inbox, Search, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -97,6 +97,7 @@ export function NoDataEmptyState({
       description={`Get started by creating your first ${entityName.toLowerCase()}.`}
       action={actionLabel && actionHref ? {
         label: actionLabel,
+        onClick: () => {},
         href: actionHref,
       } : undefined}
     />

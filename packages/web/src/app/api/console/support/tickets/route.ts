@@ -26,4 +26,6 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
     );
   }
   return NextResponse.json({ message: 'Feature temporarily unavailable' }, { status: 503 });
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

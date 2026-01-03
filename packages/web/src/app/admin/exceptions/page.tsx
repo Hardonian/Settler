@@ -14,8 +14,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { AlertCircle, CheckCircle2, Clock, Search, Filter, Download, FileDown } from 'lucide-react';
+import { Search, Download, FileDown } from 'lucide-react';
 import { NoExceptionsEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
+import Link from 'next/link';
 
 export default function AdminExceptionsPage() {
   const [selectedExceptions, setSelectedExceptions] = useState<Set<string>>(new Set());
@@ -31,7 +32,7 @@ export default function AdminExceptionsPage() {
 
   const { connectionState } = useAdminStream(['exceptions'], undefined, true);
 
-  const filteredExceptions = exceptionsData?.items?.filter(ex => {
+  const filteredExceptions = exceptionsData?.items?.filter((ex: ExceptionItem) => {
     if (searchQuery && !ex.reason.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   }) || [];
@@ -172,7 +173,7 @@ export default function AdminExceptionsPage() {
             )
           ) : (
             <div className="space-y-2">
-              {filteredExceptions.map((ex) => (
+              {filteredExceptions.map((ex: ExceptionItem) => (
                 <ExceptionRow
                   key={ex.id}
                   exception={ex}

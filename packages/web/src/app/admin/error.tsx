@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { adminLogger } from '@/lib/admin/utils/logger';
-import { adminLogger } from '@/lib/admin/utils/logger';
 
 /**
  * Admin Error Boundary
@@ -22,15 +21,6 @@ export default function AdminError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to monitoring service in production
-    // Never log sensitive information
-    const errorInfo = {
-      message: error.message,
-      digest: error.digest,
-      // Only include stack in development
-      ...(process.env.NODE_ENV === 'development' && error.stack ? { stack: error.stack } : {}),
-    };
-    
     // Log error via adminLogger
     adminLogger.error('Admin error page', error, {
       digest: error.digest,

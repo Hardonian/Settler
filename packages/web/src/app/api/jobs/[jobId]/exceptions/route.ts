@@ -304,15 +304,15 @@ export const GET = withSecurity(
       amountDiff?: 'asc' | 'desc';
       dateDiff?: 'asc' | 'desc';
       createdAt: 'asc' | 'desc';
-    } = {};
+    } = {
+      createdAt: sortOrder,
+    };
     if (sortBy === 'confidence') {
       orderBy.confidence = sortOrder;
     } else if (sortBy === 'amountDiff') {
       orderBy.amountDiff = sortOrder;
     } else if (sortBy === 'dateDiff') {
       orderBy.dateDiff = sortOrder;
-    } else {
-      orderBy.createdAt = sortOrder;
     }
 
     // Fetch exceptions with source and target transactions

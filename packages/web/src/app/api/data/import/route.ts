@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
@@ -25,10 +24,10 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     if (jobs && Array.isArray(jobs)) {
       for (const job of jobs) {
         const { id: _id, ...jobData } = job as Record<string, unknown>;
-        await supabase.from("reconciliation_jobs").upsert({
+        await (supabase.from("reconciliation_jobs") as any).upsert({
           ...jobData,
           user_id: user.id,
-        } as Record<string, unknown>);
+        });
       }
     }
 
@@ -36,12 +35,12 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     if (integrations && Array.isArray(integrations)) {
       for (const integration of integrations) {
         const integrationTyped = integration as { integration_id?: string; is_connected?: boolean };
-        await supabase.from("integration_credentials").upsert({
+        await (supabase.from("integration_credentials") as any).upsert({
           user_id: user.id,
           integration_id: integrationTyped.integration_id,
           is_connected: integrationTyped.is_connected,
           // Don't import credentials for security
-        } as Record<string, unknown>);
+        });
       }
     }
 

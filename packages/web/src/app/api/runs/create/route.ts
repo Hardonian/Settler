@@ -63,13 +63,13 @@ export const POST = withSecurity(
     }
 
     // Check for existing run with same idempotency_key
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: existing } = await (supabase
-      .from('recon_runs' as any)
+    const existingResult = await (supabase
+      .from('recon_runs') as any)
       .select('*')
       .eq('workspace_id', validated.workspace_id)
       .eq('idempotency_key', validated.idempotency_key)
-      .single() as any);
+      .single() as Promise<{ data: { id: string } | null; error: { message?: string } | null }>;
+    const { data: existing } = existingResult;
 
     if (existing) {
       logger.info('Returning existing run (idempotency)', {
@@ -85,9 +85,8 @@ export const POST = withSecurity(
     }
 
     // Create new run
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: run, error: createError } = await (supabase
-      .from('recon_runs' as any)
+    const runResult = await (supabase
+      .from('recon_runs') as any)
       .insert({
         workspace_id: validated.workspace_id,
         created_by: user.id,
@@ -97,7 +96,8 @@ export const POST = withSecurity(
         name: validated.name || 'Reconciliation Run',
       } as Record<string, unknown>)
       .select()
-      .single() as { data: Record<string, unknown> | null; error: { message?: string } | null });
+      .single() as Promise<{ data: { id: string } | null; error: { message?: string } | null }>;
+    const { data: run, error: createError } = runResult;
 
     if (createError || !run) {
       logger.error('Failed to create run', createError as Error);

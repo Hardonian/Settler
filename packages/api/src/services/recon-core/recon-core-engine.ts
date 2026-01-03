@@ -13,7 +13,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient, Prisma } from '@prisma/client';
-import { logError } from '../../utils/logger';
+import { logError, logWarn } from '../../utils/logger';
 import { WebhookService } from '../webhooks/webhook-service';
 import { ReconUsageTracker } from '../usage/recon-usage-tracker';
 import { eventBus } from '../events/event-bus';

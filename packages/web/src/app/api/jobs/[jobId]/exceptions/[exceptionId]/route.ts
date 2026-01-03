@@ -17,6 +17,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/db/prismaClient';
+import { Prisma } from '@prisma/client';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
@@ -216,7 +217,7 @@ export const PATCH = withSecurity(
       reviewed: boolean;
       reviewedBy: string;
       reviewedAt: Date;
-      metadata: Record<string, unknown>;
+      metadata: Prisma.InputJsonValue;
       targetTransactionId?: string | null;
       matchType?: string;
       confidence?: number;
@@ -229,7 +230,7 @@ export const PATCH = withSecurity(
         reviewComment: comment,
         reviewAction: action,
         reviewedAt: new Date().toISOString(),
-      },
+      } as Prisma.InputJsonValue,
     };
 
     // Handle different actions
@@ -263,9 +264,9 @@ export const PATCH = withSecurity(
     } else if (action === 'mark_expected') {
       updateData.matchType = 'expected_unmatched';
       updateData.metadata = {
-        ...updateData.metadata,
+        ...(updateData.metadata as Record<string, unknown>),
         expectedUnmatched: true,
-      };
+      } as Prisma.InputJsonValue;
     }
 
     // Update exception (idempotent - can be called multiple times safely)
@@ -352,26 +353,37 @@ export const PATCH = withSecurity(
     }
 
     // Transform response
-    const response = {
-      id: updatedException.id,
-      runId: updatedException.runId,
-      sourceTransactionId: updatedException.sourceTransactionId,
-      targetTransactionId: updatedException.targetTransactionId,
-      matchType: updatedException.matchType,
-      confidence: Number(updatedException.confidence),
-      matchReason: updatedException.matchReason,
-      amountDiff: updatedException.amountDiff ? Number(updatedException.amountDiff) : null,
-      dateDiff: updatedException.dateDiff,
-      reviewed: updatedException.reviewed,
-      reviewedBy: updatedException.reviewedBy,
-      reviewedAt: updatedException.reviewedAt,
+    const updatedExceptionWithSource = updatedException as typeof updatedException & {
       sourceTransaction: {
-        id: updatedException.sourceTransaction.id,
-        amount: Number(updatedException.sourceTransaction.amount),
-        currency: updatedException.sourceTransaction.currency,
-        date: updatedException.sourceTransaction.date,
-        description: updatedException.sourceTransaction.description,
-        externalId: updatedException.sourceTransaction.externalId,
+        id: string;
+        amount: number | bigint;
+        currency: string;
+        date: Date;
+        description: string | null;
+        externalId: string | null;
+      };
+    };
+    
+    const response = {
+      id: updatedExceptionWithSource.id,
+      runId: updatedExceptionWithSource.runId,
+      sourceTransactionId: updatedExceptionWithSource.sourceTransactionId,
+      targetTransactionId: updatedExceptionWithSource.targetTransactionId,
+      matchType: updatedExceptionWithSource.matchType,
+      confidence: Number(updatedExceptionWithSource.confidence),
+      matchReason: updatedExceptionWithSource.matchReason,
+      amountDiff: updatedExceptionWithSource.amountDiff ? Number(updatedExceptionWithSource.amountDiff) : null,
+      dateDiff: updatedExceptionWithSource.dateDiff,
+      reviewed: updatedExceptionWithSource.reviewed,
+      reviewedBy: updatedExceptionWithSource.reviewedBy,
+      reviewedAt: updatedExceptionWithSource.reviewedAt,
+      sourceTransaction: {
+        id: updatedExceptionWithSource.sourceTransaction.id,
+        amount: Number(updatedExceptionWithSource.sourceTransaction.amount),
+        currency: updatedExceptionWithSource.sourceTransaction.currency,
+        date: updatedExceptionWithSource.sourceTransaction.date,
+        description: updatedExceptionWithSource.sourceTransaction.description,
+        externalId: updatedExceptionWithSource.sourceTransaction.externalId,
       },
       targetTransaction: targetTransaction ? {
         id: targetTransaction.id,

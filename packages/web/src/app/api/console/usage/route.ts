@@ -14,6 +14,7 @@ import { getBillingAccountOptimized } from '@/lib/db/query-optimizer';
 import { executeWithRetry } from '@/lib/db/connection-pool';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { withSecurity } from '@/lib/middleware/api-security';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';

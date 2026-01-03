@@ -34,7 +34,7 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
           this.emit('node_updated', payload);
           this.notifySubscribers(jobId, {
             type: (payload.eventType === 'INSERT' ? 'node_added' : 'node_updated') as RealTimeUpdate['type'],
-            data: payload.new as ReconciliationNode,
+            data: payload.new as unknown as ReconciliationNode,
             timestamp: new Date(),
           });
         }
@@ -59,7 +59,7 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
           this.emit('edge_updated', payload);
           this.notifySubscribers(jobId, {
             type: (payload.eventType === 'INSERT' ? 'edge_added' : 'edge_updated') as RealTimeUpdate['type'],
-            data: payload.new as ReconciliationEdge,
+            data: payload.new as unknown as ReconciliationEdge,
             timestamp: new Date(),
           });
         }
@@ -100,13 +100,13 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       id: data.id,
       type: data.node_type as ReconciliationNode['type'],
       jobId: data.job_id,
-      sourceId: data.source_id,
-      targetId: data.target_id,
+      sourceId: data.source_id ?? undefined,
+      targetId: data.target_id ?? undefined,
       data: data.data,
-      amount: data.amount,
-      currency: data.currency,
+      amount: data.amount ?? undefined,
+      currency: data.currency ?? undefined,
       timestamp: new Date(data.timestamp),
-      confidence: data.confidence,
+      confidence: data.confidence ?? undefined,
       metadata: data.metadata,
     };
 
@@ -223,13 +223,13 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       id: n.id,
       type: n.node_type as ReconciliationNode['type'],
       jobId: n.job_id,
-      sourceId: n.source_id,
-      targetId: n.target_id,
+      sourceId: n.source_id ?? undefined,
+      targetId: n.target_id ?? undefined,
       data: n.data,
-      amount: n.amount,
-      currency: n.currency,
+      amount: n.amount ?? undefined,
+      currency: n.currency ?? undefined,
       timestamp: new Date(n.timestamp),
-      confidence: n.confidence,
+      confidence: n.confidence ?? undefined,
       metadata: n.metadata,
     }));
 

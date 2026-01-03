@@ -11,6 +11,7 @@ import { prisma } from '@/shared/db/prismaClient';
 import { FlagType } from '@/domain/featureFlags/types';
 import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
 import { withSecurity } from '@/lib/middleware/api-security';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -110,7 +111,10 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, {
+  rateLimit: { maxRequests: 100, windowMs: 60 * 1000 },
+  requireAuth: false, // Allow playground access
+});
 
 export const GET = withSecurity(async function GET(request: NextRequest) {
   try {

@@ -30,15 +30,24 @@ export const POST = withSecurity(async function POST(
     const body = await request.json();
     const { resolutionNotes } = body;
 
+    // Get current admin status
+    const adminStatus = await (await import('@/lib/auth/super-admin')).getSuperAdminStatus();
+    
+    // Get current metadata
+    const currentEvent = await prisma.driftEvent.findUnique({ 
+      where: { id }, 
+      select: { metadata: true } 
+    });
+    
     // Update exception (using DriftEvent)
     await prisma.driftEvent.update({
       where: { id },
       data: {
         acknowledged: true,
         acknowledgedAt: new Date(),
-        acknowledgedBy: (await import('@/lib/auth/super-admin')).getSuperAdminStatus().then(s => s.userId || null),
+        acknowledgedBy: adminStatus.userId || null,
         metadata: {
-          ...((await prisma.driftEvent.findUnique({ where: { id }, select: { metadata: true } }))?.metadata as Record<string, unknown> || {}),
+          ...((currentEvent?.metadata as Record<string, unknown>) || {}),
           resolutionNotes,
           resolvedAt: new Date().toISOString(),
         },

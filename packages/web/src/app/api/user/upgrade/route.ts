@@ -24,7 +24,8 @@ export const POST = withSecurity(
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const { planType } = await request.json();
+    const { planType: rawPlanType } = await request.json();
+    const planType = rawPlanType as string;
 
     if (!["commercial", "enterprise"].includes(planType)) {
       return NextResponse.json({ error: "Invalid plan type" }, { status: 400 });
@@ -61,11 +62,11 @@ export const POST = withSecurity(
     if (profile) {
       try {
         const lifecycleUser: LifecycleUser = {
-          email: profile.email,
+          email: profile.email || '',
           firstName: profile.name?.split(" ")[0],
           industry: profile.industry,
           companyName: profile.company_name,
-          planType,
+          planType: planType as "free" | "enterprise" | "trial" | "commercial" | undefined,
         };
 
         await sendPaidWelcomeEmail(lifecycleUser);

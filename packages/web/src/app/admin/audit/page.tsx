@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { FileSearch, Download, Search, Filter, FileDown } from 'lucide-react';
+import { Download, Search, FileDown } from 'lucide-react';
 import { NoAuditEmptyState, NoResultsEmptyState } from '@/components/admin/empty-states';
 
 export default function AdminAuditPage() {
@@ -30,7 +30,7 @@ export default function AdminAuditPage() {
     limit: 100,
   });
 
-  const filteredItems = auditData?.items?.filter(item => {
+  const filteredItems = auditData?.items?.filter((item: AuditItem) => {
     if (searchQuery && !item.action.toLowerCase().includes(searchQuery.toLowerCase()) && !item.auditType.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
@@ -134,7 +134,7 @@ export default function AdminAuditPage() {
             )
           ) : (
             <div className="space-y-3">
-              {filteredItems.map((item) => (
+              {filteredItems.map((item: AuditItem) => (
                 <AuditRow key={item.id} item={item} />
               ))}
             </div>

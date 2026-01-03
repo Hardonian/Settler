@@ -7,11 +7,9 @@
 'use client';
 
 import { use, useState } from 'react';
-import React from 'react';
 import { useAdminRuns } from '@/lib/admin/hooks/use-admin-metrics';
 import { ReconciliationRun } from '@/lib/admin/metrics/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import Link from 'next/link';
@@ -27,17 +25,17 @@ export default function CompareRunsPage({
 
   const { data: runsData } = useAdminRuns({ limit: 1000 });
   
-  const run1 = runsData?.items?.find(r => r.id === run1Id);
-  const run2 = runsData?.items?.find(r => r.id === run2Id);
+  const run1 = runsData?.items?.find((r: { id: string }) => r.id === run1Id);
+  const run2 = runsData?.items?.find((r: { id: string }) => r.id === run2Id);
 
-  const getDiff = (val1: number, val2: number) => {
-    if (val1 === 0 && val2 === 0) return { value: 0, percent: 0, trend: 'neutral' };
+  const getDiff = (val1: number, val2: number): { value: number; percent: number; trend: 'down' | 'up' | 'neutral' } => {
+    if (val1 === 0 && val2 === 0) return { value: 0, percent: 0, trend: 'neutral' as const };
     const diff = val2 - val1;
     const percent = val1 > 0 ? (diff / val1) * 100 : (diff > 0 ? 100 : -100);
     return {
       value: diff,
       percent: Math.abs(percent),
-      trend: diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral',
+      trend: (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral') as 'down' | 'up' | 'neutral',
     };
   };
 
@@ -78,7 +76,7 @@ export default function CompareRunsPage({
                 className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"
               >
                 <option value="">Select run...</option>
-                {runsData?.items?.map(run => (
+                {runsData?.items?.map((run: ReconciliationRun) => (
                   <option key={run.id} value={run.id}>
                     {run.name || run.id.slice(0, 8)} - {run.status} - {new Date(run.startedAt).toLocaleDateString()}
                   </option>
@@ -93,7 +91,7 @@ export default function CompareRunsPage({
                 className="w-full border border-slate-200 dark:border-slate-700 rounded px-3 py-2 bg-white dark:bg-slate-900"
               >
                 <option value="">Select run...</option>
-                {runsData?.items?.map(run => (
+                {runsData?.items?.map((run: ReconciliationRun) => (
                   <option key={run.id} value={run.id}>
                     {run.name || run.id.slice(0, 8)} - {run.status} - {new Date(run.startedAt).toLocaleDateString()}
                   </option>

@@ -18,7 +18,7 @@ export default function AdminRunDetailPage({ params }: { params: Promise<{ runId
   const { runId } = use(params);
   
   const { data: runsData } = useAdminRuns({ limit: 1000 });
-  const run = runsData?.items?.find(r => r.id === runId);
+  const run = runsData?.items?.find((r: { id: string }) => r.id === runId);
 
   if (!run) {
     return (

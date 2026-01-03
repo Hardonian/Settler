@@ -76,17 +76,18 @@ export const POST = withSecurity(
     const { userId, itemId } = body;
     const targetUserId = userId || user.id;
 
-    const { data, error } = await supabase
-      .from("user_checklist")
+    const checklistResult = await ((supabase
+      .from("user_checklist") as any)
       .upsert({
         user_id: targetUserId,
         checklist_item: itemId,
         completed: true,
         completed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      } as Record<string, unknown>)
+      })
       .select()
-      .single();
+      .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
+    const { data, error } = checklistResult;
 
     if (error) {
       appLogger.error("Error updating checklist", error);

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
@@ -100,26 +99,26 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     let projectData: Record<string, unknown> = {};
 
     if (projectType === "job") {
-      const { data } = await supabase
-        .from("reconciliation_jobs")
+      const jobResult = await ((supabase
+        .from("reconciliation_jobs") as any)
         .select("*")
         .eq("id", projectId)
         .eq("user_id", user.id)
-        .single();
-      projectData = data || {};
+        .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
+      projectData = jobResult.data || {};
     } else if (projectType === "integration") {
-      const { data } = await supabase
-        .from("integration_credentials")
+      const integrationResult = await ((supabase
+        .from("integration_credentials") as any)
         .select("*")
         .eq("id", projectId)
         .eq("user_id", user.id)
-        .single();
-      projectData = data || {};
+        .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
+      projectData = integrationResult.data || {};
     }
 
     // Create snapshot
-    const { data: snapshot, error } = await supabase
-      .from("project_snapshots")
+    const snapshotResult = await ((supabase
+      .from("project_snapshots") as any)
       .insert({
         user_id: user.id,
         project_id: projectId,
@@ -129,7 +128,8 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         created_by: user.id,
       } as Record<string, unknown>)
       .select()
-      .single();
+      .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
+    const { data: snapshot, error } = snapshotResult;
 
     if (error) {
       appLogger.error("Error creating snapshot", error);

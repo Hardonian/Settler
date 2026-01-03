@@ -4,13 +4,11 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Code, Play, Copy, Check } from "lucide-react";
+import { ArrowLeft, Copy, Check } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { fadeUp, staggerContainer, staggerItem } from "@/lib/motion/variants";
 import type { FeatureFlags, PlanTier } from "../lib/data/types";
 import { loadTransactions } from "../lib/data/loader";
 import { matchTransactions, DEFAULT_MATCHING_RULES } from "../lib/matching/engine";
@@ -273,7 +271,6 @@ Content-Type: multipart/form-data
                       )}
                     </Label>
                     <Switch
-                      id={flag}
                       checked={enabled}
                       onCheckedChange={() => toggleFlag(flag as keyof FeatureFlags)}
                       disabled={flag === "webhooks_enabled"}

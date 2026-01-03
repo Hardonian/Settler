@@ -6,9 +6,9 @@
  * Requires super admin access.
  */
 
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
-import { StreamEventSchema, HealthDeltaSchema } from '@/lib/admin/metrics/types';
+import { HealthDeltaSchema, StreamEvent } from '@/lib/admin/metrics/types';
 import { prisma } from '@/shared/db/prismaClient';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
@@ -22,7 +22,7 @@ const HEARTBEAT_INTERVAL_MS = 30000; // 30s heartbeat
 const MAX_BATCH_SIZE = 100;
 
 interface PendingEvent {
-  event: StreamEventSchema;
+  event: StreamEvent;
   timestamp: number;
 }
 
@@ -33,12 +33,9 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
   // Check admin access
   const adminCheck = await isSuperAdmin();
   if (!adminCheck) {
-    return new Response(
-      JSON.stringify({ error: 'Forbidden', message: 'Super admin access required' }),
-      {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      }
+    return NextResponse.json(
+      { error: 'Forbidden', message: 'Super admin access required' },
+      { status: 403 }
     );
   }
 
@@ -110,8 +107,6 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         if (!isActive) return;
 
         try {
-          const now = new Date();
-
           // Check for metric changes
           if (channels.includes('metrics')) {
             const recentRuns = await prisma.reconciliationRun.findFirst({
@@ -149,9 +144,23 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
               },
               take: 10,
               orderBy: { createdAt: 'desc' },
+              select: {
+                id: true,
+                tenantId: true,
+                reconJobId: true,
+                driftType: true,
+                severity: true,
+                acknowledged: true,
+                acknowledgedBy: true,
+                acknowledgedAt: true,
+                createdAt: true,
+                fieldPath: true,
+                expectedValue: true,
+                actualValue: true,
+              },
             });
 
-            if (recentExceptions.length > 0) {
+            if (recentExceptions.length > 0 && recentExceptions[0]) {
               lastExceptionsTimestamp = recentExceptions[0].createdAt;
               
               const added = recentExceptions.map(ex => ({
@@ -170,7 +179,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
                   actual: ex.actualValue,
                 },
                 createdAt: ex.createdAt.toISOString(),
-                updatedAt: ex.updatedAt?.toISOString() || ex.createdAt.toISOString(),
+                updatedAt: ex.createdAt.toISOString(),
                 reviewedBy: ex.acknowledgedBy || null,
                 reviewedAt: ex.acknowledgedAt?.toISOString() || null,
                 slaTimer: Date.now() - new Date(ex.createdAt).getTime(),
@@ -199,7 +208,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
               orderBy: { updatedAt: 'desc' },
             });
 
-            if (recentRuns.length > 0) {
+            if (recentRuns.length > 0 && recentRuns[0]) {
               lastRunsTimestamp = recentRuns[0].updatedAt;
 
               for (const run of recentRuns) {
@@ -255,7 +264,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
     },
   });
 
-  return new Response(stream, {
+  return new NextResponse(stream, {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache, no-transform',

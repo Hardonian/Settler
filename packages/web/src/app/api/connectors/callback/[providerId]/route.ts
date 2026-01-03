@@ -6,7 +6,6 @@ import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
 import { prisma } from '@/shared/db/prismaClient';
 import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -138,7 +137,7 @@ export const GET = withUniversalBillingGate(async function GET(
       
       // Filter out current connector manually since neq might not be available
       const otherConnectors = Array.isArray(otherConnectorsData) 
-        ? otherConnectorsData.filter((c: { id: string | number }) => {
+        ? otherConnectorsData.filter((c: Record<string, unknown>) => {
             const cId = typeof c.id === 'string' ? c.id : String(c.id);
             return cId !== connectorIdStr;
           })

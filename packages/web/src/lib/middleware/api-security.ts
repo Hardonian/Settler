@@ -7,8 +7,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { withRateLimit } from '@/lib/api/rate-limit';
-import { validateQuery, validateBody } from '@/lib/api/input-validation';
-import { appLogger } from '@/lib/utils/logger';
 
 export interface SecurityOptions {
   rateLimit?: {
@@ -23,23 +21,21 @@ export interface SecurityOptions {
 
 /**
  * Security middleware wrapper for API routes
+ * Supports both handlers with and without params (Next.js 15+ pattern)
  */
-export function withSecurity<T extends (request: NextRequest) => Promise<NextResponse>>(
+export function withSecurity<T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>>(
   handler: T,
   options: SecurityOptions = {}
 ): T {
   const {
     rateLimit = { maxRequests: 60, windowMs: 60 * 1000 },
-    requireAuth = false,
-    validateQuery: shouldValidateQuery = false,
-    validateBody: shouldValidateBody = false,
   } = options;
 
   // Apply rate limiting
   let securedHandler = withRateLimit(
-    async (request: NextRequest) => {
+    async (request: NextRequest, ...args: any[]) => {
       // Add security headers
-      const response = await handler(request);
+      const response = await handler(request, ...args);
       
       // Add security headers to all responses
       response.headers.set('X-Content-Type-Options', 'nosniff');

@@ -71,7 +71,7 @@ export const BaseTransactionSchema = z.object({
   currency: z.string().default("USD"),
   timestamp: z.string(), // ISO 8601
   status: TransactionStatusSchema,
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type BaseTransaction = z.infer<typeof BaseTransactionSchema>;
@@ -155,7 +155,7 @@ export const ReceiptSchema = z.object({
   total_amount: z.number(),
   payment_method: z.string().optional(),
   receipt_number: z.string().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type Receipt = z.infer<typeof ReceiptSchema>;
@@ -206,7 +206,7 @@ export const AuditTrailEntrySchema = z.object({
   entity_id: z.string(),
   timestamp: z.string(), // ISO 8601
   user_id: z.string().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   deterministic_hash: z.string(),
 });
 

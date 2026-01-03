@@ -16,7 +16,6 @@ import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 import { trackPageView } from "@/lib/analytics/conversion";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
-import { TrustBadges } from "@/components/shared/trust-badges";
 import {
   Accordion,
   AccordionContent,

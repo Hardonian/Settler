@@ -12,14 +12,12 @@ import {
   QuickBooksEntrySchema,
   BankPayoutSchema,
   ReceiptSchema,
-  TransactionSchema,
   type Transaction,
   type Receipt,
 } from "./types";
 import {
   hashTransaction,
   deterministicAuditTrailId,
-  deterministicTimestamp,
 } from "./deterministic";
 
 // Import JSON data
