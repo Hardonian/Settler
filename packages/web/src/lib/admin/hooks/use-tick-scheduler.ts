@@ -73,7 +73,7 @@ export function useThrottledValue<T>(value: T, enabled: boolean = true): T {
   useEffect(() => {
     if (!enabled) {
       setThrottled(value);
-      return;
+      return undefined;
     }
 
     const now = Date.now();
@@ -82,6 +82,7 @@ export function useThrottledValue<T>(value: T, enabled: boolean = true): T {
     if (timeSinceLastUpdate >= TICK_INTERVAL_MS) {
       setThrottled(value);
       lastUpdateRef.current = now;
+      return undefined;
     } else {
       const timeout = setTimeout(() => {
         setThrottled(value);

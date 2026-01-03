@@ -63,12 +63,13 @@ export const POST = withSecurity(
     }
 
     // Check for existing run with same idempotency_key
-    const { data: existing } = await (supabase
+    const existingResult = await (supabase
       .from('recon_runs') as any)
       .select('*')
       .eq('workspace_id', validated.workspace_id)
       .eq('idempotency_key', validated.idempotency_key)
       .single() as Promise<{ data: { id: string } | null; error: { message?: string } | null }>;
+    const { data: existing } = existingResult;
 
     if (existing) {
       logger.info('Returning existing run (idempotency)', {
@@ -84,7 +85,7 @@ export const POST = withSecurity(
     }
 
     // Create new run
-    const { data: run, error: createError } = await (supabase
+    const runResult = await (supabase
       .from('recon_runs') as any)
       .insert({
         workspace_id: validated.workspace_id,
@@ -96,6 +97,7 @@ export const POST = withSecurity(
       } as Record<string, unknown>)
       .select()
       .single() as Promise<{ data: { id: string } | null; error: { message?: string } | null }>;
+    const { data: run, error: createError } = runResult;
 
     if (createError || !run) {
       logger.error('Failed to create run', createError as Error);

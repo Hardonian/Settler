@@ -27,8 +27,8 @@ export async function validateBody<T>(
           {
             error: 'Validation Error',
             message: 'Invalid request body',
-            details: error.issues.map((e: { path: (string | number)[]; message: string }) => ({
-              path: e.path.join('.'),
+            details: error.issues.map((e) => ({
+              path: e.path.map(String).join('.'),
               message: e.message,
             })),
           },
@@ -69,8 +69,8 @@ export function validateQuery<T>(
           {
             error: 'Validation Error',
             message: 'Invalid query parameters',
-            details: error.issues.map((e: { path: (string | number)[]; message: string }) => ({
-              path: e.path.join('.'),
+            details: error.issues.map((e) => ({
+              path: e.path.map(String).join('.'),
               message: e.message,
             })),
           },

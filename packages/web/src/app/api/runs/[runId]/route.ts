@@ -32,11 +32,12 @@ export const GET = withSecurity(
     }
 
     // Get run
-    const { data: run, error: runError } = await (supabase
+    const runResult = await (supabase
       .from('recon_runs') as any)
       .select('*')
       .eq('id', params.runId)
-      .single() as Promise<{ data: { workspace_id: string } | null; error: { message?: string } | null }>;
+      .single() as Promise<{ data: { workspace_id: string } | null; error: { message?: string } | null }>);
+    const { data: run, error: runError } = runResult;
 
     if (runError || !run) {
       return NextResponse.json(
@@ -49,12 +50,13 @@ export const GET = withSecurity(
     await requireWorkspaceMembership(run.workspace_id);
 
     // Get events
-    const { data: events } = await (supabase
+    const eventsResult = await (supabase
       .from('run_events') as any)
       .select('*')
       .eq('run_id', params.runId)
       .order('created_at', { ascending: false })
       .limit(100) as Promise<{ data: Array<Record<string, unknown>> | null }>;
+    const { data: events } = eventsResult;
 
     return NextResponse.json({
       run,

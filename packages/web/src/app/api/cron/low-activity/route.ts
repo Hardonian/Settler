@@ -29,17 +29,16 @@ export async function GET(request: NextRequest) {
     const supabase = await createAdminClient();
 
     // Get inactive users (7+ days)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: users, error } = (await supabase.rpc("get_inactive_users", {
+    const { data: users, error } = await ((supabase.rpc("get_inactive_users", {
       p_days_inactive: 7,
-    } as Record<string, unknown>)) as { data: Array<{
+    }) as unknown) as Promise<{ data: Array<{
       id: string;
       email: string;
       name?: string;
       industry?: string;
       company_name?: string;
       plan_type?: string;
-    }> | null; error: { message?: string } | null };
+    }> | null; error: { message?: string } | null }>);
 
     if (error) {
       logger.error("Failed to fetch inactive users", error instanceof Error ? error : new Error(String(error)));
@@ -90,10 +89,10 @@ export async function GET(request: NextRequest) {
 
         await sendLowActivityEmail(lifecycleUser);
 
-        await (supabase.rpc("update_email_sent", {
+        await ((supabase.rpc("update_email_sent", {
           p_user_id: user.id,
           p_email_type: "low_activity",
-        }) as Promise<unknown>);
+        }) as unknown) as Promise<unknown>);
 
         results.processed++;
         results.emails.push(user.email);

@@ -12,7 +12,6 @@ import {
   QuickBooksEntrySchema,
   BankPayoutSchema,
   ReceiptSchema,
-  TransactionSchema,
   type Transaction,
   type Receipt,
 } from "./types";

@@ -34,14 +34,14 @@ export class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  static override getDerivedStateFromError(error: Error): Partial<State> {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     return {
       hasError: true,
       error,
     };
   }
 
-  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     appLogger.error(
       `Error boundary caught error${this.props.context ? ` in ${this.props.context}` : ''}`,
       error,
@@ -58,7 +58,7 @@ export class ErrorBoundary extends Component<Props, State> {
     });
   };
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;

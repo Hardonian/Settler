@@ -62,11 +62,11 @@ export const POST = withSecurity(
     if (profile) {
       try {
         const lifecycleUser: LifecycleUser = {
-          email: profile.email,
+          email: profile.email || '',
           firstName: profile.name?.split(" ")[0],
           industry: profile.industry,
           companyName: profile.company_name,
-          planType,
+          planType: planType as "free" | "enterprise" | "trial" | "commercial" | undefined,
         };
 
         await sendPaidWelcomeEmail(lifecycleUser);

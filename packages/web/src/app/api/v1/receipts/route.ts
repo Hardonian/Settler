@@ -22,7 +22,6 @@ import { createLogger, addCorrelationHeaders } from '@/lib/monitoring/correlatio
 import { validateReceipt, sanitizeReceiptData, validateReceiptTotals } from '@/domain/receipts/validation';
 import { logReceiptParsed } from '@/lib/audit/logger';
 import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
-import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine

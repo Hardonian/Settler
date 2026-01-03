@@ -29,9 +29,6 @@ export function withSecurity<T extends (request: NextRequest, ...args: any[]) =>
 ): T {
   const {
     rateLimit = { maxRequests: 60, windowMs: 60 * 1000 },
-    requireAuth = false,
-    validateQuery: shouldValidateQuery = false,
-    validateBody: shouldValidateBody = false,
   } = options;
 
   // Apply rate limiting
