@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { AuditQueryParamsSchema, AuditItemSchema } from '@/lib/admin/metrics/types';
 import { prisma } from '@/shared/db/prismaClient';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -37,7 +38,11 @@ export async function GET(request: NextRequest) {
     });
 
     // Build where clause
-    const whereClause: any = {};
+    const whereClause: {
+      tenantId?: string;
+      userId?: string;
+      auditType?: string;
+    } = {};
     if (params.tenantId) {
       whereClause.tenantId = params.tenantId;
     }
@@ -102,7 +107,7 @@ export async function GET(request: NextRequest) {
       offset: params.offset,
     });
   } catch (error) {
-    console.error('[Admin Audit] Error:', error);
+    appLogger.error('[Admin Audit] Error', error);
     
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(

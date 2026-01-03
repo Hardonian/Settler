@@ -21,6 +21,7 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -264,7 +265,7 @@ export const GET = withUniversalBillingGate(async function GET(
 
     // Log successful request
     const duration = Date.now() - startTime;
-    console.log('[Job Detail API] Success', {
+    appLogger.info('[Job Detail API] Success', {
       jobId,
       tenantId,
       userId,
@@ -278,8 +279,8 @@ export const GET = withUniversalBillingGate(async function GET(
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
 
-    console.error('[Job Detail API] Error', {
-      error: errorMessage,
+    appLogger.error('[Job Detail API] Error', error, {
+      errorMessage,
       stack: errorStack,
       duration,
     });

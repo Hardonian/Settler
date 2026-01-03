@@ -16,6 +16,8 @@ import { Footer } from '@/components/Footer';
 import { getConsoleAccessStatus } from '@/lib/auth/console-gate';
 import { validateSupabaseEnv } from '@/lib/env/validator';
 import { EnvErrorPanel } from '@/components/env/EnvErrorPanel';
+import { appLogger } from '@/lib/utils/logger';
+import { ErrorBoundary } from '@/components/shared/error-boundary';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -35,7 +37,7 @@ export default async function ConsoleRootLayout({
     // Environment safety check using validator
     const envValidation = validateSupabaseEnv();
     if (!envValidation.isValid) {
-      console.warn('[Console Layout] Missing Supabase configuration', {
+      appLogger.warn('[Console Layout] Missing Supabase configuration', {
         ...logContext,
         missingVars: envValidation.missing,
       });
@@ -55,7 +57,7 @@ export default async function ConsoleRootLayout({
     
     // Log access status for monitoring
     if (!accessStatus.allowed) {
-      console.log('[Console Layout] Access status:', {
+      appLogger.info('[Console Layout] Access status', {
         ...logContext,
         reason: accessStatus.reason,
         allowed: false,
@@ -66,11 +68,11 @@ export default async function ConsoleRootLayout({
     // Unauthenticated users will see free view with upsell triggers
     // Authenticated users without subscription will see upgrade prompts
     return (
-      <>
+      <ErrorBoundary context="Console Layout">
         <Navigation />
         <ConsoleLayout>{children}</ConsoleLayout>
         <Footer />
-      </>
+      </ErrorBoundary>
     );
   } catch (error) {
     // Log unexpected errors for debugging (server-side only, no secrets)
@@ -78,9 +80,9 @@ export default async function ConsoleRootLayout({
     const duration = Date.now() - startTime;
     const errorStack = error instanceof Error ? error.stack : undefined;
     
-    console.error('[Console Layout] Unexpected error', {
+    appLogger.error('[Console Layout] Unexpected error', error, {
       ...logContext,
-      error: errorMessage,
+      errorMessage,
       duration,
       // Only log stack in development
       ...(process.env.NODE_ENV === 'development' && errorStack ? { stack: errorStack } : {}),

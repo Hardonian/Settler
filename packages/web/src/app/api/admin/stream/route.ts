@@ -10,6 +10,7 @@ import { NextRequest } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { StreamEventSchema, HealthDeltaSchema } from '@/lib/admin/metrics/types';
 import { prisma } from '@/shared/db/prismaClient';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
           const json = JSON.stringify(data);
           controller.enqueue(encoder.encode(`data: ${json}\n\n`));
         } catch (error) {
-          console.error('[SSE Stream] Error encoding event:', error);
+          appLogger.error('[SSE Stream] Error encoding event', error);
         }
       };
 

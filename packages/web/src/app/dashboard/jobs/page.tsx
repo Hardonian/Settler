@@ -79,7 +79,23 @@ export default function JobsPage() {
       const jobsData = apiData.data || [];
 
       // Transform API response to Job format
-      const jobsList: Job[] = jobsData.map((jobData: any) => {
+      const jobsList: Job[] = jobsData.map((jobData: {
+        id: string;
+        name: string;
+        status: string;
+        sourceAdapter: string;
+        targetAdapter: string;
+        createdAt: string;
+        latestResult?: {
+          status: string;
+          sourceCount: number;
+          targetCount: number;
+          matchedCount: number;
+          unmatchedSourceCount: number;
+          unmatchedTargetCount: number;
+          completedAt?: string;
+        };
+      }) => {
         const latestResult = jobData.latestResult;
         const totalTransactions = (latestResult?.sourceCount || 0) + (latestResult?.targetCount || 0);
         const accuracy = totalTransactions > 0 && latestResult?.matchedCount

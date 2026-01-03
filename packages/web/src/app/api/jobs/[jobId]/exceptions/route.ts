@@ -17,6 +17,7 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -244,7 +245,12 @@ export const GET = withUniversalBillingGate(async function GET(
     }
 
     // Build where clause for matches
-    const whereClause: any = {
+    const whereClause: {
+      runId?: { in: string[] };
+      tenantId: string;
+      matchType?: string;
+      reviewed?: boolean;
+    } = {
       runId: { in: runIds },
       tenantId: tenantId,
       ...(matchType === 'unmatched' ? { matchType: 'unmatched' } : {}),
@@ -291,7 +297,12 @@ export const GET = withUniversalBillingGate(async function GET(
     ]);
 
     // Build orderBy clause
-    const orderBy: any = {};
+    const orderBy: {
+      confidence?: 'asc' | 'desc';
+      amountDiff?: 'asc' | 'desc';
+      dateDiff?: 'asc' | 'desc';
+      createdAt: 'asc' | 'desc';
+    } = {};
     if (sortBy === 'confidence') {
       orderBy.confidence = sortOrder;
     } else if (sortBy === 'amountDiff') {
@@ -402,7 +413,7 @@ export const GET = withUniversalBillingGate(async function GET(
 
     // Log successful request
     const duration = Date.now() - startTime;
-    console.log('[Job Exceptions API] Success', {
+    appLogger.info('[Job Exceptions API] Success', {
       jobId,
       tenantId,
       userId,
@@ -417,8 +428,8 @@ export const GET = withUniversalBillingGate(async function GET(
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
 
-    console.error('[Job Exceptions API] Error', {
-      error: errorMessage,
+    appLogger.error('[Job Exceptions API] Error', error, {
+      errorMessage,
       stack: errorStack,
       duration,
     });

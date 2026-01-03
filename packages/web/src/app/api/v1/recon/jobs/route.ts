@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -146,7 +147,7 @@ export async function POST(request: NextRequest) {
       );
     } catch (usageError) {
       // Don't fail job creation if usage tracking fails
-      console.error('[Recon Jobs API] Usage tracking failed:', usageError);
+      appLogger.error('[Recon Jobs API] Usage tracking failed', usageError);
     }
 
     const metadata = job.metadata as Record<string, any> | null;

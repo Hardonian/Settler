@@ -16,6 +16,7 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -138,7 +139,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     // For now, process immediately
     processExport(exportRecord.id, tenantId, type, format, reconciliationRunId, jobId, ingestionId)
       .catch((error) => {
-        console.error(`[Export API] Failed to process export ${exportRecord.id}:`, error);
+        appLogger.error(`[Export API] Failed to process export ${exportRecord.id}`, error);
         // Update export status to failed
         prisma.export.update({
           where: { id: exportRecord.id },
@@ -165,8 +166,8 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
 
-    console.error('[Export API] Error', {
-      error: errorMessage,
+    appLogger.error('[Export API] Error', error, {
+      errorMessage,
       stack: errorStack,
       duration,
     });
@@ -204,7 +205,7 @@ async function processExport(
     });
 
     // Fetch data based on format
-    let data: any[] = [];
+    let data: Array<Record<string, unknown>> = [];
 
     if (reconciliationRunId) {
       // Export reconciliation matches
@@ -309,7 +310,7 @@ async function processExport(
       },
     });
 
-    console.log(`[Export API] Export ${exportId} completed successfully`);
+    appLogger.info(`[Export API] Export ${exportId} completed successfully`);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
