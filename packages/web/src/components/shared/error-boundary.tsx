@@ -41,7 +41,7 @@ export class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     appLogger.error(
       `Error boundary caught error${this.props.context ? ` in ${this.props.context}` : ''}`,
       error,

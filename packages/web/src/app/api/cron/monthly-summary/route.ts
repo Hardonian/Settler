@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
 
         await sendMonthlySummaryEmail(lifecycleUser, metrics);
 
-        await supabase.rpc("update_email_sent", {
+        await (supabase.rpc as any)("update_email_sent", {
           p_user_id: user.id,
           p_email_type: "monthly_summary",
         });

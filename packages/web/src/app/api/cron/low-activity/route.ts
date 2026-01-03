@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createAdminClient();
 
     // Get inactive users (7+ days)
-    const result = await supabase.rpc("get_inactive_users", {
+    const result = await (supabase.rpc as any)("get_inactive_users", {
       p_days_inactive: 7,
     });
     const { data: users, error } = result as { data: Array<{
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
 
         await sendLowActivityEmail(lifecycleUser);
 
-        await supabase.rpc("update_email_sent", {
+        await (supabase.rpc as any)("update_email_sent", {
           p_user_id: user.id,
           p_email_type: "low_activity",
         });
