@@ -1,0 +1,206 @@
+[
+  {
+    "id": "demo_receipt_001",
+    "source": "receipt",
+    "vendor_name": "AWS",
+    "amount": 129.99,
+    "currency": "USD",
+    "date": "2024-01-15T00:00:00Z",
+    "category": "SaaS Subscription",
+    "items": [
+      {
+        "description": "EC2 Instance - t3.medium",
+        "quantity": 1,
+        "unit_price": 129.99,
+        "total": 129.99
+      }
+    ],
+    "tax_amount": 0,
+    "total_amount": 129.99,
+    "payment_method": "Credit Card",
+    "receipt_number": "AWS-2024-001",
+    "metadata": {
+      "account_id": "123456789012"
+    }
+  },
+  {
+    "id": "demo_receipt_002",
+    "source": "receipt",
+    "vendor_name": "Starbucks",
+    "amount": 12.45,
+    "currency": "USD",
+    "date": "2024-01-16T08:30:00Z",
+    "category": "Meals",
+    "items": [
+      {
+        "description": "Grande Latte",
+        "quantity": 1,
+        "unit_price": 5.95,
+        "total": 5.95
+      },
+      {
+        "description": "Blueberry Muffin",
+        "quantity": 1,
+        "unit_price": 3.50,
+        "total": 3.50
+      },
+      {
+        "description": "Tax",
+        "quantity": 1,
+        "unit_price": 0.75,
+        "total": 0.75
+      }
+    ],
+    "tax_amount": 0.75,
+    "total_amount": 12.45,
+    "payment_method": "Credit Card",
+    "receipt_number": "SB-12345",
+    "metadata": {}
+  },
+  {
+    "id": "demo_receipt_003",
+    "source": "receipt",
+    "vendor_name": "Office Depot",
+    "amount": 89.99,
+    "currency": "USD",
+    "date": "2024-01-17T14:00:00Z",
+    "category": "Office Supplies",
+    "items": [
+      {
+        "description": "Printer Paper - 500 sheets",
+        "quantity": 2,
+        "unit_price": 44.99,
+        "total": 89.98
+      }
+    ],
+    "tax_amount": 0.01,
+    "total_amount": 89.99,
+    "payment_method": "Credit Card",
+    "receipt_number": "OD-789012",
+    "metadata": {}
+  },
+  {
+    "id": "demo_receipt_004",
+    "source": "receipt",
+    "vendor_name": "Shell",
+    "amount": 45.67,
+    "currency": "USD",
+    "date": "2024-01-18T10:15:00Z",
+    "category": "Fuel",
+    "items": [
+      {
+        "description": "Gasoline - Premium",
+        "quantity": 12.5,
+        "unit_price": 3.65,
+        "total": 45.63
+      },
+      {
+        "description": "Tax",
+        "quantity": 1,
+        "unit_price": 0.04,
+        "total": 0.04
+      }
+    ],
+    "tax_amount": 0.04,
+    "total_amount": 45.67,
+    "payment_method": "Credit Card",
+    "receipt_number": "SH-456789",
+    "metadata": {}
+  },
+  {
+    "id": "demo_receipt_005",
+    "source": "receipt",
+    "vendor_name": "Amazon",
+    "amount": 49.99,
+    "currency": "USD",
+    "date": "2024-01-16T16:00:00Z",
+    "category": "Marketplace Purchase",
+    "items": [
+      {
+        "description": "USB-C Cable - 6ft",
+        "quantity": 1,
+        "unit_price": 49.99,
+        "total": 49.99
+      }
+    ],
+    "tax_amount": 0,
+    "total_amount": 49.99,
+    "payment_method": "Credit Card",
+    "receipt_number": "AMZ-112-3456789",
+    "metadata": {
+      "order_id": "112-3456789-1234567"
+    }
+  },
+  {
+    "id": "demo_receipt_006",
+    "source": "receipt",
+    "vendor_name": "United Airlines",
+    "amount": 599.00,
+    "currency": "USD",
+    "date": "2024-01-19T12:00:00Z",
+    "category": "Travel",
+    "items": [
+      {
+        "description": "Flight - SFO to JFK",
+        "quantity": 1,
+        "unit_price": 599.00,
+        "total": 599.00
+      }
+    ],
+    "tax_amount": 0,
+    "total_amount": 599.00,
+    "payment_method": "Credit Card",
+    "receipt_number": "UA-789012",
+    "metadata": {
+      "confirmation_code": "ABC123"
+    }
+  },
+  {
+    "id": "demo_receipt_007",
+    "source": "receipt",
+    "vendor_name": "Slack",
+    "amount": 79.99,
+    "currency": "USD",
+    "date": "2024-01-18T00:00:00Z",
+    "category": "SaaS Subscription",
+    "items": [
+      {
+        "description": "Slack Pro - Monthly",
+        "quantity": 1,
+        "unit_price": 79.99,
+        "total": 79.99
+      }
+    ],
+    "tax_amount": 0,
+    "total_amount": 79.99,
+    "payment_method": "Credit Card",
+    "receipt_number": "SLACK-2024-001",
+    "metadata": {
+      "workspace_id": "T1234567890"
+    }
+  },
+  {
+    "id": "demo_receipt_008",
+    "source": "receipt",
+    "vendor_name": "AWS",
+    "amount": 129.99,
+    "currency": "USD",
+    "date": "2024-01-15T00:00:00Z",
+    "category": "SaaS Subscription",
+    "items": [
+      {
+        "description": "EC2 Instance - t3.medium",
+        "quantity": 1,
+        "unit_price": 129.99,
+        "total": 129.99
+      }
+    ],
+    "tax_amount": 0,
+    "total_amount": 129.99,
+    "payment_method": "Credit Card",
+    "receipt_number": "AWS-2024-001",
+    "metadata": {
+      "account_id": "123456789012"
+    }
+  }
+]

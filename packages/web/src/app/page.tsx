@@ -150,8 +150,8 @@ const reconciliation = await client.reconciliations.create({
                     asChild 
                     className="w-full sm:w-auto px-8 sm:px-10 py-6 sm:py-7 text-lg sm:text-xl border-2 border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 hover:border-slate-400 dark:hover:border-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-4 focus-visible:ring-offset-background min-h-[56px] sm:min-h-[60px] font-medium"
                   >
-                    <Link href="/console/playground">
-                      Try Playground
+                    <Link href="/demo">
+                      Try the Demo
                     </Link>
                   </Button>
                 </div>
@@ -294,8 +294,8 @@ const reconciliation = await client.reconciliations.create({
                 asChild 
                 className="w-full sm:w-auto px-8 py-5 sm:py-6 text-base sm:text-lg border-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
               >
-                <Link href="/console/playground">
-                  Try Playground
+                <Link href="/demo">
+                  Try the Demo
                 </Link>
               </Button>
             </div>

@@ -15,6 +15,7 @@ import { SETTLER_IMAGES } from "@/lib/images/image-config";
 // Primary navigation items (always visible on desktop)
 const getPrimaryNavigationItems = (isAuthenticated: boolean) => {
   const items = [
+    { href: "/demo", label: "Demo" },
     { href: "/playground", label: "Playground" },
     { href: "/docs", label: "Docs" },
     { href: "/pricing", label: "Pricing" },

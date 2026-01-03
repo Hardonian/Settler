@@ -1,0 +1,80 @@
+[
+  {
+    "id": "demo_stripe_001",
+    "source": "stripe",
+    "stripe_charge_id": "ch_3QxYz1234567890abcdef",
+    "stripe_customer_id": "cus_ABC123XYZ",
+    "amount": 129.99,
+    "currency": "USD",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "status": "completed",
+    "description": "Monthly subscription - Pro Plan",
+    "fee": 4.05,
+    "net_amount": 125.94,
+    "metadata": {
+      "subscription_id": "sub_monthly_pro"
+    }
+  },
+  {
+    "id": "demo_stripe_002",
+    "source": "stripe",
+    "stripe_charge_id": "ch_3QxYz9876543210fedcba",
+    "stripe_customer_id": "cus_DEF456UVW",
+    "amount": 49.99,
+    "currency": "USD",
+    "timestamp": "2024-01-16T14:20:00Z",
+    "status": "completed",
+    "description": "One-time purchase - Add-on",
+    "fee": 1.75,
+    "net_amount": 48.24,
+    "metadata": {}
+  },
+  {
+    "id": "demo_stripe_003",
+    "source": "stripe",
+    "stripe_charge_id": "ch_3QxYz5555555555aaaaaa",
+    "stripe_customer_id": "cus_GHI789RST",
+    "amount": 299.00,
+    "currency": "USD",
+    "timestamp": "2024-01-17T09:15:00Z",
+    "status": "completed",
+    "description": "Annual subscription - Enterprise",
+    "fee": 8.97,
+    "net_amount": 290.03,
+    "metadata": {
+      "subscription_id": "sub_annual_enterprise"
+    }
+  },
+  {
+    "id": "demo_stripe_004",
+    "source": "stripe",
+    "stripe_charge_id": "ch_3QxYz1111111111bbbbbb",
+    "stripe_customer_id": "cus_JKL012OPQ",
+    "amount": 79.99,
+    "currency": "USD",
+    "timestamp": "2024-01-18T16:45:00Z",
+    "status": "refunded",
+    "description": "Refunded purchase - Customer request",
+    "fee": 2.80,
+    "net_amount": 77.19,
+    "metadata": {
+      "refund_reason": "customer_request"
+    }
+  },
+  {
+    "id": "demo_stripe_005",
+    "source": "stripe",
+    "stripe_charge_id": "ch_3QxYz2222222222cccccc",
+    "stripe_customer_id": "cus_MNO345PQR",
+    "amount": 199.50,
+    "currency": "USD",
+    "timestamp": "2024-01-19T11:30:00Z",
+    "status": "completed",
+    "description": "Quarterly subscription - Pro Plan",
+    "fee": 6.23,
+    "net_amount": 193.27,
+    "metadata": {
+      "subscription_id": "sub_quarterly_pro"
+    }
+  }
+]
