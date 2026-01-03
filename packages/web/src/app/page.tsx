@@ -15,6 +15,8 @@ import { AutomationHighlight } from "@/components/marketing/AutomationHighlight"
 import { analytics } from "@/lib/analytics";
 import { useTrackCTA } from "@/lib/telemetry/hooks";
 import { trackPageView } from "@/lib/analytics/conversion";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
+import { TrustBadges } from "@/components/shared/trust-badges";
 import {
   Accordion,
   AccordionContent,
@@ -73,7 +75,7 @@ const reconciliation = await client.reconciliations.create({
 });`;
 
   return (
-    <>
+    <ErrorBoundary context="Home Page">
       <div 
         id="main-content"
         className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-black"
@@ -304,6 +306,6 @@ const reconciliation = await client.reconciliations.create({
 
         <Footer />
       </div>
-    </>
+    </ErrorBoundary>
   );
 }

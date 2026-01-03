@@ -11,6 +11,9 @@ import { Activity, Users, TrendingUp, MessageSquare, Zap, Target, Github, Packag
 import { getExternalMetrics } from '@/lib/api/external';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { appLogger } from '@/lib/utils/logger';
+import { HoverCard, AnimatedNumber } from '@/components/admin/microinteractions';
+import { TrustBadges } from '@/components/shared/trust-badges';
 
 // Force dynamic rendering since we use cookies
 export const dynamic = 'force-dynamic';
@@ -49,7 +52,7 @@ async function DashboardMetrics() {
         logger.warn('RPC function error', { error: result.error });
       }
     } catch (err) {
-      console.warn('RPC function not available, using fallback queries:', err);
+      appLogger.warn('RPC function not available, using fallback queries', { error: err });
     }
 
     // Fetch recent activity count
@@ -61,7 +64,7 @@ async function DashboardMetrics() {
         .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString());
       recentActivityCount = count || 0;
     } catch (err) {
-      console.warn('Error fetching activity count:', err);
+      appLogger.warn('Error fetching activity count', { error: err });
     }
 
     // Fetch new users this week
@@ -73,7 +76,7 @@ async function DashboardMetrics() {
         .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
       newUsersCount = count || 0;
     } catch (err) {
-      console.warn('Error fetching new users count:', err);
+      appLogger.warn('Error fetching new users count', { error: err });
     }
 
     // Fetch most engaged post (using raw SQL calculation)
@@ -102,7 +105,7 @@ async function DashboardMetrics() {
         }
       }
     } catch (err) {
-      console.warn('Error fetching posts:', err);
+      appLogger.warn('Error fetching posts', { error: err });
     }
 
     // Fetch total posts count
@@ -114,7 +117,7 @@ async function DashboardMetrics() {
         .eq('status', 'published');
       totalPosts = count || 0;
     } catch (err) {
-      console.warn('Error fetching total posts:', err);
+      appLogger.warn('Error fetching total posts', { error: err });
     }
 
     // Fetch total profiles count
@@ -125,7 +128,7 @@ async function DashboardMetrics() {
         .select('*', { count: 'exact', head: true });
       totalProfiles = count || 0;
     } catch (err) {
-      console.warn('Error fetching total profiles:', err);
+      appLogger.warn('Error fetching total profiles', { error: err });
     }
 
     const metrics = {
@@ -146,9 +149,12 @@ async function DashboardMetrics() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-electric-cyan dark:via-electric-purple dark:to-electric-blue bg-clip-text text-transparent">
             Ecosystem Dashboard
           </h1>
-          <p className="text-xl text-slate-700 dark:text-slate-300">
+          <p className="text-xl text-slate-700 dark:text-slate-300 mb-4">
             Real-time metrics from our living system
           </p>
+          <div className="flex justify-center">
+            <TrustBadges />
+          </div>
         </div>
 
         {/* Status Badge */}
@@ -210,27 +216,30 @@ async function DashboardMetrics() {
               </h3>
             </div>
             <p className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-              {metrics.totalPosts}
+              <AnimatedNumber value={metrics.totalPosts} />
             </p>
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Community content across all categories
             </p>
-          </div>
-
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-            <div className="flex items-center gap-3 mb-4">
-              <Users className="w-6 h-6 text-indigo-600 dark:text-electric-purple" />
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                Total Community Members
-              </h3>
             </div>
-            <p className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-              {metrics.totalProfiles}
-            </p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Active profiles in the ecosystem
-            </p>
-          </div>
+          </HoverCard>
+
+          <HoverCard>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="w-6 h-6 text-indigo-600 dark:text-electric-purple" />
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                  Total Community Members
+                </h3>
+              </div>
+              <p className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+                <AnimatedNumber value={metrics.totalProfiles} />
+              </p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Active profiles in the ecosystem
+              </p>
+            </div>
+          </HoverCard>
         </div>
 
         {/* Top Post Highlight */}
@@ -315,7 +324,7 @@ async function DashboardMetrics() {
     </div>
     );
   } catch (error) {
-    console.error('Error in DashboardMetrics:', error);
+    appLogger.error('Error in DashboardMetrics', error);
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
