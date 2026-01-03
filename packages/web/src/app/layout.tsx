@@ -2,7 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
-import { OrganizationSchema, WebSiteSchema, SoftwareApplicationSchema } from "@/components/StructuredData";
+import {
+  OrganizationSchema,
+  WebSiteSchema,
+  SoftwareApplicationSchema,
+} from "@/components/StructuredData";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -25,12 +29,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
   title: {
     default: "Settler - Stop Spending Hours on Month-End Reconciliation",
     template: "%s | Settler",
   },
-  description: "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail. No manual work.",
+  description:
+    "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail. No manual work.",
   keywords: [
     "reconciliation API",
     "financial reconciliation",
@@ -56,13 +61,45 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: SETTLER_IMAGES.favicon.path, type: SETTLER_IMAGES.favicon.mimeType, sizes: `${SETTLER_IMAGES.favicon.width}x${SETTLER_IMAGES.favicon.height}` },
-      { url: SETTLER_IMAGES.favicon192.path, type: SETTLER_IMAGES.favicon192.mimeType, sizes: "192x192" },
-      { url: SETTLER_IMAGES.favicon512.path, type: SETTLER_IMAGES.favicon512.mimeType, sizes: "512x512" },
+      // WebP version for modern browsers (better performance)
+      ...(SETTLER_IMAGES.favicon.webpPath
+        ? [
+            {
+              url: SETTLER_IMAGES.favicon.webpPath,
+              type: "image/webp",
+              sizes: `${SETTLER_IMAGES.favicon.width}x${SETTLER_IMAGES.favicon.height}`,
+            },
+          ]
+        : []),
+      {
+        url: SETTLER_IMAGES.favicon.path,
+        type: SETTLER_IMAGES.favicon.mimeType,
+        sizes: `${SETTLER_IMAGES.favicon.width}x${SETTLER_IMAGES.favicon.height}`,
+      },
+      ...(SETTLER_IMAGES.favicon192.webpPath
+        ? [{ url: SETTLER_IMAGES.favicon192.webpPath, type: "image/webp", sizes: "192x192" }]
+        : []),
+      {
+        url: SETTLER_IMAGES.favicon192.path,
+        type: SETTLER_IMAGES.favicon192.mimeType,
+        sizes: "192x192",
+      },
+      ...(SETTLER_IMAGES.favicon512.webpPath
+        ? [{ url: SETTLER_IMAGES.favicon512.webpPath, type: "image/webp", sizes: "512x512" }]
+        : []),
+      {
+        url: SETTLER_IMAGES.favicon512.path,
+        type: SETTLER_IMAGES.favicon512.mimeType,
+        sizes: "512x512",
+      },
       { url: "/favicon.svg", type: "image/svg+xml" },
     ],
     apple: [
-      { url: SETTLER_IMAGES.favicon192.path, type: SETTLER_IMAGES.favicon192.mimeType, sizes: "192x192" },
+      {
+        url: SETTLER_IMAGES.favicon192.path,
+        type: SETTLER_IMAGES.favicon192.mimeType,
+        sizes: "192x192",
+      },
     ],
   },
   openGraph: {
@@ -71,10 +108,11 @@ export const metadata: Metadata = {
     url: "https://settler.dev",
     siteName: "Settler",
     title: "Settler - Stop Spending Hours on Month-End Reconciliation",
-    description: "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail.",
+    description:
+      "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail.",
     images: [
       {
-        url: getImageUrl('ogImage'),
+        url: getImageUrl("ogImage"),
         width: SETTLER_IMAGES.ogImage.width,
         height: SETTLER_IMAGES.ogImage.height,
         alt: SETTLER_IMAGES.ogImage.alt,
@@ -84,8 +122,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Settler - Stop Spending Hours on Month-End Reconciliation",
-    description: "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail.",
-    images: [getImageUrl('twitterCard')],
+    description:
+      "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail.",
+    images: [getImageUrl("twitterCard")],
     creator: "@settler_io",
   },
   robots: {
@@ -117,54 +156,52 @@ export const viewport: Viewport = {
 
 // Force dynamic rendering since getTenantContext uses headers()
 // This ensures tenant context is resolved at request time
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 // Revalidate every 60 seconds to balance freshness with performance
 export const revalidate = 60;
 
 // Validate environment on server startup (non-blocking)
 // CRITICAL: Never throw here - allow graceful degradation
-if (typeof window === 'undefined') {
+if (typeof window === "undefined") {
   try {
     requireEnvironment();
   } catch (error) {
     // Log but never throw - allow app to render even with missing env vars
-    console.warn('Environment validation warning (non-fatal):', 
-      error instanceof Error ? error.message : 'Unknown error'
+    console.warn(
+      "Environment validation warning (non-fatal):",
+      error instanceof Error ? error.message : "Unknown error"
     );
     // Continue execution - pages will handle missing env vars gracefully
   }
-  
+
   // Check Node version (non-blocking, logs warning if mismatch)
   // Use synchronous import since this runs at module load time
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { checkNodeVersion } = require('@/lib/env/node-version-check');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+    const { checkNodeVersion } = require("@/lib/env/node-version-check");
     const nodeCheck = checkNodeVersion();
     if (!nodeCheck.valid) {
-      console.warn('[Node Version]', nodeCheck.error);
+      console.warn("[Node Version]", nodeCheck.error);
       // Don't throw - allow app to run but log warning
     }
   } catch (error) {
     // Node version check failed - non-fatal
-    console.warn('Node version check failed (non-fatal):', 
-      error instanceof Error ? error.message : 'Unknown error'
+    console.warn(
+      "Node version check failed (non-fatal):",
+      error instanceof Error ? error.message : "Unknown error"
     );
   }
 }
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Initialize Sentry (non-blocking, graceful failure)
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     initSentry().catch(() => {
       // Sentry initialization failed (package not available or not configured)
       // This is expected during builds without Sentry configured
     });
   }
-  
+
   // Get tenant context for theme - gracefully handles build-time and errors
   // CRITICAL: Never throw - always return valid context
   let tenantContext;
@@ -174,32 +211,33 @@ export default async function RootLayout({
     // Fallback to default context if tenant resolution fails
     // This ensures the app still renders even if tenant service is unavailable
     tenantContext = {
-      tenantId: '',
-      tenantSlug: 'default',
+      tenantId: "",
+      tenantSlug: "default",
       theme: null,
       branding: null,
       navigation: null,
     };
-    
+
     // Only log errors in development to avoid build noise
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Failed to get tenant context, using defaults:', 
-        error instanceof Error ? error.message : 'Unknown error'
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "Failed to get tenant context, using defaults:",
+        error instanceof Error ? error.message : "Unknown error"
       );
     }
   }
-  
+
   // Ensure tenantContext is never null/undefined
   if (!tenantContext) {
     tenantContext = {
-      tenantId: '',
-      tenantSlug: 'default',
+      tenantId: "",
+      tenantSlug: "default",
       theme: null,
       branding: null,
       navigation: null,
     };
   }
-  
+
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>
@@ -233,10 +271,7 @@ export default async function RootLayout({
           >
             <QueryProvider>
               {/* Skip to main content link for accessibility */}
-              <a
-                href="#main-content"
-                className="skip-to-main"
-              >
+              <a href="#main-content" className="skip-to-main">
                 Skip to main content
               </a>
               <SmoothScroll>{children}</SmoothScroll>

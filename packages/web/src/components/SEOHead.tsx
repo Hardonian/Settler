@@ -1,5 +1,5 @@
-import Head from 'next/head';
-import { getImageUrl, SETTLER_IMAGES } from '@/lib/images/image-config';
+import Head from "next/head";
+import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 
 interface SEOHeadProps {
   title?: string;
@@ -10,14 +10,14 @@ interface SEOHeadProps {
 }
 
 export function SEOHead({
-  title = 'Settler - Reconciliation as a Service API',
-  description = 'Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. All Platforms. Real-Time.',
+  title = "Settler - Reconciliation as a Service API",
+  description = "Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems. One API. All Platforms. Real-Time.",
   canonical,
-  ogImage = getImageUrl('ogImage'),
+  ogImage = getImageUrl("ogImage"),
   noindex = false,
 }: SEOHeadProps) {
-  const fullTitle = title.includes('Settler') ? title : `${title} | Settler`;
-  const url = canonical || 'https://settler.dev';
+  const fullTitle = title.includes("Settler") ? title : `${title} | Settler`;
+  const url = canonical || "https://settler.dev";
 
   return (
     <Head>
@@ -45,6 +45,9 @@ export function SEOHead({
       {canonical && <link rel="canonical" href={canonical} />}
 
       {/* Favicon */}
+      {SETTLER_IMAGES.favicon.webpPath && (
+        <link rel="icon" type="image/webp" href={SETTLER_IMAGES.favicon.webpPath} />
+      )}
       <link rel="icon" type={SETTLER_IMAGES.favicon.mimeType} href={SETTLER_IMAGES.favicon.path} />
       <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
       <link rel="apple-touch-icon" href={SETTLER_IMAGES.favicon192.path} />
@@ -54,20 +57,20 @@ export function SEOHead({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'SoftwareApplication',
-            name: 'Settler',
-            applicationCategory: 'BusinessApplication',
-            operatingSystem: 'Web',
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "Settler",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web",
             offers: {
-              '@type': 'Offer',
-              price: '0',
-              priceCurrency: 'USD',
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD",
             },
             aggregateRating: {
-              '@type': 'AggregateRating',
-              ratingValue: '4.9',
-              reviewCount: '127',
+              "@type": "AggregateRating",
+              ratingValue: "4.9",
+              reviewCount: "127",
             },
           }),
         }}

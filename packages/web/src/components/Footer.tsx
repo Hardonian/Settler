@@ -1,27 +1,35 @@
 import Link from "next/link";
+import Image from "next/image";
 import { StatusIndicator } from "@/components/monitoring/StatusIndicator";
+import { getImageUrl } from "@/lib/images/image-config";
 
 export function Footer() {
   return (
-    <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border bg-background" role="contentinfo">
+    <footer
+      className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border bg-background"
+      role="contentinfo"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="flex items-center space-x-2 mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
               aria-label="Settler homepage"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-electric-indigo rounded-lg flex items-center justify-center" aria-hidden="true">
-                <span className="text-white font-bold text-lg">S</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-electric-indigo bg-clip-text text-transparent">
-                Settler
-              </span>
+              <Image
+                src={getImageUrl("logoMain", undefined, true)}
+                alt="Settler Logo"
+                width={130}
+                height={34}
+                className="h-10 w-auto"
+                priority
+              />
             </Link>
             <p className="text-sm text-muted-foreground">
-              Reconciliation-as-a-Service API. Automate financial data reconciliation across all platforms.
+              Reconciliation-as-a-Service API. Automate financial data reconciliation across all
+              platforms.
             </p>
           </div>
 
@@ -30,56 +38,56 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Product</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link 
-                  href="/docs" 
+                <Link
+                  href="/docs"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Documentation
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/cookbooks" 
+                <Link
+                  href="/cookbooks"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Cookbook
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/runbooks" 
+                <Link
+                  href="/runbooks"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Runbooks
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/schematics" 
+                <Link
+                  href="/schematics"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Schematics
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/playground" 
+                <Link
+                  href="/playground"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Playground
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/pricing" 
+                <Link
+                  href="/pricing"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/enterprise" 
+                <Link
+                  href="/enterprise"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Enterprise
@@ -93,26 +101,26 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link 
-                  href="/support" 
+                <Link
+                  href="/support"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Support
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/community" 
+                <Link
+                  href="/community"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Community
                 </Link>
               </li>
               <li>
-                <a 
-                  href="https://github.com/shardie-github/Settler-API" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://github.com/shardie-github/Settler-API"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                   aria-label="GitHub repository (opens in new tab)"
                 >
@@ -120,18 +128,18 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <Link 
-                  href="/docs" 
+                <Link
+                  href="/docs"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   API Reference
                 </Link>
               </li>
               <li>
-                <a 
-                  href="https://status.settler.dev" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://status.settler.dev"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                   aria-label="Status page (opens in new tab)"
                 >
@@ -146,48 +154,48 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Legal</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link 
-                  href="/legal/terms" 
+                <Link
+                  href="/legal/terms"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/legal/privacy" 
+                <Link
+                  href="/legal/privacy"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/legal/license" 
+                <Link
+                  href="/legal/license"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   License
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/legal/cookies" 
+                <Link
+                  href="/legal/cookies"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Cookie Policy
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/legal/aup" 
+                <Link
+                  href="/legal/aup"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Acceptable Use Policy
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/legal/dpa" 
+                <Link
+                  href="/legal/dpa"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
                   Data Processing Agreement
@@ -205,28 +213,28 @@ export function Footer() {
             <StatusIndicator />
           </div>
           <nav className="flex space-x-6 text-sm" aria-label="Social media links">
-            <a 
-              href="https://twitter.com/settler_io" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://twitter.com/settler_io"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
               aria-label="Twitter (opens in new tab)"
             >
               Twitter
             </a>
-            <a 
-              href="https://github.com/shardie-github/Settler-API" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://github.com/shardie-github/Settler-API"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
               aria-label="GitHub (opens in new tab)"
             >
               GitHub
             </a>
-            <a 
-              href="https://discord.gg/settler" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://discord.gg/settler"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
               aria-label="Discord (opens in new tab)"
             >
