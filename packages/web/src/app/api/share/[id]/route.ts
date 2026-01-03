@@ -36,14 +36,14 @@ export const POST = withSecurity(
     const shareId = nanoid(12);
 
     // Store shareable link
-    await supabase.from("shareable_artifacts").insert({
+    await ((supabase.from("shareable_artifacts") as any).insert({
       id: shareId,
       user_id: user.id,
       artifact_type: artifactType,
       artifact_id: artifactId,
       public: isPublic || false,
       expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
-    } as never);
+    }) as Promise<{ error: { message?: string } | null }>);
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://settler.dev";
     const shareUrl = `${baseUrl}/share/${shareId}`;
@@ -78,11 +78,12 @@ export const GET = withSecurity(
     const supabase = await createClient();
 
     // Get shareable artifact
-    const { data: artifact, error } = await supabase
-      .from("shareable_artifacts")
+    const artifactResult = await ((supabase
+      .from("shareable_artifacts") as any)
       .select("*")
       .eq("id", id)
-      .single();
+      .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
+    const { data: artifact, error } = artifactResult;
 
     if (error || !artifact) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -115,19 +116,19 @@ export const GET = withSecurity(
     let artifactData = null;
 
     if (typedArtifact.artifact_type === "reconciliation_report") {
-      const { data } = await supabase
-        .from("reconciliation_jobs")
+      const reportResult = await ((supabase
+        .from("reconciliation_jobs") as any)
         .select("*")
         .eq("id", typedArtifact.artifact_id)
-        .single();
-      artifactData = data;
+        .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
+      artifactData = reportResult.data;
     } else if (typedArtifact.artifact_type === "receipt") {
-      const { data } = await supabase
-        .from("receipts")
+      const receiptResult = await ((supabase
+        .from("receipts") as any)
         .select("*")
         .eq("id", typedArtifact.artifact_id)
-        .single();
-      artifactData = data;
+        .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
+      artifactData = receiptResult.data;
     }
 
     return NextResponse.json({

@@ -61,14 +61,15 @@ export async function GET(request: NextRequest) {
     for (const user of (Array.isArray(users) ? users : []) || []) {
       try {
         // Skip if we sent a low activity email in the last 14 days
-        const { data: profile } = (await supabase
-          .from("profiles")
+        const profileResult = await ((supabase
+          .from("profiles") as any)
           .select("last_email_sent_at, last_email_type")
           .eq("id", user.id)
-          .single()) as { data: {
+          .single() as Promise<{ data: {
             last_email_sent_at?: string;
             last_email_type?: string;
-          } | null; error: { message?: string } | null };
+          } | null; error: { message?: string } | null }>);
+        const { data: profile } = profileResult;
 
         if (profile?.last_email_type === "low_activity" && profile?.last_email_sent_at) {
           const daysSinceLastEmail = Math.floor(

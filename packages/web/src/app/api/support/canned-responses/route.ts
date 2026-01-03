@@ -83,7 +83,7 @@ export const POST = withSecurity(
     const body = await request.json();
     const { title, content, category, tags } = body;
 
-    const { data, error } = await (supabase
+    const responseResult = await ((supabase
       .from("canned_responses") as any)
       .insert({
         title,
@@ -92,7 +92,8 @@ export const POST = withSecurity(
         tags: tags || [],
       })
       .select()
-      .single();
+      .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
+    const { data, error } = responseResult;
 
     if (error) {
       appLogger.error("Error creating canned response", error);

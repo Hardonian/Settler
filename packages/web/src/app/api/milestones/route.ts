@@ -23,28 +23,29 @@ export const POST = withSecurity(
     const { milestoneType, metadata } = body;
 
     // Check if milestone already exists
-    const { data: existing } = await supabase
-      .from("user_milestones")
+    const existingResult = await ((supabase
+      .from("user_milestones") as any)
       .select("id")
       .eq("user_id", user.id)
       .eq("milestone_type", milestoneType)
-      .single();
+      .single() as Promise<{ data: { id: string } | null; error: { message?: string } | null }>);
+    const { data: existing } = existingResult;
 
     if (existing) {
       return NextResponse.json({ achieved: true, message: "Milestone already achieved" });
     }
 
     // Create milestone
-    const { data, error } = await supabase
-      .from("user_milestones")
+    const milestoneResult = await ((supabase
+      .from("user_milestones") as any)
       .insert({
         user_id: user.id,
         milestone_type: milestoneType,
         milestone_data: metadata || {},
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any)
+      })
       .select()
-      .single();
+      .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
+    const { data, error } = milestoneResult;
 
     if (error) {
       appLogger.error("Error creating milestone", error);
@@ -99,13 +100,15 @@ export const GET = withSecurity(
     const searchParams = request.nextUrl.searchParams;
     const milestoneType = searchParams.get("type");
 
-    let query = supabase.from("user_milestones").select("milestone_type").eq("user_id", user.id);
+    const query = (supabase.from("user_milestones") as any)
+      .select("milestone_type")
+      .eq("user_id", user.id);
 
-    if (milestoneType) {
-      query = query.eq("milestone_type", milestoneType);
-    }
+    const finalQuery = milestoneType 
+      ? query.eq("milestone_type", milestoneType)
+      : query;
 
-    const { data, error } = await query;
+    const { data, error } = await (finalQuery as Promise<{ data: Array<{ milestone_type: string }> | null; error: { message?: string } | null }>);
 
     if (error) {
       appLogger.error("Error fetching milestones", error);
