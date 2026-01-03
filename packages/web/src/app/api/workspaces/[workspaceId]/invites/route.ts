@@ -12,6 +12,8 @@ import { prisma } from '@/shared/db/prismaClient';
 import { z } from 'zod';
 import crypto from 'crypto';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -24,7 +26,8 @@ const createInviteSchema = z.object({
 /**
  * POST /api/workspaces/[workspaceId]/invites - Create an invite
  */
-export const POST = withUniversalBillingGate(async function POST(
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(
   request: NextRequest,
   { params }: { params: { workspaceId: string } }
 ) {
@@ -42,6 +45,7 @@ export const POST = withUniversalBillingGate(async function POST(
     }
 
     // Check user has admin/owner role
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')
@@ -76,6 +80,7 @@ export const POST = withUniversalBillingGate(async function POST(
     });
 
     // Track event
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase.rpc as any)('track_onboarding_event', {
       p_tenant_id: params.workspaceId,
       p_user_id: user.id,
@@ -98,7 +103,7 @@ export const POST = withUniversalBillingGate(async function POST(
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Invite API] Error:', error);
+    appLogger.error('[Invite API] Error', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -118,12 +123,15 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);
 
 /**
  * GET /api/workspaces/[workspaceId]/invites - List invites
  */
-export const GET = withUniversalBillingGate(async function GET(
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(
   request: NextRequest,
   { params }: { params: { workspaceId: string } }
 ) {
@@ -141,6 +149,7 @@ export const GET = withUniversalBillingGate(async function GET(
     }
 
     // Check user has admin/owner role
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')
@@ -177,7 +186,7 @@ export const GET = withUniversalBillingGate(async function GET(
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Invite API] Error:', error);
+    appLogger.error('[Invite API] Error', error);
     // Never return 500 - return empty invites array with graceful error message
     return NextResponse.json(
       { 
@@ -189,4 +198,6 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

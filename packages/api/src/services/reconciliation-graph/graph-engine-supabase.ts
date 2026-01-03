@@ -4,12 +4,13 @@
  * Persists graph state to Supabase PostgreSQL and uses Realtime for updates
  */
 
-import { ReconciliationNode, ReconciliationEdge, ReconciliationGraph, GraphQuery } from './types';
+import { ReconciliationNode, ReconciliationEdge, ReconciliationGraph, GraphQuery, RealTimeUpdate } from './types';
 import { supabase, supabaseRealtime } from '../../infrastructure/supabase/client';
 import { EventEmitter } from 'events';
+import { logError } from '../../utils/logger';
 
 export class ReconciliationGraphEngineSupabase extends EventEmitter {
-  private updateSubscribers: Map<string, Set<(update: any) => void>> = new Map();
+  private updateSubscribers: Map<string, Set<(update: RealTimeUpdate) => void>> = new Map();
 
   /**
    * Initialize Realtime subscriptions
@@ -26,11 +27,14 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
           table: 'reconciliation_graph_nodes',
           filter: `job_id=eq.${jobId}`,
         },
-        (payload) => {
+        (payload: {
+          eventType: string;
+          new: Record<string, unknown>;
+        }) => {
           this.emit('node_updated', payload);
           this.notifySubscribers(jobId, {
-            type: payload.eventType === 'INSERT' ? 'node_added' : 'node_updated',
-            data: payload.new,
+            type: (payload.eventType === 'INSERT' ? 'node_added' : 'node_updated') as RealTimeUpdate['type'],
+            data: payload.new as ReconciliationNode,
             timestamp: new Date(),
           });
         }
@@ -48,11 +52,14 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
           schema: 'public',
           table: 'reconciliation_graph_edges',
         },
-        (payload) => {
+        (payload: {
+          eventType: string;
+          new: Record<string, unknown>;
+        }) => {
           this.emit('edge_updated', payload);
           this.notifySubscribers(jobId, {
-            type: payload.eventType === 'INSERT' ? 'edge_added' : 'edge_updated',
-            data: payload.new,
+            type: (payload.eventType === 'INSERT' ? 'edge_added' : 'edge_updated') as RealTimeUpdate['type'],
+            data: payload.new as ReconciliationEdge,
             timestamp: new Date(),
           });
         }
@@ -200,9 +207,21 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       throw new Error(`Failed to query nodes: ${nodesError.message}`);
     }
 
-    const nodes: ReconciliationNode[] = (nodesData || []).map((n: any) => ({
+    const nodes: ReconciliationNode[] = (nodesData || []).map((n: {
+      id: string;
+      node_type: string;
+      job_id: string;
+      source_id: string | null;
+      target_id: string | null;
+      data: Record<string, unknown>;
+      amount: number | null;
+      currency: string | null;
+      timestamp: string;
+      confidence: number | null;
+      metadata: Record<string, unknown>;
+    }) => ({
       id: n.id,
-      type: n.node_type,
+      type: n.node_type as ReconciliationNode['type'],
       jobId: n.job_id,
       sourceId: n.source_id,
       targetId: n.target_id,
@@ -226,12 +245,20 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
       throw new Error(`Failed to query edges: ${edgesError.message}`);
     }
 
-    const edges: ReconciliationEdge[] = (edgesData || []).map((e: any) => ({
+    const edges: ReconciliationEdge[] = (edgesData || []).map((e: {
+      id: string;
+      source_node_id: string;
+      target_node_id: string;
+      edge_type: string;
+      confidence: number | null;
+      metadata: Record<string, unknown>;
+      created_at: string;
+    }) => ({
       id: e.id,
       source: e.source_node_id,
       target: e.target_node_id,
-      type: e.edge_type,
-      confidence: e.confidence,
+      type: e.edge_type as ReconciliationEdge['type'],
+      confidence: e.confidence ?? 0,
       metadata: e.metadata,
       createdAt: new Date(e.created_at),
     }));
@@ -263,10 +290,12 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
   /**
    * Subscribe to real-time updates
    */
-  subscribe(jobId: string, callback: (update: any) => void): () => void {
+  subscribe(jobId: string, callback: (update: RealTimeUpdate) => void): () => void {
     if (!this.updateSubscribers.has(jobId)) {
       this.updateSubscribers.set(jobId, new Set());
-      this.initialize(jobId).catch(console.error);
+      this.initialize(jobId).catch((error) => {
+        logError('Failed to initialize graph subscriptions', error);
+      });
     }
 
     this.updateSubscribers.get(jobId)!.add(callback);
@@ -279,14 +308,14 @@ export class ReconciliationGraphEngineSupabase extends EventEmitter {
   /**
    * Notify subscribers of updates
    */
-  private notifySubscribers(jobId: string, update: any): void {
+  private notifySubscribers(jobId: string, update: RealTimeUpdate): void {
     const subscribers = this.updateSubscribers.get(jobId);
     if (subscribers) {
       subscribers.forEach(callback => {
         try {
           callback(update);
         } catch (error) {
-          console.error('Error notifying subscriber:', error);
+          logError('Error notifying subscriber', error);
         }
       });
     }

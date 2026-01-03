@@ -21,7 +21,7 @@ export interface QueueJobData {
   tenantId: string;
   tenantTier: TenantTier;
   jobId?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export class PrioritizedQueue {
@@ -31,7 +31,7 @@ export class PrioritizedQueue {
 
   constructor(
     private queueName: string,
-    private processor: (job: Job<QueueJobData>) => Promise<any>
+    private processor: (job: Job<QueueJobData>) => Promise<unknown>
   ) {
     // Prefer REDIS_URL if provided (Upstash format: rediss://default:password@host:6379)
     if (config.redis.url) {
@@ -46,6 +46,7 @@ export class PrioritizedQueue {
         host: string;
         port: number;
         password?: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tls?: any;
       } = {
         host: config.redis.host,
@@ -180,11 +181,23 @@ export class PrioritizedQueue {
     );
 
     this.worker.on('completed', (job) => {
-      console.log(`Job ${job.id} completed in queue ${this.queueName}`);
+      import('../../utils/logger').then(({ logInfo }) => {
+        logInfo(`Job ${job.id} completed in queue ${this.queueName}`);
+      }).catch(() => {
+        // Fallback if logger fails
+        // eslint-disable-next-line no-console
+        console.log(`Job ${job.id} completed in queue ${this.queueName}`, { jobId: job.id, queueName: this.queueName });
+      });
     });
 
     this.worker.on('failed', (job, err) => {
-      console.error(`Job ${job?.id} failed in queue ${this.queueName}:`, err);
+      import('../../utils/logger').then(({ logError }) => {
+        logError(`Job ${job?.id} failed in queue ${this.queueName}`, err);
+      }).catch(() => {
+        // Fallback if logger fails
+        // eslint-disable-next-line no-console
+        console.error(`Job ${job?.id} failed in queue ${this.queueName}`, err, { jobId: job?.id, queueName: this.queueName });
+      });
     });
   }
 

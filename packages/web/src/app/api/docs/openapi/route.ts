@@ -7,6 +7,7 @@
 import { NextResponse } from 'next/server';
 import { generateOpenAPISpec } from '@/lib/api/openapi-generator';
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 import {
   createApiKeySchema,
   listApiKeysSchema,
@@ -22,7 +23,8 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-export const GET = publicRoute(async function GET() {
+export const GET = withSecurity(
+  publicRoute(async function GET() {
   const routes = [
     {
       path: '/api/console/api-keys',
@@ -124,4 +126,6 @@ export const GET = publicRoute(async function GET() {
       'Cache-Control': 'public, max-age=3600',
     },
   });
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
@@ -33,7 +35,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching snapshots:", error);
+      appLogger.error("Error fetching snapshots", error);
       return NextResponse.json(
       {
         success: false,
@@ -64,7 +66,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       })),
     });
   } catch (error) {
-    console.error("Error in snapshots GET:", error);
+    appLogger.error("Error in snapshots GET", error);
     return NextResponse.json(
       {
         success: false,
@@ -125,12 +127,12 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         snapshot_name: snapshotName || "Untitled Snapshot",
         snapshot_data: projectData,
         created_by: user.id,
-      } as any)
+      } as Record<string, unknown>)
       .select()
       .single();
 
     if (error) {
-      console.error("Error creating snapshot:", error);
+      appLogger.error("Error creating snapshot", error);
       return NextResponse.json(
       {
         success: false,
@@ -143,7 +145,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
     return NextResponse.json({ snapshot });
   } catch (error) {
-    console.error("Error in snapshots POST:", error);
+    appLogger.error("Error in snapshots POST", error);
     return NextResponse.json(
       {
         success: false,

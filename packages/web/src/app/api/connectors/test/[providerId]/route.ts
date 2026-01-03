@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
 import { getConnectorDriver } from '@settler/adapters/src/drivers';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -61,7 +63,7 @@ export const POST = withUniversalBillingGate(async function POST(
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Error in test route:', error);
+    appLogger.error('Error in test route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
       {

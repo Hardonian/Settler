@@ -8,11 +8,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -62,7 +65,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     });
 
     if (events.length >= maxEvents) {
-      console.warn(`[Usage Export] Limited to ${maxEvents} events for export`);
+      appLogger.warn(`[Usage Export] Limited to ${maxEvents} events for export`, { maxEvents, eventCount: events.length });
     }
 
     if (format === 'csv') {
@@ -107,7 +110,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       });
     }
   } catch (error) {
-    console.error('[Usage Export] Error:', error);
+    appLogger.error('[Usage Export] Error', error);
     return NextResponse.json(
       {
         success: false,
@@ -117,4 +120,6 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

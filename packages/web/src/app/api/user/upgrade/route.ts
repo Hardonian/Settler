@@ -6,11 +6,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendPaidWelcomeEmail, LifecycleUser } from "@settler/api/lib/email-lifecycle";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -28,24 +31,31 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     }
 
     // Update user plan
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: updateError } = (await (supabase.from("profiles") as any)
       .update({
         plan_type: planType,
         subscription_start_date: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
-      .eq("id", user.id)) as { error: any };
+      .eq("id", user.id)) as { error: { message?: string } | null };
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
 
     // Get updated profile
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: profile } = (await supabase
       .from("profiles")
       .select("*")
       .eq("id", user.id)
-      .single()) as { data: any; error: any };
+      .single()) as { data: {
+        email?: string;
+        name?: string;
+        industry?: string;
+        company_name?: string;
+      } | null; error: { message?: string } | null };
 
     // Send paid welcome email
     if (profile) {
@@ -60,14 +70,14 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
         await sendPaidWelcomeEmail(lifecycleUser);
       } catch (emailError) {
-        console.error("Failed to send paid welcome email:", emailError);
+        appLogger.error("Failed to send paid welcome email", emailError);
         // Don't fail upgrade if email fails
       }
     }
 
     return NextResponse.json({ success: true, planType });
   } catch (error) {
-    console.error("Upgrade error:", error);
+    appLogger.error("Upgrade error", error);
     // Never return 500 - return graceful error response
     return NextResponse.json({ 
       success: false,
@@ -75,4 +85,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       message: "Please try again later or contact support"
     }, { status: 200 });
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
+);

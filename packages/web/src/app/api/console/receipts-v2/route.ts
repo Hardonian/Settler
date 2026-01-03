@@ -29,7 +29,8 @@ const CreateReceiptSchema = z.object({
   }),
 });
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     // Authenticate
     await requireAuth(request);
@@ -71,7 +72,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       );
     }
     
-    console.error('[Receipts V2 API] Error:', error);
+    appLogger.error('[Receipts V2 API] Error', error);
     return NextResponse.json(
       {
         success: false,
@@ -81,9 +82,12 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     // Authenticate
     await requireAuth(request);
@@ -111,7 +115,9 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     
     return NextResponse.json({ receipts });
   } catch (error) {
-    console.error('[Receipts V2 API] Error:', error);
+    appLogger.error('[Receipts V2 API] Error', error);
     return NextResponse.json({ receipts: [] }, { status: 200 });
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

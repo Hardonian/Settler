@@ -8,16 +8,19 @@
 import { NextResponse } from 'next/server';
 import { getLatestInsights } from '@/lib/feedback-loops/usage-insights';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET() {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET() {
   try {
     const insights = await getLatestInsights(10);
     return NextResponse.json({ insights });
   } catch (error) {
-    console.error('[Feedback Loops] Error fetching insights:', error);
+    appLogger.error('[Feedback Loops] Error fetching insights', error);
     return NextResponse.json(
       {
         success: false,
@@ -27,4 +30,6 @@ export const GET = withUniversalBillingGate(async function GET() {
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

@@ -187,7 +187,7 @@ if (config.nodeEnv === 'production' || config.nodeEnv === 'preview') {
     SecretsManager.validateSecrets(REQUIRED_SECRETS);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Secret validation failed:', message);
+    logError('Secret validation failed', error, { message });
     process.exit(1);
   }
 }
@@ -391,7 +391,7 @@ async function startServer() {
     
     return server;
   } catch (error) {
-    console.error('Failed to start server:', error);
+    logError('Failed to start server', error);
     process.exit(1);
   }
 }

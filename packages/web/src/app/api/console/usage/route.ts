@@ -13,6 +13,7 @@ import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/mon
 import { getBillingAccountOptimized } from '@/lib/db/query-optimizer';
 import { executeWithRetry } from '@/lib/db/connection-pool';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -31,7 +32,8 @@ interface UsageSummary {
   };
 }
 
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/console/usage', method: 'GET' });
   
@@ -136,7 +138,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
             remaining: usage.remaining === -1 ? -1 : usage.remaining,
           };
         } catch (error) {
-          console.error(`[Usage API] Error getting usage for ${service}:`, error);
+          appLogger.error(`[Usage API] Error getting usage for ${service}`, error);
           // Continue with other services
         }
       }
@@ -175,4 +177,6 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     );
     return addCorrelationHeaders(response, correlationId);
   }
-}, { feature: 'Usage API' });
+}, { feature: 'Usage API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

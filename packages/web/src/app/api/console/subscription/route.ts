@@ -7,16 +7,19 @@
 import { NextResponse } from 'next/server';
 import { getSubscriptionInfo } from '@/lib/console/subscription';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET() {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET() {
   try {
     const subscription = await getSubscriptionInfo();
     return NextResponse.json(subscription);
   } catch (error) {
-    console.error('[Subscription API] Error:', error);
+    appLogger.error('[Subscription API] Error', error);
     return NextResponse.json(
       { 
         tier: 'unauthenticated',
@@ -34,4 +37,6 @@ export const GET = withUniversalBillingGate(async function GET() {
       { status: 200 }
     );
   }
-}, { feature: 'Subscription API' });
+}, { feature: 'Subscription API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

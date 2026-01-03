@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "./auth";
 import { query } from "../db";
 import { v4 as uuidv4 } from "uuid";
+import { logError } from "../utils/logger";
 
 export function idempotencyMiddleware() {
   return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
@@ -65,7 +66,9 @@ export function idempotencyMiddleware() {
               idempotencyKey,
               JSON.stringify({ statusCode, data: responseData }),
             ]
-          ).catch(err => console.error('Failed to cache idempotency key', err));
+          ).catch(err => {
+            logError('Failed to cache idempotency key', err);
+          });
         }
         if (encoding !== undefined && typeof encoding === 'string') {
           originalEnd(chunk, encoding, cb);

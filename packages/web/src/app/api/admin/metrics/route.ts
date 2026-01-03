@@ -12,11 +12,12 @@ import { getDateRange, aggregateKPIMetrics, aggregateTrendData, aggregateExcepti
 import { metricsCache, cacheKeys } from '@/lib/admin/cache/metrics-cache';
 import { rateLimiter, getRateLimitKey } from '@/lib/admin/security/rate-limit';
 import { adminLogger } from '@/lib/admin/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   try {
     // Rate limiting
     const rateLimitKey = getRateLimitKey(request);
@@ -127,4 +128,6 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

@@ -6,11 +6,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET(_request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -75,7 +78,9 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
 
     return NextResponse.json({ moment: null });
   } catch (error) {
-    console.error("Value moments error:", error);
+    appLogger.error("Value moments error", error);
     return NextResponse.json({ moment: null });
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

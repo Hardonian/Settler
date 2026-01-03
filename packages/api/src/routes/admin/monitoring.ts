@@ -89,7 +89,7 @@ export function createMonitoringRouter(): Router {
           });
         } catch (error) {
           // Skip accounts with errors (table might not exist yet)
-          console.error(`Error fetching SLA metrics for account ${account.id}`, error);
+          logError(`Error fetching SLA metrics for account ${account.id}`, error);
         }
       }
 

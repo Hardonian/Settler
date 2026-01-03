@@ -10,6 +10,8 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { createCustomerPortalSession } from '@/domain/billing/stripeService';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -30,7 +32,8 @@ function isValidOriginUrl(url: unknown): boolean {
   }
 }
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -74,8 +77,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('[Stripe Portal] Error creating customer portal session:', {
+    appLogger.error('[Stripe Portal] Error creating customer portal session', error, {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
@@ -89,4 +91,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
+);

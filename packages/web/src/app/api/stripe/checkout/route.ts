@@ -16,6 +16,8 @@ import { logAuditEvent } from '@/lib/audit/logger';
 import { trackApiMetric } from '@/lib/monitoring/metrics';
 import { freeRoute } from '@/middleware/billing-gate-universal';
 import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -43,7 +45,8 @@ function isValidOriginUrl(url: unknown): boolean {
   }
 }
 
-export const POST = freeRoute(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  freeRoute(async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
@@ -124,7 +127,7 @@ export const POST = freeRoute(async function POST(request: NextRequest) {
       });
     } catch (eventError) {
       // Don't fail checkout creation if event emission fails
-      console.error('[Stripe Checkout] Failed to emit checkout started event:', eventError);
+      appLogger.error('[Stripe Checkout] Failed to emit checkout started event', eventError);
     }
 
     // Create checkout session (already uses safe Stripe calls internally)
@@ -165,8 +168,7 @@ export const POST = freeRoute(async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('[Stripe Checkout] Error creating checkout session:', {
+    appLogger.error('[Stripe Checkout] Error creating checkout session', error, {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
@@ -186,4 +188,6 @@ export const POST = freeRoute(async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-});
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
+);

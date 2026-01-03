@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getExecutiveMetrics, getBillingAccountMetrics } from '@/lib/metrics/service';
 import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -16,7 +17,8 @@ export const runtime = 'nodejs';
 /**
  * GET /api/console/metrics
  */
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   const correlationId = await getCorrelationId();
   const logger = await createLogger({ route: '/api/console/metrics', method: 'GET' });
   
@@ -77,4 +79,6 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     );
     return addCorrelationHeaders(response, correlationId);
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

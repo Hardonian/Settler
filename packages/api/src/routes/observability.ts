@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { query } from "../db";
+import { logError } from "../utils/logger";
 
 /**
  * Observability Routes
@@ -16,10 +17,19 @@ export const observabilityRouter = Router();
  * GET /api/v1/observability/metrics
  * Get system and application metrics
  */
+interface AuthenticatedRequest extends Request {
+  userId?: string;
+  tenantId?: string;
+}
+
 observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
-    const tenantId = (req as any).tenantId;
+    const userId = (req as AuthenticatedRequest).userId;
+    const tenantId = (req as AuthenticatedRequest).tenantId;
+
+    if (!userId || !tenantId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     // Get job metrics
     const jobStats = await query<{
@@ -119,7 +129,9 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching metrics:", error);
+    const userId = (req as AuthenticatedRequest).userId;
+    const tenantId = (req as AuthenticatedRequest).tenantId;
+    logError("Error fetching metrics", error, { userId, tenantId });
     res.status(500).json({
       error: "Failed to fetch metrics",
       message: error instanceof Error ? error.message : "Unknown error",
@@ -133,8 +145,13 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
  */
 observabilityRouter.get("/logs", async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
-    const tenantId = (req as any).tenantId;
+    const userId = (req as AuthenticatedRequest).userId;
+    const tenantId = (req as AuthenticatedRequest).tenantId;
+
+    if (!userId || !tenantId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
     const {
       level,
       jobId,
@@ -155,30 +172,30 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
       FROM logs
       WHERE user_id = $1 AND tenant_id = $2
     `;
-    const params: any[] = [userId, tenantId];
+    const params: (string | number)[] = [userId, tenantId];
     let paramIndex = 3;
 
     if (level) {
       queryStr += ` AND level = $${paramIndex}`;
-      params.push(level);
+      params.push(typeof level === 'string' ? level : String(level));
       paramIndex++;
     }
 
     if (jobId) {
       queryStr += ` AND job_id = $${paramIndex}`;
-      params.push(jobId);
+      params.push(typeof jobId === 'string' ? jobId : String(jobId));
       paramIndex++;
     }
 
     if (startDate) {
       queryStr += ` AND created_at >= $${paramIndex}`;
-      params.push(startDate);
+      params.push(typeof startDate === 'string' ? startDate : String(startDate));
       paramIndex++;
     }
 
     if (endDate) {
       queryStr += ` AND created_at <= $${paramIndex}`;
-      params.push(endDate);
+      params.push(typeof endDate === 'string' ? endDate : String(endDate));
       paramIndex++;
     }
 
@@ -196,7 +213,9 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching logs:", error);
+    const userId = (req as AuthenticatedRequest).userId;
+    const tenantId = (req as AuthenticatedRequest).tenantId;
+    logError("Error fetching logs", error, { userId, tenantId });
     res.status(500).json({
       error: "Failed to fetch logs",
       message: error instanceof Error ? error.message : "Unknown error",
@@ -211,11 +230,8 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
 observabilityRouter.get("/traces", async (req: Request, res: Response) => {
   try {
     // Reserved for future user/tenant filtering
-    const _ = {
-      userId: (req as any).userId,
-      tenantId: (req as any).tenantId,
-    };
-    void _;
+    const userId = (req as AuthenticatedRequest).userId;
+    const tenantId = (req as AuthenticatedRequest).tenantId;
     // Reserved for future tracing backend integration
     void req.query.traceId;
     void req.query.jobId;
@@ -231,7 +247,9 @@ observabilityRouter.get("/traces", async (req: Request, res: Response) => {
       documentation: "https://docs.settler.io/observability/tracing",
     });
   } catch (error) {
-    console.error("Error fetching traces:", error);
+    const userId = (req as AuthenticatedRequest).userId;
+    const tenantId = (req as AuthenticatedRequest).tenantId;
+    logError("Error fetching traces", error, { userId, tenantId });
     res.status(500).json({
       error: "Failed to fetch traces",
       message: error instanceof Error ? error.message : "Unknown error",

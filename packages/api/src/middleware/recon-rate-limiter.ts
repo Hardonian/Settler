@@ -10,6 +10,7 @@ import { Response, NextFunction } from 'express';
 // @ts-ignore - PrismaClient is generated at build time
 import type { PrismaClient } from '@prisma/client';
 import type { TenantRequest } from './tenant';
+import { logError } from '../utils/logger';
 
 interface RateLimitConfig {
   rpm: number; // Requests per minute
@@ -185,7 +186,7 @@ export class ReconRateLimiter {
 
         return next();
       } catch (error) {
-        console.error('Rate limiter error:', error);
+        logError('Rate limiter error', error);
         // On error, allow the request (fail open)
         return next();
       }

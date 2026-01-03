@@ -1,5 +1,6 @@
 import { Pool, PoolClient } from 'pg';
 import { config } from '../config';
+import { logError, logWarn } from '../utils/logger';
 
 // Database connection pool with proper configuration
 export const pool = new Pool({
@@ -20,7 +21,7 @@ export const pool = new Pool({
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
+  logError('Unexpected error on idle client', err);
   process.exit(-1);
 });
 
@@ -66,7 +67,7 @@ export async function initDatabase(): Promise<void> {
   } catch (error: unknown) {
     // Fallback to basic schema if migration runner fails
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.warn('Migration runner failed, falling back to basic schema:', message);
+    logWarn('Migration runner failed, falling back to basic schema', { message });
     
     const fs = require('fs');
     const path = require('path');
@@ -87,7 +88,7 @@ export async function initDatabase(): Promise<void> {
             if (!errorMessage.includes('already exists') && 
                 !errorMessage.includes('duplicate') &&
                 !errorMessage.includes('already enabled')) {
-              console.warn('Migration warning:', errorMessage);
+              logWarn('Migration warning', { errorMessage });
             }
           }
         }

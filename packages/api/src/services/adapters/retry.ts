@@ -13,6 +13,8 @@
  * - Circuit breaker pattern
  */
 
+import { logInfo, logWarn } from '../../utils/logger';
+
 interface RetryConfig {
   maxRetries: number; // Default: 3
   initialDelayMs: number; // Default: 1000
@@ -92,7 +94,11 @@ export async function executeWithRetry<T>(
 
       // Calculate delay and wait
       const delay = calculateBackoffDelay(attempt, finalConfig);
-      console.log(`[RetryLogic] Attempt ${attempt + 1} failed, retrying in ${delay}ms:`, lastError.message);
+      logInfo(`[RetryLogic] Attempt ${attempt + 1} failed, retrying in ${delay}ms`, { 
+        attempt: attempt + 1,
+        delay,
+        errorMessage: lastError.message 
+      });
       await sleep(delay);
     }
   }
@@ -119,7 +125,7 @@ export class CircuitBreaker {
     if (this.state === 'open') {
       if (this.lastFailureTime && Date.now() - this.lastFailureTime.getTime() > this.timeoutMs) {
         this.state = 'half-open';
-        console.log('[CircuitBreaker] Moving to half-open state');
+        logInfo('[CircuitBreaker] Moving to half-open state');
       } else {
         throw new Error('Circuit breaker is open');
       }
@@ -132,7 +138,7 @@ export class CircuitBreaker {
       if (this.state === 'half-open') {
         this.state = 'closed';
         this.failures = 0;
-        console.log('[CircuitBreaker] Circuit breaker closed');
+        logInfo('[CircuitBreaker] Circuit breaker closed');
       } else {
         this.failures = 0;
       }
@@ -145,7 +151,7 @@ export class CircuitBreaker {
       // Open circuit if threshold exceeded
       if (this.failures >= this.threshold) {
         this.state = 'open';
-        console.log('[CircuitBreaker] Circuit breaker opened');
+        logWarn('[CircuitBreaker] Circuit breaker opened', { failures: this.failures, threshold: this.threshold });
       }
 
       throw error;

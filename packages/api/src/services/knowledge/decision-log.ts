@@ -8,6 +8,7 @@
 import { EventEmitter } from 'events';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { logError } from '../../utils/logger';
 
 export interface Decision {
   id: string;
@@ -245,7 +246,7 @@ ${decision.tags.map(tag => `\`${tag}\``).join(', ')}
         // For now, skip parsing
       }
     } catch (error) {
-      console.error('Failed to load decisions:', error);
+      logError('Failed to load decisions', error);
     }
   }
 }

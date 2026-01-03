@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { prisma } from '@/shared/db/prismaClient';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
@@ -16,7 +18,8 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-export const PATCH = withUniversalBillingGate(async function PATCH(
+export const PATCH = withSecurity(
+  withUniversalBillingGate(async function PATCH(
   request: NextRequest,
   { params }: RouteParams
 ) {
@@ -97,7 +100,7 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
     });
   } catch (error) {
     // Never return 500 - always return 200 with error info for playground
-    console.error('Error updating feature flag:', error);
+    appLogger.error('Error updating feature flag', error);
     return NextResponse.json(
       {
         error: 'Failed to update feature flag',
@@ -107,4 +110,6 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
       { status: 200 }
     );
   }
-}, { feature: 'PATCH API' });
+}, { feature: 'PATCH API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

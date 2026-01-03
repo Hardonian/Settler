@@ -17,6 +17,8 @@ import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { logAuditEvent, type AuditAction } from '@/lib/audit/logger';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -31,7 +33,8 @@ const BulkActionSchema = z.object({
  * POST /api/jobs/bulk
  * Perform bulk actions on jobs
  */
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   const startTime = Date.now();
   
   try {
@@ -159,7 +162,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
           if (job && job.status === 'active') {
             // Execute job (this would trigger actual execution in production)
             // For now, just log
-            console.log(`[Bulk Operations] Executing job ${jobId}`);
+            appLogger.info(`[Bulk Operations] Executing job ${jobId}`);
           }
         }
 
@@ -190,7 +193,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
     // Log successful request
     const duration = Date.now() - startTime;
-    console.log('[Bulk Operations API] Success', {
+    appLogger.info('[Bulk Operations API] Success', {
       tenantId,
       userId,
       action,
@@ -212,8 +215,8 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
 
-    console.error('[Bulk Operations API] Error', {
-      error: errorMessage,
+    appLogger.error('[Bulk Operations API] Error', error, {
+      errorMessage,
       stack: errorStack,
       duration,
     });
@@ -232,4 +235,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
+);

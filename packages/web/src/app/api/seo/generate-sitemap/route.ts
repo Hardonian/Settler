@@ -5,6 +5,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const GET = withUniversalBillingGate(async function GET(_request: NextRequest) {
   try {
@@ -82,7 +84,7 @@ ${integrations
       },
     });
   } catch (error) {
-    console.error("Sitemap generation error:", error);
+    appLogger.error("Sitemap generation error", error);
     return NextResponse.json(
       {
         success: false,

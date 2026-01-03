@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseRequestBody } from "@/types/api";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
@@ -15,7 +17,8 @@ interface UserLifecycleRow {
   [key: string]: unknown;
 }
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -74,7 +77,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
     return NextResponse.json({ response });
   } catch (error) {
-    console.error("Error in onboarding-assistant POST:", error);
+    appLogger.error("Error in onboarding-assistant POST", error);
     // Never return 500 - return graceful error response
     return NextResponse.json({ 
       response: "I'm having trouble processing your question right now. Please try again in a moment or check our documentation for help.",
@@ -82,4 +85,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       message: "Please try again later"
     }, { status: 200 });
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

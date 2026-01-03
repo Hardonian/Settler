@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -25,7 +28,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       .eq("user_id", userId);
 
     if (error) {
-      console.error("Error fetching checklist:", error);
+      appLogger.error("Error fetching checklist", error);
       // Never return 500 - return empty checklist with graceful error message
       return NextResponse.json({ 
         completedItems: [],
@@ -45,7 +48,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
 
     return NextResponse.json({ completedItems });
   } catch (error) {
-    console.error("Error in checklist GET:", error);
+    appLogger.error("Error in checklist GET", error);
     // Never return 500 - return empty checklist with graceful error message
     return NextResponse.json({ 
       completedItems: [],
@@ -53,9 +56,12 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       message: "Please try again later"
     }, { status: 200 });
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -78,12 +84,12 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         completed: true,
         completed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      } as any)
+      } as Record<string, unknown>)
       .select()
       .single();
 
     if (error) {
-      console.error("Error updating checklist:", error);
+      appLogger.error("Error updating checklist", error);
       // Never return 500 - return graceful error response
       return NextResponse.json({ 
         success: false,
@@ -94,7 +100,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
     return NextResponse.json({ success: true, item: data });
   } catch (error) {
-    console.error("Error in checklist POST:", error);
+    appLogger.error("Error in checklist POST", error);
     // Never return 500 - return graceful error response
     return NextResponse.json({ 
       success: false,
@@ -102,4 +108,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       message: "Please try again later"
     }, { status: 200 });
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

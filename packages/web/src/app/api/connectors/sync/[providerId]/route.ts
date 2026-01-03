@@ -8,12 +8,14 @@ import { checkIdempotencyKey, createIdempotencyKey, completeIdempotencyKey, fail
 import { createLogger } from '@/lib/logger';
 import { getCorrelationId } from '@/lib/monitoring/correlation';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes for sync operations
 
-export const POST = withUniversalBillingGate(async function POST(
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(
   request: NextRequest,
   { params }: { params: { providerId: string } }
 ) {
@@ -165,4 +167,6 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
+);

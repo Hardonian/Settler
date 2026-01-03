@@ -14,6 +14,7 @@
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 import { getJobSchedulerService } from './infrastructure/jobs/scheduler-service';
+import { logInfo, logError } from './utils/logger';
 
 // Initialize Prisma client
 const prisma = new PrismaClient({
@@ -28,12 +29,11 @@ const scheduler = getJobSchedulerService(prisma);
  */
 async function start() {
   try {
-    console.log('[Scheduler] Starting job scheduler service...');
+    logInfo('[Scheduler] Starting job scheduler service...');
     await scheduler.start();
-    console.log('[Scheduler] Job scheduler service started successfully');
-    console.log('[Scheduler] Status:', scheduler.getStatus());
+    logInfo('[Scheduler] Job scheduler service started successfully', { status: scheduler.getStatus() });
   } catch (error) {
-    console.error('[Scheduler] Failed to start:', error);
+    logError('[Scheduler] Failed to start', error);
     process.exit(1);
   }
 }
@@ -42,10 +42,10 @@ async function start() {
  * Graceful shutdown
  */
 async function shutdown() {
-  console.log('[Scheduler] Shutting down...');
+  logInfo('[Scheduler] Shutting down...');
   await scheduler.stop();
   await prisma.$disconnect();
-  console.log('[Scheduler] Shutdown complete');
+  logInfo('[Scheduler] Shutdown complete');
   process.exit(0);
 }
 
@@ -53,12 +53,12 @@ async function shutdown() {
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 process.on('uncaughtException', (error) => {
-  console.error('[Scheduler] Uncaught exception:', error);
+  logError('[Scheduler] Uncaught exception', error);
   shutdown();
 });
 
 // Start scheduler
 start().catch((error) => {
-  console.error('[Scheduler] Fatal error:', error);
+  logError('[Scheduler] Fatal error', error);
   process.exit(1);
 });

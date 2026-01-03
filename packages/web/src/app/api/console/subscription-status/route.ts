@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getSubscriptionStatus } from '@/lib/get-subscription-status';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -11,13 +13,14 @@ export const runtime = 'nodejs';
  * CRITICAL: Never returns 500 - always returns 200 with fallback status
  * This prevents client-side errors from breaking the console UI
  */
-export const GET = withUniversalBillingGate(async function GET() {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET() {
   try {
     const status = await getSubscriptionStatus();
     return NextResponse.json(status);
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Log error for debugging
-    console.error('[subscription-status] Error getting subscription status:', {
+    appLogger.error('[subscription-status] Error getting subscription status', error, {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
@@ -30,9 +33,11 @@ export const GET = withUniversalBillingGate(async function GET() {
       isPaid: false,
       isEnterprise: false,
       // Include error message in development only
-      ...(process.env.NODE_ENV === 'development' && error?.message
+      ...(process.env.NODE_ENV === 'development' && error instanceof Error && error.message
         ? { error: error.message }
         : {}),
     });
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

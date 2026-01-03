@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addCorsHeaders, handleCors } from "@/lib/api/cors";
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 // Cache status for 30 seconds to reduce load while keeping it fresh
 export const revalidate = 30;
@@ -8,7 +10,8 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma and Supabase
 export const maxDuration = 10; // 10 seconds max for health checks
 
-export const GET = publicRoute(async function GET(request: NextRequest): Promise<NextResponse> {
+export const GET = withSecurity(
+  publicRoute(async function GET(request: NextRequest): Promise<NextResponse> {
   // Handle CORS preflight
   const corsResponse = handleCors(request);
   if (corsResponse) return corsResponse;
@@ -64,7 +67,7 @@ export const GET = publicRoute(async function GET(request: NextRequest): Promise
     // Add CORS headers
     return addCorsHeaders(response, request);
   } catch (error) {
-    console.error("Error in status GET:", error);
+    appLogger.error("Error in status GET", error);
     // Never return 500 - return degraded status with graceful error message
     const errorResponse = NextResponse.json(
       { 
@@ -79,7 +82,9 @@ export const GET = publicRoute(async function GET(request: NextRequest): Promise
     errorResponse.headers.set('Cache-Control', 'no-store');
     return addCorsHeaders(errorResponse, request);
   }
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);
 
 /**
  * Check database health

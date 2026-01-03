@@ -17,6 +17,7 @@ import { withRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/security/rate-limiter';
 import { withCache, CACHE_CONFIGS } from '@/lib/cache/api-cache';
 import { validatePagination } from '@/lib/security/request-validator';
 import { withApiLogging } from '@/middleware/api-logger';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -81,7 +82,7 @@ async function handleGet(request: NextRequest) {
       offset: filters.offset,
     });
   } catch (error) {
-    console.error('[api-logs] Error:', error);
+    appLogger.error('[api-logs] Error', error);
     // Never return 500 - return actionable error message with empty logs
     return NextResponse.json(
       { 

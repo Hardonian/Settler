@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = "force-dynamic";
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const GET = withUniversalBillingGate(async function GET(_request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -63,7 +66,7 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
 
     return NextResponse.json({ health });
   } catch (error) {
-    console.error("Error in system-health GET:", error);
+    appLogger.error("Error in system-health GET", error);
     return NextResponse.json(
       {
         success: false,
@@ -73,4 +76,6 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

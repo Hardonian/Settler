@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -38,12 +41,13 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         user_id: user.id,
         milestone_type: milestoneType,
         milestone_data: metadata || {},
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
       .select()
       .single();
 
     if (error) {
-      console.error("Error creating milestone:", error);
+      appLogger.error("Error creating milestone", error);
       return NextResponse.json(
       {
         success: false,
@@ -61,12 +65,12 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         first_successful_setup_at: new Date().toISOString(),
         current_stage: "activation",
         updated_at: new Date().toISOString(),
-      } as any);
+      } as Record<string, unknown>);
     }
 
     return NextResponse.json({ achieved: true, milestone: data });
   } catch (error) {
-    console.error("Error in milestones POST:", error);
+    appLogger.error("Error in milestones POST", error);
     return NextResponse.json(
       {
         success: false,
@@ -76,9 +80,12 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -101,7 +108,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     const { data, error } = await query;
 
     if (error) {
-      console.error("Error fetching milestones:", error);
+      appLogger.error("Error fetching milestones", error);
       return NextResponse.json(
       {
         success: false,
@@ -120,7 +127,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     const milestones = (data || []).map((m: MilestoneRow) => m.milestone_type);
     return NextResponse.json({ milestones });
   } catch (error) {
-    console.error("Error in milestones GET:", error);
+    appLogger.error("Error in milestones GET", error);
     return NextResponse.json(
       {
         success: false,
@@ -130,4 +137,6 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

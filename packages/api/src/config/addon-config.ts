@@ -5,6 +5,8 @@
  * without requiring database schema changes.
  */
 
+import { logError } from '../utils/logger';
+
 export interface AddOnConfig {
   integration_id: string;
   name: string;
@@ -244,7 +246,7 @@ export async function createAddOnFromConfig(
     .single();
 
   if (error) {
-    console.error("Error creating add-on:", error);
+    logError("Error creating add-on", error);
     return null;
   }
 

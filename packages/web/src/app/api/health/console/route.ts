@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -41,7 +42,8 @@ interface HealthStatus {
   timestamp: string;
 }
 
-export const GET = publicRoute(async function GET() {
+export const GET = withSecurity(
+  publicRoute(async function GET() {
   const health: HealthStatus = {
     status: 'healthy',
     checks: {
@@ -173,4 +175,6 @@ export const GET = publicRoute(async function GET() {
 
   // Always return 200, even if unhealthy, to prevent 500 errors
   return NextResponse.json(health, { status: 200 });
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

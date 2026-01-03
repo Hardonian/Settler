@@ -17,6 +17,7 @@ import { withRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/security/rate-limiter';
 import { withCache, CACHE_CONFIGS } from '@/lib/cache/api-cache';
 import { validatePagination } from '@/lib/security/request-validator';
 import { withApiLogging } from '@/middleware/api-logger';
+import { appLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -72,7 +73,7 @@ async function handleGet(request: NextRequest) {
       .range(pagination.offset, pagination.offset + pagination.limit - 1);
     
     if (tenantsError) {
-      console.error('[tenants] Error fetching tenants:', tenantsError);
+      appLogger.error('[tenants] Error fetching tenants', tenantsError);
       // Never return 500 - return empty tenants list with professional error message
       return NextResponse.json(
         { 
@@ -165,7 +166,7 @@ async function handleGet(request: NextRequest) {
       offset: pagination.offset,
     });
   } catch (error) {
-    console.error('[tenants] Error:', error);
+    appLogger.error('[tenants] Error', error);
     // Never return 500 - return empty tenants list with professional error message
     return NextResponse.json(
       { 

@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
 import { prisma } from '@/shared/db/prismaClient';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 const CreateRunSchema = z.object({
   workspace_id: z.string().uuid(),
@@ -26,7 +27,8 @@ const CreateRunSchema = z.object({
 
 export const runtime = 'nodejs';
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   const logger = createLogger();
   const correlationId = generateCorrelationId();
 
@@ -61,6 +63,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     }
 
     // Check for existing run with same idempotency_key
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: existing } = await (supabase
       .from('recon_runs' as any)
       .select('*')
@@ -82,6 +85,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     }
 
     // Create new run
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: run, error: createError } = await (supabase
       .from('recon_runs' as any)
       .insert({
@@ -91,9 +95,9 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         input_manifest: validated.input_manifest,
         status: 'created',
         name: validated.name || 'Reconciliation Run',
-      } as any)
+      } as Record<string, unknown>)
       .select()
-      .single() as any);
+      .single() as { data: Record<string, unknown> | null; error: { message?: string } | null });
 
     if (createError || !run) {
       logger.error('Failed to create run', createError as Error);
@@ -229,4 +233,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);

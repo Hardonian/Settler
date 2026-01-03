@@ -8,11 +8,14 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getActiveAlerts } from '@/lib/monitoring/error-alerts';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET() {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -25,7 +28,9 @@ export const GET = withUniversalBillingGate(async function GET() {
 
     return NextResponse.json({ alerts });
   } catch (error) {
-    console.error('[Alerts API] Error:', error);
+    appLogger.error('[Alerts API] Error', error);
     return NextResponse.json({ alerts: [] });
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

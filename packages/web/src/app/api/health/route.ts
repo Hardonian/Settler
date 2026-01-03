@@ -16,11 +16,13 @@ import { getTraceId } from '@/lib/observability/trace';
 import { logger } from '@/lib/observability/logger';
 import { validateSupabaseEnv } from '@/lib/env/validator';
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = publicRoute(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  publicRoute(async function GET(request: NextRequest) {
   const traceId = await getTraceId(request);
   const checks: Record<string, { status: 'ok' | 'error'; message?: string }> = {};
   let overallStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
@@ -61,6 +63,7 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
         ]);
         
         // Check if result has error property
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const error = (queryResult as any)?.error;
         if (error && error.code !== 'PGRST116') {
           // PGRST116 is "no rows returned" which is fine for health check
@@ -86,6 +89,7 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
           ),
         ]);
         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const rpcError = (rpcResult_race as any)?.error;
         if (rpcError) {
           // RPC might be blocked by RLS for anon users - this is expected
@@ -222,7 +226,12 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
     });
   } catch (logError) {
     // Don't fail health check if logging fails
-    console.warn('[Health] Failed to log health check:', logError);
+    // Use dynamic import to avoid circular dependencies
+    import('@/lib/utils/logger').then(({ appLogger }) => {
+      appLogger.warn('[Health] Failed to log health check', { error: logError });
+    }).catch(() => {
+      // Silent fail if logger unavailable
+    });
   }
 
   const response = NextResponse.json(
@@ -247,4 +256,6 @@ export const GET = publicRoute(async function GET(request: NextRequest) {
 
   response.headers.set('x-trace-id', traceId);
   return response;
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

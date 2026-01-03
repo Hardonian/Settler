@@ -9,11 +9,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { RunsQueryParamsSchema, ReconciliationRunSchema } from '@/lib/admin/metrics/types';
 import { prisma } from '@/shared/db/prismaClient';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   try {
     // Check admin access
     const adminCheck = await isSuperAdmin();
@@ -34,7 +36,10 @@ export async function GET(request: NextRequest) {
     });
 
     // Build where clause
-    const whereClause: any = {};
+    const whereClause: {
+      tenantId?: string;
+      status?: string;
+    } = {};
     if (params.tenantId) {
       whereClause.tenantId = params.tenantId;
     }
@@ -104,7 +109,7 @@ export async function GET(request: NextRequest) {
       offset: params.offset,
     });
   } catch (error) {
-    console.error('[Admin Runs] Error:', error);
+    appLogger.error('[Admin Runs] Error', error);
     
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
@@ -118,4 +123,6 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

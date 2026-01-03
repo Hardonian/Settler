@@ -8,6 +8,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -17,7 +19,7 @@ export const maxDuration = 60;
  * POST /api/v1/recon/jobs
  * Create a reconciliation job
  */
-export async function POST(request: NextRequest) {
+export const POST = withSecurity(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but don't fail if unauthenticated (for playground)
     let auth;
@@ -146,11 +148,11 @@ export async function POST(request: NextRequest) {
       );
     } catch (usageError) {
       // Don't fail job creation if usage tracking fails
-      console.error('[Recon Jobs API] Usage tracking failed:', usageError);
+      appLogger.error('[Recon Jobs API] Usage tracking failed', usageError);
     }
 
-    const metadata = job.metadata as Record<string, any> | null;
-    const validationRules = job.validationRules as any[] | null;
+    const metadata = job.metadata as Record<string, unknown> | null;
+    const validationRules = job.validationRules as Array<Record<string, unknown>> | null;
     const jobResponse = {
       id: job.id,
       jobId: job.id,
@@ -168,7 +170,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     // Never return 500 - always return 200 with error info for playground
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[Recon Jobs API] Error:', errorMessage);
+    appLogger.error('[Recon Jobs API] Error', error, { errorMessage });
     
     // Return 200 with error info instead of 500 to prevent playground crashes
     return NextResponse.json(
@@ -180,7 +182,9 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
+);
 
 /**
  * GET /api/v1/recon/jobs
@@ -193,7 +197,7 @@ export async function POST(request: NextRequest) {
  * - Pagination support
  * - Filtering by status
  */
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   try {
@@ -262,7 +266,11 @@ export async function GET(request: NextRequest) {
     const { prisma } = await import('@/shared/db/prismaClient');
     
     // Build where clause
-    const whereClause: any = {
+    const whereClause: {
+      tenantId: string;
+      deletedAt: null;
+      status?: string;
+    } = {
       tenantId: tenantId,
       deletedAt: null,
       ...(status ? { status } : {}),
@@ -323,7 +331,7 @@ export async function GET(request: NextRequest) {
 
     // Log successful request
     const duration = Date.now() - startTime;
-    console.log('[Recon Jobs API] Success', {
+    appLogger.info('[Recon Jobs API] Success', {
       tenantId,
       userId,
       duration,
@@ -345,7 +353,7 @@ export async function GET(request: NextRequest) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
     
-    console.error('[Recon Jobs API] Error', {
+    appLogger.error('[Recon Jobs API] Error', error, {
       error: errorMessage,
       stack: errorStack,
       duration,
@@ -363,4 +371,6 @@ export async function GET(request: NextRequest) {
       error: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
     }, { status: 200 });
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

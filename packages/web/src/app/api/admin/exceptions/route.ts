@@ -12,11 +12,12 @@ import { prisma } from '@/shared/db/prismaClient';
 import { rateLimiter, getRateLimitKey } from '@/lib/admin/security/rate-limit';
 import { sanitizeSearchQuery } from '@/lib/admin/security/input-validation';
 import { adminLogger } from '@/lib/admin/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   try {
     // Rate limiting
     const rateLimitKey = getRateLimitKey(request);
@@ -52,7 +53,12 @@ export async function GET(request: NextRequest) {
     const params = ExceptionsQueryParamsSchema.parse(rawParams);
 
     // Build where clause
-    const whereClause: any = {};
+    const whereClause: {
+      tenantId?: string;
+      severity?: string;
+      driftType?: string;
+      acknowledged?: boolean;
+    } = {};
     if (params.tenantId) {
       whereClause.tenantId = params.tenantId;
     }
@@ -151,4 +157,6 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

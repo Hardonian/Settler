@@ -7,11 +7,14 @@ import { requireAuth } from '@/lib/api/unified-auth';
 import { acknowledgeAlert } from '@/lib/server/settler/alerts';
 import { getPrimaryTenant } from '@/lib/supabase/tenant-helpers';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const POST = withUniversalBillingGate(async function POST(
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -44,7 +47,7 @@ export const POST = withUniversalBillingGate(async function POST(
     
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('[Acknowledge Alert API] Error:', error);
+    appLogger.error('[Acknowledge Alert API] Error', error);
     return NextResponse.json(
       {
         success: false,
@@ -54,4 +57,6 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

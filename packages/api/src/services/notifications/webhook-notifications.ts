@@ -97,7 +97,7 @@ export async function sendWebhookNotification(
       data: {
         webhookId: webhook.id,
         url: webhook.url,
-        payload: payload as any,
+        payload: payload as Record<string, unknown>,
         status: 'delivered',
         statusCode: response.status,
         responseBody: await response.text().catch(() => null),
@@ -130,16 +130,18 @@ export async function sendWebhookNotification(
           data: {
             webhookId: failedWebhook.id,
             url: failedWebhook.url,
-            payload: { jobId, errorMessage, jobName, eventType } as any,
+            payload: { jobId, errorMessage, jobName, eventType } as Record<string, unknown>,
             status: 'failed',
             errorMessage: error instanceof Error ? error.message : 'Unknown error',
             attempts: 1,
           },
         });
       }
-    } catch (logError) {
-      // Don't fail if logging fails
-      console.error('Failed to log webhook delivery failure:', logError);
+    } catch (logErr) {
+      // Don't fail if logging fails - use logger if available, otherwise silent fail
+      logError('Failed to log webhook delivery failure', logErr).catch(() => {
+        // Silent fail - don't break notification flow
+      });
     }
   }
 }

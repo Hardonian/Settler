@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createLogger } from '@/lib/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 const DEEP_HEALTH_SECRET = process.env.DEEP_HEALTH_SECRET || '';
 
@@ -29,7 +30,7 @@ interface HealthCheck {
 // - Service Role API Key (for internal routes)
 // - Not using billing gates (system/internal use)
 
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   const logger = createLogger();
 
   // Verify secret
@@ -134,9 +135,11 @@ export async function GET(request: NextRequest) {
 
     // Check 4: Job queue accessible
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase
         .from('jobs' as any)
         .select('id, status')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .limit(1) as any);
 
       if (error) {
@@ -192,4 +195,6 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: false }
+);

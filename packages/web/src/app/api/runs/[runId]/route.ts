@@ -9,10 +9,12 @@ import { createClient } from '@/lib/supabase/server';
 import { requireWorkspaceMembership } from '@/lib/authz';
 import { createLogger } from '@/lib/logger';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET(
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(
   _request: NextRequest,
   { params }: { params: { runId: string } }
 ) {
@@ -30,11 +32,12 @@ export const GET = withUniversalBillingGate(async function GET(
     }
 
     // Get run
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: run, error: runError } = await (supabase
       .from('recon_runs' as any)
       .select('*')
       .eq('id', params.runId)
-      .single() as any);
+      .single() as { data: { workspace_id: string } | null; error: { message?: string } | null });
 
     if (runError || !run) {
       return NextResponse.json(
@@ -47,12 +50,13 @@ export const GET = withUniversalBillingGate(async function GET(
     await requireWorkspaceMembership(run.workspace_id);
 
     // Get events
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: events } = await (supabase
       .from('run_events' as any)
       .select('*')
       .eq('run_id', params.runId)
       .order('created_at', { ascending: false })
-      .limit(100) as any);
+      .limit(100) as { data: Array<Record<string, unknown>> | null });
 
     return NextResponse.json({
       run,
@@ -70,4 +74,6 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

@@ -11,6 +11,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getTraceId } from '@/lib/observability/trace';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -22,7 +24,8 @@ const completeStepSchema = z.object({
 /**
  * GET /api/workspaces/[workspaceId]/onboarding - Get onboarding progress
  */
-export const GET = withUniversalBillingGate(async function GET(
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(
   request: NextRequest,
   { params }: { params: { workspaceId: string } }
 ) {
@@ -40,6 +43,7 @@ export const GET = withUniversalBillingGate(async function GET(
     }
 
     // Check user is member of workspace
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')
@@ -55,6 +59,7 @@ export const GET = withUniversalBillingGate(async function GET(
     }
 
     // Get onboarding progress
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: progress, error } = await (supabase
       .from('tenant_onboarding_progress') as any)
       .select('*')
@@ -63,7 +68,7 @@ export const GET = withUniversalBillingGate(async function GET(
       .single();
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = not found
-      console.error('[Onboarding API] Error fetching progress:', error);
+      appLogger.error('[Onboarding API] Error fetching progress', error);
       // Never return 500 - return graceful error response
       return NextResponse.json(
         { 
@@ -78,6 +83,7 @@ export const GET = withUniversalBillingGate(async function GET(
 
     // If no progress, create initial
     if (!progress) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: newProgress, error: createError } = await (supabase
         .from('tenant_onboarding_progress') as any)
         .insert({
@@ -92,7 +98,7 @@ export const GET = withUniversalBillingGate(async function GET(
         .single();
 
       if (createError) {
-        console.error('[Onboarding API] Error creating progress:', createError);
+        appLogger.error('[Onboarding API] Error creating progress', createError);
         // Never return 500 - return graceful error response
         return NextResponse.json(
           { 
@@ -152,7 +158,7 @@ export const GET = withUniversalBillingGate(async function GET(
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Onboarding API] Error:', error);
+    appLogger.error('[Onboarding API] Error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
       { 
@@ -164,12 +170,15 @@ export const GET = withUniversalBillingGate(async function GET(
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
 /**
  * POST /api/workspaces/[workspaceId]/onboarding/complete - Complete a step
  */
-export const POST = withUniversalBillingGate(async function POST(
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(
   request: NextRequest,
   { params }: { params: { workspaceId: string } }
 ) {
@@ -187,6 +196,7 @@ export const POST = withUniversalBillingGate(async function POST(
     }
 
     // Check user is member of workspace
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: membership } = await (supabase
       .from('tenant_users') as any)
       .select('role')
@@ -205,6 +215,7 @@ export const POST = withUniversalBillingGate(async function POST(
     const { stepId } = completeStepSchema.parse(body);
 
     // Complete step using Supabase function
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: result, error } = await (supabase.rpc as any)('complete_onboarding_step', {
       p_tenant_id: params.workspaceId,
       p_user_id: user.id,
@@ -213,7 +224,7 @@ export const POST = withUniversalBillingGate(async function POST(
     });
 
     if (error) {
-      console.error('[Onboarding API] Error completing step:', error);
+      appLogger.error('[Onboarding API] Error completing step', error);
       // Never return 500 - return graceful error response
       return NextResponse.json(
         { 
@@ -235,6 +246,7 @@ export const POST = withUniversalBillingGate(async function POST(
 
     // Check if activation is complete
     if (progress.progress >= 100) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.rpc as any)('track_onboarding_event', {
         p_tenant_id: params.workspaceId,
         p_user_id: user.id,
@@ -264,7 +276,7 @@ export const POST = withUniversalBillingGate(async function POST(
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Onboarding API] Error:', error);
+    appLogger.error('[Onboarding API] Error', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -284,7 +296,9 @@ export const POST = withUniversalBillingGate(async function POST(
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
 // Onboarding steps definition
 const ONBOARDING_STEPS = [

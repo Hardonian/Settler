@@ -27,7 +27,14 @@ export class TenantConnectionPool {
     });
 
     this.pool.on('error', (err) => {
-      console.error('Unexpected error on idle client', err);
+      // Import logger dynamically to avoid circular dependencies
+      import('../../utils/logger').then(({ logError }) => {
+        logError('Unexpected error on idle client', err);
+      }).catch(() => {
+        // Fallback if logger fails
+        // eslint-disable-next-line no-console
+        console.error('Unexpected error on idle client', err);
+      });
     });
   }
 
@@ -43,10 +50,10 @@ export class TenantConnectionPool {
   /**
    * Execute a query with tenant context
    */
-  async query<T = any>(
+  async query<T = unknown>(
     tenantId: string,
     text: string,
-    params?: any[]
+    params?: unknown[]
   ): Promise<T[]> {
     const client = await this.getConnection(tenantId);
     try {

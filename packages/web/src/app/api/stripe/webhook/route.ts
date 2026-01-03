@@ -63,9 +63,10 @@ async function recordEventReceived(
         rawPayload: rawPayload as never,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     // If unique violation, event was already received (idempotent)
-    if (error?.code === 'P2002') {
+    const prismaError = error as { code?: string };
+    if (prismaError?.code === 'P2002') {
       await safeLogger.debug('[Stripe Webhook] Event already received', { eventId });
       return;
     }
@@ -127,6 +128,7 @@ function extractBillingAccountId(event: Stripe.Event): string | null {
     const invoice = event.data.object as Stripe.Invoice;
     // Invoice.subscription can be string | Stripe.Subscription | null
     // Access via type assertion since TypeScript types may not expose it directly
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const subscription = (invoice as any).subscription as string | Stripe.Subscription | null;
     if (!subscription || typeof subscription === 'string') {
       // We'd need to fetch the subscription to get metadata, but for now return null

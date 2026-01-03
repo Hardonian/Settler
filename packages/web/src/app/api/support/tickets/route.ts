@@ -9,12 +9,16 @@ import { requireAdmin } from '@/lib/api/auth-gate';
 import { prisma } from '@/shared/db/prismaClient';
 import { createClient } from '@/lib/supabase/server';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET(request: Request) {
-  const adminCheck = await requireAdmin(request as any);
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: Request) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const adminCheck = await requireAdmin(request as any);
   if (!adminCheck.isAdmin) {
     return adminCheck.error!;
   }
@@ -27,7 +31,7 @@ export const GET = withUniversalBillingGate(async function GET(request: Request)
       status: string;
       priority: string;
       category: string | null;
-      triage_result: any;
+      triage_result: Record<string, unknown> | null;
       created_at: Date;
       user_id: string;
     }>>`
@@ -76,7 +80,7 @@ export const GET = withUniversalBillingGate(async function GET(request: Request)
 
     return NextResponse.json({ tickets: ticketsWithUsers });
   } catch (error) {
-    console.error('Failed to fetch support tickets:', error);
+    appLogger.error('Failed to fetch support tickets', error);
     // Never return 500 - return empty array with graceful error message
     return NextResponse.json({ 
       tickets: [],
@@ -84,4 +88,6 @@ export const GET = withUniversalBillingGate(async function GET(request: Request)
       message: 'Please try again later'
     }, { status: 200 });
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

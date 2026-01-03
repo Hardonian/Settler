@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = "force-dynamic";
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const GET = withUniversalBillingGate(async function GET(_request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -44,7 +47,8 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
     
     for (const tenantUser of tenantUsers) {
       try {
-        const userId = (tenantUser as any)?.user_id;
+        const tenantUserTyped = tenantUser as { user_id?: string; role?: string; joined_at?: string };
+        const userId = tenantUserTyped?.user_id;
         if (!userId) continue;
         
         const { data: { user: authUser } } = await supabase.auth.admin.getUserById(userId);
@@ -52,8 +56,8 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
           users.push({
             userId: userId,
             email: authUser.email || '',
-            role: (tenantUser as any)?.role || 'member',
-            assignedAt: (tenantUser as any)?.joined_at || new Date().toISOString(),
+            role: tenantUserTyped?.role || 'member',
+            assignedAt: tenantUserTyped?.joined_at || new Date().toISOString(),
           });
         }
       } catch {
@@ -63,7 +67,7 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
 
     return NextResponse.json({ users });
   } catch (error) {
-    console.error("Error in users GET:", error);
+    appLogger.error("Error in users GET", error);
     // Never return 500 - return empty users array with graceful error message
     return NextResponse.json({ 
       users: [],
@@ -71,4 +75,6 @@ export const GET = withUniversalBillingGate(async function GET(_request: NextReq
       message: "Please try again later"
     }, { status: 200 });
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

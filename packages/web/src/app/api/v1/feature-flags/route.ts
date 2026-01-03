@@ -10,11 +10,12 @@ import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { prisma } from '@/shared/db/prismaClient';
 import { FlagType } from '@/domain/featureFlags/types';
 import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
 
-export async function POST(request: NextRequest) {
+export const POST = withSecurity(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
     let auth;
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     // Never return 500 - always return 200 with error info for playground
-    console.error('Error creating feature flag:', error);
+    appLogger.error('Error creating feature flag', error);
     return NextResponse.json(
       {
         error: 'Failed to create feature flag',
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
     let auth;
@@ -185,7 +186,8 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     // Never return 500 - always return 200 with empty array for playground
-    console.error('Error listing feature flags:', error);
+    const { appLogger } = await import('@/lib/utils/logger');
+    appLogger.error('Error listing feature flags', error);
     return NextResponse.json(
       {
         flags: [],
@@ -194,4 +196,7 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   }
-}
+}, {
+  rateLimit: { maxRequests: 100, windowMs: 60 * 1000 },
+  requireAuth: false, // Allow playground access
+});

@@ -117,6 +117,7 @@ export async function generateInsights(
 /**
  * Generate cost-related insights
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generateCostInsights(
   supabase: any,
   _timeWindow: { start: Date; end: Date }
@@ -150,7 +151,9 @@ async function generateCostInsights(
         ? previousWeekResult.value.data
         : [];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const currentTotal = currentWeekCost.reduce((sum: number, r: any) => sum + (r.estimated_cost || 0), 0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const previousTotal = previousWeekCost.reduce((sum: number, r: any) => sum + (r.estimated_cost || 0), 0);
     const wowChange = previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
 
@@ -191,6 +194,7 @@ async function generateCostInsights(
 
       if (orgCosts) {
         const orgCostMap = new Map<string, number>();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         orgCosts.forEach((r: any) => {
           if (r.tenant_id) {
             orgCostMap.set(r.tenant_id, (orgCostMap.get(r.tenant_id) || 0) + (r.estimated_cost || 0));
@@ -260,6 +264,7 @@ async function generateCostInsights(
 /**
  * Generate support-related insights
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generateSupportInsights(
   supabase: any,
   _timeWindow: { start: Date; end: Date }
@@ -299,11 +304,13 @@ async function generateSupportInsights(
       const currentByCategory = new Map<string, number>();
       const previousByCategory = new Map<string, number>();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       currentWeekTickets.forEach((t: any) => {
         const cat = t.category || 'uncategorized';
         currentByCategory.set(cat, (currentByCategory.get(cat) || 0) + 1);
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       previousWeekTickets.forEach((t: any) => {
         const cat = t.category || 'uncategorized';
         previousByCategory.set(cat, (previousByCategory.get(cat) || 0) + 1);
@@ -348,6 +355,7 @@ async function generateSupportInsights(
 /**
  * Generate usage-related insights
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generateUsageInsights(
   supabase: any,
   _timeWindow: { start: Date; end: Date }
@@ -387,6 +395,7 @@ async function generateUsageInsights(
       const currentByFeature = new Map<string, Set<string>>();
       const previousByFeature = new Map<string, Set<string>>();
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       currentWeekUsage.forEach((u: any) => {
         if (u.event_type && u.tenant_id) {
           if (!currentByFeature.has(u.event_type)) {
@@ -396,6 +405,7 @@ async function generateUsageInsights(
         }
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       previousWeekUsage.forEach((u: any) => {
         if (u.event_type && u.tenant_id) {
           if (!previousByFeature.has(u.event_type)) {
@@ -450,6 +460,7 @@ async function generateUsageInsights(
 /**
  * Generate stability-related insights
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generateStabilityInsights(
   supabase: any,
   _timeWindow: { start: Date; end: Date }
@@ -496,7 +507,9 @@ async function generateStabilityInsights(
 
       const currentCount = currentWeekErrors.length;
       const previousCount = previousWeekErrors.length;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const currentCritical = currentWeekErrors.filter((e: any) => e.severity === 'critical').length;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const previousCritical = previousWeekErrors.filter((e: any) => e.severity === 'critical').length;
 
       if (previousCount > 0) {
@@ -531,6 +544,7 @@ async function generateStabilityInsights(
     if (webhooksResult.status === 'fulfilled' && webhooksResult.value.data) {
       const webhooks = webhooksResult.value.data;
       const total = webhooks.length;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const failed = webhooks.filter((w: any) => w.status === 'failed').length;
       const failureRate = total > 0 ? (failed / total) * 100 : 0;
 
@@ -560,7 +574,9 @@ async function generateStabilityInsights(
     // Job backlog analysis
     if (jobsResult.status === 'fulfilled' && jobsResult.value.data) {
       const jobs = jobsResult.value.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const pending = jobs.filter((j: any) => j.status === 'pending').length;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const failed = jobs.filter((j: any) => j.status === 'failed').length;
       const total = jobs.length;
 

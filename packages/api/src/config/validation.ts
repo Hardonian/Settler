@@ -8,6 +8,7 @@
  */
 
 import { cleanEnv, str, num, url, bool, host, port } from 'envalid';
+import { logWarn } from '../utils/logger';
 
 /**
  * Check if we're in a build context (Next.js build, Vercel build, etc.)
@@ -183,7 +184,9 @@ if (!isBuild && (env.NODE_ENV === 'production' || env.NODE_ENV === 'preview')) {
   }
   
   if (env.ALLOWED_ORIGINS === '*') {
-    console.warn(`WARNING: CORS allows all origins in ${env.NODE_ENV}. Consider restricting ALLOWED_ORIGINS.`);
+    logWarn(`WARNING: CORS allows all origins in ${env.NODE_ENV}. Consider restricting ALLOWED_ORIGINS.`, {
+      nodeEnv: env.NODE_ENV,
+    });
   }
 }
 

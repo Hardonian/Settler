@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { publicRoute } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = "force-dynamic";
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const GET = publicRoute(async function GET() {
+export const GET = withSecurity(
+  publicRoute(async function GET() {
   try {
     const supabase = await createClient();
     const {
@@ -71,7 +74,7 @@ export const GET = publicRoute(async function GET() {
 
     return NextResponse.json({ integrations });
   } catch (error) {
-    console.error("Error in integrations/health GET:", error);
+    appLogger.error("Error in integrations/health GET", error);
     // Return empty array instead of 500 - graceful degradation
     return NextResponse.json({ 
       integrations: [],
@@ -79,4 +82,6 @@ export const GET = publicRoute(async function GET() {
       degraded: true,
     }, { status: 200 });
   }
-});;
+}),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

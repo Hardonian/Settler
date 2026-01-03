@@ -6,12 +6,16 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/api/auth-gate';
 import { prisma } from '@/shared/db/prismaClient';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = withUniversalBillingGate(async function GET(request: Request) {
-  const adminCheck = await requireAdmin(request as any);
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: Request) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const adminCheck = await requireAdmin(request as any);
   if (!adminCheck.isAdmin) {
     return adminCheck.error!;
   }
@@ -32,7 +36,7 @@ export const GET = withUniversalBillingGate(async function GET(request: Request)
 
     return NextResponse.json({ customers });
   } catch (error) {
-    console.error('Failed to fetch customers:', error);
+    appLogger.error('Failed to fetch customers', error);
     // Never return 500 - return graceful error response
 
     return NextResponse.json(
@@ -51,4 +55,6 @@ export const GET = withUniversalBillingGate(async function GET(request: Request)
 
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

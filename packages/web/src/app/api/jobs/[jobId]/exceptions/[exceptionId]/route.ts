@@ -23,6 +23,8 @@ import { z } from 'zod';
 import { logAuditEvent } from '@/lib/audit/logger';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { emitExceptionResolvedEvent } from '@/lib/ops/exception-events';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -41,7 +43,8 @@ const ReviewActionSchema = z.object({
  * PATCH /api/jobs/[jobId]/exceptions/[exceptionId]
  * Review and update exception status
  */
-export const PATCH = withUniversalBillingGate(async function PATCH(
+export const PATCH = withSecurity(
+  withUniversalBillingGate(async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ jobId: string; exceptionId: string }> }
 ) {
@@ -209,7 +212,15 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
     }
 
     // Prepare update data based on action
-    const updateData: any = {
+    const updateData: {
+      reviewed: boolean;
+      reviewedBy: string;
+      reviewedAt: Date;
+      metadata: Record<string, unknown>;
+      targetTransactionId?: string | null;
+      matchType?: string;
+      confidence?: number;
+    } = {
       reviewed: reviewed !== undefined ? reviewed : true,
       reviewedBy: userId,
       reviewedAt: new Date(),
@@ -322,7 +333,7 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
       },
     }).catch((error) => {
       // Don't fail if audit logging fails
-      console.error('[Exception Review API] Audit log failed:', error);
+      appLogger.error('[Exception Review API] Audit log failed', error);
     });
 
     // Emit lifecycle event: exception resolved (if reviewed and was previously unmatched)
@@ -336,7 +347,7 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
         });
       } catch (eventError) {
         // Don't fail if event emission fails
-        console.error('[Exception Review API] Failed to emit exception resolved event:', eventError);
+        appLogger.error('[Exception Review API] Failed to emit exception resolved event', eventError);
       }
     }
 
@@ -376,7 +387,7 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
 
     // Log successful request
     const duration = Date.now() - startTime;
-    console.log('[Exception Review API] Success', {
+    appLogger.info('[Exception Review API] Success', {
       jobId,
       exceptionId,
       tenantId,
@@ -391,7 +402,7 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
 
-    console.error('[Exception Review API] Error', {
+    appLogger.error('[Exception Review API] Error', error, {
       error: errorMessage,
       stack: errorStack,
       duration,
@@ -408,4 +419,6 @@ export const PATCH = withUniversalBillingGate(async function PATCH(
       { status: 200 }
     );
   }
-}, { feature: 'PATCH API' });
+}, { feature: 'PATCH API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);

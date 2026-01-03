@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/shared/db/prismaClient';
 import { logger } from '@/lib/observability/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -36,7 +37,7 @@ interface PerformanceMetrics {
   };
 }
 
-export async function GET(_request: NextRequest) {
+export const GET = withSecurity(async function GET(_request: NextRequest) {
   try {
     // Get API metrics (from usage_events or logs)
     // Note: Simplified implementation - in production, use proper metrics collection
@@ -117,4 +118,6 @@ export async function GET(_request: NextRequest) {
       { status: 200 }
     );
   }
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

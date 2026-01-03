@@ -6,6 +6,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { logError } from '../../utils/logger';
 
 export interface EdgeAgentConfig {
   customerId: string;
@@ -115,7 +116,7 @@ export class EdgeAgent extends EventEmitter {
 
       this.emit('reconciliation_complete', result);
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       errors++;
       this.emit('reconciliation_error', error);
       throw error;
@@ -275,7 +276,7 @@ export class EdgeAgent extends EventEmitter {
         throw new Error(`Failed to send metadata: ${response.statusText}`);
       }
     } catch (error) {
-      console.error('Failed to send metadata to cloud:', error);
+      logError('Failed to send metadata to cloud', error);
       // Don't throw - metadata sending failure shouldn't break reconciliation
     }
   }

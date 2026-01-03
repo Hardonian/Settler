@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
@@ -22,29 +24,30 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     // Import jobs
     if (jobs && Array.isArray(jobs)) {
       for (const job of jobs) {
-        const { id: _id, ...jobData } = job as any;
+        const { id: _id, ...jobData } = job as Record<string, unknown>;
         await supabase.from("reconciliation_jobs").upsert({
           ...jobData,
           user_id: user.id,
-        } as any);
+        } as Record<string, unknown>);
       }
     }
 
     // Import integrations (without sensitive credentials)
     if (integrations && Array.isArray(integrations)) {
       for (const integration of integrations) {
+        const integrationTyped = integration as { integration_id?: string; is_connected?: boolean };
         await supabase.from("integration_credentials").upsert({
           user_id: user.id,
-          integration_id: (integration as any).integration_id,
-          is_connected: (integration as any).is_connected,
+          integration_id: integrationTyped.integration_id,
+          is_connected: integrationTyped.is_connected,
           // Don't import credentials for security
-        } as any);
+        } as Record<string, unknown>);
       }
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error in import POST:", error);
+    appLogger.error("Error in import POST", error);
     return NextResponse.json(
       {
         success: false,

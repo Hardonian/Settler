@@ -14,13 +14,15 @@ import { kv, cacheGet, cacheSet } from "@/lib/vercel/kv";
 import { edgeConfig, getFeatureFlagFromEdgeConfig } from "@/lib/vercel/edge-config";
 import { blob } from "@/lib/vercel/blob";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET - Example usage of all Vercel SDKs
  */
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const action = searchParams.get("action") || "all";
 
@@ -48,12 +50,15 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);
 
 /**
  * POST - Example file upload using Blob storage
  */
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -87,7 +92,9 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
+);
 
 async function handleKvExample() {
   // Example 1: Simple key-value storage

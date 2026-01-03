@@ -10,6 +10,8 @@ import { NextRequest } from 'next/server';
 import { isSuperAdmin } from '@/lib/auth/super-admin';
 import { StreamEventSchema, HealthDeltaSchema } from '@/lib/admin/metrics/types';
 import { prisma } from '@/shared/db/prismaClient';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -27,7 +29,7 @@ interface PendingEvent {
 /**
  * SSE Stream Handler
  */
-export async function GET(request: NextRequest) {
+export const GET = withSecurity(async function GET(request: NextRequest) {
   // Check admin access
   const adminCheck = await isSuperAdmin();
   if (!adminCheck) {
@@ -64,7 +66,7 @@ export async function GET(request: NextRequest) {
           const json = JSON.stringify(data);
           controller.enqueue(encoder.encode(`data: ${json}\n\n`));
         } catch (error) {
-          console.error('[SSE Stream] Error encoding event:', error);
+          appLogger.error('[SSE Stream] Error encoding event', error);
         }
       };
 
@@ -131,6 +133,7 @@ export async function GET(request: NextRequest) {
                     confidenceAvg: recentRuns.confidenceAvg ? Number(recentRuns.confidenceAvg) : null,
                   },
                   timestamp: new Date().toISOString(),
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } as any,
                 timestamp: Date.now(),
               });
@@ -178,6 +181,7 @@ export async function GET(request: NextRequest) {
                   type: 'exceptions_delta',
                   added,
                   timestamp: new Date().toISOString(),
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } as any,
                 timestamp: Date.now(),
               });
@@ -223,6 +227,7 @@ export async function GET(request: NextRequest) {
                       updatedAt: run.updatedAt.toISOString(),
                     },
                     timestamp: new Date().toISOString(),
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   } as any,
                   timestamp: Date.now(),
                 });
@@ -230,7 +235,7 @@ export async function GET(request: NextRequest) {
             }
           }
         } catch (error) {
-          console.error('[SSE Stream] Polling error:', error);
+          appLogger.error('[SSE Stream] Polling error', error);
           sendHealth('reconnecting', null);
         }
       }, 2000); // Poll every 2 seconds
@@ -258,4 +263,6 @@ export async function GET(request: NextRequest) {
       'X-Accel-Buffering': 'no', // Disable nginx buffering
     },
   });
-}
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
+);

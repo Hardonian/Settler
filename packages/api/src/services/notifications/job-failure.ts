@@ -15,6 +15,7 @@ import { PrismaClient } from '@prisma/client';
 import { sendEmail, EmailTemplate } from '../../lib/email';
 import { getJobFailureTemplate, getJobCompletionTemplate } from '../email/job-templates';
 import { sendWebhookNotification } from './webhook-notifications';
+import { logWarn, logInfo, logError } from '../../utils/logger';
 
 interface JobFailureNotificationParams {
   jobId: string;
@@ -49,7 +50,7 @@ export async function notifyJobFailure(
     });
 
     if (!job) {
-      console.warn(`[JobFailureNotification] Job ${jobId} not found`);
+      logWarn(`[JobFailureNotification] Job ${jobId} not found`);
       return;
     }
 
@@ -65,7 +66,7 @@ export async function notifyJobFailure(
     });
 
     if (!billingAccount || !billingAccount.email) {
-      console.warn(`[JobFailureNotification] No email found for tenant ${tenantId}`);
+      logWarn(`[JobFailureNotification] No email found for tenant ${tenantId}`);
       return;
     }
 
@@ -94,9 +95,9 @@ export async function notifyJobFailure(
       };
       await sendEmail(emailTemplate);
 
-      console.log(`[JobFailureNotification] Email sent for job ${jobId}`);
+      logInfo(`[JobFailureNotification] Email sent for job ${jobId}`);
     } catch (emailError) {
-      console.error(`[JobFailureNotification] Failed to send email:`, emailError);
+      logError(`[JobFailureNotification] Failed to send email`, emailError);
       // Don't throw - notification failure shouldn't break job execution
     }
 
@@ -104,8 +105,8 @@ export async function notifyJobFailure(
     // Note: Audit logger may not exist in API package - this is optional
     try {
       // Use dynamic import with error suppression for optional module
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires
-      let auditModule: any = null;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let auditModule: { logAuditEvent?: (params: unknown) => Promise<void> } | null = null;
       try {
         // @ts-ignore - Module may not exist in API package
         auditModule = await import('../../lib/audit/logger');
@@ -130,7 +131,7 @@ export async function notifyJobFailure(
       }
     } catch (auditError: unknown) {
       // Don't fail if audit logging fails
-      console.error(`[JobFailureNotification] Audit log failed:`, auditError);
+      logError(`[JobFailureNotification] Audit log failed`, auditError);
     }
 
     // Send webhook notification if configured
@@ -145,12 +146,12 @@ export async function notifyJobFailure(
         jobName: job.name,
       });
     } catch (webhookError) {
-      console.error(`[JobFailureNotification] Webhook notification failed:`, webhookError);
+      logError(`[JobFailureNotification] Webhook notification failed`, webhookError);
       // Don't throw - webhook failure shouldn't break notification flow
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error(`[JobFailureNotification] Failed to send notification:`, errorMessage);
+    logError(`[JobFailureNotification] Failed to send notification`, error, { errorMessage });
     // Don't throw - notification failure shouldn't break job execution
   }
 }
@@ -229,7 +230,7 @@ export async function notifyJobCompletion(
       await sendEmail(emailTemplate);
     }
   } catch (error) {
-    console.error(`[JobCompletionNotification] Failed:`, error);
+    logError(`[JobCompletionNotification] Failed`, error);
     // Don't throw
   }
 }

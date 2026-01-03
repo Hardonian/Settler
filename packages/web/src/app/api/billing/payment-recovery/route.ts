@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
 
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -35,7 +38,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     const { data, error } = await query;
 
     if (error) {
-      console.error("Error fetching payment recovery:", error);
+      appLogger.error("Error fetching payment recovery", error);
       return NextResponse.json(
       {
         success: false,
@@ -61,7 +64,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
 
     return NextResponse.json({ recovery: data?.[0] || null });
   } catch (error) {
-    console.error("Error in payment-recovery GET:", error);
+    appLogger.error("Error in payment-recovery GET", error);
     return NextResponse.json(
       {
         success: false,
@@ -71,9 +74,12 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);
 
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -115,7 +121,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         .single();
 
       if (error) {
-        console.error("Error updating payment recovery:", error);
+        appLogger.error("Error updating payment recovery", error);
         return NextResponse.json(
       {
         success: false,
@@ -147,7 +153,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       .single();
 
     if (error) {
-      console.error("Error creating payment recovery:", error);
+      appLogger.error("Error creating payment recovery", error);
       return NextResponse.json(
       {
         success: false,
@@ -160,7 +166,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
     return NextResponse.json({ recovery: data });
   } catch (error) {
-    console.error("Error in payment-recovery POST:", error);
+    appLogger.error("Error in payment-recovery POST", error);
     return NextResponse.json(
       {
         success: false,
@@ -170,4 +176,6 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
+);

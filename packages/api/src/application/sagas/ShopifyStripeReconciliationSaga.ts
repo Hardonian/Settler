@@ -15,9 +15,12 @@ import { IEventStore } from '../../infrastructure/eventsourcing/EventStore';
 import { ReconciliationEvents } from '../../domain/eventsourcing/reconciliation/ReconciliationEvents';
 import { createCircuitBreaker } from '../../infrastructure/resilience/circuit-breaker';
 import { CircuitBreaker } from 'opossum';
+import { logError } from '../../utils/logger';
 
 export class ShopifyStripeReconciliationSaga {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private shopifyCircuitBreaker: CircuitBreaker<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private stripeCircuitBreaker: CircuitBreaker<any>;
 
   constructor(
@@ -27,10 +30,12 @@ export class ShopifyStripeReconciliationSaga {
   ) {
     // Initialize circuit breakers
     this.shopifyCircuitBreaker = createCircuitBreaker(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       async (options: any) => this.shopifyAdapter.fetch(options),
       { name: 'shopify-api' }
     );
     this.stripeCircuitBreaker = createCircuitBreaker(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       async (options: any) => this.stripeAdapter.fetch(options),
       { name: 'stripe-api' }
     );
@@ -85,7 +90,13 @@ export class ShopifyStripeReconciliationSaga {
               reconciliation_id: reconciliationId,
               source: 'shopify',
               count: orders.length,
-              orders: orders.map((order: any) => ({
+              orders: orders.map((order: {
+                id: string;
+                amount: number;
+                currency: string;
+                date: Date;
+                metadata?: Record<string, unknown>;
+              }) => ({
                 id: order.id,
                 amount: order.amount,
                 currency: order.currency,
@@ -109,12 +120,14 @@ export class ShopifyStripeReconciliationSaga {
               shopify_orders_count: orders.length,
             },
           };
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorName = error instanceof Error ? error.name : 'FetchError';
           return {
             success: false,
             error: {
-              type: error.name || 'FetchError',
-              message: error.message,
+              type: errorName,
+              message: errorMessage,
               retryable: true,
             },
           };
@@ -122,7 +135,7 @@ export class ShopifyStripeReconciliationSaga {
       },
       compensate: async (state: SagaState): Promise<void> => {
         // No compensation needed for read-only fetch
-        console.log(`Compensating fetch_shopify_orders for ${state.aggregateId}`);
+        logError(`Compensating fetch_shopify_orders for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
       },
     };
   }
@@ -157,7 +170,13 @@ export class ShopifyStripeReconciliationSaga {
               reconciliation_id: reconciliationId,
               source: 'stripe',
               count: payments.length,
-              payments: payments.map((payment: any) => ({
+              payments: payments.map((payment: {
+                id: string;
+                amount: number;
+                currency: string;
+                date: Date;
+                metadata?: Record<string, unknown>;
+              }) => ({
                 id: payment.id,
                 amount: payment.amount,
                 currency: payment.currency,
@@ -180,12 +199,14 @@ export class ShopifyStripeReconciliationSaga {
               stripe_payments_count: payments.length,
             },
           };
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorName = error instanceof Error ? error.name : 'FetchError';
           return {
             success: false,
             error: {
-              type: error.name || 'FetchError',
-              message: error.message,
+              type: errorName,
+              message: errorMessage,
               retryable: true,
             },
           };
@@ -193,7 +214,7 @@ export class ShopifyStripeReconciliationSaga {
       },
       compensate: async (state: SagaState): Promise<void> => {
         // No compensation needed
-        console.log(`Compensating fetch_stripe_payments for ${state.aggregateId}`);
+        logError(`Compensating fetch_stripe_payments for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
       },
     };
   }
@@ -209,14 +230,44 @@ export class ShopifyStripeReconciliationSaga {
       execute: async (state: SagaState): Promise<SagaStepResult> => {
         try {
           const reconciliationId = state.aggregateId;
-          const orders = state.data.shopify_orders as any[];
-          const payments = state.data.stripe_payments as any[];
+          interface Order {
+            id: string;
+            amount: number;
+            currency: string;
+            date: Date | string;
+            metadata?: Record<string, unknown>;
+          }
+          interface Payment {
+            id: string;
+            amount: number;
+            currency: string;
+            date: Date | string;
+            metadata?: Record<string, unknown>;
+            referenceId?: string;
+          }
+          interface Match {
+            source_id: string;
+            target_id: string;
+            amount: number;
+            currency: string;
+            confidence: number;
+            matched_fields: string[];
+          }
+          interface Unmatched {
+            source_id?: string;
+            target_id?: string;
+            amount: number;
+            currency: string;
+            reason: string;
+          }
+          const orders = state.data.shopify_orders as Order[];
+          const payments = state.data.stripe_payments as Payment[];
           // Matching rules reserved for future use
-          const _matchingRules = state.data.matching_rules as any;
+          const _matchingRules = state.data.matching_rules as Record<string, unknown>;
           void _matchingRules;
 
-          const matched: any[] = [];
-          const unmatched: any[] = [];
+          const matched: Match[] = [];
+          const unmatched: Unmatched[] = [];
 
           // Simple matching logic (in production, use more sophisticated algorithm)
           for (const order of orders) {
@@ -331,12 +382,14 @@ export class ShopifyStripeReconciliationSaga {
               unmatched_count: unmatched.length,
             },
           };
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorName = error instanceof Error ? error.name : 'MatchingError';
           return {
             success: false,
             error: {
-              type: error.name || 'MatchingError',
-              message: error.message,
+              type: errorName,
+              message: errorMessage,
               retryable: false,
             },
           };
@@ -366,12 +419,14 @@ export class ShopifyStripeReconciliationSaga {
               persisted: true,
             },
           };
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorName = error instanceof Error ? error.name : 'PersistenceError';
           return {
             success: false,
             error: {
-              type: error.name || 'PersistenceError',
-              message: error.message,
+              type: errorName,
+              message: errorMessage,
               retryable: true,
             },
           };
@@ -379,7 +434,7 @@ export class ShopifyStripeReconciliationSaga {
       },
       compensate: async (state: SagaState): Promise<void> => {
         // Could delete persisted results if needed
-        console.log(`Compensating persist_results for ${state.aggregateId}`);
+        logError(`Compensating persist_results for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
       },
     };
   }
@@ -397,7 +452,7 @@ export class ShopifyStripeReconciliationSaga {
         try {
           // In production, send webhooks to configured endpoints
           // For now, just log
-          console.log(`Sending webhook notifications for ${state.aggregateId}`);
+          logError(`Sending webhook notifications for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
 
           return {
             success: true,
@@ -405,12 +460,14 @@ export class ShopifyStripeReconciliationSaga {
               webhooks_sent: true,
             },
           };
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorName = error instanceof Error ? error.name : 'WebhookError';
           return {
             success: false,
             error: {
-              type: error.name || 'WebhookError',
-              message: error.message,
+              type: errorName,
+              message: errorMessage,
               retryable: true,
             },
           };
@@ -418,7 +475,7 @@ export class ShopifyStripeReconciliationSaga {
       },
       compensate: async (state: SagaState): Promise<void> => {
         // Webhooks are typically fire-and-forget, no compensation needed
-        console.log(`Compensating notify_webhooks for ${state.aggregateId}`);
+        logError(`Compensating notify_webhooks for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
       },
     };
   }
@@ -428,10 +485,37 @@ export class ShopifyStripeReconciliationSaga {
    */
   private async handleSagaComplete(state: SagaState): Promise<void> {
     const reconciliationId = state.aggregateId;
-    const matched = state.data.matched as any[];
-    const unmatched = state.data.unmatched as any[];
-    const orders = state.data.shopify_orders as any[];
-    const payments = state.data.stripe_payments as any[];
+    interface Match {
+      source_id: string;
+      target_id: string;
+      amount: number;
+      currency: string;
+      confidence: number;
+      matched_fields: string[];
+    }
+    interface Unmatched {
+      source_id?: string;
+      target_id?: string;
+      amount: number;
+      currency: string;
+      reason: string;
+    }
+    interface Order {
+      id: string;
+      amount: number;
+      currency: string;
+      date: Date | string;
+    }
+    interface Payment {
+      id: string;
+      amount: number;
+      currency: string;
+      date: Date | string;
+    }
+    const matched = state.data.matched as Match[];
+    const unmatched = state.data.unmatched as Unmatched[];
+    const orders = state.data.shopify_orders as Order[];
+    const payments = state.data.stripe_payments as Payment[];
 
     const unmatchedSource = unmatched.filter((u) => u.source_id).length;
     const unmatchedTarget = unmatched.filter((u) => u.target_id).length;

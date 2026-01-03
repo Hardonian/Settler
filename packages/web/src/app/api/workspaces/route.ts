@@ -12,6 +12,8 @@ import { prisma } from '@/shared/db/prismaClient';
 import { z } from 'zod';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
+import { appLogger } from '@/lib/utils/logger';
+import { withSecurity } from '@/lib/middleware/api-security';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -24,7 +26,8 @@ const createWorkspaceSchema = z.object({
 /**
  * POST /api/workspaces - Create a new workspace
  */
-export const POST = withUniversalBillingGate(async function POST(request: NextRequest) {
+export const POST = withSecurity(
+  withUniversalBillingGate(async function POST(request: NextRequest) {
   const traceId = getTraceId(request);
   
   try {
@@ -56,6 +59,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     // Create workspace using Prisma (fallback to direct insert if function doesn't exist)
     let tenantId: string;
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: result, error } = await (supabase.rpc as any)('create_workspace_with_owner', {
         p_name: validated.name,
         p_slug: validated.slug,
@@ -74,6 +78,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         tenantId = tenant.id;
 
         // Add user as owner
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase.from('tenant_users') as any).insert({
           tenant_id: tenantId,
           user_id: user.id,
@@ -82,6 +87,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         });
 
         // Initialize onboarding progress
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase.from('tenant_onboarding_progress') as any).insert({
           tenant_id: tenantId,
           user_id: user.id,
@@ -94,7 +100,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
         tenantId = result as string;
       }
     } catch (error) {
-      console.error('[Workspace API] Error creating workspace:', error);
+      appLogger.error('[Workspace API] Error creating workspace', error);
       // Never return 500 - return graceful error response
       return NextResponse.json(
         { 
@@ -109,6 +115,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
     // Track onboarding event (with fallback)
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.rpc as any)('track_onboarding_event', {
         p_tenant_id: tenantId,
         p_user_id: user.id,
@@ -119,6 +126,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       });
     } catch (error) {
       // Fallback: insert directly
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from('onboarding_events') as any).insert({
         tenant_id: tenantId,
         user_id: user.id,
@@ -131,6 +139,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
 
     // Complete the create_workspace step (with fallback)
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.rpc as any)('complete_onboarding_step', {
         p_tenant_id: tenantId,
         p_user_id: user.id,
@@ -139,6 +148,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       });
     } catch (error) {
       // Fallback: update directly
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from('tenant_onboarding_progress') as any).upsert({
         tenant_id: tenantId,
         user_id: user.id,
@@ -181,7 +191,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Workspace API] Error:', error);
+    appLogger.error('[Workspace API] Error', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -201,12 +211,15 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
       { status: 200 }
     );
   }
-}, { feature: 'POST API' });
+}, { feature: 'POST API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+);
 
 /**
  * GET /api/workspaces - List user's workspaces
  */
-export const GET = withUniversalBillingGate(async function GET(request: NextRequest) {
+export const GET = withSecurity(
+  withUniversalBillingGate(async function GET(request: NextRequest) {
   const traceId = getTraceId(request);
   
   try {
@@ -221,13 +234,14 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
     }
 
     // Get user's tenant memberships
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: memberships, error } = await (supabase
       .from('tenant_users') as any)
       .select('tenant_id, role')
       .eq('user_id', user.id);
 
     if (error) {
-      console.error('[Workspace API] Error fetching memberships:', error);
+      appLogger.error('[Workspace API] Error fetching memberships', error);
       // Never return 500 - return empty workspaces array with graceful error message
       return NextResponse.json(
         { 
@@ -272,7 +286,7 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       trace_id: traceId,
     });
   } catch (error) {
-    console.error('[Workspace API] Error:', error);
+    appLogger.error('[Workspace API] Error', error);
     // Never return 500 - return empty workspaces array with graceful error message
     return NextResponse.json(
       { 
@@ -284,4 +298,6 @@ export const GET = withUniversalBillingGate(async function GET(request: NextRequ
       { status: 200 }
     );
   }
-}, { feature: 'GET API' });
+}, { feature: 'GET API' }),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
+);

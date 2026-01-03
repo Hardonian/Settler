@@ -7,6 +7,7 @@
 import { ReconciliationNode } from './types';
 import { graphEngine, MatchingRule } from './graph-engine';
 import { EventEmitter } from 'events';
+import { logError } from '../../utils/logger';
 
 export interface TransactionEvent {
   id: string;
@@ -64,7 +65,7 @@ export class StreamProcessor extends EventEmitter {
         await this.processEvent(event);
       }
     } catch (error) {
-      console.error('Error processing batch:', error);
+      logError('Error processing batch', error);
       this.emit('processing_error', error);
     } finally {
       this.isProcessing = false;
