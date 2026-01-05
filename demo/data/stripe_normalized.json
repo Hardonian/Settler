@@ -1,0 +1,1040 @@
+[
+  {
+    "id": "a442fa40-7d53-4780-a444-31e5e0a5d3e6",
+    "externalId": "ch_725b436c",
+    "source": "Stripe",
+    "occurredAt": "2025-01-01T11:14:42.000Z",
+    "amount": 54.3,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_9287",
+    "payoutId": "po_0",
+    "feeAmount": 1.87,
+    "netAmount": 52.43,
+    "description": "Charge for ord_9287",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "287d3f0b-2c38-4e62-bad6-85f43aeb2db5",
+    "externalId": "ch_44e551c9",
+    "source": "Stripe",
+    "occurredAt": "2025-01-26T19:42:57.000Z",
+    "amount": 62.1,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_2509",
+    "payoutId": "po_0",
+    "feeAmount": 2.1,
+    "netAmount": 60,
+    "description": "Charge for ord_2509",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "fa309ce0-e3e1-4e9f-9aca-90e8996017eb",
+    "externalId": "ch_ce6ce9d5",
+    "source": "Stripe",
+    "occurredAt": "2025-01-21T09:42:20.000Z",
+    "amount": 102.18,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_3028",
+    "payoutId": "po_0",
+    "feeAmount": 3.26,
+    "netAmount": 98.92,
+    "description": "Charge for ord_3028",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "51198472-cd63-4529-9749-e1d7edb9c046",
+    "externalId": "ch_8392b69e",
+    "source": "Stripe",
+    "occurredAt": "2025-01-02T06:16:48.000Z",
+    "amount": 91.61,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_1243",
+    "payoutId": "po_0",
+    "feeAmount": 2.96,
+    "netAmount": 88.65,
+    "description": "Charge for ord_1243",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "8673550f-e7ea-43e1-94ca-eb212d4df300",
+    "externalId": "ch_fd48433b",
+    "source": "Stripe",
+    "occurredAt": "2025-01-02T16:02:52.000Z",
+    "amount": 42.66,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_7398",
+    "payoutId": "po_0",
+    "feeAmount": 1.54,
+    "netAmount": 41.12,
+    "description": "Charge for ord_7398",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "39457ccc-cd7b-4cc7-9799-4e30f71898f8",
+    "externalId": "ch_3d9badc4",
+    "source": "Stripe",
+    "occurredAt": "2025-01-15T22:59:27.000Z",
+    "amount": 28.75,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_9333",
+    "payoutId": "po_0",
+    "feeAmount": 1.13,
+    "netAmount": 27.62,
+    "description": "Charge for ord_9333",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "b4e9a2cc-e80f-4e7d-b4df-32549c2084f6",
+    "externalId": "ch_ea60e40e",
+    "source": "Stripe",
+    "occurredAt": "2025-01-17T22:09:50.000Z",
+    "amount": 18.27,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_1218",
+    "payoutId": "po_0",
+    "feeAmount": 0.83,
+    "netAmount": 17.44,
+    "description": "Charge for ord_1218",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "fb47f5ac-9f6b-4384-a39f-80957e454d4b",
+    "externalId": "ch_6f94a628",
+    "source": "Stripe",
+    "occurredAt": "2025-01-23T23:25:31.000Z",
+    "amount": 38.6,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_9443",
+    "payoutId": "po_0",
+    "feeAmount": 1.42,
+    "netAmount": 37.18,
+    "description": "Charge for ord_9443",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "08a6fd9c-2dbf-487b-9b91-d63e772ff4ed",
+    "externalId": "ch_af1e7cbc",
+    "source": "Stripe",
+    "occurredAt": "2025-01-03T12:02:17.000Z",
+    "amount": 93.02,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_3392",
+    "payoutId": "po_0",
+    "feeAmount": 3,
+    "netAmount": 90.02,
+    "description": "Charge for ord_3392",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "e22d45c4-33f3-4d21-b366-b27b5e7961fa",
+    "externalId": "ch_482b7a9b",
+    "source": "Stripe",
+    "occurredAt": "2025-01-18T19:09:33.000Z",
+    "amount": 59.9,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_2689",
+    "payoutId": "po_0",
+    "feeAmount": 2.04,
+    "netAmount": 57.86,
+    "description": "Charge for ord_2689",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "51b828ae-6be2-49b0-b579-2fe07c63afac",
+    "externalId": "ch_3429f162",
+    "source": "Stripe",
+    "occurredAt": "2025-01-25T22:49:07.000Z",
+    "amount": 30.81,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_8779",
+    "payoutId": "po_1",
+    "feeAmount": 1.19,
+    "netAmount": 29.62,
+    "description": "Charge for ord_8779",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "f1893a43-8701-405c-8252-9d0bc87b4e04",
+    "externalId": "ch_f0d04e61",
+    "source": "Stripe",
+    "occurredAt": "2025-01-03T00:16:04.000Z",
+    "amount": 102.35,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_5144",
+    "payoutId": "po_1",
+    "feeAmount": 3.27,
+    "netAmount": 99.08,
+    "description": "Charge for ord_5144",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "762a420f-f0d3-4a97-b674-8ff92b107144",
+    "externalId": "ch_377679ee",
+    "source": "Stripe",
+    "occurredAt": "2025-01-09T15:32:10.000Z",
+    "amount": 25.84,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_1329",
+    "payoutId": "po_1",
+    "feeAmount": 1.05,
+    "netAmount": 24.79,
+    "description": "Charge for ord_1329",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "093a1ee9-bf26-47a9-9c36-19f17555ba36",
+    "externalId": "ch_6be2ac0d",
+    "source": "Stripe",
+    "occurredAt": "2025-01-15T07:56:51.000Z",
+    "amount": 32.81,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_5989",
+    "payoutId": "po_1",
+    "feeAmount": 1.25,
+    "netAmount": 31.56,
+    "description": "Charge for ord_5989",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "5fdcd418-7641-4efe-8c64-d1eda88097a4",
+    "externalId": "ch_f86d5a21",
+    "source": "Stripe",
+    "occurredAt": "2025-01-02T22:33:01.000Z",
+    "amount": 51.92,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_8493",
+    "payoutId": "po_1",
+    "feeAmount": 1.81,
+    "netAmount": 50.11,
+    "description": "Charge for ord_8493",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "7a67c3b7-8ad6-4542-9b1e-154ea0c0cd8d",
+    "externalId": "ch_6b8d0563",
+    "source": "Stripe",
+    "occurredAt": "2025-01-18T18:38:54.000Z",
+    "amount": 83.87,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_1259",
+    "payoutId": "po_1",
+    "feeAmount": 2.73,
+    "netAmount": 81.14,
+    "description": "Charge for ord_1259",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "61b9b077-b1fc-4b82-89ea-a12ebbb8a9a8",
+    "externalId": "ch_79aafd23",
+    "source": "Stripe",
+    "occurredAt": "2025-01-05T11:56:12.000Z",
+    "amount": 28.95,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_4878",
+    "payoutId": "po_1",
+    "feeAmount": 1.14,
+    "netAmount": 27.81,
+    "description": "Charge for ord_4878",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "b283db43-5340-4cac-a408-820a71e12274",
+    "externalId": "ch_ea569d90",
+    "source": "Stripe",
+    "occurredAt": "2025-01-28T12:27:14.000Z",
+    "amount": 49.28,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_8295",
+    "payoutId": "po_1",
+    "feeAmount": 1.73,
+    "netAmount": 47.55,
+    "description": "Charge for ord_8295",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "7d25d83f-0009-491b-b1ab-0c75cfe913c3",
+    "externalId": "ch_6161d56b",
+    "source": "Stripe",
+    "occurredAt": "2025-01-26T16:23:47.000Z",
+    "amount": 41.27,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_9227",
+    "payoutId": "po_1",
+    "feeAmount": 1.5,
+    "netAmount": 39.77,
+    "description": "Charge for ord_9227",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "3a8ab4fc-cb78-4bfe-8ef2-eb8331812e0f",
+    "externalId": "ch_28325ead",
+    "source": "Stripe",
+    "occurredAt": "2025-01-28T06:05:06.000Z",
+    "amount": 83.77,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_7347",
+    "payoutId": "po_1",
+    "feeAmount": 2.73,
+    "netAmount": 81.04,
+    "description": "Charge for ord_7347",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "7ba0f47c-c404-460c-9d8f-34a368a248e6",
+    "externalId": "ch_c3cde19b",
+    "source": "Stripe",
+    "occurredAt": "2025-01-05T22:32:10.000Z",
+    "amount": 13.64,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_6900",
+    "payoutId": "po_2",
+    "feeAmount": 0.7,
+    "netAmount": 12.94,
+    "description": "Charge for ord_6900",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "5cfaa6f7-d214-4aa6-bf4f-ec73ff43e9c2",
+    "externalId": "ch_149b00a8",
+    "source": "Stripe",
+    "occurredAt": "2025-01-18T16:58:08.000Z",
+    "amount": 25.65,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_5557",
+    "payoutId": "po_2",
+    "feeAmount": 1.04,
+    "netAmount": 24.61,
+    "description": "Charge for ord_5557",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "3f387787-3df2-4462-8336-31e4659c3eb1",
+    "externalId": "ch_d1e15a77",
+    "source": "Stripe",
+    "occurredAt": "2025-01-21T09:01:10.000Z",
+    "amount": 39.23,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_7895",
+    "payoutId": "po_2",
+    "feeAmount": 1.44,
+    "netAmount": 37.79,
+    "description": "Charge for ord_7895",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "b4d5d9f2-99af-4d59-b394-677757b5caae",
+    "externalId": "ch_33464dfd",
+    "source": "Stripe",
+    "occurredAt": "2025-01-02T23:37:32.000Z",
+    "amount": 22.63,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_4077",
+    "payoutId": "po_2",
+    "feeAmount": 0.96,
+    "netAmount": 21.67,
+    "description": "Charge for ord_4077",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "b762e53a-8226-4479-99fc-bb7d18dec9d8",
+    "externalId": "ch_987ac9f6",
+    "source": "Stripe",
+    "occurredAt": "2025-01-30T14:54:46.000Z",
+    "amount": 49.02,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_9724",
+    "payoutId": "po_2",
+    "feeAmount": 1.72,
+    "netAmount": 47.3,
+    "description": "Charge for ord_9724",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "cc22b890-03e9-4e68-87d1-00cae2ba4f7c",
+    "externalId": "ch_01fc6afe",
+    "source": "Stripe",
+    "occurredAt": "2025-01-06T14:11:33.000Z",
+    "amount": 63.4,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_8864",
+    "payoutId": "po_2",
+    "feeAmount": 2.14,
+    "netAmount": 61.26,
+    "description": "Charge for ord_8864",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "2e438381-4d11-424e-9682-e34c8a9b2f20",
+    "externalId": "ch_e47e26c9",
+    "source": "Stripe",
+    "occurredAt": "2025-01-02T18:50:22.000Z",
+    "amount": 108.1,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_4688",
+    "payoutId": "po_2",
+    "feeAmount": 3.43,
+    "netAmount": 104.67,
+    "description": "Charge for ord_4688",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "9cebdb87-5cb4-48d9-9b21-1af3afd9e56a",
+    "externalId": "ch_54155f92",
+    "source": "Stripe",
+    "occurredAt": "2025-01-01T22:57:05.000Z",
+    "amount": 102.45,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_6257",
+    "payoutId": "po_2",
+    "feeAmount": 3.27,
+    "netAmount": 99.18,
+    "description": "Charge for ord_6257",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "c39212c2-54ea-40bb-a33e-9f0185317059",
+    "externalId": "ch_501967d3",
+    "source": "Stripe",
+    "occurredAt": "2025-01-28T13:56:58.000Z",
+    "amount": 50.26,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_7685",
+    "payoutId": "po_2",
+    "feeAmount": 1.76,
+    "netAmount": 48.5,
+    "description": "Charge for ord_7685",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "e4762aa1-85ba-469f-a553-b7186cdaecc5",
+    "externalId": "ch_70a23f24",
+    "source": "Stripe",
+    "occurredAt": "2025-01-23T16:30:39.000Z",
+    "amount": 46.94,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_3481",
+    "payoutId": "po_2",
+    "feeAmount": 1.66,
+    "netAmount": 45.28,
+    "description": "Charge for ord_3481",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "b5d95ca1-ac20-4e69-90e4-7ed6194d4531",
+    "externalId": "ch_d0595d8d",
+    "source": "Stripe",
+    "occurredAt": "2025-01-21T19:59:54.000Z",
+    "amount": 106.6,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_4125",
+    "payoutId": "po_3",
+    "feeAmount": 3.39,
+    "netAmount": 103.21,
+    "description": "Charge for ord_4125",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "aeb006b0-a175-4569-af76-f3d9e61fac6f",
+    "externalId": "ch_12712213",
+    "source": "Stripe",
+    "occurredAt": "2025-01-30T09:59:34.000Z",
+    "amount": 69.85,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_6545",
+    "payoutId": "po_3",
+    "feeAmount": 2.33,
+    "netAmount": 67.52,
+    "description": "Charge for ord_6545",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "7dc7dd12-b77c-409c-a9ae-7ba4fca553cd",
+    "externalId": "ch_12935ce4",
+    "source": "Stripe",
+    "occurredAt": "2025-01-16T18:26:38.000Z",
+    "amount": 76.62,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_7806",
+    "payoutId": "po_3",
+    "feeAmount": 2.52,
+    "netAmount": 74.1,
+    "description": "Charge for ord_7806",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "af5a142e-b614-417b-adaf-d78d822c089f",
+    "externalId": "ch_d9f5b440",
+    "source": "Stripe",
+    "occurredAt": "2025-01-14T13:09:39.000Z",
+    "amount": 33.09,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_6392",
+    "payoutId": "po_3",
+    "feeAmount": 1.26,
+    "netAmount": 31.83,
+    "description": "Charge for ord_6392",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "0bdd1121-8c8d-423a-96b7-f33220c8ce8e",
+    "externalId": "ch_07029038",
+    "source": "Stripe",
+    "occurredAt": "2025-01-15T20:53:09.000Z",
+    "amount": 24.46,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_7593",
+    "payoutId": "po_3",
+    "feeAmount": 1.01,
+    "netAmount": 23.45,
+    "description": "Charge for ord_7593",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "d85b5dc3-bffb-41de-b34d-7899ed61f81a",
+    "externalId": "ch_4e848d60",
+    "source": "Stripe",
+    "occurredAt": "2025-01-26T06:43:28.000Z",
+    "amount": 90.84,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_2395",
+    "payoutId": "po_3",
+    "feeAmount": 2.93,
+    "netAmount": 87.91,
+    "description": "Charge for ord_2395",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "6770c793-09c0-410c-9af2-6e91de73903d",
+    "externalId": "ch_26b558a5",
+    "source": "Stripe",
+    "occurredAt": "2025-01-08T23:25:07.000Z",
+    "amount": 95.42,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_5474",
+    "payoutId": "po_3",
+    "feeAmount": 3.07,
+    "netAmount": 92.35,
+    "description": "Charge for ord_5474",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "9e4f433b-a772-4066-9b32-107251f23e8b",
+    "externalId": "ch_d6647766",
+    "source": "Stripe",
+    "occurredAt": "2025-01-07T11:24:25.000Z",
+    "amount": 42.23,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_3514",
+    "payoutId": "po_3",
+    "feeAmount": 1.52,
+    "netAmount": 40.71,
+    "description": "Charge for ord_3514",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "b3ab24a2-6964-423d-92ce-909194f9d2de",
+    "externalId": "ch_aba3f50c",
+    "source": "Stripe",
+    "occurredAt": "2025-01-09T04:06:53.000Z",
+    "amount": 78.42,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_4083",
+    "payoutId": "po_3",
+    "feeAmount": 2.57,
+    "netAmount": 75.85,
+    "description": "Charge for ord_4083",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "fa0a8a4b-63fb-469f-b6fe-f9ee217a51cd",
+    "externalId": "ch_34701f48",
+    "source": "Stripe",
+    "occurredAt": "2025-01-26T19:45:56.000Z",
+    "amount": 10.51,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_8666",
+    "payoutId": "po_3",
+    "feeAmount": 0.6,
+    "netAmount": 9.91,
+    "description": "Charge for ord_8666",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "76b1974f-a719-423d-abd7-d5b0b17fc997",
+    "externalId": "ch_dcf98f5f",
+    "source": "Stripe",
+    "occurredAt": "2025-01-28T07:05:11.000Z",
+    "amount": 21.74,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_91",
+    "payoutId": "po_4",
+    "feeAmount": 0.93,
+    "netAmount": 20.81,
+    "description": "Charge for ord_91",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "055030ca-8559-4885-a142-e2ea4297e0a3",
+    "externalId": "ch_6569020a",
+    "source": "Stripe",
+    "occurredAt": "2025-01-22T03:36:30.000Z",
+    "amount": 41.45,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_3181",
+    "payoutId": "po_4",
+    "feeAmount": 1.5,
+    "netAmount": 39.95,
+    "description": "Charge for ord_3181",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "c6a16634-779e-4a39-8bba-187c8b10f296",
+    "externalId": "ch_eb7e2d45",
+    "source": "Stripe",
+    "occurredAt": "2025-01-25T12:12:25.000Z",
+    "amount": 85.67,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_7180",
+    "payoutId": "po_4",
+    "feeAmount": 2.78,
+    "netAmount": 82.89,
+    "description": "Charge for ord_7180",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "3a6e8c71-f138-4cd9-8624-46f3b76904d9",
+    "externalId": "ch_d10a9c9f",
+    "source": "Stripe",
+    "occurredAt": "2025-01-01T20:17:30.000Z",
+    "amount": 31.14,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_2862",
+    "payoutId": "po_4",
+    "feeAmount": 1.2,
+    "netAmount": 29.94,
+    "description": "Charge for ord_2862",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "2e1e7278-cc5a-42f3-8919-350a4e0df8ce",
+    "externalId": "ch_7eef3e2d",
+    "source": "Stripe",
+    "occurredAt": "2025-01-17T01:51:56.000Z",
+    "amount": 72.98,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_7889",
+    "payoutId": "po_4",
+    "feeAmount": 2.42,
+    "netAmount": 70.56,
+    "description": "Charge for ord_7889",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "d58d6a9c-eb88-4711-9e6d-eeca57ed9223",
+    "externalId": "ch_dbc84f17",
+    "source": "Stripe",
+    "occurredAt": "2025-01-10T02:12:26.000Z",
+    "amount": 88.06,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_3597",
+    "payoutId": "po_4",
+    "feeAmount": 2.85,
+    "netAmount": 85.21,
+    "description": "Charge for ord_3597",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "d972b68d-f427-47da-91cb-c040b83738d6",
+    "externalId": "ch_095f853b",
+    "source": "Stripe",
+    "occurredAt": "2025-01-16T07:47:50.000Z",
+    "amount": 97.7,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_9858",
+    "payoutId": "po_4",
+    "feeAmount": 3.13,
+    "netAmount": 94.57,
+    "description": "Charge for ord_9858",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "acb81691-7c8b-4ced-b025-78217e86aad1",
+    "externalId": "ch_b851df49",
+    "source": "Stripe",
+    "occurredAt": "2025-01-08T10:55:55.000Z",
+    "amount": 86.89,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_133",
+    "payoutId": "po_4",
+    "feeAmount": 2.82,
+    "netAmount": 84.07,
+    "description": "Charge for ord_133",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "a2708b44-7fde-422a-9fbc-5816ef9ea953",
+    "externalId": "ch_994acf94",
+    "source": "Stripe",
+    "occurredAt": "2025-01-25T09:03:34.000Z",
+    "amount": 83.16,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_7780",
+    "payoutId": "po_4",
+    "feeAmount": 2.71,
+    "netAmount": 80.45,
+    "description": "Charge for ord_7780",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "c643b6c9-ab2a-4472-a294-91360a41ef94",
+    "externalId": "ch_480d4fe6",
+    "source": "Stripe",
+    "occurredAt": "2025-01-08T15:10:12.000Z",
+    "amount": 15.17,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "CHARGE",
+    "status": "succeeded",
+    "orderId": "ord_9436",
+    "payoutId": "po_4",
+    "feeAmount": 0.74,
+    "netAmount": 14.43,
+    "description": "Charge for ord_9436",
+    "raw": {
+      "id": "raw_stripe"
+    }
+  },
+  {
+    "id": "b6ab3816-e683-4adb-afee-a5974198cc4f",
+    "externalId": "po_0",
+    "source": "Stripe",
+    "occurredAt": "2025-01-28T19:42:57.000Z",
+    "amount": 571.24,
+    "currency": "USD",
+    "direction": "OUTGOING",
+    "type": "PAYOUT",
+    "status": "paid",
+    "description": "Payout po_0",
+    "raw": {
+      "id": "raw_payout"
+    }
+  },
+  {
+    "id": "24a0cd67-b571-40bc-a14d-8d9622b416b7",
+    "externalId": "po_1",
+    "source": "Stripe",
+    "occurredAt": "2025-01-30T12:27:14.000Z",
+    "amount": 512.47,
+    "currency": "USD",
+    "direction": "OUTGOING",
+    "type": "PAYOUT",
+    "status": "paid",
+    "description": "Payout po_1",
+    "raw": {
+      "id": "raw_payout"
+    }
+  },
+  {
+    "id": "e0c224ba-49b9-41a1-8882-3facbf9ff033",
+    "externalId": "po_2",
+    "source": "Stripe",
+    "occurredAt": "2025-02-01T14:54:46.000Z",
+    "amount": 503.2,
+    "currency": "USD",
+    "direction": "OUTGOING",
+    "type": "PAYOUT",
+    "status": "paid",
+    "description": "Payout po_2",
+    "raw": {
+      "id": "raw_payout"
+    }
+  },
+  {
+    "id": "e410f231-205b-43e0-9b30-9bbc2dd9c73d",
+    "externalId": "po_3",
+    "source": "Stripe",
+    "occurredAt": "2025-02-01T09:59:34.000Z",
+    "amount": 606.84,
+    "currency": "USD",
+    "direction": "OUTGOING",
+    "type": "PAYOUT",
+    "status": "paid",
+    "description": "Payout po_3",
+    "raw": {
+      "id": "raw_payout"
+    }
+  },
+  {
+    "id": "fb110d93-c7de-4ff6-838a-a1f68571ff9c",
+    "externalId": "po_4",
+    "source": "Stripe",
+    "occurredAt": "2025-01-30T07:05:11.000Z",
+    "amount": 602.88,
+    "currency": "USD",
+    "direction": "OUTGOING",
+    "type": "PAYOUT",
+    "status": "paid",
+    "description": "Payout po_4",
+    "raw": {
+      "id": "raw_payout"
+    }
+  },
+  {
+    "id": "0ca6316c-3c33-42dc-a00c-b0962fb1759b",
+    "externalId": "re_ee25a720",
+    "source": "Stripe",
+    "occurredAt": "2025-01-24T02:04:23.000Z",
+    "amount": 50,
+    "currency": "USD",
+    "direction": "OUTGOING",
+    "type": "REFUND",
+    "status": "succeeded",
+    "description": "Refund for item",
+    "raw": {}
+  }
+]
