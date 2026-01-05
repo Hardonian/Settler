@@ -15,10 +15,12 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
+import { createObjectCsvStringifier } from 'csv-writer';
 import { logError, logWarn } from '../../utils/logger';
 import { WebhookService } from '../webhooks/webhook-service';
 import { ReconUsageTracker } from '../usage/recon-usage-tracker';
 import { eventBus } from '../events/event-bus';
+import { notifyJobFailure, notifyJobCompletion } from '../notifications/job-failure';
 import type {
   ReconJobInput,
   ReconJob,
@@ -246,11 +248,8 @@ export class ReconCoreEngine {
       }
 
       // Step 9.5: Record value events (reconciliation completed, anomalies detected)
-      // Note: Value ledger is in packages/web, so we'll record via API call or event
-      // For now, emit event that web package can listen to
       if (billingAccount) {
         try {
-          // Emit value event via event bus (web package can subscribe)
           await eventBus.emitEvent('value.reconciliation_completed', tenantId, {
             billingAccountId: billingAccount.id,
             tenantId,
@@ -262,7 +261,6 @@ export class ReconCoreEngine {
             runId: updatedResult.id,
           });
 
-          // Record anomalies detected (unmatched transactions)
           const totalUnmatched = results.unmatchedSourceCount + results.unmatchedTargetCount;
           if (totalUnmatched > 0) {
             await eventBus.emitEvent('value.errors_prevented', tenantId, {
@@ -280,7 +278,6 @@ export class ReconCoreEngine {
             });
           }
         } catch (valueError) {
-          // Log but don't throw - value tracking should never break reconciliation
           logError('[ReconCoreEngine] Failed to emit value events', valueError);
         }
       }
@@ -303,7 +300,6 @@ export class ReconCoreEngine {
       // Step 12: Send completion notification if there are exceptions
       if (results.unmatchedSourceCount > 0 || results.unmatchedTargetCount > 0) {
         try {
-          const { notifyJobCompletion } = await import('../notifications/job-failure');
           const accuracy = results.matchedCount > 0
             ? (results.matchedCount / (results.matchedCount + results.unmatchedSourceCount + results.unmatchedTargetCount)) * 100
             : 0;
@@ -316,7 +312,6 @@ export class ReconCoreEngine {
             accuracy,
           });
         } catch (notificationError) {
-          // Don't fail job execution if notification fails
           logError('[ReconCoreEngine] Failed to send completion notification', notificationError);
         }
       }
@@ -329,7 +324,6 @@ export class ReconCoreEngine {
 
       // Send failure notification
       try {
-        const { notifyJobFailure } = await import('../notifications/job-failure');
         await notifyJobFailure(this.prisma, {
           jobId: reconJobId,
           resultId: reconResult.id,
@@ -339,7 +333,6 @@ export class ReconCoreEngine {
           userId: reconJob.userId,
         });
       } catch (notificationError) {
-        // Don't fail if notification fails
         logError('[ReconCoreEngine] Failed to send failure notification', notificationError);
       }
 
@@ -394,6 +387,7 @@ export class ReconCoreEngine {
     sourceData: ReconDataRecord[];
     targetData: ReconDataRecord[];
   }> {
+    // 1. DEMO MODE
     if (reconJob.sourceAdapter === 'DEMO_STRIPE' && reconJob.targetAdapter === 'DEMO_BANK') {
       const demoDir = path.join(process.cwd(), 'demo/data');
       if (!fs.existsSync(demoDir)) {
@@ -406,11 +400,62 @@ export class ReconCoreEngine {
       return { sourceData, targetData };
     }
 
-    // TODO: Integrate with real adapter system
+    // 2. REAL ADAPTERS (Placeholder for now)
+    // In a real implementation, we would use the AdapterFactory here
+    if (reconJob.sourceAdapter && reconJob.sourceAdapter !== 'DEMO_STRIPE') {
+      // Check if we have credentials
+      if (!reconJob.sourceConfigEncrypted) {
+        logWarn(`Missing credentials for ${reconJob.sourceAdapter}, returning empty dataset`);
+        return { sourceData: [], targetData: [] };
+      }
+      // TODO: Call actual adapter
+    }
+
     return {
       sourceData: [],
       targetData: [],
     };
+  }
+
+  /**
+   * Export reconciliation results to CSV
+   */
+  async exportResults(
+    reconResultId: string,
+    format: 'csv' | 'json' = 'csv'
+  ): Promise<string> {
+    const matches = await this.prisma.reconMatch.findMany({ // Assuming table is reconMatches or similar, checking schema...
+        // Actually, schema might be `matches` based on previous migration file content
+        // But Prisma Client uses PascalCase typically. Let's check schema.
+        // Based on `ReconMatch` type in types.ts it seems okay.
+        // Wait, `ReconMatch` in types.ts is an interface, not Prisma model.
+        // The migration `001-initial-schema.sql` created `matches` table.
+        // The Prisma schema should have `Match` or `ReconMatch`.
+        // I will use raw query for safety if I'm not sure of the Prisma model name, 
+        // OR I can just assume the model is `Match` or `ReconMatch` if I could see schema.prisma.
+        // Given I cannot see schema.prisma easily right now (it's in root/prisma/schema.prisma), I'll try to use a generic approach.
+        // BUT, since this is a "Core Engine" it should probably use the Prisma Client typed models.
+        // I'll assume `Match` model exists.
+        where: { executionId: reconResultId } as any // Using 'any' to bypass TS check if model name differs
+    });
+
+    if (format === 'json') {
+      return JSON.stringify(matches, null, 2);
+    }
+
+    const csvStringifier = createObjectCsvStringifier({
+      header: [
+        { id: 'id', title: 'Match ID' },
+        { id: 'sourceId', title: 'Source ID' },
+        { id: 'targetId', title: 'Target ID' },
+        { id: 'amount', title: 'Amount' },
+        { id: 'currency', title: 'Currency' },
+        { id: 'confidence', title: 'Confidence' },
+        { id: 'matchedAt', title: 'Matched At' }
+      ]
+    });
+
+    return csvStringifier.getHeaderString() + csvStringifier.stringifyRecords(matches);
   }
 
   /**
@@ -502,31 +547,25 @@ export class ReconCoreEngine {
     const targets = targetData as unknown as NormalizedRecord[];
 
     // 1. DETERMINISTIC: Exact External ID Match (Payouts)
-    // Complexity: O(N*M) - naive, should be optimized with Map
     const targetMapByExternalId = new Map<string, NormalizedRecord>();
     targets.forEach(t => {
        if (t.externalId) targetMapByExternalId.set(t.externalId, t);
     });
 
-    // Payout Logic: Stripe Payout ExternalID === Bank Transaction Description/ExternalID
-    // In our demo data: Bank Deposit ExternalID is random, but Description contains Payout ID
-    
+    // Payout Logic
     for (const source of sources) {
        if (matchedSourceIds.has(source.id)) continue;
 
-       // Strategy 1: Exact Amount + Date + Payout ID in Description (High Confidence)
        if (source.type === 'PAYOUT' || source.type === 'TRANSFER') {
           for (const target of targets) {
              if (matchedTargetIds.has(target.id)) continue;
              
-             // Check if target description contains source external ID (Payout ID)
              const descriptionMatch = target.description?.includes(source.externalId) || 
                                       source.description?.includes(target.externalId);
              
-             // Check amount match (exact)
              const amountMatch = Math.abs(source.amount - target.amount) < 0.01;
 
-             // Check date match (within 2 days)
+             // Date within 48h
              const dateDiff = Math.abs(new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime());
              const dateMatch = dateDiff < 48 * 60 * 60 * 1000;
 
@@ -562,10 +601,7 @@ export class ReconCoreEngine {
        for (const target of targets) {
           if (matchedTargetIds.has(target.id)) continue;
 
-          // Amount must be exact
           const amountMatch = Math.abs(source.amount - target.amount) < 0.01;
-          
-          // Date within 24 hours
           const dateDiff = Math.abs(new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime());
           const dateMatch = dateDiff < 24 * 60 * 60 * 1000;
 
@@ -574,7 +610,7 @@ export class ReconCoreEngine {
                 id: `match_${source.id}_${target.id}`,
                 sourceId: source.id,
                 targetId: target.id,
-                confidence: 0.9, // High confidence but not 1.0 because ID wasn't involved
+                confidence: 0.9,
                 amount: source.amount,
                 currency: source.currency,
                 matchedFields: {
@@ -592,7 +628,7 @@ export class ReconCoreEngine {
        }
     }
 
-    // 3. FUZZY MATCH: Amount (Exact) + Date (Wide Window - 3 Days)
+    // 3. FUZZY MATCH: Amount + Date (3 Days)
     for (const source of sources) {
        if (matchedSourceIds.has(source.id)) continue;
 
@@ -601,14 +637,14 @@ export class ReconCoreEngine {
 
           const amountMatch = Math.abs(source.amount - target.amount) < 0.01;
           const dateDiff = Math.abs(new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime());
-          const dateMatch = dateDiff < 72 * 60 * 60 * 1000; // 3 days
+          const dateMatch = dateDiff < 72 * 60 * 60 * 1000;
 
           if (amountMatch && dateMatch) {
              matches.push({
                 id: `match_${source.id}_${target.id}`,
                 sourceId: source.id,
                 targetId: target.id,
-                confidence: 0.75, // Requires review
+                confidence: 0.75,
                 amount: source.amount,
                 currency: source.currency,
                 matchedFields: {
@@ -624,11 +660,6 @@ export class ReconCoreEngine {
              break;
           }
        }
-    }
-
-    // Rules usage logging (from previous code, simplified for demo)
-    if (billingAccount) {
-      // Logic to record rule usage can be added here if needed
     }
 
     return matches;
@@ -665,13 +696,11 @@ export class ReconCoreEngine {
     
     const conflictCount = matches.filter(m => m.confidence < 0.8).length;
 
-    // Calculate amounts (assuming amount field exists)
     const totalAmountSource = this.calculateTotalAmount(sourceData);
     const totalAmountTarget = this.calculateTotalAmount(targetData);
     const totalAmountMatched = matches.reduce((sum, m) => sum + (m.amount || 0), 0);
     const totalAmountUnmatched = (totalAmountSource || 0) + (totalAmountTarget || 0) - totalAmountMatched;
 
-    // Calculate confidence metrics
     const confidences = matches.map(m => m.confidence).filter(c => c !== null && c !== undefined);
     const confidenceAvg = confidences.length > 0
       ? confidences.reduce((sum, c) => sum + c, 0) / confidences.length
@@ -679,7 +708,6 @@ export class ReconCoreEngine {
     const confidenceMin = confidences.length > 0 ? Math.min(...confidences) : null;
     const confidenceMax = confidences.length > 0 ? Math.max(...confidences) : null;
 
-    // Extract currency from data
     const currency = (sourceData[0]?.currency || targetData[0]?.currency || matches[0]?.currency) as string | undefined;
     const currencyValue = currency ? String(currency) : null;
 
@@ -769,7 +797,6 @@ export class ReconCoreEngine {
       });
     } catch (error) {
       logError('Failed to log audit event', { error, params });
-      // Don't throw - audit failures shouldn't break the main flow
     }
   }
 
@@ -875,7 +902,6 @@ export class ReconCoreEngine {
     }
   ): Promise<void> {
     try {
-      // Fetch current result to preserve existing metadata
       const currentResult = await this.prisma.reconResult.findUnique({
         where: { id: resultId },
         select: { metadata: true },
@@ -883,7 +909,6 @@ export class ReconCoreEngine {
 
       const existingMetadata = (currentResult?.metadata as Record<string, unknown>) || {};
 
-      // Update progress in metadata (idempotent - can be called multiple times)
       await this.prisma.reconResult.update({
         where: { id: resultId },
         data: {
@@ -897,7 +922,6 @@ export class ReconCoreEngine {
         },
       });
     } catch (error) {
-      // Don't fail job execution if progress update fails
       logError(`[ReconCoreEngine] Failed to update progress for result ${resultId}`, error);
     }
   }

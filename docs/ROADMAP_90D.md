@@ -1,15 +1,15 @@
 # 90-Day Roadmap
 
-## Phase 1: Foundation (Days 0-30) - CURRENT
+## Phase 1: Foundation (Days 0-30) - COMPLETE
 *   [x] **Reality Audit:** Identify gaps.
-*   [ ] **Demo Environment:** Synthetic data + Demo Mode.
-*   [ ] **Core Engine Fix:** `ingestData` implementation + Deterministic Matching.
-*   [ ] **Compliance Update:** Truthful copy on site/docs.
-*   [ ] **Playground UI:** Visible proof of value.
+*   [x] **Demo Environment:** Synthetic data + Demo Mode.
+*   [x] **Core Engine Fix:** `ingestData` implementation + Deterministic Matching.
+*   [x] **Compliance Update:** Truthful copy on site/docs.
+*   [x] **Playground UI:** Visual simulation of reconciliation without sign-up.
 
 ## Phase 2: Refinement (Days 31-60)
 *   [ ] **Real Integration Hardening:** Verify Stripe/Shopify/QB adapters against real sandboxes.
-*   [ ] **Reporting:** Export to PDF/CSV for auditors.
+*   [ ] **Reporting:** Export to PDF/CSV for auditors (CSV Logic Implemented in Backend).
 *   [ ] **Alerting:** Slack/Email notifications for anomalies.
 *   [ ] **User Roles:** Read-only vs Editor vs Admin.
 

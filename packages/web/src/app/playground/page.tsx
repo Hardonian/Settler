@@ -12,6 +12,9 @@ import { ConversionCTA } from "@/components/ConversionCTA";
 import { TrustBadges } from "@/components/TrustBadges";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
+import { runDemoSimulation, DemoResult, DemoMatch, DemoUnmatched } from "../actions/playground";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CheckCircle2, XCircle, AlertTriangle, Play, RefreshCw, ArrowRight } from "lucide-react";
 
 export default function Playground() {
   const [apiKey, setApiKey] = useState("");
@@ -26,44 +29,30 @@ const job = await client.jobs.create({
   name: "Shopify-Stripe Reconciliation",
   source: {
     adapter: "shopify",
-    config: {
-      apiKey: process.env.NEXT_PUBLIC_SHOPIFY_API_KEY || "",
-    },
+    config: { apiKey: process.env.SHOPIFY_KEY },
   },
   target: {
     adapter: "stripe",
-    config: {
-      // SECURITY: Never expose secret keys client-side!
-      // Use server-side API routes to handle Stripe operations
-      apiKey: "sk_test_...", // Placeholder - use server-side API in production
-    },
+    config: { apiKey: process.env.STRIPE_KEY },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
       { field: "amount", type: "exact", tolerance: 0.01 },
-    ],
-    conflictResolution: "last-wins",
-  },
+    ]
+  }
 });
 
-console.log("Job created:", job.data.id);
-
-// Run the job and get report
 const report = await client.jobs.run(job.data.id);
-console.log("Report:", report.data.summary);
-// {
-//   total: 150,
-//   matched: 145,
-//   unmatched: 3,
-//   conflicts: 2,
-//   accuracy: 0.987
-// }`);
+console.log(report.data.summary);`);
 
   const [output, setOutput] = useState<string>("// Click 'Run Code' to execute and see results here");
   const [isRunning, setIsRunning] = useState(false);
+  const [demoResult, setDemoResult] = useState<DemoResult | null>(null);
+  const [demoLoading, setDemoLoading] = useState(false);
+  const [demoError, setDemoError] = useState<string | null>(null);
 
-  const handleRun = async () => {
+  const handleRunCode = async () => {
     setIsRunning(true);
     setOutput("// Running...\n");
     
@@ -85,343 +74,253 @@ console.log("Report:", report.data.summary);
     });
   };
 
+  const handleRunDemo = async () => {
+    setDemoLoading(true);
+    setDemoError(null);
+    try {
+      const result = await runDemoSimulation();
+      setDemoResult(result);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to run demo";
+      setDemoError(message);
+    } finally {
+      setDemoLoading(false);
+    }
+  };
+
   const [isVisible, setIsVisible] = useState(false);
   const playgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize guest session on mount (skip in safe mode)
     if (!isSafeMode()) {
       initGuestSession().catch(console.error);
     }
     
     const observer = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0];
-        if (entry?.isIntersecting) {
-          setIsVisible(true);
-        }
+        if (entries[0]?.isIntersecting) setIsVisible(true);
       },
       { threshold: 0.1 }
     );
 
-    if (playgroundRef.current) {
-      observer.observe(playgroundRef.current);
-    }
-
-    return () => {
-      if (playgroundRef.current) {
-        observer.unobserve(playgroundRef.current);
-      }
-    };
+    if (playgroundRef.current) observer.observe(playgroundRef.current);
+    return () => observer.disconnect();
   }, []);
 
   return (
     <AnimatedPageWrapper aria-label="Interactive playground">
       <Navigation />
 
-      {/* Hero Section */}
       <AnimatedHero
         badge="Interactive Playground"
         title="Try Settler API"
-        description="Test our APIs, explore examples, and experiment with reconciliation jobs—all without writing code or signing up"
+        description="Experience the power of deterministic reconciliation. Run a simulation against our demo dataset or write code to test the SDK."
       />
 
-      {/* Playground Content */}
       <section
         ref={playgroundRef}
         className="py-12 px-4 sm:px-6 lg:px-8"
-        aria-labelledby="playground-heading"
       >
         <div className="max-w-7xl mx-auto">
-          <h2 id="playground-heading" className="sr-only">
-            Interactive Playground
-          </h2>
-          {/* API Key Input */}
-          <Card
-            className={`
-              bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 mb-6
-              transition-all duration-700
-              ${isVisible
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-8'
-              }
-            `}
-            role="region"
-            aria-labelledby="api-config-heading"
-          >
-            <CardHeader>
-              <CardTitle id="api-config-heading" className="text-slate-900 dark:text-slate-100">
-                API Configuration
-              </CardTitle>
-              <CardDescription className="text-slate-600 dark:text-slate-300">
-                Enter your API key to test with real credentials, or leave empty to explore demo mode with sample data
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-4">
-                <input
-                  type="text"
-                  value={apiKey}
-                  onChange={(e) => {
-                    setApiKey(e.target.value);
-                    setCode(code.replace(/sk_your_api_key/g, e.target.value || "sk_your_api_key"));
-                  }}
-                  placeholder="sk_your_api_key"
-                  className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent font-mono text-sm leading-[1.5]"
-                  aria-label="API key input"
-                />
-                <Button
-                  onClick={handleRun}
-                  disabled={isRunning}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 transition-all transform hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  aria-label={isRunning ? 'Running code' : 'Run code'}
-                >
-                  {isRunning ? 'Running...' : 'Run Code'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          
+          <Tabs defaultValue="visual" className="w-full">
+            <div className="flex justify-center mb-8">
+              <TabsList className="grid w-full max-w-md grid-cols-2">
+                <TabsTrigger value="visual">Visual Simulation</TabsTrigger>
+                <TabsTrigger value="code">Code Editor</TabsTrigger>
+              </TabsList>
+            </div>
 
-          {/* Code Editor and Output */}
-          <div
-            className={`
-              grid grid-cols-1 lg:grid-cols-2 gap-6
-              transition-all duration-700
-              ${isVisible
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-8'
-              }
-            `}
-            style={{ transitionDelay: '200ms' }}
-          >
-            {/* Code Editor */}
-            <Card
-              className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-lg"
-              role="region"
-              aria-labelledby="editor-heading"
-            >
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle id="editor-heading" className="text-slate-900 dark:text-slate-100">
-                    Code Editor
-                  </CardTitle>
-                  <Badge className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    TypeScript
-                  </Badge>
-                </div>
-                <CardDescription className="text-slate-600 dark:text-slate-300">
-                  Edit the code below to experiment with the Settler API
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <textarea
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  className="w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] p-4 font-mono text-sm border border-slate-300 dark:border-slate-700 rounded-md bg-slate-900 dark:bg-slate-950 text-green-300 dark:text-green-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-y leading-[1.5]"
-                  style={{ lineHeight: '1.5' }}
-                  spellCheck={false}
-                  aria-label="Code editor"
-                />
-              </CardContent>
-            </Card>
-
-            {/* Output */}
-            <Card
-              className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-lg"
-              role="region"
-              aria-labelledby="output-heading"
-              aria-live="polite"
-            >
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle id="output-heading" className="text-slate-900 dark:text-slate-100">
-                    Output
-                  </CardTitle>
-                  <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                    Console
-                  </Badge>
-                </div>
-                <CardDescription className="text-slate-600 dark:text-slate-300">
-                  Results and logs from your code execution
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] p-4 bg-slate-900 dark:bg-slate-950 text-green-300 dark:text-green-400 font-mono text-sm rounded-md overflow-auto border border-slate-300 dark:border-slate-700"
-                  role="log"
-                  aria-label="Code execution output"
-                >
-                  <pre className="whitespace-pre-wrap leading-[1.5]" style={{ lineHeight: '1.5' }}>{output}</pre>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Examples */}
-          <div
-            className={`
-              mt-8
-              transition-all duration-700
-              ${isVisible
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-8'
-              }
-            `}
-            style={{ transitionDelay: '400ms' }}
-          >
-            <Card
-              className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-lg"
-              role="region"
-              aria-labelledby="examples-heading"
-            >
-              <CardHeader>
-                <CardTitle id="examples-heading" className="text-slate-900 dark:text-slate-100">
-                  Quick Examples
-                </CardTitle>
-                <CardDescription className="text-slate-600 dark:text-slate-300">
-                  Try these pre-configured examples
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                  role="list"
-                  aria-label="Quick example templates"
-                >
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setCode(`import { Settler } from "@settler/sdk";
-
-const client = new Settler({
-  apiKey: "${apiKey || "sk_your_api_key"}",
-});
-
-// QuickBooks to Stripe reconciliation
-const job = await client.jobs.create({
-  name: "QuickBooks-Stripe",
-  source: { adapter: "quickbooks", config: { apiKey: "..." } },
-  target: { adapter: "stripe", config: { apiKey: "..." } },
-  rules: {
-    matching: [
-      { field: "transaction_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
-    ]
-  }
-});
-
-const report = await client.jobs.run(job.data.id);
-console.log(report.data.summary);`);
-                    }}
-                    className="h-auto py-4 text-left transition-all transform hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    role="listitem"
-                    aria-label="Load QuickBooks to Stripe example"
-                  >
-                    <div>
-                      <div className="font-semibold mb-1 leading-[1.4]">QuickBooks → Stripe</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 leading-[1.5]">
-                        Accounting to payments
+            {/* VISUAL MODE */}
+            <TabsContent value="visual" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Demo Environment</CardTitle>
+                  <CardDescription>
+                    Run a full reconciliation on a pre-generated dataset of 30 days of Stripe vs. Bank transactions.
+                    See how our engine handles Payouts, Fees, and Anomalies.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col items-center justify-center p-8 bg-slate-50 dark:bg-slate-900 rounded-lg border border-dashed border-slate-300 dark:border-slate-700">
+                    {!demoResult && !demoLoading && !demoError && (
+                      <div className="text-center">
+                        <div className="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                          <Play className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-lg font-medium mb-2">Ready to Start?</h3>
+                        <p className="text-slate-500 mb-6 max-w-md">
+                          We'll load 1 month of transaction data (Stripe Charges, Payouts, Refunds) and reconcile it against a simulated Bank Ledger.
+                        </p>
+                        <Button size="lg" onClick={handleRunDemo} className="bg-blue-600 hover:bg-blue-700">
+                          Run Simulation
+                        </Button>
                       </div>
-                    </div>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setCode(`import { Settler } from "@settler/sdk";
+                    )}
 
-const client = new Settler({
-  apiKey: "${apiKey || "sk_your_api_key"}",
-});
-
-// PayPal to Shopify reconciliation
-const job = await client.jobs.create({
-  name: "PayPal-Shopify",
-  source: { adapter: "paypal", config: { apiKey: "..." } },
-  target: { adapter: "shopify", config: { apiKey: "..." } },
-  rules: {
-    matching: [
-      { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 },
-      { field: "date", type: "range", days: 1 }
-    ]
-  }
-});
-
-const report = await client.jobs.run(job.data.id);
-console.log(report.data.summary);`);
-                    }}
-                    className="h-auto py-4 text-left transition-all transform hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    role="listitem"
-                    aria-label="Load PayPal to Shopify example"
-                  >
-                    <div>
-                      <div className="font-semibold mb-1 leading-[1.4]">PayPal → Shopify</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 leading-[1.5]">
-                        Payment to e-commerce
+                    {demoLoading && (
+                      <div className="text-center py-12">
+                        <RefreshCw className="w-12 h-12 animate-spin text-blue-500 mx-auto mb-4" />
+                        <p className="text-lg font-medium text-slate-700 dark:text-slate-300">Reconciling 150+ transactions...</p>
+                        <p className="text-sm text-slate-500">Applying deterministic rules...</p>
                       </div>
-                    </div>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setCode(`import { Settler } from "@settler/sdk";
+                    )}
 
-const client = new Settler({
-  apiKey: "${apiKey || "sk_your_api_key"}",
-});
-
-// Real-time webhook reconciliation
-const job = await client.jobs.create({
-  name: "Real-time Webhook Sync",
-  source: { adapter: "webhook", config: { endpoint: "..." } },
-  target: { adapter: "stripe", config: { apiKey: "..." } },
-  rules: {
-    matching: [{ field: "id", type: "exact" }],
-    realtime: true
-  }
-});
-
-// Listen for webhook events
-client.webhooks.on("reconciliation.complete", (event) => {
-  console.log("Reconciliation complete:", event.data);
-});`);
-                    }}
-                    className="h-auto py-4 text-left transition-all transform hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    role="listitem"
-                    aria-label="Load real-time webhooks example"
-                  >
-                    <div>
-                      <div className="font-semibold mb-1 leading-[1.4]">Real-time Webhooks</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 leading-[1.5]">
-                        Live event reconciliation
+                    {demoError && (
+                      <div className="text-center text-red-500">
+                        <AlertTriangle className="w-12 h-12 mx-auto mb-4" />
+                        <p className="font-medium">Error: {demoError}</p>
+                        <Button variant="outline" onClick={handleRunDemo} className="mt-4">Try Again</Button>
                       </div>
+                    )}
+
+                    {demoResult && (
+                      <div className="w-full space-y-8 animate-in fade-in duration-500">
+                        {/* Summary Cards */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <Card className="bg-white dark:bg-slate-800">
+                            <CardContent className="pt-6 text-center">
+                              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                                {demoResult.summary.totalSource + demoResult.summary.totalTarget}
+                              </div>
+                              <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">Total Records</div>
+                            </CardContent>
+                          </Card>
+                          <Card className="bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800">
+                            <CardContent className="pt-6 text-center">
+                              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                                {demoResult.summary.matched}
+                              </div>
+                              <div className="text-xs text-emerald-600/80 uppercase tracking-wide mt-1">Matched</div>
+                            </CardContent>
+                          </Card>
+                          <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+                            <CardContent className="pt-6 text-center">
+                              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                                {demoResult.summary.unmatchedSource + demoResult.summary.unmatchedTarget}
+                              </div>
+                              <div className="text-xs text-red-600/80 uppercase tracking-wide mt-1">Unmatched</div>
+                            </CardContent>
+                          </Card>
+                          <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                            <CardContent className="pt-6 text-center">
+                              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                {demoResult.summary.matchRate}
+                              </div>
+                              <div className="text-xs text-blue-600/80 uppercase tracking-wide mt-1">Match Rate</div>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        {/* Matches List (Preview) */}
+                        <div className="grid md:grid-cols-2 gap-8">
+                          <div>
+                            <h4 className="flex items-center gap-2 font-medium mb-4 text-emerald-600">
+                              <CheckCircle2 className="w-5 h-5" /> Recent Matches (High Confidence)
+                            </h4>
+                            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                              {demoResult.matches.map((m) => (
+                                <div key={m.id} className="bg-white dark:bg-slate-800 p-3 rounded border border-slate-200 dark:border-slate-700 text-sm flex justify-between items-center">
+                                  <div>
+                                    <div className="font-medium">Amount: ${m.amount?.toFixed(2)}</div>
+                                    <div className="text-xs text-slate-500">ID: {m.sourceId.slice(0,8)}... ↔ {m.targetId.slice(0,8)}...</div>
+                                  </div>
+                                  <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300">
+                                    {(m.confidence * 100).toFixed(0)}%
+                                  </Badge>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Unmatched List */}
+                          <div>
+                            <h4 className="flex items-center gap-2 font-medium mb-4 text-red-600">
+                              <XCircle className="w-5 h-5" /> Unmatched Items (Needs Review)
+                            </h4>
+                            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                              {demoResult.unmatchedSource.map((u) => (
+                                <div key={u.id} className="bg-white dark:bg-slate-800 p-3 rounded border border-red-200 dark:border-red-900/50 text-sm flex justify-between items-center">
+                                  <div>
+                                    <div className="font-medium">${u.amount?.toFixed(2)} {u.currency}</div>
+                                    <div className="text-xs text-slate-500">{u.description || 'Unknown Transaction'}</div>
+                                    <div className="text-[10px] text-slate-400 font-mono mt-1">{u.source} • {new Date(u.occurredAt).toLocaleDateString()}</div>
+                                  </div>
+                                  <Button variant="ghost" size="sm" className="h-6 text-xs text-red-600">
+                                    Resolve <ArrowRight className="w-3 h-3 ml-1" />
+                                  </Button>
+                                </div>
+                              ))}
+                              {demoResult.unmatchedSource.length === 0 && (
+                                <div className="text-center text-slate-500 py-8 italic">
+                                  No unmatched items!
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-center pt-4">
+                           <Button variant="outline" onClick={() => { setDemoResult(null); }}>
+                             Reset Simulation
+                           </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* CODE MODE */}
+            <TabsContent value="code" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>SDK Code Editor</CardTitle>
+                  <CardDescription>
+                    Write and execute TypeScript code to interact with the Settler SDK directly.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="relative">
+                       <textarea
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                        className="w-full h-[400px] p-4 font-mono text-sm border border-slate-300 dark:border-slate-700 rounded-md bg-slate-900 dark:bg-slate-950 text-blue-300 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none leading-[1.5]"
+                        spellCheck={false}
+                      />
+                      <Button 
+                        className="absolute bottom-4 right-4 z-10" 
+                        onClick={handleRunCode}
+                        disabled={isRunning}
+                      >
+                        {isRunning ? 'Running...' : 'Run Code'}
+                      </Button>
                     </div>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                    <div className="bg-slate-900 dark:bg-slate-950 rounded-md p-4 h-[400px] overflow-auto border border-slate-300 dark:border-slate-700">
+                      <pre className="font-mono text-sm text-green-400 whitespace-pre-wrap">{output}</pre>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
         </div>
       </section>
 
-      {/* Trust Badges */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-slate-800/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-slate-100 leading-[1.4]">
-              Secure & Reliable
-            </h2>
-          </div>
+        <div className="max-w-7xl mx-auto text-center">
           <TrustBadges />
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <ConversionCTA
             title="Ready to Integrate?"
-            description="Get your API key and start reconciling in minutes. 14-day free trial—no credit card required."
+            description="Get your API key and start reconciling in minutes. 14-day free trial."
             primaryAction="Start Free Trial"
             primaryLink="/signup"
             secondaryAction="View Pricing"
