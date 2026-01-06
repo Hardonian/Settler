@@ -1,0 +1,90 @@
+[
+  {
+    "id": "89dd5f7e-7744-44cc-a198-509afa8abc9a",
+    "externalId": "txn_ae96c02c",
+    "source": "Bank",
+    "occurredAt": "2025-01-28T19:42:57.000Z",
+    "amount": 571.24,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "TRANSFER",
+    "status": "posted",
+    "description": "STRIPE TRANSFER po_0",
+    "raw": {
+      "id": "raw_bank"
+    }
+  },
+  {
+    "id": "8c4a9300-0150-4507-bcac-40d95f10405e",
+    "externalId": "txn_c71b74f1",
+    "source": "Bank",
+    "occurredAt": "2025-01-30T12:27:14.000Z",
+    "amount": 512.47,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "TRANSFER",
+    "status": "posted",
+    "description": "STRIPE TRANSFER po_1",
+    "raw": {
+      "id": "raw_bank"
+    }
+  },
+  {
+    "id": "344e1d04-246b-4015-83ce-8eb7016d27c6",
+    "externalId": "txn_a6d1877f",
+    "source": "Bank",
+    "occurredAt": "2025-02-01T14:54:46.000Z",
+    "amount": 503.2,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "TRANSFER",
+    "status": "posted",
+    "description": "STRIPE TRANSFER po_2",
+    "raw": {
+      "id": "raw_bank"
+    }
+  },
+  {
+    "id": "67652b8b-825c-4e41-9019-99c951e4109d",
+    "externalId": "txn_df143589",
+    "source": "Bank",
+    "occurredAt": "2025-02-01T09:59:34.000Z",
+    "amount": 606.84,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "TRANSFER",
+    "status": "posted",
+    "description": "STRIPE TRANSFER po_3",
+    "raw": {
+      "id": "raw_bank"
+    }
+  },
+  {
+    "id": "51a8cb4f-0141-4461-979e-53217797a1f3",
+    "externalId": "txn_2bf9507f",
+    "source": "Bank",
+    "occurredAt": "2025-01-30T07:05:11.000Z",
+    "amount": 602.88,
+    "currency": "USD",
+    "direction": "INCOMING",
+    "type": "TRANSFER",
+    "status": "posted",
+    "description": "STRIPE TRANSFER po_4",
+    "raw": {
+      "id": "raw_bank"
+    }
+  },
+  {
+    "id": "c0ad943c-5443-4b9b-b31a-732643577629",
+    "externalId": "txn_fee_034db9d8",
+    "source": "Bank",
+    "occurredAt": "2025-01-17T00:45:20.000Z",
+    "amount": 15,
+    "currency": "USD",
+    "direction": "OUTGOING",
+    "type": "FEE",
+    "status": "posted",
+    "description": "MONTHLY SERVICE FEE",
+    "raw": {}
+  }
+]
