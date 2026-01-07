@@ -1,0 +1,42 @@
+name: Quality Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: cd packages/web && npm install # Assuming npm, adjust if pnpm/yarn detected
+
+      - name: Lint
+        run: cd packages/web && npm run lint
+
+      - name: Typecheck
+        run: cd packages/web && npm run type-check || npm run build -- --no-lint # build often includes typecheck
+
+      - name: Security Audit
+        run: npm audit --audit-level=high
+
+      - name: Check for Exposed Secrets
+        run: |
+          if grep -r "sk_live_" . ; then
+            echo "POTENTIAL SECRET LEAK: Found 'sk_live_' in code."
+            exit 1
+          fi
+          if grep -r "sk_test_" . ; then
+            echo "POTENTIAL SECRET LEAK: Found 'sk_test_' in code."
+            exit 1
+          fi
+          echo "PASS: No obvious secret patterns found."

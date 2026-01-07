@@ -1,55 +1,69 @@
-name: Supabase Production Migration
+name: Supabase Migration Guard
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'supabase/migrations/**'
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  migrate:
+  migrate-and-check:
     runs-on: ubuntu-latest
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - uses: supabase/setup-cli@v1
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
         with:
           version: latest
 
       - name: Link Supabase Project
-        run: supabase link --project-ref $SUPABASE_PROJECT_REF
+        run: supabase link --project-ref $SUPABASE_PROJECT_ID --password $SUPABASE_DB_PASSWORD
 
-      - name: Apply Migrations (db push)
+      - name: Apply Migrations
         run: supabase db push
 
-      - name: Verify RLS Policies
+      - name: Smoke Check - Verify RLS Enabled
+        # Fails if any table in public schema has RLS disabled
         run: |
-          # Simple check to ensure we didn't accidentally disable RLS on key tables
-          # This runs against the remote DB via CLI
-          supabase db query --command "
-            select relname, relrowsecurity 
-            from pg_class 
-            where relname in ('billing_accounts', 'tenants', 'recon_jobs') 
-            and relrowsecurity = false;" \
-            | grep "0 rows" || (echo "CRITICAL: RLS disabled on core tables" && exit 1)
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run Backend Smoke Test
-        run: npm run db:smoke
+          supabase db push --dry-run # Ensure sync state
+          
+          # This query checks for tables without RLS
+          MISSING_RLS=$(psql -h aws-0-us-east-1.pooler.supabase.com -p 5432 -U postgres.$SUPABASE_PROJECT_ID -d postgres -t -c "
+            SELECT tablename 
+            FROM pg_tables 
+            WHERE schemaname = 'public' 
+              AND rowsecurity = false 
+              AND tablename NOT LIKE 'pg_%' 
+              AND tablename NOT IN ('_prisma_migrations', 'schema_migrations');
+          ")
+          
+          if [ ! -z "$MISSING_RLS" ]; then
+            echo "CRITICAL SECURITY FAILURE: The following tables do not have RLS enabled:"
+            echo "$MISSING_RLS"
+            exit 1
+          fi
+          
+          echo "PASS: All public tables have RLS enabled."
         env:
-          SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+      - name: Smoke Check - Verify Critical Functions
+        # Verifies tenant isolation function exists
+        run: |
+          HAS_FUNC=$(psql -h aws-0-us-east-1.pooler.supabase.com -p 5432 -U postgres.$SUPABASE_PROJECT_ID -d postgres -t -c "
+            SELECT 1 FROM pg_proc WHERE proname = 'get_user_tenant_ids';
+          ")
+          
+          if [ -z "$HAS_FUNC" ]; then
+             echo "CRITICAL FAILURE: get_user_tenant_ids() function missing!"
+             exit 1
+          fi
+          
+          echo "PASS: Critical tenant isolation function exists."
+        env:
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
