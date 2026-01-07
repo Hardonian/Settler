@@ -1,4 +1,4 @@
-name: Supabase Migration (Auto)
+name: Supabase Production Migration
 
 on:
   push:
@@ -6,476 +6,50 @@ on:
       - main
     paths:
       - 'supabase/migrations/**'
-      - 'supabase/functions/**'
-      - 'supabase/seeds/**'
-      - 'prisma/migrations/**'
-      - 'prisma/schema.prisma'
-  pull_request:
-    paths:
-      - 'supabase/migrations/**'
-      - 'supabase/functions/**'
-      - 'supabase/seeds/**'
-      - 'prisma/migrations/**'
-      - 'prisma/schema.prisma'
   workflow_dispatch:
-    inputs:
-      run_seeds:
-        description: 'Run seed files after migration'
-        required: false
-        default: 'false'
-        type: boolean
-      target_environment:
-        description: 'Target environment'
-        required: false
-        default: 'production'
-        type: choice
-        options:
-          - production
-          - staging
-
-env:
-  # Use production secrets for main branch, preview secrets for PRs
-  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-  SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-  SUPABASE_PROJECT_REF: ${{ github.ref == 'refs/heads/main' && secrets.SUPABASE_PROJECT_REF || secrets.SUPABASE_PROJECT_REF_PREVIEW || secrets.SUPABASE_PROJECT_REF }}
-  DATABASE_URL: ${{ github.ref == 'refs/heads/main' && secrets.DATABASE_URL || secrets.DATABASE_URL_PREVIEW || secrets.DATABASE_URL }}
-  DIRECT_URL: ${{ github.ref == 'refs/heads/main' && secrets.DIRECT_URL || secrets.DIRECT_URL_PREVIEW || secrets.DIRECT_URL }}
-  # Supabase API credentials
-  SUPABASE_URL: ${{ github.ref == 'refs/heads/main' && secrets.SUPABASE_URL || secrets.SUPABASE_URL_PREVIEW || secrets.SUPABASE_URL }}
-  SUPABASE_ANON_KEY: ${{ github.ref == 'refs/heads/main' && secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY_PREVIEW || secrets.SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ github.ref == 'refs/heads/main' && secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY_PREVIEW || secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
 jobs:
-  detect-changes:
-    name: Detect Migration Changes
+  migrate:
     runs-on: ubuntu-latest
-    outputs:
-      has_supabase_migrations: ${{ steps.changes.outputs.supabase_migrations }}
-      has_prisma_migrations: ${{ steps.changes.outputs.prisma_migrations }}
-      has_functions: ${{ steps.changes.outputs.functions }}
-      has_seeds: ${{ steps.changes.outputs.seeds }}
-      migration_files: ${{ steps.list-migrations.outputs.files }}
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+      - uses: actions/checkout@v4
 
-      - name: Detect changed paths
-        id: changes
-        run: |
-          echo "supabase_migrations=$(git diff --name-only HEAD~1 HEAD | grep -q 'supabase/migrations/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "prisma_migrations=$(git diff --name-only HEAD~1 HEAD | grep -q 'prisma/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "functions=$(git diff --name-only HEAD~1 HEAD | grep -q 'supabase/functions/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "seeds=$(git diff --name-only HEAD~1 HEAD | grep -q 'supabase/seeds/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-
-      - name: List new migration files
-        id: list-migrations
-        run: |
-          # Get changed files in this PR/push
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            BASE_SHA="${{ github.event.pull_request.base.sha }}"
-            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-            CHANGED_FILES=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E "supabase/migrations/.*\.sql$" || echo "")
-          else
-            # For push events, check all migration files
-            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep -E "supabase/migrations/.*\.sql$" || echo "")
-          fi
-          
-          # Also list all migration files for reference
-          ALL_FILES=$(ls -1 supabase/migrations/*.sql 2>/dev/null | sort | tr '\n' ' ' || echo "")
-          
-          echo "files=$ALL_FILES" >> $GITHUB_OUTPUT
-          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
-          
-          if [ -n "$CHANGED_FILES" ]; then
-            echo "📝 Changed migration files:"
-            echo "$CHANGED_FILES"
-          fi
-          echo "📦 All migration files: $ALL_FILES"
-
-  migrate-supabase:
-    name: Run Supabase Migrations
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.has_supabase_migrations == 'true' || github.event_name == 'workflow_dispatch'
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v1
         with:
           version: latest
 
-      - name: Determine environment
-        id: env-info
+      - name: Link Supabase Project
+        run: supabase link --project-ref $SUPABASE_PROJECT_REF
+
+      - name: Apply Migrations (db push)
+        run: supabase db push
+
+      - name: Verify RLS Policies
         run: |
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            echo "environment=production" >> $GITHUB_OUTPUT
-            echo "🔵 Running migrations for PRODUCTION"
-          else
-            echo "environment=preview" >> $GITHUB_OUTPUT
-            echo "🟡 Running migrations for PREVIEW/TEST"
-          fi
+          # Simple check to ensure we didn't accidentally disable RLS on key tables
+          # This runs against the remote DB via CLI
+          supabase db query --command "
+            select relname, relrowsecurity 
+            from pg_class 
+            where relname in ('billing_accounts', 'tenants', 'recon_jobs') 
+            and relrowsecurity = false;" \
+            | grep "0 rows" || (echo "CRITICAL: RLS disabled on core tables" && exit 1)
 
-      - name: Link Supabase project
-        run: |
-          echo "Linking to Supabase project: ${{ env.SUPABASE_PROJECT_REF }}"
-          supabase link --project-ref ${{ env.SUPABASE_PROJECT_REF }} || {
-            echo "⚠️  Failed to link project, continuing with direct connection..."
-          }
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
-        continue-on-error: true
-
-      - name: Validate migrations
-        run: |
-          echo "🔍 Validating migration files..."
-          MIGRATION_COUNT=0
-          for file in supabase/migrations/*.sql; do
-            if [ -f "$file" ]; then
-              MIGRATION_COUNT=$((MIGRATION_COUNT + 1))
-              echo "✓ Found: $(basename $file)"
-              # Basic SQL syntax validation
-              if ! head -1 "$file" | grep -qE "^--|^BEGIN|^CREATE|^ALTER|^DROP|^INSERT|^DO"; then
-                echo "⚠️  Warning: $file may have invalid SQL header"
-              fi
-            fi
-          done
-          echo "Found $MIGRATION_COUNT migration file(s)"
-          if [ $MIGRATION_COUNT -eq 0 ]; then
-            echo "⚠️  No migration files found in supabase/migrations/"
-            exit 1
-          fi
-          echo "✅ Validation complete"
-
-      - name: Run database migrations
-        run: |
-          echo "🔄 Running Supabase migrations..."
-          echo "Environment: ${{ steps.env-info.outputs.environment }}"
-          echo "Project: ${{ env.SUPABASE_PROJECT_REF }}"
-          
-          # Install PostgreSQL client if not available
-          if ! command -v psql &> /dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y postgresql-client
-          fi
-          
-          # Apply migrations in order
-          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
-          
-          # Get list of migration files sorted by name
-          MIGRATIONS=$(ls -1 supabase/migrations/*.sql 2>/dev/null | sort)
-          
-          if [ -z "$MIGRATIONS" ]; then
-            echo "⚠️  No migration files found"
-            exit 1
-          fi
-          
-          echo "Found $(echo "$MIGRATIONS" | wc -l) migration(s) to apply"
-          
-          # Apply each migration
-          APPLIED_COUNT=0
-          SKIPPED_COUNT=0
-          FAILED_COUNT=0
-          
-          for migration in $MIGRATIONS; do
-            migration_name=$(basename $migration)
-            echo "📦 Applying: $migration_name"
-            
-            # Apply with error handling
-            # Note: Migrations use IF NOT EXISTS clauses to handle re-runs safely
-            if psql "${{ env.DATABASE_URL }}" -v ON_ERROR_STOP=1 -f "$migration" 2>&1; then
-              echo "✅ Applied: $migration_name"
-              APPLIED_COUNT=$((APPLIED_COUNT + 1))
-            else
-              EXIT_CODE=$?
-              # Check if error is due to already-existing objects (non-fatal)
-              if psql "${{ env.DATABASE_URL }}" -c "\q" 2>&1 | grep -q "already exists"; then
-                echo "⚠️  Migration may have already been applied: $migration_name (continuing...)"
-                SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
-              else
-                echo "❌ Failed: $migration_name (exit code: $EXIT_CODE)"
-                FAILED_COUNT=$((FAILED_COUNT + 1))
-                exit 1
-              fi
-            fi
-          done
-          
-          echo ""
-          echo "✅ Migration Summary:"
-          echo "   Applied: $APPLIED_COUNT"
-          echo "   Skipped (already applied): $SKIPPED_COUNT"
-          echo "   Failed: $FAILED_COUNT"
-          
-          if [ $FAILED_COUNT -gt 0 ]; then
-            echo "❌ Some migrations failed"
-            exit 1
-          fi
-          
-          echo "✅ All migrations completed successfully"
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
-          PGPASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
-
-      - name: Verify migration status
-        run: |
-          echo "🔍 Checking migration status..."
-          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
-          
-          # Verify key tables exist
-          echo "Verifying Settler schema..."
-          psql "${{ env.DATABASE_URL }}" -c "
-            SELECT 
-              'receipts' as table_name,
-              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'receipts') THEN '✓ exists' ELSE '✗ missing' END as status
-            UNION ALL
-            SELECT 
-              'ai_analysis_usage' as table_name,
-              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ai_analysis_usage') THEN '✓ exists' ELSE '✗ missing' END as status
-            UNION ALL
-            SELECT 
-              'ai_analyses' as table_name,
-              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ai_analyses') THEN '✓ exists' ELSE '✗ missing' END as status
-            UNION ALL
-            SELECT 
-              'support_tickets' as table_name,
-              CASE WHEN EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'support_tickets') THEN '✓ exists' ELSE '✗ missing' END as status
-            UNION ALL
-            SELECT 
-              'set_tenant_context' as function_name,
-              CASE WHEN EXISTS (SELECT FROM pg_proc WHERE proname = 'set_tenant_context') THEN '✓ exists' ELSE '✗ missing' END as status
-            UNION ALL
-            SELECT 
-              'check_sla_violations' as function_name,
-              CASE WHEN EXISTS (SELECT FROM pg_proc WHERE proname = 'check_sla_violations') THEN '✓ exists' ELSE '✗ missing' END as status;
-          " || echo "⚠️  Could not verify schema (non-critical)"
-          
-          # Check RLS policies
-          echo ""
-          echo "Checking RLS policies..."
-          psql "${{ env.DATABASE_URL }}" -c "
-            SELECT tablename, policyname 
-            FROM pg_policies 
-            WHERE schemaname = 'public' 
-            AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses', 'recon_results', 'alerts', 'support_tickets')
-            ORDER BY tablename, policyname;
-          " || echo "⚠️  Could not list policies (non-critical)"
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
-          PGPASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
-        continue-on-error: true
-
-  migrate-prisma:
-    name: Run Prisma Migrations
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.has_prisma_migrations == 'true'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: 20
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Generate Prisma client
-        run: npm run prisma:generate || npx prisma generate
-
-      - name: Run Prisma migrations
-        run: npm run prisma:migrate || npx prisma migrate deploy
+      - name: Run Backend Smoke Test
+        run: npm run db:smoke
         env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-          DIRECT_URL: ${{ env.DIRECT_URL }}
-
-      - name: Verify Prisma migration status
-        run: npm run prisma:status || npx prisma migrate status
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-
-  deploy-functions:
-    name: Deploy Edge Functions
-    runs-on: ubuntu-latest
-    needs: [detect-changes, migrate-supabase]
-    if: always() && needs.detect-changes.outputs.has_functions == 'true' && (needs.migrate-supabase.result == 'success' || needs.migrate-supabase.result == 'skipped')
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Link Supabase project
-        run: supabase link --project-ref ${{ env.SUPABASE_PROJECT_REF }}
-
-      - name: Deploy all Edge Functions
-        run: |
-          echo "Deploying Edge Functions..."
-          for dir in supabase/functions/*/; do
-            if [ -d "$dir" ]; then
-              func_name=$(basename "$dir")
-              if [ "$func_name" != "_shared" ]; then
-                echo "Deploying function: $func_name"
-                supabase functions deploy "$func_name" --no-verify-jwt || true
-              fi
-            fi
-          done
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
-
-  run-seeds:
-    name: Run Database Seeds
-    runs-on: ubuntu-latest
-    needs: [migrate-supabase, migrate-prisma]
-    if: always() && (github.event.inputs.run_seeds == 'true' || needs.detect-changes.outputs.has_seeds == 'true') && (needs.migrate-supabase.result == 'success' || needs.migrate-supabase.result == 'skipped') && (needs.migrate-prisma.result == 'success' || needs.migrate-prisma.result == 'skipped')
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Run seed files
-        run: |
-          echo "Running seed files..."
-          if [ -f "supabase/seeds/seed.sql" ]; then
-            supabase db push --include-seed
-          fi
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
-
-  verify-deployment:
-    name: Verify Database Deployment
-    runs-on: ubuntu-latest
-    needs: [migrate-supabase, migrate-prisma, deploy-functions]
-    if: always() && (needs.migrate-supabase.result == 'success' || needs.migrate-prisma.result == 'success')
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Verify database schema
-        run: |
-          cat << 'EOF' > verify-schema.mjs
-          import { createClient } from '@supabase/supabase-js'
-
-          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-          const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-          if (!supabaseUrl || !supabaseKey) {
-            console.error('Missing Supabase credentials')
-            process.exit(1)
-          }
-
-          const supabase = createClient(supabaseUrl, supabaseKey)
-
-          async function verify() {
-            console.log('Verifying database schema...')
-            
-            // Check tables exist
-            const { data: tables, error: tablesError } = await supabase
-              .rpc('get_tables')
-              .catch(() => ({ data: null, error: 'RPC not available' }))
-            
-            if (tablesError) {
-              // Fallback: query pg_tables directly
-              const { data, error } = await supabase
-                .from('profiles')
-                .select('id')
-                .limit(0)
-              
-              if (error && error.code === '42P01') {
-                console.error('Table profiles does not exist')
-                process.exit(1)
-              }
-              console.log('✓ Core tables verified')
-            }
-
-            // Check RLS is enabled
-            console.log('✓ RLS policies verified')
-            
-            // Check functions exist
-            console.log('✓ Functions verified')
-            
-            console.log('All verifications passed!')
-            process.exit(0)
-          }
-
-          verify().catch(err => {
-            console.error('Verification failed:', err)
-            process.exit(1)
-          })
-          EOF
-          node verify-schema.mjs
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-
-      - name: Post deployment summary
-        run: |
-          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Supabase Migrations | ${{ needs.migrate-supabase.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Prisma Migrations | ${{ needs.migrate-prisma.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Edge Functions | ${{ needs.deploy-functions.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Deployed at: $(date -u)" >> $GITHUB_STEP_SUMMARY
-
-  notify-failure:
-    name: Notify on Failure
-    runs-on: ubuntu-latest
-    needs: [migrate-supabase, migrate-prisma, deploy-functions, verify-deployment]
-    if: failure()
-    steps:
-      - name: Create failure issue
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const title = `Migration Failed: ${context.sha.substring(0, 7)}`
-            const body = `
-            ## Migration Failure Report
-            
-            **Commit:** ${context.sha}
-            **Branch:** ${context.ref}
-            **Workflow:** ${context.workflow}
-            **Run ID:** ${context.runId}
-            
-            ### Job Results
-            - Supabase Migrations: ${{ needs.migrate-supabase.result }}
-            - Prisma Migrations: ${{ needs.migrate-prisma.result }}
-            - Edge Functions: ${{ needs.deploy-functions.result }}
-            - Verification: ${{ needs.verify-deployment.result }}
-            
-            [View Workflow Run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
-            `
-            
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: body,
-              labels: ['bug', 'migration-failure', 'urgent']
-            })
+          SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

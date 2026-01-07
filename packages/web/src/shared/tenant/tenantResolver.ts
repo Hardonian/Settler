@@ -7,6 +7,8 @@
  * - Default to main Settler tenant if no match
  */
 
+import { getUserRole, UserRole } from '../auth/roles';
+
 // Lazy-load Prisma to prevent initialization errors when DATABASE_URL is missing
 async function getPrisma() {
   try {
@@ -145,27 +147,14 @@ async function canAccessTenant(
   if (!userId) return false;
   
   try {
-    // TODO: Implement role-based access check
-    // For now, allow if user has billing account linked to tenant
-    const prisma = await getPrisma();
-    const tenant = await prisma.tenant.findUnique({
-      where: { id: tenantId },
-      include: {
-        billingAccount: {
-          select: { userId: true },
-        },
-      },
-    });
+    const role = await getUserRole(userId, tenantId);
     
-    if (!tenant) return false;
-    
-    // Allow if user owns the billing account
-    if (tenant.billingAccount?.userId === userId) {
-      return true;
-    }
-    
-    // TODO: Check for SUPER_ADMIN role
-    return false;
+    // Super admin, tenant admin, and tenant editor can access
+    return [
+      UserRole.SUPER_ADMIN, 
+      UserRole.TENANT_ADMIN, 
+      UserRole.TENANT_EDITOR
+    ].includes(role);
   } catch (error) {
     console.error('Failed to check tenant access:', error);
     return false;
