@@ -47,10 +47,9 @@ export const POST = withSecurity(
   freeRoute(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
-    let auth;
     let isAuthenticated = false;
     
-    auth = await authenticateApiKey(request);
+    const auth = await authenticateApiKey(request);
     if (auth) {
       isAuthenticated = true;
     }

@@ -27,6 +27,7 @@ jobs:
           test -d packages/api/dist || (echo "❌ API dist missing" && exit 1)
           echo "✅ Build artifacts verified"
       - name: Deploy to Vercel Preview
+        id: deploy
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -39,7 +40,6 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL_PREVIEW || secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_PREVIEW || secrets.SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY_PREVIEW || secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NODE_ENV: preview
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
       - name: Comment PR with preview URL

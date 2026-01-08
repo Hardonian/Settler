@@ -22,10 +22,9 @@ export const maxDuration = 60;
 export const POST = withSecurity(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but don't fail if unauthenticated (for playground)
-    let auth;
     let isAuthenticated = false;
     
-    auth = await authenticateApiKey(request);
+    const auth = await authenticateApiKey(request);
     if (auth) {
       isAuthenticated = true;
     }

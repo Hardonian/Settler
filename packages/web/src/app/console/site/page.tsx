@@ -211,7 +211,7 @@ export default function SiteDesignerPage() {
       </div>
 
       {/* Quick Links */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>Branding</CardTitle>
@@ -237,6 +237,21 @@ export default function SiteDesignerPage() {
               <Link href="/console/site/navigation">
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Navigation
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Runtime UI Config</CardTitle>
+            <CardDescription>Adjust density, banners, and widgets (no deploy)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" asChild className="w-full">
+              <Link href="/console/site/ui-config">
+                <Edit className="w-4 h-4 mr-2" />
+                Edit UI Config
               </Link>
             </Button>
           </CardContent>

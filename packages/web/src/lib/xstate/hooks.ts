@@ -49,10 +49,10 @@ export function useContextValue<TMachine extends AnyStateMachine>(
   actor: ActorRefFrom<TMachine>,
   selector?: (context: any) => unknown
 ) {
-  if (selector) {
-    return useSelector(actor, (state: any) => selector(state.context));
-  }
-  return useSelector(actor, (state: any) => state.context);
+  return useSelector(actor, (state: any) => {
+    const ctx = state.context;
+    return selector ? selector(ctx) : ctx;
+  });
 }
 
 /**

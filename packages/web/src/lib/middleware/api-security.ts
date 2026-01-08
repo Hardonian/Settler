@@ -32,7 +32,7 @@ export function withSecurity<T extends (request: NextRequest, ...args: any[]) =>
   } = options;
 
   // Apply rate limiting
-  let securedHandler = withRateLimit(
+  const securedHandler = withRateLimit(
     async (request: NextRequest, ...args: any[]) => {
       // Add security headers
       const response = await handler(request, ...args);

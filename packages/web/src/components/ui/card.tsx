@@ -40,9 +40,10 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, children, elevation = 'default', hover = false, ...props }, ref) => {
     const elevationClasses = {
-      none: '',
+      none: 'shadow-none',
       sm: 'shadow-sm',
-      default: 'shadow-md',
+      // Uses runtime token: --ui-card-shadow (safe default set in globals.css)
+      default: 'shadow-[var(--ui-card-shadow)]',
       lg: 'shadow-lg',
     };
 
@@ -50,7 +51,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-lg border bg-card text-card-foreground',
+          'rounded-[var(--ui-radius-lg)] border bg-card text-card-foreground',
           'transition-shadow duration-200 ease-out',
           'motion-reduce:transition-none',
           elevationClasses[elevation],
@@ -70,7 +71,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, children, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex flex-col space-y-1.5 p-6', className)}
+      className={cn('flex flex-col space-y-1.5 p-[var(--ui-card-padding)]', className)}
       {...props}
     >
       {children}
@@ -115,7 +116,7 @@ CardDescription.displayName = 'CardDescription';
 
 const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn('p-6 pt-0', className)} {...props}>
+    <div ref={ref} className={cn('p-[var(--ui-card-padding)] pt-0', className)} {...props}>
       {children}
     </div>
   )
@@ -126,7 +127,7 @@ const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, children, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex items-center p-6 pt-0', className)}
+      className={cn('flex items-center p-[var(--ui-card-padding)] pt-0', className)}
       {...props}
     >
       {children}

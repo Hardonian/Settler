@@ -42,7 +42,11 @@ export function Banner({
 
   return (
     <div
-      className={cn("border rounded-lg p-4 mb-6", variantStyles[variant], className)}
+      className={cn(
+        "border rounded-[var(--ui-radius-lg)] p-4 mb-6",
+        variantStyles[variant],
+        className
+      )}
       role={roleMap[variant]}
       aria-live={variant === "error" || variant === "warning" ? "assertive" : "polite"}
     >
