@@ -52,7 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     
     const baseStyles = [
       'inline-flex items-center justify-center gap-2',
-      'rounded-md text-sm font-medium',
+      'rounded-[var(--ui-radius-md)] text-sm font-medium',
       'ring-offset-background',
       // Typography: ensure minimum line-height for readability
       'leading-[1.4]',
@@ -110,9 +110,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const sizes = {
-      sm: 'min-h-9 rounded-md px-3 text-sm py-2',
-      default: 'min-h-10 px-4 py-2',
-      lg: 'min-h-11 rounded-md px-8 text-base py-3',
+      sm: 'min-h-9 px-3 text-sm py-2',
+      default: 'min-h-[var(--ui-control-height)] px-4 py-2',
+      lg: 'min-h-11 px-8 text-base py-3',
       icon: 'h-10 w-10',
     };
 

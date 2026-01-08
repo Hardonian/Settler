@@ -8,98 +8,105 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { safeLogger } from '@/lib/observability/safe-logger';
 
-// Import billing hardening functions - handle both direct import and dynamic import
-let checkEntitlements: any;
-let getBillingStatus: any;
+type BillingHardeningModule = {
+  checkEntitlements: (billingAccountId: string, options?: any) => Promise<EntitlementCheck>;
+  getBillingStatus: (billingAccountId: string) => Promise<string>;
+};
 
-try {
-  // Try direct import first
-  const billingHardening = require('@settler/api/src/ops/billing-hardening');
-  checkEntitlements = billingHardening.checkEntitlements;
-  getBillingStatus = billingHardening.getBillingStatus;
-} catch {
-  // Fallback: implement inline if import fails
-  // This ensures the code works even if the API package isn't built
-  // Fallback implementation - no warning needed (graceful degradation)
-  
-  // Fallback implementation
-  checkEntitlements = async (billingAccountId: string, _options?: any) => {
-    const prisma = new PrismaClient();
-    try {
-      const account = await prisma.billingAccount.findUnique({
-        where: { id: billingAccountId },
-        include: {
-          subscriptions: {
-            where: { status: { in: ['active', 'trialing'] } },
-            take: 1,
-          },
-        },
-      });
+let cachedBilling: BillingHardeningModule | null = null;
 
-      if (!account || !account.subscriptions[0]) {
-        return {
-          canRunRecon: false,
-          canCreateRecon: false,
-          canExport: true,
-          canViewReports: true,
-          canUseAPI: false,
-          message: 'Active subscription required',
-          upgradeUrl: '/pricing',
-        };
-      }
+async function getBillingHardening(): Promise<BillingHardeningModule> {
+  if (cachedBilling) return cachedBilling;
 
-      const sub = account.subscriptions[0];
-      if (sub.status === 'past_due' || sub.status === 'unpaid') {
-        return {
-          canRunRecon: false,
-          canCreateRecon: false,
-          canExport: true,
-          canViewReports: true,
-          canUseAPI: false,
-          message: 'Payment required. Please update your payment method.',
-          upgradeUrl: '/console/billing',
-        };
-      }
+  try {
+    const mod: any = await import('@settler/api/src/ops/billing-hardening');
+    cachedBilling = {
+      checkEntitlements: mod.checkEntitlements,
+      getBillingStatus: mod.getBillingStatus,
+    };
+    return cachedBilling;
+  } catch {
+    cachedBilling = {
+      checkEntitlements: async (billingAccountId: string, _options?: any) => {
+        const prisma = new PrismaClient();
+        try {
+          const account = await prisma.billingAccount.findUnique({
+            where: { id: billingAccountId },
+            include: {
+              subscriptions: {
+                where: { status: { in: ['active', 'trialing'] } },
+                take: 1,
+              },
+            },
+          });
 
-      return {
-        canRunRecon: true,
-        canCreateRecon: true,
-        canExport: true,
-        canViewReports: true,
-        canUseAPI: true,
-      };
-    } finally {
-      await prisma.$disconnect();
-    }
-  };
+          if (!account || !account.subscriptions[0]) {
+            return {
+              canRunRecon: false,
+              canCreateRecon: false,
+              canExport: true,
+              canViewReports: true,
+              canUseAPI: false,
+              message: 'Active subscription required',
+              upgradeUrl: '/pricing',
+            };
+          }
 
-  getBillingStatus = async (billingAccountId: string) => {
-    const prisma = new PrismaClient();
-    try {
-      const account = await prisma.billingAccount.findUnique({
-        where: { id: billingAccountId },
-        include: {
-          subscriptions: {
-            where: { status: { in: ['active', 'past_due', 'trialing', 'canceled'] } },
-            orderBy: { createdAt: 'desc' },
-            take: 1,
-          },
-        },
-      });
+          const sub = account.subscriptions[0];
+          if (sub.status === 'past_due' || sub.status === 'unpaid') {
+            return {
+              canRunRecon: false,
+              canCreateRecon: false,
+              canExport: true,
+              canViewReports: true,
+              canUseAPI: false,
+              message: 'Payment required. Please update your payment method.',
+              upgradeUrl: '/console/billing',
+            };
+          }
 
-      if (!account || !account.subscriptions[0]) {
-        return 'free';
-      }
+          return {
+            canRunRecon: true,
+            canCreateRecon: true,
+            canExport: true,
+            canViewReports: true,
+            canUseAPI: true,
+          };
+        } finally {
+          await prisma.$disconnect();
+        }
+      },
+      getBillingStatus: async (billingAccountId: string) => {
+        const prisma = new PrismaClient();
+        try {
+          const account = await prisma.billingAccount.findUnique({
+            where: { id: billingAccountId },
+            include: {
+              subscriptions: {
+                where: { status: { in: ['active', 'past_due', 'trialing', 'canceled'] } },
+                orderBy: { createdAt: 'desc' },
+                take: 1,
+              },
+            },
+          });
 
-      const sub = account.subscriptions[0];
-      if (sub.status === 'past_due' && sub.currentPeriodEnd < new Date()) {
-        return 'unpaid';
-      }
-      return sub.status as string;
-    } finally {
-      await prisma.$disconnect();
-    }
-  };
+          if (!account || !account.subscriptions[0]) {
+            return 'free';
+          }
+
+          const sub = account.subscriptions[0];
+          if (sub.status === 'past_due' && sub.currentPeriodEnd < new Date()) {
+            return 'unpaid';
+          }
+          return sub.status as string;
+        } finally {
+          await prisma.$disconnect();
+        }
+      },
+    };
+
+    return cachedBilling;
+  }
 }
 
 type EntitlementCheck = {
@@ -129,7 +136,8 @@ export async function checkUserEntitlements(
   }
 ): Promise<EntitlementCheckResult> {
   try {
-    const entitlements = await checkEntitlements(billingAccountId, {
+    const billing = await getBillingHardening();
+    const entitlements = await billing.checkEntitlements(billingAccountId, {
       requestedUsage: _requestedUsage,
     });
 
@@ -190,7 +198,8 @@ export async function checkUserEntitlements(
  */
 export async function getUserBillingStatus(billingAccountId: string): Promise<string> {
   try {
-    return await getBillingStatus(billingAccountId);
+    const billing = await getBillingHardening();
+    return await billing.getBillingStatus(billingAccountId);
   } catch (error) {
     await safeLogger.error('[Entitlement Checks] Billing status check failed', {
       billingAccountId,

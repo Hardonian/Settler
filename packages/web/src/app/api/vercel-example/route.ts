@@ -6,23 +6,58 @@
  * - @vercel/edge-config for configuration
  * - @vercel/blob for file storage
  *
- * Note: This is an example route. Remove or secure it in production.
+ * NOTE: This is an internal example route.
+ * - Disabled in production
+ * - Restricted to super admins in preview/development
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { kv, cacheGet, cacheSet } from "@/lib/vercel/kv";
 import { edgeConfig, getFeatureFlagFromEdgeConfig } from "@/lib/vercel/edge-config";
 import { blob } from "@/lib/vercel/blob";
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { withSecurity } from '@/lib/middleware/api-security';
+import { requireAuth } from "@/lib/api/unified-auth";
+import { isSuperAdmin } from "@/lib/auth/super-admin";
 
 export const dynamic = "force-dynamic";
+
+function isProductionRuntime(): boolean {
+  // Vercel sets VERCEL_ENV to "production" for production deployments.
+  // In preview deployments, VERCEL_ENV is "preview".
+  return process.env.VERCEL_ENV === "production";
+}
+
+async function guardInternalAccess(request: NextRequest): Promise<NextResponse | null> {
+  // Hard-disable in production to eliminate accidental exposure.
+  if (isProductionRuntime()) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  try {
+    // Require authenticated session (Console users).
+    await requireAuth(request);
+  } catch {
+    // Do not reveal route existence.
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const admin = await isSuperAdmin();
+  if (!admin) {
+    // Do not reveal route existence.
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  return null;
+}
 
 /**
  * GET - Example usage of all Vercel SDKs
  */
 export const GET = withSecurity(
-  withUniversalBillingGate(async function GET(request: NextRequest) {
+  async function GET(request: NextRequest) {
+    const denied = await guardInternalAccess(request);
+    if (denied) return denied;
+
   const { searchParams } = new URL(request.url);
   const action = searchParams.get("action") || "all";
 
@@ -50,15 +85,18 @@ export const GET = withSecurity(
       { status: 200 }
     );
   }
-}, { feature: 'GET API' }),
-  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 60 }, requireAuth: true }
 );
 
 /**
  * POST - Example file upload using Blob storage
  */
 export const POST = withSecurity(
-  withUniversalBillingGate(async function POST(request: NextRequest) {
+  async function POST(request: NextRequest) {
+    const denied = await guardInternalAccess(request);
+    if (denied) return denied;
+
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -92,8 +130,8 @@ export const POST = withSecurity(
       { status: 200 }
     );
   }
-}, { feature: 'POST API' }),
-  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
+},
+  { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
 );
 
 async function handleKvExample() {

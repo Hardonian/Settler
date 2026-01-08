@@ -17,7 +17,7 @@ export interface ConnectionPoolStats {
   errorCount: number;
 }
 
-let poolStats: ConnectionPoolStats = {
+const poolStats: ConnectionPoolStats = {
   healthy: true,
   lastCheck: new Date(),
   errorCount: 0,

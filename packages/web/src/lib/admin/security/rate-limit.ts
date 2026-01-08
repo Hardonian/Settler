@@ -5,6 +5,8 @@
  * Can be extended to use Redis in production.
  */
 
+import { createHash } from 'crypto';
+
 interface RateLimitEntry {
   count: number;
   resetAt: number;
@@ -115,6 +117,5 @@ export function getRateLimitKey(request: Request): string {
   const userAgent = request.headers.get('user-agent') || 'unknown';
   
   // Hash for privacy
-  const crypto = require('crypto');
-  return crypto.createHash('sha256').update(`${ip}:${userAgent}`).digest('hex');
+  return createHash('sha256').update(`${ip}:${userAgent}`).digest('hex');
 }

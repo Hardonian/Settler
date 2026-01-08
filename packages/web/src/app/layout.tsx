@@ -18,9 +18,10 @@ import { requireEnvironment } from "@/lib/env/validation";
 import { ToastContainer } from "@/components/ux/ToastContainer";
 import { initSentry } from "@/lib/monitoring/sentry";
 import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
-import { FloatingHelpButton } from "@/components/support/FloatingHelpButton";
-import { Chatbot } from "@/components/chatbot/Chatbot";
 import { CookieConsent } from "@/components/consent/CookieConsent";
+import { RuntimeUiConfigProvider } from "@/lib/runtime-ui-config/client";
+import { AnnouncementBanner } from "@/components/polish/AnnouncementBanner";
+import { RuntimeUiOptionalFeatures } from "@/components/polish/RuntimeUiOptionalFeatures";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -269,20 +270,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             tenantId={tenantContext.tenantId || null}
             tenantSlug={tenantContext.tenantSlug || null}
           >
-            <QueryProvider>
-              {/* Skip to main content link for accessibility */}
-              <a href="#main-content" className="skip-to-main">
-                Skip to main content
-              </a>
-              <SmoothScroll>{children}</SmoothScroll>
-              <PwaInstallPrompt />
-              <ToastContainer />
-              <FloatingHelpButton />
-              <Chatbot />
-              <CookieConsent />
-              <Analytics />
-              <SpeedInsights />
-            </QueryProvider>
+            <RuntimeUiConfigProvider>
+              <QueryProvider>
+                {/* Skip to main content link for accessibility */}
+                <a href="#main-content" className="skip-to-main">
+                  Skip to main content
+                </a>
+                <AnnouncementBanner />
+                <SmoothScroll>{children}</SmoothScroll>
+                <PwaInstallPrompt />
+                <ToastContainer />
+                <RuntimeUiOptionalFeatures />
+                <CookieConsent />
+                <Analytics />
+                <SpeedInsights />
+              </QueryProvider>
+            </RuntimeUiConfigProvider>
           </TenantThemeProvider>
         </ErrorBoundary>
       </body>

@@ -117,103 +117,15 @@ export function FeatureShowcase() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => {
-            const ref = useRef(null);
-            const isInView = useInView(ref, { once: true, margin: '-100px' });
-            const controls = useAnimation();
-
-            useEffect(() => {
-              if (isInView) {
-                controls.start('visible');
-              }
-            }, [isInView, controls]);
-
-            return (
-              <motion.div
-                key={feature.id}
-                ref={ref}
-                initial="hidden"
-                animate={controls}
-                variants={{
-                  hidden: { opacity: 0, y: 50 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: { delay: index * 0.1, duration: 0.5 },
-                  },
-                }}
-                onHoverStart={() => setHoveredFeature(feature.id)}
-                onHoverEnd={() => setHoveredFeature(null)}
-              >
-                <Card
-                  className={`relative overflow-hidden h-full transition-all duration-300 ${
-                    hoveredFeature === feature.id
-                      ? 'shadow-2xl scale-105 border-2'
-                      : 'shadow-lg hover:shadow-xl'
-                  }`}
-                >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-300 ${
-                      hoveredFeature === feature.id ? 'opacity-5' : ''
-                    }`}
-                  />
-                  <CardContent className="p-6 relative z-10">
-                    {feature.screenshot && (
-                      <div className="mb-4 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                        <div className="relative w-full">
-                          <SafeImage
-                            src={feature.screenshot}
-                            alt={`${feature.title} - UI screenshot`}
-                            width={1258}
-                            height={618}
-                            className="w-full h-auto object-contain md:object-cover"
-                            fallbackTitle={feature.title}
-                            fallbackCaption={feature.description}
-                            sizes="100vw"
-                            containerClassName="w-full"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    <motion.div
-                      animate={{
-                        rotate: hoveredFeature === feature.id ? [0, -10, 10, -10, 0] : 0,
-                      }}
-                      transition={{ duration: 0.5 }}
-                      className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${feature.gradient} text-white mb-4`}
-                    >
-                      {feature.icon}
-                    </motion.div>
-
-                    <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                    <p className="text-slate-600 dark:text-slate-400 mb-4">
-                      {feature.description}
-                    </p>
-
-                    <Badge
-                      variant="outline"
-                      className={`mb-4 border-${feature.color}-200 text-${feature.color}-700 dark:border-${feature.color}-800 dark:text-${feature.color}-400`}
-                    >
-                      {feature.highlight}
-                    </Badge>
-
-                    <motion.div whileHover={{ x: 5 }}>
-                      <Button
-                        asChild
-                        variant="ghost"
-                        className="w-full group"
-                      >
-                        <Link href={feature.link}>
-                          Explore Feature
-                          <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                      </Button>
-                    </motion.div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={feature.id}
+              feature={feature}
+              index={index}
+              hoveredFeature={hoveredFeature}
+              setHoveredFeature={setHoveredFeature}
+            />
+          ))}
         </div>
 
         <motion.div
@@ -232,5 +144,104 @@ export function FeatureShowcase() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function FeatureCard({
+  feature,
+  index,
+  hoveredFeature,
+  setHoveredFeature,
+}: {
+  feature: Feature;
+  index: number;
+  hoveredFeature: string | null;
+  setHoveredFeature: (id: string | null) => void;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const controls = useAnimation();
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start("visible");
+    }
+  }, [isInView, controls]);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={controls}
+      variants={{
+        hidden: { opacity: 0, y: 50 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { delay: index * 0.1, duration: 0.5 },
+        },
+      }}
+      onHoverStart={() => setHoveredFeature(feature.id)}
+      onHoverEnd={() => setHoveredFeature(null)}
+    >
+      <Card
+        className={`relative overflow-hidden h-full transition-all duration-300 ${
+          hoveredFeature === feature.id ? "shadow-2xl scale-105 border-2" : "shadow-lg hover:shadow-xl"
+        }`}
+      >
+        <div
+          className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-300 ${
+            hoveredFeature === feature.id ? "opacity-5" : ""
+          }`}
+        />
+        <CardContent className="p-6 relative z-10">
+          {feature.screenshot && (
+            <div className="mb-4 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+              <div className="relative w-full">
+                <SafeImage
+                  src={feature.screenshot}
+                  alt={`${feature.title} - UI screenshot`}
+                  width={1258}
+                  height={618}
+                  className="w-full h-auto object-contain md:object-cover"
+                  fallbackTitle={feature.title}
+                  fallbackCaption={feature.description}
+                  sizes="100vw"
+                  containerClassName="w-full"
+                />
+              </div>
+            </div>
+          )}
+          <motion.div
+            animate={{
+              rotate: hoveredFeature === feature.id ? [0, -10, 10, -10, 0] : 0,
+            }}
+            transition={{ duration: 0.5 }}
+            className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${feature.gradient} text-white mb-4`}
+          >
+            {feature.icon}
+          </motion.div>
+
+          <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+          <p className="text-slate-600 dark:text-slate-400 mb-4">{feature.description}</p>
+
+          <Badge
+            variant="outline"
+            className={`mb-4 border-${feature.color}-200 text-${feature.color}-700 dark:border-${feature.color}-800 dark:text-${feature.color}-400`}
+          >
+            {feature.highlight}
+          </Badge>
+
+          <motion.div whileHover={{ x: 5 }}>
+            <Button asChild variant="ghost" className="w-full group">
+              <Link href={feature.link}>
+                Explore Feature
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+          </motion.div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }

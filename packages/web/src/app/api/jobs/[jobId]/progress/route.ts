@@ -73,11 +73,10 @@ export const GET = withSecurity(
     }
 
     // Authenticate request
-    let auth;
     let tenantId: string | null = null;
     let userId: string | null = null;
 
-    auth = await authenticateApiKey(request);
+    const auth = await authenticateApiKey(request);
     if (auth) {
       tenantId = auth.tenantId || null;
       userId = auth.userId || null;

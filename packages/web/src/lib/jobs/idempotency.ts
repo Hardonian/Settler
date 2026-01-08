@@ -5,6 +5,7 @@
  */
 
 import { Job } from './worker';
+import { generateIdempotencyKey } from '@/lib/idempotency/key';
 
 /**
  * Check if a job with the same idempotency key already exists
@@ -58,7 +59,6 @@ export function generateJobIdempotencyKey(
   jobType: string,
   payload: Record<string, unknown>
 ): string {
-  const { generateIdempotencyKey } = require('@/lib/idempotency/key');
   return generateIdempotencyKey({
     tenantId: workspaceId,
     operation: `job:${jobType}`,

@@ -31,6 +31,13 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
+
+    /* Runtime UI polish tokens (safe defaults) */
+    --ui-card-padding: 1.5rem; /* matches p-6 */
+    --ui-control-height: 2.5rem; /* matches min-h-10 */
+    --ui-radius-md: 0.375rem; /* matches rounded-md */
+    --ui-radius-lg: 0.5rem; /* matches rounded-lg */
+    --ui-card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.10), 0 2px 4px -2px rgb(0 0 0 / 0.10);
   }
 
   .dark {

@@ -29,6 +29,7 @@ export enum SiteBuilderPermission {
   VIEW_TENANT_CONFIG = 'VIEW_TENANT_CONFIG',
   UPDATE_TENANT_BRANDING = 'UPDATE_TENANT_BRANDING',
   UPDATE_TENANT_NAVIGATION = 'UPDATE_TENANT_NAVIGATION',
+  UPDATE_TENANT_UI_CONFIG = 'UPDATE_TENANT_UI_CONFIG',
   
   // Page management
   CREATE_PAGE = 'CREATE_PAGE',
@@ -65,6 +66,7 @@ const ROLE_PERMISSIONS: Record<UserRole, Set<SiteBuilderPermission>> = {
     SiteBuilderPermission.VIEW_TENANT_CONFIG,
     SiteBuilderPermission.UPDATE_TENANT_BRANDING,
     SiteBuilderPermission.UPDATE_TENANT_NAVIGATION,
+    SiteBuilderPermission.UPDATE_TENANT_UI_CONFIG,
     SiteBuilderPermission.CREATE_PAGE,
     SiteBuilderPermission.UPDATE_PAGE,
     SiteBuilderPermission.DELETE_PAGE,
@@ -86,6 +88,7 @@ const ROLE_PERMISSIONS: Record<UserRole, Set<SiteBuilderPermission>> = {
     SiteBuilderPermission.VIEW_TENANT_CONFIG,
     SiteBuilderPermission.UPDATE_TENANT_BRANDING,
     SiteBuilderPermission.UPDATE_TENANT_NAVIGATION,
+    SiteBuilderPermission.UPDATE_TENANT_UI_CONFIG,
     SiteBuilderPermission.CREATE_PAGE,
     SiteBuilderPermission.UPDATE_PAGE,
     SiteBuilderPermission.DELETE_PAGE,

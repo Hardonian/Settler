@@ -12,16 +12,15 @@ import { ConversionCTA } from "@/components/ConversionCTA";
 import { TrustBadges } from "@/components/TrustBadges";
 import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
-import { runDemoSimulation, DemoResult, DemoMatch, DemoUnmatched } from "../actions/playground";
+import { runDemoSimulation, DemoResult } from "../actions/playground";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, XCircle, AlertTriangle, Play, RefreshCw, ArrowRight } from "lucide-react";
 
 export default function Playground() {
-  const [apiKey, setApiKey] = useState("");
   const [code, setCode] = useState(`import { Settler } from "@settler/sdk";
 
 const client = new Settler({
-  apiKey: "${apiKey || "sk_your_api_key"}",
+  apiKey: "sk_your_api_key",
 });
 
 // Create a reconciliation job
@@ -88,23 +87,12 @@ console.log(report.data.summary);`);
     }
   };
 
-  const [isVisible, setIsVisible] = useState(false);
   const playgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isSafeMode()) {
       initGuestSession().catch(console.error);
     }
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) setIsVisible(true);
-      },
-      { threshold: 0.1 }
-    );
-
-    if (playgroundRef.current) observer.observe(playgroundRef.current);
-    return () => observer.disconnect();
   }, []);
 
   return (

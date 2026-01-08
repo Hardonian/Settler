@@ -162,6 +162,10 @@ export function useExperimentVariant(experimentKey: FlagKey): string {
     }
 
     getVariant();
+
+    return () => {
+      mounted = false;
+    };
   }, [experimentKey, userContext]);
 
   // Fallback to synchronous check if still loading
@@ -225,6 +229,10 @@ export function useFeatureFlags(keys: FlagKey[]): Record<FlagKey, boolean> {
     }
 
     checkFlags();
+
+    return () => {
+      mounted = false;
+    };
   }, [keys.join(','), userContext]);
 
   // Fallback to synchronous checks if still loading

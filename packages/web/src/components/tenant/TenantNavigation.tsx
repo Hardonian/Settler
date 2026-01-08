@@ -10,6 +10,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import type { CSSProperties } from "react";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { cn } from "@/lib/utils";
@@ -118,10 +119,7 @@ export function TenantNavigation({
                   'rounded px-2 py-1',
                   'motion-reduce:transition-none'
                 )}
-                style={{
-                  // @ts-ignore - CSS custom properties
-                  '--hover-color': primaryColor,
-                }}
+                style={{ ["--hover-color" as any]: primaryColor } as CSSProperties}
               >
                 {item.label}
               </Link>
