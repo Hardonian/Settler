@@ -2,3 +2,9 @@
 # Files in INVESTOR-RELATIONS-PRIVATE will be encrypted
 # NOTE: Run 'git crypt init' and 'git crypt add-gpg-user <email>' before committing
 INVESTOR-RELATIONS-PRIVATE/** filter=git-crypt diff=git-crypt
+
+# Normalize line endings to prevent CRLF-sensitive scripts from breaking in CI.
+* text=auto eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
