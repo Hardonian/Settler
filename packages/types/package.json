@@ -17,9 +17,10 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
-  "devDependencies": {
+  "dependencies": {
     "@types/node": "^24.0.0",
     "typescript": "^5.3.3"
   },
+  "devDependencies": {},
   "license": "MIT"
 }
