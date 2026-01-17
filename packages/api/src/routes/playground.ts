@@ -13,7 +13,6 @@ import { PrismaClient } from '@prisma/client';
 import { validateRequest } from "../middleware/validation";
 import { handleRouteError } from "../utils/error-handler";
 import { calculateConfidenceScore } from "../services/confidence-scoring";
-import { validateAdapterConfig } from "../utils/adapter-config-validator";
 import { MatchingRule } from "../domain/entities/Job";
 import { ReconCoreEngine } from "../services/recon-core/recon-core-engine";
 import { NormalizedRecord } from "../services/recon-core/normalized-types";
@@ -209,7 +208,7 @@ router.post(
         targetData: Array<Record<string, unknown>>;
         rules: Array<{ field: string; type: string; tolerance?: number; threshold?: number; days?: number }>;
       };
-      const { sourceAdapter, sourceData, targetAdapter, targetData, rules } = body;
+      const { sourceData, targetData, rules } = body;
 
       const matches: Array<{
         sourceId: string;
