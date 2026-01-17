@@ -14,7 +14,7 @@ export declare class TenantConnectionPool {
     /**
      * Execute a query with tenant context
      */
-    query<T = any>(tenantId: string, text: string, params?: any[]): Promise<T[]>;
+    query<T = unknown>(tenantId: string, text: string, params?: unknown[]): Promise<T[]>;
     /**
      * Execute a transaction with tenant context
      */

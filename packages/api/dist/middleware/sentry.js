@@ -47,6 +47,7 @@ exports.captureMessage = captureMessage;
 const Sentry = __importStar(require("@sentry/node"));
 const profiling_node_1 = require("@sentry/profiling-node");
 const validation_1 = require("../config/validation");
+const logger_1 = require("../utils/logger");
 let sentryInitialized = false;
 /**
  * Initialize Sentry
@@ -56,7 +57,7 @@ function initializeSentry() {
         return;
     }
     if (!validation_1.validatedConfig.sentry.dsn) {
-        console.log('Sentry DSN not configured, skipping Sentry initialization');
+        (0, logger_1.logInfo)('Sentry DSN not configured, skipping Sentry initialization');
         return;
     }
     Sentry.init({
@@ -78,7 +79,7 @@ function initializeSentry() {
         },
     });
     sentryInitialized = true;
-    console.log('Sentry initialized');
+    (0, logger_1.logInfo)('Sentry initialized');
 }
 /**
  * Sentry request handler middleware

@@ -69,6 +69,8 @@ try {
 }
 catch (error) {
     // OpenTelemetry packages not installed - tracing will be disabled
+    // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+    // eslint-disable-next-line no-console
     console.warn("OpenTelemetry packages not found, tracing disabled");
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -79,11 +81,15 @@ function initializeTracing() {
     }
     // Check if OpenTelemetry packages are available
     if (!NodeSDK || !Resource || !SemanticResourceAttributes) {
+        // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+        // eslint-disable-next-line no-console
         console.warn("OpenTelemetry packages not installed, tracing disabled");
         return;
     }
     const otlpEndpoint = config_1.config.observability.otlpEndpoint;
     if (!otlpEndpoint) {
+        // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+        // eslint-disable-next-line no-console
         console.warn("OTLP_ENDPOINT not set, tracing disabled");
         return;
     }
@@ -106,9 +112,13 @@ function initializeTracing() {
         });
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         sdk.start();
+        // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+        // eslint-disable-next-line no-console
         console.log("OpenTelemetry tracing initialized");
     }
     catch (error) {
+        // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+        // eslint-disable-next-line no-console
         console.warn("Failed to initialize OpenTelemetry tracing:", error);
     }
 }

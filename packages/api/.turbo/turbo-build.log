@@ -16,20 +16,14 @@ npm warn config       Default value does install optional deps unless otherwise 
 
 Loaded Prisma config from prisma.config.ts.
 
-Prisma schema loaded from prisma/schema.prisma
-┌─────────────────────────────────────────────────────────┐
+Prisma schema loaded from prisma/schema.prisma.
 
-✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 260ms
-│  Update available 7.1.0 -> 7.2.0                        │
-│  Run the following to update                            │
+✔ Generated Prisma Client (v7.2.0) to ./node_modules/@prisma/client in 299ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
 
-│    npm i --save-dev prisma@latest                       │
-│    npm i @prisma/client@latest                          │
-└─────────────────────────────────────────────────────────┘
 
 > @settler/api@1.0.0 build
 > npm run typecheck && tsc
@@ -52,13 +46,13 @@ npm warn config       Default value does install optional deps unless otherwise 
 
 Loaded Prisma config from prisma.config.ts.
 
-Prisma schema loaded from prisma/schema.prisma
+Prisma schema loaded from prisma/schema.prisma.
 
-✔ Generated Prisma Client (v7.1.0) to ./node_modules/@prisma/client in 265ms
+✔ Generated Prisma Client (v7.2.0) to ./node_modules/@prisma/client in 289ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
 
 
 > @settler/api@1.0.0 typecheck

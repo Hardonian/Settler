@@ -84,7 +84,7 @@ function createMonitoringRouter() {
                 }
                 catch (error) {
                     // Skip accounts with errors (table might not exist yet)
-                    console.error(`Error fetching SLA metrics for account ${account.id}`, error);
+                    (0, logger_1.logError)(`Error fetching SLA metrics for account ${account.id}`, error);
                 }
             }
             // Get current violations

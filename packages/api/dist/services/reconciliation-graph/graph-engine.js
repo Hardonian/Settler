@@ -8,6 +8,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.graphEngine = exports.ReconciliationGraphEngine = void 0;
 const events_1 = require("events");
+const logger_1 = require("../../utils/logger");
 class ReconciliationGraphEngine extends events_1.EventEmitter {
     graphs = new Map();
     updateSubscribers = new Map();
@@ -254,7 +255,7 @@ class ReconciliationGraphEngine extends events_1.EventEmitter {
                     callback(update);
                 }
                 catch (error) {
-                    console.error('Error notifying subscriber:', error);
+                    (0, logger_1.logError)('Error notifying subscriber', error);
                 }
             });
         }

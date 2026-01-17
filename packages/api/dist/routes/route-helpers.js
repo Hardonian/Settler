@@ -19,7 +19,9 @@ exports.mountRoute = mountRoute;
  * mountVersionedRoutes(app, '/jobs', jobsRouter, authMiddleware, rateLimitMiddleware());
  * ```
  */
-function mountVersionedRoutes(app, path, router, ...middleware) {
+function mountVersionedRoutes(app, path, router, 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+...middleware) {
     app.use(`/api/v1${path}`, ...middleware, router);
     app.use(`/api/v2${path}`, ...middleware, router);
 }
@@ -32,7 +34,9 @@ function mountVersionedRoutes(app, path, router, ...middleware) {
  * @param router - Express router to mount
  * @param middleware - Middleware functions to apply
  */
-function mountRoute(app, version, path, router, ...middleware) {
+function mountRoute(app, version, path, router, 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+...middleware) {
     app.use(`/api/${version}${path}`, ...middleware, router);
 }
 //# sourceMappingURL=route-helpers.js.map

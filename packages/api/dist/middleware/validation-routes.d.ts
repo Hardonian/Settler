@@ -98,21 +98,21 @@ export declare const adminAggregateParamSchema: z.ZodObject<{
         aggregateType: z.ZodString;
         aggregateId: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        aggregateType: string;
         aggregateId: string;
+        aggregateType: string;
     }, {
-        aggregateType: string;
         aggregateId: string;
+        aggregateType: string;
     }>;
 }, "strip", z.ZodTypeAny, {
     params: {
-        aggregateType: string;
         aggregateId: string;
+        aggregateType: string;
     };
 }, {
     params: {
-        aggregateType: string;
         aggregateId: string;
+        aggregateType: string;
     };
 }>;
 export declare const adminCorrelationParamSchema: z.ZodObject<{

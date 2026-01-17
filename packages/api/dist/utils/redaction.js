@@ -6,6 +6,7 @@ const SENSITIVE_FIELDS = [
     'card_number', 'cvv', 'ssn', 'email', 'phone', 'credit_card',
     'passwordHash', 'keyHash', 'secret', 'webhookSecret',
 ];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function redact(obj, additionalFields = []) {
     if (obj === null || obj === undefined) {
         return obj;
@@ -17,6 +18,7 @@ function redact(obj, additionalFields = []) {
         return obj.map(item => redact(item, additionalFields));
     }
     const sensitiveFields = [...SENSITIVE_FIELDS, ...additionalFields];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const redacted = {};
     for (const [key, value] of Object.entries(obj)) {
         const keyLower = key.toLowerCase();

@@ -8,6 +8,39 @@
  * - Rate limiting
  * - Session storage
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cache = exports.redis = void 0;
 exports.getRedisClient = getRedisClient;
@@ -17,6 +50,8 @@ const redis_1 = require("@upstash/redis");
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_TOKEN;
 if (!redisUrl || !redisToken) {
+    // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+    // eslint-disable-next-line no-console
     console.warn('Redis not configured. Some features will be disabled.');
 }
 /**
@@ -31,6 +66,7 @@ exports.redis = redisUrl && redisToken
 /**
  * Fallback Redis client using ioredis (for local development)
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ioredisClient = null;
 if (!exports.redis && process.env.REDIS_HOST) {
     try {
@@ -46,16 +82,21 @@ if (!exports.redis && process.env.REDIS_HOST) {
             },
         });
         ioredisClient.on('error', (err) => {
+            // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+            // eslint-disable-next-line no-console
             console.error('Redis connection error:', err);
         });
     }
     catch (error) {
+        // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+        // eslint-disable-next-line no-console
         console.warn('Failed to initialize Redis client:', error);
     }
 }
 /**
  * Get Redis client (Upstash or ioredis fallback)
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getRedisClient() {
     return exports.redis || ioredisClient;
 }
@@ -86,7 +127,12 @@ exports.cache = {
             }
         }
         catch (error) {
-            console.error('Redis get error:', error);
+            // Use dynamic import to avoid circular dependencies
+            Promise.resolve().then(() => __importStar(require('../../utils/logger'))).then(({ logError }) => {
+                logError('Redis get error', error);
+            }).catch(() => {
+                // Silent fail if logger unavailable
+            });
             return null;
         }
     },
@@ -117,7 +163,12 @@ exports.cache = {
             }
         }
         catch (error) {
-            console.error('Redis set error:', error);
+            // Use dynamic import to avoid circular dependencies
+            Promise.resolve().then(() => __importStar(require('../../utils/logger'))).then(({ logError }) => {
+                logError('Redis set error', error);
+            }).catch(() => {
+                // Silent fail if logger unavailable
+            });
         }
     },
     /**
@@ -131,7 +182,12 @@ exports.cache = {
             await client.del(key);
         }
         catch (error) {
-            console.error('Redis del error:', error);
+            // Use dynamic import to avoid circular dependencies
+            Promise.resolve().then(() => __importStar(require('../../utils/logger'))).then(({ logError }) => {
+                logError('Redis del error', error);
+            }).catch(() => {
+                // Silent fail if logger unavailable
+            });
         }
     },
     /**
@@ -152,7 +208,12 @@ exports.cache = {
             }
         }
         catch (error) {
-            console.error('Redis exists error:', error);
+            // Use dynamic import to avoid circular dependencies
+            Promise.resolve().then(() => __importStar(require('../../utils/logger'))).then(({ logError }) => {
+                logError('Redis exists error', error);
+            }).catch(() => {
+                // Silent fail if logger unavailable
+            });
             return false;
         }
     },

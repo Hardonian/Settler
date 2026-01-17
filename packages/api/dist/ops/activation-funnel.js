@@ -5,6 +5,39 @@
  * Emits canonical lifecycle events for product-led growth tracking.
  * Uses existing UsageEvent table for event storage.
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LifecycleEventType = void 0;
 exports.emitLifecycleEvent = emitLifecycleEvent;
@@ -57,13 +90,23 @@ async function emitLifecycleEvent(eventType, params) {
             });
             if (!user) {
                 // Would need user email - skip for now if not available
-                console.warn(`Cannot emit lifecycle event ${eventType}: no billing account found`);
+                // Use dynamic import to avoid circular dependencies
+                Promise.resolve().then(() => __importStar(require('../utils/logger'))).then(({ logWarn }) => {
+                    logWarn(`Cannot emit lifecycle event ${eventType}: no billing account found`);
+                }).catch(() => {
+                    // Silent fail if logger unavailable
+                });
                 return;
             }
             finalBillingAccountId = user.id;
         }
         if (!finalBillingAccountId) {
-            console.warn(`Cannot emit lifecycle event ${eventType}: no billing account ID available`);
+            // Use dynamic import to avoid circular dependencies
+            Promise.resolve().then(() => __importStar(require('../utils/logger'))).then(({ logWarn }) => {
+                logWarn(`Cannot emit lifecycle event ${eventType}: no billing account ID available`);
+            }).catch(() => {
+                // Silent fail if logger unavailable
+            });
             return;
         }
         // Emit event via UsageEvent table
@@ -83,7 +126,12 @@ async function emitLifecycleEvent(eventType, params) {
     }
     catch (error) {
         // Don't throw - event tracking should never break the main flow
-        console.error(`Failed to emit lifecycle event ${eventType}:`, error);
+        // Use dynamic import to avoid circular dependencies
+        Promise.resolve().then(() => __importStar(require('../utils/logger'))).then(({ logError }) => {
+            logError(`Failed to emit lifecycle event ${eventType}`, error);
+        }).catch(() => {
+            // Silent fail if logger unavailable
+        });
     }
 }
 /**

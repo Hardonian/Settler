@@ -19,6 +19,7 @@ exports.batchMatchReceipts = batchMatchReceipts;
 exports.matchReceiptsToTransactions = matchReceiptsToTransactions;
 exports.getReceiptMatches = getReceiptMatches;
 exports.verifyReceiptLink = verifyReceiptLink;
+const logger_1 = require("../utils/logger");
 /**
  * Match a receipt to transactions
  */
@@ -114,7 +115,7 @@ async function matchReceiptToTransaction(prisma, receiptId, tenantId, config = {
         return null;
     }
     catch (error) {
-        console.error(`[ReceiptMatching] Failed to match receipt ${receiptId}:`, error);
+        (0, logger_1.logError)(`[ReceiptMatching] Failed to match receipt ${receiptId}`, error);
         return null;
     }
 }

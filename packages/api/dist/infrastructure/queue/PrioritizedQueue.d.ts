@@ -14,7 +14,7 @@ export interface QueueJobData {
     tenantId: string;
     tenantTier: TenantTier;
     jobId?: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 export declare class PrioritizedQueue {
     private queueName;
@@ -22,7 +22,7 @@ export declare class PrioritizedQueue {
     private queue;
     private worker;
     private redis;
-    constructor(queueName: string, processor: (job: Job<QueueJobData>) => Promise<any>);
+    constructor(queueName: string, processor: (job: Job<QueueJobData>) => Promise<unknown>);
     /**
      * Add job to queue with priority
      * Enterprise tenants bypass queue and execute immediately

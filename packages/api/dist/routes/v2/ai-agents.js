@@ -10,6 +10,7 @@ const orchestrator_1 = require("../../services/ai-agents/orchestrator");
 const infrastructure_optimizer_1 = require("../../services/ai-agents/infrastructure-optimizer");
 const anomaly_detector_1 = require("../../services/ai-agents/anomaly-detector");
 const error_handler_1 = require("../../utils/error-handler");
+const logger_1 = require("../../utils/logger");
 const router = (0, express_1.Router)();
 // Initialize agents
 const infrastructureOptimizer = new infrastructure_optimizer_1.InfrastructureOptimizerAgent({});
@@ -17,7 +18,9 @@ const anomalyDetector = new anomaly_detector_1.AnomalyDetectorAgent({});
 orchestrator_1.agentOrchestrator.registerAgent(infrastructureOptimizer);
 orchestrator_1.agentOrchestrator.registerAgent(anomalyDetector);
 // Initialize all agents on startup
-orchestrator_1.agentOrchestrator.initializeAll().catch(console.error);
+orchestrator_1.agentOrchestrator.initializeAll().catch((error) => {
+    (0, logger_1.logError)('Failed to initialize AI agents', error);
+});
 /**
  * GET /api/v2/ai-agents
  * List all agents

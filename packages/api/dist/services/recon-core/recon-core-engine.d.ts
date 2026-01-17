@@ -10,7 +10,7 @@
  * Part of Phase I: Platform Audit + Recon Core Foundation
  */
 import { PrismaClient } from '@prisma/client';
-import type { ReconJobInput, ReconJob, ReconResult, ReconExecutionOptions } from './types';
+import type { ReconJobInput, ReconJob, ReconResult, ReconStrategy, ReconExecutionOptions, ReconMatch, ReconDataRecord } from './types';
 export declare class ReconCoreEngine {
     private prisma;
     private webhookService;
@@ -29,6 +29,10 @@ export declare class ReconCoreEngine {
      */
     private ingestData;
     /**
+     * Export reconciliation results to CSV
+     */
+    exportResults(_reconResultId: string, format?: 'csv' | 'json'): Promise<string>;
+    /**
      * Transform data using a transform recipe
      */
     private transformData;
@@ -44,7 +48,7 @@ export declare class ReconCoreEngine {
      * Perform reconciliation matching
      * Integrates rules engine for improved match rates over time
      */
-    private performReconciliation;
+    performReconciliation(sourceData: ReconDataRecord[], targetData: ReconDataRecord[], _strategy: ReconStrategy, _reconJob: ReconJob): Promise<ReconMatch[]>;
     /**
      * Calculate reconciliation results
      */

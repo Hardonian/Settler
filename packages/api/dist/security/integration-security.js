@@ -52,6 +52,7 @@ exports.recordIntegrationQuotaUsage = recordIntegrationQuotaUsage;
 exports.updateIntegrationHealth = updateIntegrationHealth;
 const supabase_js_1 = require("@supabase/supabase-js");
 const crypto = __importStar(require("crypto"));
+const logger_1 = require("../utils/logger");
 /**
  * Encrypt credential using AES-256-GCM
  * In production, use AWS KMS, HashiCorp Vault, or similar
@@ -147,7 +148,7 @@ async function checkIntegrationQuota(supabaseUrl, supabaseServiceKey, tenantId, 
         .single();
     if (error && error.code !== "PGRST116") {
         // Error other than "not found"
-        console.error("Error checking quota:", error);
+        (0, logger_1.logError)("Error checking quota", error);
         return { allowed: false, current: 0, limit };
     }
     const current = data?.[quotaType === "api_calls"
@@ -194,7 +195,7 @@ async function recordIntegrationQuotaUsage(supabaseUrl, supabaseServiceKey, tena
         onConflict: "tenant_id,integration_id,date",
     });
     if (error) {
-        console.error("Error recording quota usage:", error);
+        (0, logger_1.logError)("Error recording quota usage", error);
     }
 }
 /**
@@ -237,7 +238,7 @@ async function updateIntegrationHealth(supabaseUrl, supabaseServiceKey, tenantId
         onConflict: "tenant_id,integration_id",
     });
     if (error) {
-        console.error("Error updating integration health:", error);
+        (0, logger_1.logError)("Error updating integration health", error);
     }
 }
 /**

@@ -80,6 +80,7 @@ async function generateInsights(supabaseUrl, supabaseKey, timeWindow) {
 /**
  * Generate cost-related insights
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generateCostInsights(supabase, _timeWindow) {
     const insights = [];
     const now = new Date();
@@ -105,7 +106,9 @@ async function generateCostInsights(supabase, _timeWindow) {
         const previousWeekCost = previousWeekResult.status === 'fulfilled' && previousWeekResult.value.data
             ? previousWeekResult.value.data
             : [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const currentTotal = currentWeekCost.reduce((sum, r) => sum + (r.estimated_cost || 0), 0);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const previousTotal = previousWeekCost.reduce((sum, r) => sum + (r.estimated_cost || 0), 0);
         const wowChange = previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
         if (Math.abs(wowChange) > 20) {
@@ -143,6 +146,7 @@ async function generateCostInsights(supabase, _timeWindow) {
                 .limit(1000); // Limit to prevent huge queries
             if (orgCosts) {
                 const orgCostMap = new Map();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 orgCosts.forEach((r) => {
                     if (r.tenant_id) {
                         orgCostMap.set(r.tenant_id, (orgCostMap.get(r.tenant_id) || 0) + (r.estimated_cost || 0));
@@ -212,6 +216,7 @@ async function generateCostInsights(supabase, _timeWindow) {
 /**
  * Generate support-related insights
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generateSupportInsights(supabase, _timeWindow) {
     const insights = [];
     const now = new Date();
@@ -242,10 +247,12 @@ async function generateSupportInsights(supabase, _timeWindow) {
         if (currentWeekTickets.length > 0 && previousWeekTickets.length > 0) {
             const currentByCategory = new Map();
             const previousByCategory = new Map();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             currentWeekTickets.forEach((t) => {
                 const cat = t.category || 'uncategorized';
                 currentByCategory.set(cat, (currentByCategory.get(cat) || 0) + 1);
             });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             previousWeekTickets.forEach((t) => {
                 const cat = t.category || 'uncategorized';
                 previousByCategory.set(cat, (previousByCategory.get(cat) || 0) + 1);
@@ -288,6 +295,7 @@ async function generateSupportInsights(supabase, _timeWindow) {
 /**
  * Generate usage-related insights
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generateUsageInsights(supabase, _timeWindow) {
     const insights = [];
     const now = new Date();
@@ -318,6 +326,7 @@ async function generateUsageInsights(supabase, _timeWindow) {
         if (currentWeekUsage.length > 0 && previousWeekUsage.length > 0) {
             const currentByFeature = new Map();
             const previousByFeature = new Map();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             currentWeekUsage.forEach((u) => {
                 if (u.event_type && u.tenant_id) {
                     if (!currentByFeature.has(u.event_type)) {
@@ -326,6 +335,7 @@ async function generateUsageInsights(supabase, _timeWindow) {
                     currentByFeature.get(u.event_type).add(u.tenant_id);
                 }
             });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             previousWeekUsage.forEach((u) => {
                 if (u.event_type && u.tenant_id) {
                     if (!previousByFeature.has(u.event_type)) {
@@ -378,6 +388,7 @@ async function generateUsageInsights(supabase, _timeWindow) {
 /**
  * Generate stability-related insights
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generateStabilityInsights(supabase, _timeWindow) {
     const insights = [];
     const now = new Date();
@@ -417,7 +428,9 @@ async function generateStabilityInsights(supabase, _timeWindow) {
             const previousWeekErrors = previousWeekResult.value.data || [];
             const currentCount = currentWeekErrors.length;
             const previousCount = previousWeekErrors.length;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const currentCritical = currentWeekErrors.filter((e) => e.severity === 'critical').length;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const previousCritical = previousWeekErrors.filter((e) => e.severity === 'critical').length;
             if (previousCount > 0) {
                 const errorRateChange = ((currentCount - previousCount) / previousCount) * 100;
@@ -450,6 +463,7 @@ async function generateStabilityInsights(supabase, _timeWindow) {
         if (webhooksResult.status === 'fulfilled' && webhooksResult.value.data) {
             const webhooks = webhooksResult.value.data;
             const total = webhooks.length;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const failed = webhooks.filter((w) => w.status === 'failed').length;
             const failureRate = total > 0 ? (failed / total) * 100 : 0;
             if (failureRate > 10 && total >= 10) {
@@ -477,7 +491,9 @@ async function generateStabilityInsights(supabase, _timeWindow) {
         // Job backlog analysis
         if (jobsResult.status === 'fulfilled' && jobsResult.value.data) {
             const jobs = jobsResult.value.data;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const pending = jobs.filter((j) => j.status === 'pending').length;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const failed = jobs.filter((j) => j.status === 'failed').length;
             const total = jobs.length;
             if (pending > 50 || failed > 20) {

@@ -170,7 +170,7 @@ if (config_1.config.nodeEnv === 'production' || config_1.config.nodeEnv === 'pre
     }
     catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error';
-        console.error('Secret validation failed:', message);
+        (0, logger_1.logError)('Secret validation failed', error, { message });
         process.exit(1);
     }
 }
@@ -330,7 +330,7 @@ async function startServer() {
         return server;
     }
     catch (error) {
-        console.error('Failed to start server:', error);
+        (0, logger_1.logError)('Failed to start server', error);
         process.exit(1);
     }
 }
