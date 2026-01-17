@@ -27,6 +27,8 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@builder.io/react": "^9.1.0",
+    "@builder.io/sdk": "^6.2.0",
     "@mdx-js/loader": "^3.0.0",
     "@mdx-js/react": "^3.0.0",
     "@next/mdx": "^14.0.4",
