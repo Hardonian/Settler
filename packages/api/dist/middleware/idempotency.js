@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.idempotencyMiddleware = idempotencyMiddleware;
 const db_1 = require("../db");
 const uuid_1 = require("uuid");
+const logger_1 = require("../utils/logger");
 function idempotencyMiddleware() {
     return async (req, res, next) => {
         // Only apply to state-changing methods
@@ -50,7 +51,9 @@ function idempotencyMiddleware() {
                         req.userId || null,
                         idempotencyKey,
                         JSON.stringify({ statusCode, data: responseData }),
-                    ]).catch(err => console.error('Failed to cache idempotency key', err));
+                    ]).catch(err => {
+                        (0, logger_1.logError)('Failed to cache idempotency key', err);
+                    });
                 }
                 if (encoding !== undefined && typeof encoding === 'string') {
                     originalEnd(chunk, encoding, cb);

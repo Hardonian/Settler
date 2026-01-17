@@ -7,6 +7,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReconRateLimiter = void 0;
+const logger_1 = require("../utils/logger");
 const TIER_LIMITS = {
     free: {
         rpm: 100,
@@ -157,7 +158,7 @@ class ReconRateLimiter {
                 return next();
             }
             catch (error) {
-                console.error('Rate limiter error:', error);
+                (0, logger_1.logError)('Rate limiter error', error);
                 // On error, allow the request (fail open)
                 return next();
             }

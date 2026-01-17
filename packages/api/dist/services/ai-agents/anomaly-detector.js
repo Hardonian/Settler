@@ -24,7 +24,7 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
         setInterval(() => {
             if (this.enabled) {
                 this.detectAnomalies().catch(error => {
-                    console.error('Anomaly detection failed:', error);
+                    (0, logger_1.logError)('Anomaly detection failed', error);
                 });
             }
         }, 60000); // Every minute
@@ -259,7 +259,11 @@ class AnomalyDetectorAgent extends orchestrator_1.BaseAgent {
      */
     async sendAlert(anomaly) {
         // TODO: Send to alerting system (PagerDuty, Slack, etc.)
-        console.log(`ALERT: ${anomaly.severity.toUpperCase()} - ${anomaly.description}`);
+        (0, logger_1.logWarn)(`ALERT: ${anomaly.severity.toUpperCase()} - ${anomaly.description}`, {
+            severity: anomaly.severity,
+            description: anomaly.description,
+            anomalyId: anomaly.id,
+        });
         this.emit('alert_sent', anomaly);
     }
 }

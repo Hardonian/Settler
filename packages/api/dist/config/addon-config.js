@@ -13,6 +13,7 @@ exports.getStandardAddOns = getStandardAddOns;
 exports.getPremiumAddOns = getPremiumAddOns;
 exports.validateAddOnConfig = validateAddOnConfig;
 exports.createAddOnFromConfig = createAddOnFromConfig;
+const logger_1 = require("../utils/logger");
 /**
  * Add-on configurations (can be loaded from JSON file or database)
  */
@@ -212,7 +213,7 @@ async function createAddOnFromConfig(config, supabase) {
         .select("id")
         .single();
     if (error) {
-        console.error("Error creating add-on:", error);
+        (0, logger_1.logError)("Error creating add-on", error);
         return null;
     }
     return data?.id ?? null;

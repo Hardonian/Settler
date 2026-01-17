@@ -43,6 +43,7 @@ exports.decisionLog = exports.DecisionLog = void 0;
 const events_1 = require("events");
 const fs = __importStar(require("fs/promises"));
 const path = __importStar(require("path"));
+const logger_1 = require("../../utils/logger");
 class DecisionLog extends events_1.EventEmitter {
     decisions = new Map();
     logDirectory;
@@ -214,7 +215,7 @@ ${decision.tags.map(tag => `\`${tag}\``).join(', ')}
             }
         }
         catch (error) {
-            console.error('Failed to load decisions:', error);
+            (0, logger_1.logError)('Failed to load decisions', error);
         }
     }
 }

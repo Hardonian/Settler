@@ -108,11 +108,12 @@ async function executeMigration(migrationPath, migrationName, useSupabase) {
                 }
                 catch (error) {
                     // Ignore "already exists" errors (idempotent migration)
-                    if (error.message.includes('already exists') ||
-                        error.message.includes('duplicate') ||
-                        error.message.includes('already enabled') ||
-                        error.message.includes('does not exist') && error.message.includes('DROP')) {
-                        (0, logger_1.logWarn)(`Migration warning (ignored): ${error.message}`);
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    if (errorMessage.includes('already exists') ||
+                        errorMessage.includes('duplicate') ||
+                        errorMessage.includes('already enabled') ||
+                        (errorMessage.includes('does not exist') && errorMessage.includes('DROP'))) {
+                        (0, logger_1.logWarn)(`Migration warning (ignored)`, { message: errorMessage });
                         continue;
                     }
                     throw error;
@@ -124,7 +125,7 @@ async function executeMigration(migrationPath, migrationName, useSupabase) {
         (0, logger_1.logInfo)(`Migration completed: ${migrationName}`, { statements: result.statementsExecuted });
     }
     catch (error) {
-        result.error = error.message;
+        result.error = error instanceof Error ? error.message : String(error);
         (0, logger_1.logError)(`Migration failed: ${migrationName}`, error);
         throw error;
     }
@@ -180,9 +181,10 @@ async function initializeSupabaseExtensions() {
                 (0, logger_1.logInfo)(`Extension enabled: ${ext.name}`);
             }
             catch (error) {
-                if (error.message.includes('already exists') ||
-                    error.message.includes('permission denied')) {
-                    (0, logger_1.logWarn)(`Extension ${ext.name}: ${error.message}`);
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                if (errorMessage.includes('already exists') ||
+                    errorMessage.includes('permission denied')) {
+                    (0, logger_1.logWarn)(`Extension ${ext.name}`, { message: errorMessage });
                 }
                 else {
                     (0, logger_1.logError)(`Failed to enable extension ${ext.name}`, error);
@@ -192,7 +194,10 @@ async function initializeSupabaseExtensions() {
         await pool.end();
     }
     catch (error) {
-        (0, logger_1.logWarn)('Supabase extension initialization warning', error);
+        (0, logger_1.logWarn)('Supabase extension initialization warning', {
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+        });
         // Don't fail if extensions can't be initialized
     }
 }
@@ -228,7 +233,7 @@ async function runMigrations() {
             results.push({
                 migration: migrationFile,
                 success: false,
-                error: error.message,
+                error: error instanceof Error ? error.message : String(error),
                 statementsExecuted: 0,
             });
             (0, logger_1.logError)(`Migration ${migrationFile} failed`, error);
@@ -252,17 +257,26 @@ if (require.main === module) {
         .then((results) => {
         const failed = results.filter(r => !r.success);
         if (failed.length > 0) {
+            // CLI usage - console is acceptable here
+            // eslint-disable-next-line no-console
             console.error('Some migrations failed:');
-            failed.forEach(r => console.error(`  - ${r.migration}: ${r.error}`));
+            failed.forEach(r => {
+                // eslint-disable-next-line no-console
+                console.error(`  - ${r.migration}: ${r.error}`);
+            });
             process.exit(1);
         }
         else {
-            console.log('All migrations completed successfully');
+            // CLI usage - console is acceptable here
+            // eslint-disable-next-line no-console
+            (0, logger_1.logInfo)('All migrations completed successfully');
             process.exit(0);
         }
     })
         .catch((error) => {
-        console.error('Migration process failed:', error);
+        // CLI usage - console is acceptable here
+        // eslint-disable-next-line no-console
+        (0, logger_1.logError)('Migration process failed', error);
         process.exit(1);
     });
 }

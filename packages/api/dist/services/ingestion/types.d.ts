@@ -43,9 +43,9 @@ export declare const NormalizedTransactionSchema: z.ZodObject<{
     date: Date;
     metadata?: Record<string, unknown> | undefined;
     description?: string | undefined;
+    externalId?: string | undefined;
     category?: string | undefined;
     paymentMethod?: string | undefined;
-    externalId?: string | undefined;
     reference?: string | undefined;
 }, {
     amount: number;
@@ -53,9 +53,9 @@ export declare const NormalizedTransactionSchema: z.ZodObject<{
     metadata?: Record<string, unknown> | undefined;
     description?: string | undefined;
     currency?: string | undefined;
+    externalId?: string | undefined;
     category?: string | undefined;
     paymentMethod?: string | undefined;
-    externalId?: string | undefined;
     reference?: string | undefined;
 }>;
 export type NormalizedTransactionInput = z.infer<typeof NormalizedTransactionSchema>;

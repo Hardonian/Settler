@@ -21,7 +21,7 @@ export declare function checkSupabaseHealth(): Promise<{
 /**
  * Helper function to execute SQL queries with retry logic
  */
-export declare function executeSQL<T = any>(query: string, params?: any[]): Promise<T[]>;
+export declare function executeSQL<T = unknown>(query: string, params?: unknown[]): Promise<T[]>;
 /**
  * Helper function for transactions
  */

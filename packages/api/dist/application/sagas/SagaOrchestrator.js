@@ -6,6 +6,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SagaOrchestrator = exports.SagaStatus = void 0;
 const db_1 = require("../../db");
+const logger_1 = require("../../utils/logger");
 var SagaStatus;
 (function (SagaStatus) {
     SagaStatus["RUNNING"] = "running";
@@ -57,7 +58,7 @@ class SagaOrchestrator {
         await this.saveSagaState(state);
         // Start executing the saga
         this.executeSaga(state).catch((error) => {
-            console.error(`Saga ${sagaId} failed:`, error);
+            (0, logger_1.logError)(`Saga ${sagaId} failed`, error);
         });
         return sagaId;
     }
@@ -100,8 +101,10 @@ class SagaOrchestrator {
                     await this.recordStepComplete(state, step.name);
                 }
                 catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    const errorName = error instanceof Error ? error.name : 'UnknownError';
                     // Handle timeout or unexpected errors
-                    if (step.timeoutMs && error.name === 'TimeoutError') {
+                    if (step.timeoutMs && errorName === 'TimeoutError') {
                         await this.handleStepTimeout(state, step);
                         return;
                     }
@@ -109,9 +112,9 @@ class SagaOrchestrator {
                     if (step.compensate) {
                         await this.compensate(state, step.name);
                     }
-                    await this.markSagaFailed(state, error.message);
+                    await this.markSagaFailed(state, errorMessage);
                     if (saga.onFailure) {
-                        await saga.onFailure(state, error);
+                        await saga.onFailure(state, error instanceof Error ? error : new Error(errorMessage));
                     }
                     return;
                 }
@@ -123,9 +126,10 @@ class SagaOrchestrator {
             }
         }
         catch (error) {
-            await this.markSagaFailed(state, error.message);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            await this.markSagaFailed(state, errorMessage);
             if (saga.onFailure) {
-                await saga.onFailure(state, error);
+                await saga.onFailure(state, error instanceof Error ? error : new Error(errorMessage));
             }
         }
     }
@@ -149,11 +153,13 @@ class SagaOrchestrator {
                 lastError = result;
             }
             catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                const errorName = error instanceof Error ? error.name : 'UnknownError';
                 lastError = {
                     success: false,
                     error: {
-                        type: error.name || 'UnknownError',
-                        message: error.message,
+                        type: errorName,
+                        message: errorMessage,
                         retryable: attempt < maxRetries,
                     },
                 };
@@ -200,7 +206,7 @@ class SagaOrchestrator {
                         await this.recordStepCompensated(state, step.name);
                     }
                     catch (error) {
-                        console.error(`Compensation failed for step ${step.name}:`, error);
+                        (0, logger_1.logError)(`Compensation failed for step ${step.name}`, error);
                         // Continue with other compensations
                     }
                 }

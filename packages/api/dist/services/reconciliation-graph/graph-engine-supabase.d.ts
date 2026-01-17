@@ -3,7 +3,7 @@
  *
  * Persists graph state to Supabase PostgreSQL and uses Realtime for updates
  */
-import { ReconciliationNode, ReconciliationEdge, ReconciliationGraph, GraphQuery } from './types';
+import { ReconciliationNode, ReconciliationEdge, ReconciliationGraph, GraphQuery, RealTimeUpdate } from './types';
 import { EventEmitter } from 'events';
 export declare class ReconciliationGraphEngineSupabase extends EventEmitter {
     private updateSubscribers;
@@ -33,7 +33,7 @@ export declare class ReconciliationGraphEngineSupabase extends EventEmitter {
     /**
      * Subscribe to real-time updates
      */
-    subscribe(jobId: string, callback: (update: any) => void): () => void;
+    subscribe(jobId: string, callback: (update: RealTimeUpdate) => void): () => void;
     /**
      * Notify subscribers of updates
      */

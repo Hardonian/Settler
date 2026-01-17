@@ -7,19 +7,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShopifyStripeReconciliationSaga = void 0;
 const ReconciliationEvents_1 = require("../../domain/eventsourcing/reconciliation/ReconciliationEvents");
 const circuit_breaker_1 = require("../../infrastructure/resilience/circuit-breaker");
+const logger_1 = require("../../utils/logger");
 class ShopifyStripeReconciliationSaga {
     eventStore;
     shopifyAdapter;
     stripeAdapter;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     shopifyCircuitBreaker;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     stripeCircuitBreaker;
     constructor(eventStore, shopifyAdapter, stripeAdapter) {
         this.eventStore = eventStore;
         this.shopifyAdapter = shopifyAdapter;
         this.stripeAdapter = stripeAdapter;
         // Initialize circuit breakers
-        this.shopifyCircuitBreaker = (0, circuit_breaker_1.createCircuitBreaker)(async (options) => this.shopifyAdapter.fetch(options), { name: 'shopify-api' });
-        this.stripeCircuitBreaker = (0, circuit_breaker_1.createCircuitBreaker)(async (options) => this.stripeAdapter.fetch(options), { name: 'stripe-api' });
+        this.shopifyCircuitBreaker = (0, circuit_breaker_1.createCircuitBreaker)(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        async (options) => this.shopifyAdapter.fetch(options), { name: 'shopify-api' });
+        this.stripeCircuitBreaker = (0, circuit_breaker_1.createCircuitBreaker)(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        async (options) => this.stripeAdapter.fetch(options), { name: 'stripe-api' });
     }
     /**
      * Create saga definition
@@ -85,11 +92,13 @@ class ShopifyStripeReconciliationSaga {
                     };
                 }
                 catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    const errorName = error instanceof Error ? error.name : 'FetchError';
                     return {
                         success: false,
                         error: {
-                            type: error.name || 'FetchError',
-                            message: error.message,
+                            type: errorName,
+                            message: errorMessage,
                             retryable: true,
                         },
                     };
@@ -97,7 +106,7 @@ class ShopifyStripeReconciliationSaga {
             },
             compensate: async (state) => {
                 // No compensation needed for read-only fetch
-                console.log(`Compensating fetch_shopify_orders for ${state.aggregateId}`);
+                (0, logger_1.logError)(`Compensating fetch_shopify_orders for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
             },
         };
     }
@@ -146,11 +155,13 @@ class ShopifyStripeReconciliationSaga {
                     };
                 }
                 catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    const errorName = error instanceof Error ? error.name : 'FetchError';
                     return {
                         success: false,
                         error: {
-                            type: error.name || 'FetchError',
-                            message: error.message,
+                            type: errorName,
+                            message: errorMessage,
                             retryable: true,
                         },
                     };
@@ -158,7 +169,7 @@ class ShopifyStripeReconciliationSaga {
             },
             compensate: async (state) => {
                 // No compensation needed
-                console.log(`Compensating fetch_stripe_payments for ${state.aggregateId}`);
+                (0, logger_1.logError)(`Compensating fetch_stripe_payments for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
             },
         };
     }
@@ -266,11 +277,13 @@ class ShopifyStripeReconciliationSaga {
                     };
                 }
                 catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    const errorName = error instanceof Error ? error.name : 'MatchingError';
                     return {
                         success: false,
                         error: {
-                            type: error.name || 'MatchingError',
-                            message: error.message,
+                            type: errorName,
+                            message: errorMessage,
                             retryable: false,
                         },
                     };
@@ -300,11 +313,13 @@ class ShopifyStripeReconciliationSaga {
                     };
                 }
                 catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    const errorName = error instanceof Error ? error.name : 'PersistenceError';
                     return {
                         success: false,
                         error: {
-                            type: error.name || 'PersistenceError',
-                            message: error.message,
+                            type: errorName,
+                            message: errorMessage,
                             retryable: true,
                         },
                     };
@@ -312,7 +327,7 @@ class ShopifyStripeReconciliationSaga {
             },
             compensate: async (state) => {
                 // Could delete persisted results if needed
-                console.log(`Compensating persist_results for ${state.aggregateId}`);
+                (0, logger_1.logError)(`Compensating persist_results for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
             },
         };
     }
@@ -329,7 +344,7 @@ class ShopifyStripeReconciliationSaga {
                 try {
                     // In production, send webhooks to configured endpoints
                     // For now, just log
-                    console.log(`Sending webhook notifications for ${state.aggregateId}`);
+                    (0, logger_1.logError)(`Sending webhook notifications for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
                     return {
                         success: true,
                         data: {
@@ -338,11 +353,13 @@ class ShopifyStripeReconciliationSaga {
                     };
                 }
                 catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    const errorName = error instanceof Error ? error.name : 'WebhookError';
                     return {
                         success: false,
                         error: {
-                            type: error.name || 'WebhookError',
-                            message: error.message,
+                            type: errorName,
+                            message: errorMessage,
                             retryable: true,
                         },
                     };
@@ -350,7 +367,7 @@ class ShopifyStripeReconciliationSaga {
             },
             compensate: async (state) => {
                 // Webhooks are typically fire-and-forget, no compensation needed
-                console.log(`Compensating notify_webhooks for ${state.aggregateId}`);
+                (0, logger_1.logError)(`Compensating notify_webhooks for ${state.aggregateId}`, undefined, { aggregateId: state.aggregateId });
             },
         };
     }

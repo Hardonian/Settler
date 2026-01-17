@@ -7,6 +7,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.complianceExportSystem = exports.ComplianceExportSystem = void 0;
 const events_1 = require("events");
+const logger_1 = require("../../utils/logger");
 class ComplianceExportSystem extends events_1.EventEmitter {
     exports = new Map();
     templates = new Map();
@@ -79,7 +80,7 @@ class ComplianceExportSystem extends events_1.EventEmitter {
         this.exports.set(export_.id, export_);
         // Process export asynchronously
         this.processExport(export_).catch(error => {
-            console.error(`Failed to process export ${export_.id}:`, error);
+            (0, logger_1.logError)(`Failed to process export ${export_.id}`, error);
             export_.status = 'failed';
             this.emit('export_failed', export_);
         });

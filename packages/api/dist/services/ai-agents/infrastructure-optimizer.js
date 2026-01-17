@@ -11,6 +11,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InfrastructureOptimizerAgent = void 0;
 const orchestrator_1 = require("./orchestrator");
+const logger_1 = require("../../utils/logger");
 class InfrastructureOptimizerAgent extends orchestrator_1.BaseAgent {
     id = 'infrastructure-optimizer';
     name = 'Infrastructure Optimizer';
@@ -22,7 +23,7 @@ class InfrastructureOptimizerAgent extends orchestrator_1.BaseAgent {
         setInterval(() => {
             if (this.enabled) {
                 this.analyzeInfrastructure().catch(error => {
-                    console.error('Infrastructure analysis failed:', error);
+                    (0, logger_1.logError)('Infrastructure analysis failed', error);
                 });
             }
         }, 3600000); // Every hour
@@ -78,7 +79,7 @@ class InfrastructureOptimizerAgent extends orchestrator_1.BaseAgent {
         for (const opportunity of opportunities) {
             if (opportunity.recommendedAction === 'auto-apply' && opportunity.expectedImpact.riskLevel === 'low') {
                 await this.applyOptimization(opportunity).catch(error => {
-                    console.error(`Failed to apply optimization ${opportunity.id}:`, error);
+                    (0, logger_1.logError)(`Failed to apply optimization ${opportunity.id}`, error);
                 });
             }
         }
@@ -159,7 +160,7 @@ class InfrastructureOptimizerAgent extends orchestrator_1.BaseAgent {
      */
     async applyOptimization(opportunity) {
         // TODO: Implement actual optimization logic
-        console.log(`Applying optimization: ${opportunity.id}`);
+        (0, logger_1.logInfo)(`Applying optimization: ${opportunity.id}`, { opportunityId: opportunity.id });
         this.emit('optimization_applied', opportunity);
     }
     /**

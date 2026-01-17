@@ -19,6 +19,7 @@ exports.validateIPAddress = validateIPAddress;
 exports.secureEdgeFunction = secureEdgeFunction;
 exports.getCORSHeaders = getCORSHeaders;
 const supabase_js_1 = require("@supabase/supabase-js");
+const logger_1 = require("../utils/logger");
 /**
  * Validate HMAC signature for webhook requests
  */
@@ -31,7 +32,7 @@ async function validateHMACSignature(payload, signature, secret, algorithm = "sh
         cryptoKey = await crypto.subtle.importKey("raw", keyData, { name: "HMAC", hash: algorithm }, false, ["sign"]);
     }
     catch (error) {
-        console.error("Failed to import HMAC key:", error);
+        (0, logger_1.logError)("Failed to import HMAC key", error);
         return false;
     }
     const signatureBuffer = await crypto.subtle.sign("HMAC", cryptoKey, payloadData);

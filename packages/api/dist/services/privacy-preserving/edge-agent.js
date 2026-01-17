@@ -8,6 +8,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EdgeAgent = void 0;
 const events_1 = require("events");
+const logger_1 = require("../../utils/logger");
 class EdgeAgent extends events_1.EventEmitter {
     config;
     isRunning = false;
@@ -213,7 +214,7 @@ class EdgeAgent extends events_1.EventEmitter {
             }
         }
         catch (error) {
-            console.error('Failed to send metadata to cloud:', error);
+            (0, logger_1.logError)('Failed to send metadata to cloud', error);
             // Don't throw - metadata sending failure shouldn't break reconciliation
         }
     }

@@ -8,6 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.streamProcessor = exports.StreamProcessor = void 0;
 const graph_engine_1 = require("./graph-engine");
 const events_1 = require("events");
+const logger_1 = require("../../utils/logger");
 class StreamProcessor extends events_1.EventEmitter {
     processingQueue = [];
     isProcessing = false;
@@ -48,7 +49,7 @@ class StreamProcessor extends events_1.EventEmitter {
             }
         }
         catch (error) {
-            console.error('Error processing batch:', error);
+            (0, logger_1.logError)('Error processing batch', error);
             this.emit('processing_error', error);
         }
         finally {

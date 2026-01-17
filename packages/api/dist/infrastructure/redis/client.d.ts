@@ -27,11 +27,11 @@ export declare const cache: {
     /**
      * Get value from cache
      */
-    get<T = any>(key: string): Promise<T | null>;
+    get<T = unknown>(key: string): Promise<T | null>;
     /**
      * Set value in cache
      */
-    set(key: string, value: any, ttlSeconds?: number): Promise<void>;
+    set(key: string, value: unknown, ttlSeconds?: number): Promise<void>;
     /**
      * Delete value from cache
      */

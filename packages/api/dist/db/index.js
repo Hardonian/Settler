@@ -6,6 +6,7 @@ exports.transaction = transaction;
 exports.initDatabase = initDatabase;
 const pg_1 = require("pg");
 const config_1 = require("../config");
+const logger_1 = require("../utils/logger");
 // Database connection pool with proper configuration
 exports.pool = new pg_1.Pool({
     host: config_1.config.database.host,
@@ -24,7 +25,7 @@ exports.pool = new pg_1.Pool({
     } : false,
 });
 exports.pool.on('error', (err) => {
-    console.error('Unexpected error on idle client', err);
+    (0, logger_1.logError)('Unexpected error on idle client', err);
     process.exit(-1);
 });
 // Helper function to execute queries
@@ -65,7 +66,7 @@ async function initDatabase() {
     catch (error) {
         // Fallback to basic schema if migration runner fails
         const message = error instanceof Error ? error.message : 'Unknown error';
-        console.warn('Migration runner failed, falling back to basic schema:', message);
+        (0, logger_1.logWarn)('Migration runner failed, falling back to basic schema', { message });
         const fs = require('fs');
         const path = require('path');
         // Run consolidated initial schema migration
@@ -85,7 +86,7 @@ async function initDatabase() {
                         if (!errorMessage.includes('already exists') &&
                             !errorMessage.includes('duplicate') &&
                             !errorMessage.includes('already enabled')) {
-                            console.warn('Migration warning:', errorMessage);
+                            (0, logger_1.logWarn)('Migration warning', { errorMessage });
                         }
                     }
                 }

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.observabilityRouter = void 0;
 const express_1 = require("express");
 const db_1 = require("../db");
+const logger_1 = require("../utils/logger");
 /**
  * Observability Routes
  *
@@ -12,14 +13,14 @@ const db_1 = require("../db");
  * GET /api/v1/observability/health - Detailed health check
  */
 exports.observabilityRouter = (0, express_1.Router)();
-/**
- * GET /api/v1/observability/metrics
- * Get system and application metrics
- */
 exports.observabilityRouter.get("/metrics", async (req, res) => {
     try {
         const userId = req.userId;
         const tenantId = req.tenantId;
+        if (!userId || !tenantId) {
+            res.status(401).json({ error: 'Unauthorized' });
+            return;
+        }
         // Get job metrics
         const jobStats = await (0, db_1.query)(`SELECT 
         COUNT(*) as total,
@@ -84,7 +85,9 @@ exports.observabilityRouter.get("/metrics", async (req, res) => {
         });
     }
     catch (error) {
-        console.error("Error fetching metrics:", error);
+        const userId = req.userId;
+        const tenantId = req.tenantId;
+        (0, logger_1.logError)("Error fetching metrics", error, { userId, tenantId });
         res.status(500).json({
             error: "Failed to fetch metrics",
             message: error instanceof Error ? error.message : "Unknown error",
@@ -99,6 +102,10 @@ exports.observabilityRouter.get("/logs", async (req, res) => {
     try {
         const userId = req.userId;
         const tenantId = req.tenantId;
+        if (!userId || !tenantId) {
+            res.status(401).json({ error: 'Unauthorized' });
+            return;
+        }
         const { level, jobId, startDate, endDate, limit = "100", offset = "0", } = req.query;
         let queryStr = `
       SELECT 
@@ -115,22 +122,22 @@ exports.observabilityRouter.get("/logs", async (req, res) => {
         let paramIndex = 3;
         if (level) {
             queryStr += ` AND level = $${paramIndex}`;
-            params.push(level);
+            params.push(typeof level === 'string' ? level : String(level));
             paramIndex++;
         }
         if (jobId) {
             queryStr += ` AND job_id = $${paramIndex}`;
-            params.push(jobId);
+            params.push(typeof jobId === 'string' ? jobId : String(jobId));
             paramIndex++;
         }
         if (startDate) {
             queryStr += ` AND created_at >= $${paramIndex}`;
-            params.push(startDate);
+            params.push(typeof startDate === 'string' ? startDate : String(startDate));
             paramIndex++;
         }
         if (endDate) {
             queryStr += ` AND created_at <= $${paramIndex}`;
-            params.push(endDate);
+            params.push(typeof endDate === 'string' ? endDate : String(endDate));
             paramIndex++;
         }
         queryStr += ` ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
@@ -146,7 +153,9 @@ exports.observabilityRouter.get("/logs", async (req, res) => {
         });
     }
     catch (error) {
-        console.error("Error fetching logs:", error);
+        const userId = req.userId;
+        const tenantId = req.tenantId;
+        (0, logger_1.logError)("Error fetching logs", error, { userId, tenantId });
         res.status(500).json({
             error: "Failed to fetch logs",
             message: error instanceof Error ? error.message : "Unknown error",
@@ -160,11 +169,8 @@ exports.observabilityRouter.get("/logs", async (req, res) => {
 exports.observabilityRouter.get("/traces", async (req, res) => {
     try {
         // Reserved for future user/tenant filtering
-        const _ = {
-            userId: req.userId,
-            tenantId: req.tenantId,
-        };
-        void _;
+        void req.userId;
+        void req.tenantId;
         // Reserved for future tracing backend integration
         void req.query.traceId;
         void req.query.jobId;
@@ -180,7 +186,9 @@ exports.observabilityRouter.get("/traces", async (req, res) => {
         });
     }
     catch (error) {
-        console.error("Error fetching traces:", error);
+        const userId = req.userId;
+        const tenantId = req.tenantId;
+        (0, logger_1.logError)("Error fetching traces", error, { userId, tenantId });
         res.status(500).json({
             error: "Failed to fetch traces",
             message: error instanceof Error ? error.message : "Unknown error",

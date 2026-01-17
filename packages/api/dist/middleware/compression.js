@@ -45,6 +45,7 @@ exports.brotliCompressionMiddleware = brotliCompressionMiddleware;
 const compression_1 = __importDefault(require("compression"));
 const zlib = __importStar(require("zlib"));
 const util_1 = require("util");
+const logger_1 = require("../utils/logger");
 const brotliCompress = (0, util_1.promisify)(zlib.brotliCompress);
 // Check if client accepts Brotli
 function acceptsBrotli(req) {
@@ -106,7 +107,7 @@ async function brotliCompressionMiddleware(req, res, next) {
         })
             .catch((error) => {
             // Fallback to uncompressed
-            console.error('Brotli compression failed:', error);
+            (0, logger_1.logError)('Brotli compression failed', error);
             originalSend.call(this, body);
         });
         return res;

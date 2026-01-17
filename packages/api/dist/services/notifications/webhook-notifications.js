@@ -112,9 +112,9 @@ async function sendWebhookNotification(prisma, params) {
                 });
             }
         }
-        catch (logError) {
-            // Don't fail if logging fails
-            console.error('Failed to log webhook delivery failure:', logError);
+        catch (logErr) {
+            // Don't fail if logging fails - use logger if available, otherwise silent fail
+            (0, logger_1.logError)('Failed to log webhook delivery failure', logErr);
         }
     }
 }

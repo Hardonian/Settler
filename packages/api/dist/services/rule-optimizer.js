@@ -11,6 +11,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.suggestRuleOptimizations = suggestRuleOptimizations;
+const logger_1 = require("../utils/logger");
 /**
  * Analyze job results and suggest rule optimizations
  */
@@ -107,7 +108,7 @@ async function suggestRuleOptimizations(prisma, jobId, tenantId) {
         return suggestions.sort((a, b) => b.expectedImprovement - a.expectedImprovement);
     }
     catch (error) {
-        console.error(`[RuleOptimizer] Failed to analyze job ${jobId}:`, error);
+        (0, logger_1.logError)(`[RuleOptimizer] Failed to analyze job ${jobId}`, error);
         return suggestions;
     }
 }

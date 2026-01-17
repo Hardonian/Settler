@@ -16,6 +16,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CircuitBreaker = void 0;
 exports.executeWithRetry = executeWithRetry;
+const logger_1 = require("../../utils/logger");
 const DEFAULT_CONFIG = {
     maxRetries: 3,
     initialDelayMs: 1000,
@@ -74,7 +75,11 @@ async function executeWithRetry(fn, config = {}) {
             }
             // Calculate delay and wait
             const delay = calculateBackoffDelay(attempt, finalConfig);
-            console.log(`[RetryLogic] Attempt ${attempt + 1} failed, retrying in ${delay}ms:`, lastError.message);
+            (0, logger_1.logInfo)(`[RetryLogic] Attempt ${attempt + 1} failed, retrying in ${delay}ms`, {
+                attempt: attempt + 1,
+                delay,
+                errorMessage: lastError.message
+            });
             await sleep(delay);
         }
     }
@@ -99,7 +104,7 @@ class CircuitBreaker {
         if (this.state === 'open') {
             if (this.lastFailureTime && Date.now() - this.lastFailureTime.getTime() > this.timeoutMs) {
                 this.state = 'half-open';
-                console.log('[CircuitBreaker] Moving to half-open state');
+                (0, logger_1.logInfo)('[CircuitBreaker] Moving to half-open state');
             }
             else {
                 throw new Error('Circuit breaker is open');
@@ -111,7 +116,7 @@ class CircuitBreaker {
             if (this.state === 'half-open') {
                 this.state = 'closed';
                 this.failures = 0;
-                console.log('[CircuitBreaker] Circuit breaker closed');
+                (0, logger_1.logInfo)('[CircuitBreaker] Circuit breaker closed');
             }
             else {
                 this.failures = 0;
@@ -124,7 +129,7 @@ class CircuitBreaker {
             // Open circuit if threshold exceeded
             if (this.failures >= this.threshold) {
                 this.state = 'open';
-                console.log('[CircuitBreaker] Circuit breaker opened');
+                (0, logger_1.logWarn)('[CircuitBreaker] Circuit breaker opened', { failures: this.failures, threshold: this.threshold });
             }
             throw error;
         }

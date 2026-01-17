@@ -10,6 +10,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validatedConfig = exports.env = void 0;
 const envalid_1 = require("envalid");
+const logger_1 = require("../utils/logger");
 /**
  * Check if we're in a build context (Next.js build, Vercel build, etc.)
  */
@@ -155,7 +156,9 @@ if (!isBuild && (exports.env.NODE_ENV === 'production' || exports.env.NODE_ENV =
         throw new Error(`DB_PASSWORD must be set in ${exports.env.NODE_ENV}. Current value: build placeholder (not set)`);
     }
     if (exports.env.ALLOWED_ORIGINS === '*') {
-        console.warn(`WARNING: CORS allows all origins in ${exports.env.NODE_ENV}. Consider restricting ALLOWED_ORIGINS.`);
+        (0, logger_1.logWarn)(`WARNING: CORS allows all origins in ${exports.env.NODE_ENV}. Consider restricting ALLOWED_ORIGINS.`, {
+            nodeEnv: exports.env.NODE_ENV,
+        });
     }
 }
 // Export validated config

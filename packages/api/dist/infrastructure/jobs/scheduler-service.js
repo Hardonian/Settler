@@ -67,6 +67,7 @@ catch (error) {
 class JobSchedulerService {
     prisma;
     reconEngine;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cronJobs = new Map();
     isRunning = false;
     healthCheckInterval = null;
@@ -286,7 +287,7 @@ class JobSchedulerService {
                 },
             });
             if (!dbJob) {
-                console.warn(`[JobScheduler] Job ${job.id} no longer exists or is inactive, unscheduling`);
+                (0, logger_1.logWarn)(`[JobScheduler] Job ${job.id} no longer exists or is inactive, unscheduling`, { jobId: job.id });
                 await this.unscheduleJob(job.id);
                 return;
             }
@@ -304,10 +305,10 @@ class JobSchedulerService {
                 const runningDuration = Date.now() - runningResult.startedAt.getTime();
                 // If job has been running for more than 1 hour, consider it stuck
                 if (runningDuration > 3600000) {
-                    console.warn(`[JobScheduler] Job ${job.id} appears stuck, allowing new execution`);
+                    (0, logger_1.logWarn)(`[JobScheduler] Job ${job.id} appears stuck, allowing new execution`, { jobId: job.id, runningDuration });
                 }
                 else {
-                    console.warn(`[JobScheduler] Job ${job.id} is already running, skipping`);
+                    (0, logger_1.logWarn)(`[JobScheduler] Job ${job.id} is already running, skipping`, { jobId: job.id });
                     return;
                 }
             }
@@ -319,7 +320,8 @@ class JobSchedulerService {
                 customRules: undefined,
             });
             const duration = Date.now() - startTime;
-            console.log(`[JobScheduler] Job ${job.id} executed successfully`, {
+            (0, logger_1.logInfo)(`[JobScheduler] Job ${job.id} executed successfully`, {
+                jobId: job.id,
                 resultId: result.id,
                 duration,
             });
@@ -339,7 +341,8 @@ class JobSchedulerService {
             const duration = Date.now() - startTime;
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             const errorStack = error instanceof Error ? error.stack : undefined;
-            console.error(`[JobScheduler] Job ${job.id} execution failed:`, {
+            (0, logger_1.logError)(`[JobScheduler] Job ${job.id} execution failed`, error, {
+                jobId: job.id,
                 error: errorMessage,
                 stack: errorStack,
                 duration,
@@ -368,7 +371,7 @@ class JobSchedulerService {
                 failedResultId = failedResult.id;
             }
             catch (createError) {
-                console.error(`[JobScheduler] Failed to create error result for job ${job.id}:`, createError);
+                (0, logger_1.logError)(`[JobScheduler] Failed to create error result for job ${job.id}`, createError);
             }
             // Send failure notification
             if (failedResultId) {
@@ -385,7 +388,7 @@ class JobSchedulerService {
                 }
                 catch (notificationError) {
                     // Don't fail if notification fails
-                    console.error(`[JobScheduler] Failed to send failure notification:`, notificationError);
+                    (0, logger_1.logError)(`[JobScheduler] Failed to send failure notification`, notificationError);
                 }
             }
             // Don't throw - allow scheduler to continue
@@ -402,11 +405,11 @@ class JobSchedulerService {
             await this.prisma.$queryRaw `SELECT 1`;
             // Log health status (only if there are jobs to avoid spam)
             if (activeJobCount > 0) {
-                console.log(`[JobScheduler] Health check OK - ${activeJobCount} active jobs`);
+                (0, logger_1.logInfo)(`[JobScheduler] Health check OK - ${activeJobCount} active jobs`, { activeJobCount });
             }
         }
         catch (error) {
-            console.error('[JobScheduler] Health check failed:', error);
+            (0, logger_1.logError)('[JobScheduler] Health check failed', error);
         }
     }
     /**

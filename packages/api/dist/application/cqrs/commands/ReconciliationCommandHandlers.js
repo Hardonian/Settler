@@ -48,9 +48,13 @@ class ReconciliationCommandHandlers {
         // Create retry event (could be a new event type)
         const retryEventData = {
             reconciliation_id: command.reconciliation_id,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             job_id: lastEvent.data.job_id,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             source_adapter: lastEvent.data.source_adapter,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             target_adapter: lastEvent.data.target_adapter,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             date_range: lastEvent.data.date_range,
         };
         if (command.user_id) {

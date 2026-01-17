@@ -8,6 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.graphEngineSupabase = exports.ReconciliationGraphEngineSupabase = void 0;
 const client_1 = require("../../infrastructure/supabase/client");
 const events_1 = require("events");
+const logger_1 = require("../../utils/logger");
 class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
     updateSubscribers = new Map();
     /**
@@ -25,7 +26,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
         }, (payload) => {
             this.emit('node_updated', payload);
             this.notifySubscribers(jobId, {
-                type: payload.eventType === 'INSERT' ? 'node_added' : 'node_updated',
+                type: (payload.eventType === 'INSERT' ? 'node_added' : 'node_updated'),
                 data: payload.new,
                 timestamp: new Date(),
             });
@@ -42,7 +43,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
         }, (payload) => {
             this.emit('edge_updated', payload);
             this.notifySubscribers(jobId, {
-                type: payload.eventType === 'INSERT' ? 'edge_added' : 'edge_updated',
+                type: (payload.eventType === 'INSERT' ? 'edge_added' : 'edge_updated'),
                 data: payload.new,
                 timestamp: new Date(),
             });
@@ -80,13 +81,13 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
             id: data.id,
             type: data.node_type,
             jobId: data.job_id,
-            sourceId: data.source_id,
-            targetId: data.target_id,
+            sourceId: data.source_id ?? undefined,
+            targetId: data.target_id ?? undefined,
             data: data.data,
-            amount: data.amount,
-            currency: data.currency,
+            amount: data.amount ?? undefined,
+            currency: data.currency ?? undefined,
             timestamp: new Date(data.timestamp),
-            confidence: data.confidence,
+            confidence: data.confidence ?? undefined,
             metadata: data.metadata,
         };
         this.emit('node_added', savedNode);
@@ -175,13 +176,13 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
             id: n.id,
             type: n.node_type,
             jobId: n.job_id,
-            sourceId: n.source_id,
-            targetId: n.target_id,
+            sourceId: n.source_id ?? undefined,
+            targetId: n.target_id ?? undefined,
             data: n.data,
-            amount: n.amount,
-            currency: n.currency,
+            amount: n.amount ?? undefined,
+            currency: n.currency ?? undefined,
             timestamp: new Date(n.timestamp),
-            confidence: n.confidence,
+            confidence: n.confidence ?? undefined,
             metadata: n.metadata,
         }));
         // Get edges for these nodes
@@ -199,7 +200,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
             source: e.source_node_id,
             target: e.target_node_id,
             type: e.edge_type,
-            confidence: e.confidence,
+            confidence: e.confidence ?? 0,
             metadata: e.metadata,
             createdAt: new Date(e.created_at),
         }));
@@ -228,7 +229,9 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
     subscribe(jobId, callback) {
         if (!this.updateSubscribers.has(jobId)) {
             this.updateSubscribers.set(jobId, new Set());
-            this.initialize(jobId).catch(console.error);
+            this.initialize(jobId).catch((error) => {
+                (0, logger_1.logError)('Failed to initialize graph subscriptions', error);
+            });
         }
         this.updateSubscribers.get(jobId).add(callback);
         return () => {
@@ -246,7 +249,7 @@ class ReconciliationGraphEngineSupabase extends events_1.EventEmitter {
                     callback(update);
                 }
                 catch (error) {
-                    console.error('Error notifying subscriber:', error);
+                    (0, logger_1.logError)('Error notifying subscriber', error);
                 }
             });
         }

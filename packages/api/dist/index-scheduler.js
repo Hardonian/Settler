@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-ignore - PrismaClient is generated at build time
 const client_1 = require("@prisma/client");
 const scheduler_service_1 = require("./infrastructure/jobs/scheduler-service");
+const logger_1 = require("./utils/logger");
 // Initialize Prisma client
 const prisma = new client_1.PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
@@ -26,13 +27,12 @@ const scheduler = (0, scheduler_service_1.getJobSchedulerService)(prisma);
  */
 async function start() {
     try {
-        console.log('[Scheduler] Starting job scheduler service...');
+        (0, logger_1.logInfo)('[Scheduler] Starting job scheduler service...');
         await scheduler.start();
-        console.log('[Scheduler] Job scheduler service started successfully');
-        console.log('[Scheduler] Status:', scheduler.getStatus());
+        (0, logger_1.logInfo)('[Scheduler] Job scheduler service started successfully', { status: scheduler.getStatus() });
     }
     catch (error) {
-        console.error('[Scheduler] Failed to start:', error);
+        (0, logger_1.logError)('[Scheduler] Failed to start', error);
         process.exit(1);
     }
 }
@@ -40,22 +40,22 @@ async function start() {
  * Graceful shutdown
  */
 async function shutdown() {
-    console.log('[Scheduler] Shutting down...');
+    (0, logger_1.logInfo)('[Scheduler] Shutting down...');
     await scheduler.stop();
     await prisma.$disconnect();
-    console.log('[Scheduler] Shutdown complete');
+    (0, logger_1.logInfo)('[Scheduler] Shutdown complete');
     process.exit(0);
 }
 // Handle shutdown signals
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 process.on('uncaughtException', (error) => {
-    console.error('[Scheduler] Uncaught exception:', error);
+    (0, logger_1.logError)('[Scheduler] Uncaught exception', error);
     shutdown();
 });
 // Start scheduler
 start().catch((error) => {
-    console.error('[Scheduler] Fatal error:', error);
+    (0, logger_1.logError)('[Scheduler] Fatal error', error);
     process.exit(1);
 });
 //# sourceMappingURL=index-scheduler.js.map
