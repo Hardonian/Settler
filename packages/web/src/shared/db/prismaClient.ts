@@ -19,6 +19,16 @@
 
 // CRITICAL: Set environment variables BEFORE importing PrismaClient
 // Prisma 7 determines engine type at import time, so we must set these first
+type PrismaGlobal = typeof globalThis & {
+  __PRISMA_BUILD_PHASE__?: boolean;
+};
+
+type PrismaClientWithError = PrismaClient & {
+  __prismaInitError?: unknown;
+};
+
+const prismaGlobals = globalThis as PrismaGlobal;
+
 if (typeof process !== 'undefined' && process.env) {
   // Use bracket notation to prevent webpack from optimizing these away
   const env = process.env;
@@ -62,7 +72,7 @@ if (typeof process !== 'undefined' && process.env) {
   }
   
   // Store isBuildPhase for use after import
-  (globalThis as any).__PRISMA_BUILD_PHASE__ = isBuildPhase;
+  prismaGlobals.__PRISMA_BUILD_PHASE__ = isBuildPhase;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -70,8 +80,8 @@ if (typeof process !== 'undefined' && process.env) {
 import { PrismaClient } from '@prisma/client';
 
 // Prevent multiple instances in development
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+const globalForPrisma = globalThis as typeof globalThis & {
+  prisma?: PrismaClient;
 };
 
 // PrismaClient configuration with connection pooling optimization
@@ -79,7 +89,7 @@ const globalForPrisma = globalThis as unknown as {
 // we must provide either adapter or accelerateUrl. Since we generate with
 // PRISMA_CLIENT_ENGINE_TYPE=binary, this should not be needed, but we handle
 // it as a safety measure during build time.
-const isBuildPhase = (globalThis as any).__PRISMA_BUILD_PHASE__ ?? false;
+const isBuildPhase = prismaGlobals.__PRISMA_BUILD_PHASE__ ?? false;
 
 // Use bracket notation to prevent webpack from optimizing process.env access
 const nodeEnv = typeof process !== 'undefined' && process.env ? process.env['NODE_ENV'] : 'production';
@@ -131,7 +141,7 @@ const optimizedDbUrl = getOptimizedDatabaseUrl();
 // 1. Override with optimized URL if we want connection pooling params
 // 2. Provide accelerateUrl ONLY during build phase when DATABASE_URL is truly missing
 // IMPORTANT: Don't provide accelerateUrl if DATABASE_URL exists, as it will override the direct connection
-const prismaConfig: ConstructorParameters<typeof PrismaClient>[0] = {
+const prismaConfig: Record<string, any> = {
   log: nodeEnv === 'development' ? ['error', 'warn'] : ['error'], // Reduced logging in production
   // Only provide accelerateUrl during build phase if DATABASE_URL is truly missing
   // This satisfies Prisma Client constructor when generated with client engine type
@@ -243,7 +253,7 @@ try {
   }) as PrismaClient;
   
   // Store the error for debugging
-  (prismaInstance as any).__prismaInitError = error;
+  (prismaInstance as PrismaClientWithError).__prismaInitError = error;
 }
 
 // Add connection health check

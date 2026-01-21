@@ -9,6 +9,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+import type { Database } from '@/types/database.types';
 
 export interface PositioningFeedbackInput {
   fiveWordVp?: string;
@@ -34,7 +35,7 @@ export async function submitPositioningFeedback(
   input: PositioningFeedbackInput
 ): Promise<PositioningFeedbackResult> {
   try {
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
     const { data: { user } } = await supabase.auth.getUser();
 
     // Validate input
@@ -45,16 +46,18 @@ export async function submitPositioningFeedback(
       };
     }
 
+    const insertData: Database['public']['Tables']['positioning_feedback']['Insert'] = {
+      user_id: user?.id || null,
+      five_word_vp: input.fiveWordVp ?? null,
+      target_persona_pain: input.targetPersonaPain ?? null,
+      clarity_rating: input.clarityRating ?? null,
+      feedback_text: input.feedbackText ?? null,
+    };
+
     // Insert feedback (trigger will calculate impact_score automatically)
     const { data, error } = await supabase
       .from('positioning_feedback')
-      .insert({
-        user_id: user?.id || null, // Allow anonymous feedback
-        five_word_vp: input.fiveWordVp,
-        target_persona_pain: input.targetPersonaPain,
-        clarity_rating: input.clarityRating,
-        feedback_text: input.feedbackText,
-      } as any)
+      .insert(insertData)
       .select()
       .single();
 
@@ -71,8 +74,8 @@ export async function submitPositioningFeedback(
 
     return {
       success: true,
-      impactScore: (data as any)?.impact_score,
-      feedbackId: (data as any)?.id,
+      impactScore: data?.impact_score ?? undefined,
+      feedbackId: data?.id ?? undefined,
     };
   } catch (error) {
     console.error('Positioning feedback error:', error);

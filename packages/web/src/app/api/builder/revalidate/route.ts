@@ -13,13 +13,13 @@ export async function POST(request: NextRequest) {
     // Verify webhook signature (optional but recommended)
     const webhookSecret = process.env.BUILDER_WEBHOOK_SECRET;
     if (webhookSecret) {
-      const signature = request.headers.get('x-builder-signature');
+      const _signature = request.headers.get('x-builder-signature');
       // TODO: Implement signature verification
       // For now, we'll trust the webhook
     }
 
     // Extract the model and URL from the webhook payload
-    const { model, url, data } = body;
+    const { model, url } = body;
 
     if (!url) {
       return NextResponse.json(

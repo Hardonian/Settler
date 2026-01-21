@@ -6,7 +6,7 @@
  */
 
 // Export a stub that throws if accidentally used
-export const prisma = new Proxy({} as any, {
+export const prisma = new Proxy({} as object, {
   get() {
     throw new Error(
       'Prisma Client cannot be used in the browser. ' +

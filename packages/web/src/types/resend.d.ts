@@ -9,7 +9,7 @@ declare module "resend" {
         html?: string;
         text?: string;
         tags?: Array<{ name: string; value: string }>;
-      }): Promise<{ data?: { id: string } | null; error?: any }>;
+      }): Promise<{ data?: { id: string } | null; error?: unknown }>;
     };
   }
 }

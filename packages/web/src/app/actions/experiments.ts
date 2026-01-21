@@ -3,6 +3,7 @@
 import { prisma } from '@/shared/db/prismaClient';
 import { getTenantContext } from '@/lib/tenant/server';
 import { revalidatePath } from 'next/cache';
+import { Prisma } from '@prisma/client';
 
 async function getAuthenticatedTenantId() {
     const context = await getTenantContext();
@@ -14,7 +15,50 @@ async function getAuthenticatedTenantId() {
     throw new Error('No tenant context found');
 }
 
-export async function getExperiments() {
+type ActionState<T = unknown> = {
+    success: boolean;
+    data?: T;
+    error?: string;
+};
+
+type ExperimentUpdateInput = {
+    name?: string;
+    status?: string;
+    trafficSplit?: Record<string, number>;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+    typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isTrafficSplit = (value: unknown): value is Record<string, number> =>
+    isRecord(value) && Object.values(value).every((entry) => typeof entry === 'number');
+
+function parseExperimentUpdateInput(value: unknown): ExperimentUpdateInput | null {
+    if (!isRecord(value)) {
+        return null;
+    }
+
+    const update: ExperimentUpdateInput = {};
+
+    if (typeof value.name === 'string') {
+        update.name = value.name;
+    }
+
+    if (typeof value.status === 'string') {
+        update.status = value.status;
+    }
+
+    if (value.trafficSplit !== undefined) {
+        if (!isTrafficSplit(value.trafficSplit)) {
+            return null;
+        }
+        update.trafficSplit = value.trafficSplit;
+    }
+
+    return update;
+}
+
+export async function getExperiments(): Promise<ActionState<Prisma.ExperimentGetPayload<{ include: { targetPage: true } }>[]>> {
     try {
         const tenantId = await getAuthenticatedTenantId();
         const experiments = await prisma.experiment.findMany({
@@ -28,7 +72,9 @@ export async function getExperiments() {
     }
 }
 
-export async function getExperiment(id: string) {
+export async function getExperiment(
+    id: string
+): Promise<ActionState<Prisma.ExperimentGetPayload<{ include: { targetPage: true; variants: true } }>>> {
     try {
         const tenantId = await getAuthenticatedTenantId();
         const experiment = await prisma.experiment.findUnique({
@@ -49,14 +95,14 @@ export async function getExperiment(id: string) {
     }
 }
 
-export async function createExperiment(formData: FormData) {
+export async function createExperiment(formData: FormData): Promise<ActionState> {
     try {
         const tenantId = await getAuthenticatedTenantId();
-        const name = formData.get('name') as string;
-        const slug = formData.get('slug') as string;
-        const targetPageId = formData.get('targetPageId') as string;
+        const name = formData.get('name');
+        const slug = formData.get('slug');
+        const targetPageId = formData.get('targetPageId');
 
-        if (!name || !slug || !targetPageId) {
+        if (typeof name !== 'string' || typeof slug !== 'string' || typeof targetPageId !== 'string') {
             return { success: false, error: 'Missing required fields' };
         }
 
@@ -88,9 +134,14 @@ export async function createExperiment(formData: FormData) {
     }
 }
 
-export async function updateExperiment(id: string, data: any) {
+export async function updateExperiment(id: string, data: unknown): Promise<ActionState> {
     try {
         const tenantId = await getAuthenticatedTenantId();
+        const update = parseExperimentUpdateInput(data);
+
+        if (!update || Object.keys(update).length === 0) {
+            return { success: false, error: 'Invalid update payload' };
+        }
         
         // Verify ownership
         const existing = await prisma.experiment.findUnique({ where: { id } });
@@ -98,14 +149,25 @@ export async function updateExperiment(id: string, data: any) {
             return { success: false, error: 'Unauthorized' };
         }
 
+        const updateData: Prisma.ExperimentUpdateInput = {
+            updatedAt: new Date(),
+        };
+
+        if (update.name) {
+            updateData.name = update.name;
+        }
+
+        if (update.status) {
+            updateData.status = update.status;
+        }
+
+        if (update.trafficSplit) {
+            updateData.trafficSplit = update.trafficSplit as Prisma.JsonObject;
+        }
+
         await prisma.experiment.update({
             where: { id },
-            data: {
-                name: data.name,
-                status: data.status,
-                trafficSplit: data.trafficSplit,
-                updatedAt: new Date(),
-            }
+            data: updateData
         });
         
         revalidatePath(`/admin/experiments/${id}`);

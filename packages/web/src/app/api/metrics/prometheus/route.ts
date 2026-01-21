@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { metrics } from '@settler/adapters/src/metrics/prometheus';
+import { metrics } from '@settler/adapters/dist/metrics/prometheus';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';

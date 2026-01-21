@@ -7,8 +7,9 @@
 import { headers } from 'next/headers';
 import { resolveTenant, getTenantById } from '@/shared/tenant/tenantResolver';
 import { brandingToTheme } from '@/components/tenant/TenantThemeProvider';
-import { TenantTheme } from '@/shared/tenant/types';
+import { TenantNavigationItem, TenantTheme } from '@/shared/tenant/types';
 import { createClient } from '@/lib/supabase/server';
+import { Prisma } from '@prisma/client';
 
 export interface TenantContext {
   tenantId: string;
@@ -19,8 +20,8 @@ export interface TenantContext {
     faviconUrl?: string | null;
   } | null;
   navigation: {
-    navItems: any[];
-    footerItems: any[];
+    navItems: TenantNavigationItem[];
+    footerItems: TenantNavigationItem[];
   } | null;
 }
 
@@ -165,8 +166,8 @@ export async function getTenantContext(): Promise<TenantContext> {
         : null,
       navigation: tenant.navigation
         ? {
-            navItems: tenant.navigation.navItems as any[],
-            footerItems: tenant.navigation.footerItems as any[],
+            navItems: normalizeNavigationItems(tenant.navigation.navItems),
+            footerItems: normalizeNavigationItems(tenant.navigation.footerItems),
           }
         : null,
     };
@@ -183,7 +184,26 @@ export async function getTenantContext(): Promise<TenantContext> {
 /**
  * Get tenant page by slug with experiment variant
  */
-export async function getTenantPage(tenantId: string, slug: string) {
+type TenantPagePayload = Prisma.TenantPageGetPayload<{
+  include: {
+    tenant: {
+      include: {
+        branding: true;
+        navigation: true;
+      };
+    };
+  };
+}>;
+
+type TenantPageWithExperiment = TenantPagePayload & {
+  blocks: unknown[];
+  experiment: { id: string; variantKey: string } | null;
+};
+
+export async function getTenantPage(
+  tenantId: string,
+  slug: string
+): Promise<TenantPageWithExperiment | null> {
   const { prisma } = await import('@/shared/db/prismaClient');
   const { resolveExperimentVariant } = await import('./experimentResolver');
 
@@ -212,7 +232,8 @@ export async function getTenantPage(tenantId: string, slug: string) {
   const experiment = await resolveExperimentVariant(tenantId, page.id);
   
   // Merge experiment blocks override with base blocks
-  let finalBlocks = page.blocks as unknown[];
+  const baseBlocks = Array.isArray(page.blocks) ? page.blocks : [];
+  let finalBlocks = baseBlocks;
   if (experiment.blocksOverride && Array.isArray(experiment.blocksOverride)) {
     // Simple merge: experiment blocks override base blocks
     // In production, you might want more sophisticated merging
@@ -230,3 +251,32 @@ export async function getTenantPage(tenantId: string, slug: string) {
     } : null,
   };
 }
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isTenantNavigationItem = (value: unknown): value is TenantNavigationItem => {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const type = value.type;
+  if (type !== 'internal' && type !== 'external') {
+    return false;
+  }
+
+  if (typeof value.label !== 'string' || typeof value.href !== 'string') {
+    return false;
+  }
+
+  if (value.children) {
+    if (!Array.isArray(value.children)) {
+      return false;
+    }
+    return value.children.every(isTenantNavigationItem);
+  }
+
+  return true;
+};
+
+const normalizeNavigationItems = (value: unknown): TenantNavigationItem[] =>
+  Array.isArray(value) ? value.filter(isTenantNavigationItem) : [];

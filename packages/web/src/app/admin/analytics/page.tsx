@@ -2,7 +2,7 @@
 
 import { adminLogger } from '@/lib/admin/utils/logger';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -32,20 +32,20 @@ interface WorkspaceDetail {
   createdAt: Date;
 }
 
+type DateRange = '7d' | '30d' | '90d' | 'all';
+
+const isDateRange = (value: string): value is DateRange =>
+  value === '7d' || value === '30d' || value === '90d' || value === 'all';
+
 export default function AdminAnalyticsPage() {
   const [kpis, setKpis] = useState<KPIs | null>(null);
   const [workspaces, setWorkspaces] = useState<WorkspaceDetail[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
+  const [dateRange, setDateRange] = useState<DateRange>('30d');
   const [planFilter, setPlanFilter] = useState<string>('all');
-
-  useEffect(() => {
-    loadData();
-  }, [dateRange, planFilter]);
-
   const [error, setError] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -77,6 +77,16 @@ export default function AdminAnalyticsPage() {
     } finally {
       setLoading(false);
     }
+  }, [dateRange, planFilter]);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
+
+  const handleDateRangeChange = (value: string) => {
+    if (isDateRange(value)) {
+      setDateRange(value);
+    }
   };
 
   const handleExport = () => {
@@ -105,7 +115,7 @@ export default function AdminAnalyticsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Select value={dateRange} onValueChange={(v) => setDateRange(v as any)}>
+          <Select value={dateRange} onValueChange={handleDateRangeChange}>
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>

@@ -8,21 +8,18 @@
  */
 
 import { getUserRole, UserRole } from '../auth/roles';
+import type { PrismaClient } from '@prisma/client';
 
 // Lazy-load Prisma to prevent initialization errors when DATABASE_URL is missing
-async function getPrisma() {
+type PrismaTenantClient = PrismaClient;
+
+async function getPrisma(): Promise<PrismaTenantClient | null> {
   try {
-    const { prisma } = await import('../db/prismaClient');
+    const { prisma } = (await import('../db/prismaClient')) as unknown as { prisma: PrismaTenantClient };
     return prisma;
   } catch (error) {
     console.error('[TenantResolver] Failed to load Prisma:', error);
-    // Return a stub that always returns null
-    return {
-      tenant: {
-        findFirst: async () => null,
-        findUnique: async () => null,
-      },
-    } as any;
+    return null;
   }
 }
 
@@ -65,6 +62,9 @@ type TenantSelect = {
 async function findTenantByDomain(host: string): Promise<TenantSelect | null> {
   try {
     const prisma = await getPrisma();
+    if (!prisma) {
+      return null;
+    }
     const tenant = await prisma.tenant.findFirst({
       where: {
         OR: [
@@ -82,7 +82,7 @@ async function findTenantByDomain(host: string): Promise<TenantSelect | null> {
         isActive: true,
       },
     });
-    return tenant;
+    return tenant as TenantSelect | null;
   } catch (error) {
     console.error('Failed to find tenant by domain:', error);
     return null;
@@ -95,6 +95,9 @@ async function findTenantByDomain(host: string): Promise<TenantSelect | null> {
 async function findTenantBySlug(slug: string): Promise<TenantSelect | null> {
   try {
     const prisma = await getPrisma();
+    if (!prisma) {
+      return null;
+    }
     const tenant = await prisma.tenant.findUnique({
       where: { slug },
       select: {
@@ -106,7 +109,7 @@ async function findTenantBySlug(slug: string): Promise<TenantSelect | null> {
         isActive: true,
       },
     });
-    return tenant;
+    return tenant as TenantSelect | null;
   } catch (error) {
     console.error('Failed to find tenant by slug:', error);
     return null;
@@ -119,6 +122,9 @@ async function findTenantBySlug(slug: string): Promise<TenantSelect | null> {
 async function getDefaultTenant(): Promise<TenantSelect | null> {
   try {
     const prisma = await getPrisma();
+    if (!prisma) {
+      return null;
+    }
     const tenant = await prisma.tenant.findUnique({
       where: { slug: 'default' },
       select: {
@@ -130,7 +136,7 @@ async function getDefaultTenant(): Promise<TenantSelect | null> {
         isActive: true,
       },
     });
-    return tenant;
+    return tenant as TenantSelect | null;
   } catch (error) {
     console.error('Failed to get default tenant:', error);
     return null;
@@ -240,6 +246,9 @@ export async function resolveTenant(
 export async function getTenantById(tenantId: string) {
   try {
     const prisma = await getPrisma();
+    if (!prisma) {
+      return null;
+    }
     return await prisma.tenant.findUnique({
       where: { id: tenantId },
       include: {
@@ -260,6 +269,9 @@ export async function getTenantById(tenantId: string) {
 export async function getTenantBySlug(slug: string) {
   try {
     const prisma = await getPrisma();
+    if (!prisma) {
+      return null;
+    }
     return await prisma.tenant.findUnique({
       where: { slug },
       include: {

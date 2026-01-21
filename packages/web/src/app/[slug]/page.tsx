@@ -35,11 +35,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {};
   }
   
+  const title = typeof page.seoTitle === 'string' ? page.seoTitle : page.slug;
+  const description = typeof page.seoDescription === 'string' ? page.seoDescription : undefined;
+  const seoImageUrl = typeof page.seoImageUrl === 'string' ? page.seoImageUrl : undefined;
+
   return {
-    title: page.seoTitle || page.slug || 'Page',
-    description: page.seoDescription || undefined,
+    title: title || 'Page',
+    description,
     openGraph: {
-      images: page.seoImageUrl ? [page.seoImageUrl] : undefined,
+      images: seoImageUrl ? [seoImageUrl] : undefined,
     },
   };
 }
@@ -96,7 +100,7 @@ export default async function TenantPageRoute({ params }: PageProps) {
           tenantName={tenantContext.tenantSlug || 'Settler'}
         />
         <main className="pt-16">
-          <PageRenderer blocks={page.blocks as unknown[]} />
+          <PageRenderer blocks={page.blocks} />
         </main>
         <Footer />
       </div>

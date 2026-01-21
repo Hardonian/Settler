@@ -9,6 +9,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import { Button } from "@/components/ui/button";
@@ -71,10 +72,13 @@ export function TenantNavigation({
             aria-label={`${tenantName} homepage`}
           >
             {logoUrl ? (
-              <img
+              <Image
                 src={logoUrl}
                 alt={`${tenantName} logo`}
+                width={128}
+                height={32}
                 className="h-8 w-auto"
+                priority
               />
             ) : (
               <div
