@@ -2,11 +2,10 @@
  * Console Layout
  * 
  * Wraps all console pages with the console layout and navigation.
- * Allows unauthenticated users to see a free view with upsell triggers.
+ * Middleware enforces authentication for /console routes.
  * Authenticated users without subscription see upgrade prompts.
  * 
- * CRITICAL: This layout allows public access but gates features based on auth/subscription.
- * Unauthenticated users see free view with sign-up CTAs.
+ * CRITICAL: This layout handles error states gracefully without hard 500s.
  * Authenticated users without subscription see upgrade prompts.
  */
 

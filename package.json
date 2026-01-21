@@ -157,7 +157,7 @@
     "node": ">=24.0.0",
     "npm": ">=10.0.0"
   },
-  "packageManager": "npm@10.2.4",
+  "packageManager": "pnpm@10.13.1",
   "overrides": {
     "rimraf": "^5.0.0",
     "raw-body": "^2.5.2",

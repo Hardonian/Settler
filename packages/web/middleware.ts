@@ -15,6 +15,7 @@ import { generateTraceId } from "./src/lib/observability/trace";
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // CRITICAL: Wrap entire middleware in try-catch to prevent any 500 errors
   try {
+    const pathname = request.nextUrl.pathname;
     // Generate or get trace_id
     let traceId = request.headers.get("x-trace-id") || request.cookies.get("trace-id")?.value;
     if (!traceId) {
@@ -32,23 +33,98 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       return addSecurityHeaders(response);
     }
 
-  // Public routes that should never require auth or throw errors
-  // These routes must always render, even if Supabase/auth fails
-  // NOTE: /console is NOT public - it requires authentication and subscription
-  const publicRoutes = [
-    '/playground',
-    '/pricing',
-    '/trust',
-    '/cookbook',
-    '/cookbooks',
-    '/runbooks',
-    '/schematics',
-    '/demo', // Demo routes are public and unauthenticated
-  ];
-  
-  const isPublicRoute = publicRoutes.some(route => 
-    request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(`${route}/`)
-  );
+    // Public routes that should never require auth or throw errors
+    // These routes must always render, even if Supabase/auth fails
+    // NOTE: /console, /admin, /dashboard, and data-bearing routes are authenticated
+    const publicExactRoutes = new Set([
+      '/',
+      '/pricing',
+      '/support',
+      '/status',
+      '/trust',
+      '/security',
+      '/roadmap',
+      '/proof',
+      '/comparison',
+      '/vision',
+      '/why-settler',
+      '/how-it-works',
+      '/architecture',
+      '/founder',
+      '/enterprise',
+      '/benchmarks',
+      '/roi-calculator',
+      '/playground',
+      '/demo',
+      '/receipts',
+      '/feature-flags',
+      '/cookbook',
+      '/cookbooks',
+      '/runbooks',
+      '/schematics',
+      '/react-settler-demo',
+      '/edge-ai',
+      '/community',
+      '/community/contributors',
+      '/changelog',
+      '/oss',
+      '/offline',
+      '/mobile',
+      '/docs',
+      '/signup',
+      '/integrations/request',
+      '/support/contact',
+      '/legal',
+    ]);
+
+    const publicPrefixes = [
+      '/docs/',
+      '/support/',
+      '/legal/',
+      '/changelog/',
+      '/community/',
+      '/use-cases/',
+      '/demo/',
+      '/playground/',
+      '/builder/',
+      '/invite/',
+      '/oss/',
+      '/cookbook/',
+      '/cookbooks/',
+    ];
+
+    const publicExceptions = [
+      '/console/playground',
+    ];
+
+    const isPublicRoute =
+      publicExactRoutes.has(pathname) ||
+      publicPrefixes.some((prefix) => pathname.startsWith(prefix)) ||
+      publicExceptions.some(
+        (route) => pathname === route || pathname.startsWith(`${route}/`)
+      );
+
+    const isApiRoute = pathname.startsWith('/api');
+
+    const authRequiredPrefixes = [
+      '/console',
+      '/dashboard',
+      '/admin',
+      '/billing',
+      '/enterprise/dashboard',
+      '/review',
+      '/investor',
+      '/edge-ai/nodes',
+      '/realtime-dashboard',
+      '/ux-playground',
+    ];
+
+    const isAuthRequiredRoute =
+      !isPublicRoute &&
+      !isApiRoute &&
+      authRequiredPrefixes.some((prefix) =>
+        pathname === prefix || pathname.startsWith(`${prefix}/`)
+      );
 
   let response = NextResponse.next({
     request: {
@@ -71,15 +147,22 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const supabaseAnonKey =
     process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!supabaseUrl || !supabaseAnonKey) {
-    // If Supabase not configured, skip auth middleware
-    // Public routes should still work
-    return addSecurityHeaders(response);
-  }
+    if (!supabaseUrl || !supabaseAnonKey) {
+      // If Supabase not configured, skip auth middleware for public/API routes
+      // Public routes should still work; protected routes fail closed.
+      if (isAuthRequiredRoute) {
+        const redirectUrl = new URL('/signup', request.url);
+        redirectUrl.searchParams.set('next', pathname);
+        const redirectResponse = NextResponse.redirect(redirectUrl);
+        redirectResponse.headers.set('x-trace-id', traceId);
+        return addSecurityHeaders(redirectResponse);
+      }
+      return addSecurityHeaders(response);
+    }
 
   // For public routes, skip auth checks but still refresh session if possible
   // This allows authenticated users to see elevated features without blocking unauthenticated access
-  if (isPublicRoute) {
+  if (isPublicRoute || isApiRoute) {
     try {
       const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
         cookies: {
@@ -186,13 +269,27 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     // Refresh session if expired - required for Server Components
     // Wrap in try/catch to prevent middleware from crashing on auth errors
     try {
-      await supabase.auth.getUser();
+      const { data, error } = await supabase.auth.getUser();
+      if (isAuthRequiredRoute && (error || !data?.user)) {
+        const redirectUrl = new URL('/signup', request.url);
+        redirectUrl.searchParams.set('next', pathname);
+        const redirectResponse = NextResponse.redirect(redirectUrl);
+        redirectResponse.headers.set('x-trace-id', traceId);
+        return addSecurityHeaders(redirectResponse);
+      }
     } catch (authError) {
       // Log but don't fail - let the route handler deal with auth
       console.warn(
         "[Middleware] Auth refresh failed (non-fatal):",
         authError instanceof Error ? authError.message : "Unknown error"
       );
+      if (isAuthRequiredRoute) {
+        const redirectUrl = new URL('/signup', request.url);
+        redirectUrl.searchParams.set('next', pathname);
+        const redirectResponse = NextResponse.redirect(redirectUrl);
+        redirectResponse.headers.set('x-trace-id', traceId);
+        return addSecurityHeaders(redirectResponse);
+      }
     }
   } catch (error) {
     // If Supabase client creation fails, log but continue
@@ -201,6 +298,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       "[Middleware] Failed to create Supabase client (non-fatal):",
       error instanceof Error ? error.message : "Unknown error"
     );
+    if (isAuthRequiredRoute) {
+      const redirectUrl = new URL('/signup', request.url);
+      redirectUrl.searchParams.set('next', pathname);
+      const redirectResponse = NextResponse.redirect(redirectUrl);
+      redirectResponse.headers.set('x-trace-id', traceId);
+      return addSecurityHeaders(redirectResponse);
+    }
   }
 
   // Add route protection logic here if needed
