@@ -8,7 +8,7 @@ import { Loader2, Search, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { asExtendedClient } from "@/lib/supabase/types";
-import { getAllConnectorMetadata } from "@settler/adapters/src/drivers";
+import { getAllConnectorMetadata } from "@settler/adapters/dist/drivers";
 
 interface Integration {
   id: string;

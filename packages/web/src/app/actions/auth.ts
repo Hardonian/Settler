@@ -39,7 +39,7 @@ export async function signUpUser(
       };
     }
 
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
 
     // 1. Create auth user in Supabase
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -84,7 +84,7 @@ export async function signUpUser(
 
     const { error: profileError } = await supabase
       .from('profiles')
-      .insert(profileData as any);
+      .insert(profileData);
 
     if (profileError) {
       // If profile creation fails, we should handle it gracefully
@@ -106,7 +106,7 @@ export async function signUpUser(
 
     const { error: activityError } = await supabase
       .from('activity_log')
-      .insert(activityData as any);
+      .insert(activityData);
 
     if (activityError) {
       console.error('Activity log error:', activityError);
@@ -156,7 +156,7 @@ export async function logActivity(
   metadata?: Database['public']['Tables']['activity_log']['Row']['metadata']
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
     const { data: { user } } = await supabase.auth.getUser();
 
     const activityData: Database['public']['Tables']['activity_log']['Insert'] = {
@@ -169,7 +169,7 @@ export async function logActivity(
 
     const { error } = await supabase
       .from('activity_log')
-      .insert(activityData as any);
+      .insert(activityData);
 
     if (error) {
       console.error('Activity log error:', error);

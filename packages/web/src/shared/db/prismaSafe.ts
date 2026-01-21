@@ -5,11 +5,13 @@
  * This ensures pages can render even if Prisma fails to initialize.
  */
 
-let prismaInstance: any = null;
+import type { PrismaClient } from '@prisma/client';
+
+let prismaInstance: PrismaClient | null = null;
 let prismaError: Error | null = null;
 
 // Lazy load Prisma to avoid import-time failures
-async function getPrismaClient() {
+async function getPrismaClient(): Promise<PrismaClient | null> {
   if (prismaInstance) {
     return prismaInstance;
   }
@@ -20,7 +22,7 @@ async function getPrismaClient() {
   
   try {
     // Dynamic import to avoid module-level failures
-    const { prisma } = await import('./prismaClient');
+    const { prisma } = (await import('./prismaClient')) as { prisma: PrismaClient };
     prismaInstance = prisma;
     return prisma;
   } catch (error) {

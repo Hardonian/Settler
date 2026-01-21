@@ -9,6 +9,7 @@
 import { FeatureGridBlock } from '../pageSchema';
 import { cn } from '@/lib/utils';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
+import Image from 'next/image';
 
 interface FeatureGridBlockComponentProps {
   block: FeatureGridBlock;
@@ -47,9 +48,11 @@ export function FeatureGridBlockComponent({ block }: FeatureGridBlockComponentPr
                 </div>
               )}
               {feature.image && (
-                <img
+                <Image
                   src={feature.image}
                   alt={feature.title}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 mb-4 object-contain"
                 />
               )}

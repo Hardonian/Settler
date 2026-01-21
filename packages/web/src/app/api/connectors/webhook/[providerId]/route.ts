@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
-import { getConnectorDriver } from '@settler/adapters/src/drivers';
-import { verifyWebhook } from '@settler/adapters/src/webhook-verification';
+import { getConnectorDriver } from '@settler/adapters/dist/drivers';
+import { verifyWebhook } from '@settler/adapters/dist/webhook-verification';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 

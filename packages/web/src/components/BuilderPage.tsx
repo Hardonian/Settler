@@ -6,9 +6,10 @@
 'use client';
 
 import { BuilderComponent, builder, useIsPreviewing } from '@builder.io/react';
-import { builderConfig, builderModels } from '@/lib/builder/config';
+import { builderModels } from '@/lib/builder/config';
 import '@/lib/builder/component-registry'; // Auto-register components
 import { useEffect, useState } from 'react';
+import Head from 'next/head';
 
 interface BuilderPageProps {
   model?: string;
@@ -127,7 +128,7 @@ export function BuilderPageWithSEO({ content, model }: BuilderPageProps) {
 
   return (
     <>
-      <head>
+      <Head>
         <title>{title}</title>
         {description && <meta name="description" content={description} />}
         {keywords && <meta name="keywords" content={keywords} />}
@@ -138,7 +139,7 @@ export function BuilderPageWithSEO({ content, model }: BuilderPageProps) {
         <meta name="twitter:title" content={title} />
         {description && <meta name="twitter:description" content={description} />}
         <meta name="twitter:image" content={ogImage} />
-      </head>
+      </Head>
       <BuilderPage content={content} model={model} />
     </>
   );

@@ -16,8 +16,8 @@ export interface DemoMatch {
   confidence: number;
   amount: number;
   currency: string;
-  matchedFields: Record<string, any>;
-  metadata: Record<string, any>;
+  matchedFields: Record<string, unknown>;
+  metadata: Record<string, unknown>;
 }
 
 export interface DemoUnmatched {
@@ -40,6 +40,57 @@ export interface DemoResult {
   unmatchedTarget: DemoUnmatched[];
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isString = (value: unknown): value is string => typeof value === 'string';
+
+const isNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value);
+
+const isDemoSummary = (value: unknown): value is DemoSummary =>
+  isRecord(value) &&
+  isNumber(value.totalSource) &&
+  isNumber(value.totalTarget) &&
+  isNumber(value.matched) &&
+  isNumber(value.unmatchedSource) &&
+  isNumber(value.unmatchedTarget) &&
+  isString(value.matchRate);
+
+const isDemoMatch = (value: unknown): value is DemoMatch =>
+  isRecord(value) &&
+  isString(value.id) &&
+  isString(value.sourceId) &&
+  isString(value.targetId) &&
+  isNumber(value.confidence) &&
+  isNumber(value.amount) &&
+  isString(value.currency) &&
+  isRecord(value.matchedFields) &&
+  isRecord(value.metadata);
+
+const isDemoUnmatched = (value: unknown): value is DemoUnmatched =>
+  isRecord(value) &&
+  isString(value.id) &&
+  isString(value.externalId) &&
+  isString(value.source) &&
+  isString(value.occurredAt) &&
+  isNumber(value.amount) &&
+  isString(value.currency) &&
+  isString(value.description) &&
+  isString(value.type);
+
+const isDemoResult = (value: unknown): value is DemoResult =>
+  isRecord(value) &&
+  isString(value.runId) &&
+  isString(value.timestamp) &&
+  isDemoSummary(value.summary) &&
+  Array.isArray(value.matches) &&
+  value.matches.every(isDemoMatch) &&
+  Array.isArray(value.unmatchedSource) &&
+  value.unmatchedSource.every(isDemoUnmatched) &&
+  Array.isArray(value.unmatchedTarget) &&
+  value.unmatchedTarget.every(isDemoUnmatched);
+
 export async function runDemoSimulation(): Promise<DemoResult> {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
   
@@ -60,7 +111,11 @@ export async function runDemoSimulation(): Promise<DemoResult> {
       });
 
       if (response.ok) {
-        return await response.json() as DemoResult;
+        const payload: unknown = await response.json();
+        if (isDemoResult(payload)) {
+          return payload;
+        }
+        throw new Error('Unexpected demo response payload');
       }
     } catch (e) {
       // Continue to next port

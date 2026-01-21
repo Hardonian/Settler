@@ -4,12 +4,29 @@ import { prisma } from '@/shared/db/prismaClient';
 import { getTenantContext } from '@/lib/tenant/server';
 import { revalidatePath } from 'next/cache';
 import { PageBlock } from '@/domain/siteBuilder/pageSchema';
+import { Prisma } from '@prisma/client';
 
-export type ActionState = {
+export type ActionState<T = unknown> = {
   success?: boolean;
   error?: string;
-  data?: any;
+  data?: T;
 };
+
+type PageMetadata = Prisma.JsonObject;
+
+type FormattedPage = {
+  id: string;
+  title: string;
+  slug: string;
+  status: 'draft' | 'published';
+  lastUpdated: string;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const getString = (value: unknown): string | undefined =>
+  typeof value === 'string' ? value : undefined;
 
 /**
  * Ensure we have a valid tenant context.
@@ -35,7 +52,7 @@ async function getAuthenticatedTenantId() {
   throw new Error('No tenant context found and no default tenant available.');
 }
 
-export async function getPages(): Promise<ActionState> {
+export async function getPages(): Promise<ActionState<FormattedPage[]>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
     
@@ -52,15 +69,20 @@ export async function getPages(): Promise<ActionState> {
     });
 
     // Map to a friendlier format
-    const formattedPages = pages.map(p => {
-        const meta = p.metadata as Record<string, any>;
-        return {
-            id: p.id,
-            title: meta.title || p.slug || 'Untitled Page',
-            slug: p.slug,
-            status: p.isDraft ? 'draft' : 'published',
-            lastUpdated: p.updatedAt.toISOString(),
-        };
+    const formattedPages = pages.map((page) => {
+      const meta = isRecord(page.metadata) ? (page.metadata as PageMetadata) : {};
+      const metaTitle = getString(meta.title);
+
+      const status: FormattedPage['status'] = page.isDraft ? 'draft' : 'published';
+      const updatedAt = page.updatedAt instanceof Date ? page.updatedAt : new Date(page.updatedAt as any);
+
+      return {
+        id: page.id as string,
+        title: (metaTitle || page.slug || 'Untitled Page') as string,
+        slug: page.slug as string,
+        status,
+        lastUpdated: updatedAt.toISOString(),
+      };
     });
 
     return { success: true, data: formattedPages };
@@ -92,10 +114,10 @@ export async function getPage(id: string): Promise<ActionState> {
 export async function createPage(formData: FormData): Promise<ActionState> {
   try {
     const tenantId = await getAuthenticatedTenantId();
-    const title = formData.get('title') as string;
-    const slug = formData.get('slug') as string;
+    const title = formData.get('title');
+    const slug = formData.get('slug');
 
-    if (!title || !slug) {
+    if (typeof title !== 'string' || typeof slug !== 'string' || !title || !slug) {
         return { success: false, error: 'Title and Slug are required' };
     }
 
@@ -131,7 +153,11 @@ export async function createPage(formData: FormData): Promise<ActionState> {
   }
 }
 
-export async function updatePageBlocks(id: string, blocks: PageBlock[], metadata?: any): Promise<ActionState> {
+export async function updatePageBlocks(
+  id: string,
+  blocks: PageBlock[],
+  metadata?: Record<string, unknown>
+): Promise<ActionState> {
     try {
         const tenantId = await getAuthenticatedTenantId();
         
@@ -144,11 +170,19 @@ export async function updatePageBlocks(id: string, blocks: PageBlock[], metadata
             return { success: false, error: 'Page not found or unauthorized' };
         }
 
+        const existingMetadata = isRecord(existingPage.metadata)
+          ? (existingPage.metadata as PageMetadata)
+          : {};
+
+        const mergedMetadata = metadata
+          ? { ...existingMetadata, ...metadata }
+          : undefined;
+
         await prisma.tenantPage.update({
             where: { id },
             data: {
-                blocks: blocks as any, // Prisma Json handling
-                metadata: metadata ? { ...existingPage.metadata as object, ...metadata } : undefined,
+                blocks: blocks as unknown as Prisma.JsonArray,
+                metadata: mergedMetadata,
                 updatedAt: new Date(),
             }
         });

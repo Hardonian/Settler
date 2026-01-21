@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
-import { getConnectorDriver } from '@settler/adapters/src/drivers';
+import { getConnectorDriver } from '@settler/adapters/dist/drivers';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
 import { prisma } from '@/shared/db/prismaClient';

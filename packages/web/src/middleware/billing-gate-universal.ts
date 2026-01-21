@@ -25,7 +25,7 @@ export interface UniversalBillingGateOptions {
  * 
  * This is the DEFAULT behavior. Routes must opt-out if they're free.
  */
-export function withUniversalBillingGate<T extends (...args: any[]) => Promise<NextResponse>>(
+export function withUniversalBillingGate<T extends (...args: unknown[]) => Promise<NextResponse>>(
   handler: T,
   options: UniversalBillingGateOptions = {}
 ): T {
@@ -69,7 +69,7 @@ export function withUniversalBillingGate<T extends (...args: any[]) => Promise<N
 /**
  * Helper to mark routes as public (no billing required)
  */
-export function publicRoute<T extends (...args: any[]) => Promise<NextResponse>>(
+export function publicRoute<T extends (...args: unknown[]) => Promise<NextResponse>>(
   handler: T
 ): T {
   return withUniversalBillingGate(handler, { allowPublic: true });
@@ -78,7 +78,7 @@ export function publicRoute<T extends (...args: any[]) => Promise<NextResponse>>
 /**
  * Helper to mark routes as free tier (no subscription, but usage limits apply)
  */
-export function freeRoute<T extends (...args: any[]) => Promise<NextResponse>>(
+export function freeRoute<T extends (...args: unknown[]) => Promise<NextResponse>>(
   handler: T
 ): T {
   return withUniversalBillingGate(handler, { allowFree: true });

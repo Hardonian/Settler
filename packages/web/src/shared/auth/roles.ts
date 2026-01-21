@@ -53,6 +53,9 @@ export enum SiteBuilderPermission {
   VALIDATE_CONFIG = 'VALIDATE_CONFIG',
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
 /**
  * Role to permissions mapping
  */
@@ -133,7 +136,7 @@ export async function getUserRole(
     where: { userId },
   });
   
-  const metadata = billingAccount?.metadata as Record<string, unknown> | undefined;
+  const metadata = isRecord(billingAccount?.metadata) ? billingAccount?.metadata : undefined;
   if (metadata?.role === UserRole.SUPER_ADMIN) {
     return UserRole.SUPER_ADMIN;
   }
@@ -156,9 +159,10 @@ export async function getUserRole(
       }
       
       // Check tenant-specific role in metadata
-      const tenantMetadata = tenant.metadata as Record<string, unknown> | undefined;
-      const userRole = tenantMetadata?.userRoles as Record<string, string> | undefined;
-      if (userRole?.[userId] === UserRole.TENANT_EDITOR) {
+      const tenantMetadata = isRecord(tenant.metadata) ? tenant.metadata : undefined;
+      const userRoles = isRecord(tenantMetadata?.userRoles) ? tenantMetadata?.userRoles : undefined;
+      const userRole = typeof userRoles?.[userId] === 'string' ? userRoles[userId] : undefined;
+      if (userRole === UserRole.TENANT_EDITOR) {
         return UserRole.TENANT_EDITOR;
       }
     }

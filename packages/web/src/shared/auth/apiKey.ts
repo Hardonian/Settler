@@ -9,6 +9,7 @@ import { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import bcrypt from 'bcrypt';
 import { prisma } from '../db/prismaClient';
+import type { Database } from '@/types/database.types';
 
 async function verifyApiKey(apiKey: string, hash: string): Promise<boolean> {
   return bcrypt.compare(apiKey, hash);
@@ -57,7 +58,7 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext 
   const prefix = apiKey.substring(0, 12);
 
   // Lookup API key in database using Supabase
-  const supabase = await createAdminClient();
+  const supabase = (await createAdminClient()) as any;
   const { data: keyRecords, error } = await supabase
     .from('api_keys')
     .select('id, user_id, key_hash, scopes, revoked_at, expires_at')
@@ -70,14 +71,7 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext 
     return null;
   }
 
-  const key = keyRecords as {
-    id: string;
-    user_id: string;
-    key_hash: string;
-    scopes: string[] | null;
-    revoked_at: string | null;
-    expires_at: string | null;
-  };
+  const key = keyRecords as Database['public']['Tables']['api_keys']['Row'];
 
   // Verify full key against hash
   const isValid = await verifyApiKey(apiKey, key.key_hash);
@@ -109,7 +103,7 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext 
   // Update last used timestamp
   await supabase
     .from('api_keys')
-    .update({ last_used_at: new Date().toISOString() } as never)
+    .update({ last_used_at: new Date().toISOString() } satisfies Database['public']['Tables']['api_keys']['Update'])
     .eq('id', key.id);
 
   return {

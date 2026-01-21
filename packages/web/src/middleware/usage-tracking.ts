@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database.types';
 
 export interface UsageEvent {
   billingAccountId: string;
@@ -16,7 +17,7 @@ export interface UsageEvent {
   integrationId?: string;
   quantity: number; // Number of transactions/units
   unit: string; // 'transaction', 'receipt', 'api_call', etc.
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -29,22 +30,22 @@ export interface UsageEvent {
  */
 export async function recordUsageEvent(event: UsageEvent): Promise<void> {
   try {
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
+
+    const insertData: Database['public']['Tables']['usage_events']['Insert'] = {
+      billing_account_id: event.billingAccountId,
+      tenant_id: event.tenantId ?? null,
+      user_id: event.userId ?? null,
+      event_type: event.eventType,
+      integration_id: event.integrationId ?? null,
+      quantity: event.quantity,
+      unit: event.unit,
+      metadata: event.metadata ?? {},
+      timestamp: new Date().toISOString(),
+    };
 
     // Insert usage event
-    const { error } = await (supabase
-      .from('usage_events') as any)
-      .insert({
-        billing_account_id: event.billingAccountId,
-        tenant_id: event.tenantId || null,
-        user_id: event.userId || null,
-        event_type: event.eventType,
-        integration_id: event.integrationId || null,
-        quantity: event.quantity,
-        unit: event.unit,
-        metadata: event.metadata || {},
-        timestamp: new Date().toISOString(),
-      });
+    const { error } = await supabase.from('usage_events').insert(insertData);
 
     if (error) {
       console.error('[Usage Tracking] Failed to record event:', error);
@@ -94,7 +95,7 @@ export async function getCurrentUsage(
   periodStart: Date;
   periodEnd: Date;
 }> {
-  const supabase = await createClient();
+  const supabase = (await createClient()) as any;
 
   const now = new Date();
   const periodStart = period === 'monthly'
@@ -106,8 +107,8 @@ export async function getCurrentUsage(
     : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
   // Get usage from usage_events
-  const { data, error } = await (supabase
-    .from('usage_events') as any)
+  const { data, error } = await supabase
+    .from('usage_events')
     .select('quantity, event_type')
     .eq('billing_account_id', billingAccountId)
     .eq('event_type', 'reconciliation_transaction')
@@ -124,7 +125,7 @@ export async function getCurrentUsage(
     };
   }
 
-  const totalTransactions = (data as Array<{ quantity: number | string }>)?.reduce((sum, event) => {
+  const totalTransactions = (data ?? []).reduce((sum, event) => {
     return sum + Number(event.quantity || 0);
   }, 0) || 0;
 
@@ -181,7 +182,7 @@ export async function checkUsageLimit(
 /**
  * Middleware to track usage for API routes
  */
-export function withUsageTracking<T extends (...args: any[]) => Promise<NextResponse>>(
+export function withUsageTracking<T extends (...args: unknown[]) => Promise<NextResponse>>(
   handler: T,
   options: {
     eventType: string;
