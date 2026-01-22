@@ -11,6 +11,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe, syncSubscriptionFromWebhook } from '@/domain/billing/stripeService';
+import { reconcileBillingAccount } from '@/domain/billing/reconciliation';
 import { prisma } from '@/shared/db/prismaClient';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
@@ -88,10 +89,45 @@ async function markEventProcessed(eventId: string): Promise<void> {
 }
 
 /**
+ * Claim event for processing to avoid concurrent double-processing
+ */
+async function claimEventForProcessing(
+  eventId: string
+): Promise<'claimed' | 'processed' | 'processing'> {
+  const updateResult = await prisma.stripeEvent.updateMany({
+    where: {
+      eventId,
+      status: {
+        in: ['received', 'failed'],
+      },
+    },
+    data: {
+      status: 'processing',
+      processedAt: null,
+    },
+  });
+
+  if (updateResult.count === 1) {
+    return 'claimed';
+  }
+
+  const existing = await prisma.stripeEvent.findUnique({
+    where: { eventId },
+    select: { status: true },
+  });
+
+  if (existing?.status === 'processed') {
+    return 'processed';
+  }
+
+  return 'processing';
+}
+
+/**
  * Mark event as failed
  */
 async function markEventFailed(eventId: string, error: string): Promise<void> {
-  await prisma.stripeEvent.update({
+  await prisma.stripeEvent.updateMany({
     where: { eventId },
     data: {
       status: 'failed',
@@ -223,6 +259,29 @@ export async function POST(request: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
     });
     // Continue processing - event might have been recorded in parallel
+  }
+
+  const claimResult = await claimEventForProcessing(event.id);
+  if (claimResult === 'processed') {
+    await logger.info('Stripe webhook event already processed (post-claim)', {
+      trace_id: traceId,
+      eventId: event.id,
+      type: event.type,
+    });
+    const response = NextResponse.json({ received: true, duplicate: true, trace_id: traceId });
+    response.headers.set('x-trace-id', traceId);
+    return response;
+  }
+
+  if (claimResult === 'processing') {
+    await logger.info('Stripe webhook event already processing', {
+      trace_id: traceId,
+      eventId: event.id,
+      type: event.type,
+    });
+    const response = NextResponse.json({ received: true, processing: true, trace_id: traceId });
+    response.headers.set('x-trace-id', traceId);
+    return response;
   }
 
   // Extract billing account ID for audit trail
@@ -438,6 +497,36 @@ export async function POST(request: NextRequest) {
     // Track metrics
     const durationMs = Date.now() - startTime;
     await trackWebhookMetric(event.type, true, durationMs);
+
+    if (
+      billingAccountId &&
+      [
+        'checkout.session.completed',
+        'customer.subscription.created',
+        'customer.subscription.updated',
+        'customer.subscription.deleted',
+        'invoice.paid',
+        'invoice.payment_failed',
+      ].includes(event.type)
+    ) {
+      try {
+        const reconciliation = await reconcileBillingAccount(billingAccountId);
+        if (!reconciliation.success) {
+          await safeLogger.warn('[Stripe Webhook] Reconciliation reported issues', {
+            eventId: event.id,
+            billingAccountId,
+            errors: reconciliation.errors,
+          });
+        }
+      } catch (reconcileError) {
+        await safeLogger.error('[Stripe Webhook] Reconciliation failed', {
+          eventId: event.id,
+          billingAccountId,
+          error: reconcileError instanceof Error ? reconcileError.message : String(reconcileError),
+          stack: reconcileError instanceof Error ? reconcileError.stack : undefined,
+        });
+      }
+    }
 
     const response = NextResponse.json({ received: true, trace_id: traceId });
     response.headers.set('x-trace-id', traceId);

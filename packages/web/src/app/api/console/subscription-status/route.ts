@@ -38,6 +38,6 @@ export const GET = withSecurity(
         : {}),
     });
   }
-}, { feature: 'GET API' }),
+}, { feature: 'Subscription Status', allowFree: true }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );

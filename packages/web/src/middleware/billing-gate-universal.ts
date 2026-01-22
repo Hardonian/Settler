@@ -46,6 +46,19 @@ export function withUniversalBillingGate<T extends (...args: unknown[]) => Promi
       if (allowFree) {
         // Allow authenticated users even without subscription
         // (They'll hit usage limits instead)
+        if (subscriptionCheck.reason === 'No authenticated user') {
+          return (
+            subscriptionCheck.error ||
+            NextResponse.json(
+              {
+                error: 'Unauthorized',
+                message: 'Authentication required',
+                code: 'AUTH_REQUIRED',
+              },
+              { status: 401 }
+            )
+          );
+        }
         return handler(...args);
       }
       
