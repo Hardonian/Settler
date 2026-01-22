@@ -1,6 +1,6 @@
 /**
  * NetSuite Connector Driver
- * 
+ *
  * NetSuite ERP integration
  * Supports Token-Based Authentication or OAuth 2.0
  */
@@ -15,39 +15,38 @@ import {
   NormalizedInvoice,
   NormalizedTransaction,
   ConnectorError,
-} from '../connector-driver';
+} from "../connector-driver";
 
 export class NetSuiteDriver implements ConnectorDriver {
   readonly metadata: ConnectorMetadata = {
-    id: 'netsuite',
-    displayName: 'NetSuite',
-    category: 'erp',
-    authType: 'token_based',
-    description: 'Sync invoices, payments, and journal entries from NetSuite (read-only)',
-    icon: '📊',
-    documentationUrl: 'https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/',
+    id: "netsuite",
+    displayName: "NetSuite",
+    category: "erp",
+    authType: "token_based",
+    description: "Sync invoices, payments, and journal entries from NetSuite (read-only)",
+    icon: "📊",
+    documentationUrl: "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/",
     supportsWebhooks: false,
     supportsPolling: true,
-    requiredConfig: ['account_id', 'consumer_key', 'consumer_secret', 'token_id', 'token_secret'],
-    optionalConfig: ['environment', 'realm'],
+    requiredConfig: ["account_id", "consumer_key", "consumer_secret", "token_id", "token_secret"],
+    optionalConfig: ["environment", "realm"],
   };
 
   private getApiUrl(accountId: string, environment?: string): string {
-    const env = environment || 'production';
-    if (env === 'sandbox') {
+    const env = environment || "production";
+    if (env === "sandbox") {
       return `https://${accountId}.app.netsuite.com`;
     }
     return `https://${accountId}.suitetalk.api.netsuite.com`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   private async getAccessToken(_credentials: Record<string, unknown>): Promise<string> {
     // NetSuite OAuth 1.0 credentials are used in signature generation
     // but the actual implementation would use them here
     // This is simplified - full OAuth 1.0 implementation needed
-    
+
     // For now, return a placeholder - full OAuth 1.0 implementation required
-    return 'oauth_token_placeholder';
+    return await Promise.resolve("oauth_token_placeholder");
   }
 
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
@@ -57,8 +56,8 @@ export class NetSuiteDriver implements ConnectorDriver {
     if (!accountId) {
       return {
         success: false,
-        error: 'Missing account_id',
-        message: 'NetSuite account_id is required',
+        error: "Missing account_id",
+        message: "NetSuite account_id is required",
       };
     }
 
@@ -68,24 +67,24 @@ export class NetSuiteDriver implements ConnectorDriver {
       const accessToken = await this.getAccessToken(credentials);
 
       const response = await fetch(`${apiUrl}/services/rest/record/v1/metadata-catalog`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
         return {
           success: false,
-          error: 'Authentication failed',
-          message: 'Please check your NetSuite credentials',
+          error: "Authentication failed",
+          message: "Please check your NetSuite credentials",
         };
       }
 
       return {
         success: true,
-        message: 'Connection successful',
+        message: "Connection successful",
       };
     } catch (error) {
       return {
@@ -99,11 +98,13 @@ export class NetSuiteDriver implements ConnectorDriver {
   async sync(
     credentials: Record<string, unknown>,
     _options: SyncOptions
-  ): Promise<SyncResult & {
-    invoices?: NormalizedInvoice[];
-    transactions?: NormalizedTransaction[];
-    rawPayloads?: Array<{ type: string; payload: unknown }>;
-  }> {
+  ): Promise<
+    SyncResult & {
+      invoices?: NormalizedInvoice[];
+      transactions?: NormalizedTransaction[];
+      rawPayloads?: Array<{ type: string; payload: unknown }>;
+    }
+  > {
     const accountId = credentials.account_id as string;
     const apiUrl = this.getApiUrl(accountId, credentials.environment as string);
     const accessToken = await this.getAccessToken(credentials);
@@ -114,20 +115,17 @@ export class NetSuiteDriver implements ConnectorDriver {
 
     try {
       // Fetch invoices
-      const invoicesResponse = await fetch(
-        `${apiUrl}/services/rest/record/v1/invoice`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const invoicesResponse = await fetch(`${apiUrl}/services/rest/record/v1/invoice`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (invoicesResponse.ok) {
         const invoicesData = await invoicesResponse.json();
-        rawPayloads.push({ type: 'invoices', payload: invoicesData });
+        rawPayloads.push({ type: "invoices", payload: invoicesData });
 
         for (const invoice of invoicesData.items || []) {
           invoices.push({
@@ -136,7 +134,7 @@ export class NetSuiteDriver implements ConnectorDriver {
             customerId: invoice.entity?.id,
             customerName: invoice.entity?.name,
             amountCents: Math.round((invoice.total || 0) * 100),
-            currency: invoice.currency?.name || 'USD',
+            currency: invoice.currency?.name || "USD",
             status: invoice.status,
             issueDate: invoice.trandate ? new Date(invoice.trandate) : undefined,
             dueDate: invoice.duedate ? new Date(invoice.duedate) : undefined,
@@ -166,8 +164,8 @@ export class NetSuiteDriver implements ConnectorDriver {
       }
       throw new ConnectorError(
         `NetSuite sync failed: ${error instanceof Error ? error.message : String(error)}`,
-        'NETSUITE_SYNC_FAILED',
-        'netsuite',
+        "NETSUITE_SYNC_FAILED",
+        "netsuite",
         error instanceof Error ? error : undefined
       );
     }

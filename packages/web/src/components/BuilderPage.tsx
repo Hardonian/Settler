@@ -3,12 +3,12 @@
  * Renders content from Builder.io visual editor
  */
 
-'use client';
+"use client";
 
-import { BuilderComponent, builder, useIsPreviewing } from '@builder.io/react';
-import { builderConfig, builderModels } from '@/lib/builder/config';
-import '@/lib/builder/component-registry'; // Auto-register components
-import { useEffect, useState } from 'react';
+import { BuilderComponent, builder, useIsPreviewing } from "@builder.io/react";
+import { builderModels } from "@/lib/builder/config";
+import "@/lib/builder/component-registry"; // Auto-register components
+import { useEffect, useState } from "react";
 
 interface BuilderPageProps {
   model?: string;
@@ -35,7 +35,7 @@ export default function BuilderPage({
 
   // Fetch content if not provided
   useEffect(() => {
-    if (!initialContent && typeof window !== 'undefined') {
+    if (!initialContent && typeof window !== "undefined") {
       setLoading(true);
       builder
         .get(model, {
@@ -50,8 +50,8 @@ export default function BuilderPage({
           setLoading(false);
         })
         .catch((err) => {
-          console.error('Error fetching Builder content:', err);
-          setError('Failed to load page content');
+          console.error("Error fetching Builder content:", err);
+          setError("Failed to load page content");
           setLoading(false);
         });
     }
@@ -95,9 +95,7 @@ export default function BuilderPage({
         <div className="flex flex-col items-center gap-4 text-center max-w-md">
           <div className="text-6xl">404</div>
           <h2 className="text-2xl font-bold">Page Not Found</h2>
-          <p className="text-muted-foreground">
-            This page hasn't been created in Builder.io yet.
-          </p>
+          <p className="text-muted-foreground">This page hasn't been created in Builder.io yet.</p>
           <a
             href="/"
             className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
@@ -120,10 +118,10 @@ export default function BuilderPage({
 // SEO helper component for Builder pages
 export function BuilderPageWithSEO({ content, model }: BuilderPageProps) {
   // Extract SEO data from Builder content
-  const title = content?.data?.title || 'Settler';
-  const description = content?.data?.description || '';
-  const keywords = content?.data?.keywords || '';
-  const ogImage = content?.data?.ogImage || '/og-image.png';
+  const title = content?.data?.title || "Settler";
+  const description = content?.data?.description || "";
+  const keywords = content?.data?.keywords || "";
+  const ogImage = content?.data?.ogImage || "/og-image.png";
 
   return (
     <>

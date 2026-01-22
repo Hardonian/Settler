@@ -1,6 +1,6 @@
 /**
  * Chargebee Connector Driver
- * 
+ *
  * Subscription billing engine
  * Supports API key authentication
  */
@@ -15,21 +15,21 @@ import {
   NormalizedSubscription,
   NormalizedInvoice,
   ConnectorError,
-} from '../connector-driver';
+} from "../connector-driver";
 
 export class ChargebeeDriver implements ConnectorDriver {
   readonly metadata: ConnectorMetadata = {
-    id: 'chargebee',
-    displayName: 'Chargebee',
-    category: 'subscription_billing',
-    authType: 'api_key',
-    description: 'Sync subscriptions, invoices, and customers from Chargebee',
-    icon: '💳',
-    documentationUrl: 'https://apidocs.chargebee.com',
+    id: "chargebee",
+    displayName: "Chargebee",
+    category: "subscription_billing",
+    authType: "api_key",
+    description: "Sync subscriptions, invoices, and customers from Chargebee",
+    icon: "💳",
+    documentationUrl: "https://apidocs.chargebee.com",
     supportsWebhooks: true,
     supportsPolling: true,
-    requiredConfig: ['api_key', 'site'],
-    optionalConfig: ['webhook_secret'],
+    requiredConfig: ["api_key", "site"],
+    optionalConfig: ["webhook_secret"],
   };
 
   private getApiUrl(site: string): string {
@@ -44,23 +44,23 @@ export class ChargebeeDriver implements ConnectorDriver {
 
     try {
       const response = await fetch(`${apiUrl}/site`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`,
+          Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`,
         },
       });
 
       if (!response.ok) {
         return {
           success: false,
-          error: 'Invalid API key or site',
-          message: 'Connection test failed: Invalid credentials',
+          error: "Invalid API key or site",
+          message: "Connection test failed: Invalid credentials",
         };
       }
 
       return {
         success: true,
-        message: 'Connection successful',
+        message: "Connection successful",
       };
     } catch (error) {
       return {
@@ -74,11 +74,13 @@ export class ChargebeeDriver implements ConnectorDriver {
   async sync(
     credentials: Record<string, unknown>,
     options: SyncOptions
-  ): Promise<SyncResult & {
-    subscriptions?: NormalizedSubscription[];
-    invoices?: NormalizedInvoice[];
-    rawPayloads?: Array<{ type: string; payload: unknown }>;
-  }> {
+  ): Promise<
+    SyncResult & {
+      subscriptions?: NormalizedSubscription[];
+      invoices?: NormalizedInvoice[];
+      rawPayloads?: Array<{ type: string; payload: unknown }>;
+    }
+  > {
     const apiKey = credentials.api_key as string;
     const site = credentials.site as string;
     const apiUrl = this.getApiUrl(site);
@@ -87,24 +89,27 @@ export class ChargebeeDriver implements ConnectorDriver {
     const invoices: NormalizedInvoice[] = [];
     const rawPayloads: Array<{ type: string; payload: unknown }> = [];
 
-    const authHeader = `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`;
+    const authHeader = `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`;
 
     try {
       // Fetch subscriptions
       let subscriptionsUrl = `${apiUrl}/subscriptions`;
       const subscriptionParams = new URLSearchParams();
       if (options.since) {
-        subscriptionParams.append('created_at[after]', Math.floor(options.since.getTime() / 1000).toString());
+        subscriptionParams.append(
+          "created_at[after]",
+          Math.floor(options.since.getTime() / 1000).toString()
+        );
       }
       if (options.limit) {
-        subscriptionParams.append('limit', options.limit.toString());
+        subscriptionParams.append("limit", options.limit.toString());
       }
       if (subscriptionParams.toString()) {
         subscriptionsUrl += `?${subscriptionParams.toString()}`;
       }
 
       const subscriptionsResponse = await fetch(subscriptionsUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: authHeader,
         },
@@ -114,13 +119,13 @@ export class ChargebeeDriver implements ConnectorDriver {
         const error = await subscriptionsResponse.json();
         throw new ConnectorError(
           `Failed to fetch subscriptions: ${error.message || error.error}`,
-          'CHARGEBEE_SUBSCRIPTIONS_FAILED',
-          'chargebee'
+          "CHARGEBEE_SUBSCRIPTIONS_FAILED",
+          "chargebee"
         );
       }
 
       const subscriptionsData = await subscriptionsResponse.json();
-      rawPayloads.push({ type: 'subscriptions', payload: subscriptionsData });
+      rawPayloads.push({ type: "subscriptions", payload: subscriptionsData });
 
       // Normalize subscriptions
       for (const sub of subscriptionsData.list || []) {
@@ -133,7 +138,7 @@ export class ChargebeeDriver implements ConnectorDriver {
           status: subscription.status,
           billingCycle: subscription.billing_period_unit,
           amountCents: Math.round((subscription.mrr || 0) * 100),
-          currency: subscription.currency_code || 'USD',
+          currency: subscription.currency_code || "USD",
           currentPeriodStart: subscription.current_term_start
             ? new Date(subscription.current_term_start * 1000)
             : undefined,
@@ -141,7 +146,9 @@ export class ChargebeeDriver implements ConnectorDriver {
             ? new Date(subscription.current_term_end * 1000)
             : undefined,
           cancelAtPeriodEnd: subscription.cancel_at_term_end || false,
-          cancelledAt: subscription.cancelled_at ? new Date(subscription.cancelled_at * 1000) : undefined,
+          cancelledAt: subscription.cancelled_at
+            ? new Date(subscription.cancelled_at * 1000)
+            : undefined,
           providerMetadata: {
             subscription_id: subscription.id,
             plan_id: subscription.plan_id,
@@ -154,17 +161,17 @@ export class ChargebeeDriver implements ConnectorDriver {
       let invoicesUrl = `${apiUrl}/invoices`;
       const invoiceParams = new URLSearchParams();
       if (options.since) {
-        invoiceParams.append('date[after]', Math.floor(options.since.getTime() / 1000).toString());
+        invoiceParams.append("date[after]", Math.floor(options.since.getTime() / 1000).toString());
       }
       if (options.limit) {
-        invoiceParams.append('limit', options.limit.toString());
+        invoiceParams.append("limit", options.limit.toString());
       }
       if (invoiceParams.toString()) {
         invoicesUrl += `?${invoiceParams.toString()}`;
       }
 
       const invoicesResponse = await fetch(invoicesUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: authHeader,
         },
@@ -172,7 +179,7 @@ export class ChargebeeDriver implements ConnectorDriver {
 
       if (invoicesResponse.ok) {
         const invoicesData = await invoicesResponse.json();
-        rawPayloads.push({ type: 'invoices', payload: invoicesData });
+        rawPayloads.push({ type: "invoices", payload: invoicesData });
 
         // Normalize invoices
         for (const inv of invoicesData.list || []) {
@@ -182,7 +189,7 @@ export class ChargebeeDriver implements ConnectorDriver {
             invoiceNumber: invoice.number,
             customerId: invoice.customer_id,
             amountCents: Math.round((invoice.total || 0) * 100),
-            currency: invoice.currency_code || 'USD',
+            currency: invoice.currency_code || "USD",
             status: invoice.status,
             issueDate: invoice.date ? new Date(invoice.date * 1000) : undefined,
             paidAt: invoice.paid_at ? new Date(invoice.paid_at * 1000) : undefined,
@@ -212,14 +219,13 @@ export class ChargebeeDriver implements ConnectorDriver {
       }
       throw new ConnectorError(
         `Chargebee sync failed: ${error instanceof Error ? error.message : String(error)}`,
-        'CHARGEBEE_SYNC_FAILED',
-        'chargebee',
+        "CHARGEBEE_SYNC_FAILED",
+        "chargebee",
         error instanceof Error ? error : undefined
       );
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async handleWebhook(
     _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
     _credentials: Record<string, unknown>
@@ -228,9 +234,9 @@ export class ChargebeeDriver implements ConnectorDriver {
     invoices?: NormalizedInvoice[];
   }> {
     // Chargebee webhooks indicate when to sync
-    return {
+    return await Promise.resolve({
       subscriptions: [],
       invoices: [],
-    };
+    });
   }
 }

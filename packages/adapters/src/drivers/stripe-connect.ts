@@ -1,6 +1,6 @@
 /**
  * Stripe Connect Connector Driver
- * 
+ *
  * Stripe Connect integration for connected accounts
  * Supports OAuth2 flow for connected accounts
  */
@@ -18,34 +18,102 @@ import {
   NormalizedPayout,
   NormalizedBalance,
   ConnectorError,
-} from '../connector-driver';
+} from "../connector-driver";
+
+// Stripe Connect API response types
+interface StripeOAuthErrorResponse {
+  error: string;
+  error_description?: string;
+}
+
+interface StripeOAuthTokenResponse {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+  stripe_user_id?: string;
+  stripe_publishable_key?: string;
+  token_type: string;
+  scope: string;
+}
+
+interface StripeApiError {
+  error: {
+    message: string;
+    type: string;
+    code?: string;
+  };
+}
+
+interface StripeAccount {
+  id: string;
+  email?: string;
+  country?: string;
+  type?: string;
+  default_currency?: string;
+  business_profile?: {
+    name?: string;
+    url?: string;
+  };
+}
+
+interface StripeBalanceAmount {
+  amount: number;
+  currency: string;
+  source_types?: Record<string, number>;
+}
+
+interface StripeBalance {
+  available: StripeBalanceAmount[];
+  pending: StripeBalanceAmount[];
+}
+
+interface StripePayout {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  created: number;
+  arrival_date?: number;
+  fees?: number;
+  description?: string;
+  method: string;
+  destination?: {
+    id: string;
+    object: string;
+  };
+}
+
+interface StripePayoutsResponse {
+  data: StripePayout[];
+  has_more: boolean;
+}
 
 export class StripeConnectDriver implements ConnectorDriver {
   readonly metadata: ConnectorMetadata = {
-    id: 'stripe-connect',
-    displayName: 'Stripe Connect',
-    category: 'marketplace',
-    authType: 'oauth2',
-    description: 'Sync payouts and balances from Stripe Connect connected accounts',
-    icon: '💳',
-    documentationUrl: 'https://stripe.com/docs/connect',
+    id: "stripe-connect",
+    displayName: "Stripe Connect",
+    category: "marketplace",
+    authType: "oauth2",
+    description: "Sync payouts and balances from Stripe Connect connected accounts",
+    icon: "💳",
+    documentationUrl: "https://stripe.com/docs/connect",
     supportsWebhooks: true,
     supportsPolling: true,
-    requiredConfig: ['client_id', 'client_secret'],
-    optionalConfig: ['redirect_uri', 'webhook_secret'],
+    requiredConfig: ["client_id", "client_secret"],
+    optionalConfig: ["redirect_uri", "webhook_secret"],
   };
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
     const config = options as unknown as { clientId: string; redirectUri: string };
     const params = new URLSearchParams({
-      response_type: 'code',
+      response_type: "code",
       client_id: config.clientId,
       redirect_uri: config.redirectUri || options.redirectUri,
-      scope: options.scopes?.join(' ') || 'read_write',
-      state: options.state || '',
+      scope: options.scopes?.join(" ") || "read_write",
+      state: options.state || "",
     });
 
-    return `https://connect.stripe.com/oauth/authorize?${params.toString()}`;
+    return await Promise.resolve(`https://connect.stripe.com/oauth/authorize?${params.toString()}`);
   }
 
   async handleCallback(
@@ -59,13 +127,13 @@ export class StripeConnectDriver implements ConnectorDriver {
       redirectUri: string;
     };
 
-    const response = await fetch('https://connect.stripe.com/oauth/token', {
-      method: 'POST',
+    const response = await fetch("https://connect.stripe.com/oauth/token", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        grant_type: 'authorization_code',
+        grant_type: "authorization_code",
         client_id: config.clientId,
         client_secret: config.clientSecret,
         code: code,
@@ -74,15 +142,15 @@ export class StripeConnectDriver implements ConnectorDriver {
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const error = (await response.json()) as StripeOAuthErrorResponse;
       throw new ConnectorError(
-        `Failed to exchange Stripe Connect token: ${error.error || error.error_description}`,
-        'STRIPE_CONNECT_TOKEN_EXCHANGE_FAILED',
-        'stripe-connect'
+        `Failed to exchange Stripe Connect token: ${error.error ?? error.error_description ?? "Unknown error"}`,
+        "STRIPE_CONNECT_TOKEN_EXCHANGE_FAILED",
+        "stripe-connect"
       );
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as StripeOAuthTokenResponse;
     return {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
@@ -101,13 +169,13 @@ export class StripeConnectDriver implements ConnectorDriver {
     const clientId = config?.client_id as string;
     const clientSecret = config?.client_secret as string;
 
-    const response = await fetch('https://connect.stripe.com/oauth/token', {
-      method: 'POST',
+    const response = await fetch("https://connect.stripe.com/oauth/token", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        grant_type: 'refresh_token',
+        grant_type: "refresh_token",
         client_id: clientId,
         client_secret: clientSecret,
         refresh_token: refreshToken,
@@ -115,15 +183,15 @@ export class StripeConnectDriver implements ConnectorDriver {
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const error = (await response.json()) as StripeOAuthErrorResponse;
       throw new ConnectorError(
-        `Failed to refresh Stripe Connect token: ${error.error || error.error_description}`,
-        'STRIPE_CONNECT_REFRESH_FAILED',
-        'stripe-connect'
+        `Failed to refresh Stripe Connect token: ${error.error ?? error.error_description ?? "Unknown error"}`,
+        "STRIPE_CONNECT_REFRESH_FAILED",
+        "stripe-connect"
       );
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as StripeOAuthTokenResponse;
     return {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
@@ -141,25 +209,25 @@ export class StripeConnectDriver implements ConnectorDriver {
     const accessToken = credentials.access_token as string;
 
     try {
-      const response = await fetch('https://api.stripe.com/v1/account', {
-        method: 'GET',
+      const response = await fetch("https://api.stripe.com/v1/account", {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = (await response.json()) as StripeApiError;
         return {
           success: false,
-          error: error.error?.message || 'Connection test failed',
-          message: `Connection test failed: ${error.error?.message}`,
+          error: error.error?.message ?? "Connection test failed",
+          message: `Connection test failed: ${error.error?.message ?? "Unknown error"}`,
         };
       }
 
       return {
         success: true,
-        message: 'Connection successful',
+        message: "Connection successful",
       };
     } catch (error) {
       return {
@@ -173,12 +241,14 @@ export class StripeConnectDriver implements ConnectorDriver {
   async sync(
     credentials: Record<string, unknown>,
     options: SyncOptions
-  ): Promise<SyncResult & {
-    accounts?: NormalizedAccount[];
-    payouts?: NormalizedPayout[];
-    balances?: NormalizedBalance[];
-    rawPayloads?: Array<{ type: string; payload: unknown }>;
-  }> {
+  ): Promise<
+    SyncResult & {
+      accounts?: NormalizedAccount[];
+      payouts?: NormalizedPayout[];
+      balances?: NormalizedBalance[];
+      rawPayloads?: Array<{ type: string; payload: unknown }>;
+    }
+  > {
     const accessToken = credentials.access_token as string;
 
     const accounts: NormalizedAccount[] = [];
@@ -188,32 +258,32 @@ export class StripeConnectDriver implements ConnectorDriver {
 
     try {
       // Get account info
-      const accountResponse = await fetch('https://api.stripe.com/v1/account', {
-        method: 'GET',
+      const accountResponse = await fetch("https://api.stripe.com/v1/account", {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
 
       if (!accountResponse.ok) {
-        const error = await accountResponse.json();
+        const error = (await accountResponse.json()) as StripeApiError;
         throw new ConnectorError(
-          `Failed to fetch account: ${error.error?.message}`,
-          'STRIPE_CONNECT_ACCOUNT_FAILED',
-          'stripe-connect'
+          `Failed to fetch account: ${error.error?.message ?? "Unknown error"}`,
+          "STRIPE_CONNECT_ACCOUNT_FAILED",
+          "stripe-connect"
         );
       }
 
-      const accountData = await accountResponse.json();
-      rawPayloads.push({ type: 'account', payload: accountData });
+      const accountData = (await accountResponse.json()) as StripeAccount;
+      rawPayloads.push({ type: "account", payload: accountData });
 
       accounts.push({
         providerAccountId: accountData.id,
-        accountName: accountData.business_profile?.name || accountData.email || 'Stripe Account',
-        accountType: 'connected_account',
-        currency: accountData.default_currency || 'USD',
-        institutionName: 'Stripe',
-        institutionId: 'stripe',
+        accountName: accountData.business_profile?.name ?? accountData.email ?? "Stripe Account",
+        accountType: "connected_account",
+        currency: accountData.default_currency ?? "USD",
+        institutionName: "Stripe",
+        institutionId: "stripe",
         metadata: {
           country: accountData.country,
           type: accountData.type,
@@ -221,18 +291,18 @@ export class StripeConnectDriver implements ConnectorDriver {
       });
 
       // Get balance
-      const balanceResponse = await fetch('https://api.stripe.com/v1/balance', {
-        method: 'GET',
+      const balanceResponse = await fetch("https://api.stripe.com/v1/balance", {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
 
       if (balanceResponse.ok) {
-        const balanceData = await balanceResponse.json();
-        rawPayloads.push({ type: 'balance', payload: balanceData });
+        const balanceData = (await balanceResponse.json()) as StripeBalance;
+        rawPayloads.push({ type: "balance", payload: balanceData });
 
-        for (const balance of balanceData.available || []) {
+        for (const balance of balanceData.available) {
           balances.push({
             accountId: accountData.id,
             balanceCents: balance.amount,
@@ -249,16 +319,16 @@ export class StripeConnectDriver implements ConnectorDriver {
       // Get payouts
       const payoutsParams = new URLSearchParams();
       if (options.since) {
-        payoutsParams.append('created[gte]', Math.floor(options.since.getTime() / 1000).toString());
+        payoutsParams.append("created[gte]", Math.floor(options.since.getTime() / 1000).toString());
       }
       if (options.limit) {
-        payoutsParams.append('limit', options.limit.toString());
+        payoutsParams.append("limit", options.limit.toString());
       }
 
       const payoutsResponse = await fetch(
         `https://api.stripe.com/v1/payouts?${payoutsParams.toString()}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -266,10 +336,10 @@ export class StripeConnectDriver implements ConnectorDriver {
       );
 
       if (payoutsResponse.ok) {
-        const payoutsData = await payoutsResponse.json();
-        rawPayloads.push({ type: 'payouts', payload: payoutsData });
+        const payoutsData = (await payoutsResponse.json()) as StripePayoutsResponse;
+        rawPayloads.push({ type: "payouts", payload: payoutsData });
 
-        for (const payout of payoutsData.data || []) {
+        for (const payout of payoutsData.data) {
           payouts.push({
             externalId: payout.id,
             amountCents: payout.amount,
@@ -277,8 +347,8 @@ export class StripeConnectDriver implements ConnectorDriver {
             status: payout.status,
             initiatedAt: new Date(payout.created * 1000),
             completedAt: payout.arrival_date ? new Date(payout.arrival_date * 1000) : undefined,
-            feeCents: payout.fees || 0,
-            netAmountCents: payout.amount - (payout.fees || 0),
+            feeCents: payout.fees ?? 0,
+            netAmountCents: payout.amount - (payout.fees ?? 0),
             destinationType: payout.destination?.object,
             destinationId: payout.destination?.id,
             description: payout.description,
@@ -310,8 +380,8 @@ export class StripeConnectDriver implements ConnectorDriver {
       }
       throw new ConnectorError(
         `Stripe Connect sync failed: ${error instanceof Error ? error.message : String(error)}`,
-        'STRIPE_CONNECT_SYNC_FAILED',
-        'stripe-connect',
+        "STRIPE_CONNECT_SYNC_FAILED",
+        "stripe-connect",
         error instanceof Error ? error : undefined
       );
     }
@@ -326,10 +396,10 @@ export class StripeConnectDriver implements ConnectorDriver {
     balances?: NormalizedBalance[];
   }> {
     // Stripe webhooks indicate when to sync
-    return {
+    return await Promise.resolve({
       accounts: [],
       payouts: [],
       balances: [],
-    };
+    });
   }
 }

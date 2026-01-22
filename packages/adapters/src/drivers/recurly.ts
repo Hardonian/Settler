@@ -1,6 +1,6 @@
 /**
  * Recurly Connector Driver
- * 
+ *
  * Subscription billing engine
  * Supports API key authentication
  */
@@ -15,21 +15,21 @@ import {
   NormalizedSubscription,
   NormalizedInvoice,
   ConnectorError,
-} from '../connector-driver';
+} from "../connector-driver";
 
 export class RecurlyDriver implements ConnectorDriver {
   readonly metadata: ConnectorMetadata = {
-    id: 'recurly',
-    displayName: 'Recurly',
-    category: 'subscription_billing',
-    authType: 'api_key',
-    description: 'Sync subscriptions, invoices, and customers from Recurly',
-    icon: '💳',
-    documentationUrl: 'https://developers.recurly.com/api',
+    id: "recurly",
+    displayName: "Recurly",
+    category: "subscription_billing",
+    authType: "api_key",
+    description: "Sync subscriptions, invoices, and customers from Recurly",
+    icon: "💳",
+    documentationUrl: "https://developers.recurly.com/api",
     supportsWebhooks: true,
     supportsPolling: true,
-    requiredConfig: ['api_key', 'subdomain'],
-    optionalConfig: ['webhook_secret'],
+    requiredConfig: ["api_key", "subdomain"],
+    optionalConfig: ["webhook_secret"],
   };
 
   private getApiUrl(subdomain: string): string {
@@ -44,10 +44,10 @@ export class RecurlyDriver implements ConnectorDriver {
 
     try {
       const response = await fetch(`${apiUrl}/accounts`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`,
-          'Content-Type': 'application/json',
+          Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`,
+          "Content-Type": "application/json",
         },
         // Limit to 1 for test
       });
@@ -55,14 +55,14 @@ export class RecurlyDriver implements ConnectorDriver {
       if (!response.ok) {
         return {
           success: false,
-          error: 'Invalid API key or subdomain',
-          message: 'Connection test failed: Invalid credentials',
+          error: "Invalid API key or subdomain",
+          message: "Connection test failed: Invalid credentials",
         };
       }
 
       return {
         success: true,
-        message: 'Connection successful',
+        message: "Connection successful",
       };
     } catch (error) {
       return {
@@ -76,11 +76,13 @@ export class RecurlyDriver implements ConnectorDriver {
   async sync(
     credentials: Record<string, unknown>,
     options: SyncOptions
-  ): Promise<SyncResult & {
-    subscriptions?: NormalizedSubscription[];
-    invoices?: NormalizedInvoice[];
-    rawPayloads?: Array<{ type: string; payload: unknown }>;
-  }> {
+  ): Promise<
+    SyncResult & {
+      subscriptions?: NormalizedSubscription[];
+      invoices?: NormalizedInvoice[];
+      rawPayloads?: Array<{ type: string; payload: unknown }>;
+    }
+  > {
     const apiKey = credentials.api_key as string;
     const subdomain = credentials.subdomain as string;
     const apiUrl = this.getApiUrl(subdomain);
@@ -89,24 +91,24 @@ export class RecurlyDriver implements ConnectorDriver {
     const invoices: NormalizedInvoice[] = [];
     const rawPayloads: Array<{ type: string; payload: unknown }> = [];
 
-    const authHeader = `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`;
+    const authHeader = `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`;
 
     try {
       // Fetch subscriptions
       let subscriptionsUrl = `${apiUrl}/subscriptions`;
       const subscriptionParams = new URLSearchParams();
       if (options.limit) {
-        subscriptionParams.append('limit', options.limit.toString());
+        subscriptionParams.append("limit", options.limit.toString());
       }
       if (subscriptionParams.toString()) {
         subscriptionsUrl += `?${subscriptionParams.toString()}`;
       }
 
       const subscriptionsResponse = await fetch(subscriptionsUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: authHeader,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -114,13 +116,13 @@ export class RecurlyDriver implements ConnectorDriver {
         const error = await subscriptionsResponse.json();
         throw new ConnectorError(
           `Failed to fetch subscriptions: ${error.error?.message || error.message}`,
-          'RECURLY_SUBSCRIPTIONS_FAILED',
-          'recurly'
+          "RECURLY_SUBSCRIPTIONS_FAILED",
+          "recurly"
         );
       }
 
       const subscriptionsData = await subscriptionsResponse.json();
-      rawPayloads.push({ type: 'subscriptions', payload: subscriptionsData });
+      rawPayloads.push({ type: "subscriptions", payload: subscriptionsData });
 
       // Normalize subscriptions
       for (const sub of subscriptionsData.data || []) {
@@ -132,7 +134,7 @@ export class RecurlyDriver implements ConnectorDriver {
           status: sub.state,
           billingCycle: sub.plan?.interval_unit,
           amountCents: Math.round((sub.unit_amount || 0) * 100),
-          currency: sub.currency || 'USD',
+          currency: sub.currency || "USD",
           currentPeriodStart: sub.current_period_started_at
             ? new Date(sub.current_period_started_at)
             : undefined,
@@ -153,26 +155,26 @@ export class RecurlyDriver implements ConnectorDriver {
       let invoicesUrl = `${apiUrl}/invoices`;
       const invoiceParams = new URLSearchParams();
       if (options.since) {
-        invoiceParams.append('begin_time', options.since.toISOString());
+        invoiceParams.append("begin_time", options.since.toISOString());
       }
       if (options.limit) {
-        invoiceParams.append('limit', options.limit.toString());
+        invoiceParams.append("limit", options.limit.toString());
       }
       if (invoiceParams.toString()) {
         invoicesUrl += `?${invoiceParams.toString()}`;
       }
 
       const invoicesResponse = await fetch(invoicesUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: authHeader,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (invoicesResponse.ok) {
         const invoicesData = await invoicesResponse.json();
-        rawPayloads.push({ type: 'invoices', payload: invoicesData });
+        rawPayloads.push({ type: "invoices", payload: invoicesData });
 
         // Normalize invoices
         for (const inv of invoicesData.data || []) {
@@ -181,7 +183,7 @@ export class RecurlyDriver implements ConnectorDriver {
             invoiceNumber: inv.number,
             customerId: inv.account?.id || inv.account_id,
             amountCents: Math.round((inv.total || 0) * 100),
-            currency: inv.currency || 'USD',
+            currency: inv.currency || "USD",
             status: inv.state,
             issueDate: inv.created_at ? new Date(inv.created_at) : undefined,
             paidAt: inv.paid_at ? new Date(inv.paid_at) : undefined,
@@ -211,8 +213,8 @@ export class RecurlyDriver implements ConnectorDriver {
       }
       throw new ConnectorError(
         `Recurly sync failed: ${error instanceof Error ? error.message : String(error)}`,
-        'RECURLY_SYNC_FAILED',
-        'recurly',
+        "RECURLY_SYNC_FAILED",
+        "recurly",
         error instanceof Error ? error : undefined
       );
     }
@@ -226,9 +228,9 @@ export class RecurlyDriver implements ConnectorDriver {
     invoices?: NormalizedInvoice[];
   }> {
     // Recurly webhooks indicate when to sync
-    return {
+    return await Promise.resolve({
       subscriptions: [],
       invoices: [],
-    };
+    });
   }
 }

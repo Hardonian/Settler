@@ -1,6 +1,6 @@
 /**
  * eBay Connector Driver
- * 
+ *
  * eBay marketplace integration
  * Supports OAuth2 flow
  */
@@ -17,45 +17,48 @@ import {
   NormalizedPayout,
   NormalizedTransaction,
   ConnectorError,
-} from '../connector-driver';
+} from "../connector-driver";
 
 export class EbayDriver implements ConnectorDriver {
   readonly metadata: ConnectorMetadata = {
-    id: 'ebay',
-    displayName: 'eBay',
-    category: 'marketplace',
-    authType: 'oauth2',
-    description: 'Sync eBay sales, payouts, and transactions',
-    icon: '🏪',
-    documentationUrl: 'https://developer.ebay.com',
+    id: "ebay",
+    displayName: "eBay",
+    category: "marketplace",
+    authType: "oauth2",
+    description: "Sync eBay sales, payouts, and transactions",
+    icon: "🏪",
+    documentationUrl: "https://developer.ebay.com",
     supportsWebhooks: true,
     supportsPolling: true,
-    requiredConfig: ['client_id', 'client_secret', 'environment'],
-    optionalConfig: ['redirect_uri', 'webhook_secret'],
+    requiredConfig: ["client_id", "client_secret", "environment"],
+    optionalConfig: ["redirect_uri", "webhook_secret"],
   };
 
   private getApiUrl(environment: string): string {
-    const env = environment || 'sandbox';
+    const env = environment || "sandbox";
     const urls: Record<string, string> = {
-      sandbox: 'https://api.sandbox.ebay.com',
-      production: 'https://api.ebay.com',
+      sandbox: "https://api.sandbox.ebay.com",
+      production: "https://api.ebay.com",
     };
     return (urls[env] ?? urls.sandbox) as string;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
-    const config = options as unknown as { clientId: string; redirectUri: string; environment: string };
+    const config = options as unknown as {
+      clientId: string;
+      redirectUri: string;
+      environment: string;
+    };
     const apiUrl = this.getApiUrl(config.environment);
     const params = new URLSearchParams({
-      response_type: 'code',
+      response_type: "code",
       client_id: config.clientId,
       redirect_uri: config.redirectUri || options.redirectUri,
-      scope: options.scopes?.join(' ') || 'https://api.ebay.com/oauth/api_scope/sell.finances',
-      state: options.state || '',
+      scope: options.scopes?.join(" ") || "https://api.ebay.com/oauth/api_scope/sell.finances",
+      state: options.state || "",
     });
 
-    return `${apiUrl}/identity/v1/oauth2/authorize?${params.toString()}`;
+    return await Promise.resolve(`${apiUrl}/identity/v1/oauth2/authorize?${params.toString()}`);
   }
 
   async handleCallback(
@@ -72,13 +75,13 @@ export class EbayDriver implements ConnectorDriver {
     const apiUrl = this.getApiUrl(config.environment);
 
     const response = await fetch(`${apiUrl}/identity/v1/oauth2/token`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${Buffer.from(`${config.clientId}:${config.clientSecret}`).toString('base64')}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${Buffer.from(`${config.clientId}:${config.clientSecret}`).toString("base64")}`,
       },
       body: new URLSearchParams({
-        grant_type: 'authorization_code',
+        grant_type: "authorization_code",
         code: code,
         redirect_uri: config.redirectUri || options.redirectUri,
       }),
@@ -88,8 +91,8 @@ export class EbayDriver implements ConnectorDriver {
       const error = await response.json();
       throw new ConnectorError(
         `Failed to exchange eBay token: ${error.error || error.error_description}`,
-        'EBAY_TOKEN_EXCHANGE_FAILED',
-        'ebay'
+        "EBAY_TOKEN_EXCHANGE_FAILED",
+        "ebay"
       );
     }
 
@@ -108,19 +111,19 @@ export class EbayDriver implements ConnectorDriver {
   ): Promise<AuthCallbackResult> {
     const clientId = config?.client_id as string;
     const clientSecret = config?.client_secret as string;
-    const env = (config?.environment as string) || 'sandbox';
+    const env = (config?.environment as string) || "sandbox";
     const apiUrl = this.getApiUrl(env);
 
     const response = await fetch(`${apiUrl}/identity/v1/oauth2/token`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
       },
       body: new URLSearchParams({
-        grant_type: 'refresh_token',
+        grant_type: "refresh_token",
         refresh_token: refreshToken,
-        scope: 'https://api.ebay.com/oauth/api_scope/sell.finances',
+        scope: "https://api.ebay.com/oauth/api_scope/sell.finances",
       }),
     });
 
@@ -128,8 +131,8 @@ export class EbayDriver implements ConnectorDriver {
       const error = await response.json();
       throw new ConnectorError(
         `Failed to refresh eBay token: ${error.error || error.error_description}`,
-        'EBAY_REFRESH_FAILED',
-        'ebay'
+        "EBAY_REFRESH_FAILED",
+        "ebay"
       );
     }
 
@@ -149,12 +152,12 @@ export class EbayDriver implements ConnectorDriver {
   async testConnection(options: TestConnectionOptions): Promise<TestConnectionResult> {
     const { credentials, config } = options;
     const accessToken = credentials.access_token as string;
-    const env = (config?.environment as string) || 'sandbox';
+    const env = (config?.environment as string) || "sandbox";
     const apiUrl = this.getApiUrl(env);
 
     try {
       const response = await fetch(`${apiUrl}/sell/account/v1/privilege`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -164,14 +167,14 @@ export class EbayDriver implements ConnectorDriver {
         const error = await response.json();
         return {
           success: false,
-          error: error.error || 'Connection test failed',
+          error: error.error || "Connection test failed",
           message: `Connection test failed: ${error.error}`,
         };
       }
 
       return {
         success: true,
-        message: 'Connection successful',
+        message: "Connection successful",
       };
     } catch (error) {
       return {
@@ -185,14 +188,16 @@ export class EbayDriver implements ConnectorDriver {
   async sync(
     credentials: Record<string, unknown>,
     _options: SyncOptions
-  ): Promise<SyncResult & {
-    payouts?: NormalizedPayout[];
-    transactions?: NormalizedTransaction[];
-    rawPayloads?: Array<{ type: string; payload: unknown }>;
-  }> {
+  ): Promise<
+    SyncResult & {
+      payouts?: NormalizedPayout[];
+      transactions?: NormalizedTransaction[];
+      rawPayloads?: Array<{ type: string; payload: unknown }>;
+    }
+  > {
     const accessToken = credentials.access_token as string;
-    const config = credentials.config as Record<string, unknown> || {};
-    const env = (config.environment as string) || 'sandbox';
+    const config = (credentials.config as Record<string, unknown>) || {};
+    const env = (config.environment as string) || "sandbox";
     const apiUrl = this.getApiUrl(env);
 
     const payouts: NormalizedPayout[] = [];
@@ -202,7 +207,7 @@ export class EbayDriver implements ConnectorDriver {
     try {
       // Get payouts
       const payoutsResponse = await fetch(`${apiUrl}/sell/finances/v1/payout`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -210,13 +215,13 @@ export class EbayDriver implements ConnectorDriver {
 
       if (payoutsResponse.ok) {
         const payoutsData = await payoutsResponse.json();
-        rawPayloads.push({ type: 'payouts', payload: payoutsData });
+        rawPayloads.push({ type: "payouts", payload: payoutsData });
 
         for (const payout of payoutsData.payouts || []) {
           payouts.push({
             externalId: payout.payoutId,
             amountCents: Math.round((payout.amount?.value || 0) * 100),
-            currency: payout.amount?.currency || 'USD',
+            currency: payout.amount?.currency || "USD",
             status: payout.payoutStatus,
             initiatedAt: payout.payoutDate ? new Date(payout.payoutDate) : new Date(),
             providerMetadata: {
@@ -229,7 +234,7 @@ export class EbayDriver implements ConnectorDriver {
 
       // Get transactions
       const transactionsResponse = await fetch(`${apiUrl}/sell/finances/v1/transaction`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -237,14 +242,14 @@ export class EbayDriver implements ConnectorDriver {
 
       if (transactionsResponse.ok) {
         const transactionsData = await transactionsResponse.json();
-        rawPayloads.push({ type: 'transactions', payload: transactionsData });
+        rawPayloads.push({ type: "transactions", payload: transactionsData });
 
         for (const tx of transactionsData.transactions || []) {
           transactions.push({
             externalId: tx.transactionId,
-            transactionType: tx.transactionType === 'DEBIT' ? 'debit' : 'credit',
+            transactionType: tx.transactionType === "DEBIT" ? "debit" : "credit",
             amountCents: Math.round((tx.amount?.value || 0) * 100),
-            currency: tx.amount?.currency || 'USD',
+            currency: tx.amount?.currency || "USD",
             occurredAt: tx.transactionDate ? new Date(tx.transactionDate) : new Date(),
             description: tx.transactionMemo || `eBay transaction ${tx.transactionId}`,
             providerMetadata: {
@@ -273,8 +278,8 @@ export class EbayDriver implements ConnectorDriver {
       }
       throw new ConnectorError(
         `eBay sync failed: ${error instanceof Error ? error.message : String(error)}`,
-        'EBAY_SYNC_FAILED',
-        'ebay',
+        "EBAY_SYNC_FAILED",
+        "ebay",
         error instanceof Error ? error : undefined
       );
     }

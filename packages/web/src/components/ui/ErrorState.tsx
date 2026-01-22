@@ -3,14 +3,14 @@
  * Provides consistent error UI across the application
  */
 
-import { AlertCircle, RefreshCw, Home, ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { AlertCircle, RefreshCw, Home, ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ErrorStateProps {
   title?: string;
   message?: string;
   error?: Error | null;
-  variant?: 'default' | 'minimal' | 'full';
+  variant?: "default" | "minimal" | "full";
   showRetry?: boolean;
   showHome?: boolean;
   showBack?: boolean;
@@ -20,11 +20,11 @@ interface ErrorStateProps {
   className?: string;
 }
 
-export default function ErrorState({
-  title = 'Something went wrong',
-  message = 'An unexpected error occurred. Please try again.',
+function ErrorStateComponent({
+  title = "Something went wrong",
+  message = "An unexpected error occurred. Please try again.",
   error,
-  variant = 'default',
+  variant = "default",
   showRetry = true,
   showHome = false,
   showBack = false,
@@ -34,13 +34,13 @@ export default function ErrorState({
   className,
 }: ErrorStateProps) {
   // Extract error message if Error object is provided
-  const errorMessage = error?.message || message;
+  const errorMessage = error?.message ?? message;
 
-  if (variant === 'minimal') {
+  if (variant === "minimal") {
     return (
       <div
         className={cn(
-          'flex items-center gap-2 p-4 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg',
+          "flex items-center gap-2 p-4 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg",
           className
         )}
         role="alert"
@@ -60,16 +60,16 @@ export default function ErrorState({
     );
   }
 
-  const sizeClasses = {
-    default: 'p-8',
-    full: 'min-h-screen p-12',
+  const sizeClasses: Record<string, string> = {
+    default: "p-8",
+    full: "min-h-screen p-12",
   };
 
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center gap-6 text-center',
-        sizeClasses[variant],
+        "flex flex-col items-center justify-center gap-6 text-center",
+        sizeClasses[variant] ?? "",
         className
       )}
       role="alert"
@@ -90,7 +90,7 @@ export default function ErrorState({
       </div>
 
       {/* Error Details (Development Only) */}
-      {process.env.NODE_ENV === 'development' && error?.stack && (
+      {process.env.NODE_ENV === "development" && error?.stack && (
         <details className="max-w-2xl w-full">
           <summary className="text-sm text-muted-foreground cursor-pointer hover:text-foreground">
             View Stack Trace
@@ -116,7 +116,7 @@ export default function ErrorState({
 
         {showHome && (
           <button
-            onClick={onHome || (() => (window.location.href = '/'))}
+            onClick={onHome ?? (() => (window.location.href = "/"))}
             className="inline-flex items-center gap-2 px-6 py-3 border-2 border-border rounded-lg hover:bg-muted transition-colors"
             aria-label="Go to homepage"
           >
@@ -127,7 +127,7 @@ export default function ErrorState({
 
         {showBack && (
           <button
-            onClick={onBack || (() => window.history.back())}
+            onClick={onBack ?? (() => window.history.back())}
             className="inline-flex items-center gap-2 px-6 py-3 border-2 border-border rounded-lg hover:bg-muted transition-colors"
             aria-label="Go back"
           >
@@ -139,7 +139,7 @@ export default function ErrorState({
 
       {/* Help Text */}
       <p className="text-sm text-muted-foreground max-w-md">
-        If this problem persists, please{' '}
+        If this problem persists, please{" "}
         <a href="/contact" className="underline hover:no-underline">
           contact support
         </a>
@@ -152,15 +152,13 @@ export default function ErrorState({
 // Minimal inline error for form fields
 export function InlineError({ message, className }: { message: string; className?: string }) {
   return (
-    <div
-      className={cn('flex items-center gap-1 text-sm text-destructive', className)}
-      role="alert"
-    >
+    <div className={cn("flex items-center gap-1 text-sm text-destructive", className)} role="alert">
       <AlertCircle className="w-4 h-4" />
       <span>{message}</span>
     </div>
   );
 }
 
-// Export all variants
-export { ErrorState, InlineError };
+// Export both default and named
+export default ErrorStateComponent;
+export { ErrorStateComponent as ErrorState };

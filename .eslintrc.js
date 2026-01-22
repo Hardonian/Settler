@@ -27,5 +27,15 @@ module.exports = {
     "@typescript-eslint/require-await": "error",
     "@typescript-eslint/await-thenable": "error",
   },
-  ignorePatterns: ["node_modules", "dist", "build", ".next", "coverage"],
+  ignorePatterns: [
+    "node_modules",
+    "dist",
+    "build",
+    ".next",
+    "coverage",
+    "*.config.js",
+    "*.config.mjs",
+    ".eslintrc.js",
+    ".lintstagedrc.js",
+  ],
 };

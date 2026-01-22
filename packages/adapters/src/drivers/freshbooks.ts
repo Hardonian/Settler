@@ -1,6 +1,6 @@
 /**
  * FreshBooks Connector Driver
- * 
+ *
  * Accounting system integration
  * Supports OAuth2 flow
  */
@@ -16,37 +16,40 @@ import {
   SyncResult,
   NormalizedInvoice,
   ConnectorError,
-} from '../connector-driver';
+} from "../connector-driver";
 
 export class FreshBooksDriver implements ConnectorDriver {
   readonly metadata: ConnectorMetadata = {
-    id: 'freshbooks',
-    displayName: 'FreshBooks',
-    category: 'accounting',
-    authType: 'oauth2',
-    description: 'Sync invoices, payments, and expenses from FreshBooks',
-    icon: '📊',
-    documentationUrl: 'https://www.freshbooks.com/api',
+    id: "freshbooks",
+    displayName: "FreshBooks",
+    category: "accounting",
+    authType: "oauth2",
+    description: "Sync invoices, payments, and expenses from FreshBooks",
+    icon: "📊",
+    documentationUrl: "https://www.freshbooks.com/api",
     supportsWebhooks: true,
     supportsPolling: true,
-    requiredConfig: ['client_id', 'client_secret'],
-    optionalConfig: ['redirect_uri'],
+    requiredConfig: ["client_id", "client_secret"],
+    optionalConfig: ["redirect_uri"],
   };
 
-  private readonly apiUrl = 'https://api.freshbooks.com';
+  private readonly apiUrl = "https://api.freshbooks.com";
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
     const config = options as unknown as { clientId: string; redirectUri: string };
     const params = new URLSearchParams({
-      response_type: 'code',
+      response_type: "code",
       client_id: config.clientId,
       redirect_uri: config.redirectUri || options.redirectUri,
-      scope: options.scopes?.join(' ') || 'user:profile:read accounting:invoices:read accounting:expenses:read',
-      state: options.state || '',
+      scope:
+        options.scopes?.join(" ") ||
+        "user:profile:read accounting:invoices:read accounting:expenses:read",
+      state: options.state || "",
     });
 
-    return `https://my.freshbooks.com/service/auth/oauth/authorize?${params.toString()}`;
+    return await Promise.resolve(
+      `https://my.freshbooks.com/service/auth/oauth/authorize?${params.toString()}`
+    );
   }
 
   async handleCallback(
@@ -60,13 +63,13 @@ export class FreshBooksDriver implements ConnectorDriver {
       redirectUri: string;
     };
 
-    const response = await fetch('https://api.freshbooks.com/auth/oauth/token', {
-      method: 'POST',
+    const response = await fetch("https://api.freshbooks.com/auth/oauth/token", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        grant_type: 'authorization_code',
+        grant_type: "authorization_code",
         client_id: config.clientId,
         client_secret: config.clientSecret,
         redirect_uri: config.redirectUri || options.redirectUri,
@@ -78,8 +81,8 @@ export class FreshBooksDriver implements ConnectorDriver {
       const error = await response.json();
       throw new ConnectorError(
         `Failed to exchange FreshBooks token: ${error.error || error.error_description}`,
-        'FRESHBOOKS_TOKEN_EXCHANGE_FAILED',
-        'freshbooks'
+        "FRESHBOOKS_TOKEN_EXCHANGE_FAILED",
+        "freshbooks"
       );
     }
 
@@ -102,13 +105,13 @@ export class FreshBooksDriver implements ConnectorDriver {
     const clientId = config?.client_id as string;
     const clientSecret = config?.client_secret as string;
 
-    const response = await fetch('https://api.freshbooks.com/auth/oauth/token', {
-      method: 'POST',
+    const response = await fetch("https://api.freshbooks.com/auth/oauth/token", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        grant_type: 'refresh_token',
+        grant_type: "refresh_token",
         client_id: clientId,
         client_secret: clientSecret,
         refresh_token: refreshToken,
@@ -119,8 +122,8 @@ export class FreshBooksDriver implements ConnectorDriver {
       const error = await response.json();
       throw new ConnectorError(
         `Failed to refresh FreshBooks token: ${error.error || error.error_description}`,
-        'FRESHBOOKS_REFRESH_FAILED',
-        'freshbooks'
+        "FRESHBOOKS_REFRESH_FAILED",
+        "freshbooks"
       );
     }
 
@@ -144,7 +147,7 @@ export class FreshBooksDriver implements ConnectorDriver {
 
     try {
       const response = await fetch(`${this.apiUrl}/auth/api/v1/users/me`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -161,7 +164,7 @@ export class FreshBooksDriver implements ConnectorDriver {
 
       return {
         success: true,
-        message: 'Connection successful',
+        message: "Connection successful",
       };
     } catch (error) {
       return {
@@ -175,10 +178,12 @@ export class FreshBooksDriver implements ConnectorDriver {
   async sync(
     credentials: Record<string, unknown>,
     _options: SyncOptions
-  ): Promise<SyncResult & {
-    invoices?: NormalizedInvoice[];
-    rawPayloads?: Array<{ type: string; payload: unknown }>;
-  }> {
+  ): Promise<
+    SyncResult & {
+      invoices?: NormalizedInvoice[];
+      rawPayloads?: Array<{ type: string; payload: unknown }>;
+    }
+  > {
     const accessToken = credentials.access_token as string;
     const accountId = (credentials.metadata as Record<string, unknown>)?.account_id as string;
 
@@ -190,7 +195,7 @@ export class FreshBooksDriver implements ConnectorDriver {
       const invoicesResponse = await fetch(
         `${this.apiUrl}/accounting/account/${accountId}/invoices/invoices`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -201,13 +206,13 @@ export class FreshBooksDriver implements ConnectorDriver {
         const error = await invoicesResponse.json();
         throw new ConnectorError(
           `Failed to fetch invoices: ${error.error || error.error_description}`,
-          'FRESHBOOKS_INVOICES_FAILED',
-          'freshbooks'
+          "FRESHBOOKS_INVOICES_FAILED",
+          "freshbooks"
         );
       }
 
       const invoicesData = await invoicesResponse.json();
-      rawPayloads.push({ type: 'invoices', payload: invoicesData });
+      rawPayloads.push({ type: "invoices", payload: invoicesData });
 
       // Normalize invoices
       for (const invoice of invoicesData.response?.result?.invoices || []) {
@@ -217,17 +222,19 @@ export class FreshBooksDriver implements ConnectorDriver {
           customerId: invoice.customerid,
           customerName: invoice.customer_name,
           amountCents: Math.round((invoice.amount?.amount || 0) * 100),
-          currency: invoice.amount?.code || 'USD',
+          currency: invoice.amount?.code || "USD",
           status: invoice.status,
           issueDate: invoice.date ? new Date(invoice.date) : undefined,
           dueDate: invoice.due_date ? new Date(invoice.due_date) : undefined,
           paidAt: invoice.paid_date ? new Date(invoice.paid_date) : undefined,
-          lineItems: invoice.lines?.map((line: any) => ({
-            description: line.description,
-            quantity: line.qty || 1,
-            unitPriceCents: Math.round((line.amount?.amount || 0) * 100),
-            totalCents: Math.round((line.amount?.amount || 0) * 100),
-          })),
+          lineItems: invoice.lines?.map(
+            (line: { description?: string; qty?: number; amount?: { amount?: number } }) => ({
+              description: line.description,
+              quantity: line.qty || 1,
+              unitPriceCents: Math.round((line.amount?.amount || 0) * 100),
+              totalCents: Math.round((line.amount?.amount || 0) * 100),
+            })
+          ),
           providerMetadata: {
             invoiceid: invoice.invoiceid,
             po_number: invoice.po_number,
@@ -251,8 +258,8 @@ export class FreshBooksDriver implements ConnectorDriver {
       }
       throw new ConnectorError(
         `FreshBooks sync failed: ${error instanceof Error ? error.message : String(error)}`,
-        'FRESHBOOKS_SYNC_FAILED',
-        'freshbooks',
+        "FRESHBOOKS_SYNC_FAILED",
+        "freshbooks",
         error instanceof Error ? error : undefined
       );
     }
