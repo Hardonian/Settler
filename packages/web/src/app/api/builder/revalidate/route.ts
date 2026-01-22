@@ -3,20 +3,42 @@
  * Revalidates pages when content is published in Builder.io
  */
 
+import { createHmac, timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 
+function normalizeSignature(signature: string): string {
+  return signature.startsWith('sha256=') ? signature.slice('sha256='.length) : signature;
+}
+
+function isValidSignature(secret: string, payload: string, signature: string): boolean {
+  const expected = createHmac('sha256', secret).update(payload, 'utf8').digest('hex');
+  const provided = normalizeSignature(signature);
+
+  if (expected.length !== provided.length) {
+    return false;
+  }
+
+  return timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(provided, 'hex'));
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const rawBody = await request.text();
 
     // Verify webhook signature (optional but recommended)
     const webhookSecret = process.env.BUILDER_WEBHOOK_SECRET;
     if (webhookSecret) {
-      const _signature = request.headers.get('x-builder-signature');
-      // TODO: Implement signature verification
-      // For now, we'll trust the webhook
+      const signature = request.headers.get('x-builder-signature');
+      if (!signature || !isValidSignature(webhookSecret, rawBody, signature)) {
+        return NextResponse.json(
+          { error: 'Invalid webhook signature' },
+          { status: 401 }
+        );
+      }
     }
+
+    const body = JSON.parse(rawBody);
 
     // Extract the model and URL from the webhook payload
     const { model, url } = body;
