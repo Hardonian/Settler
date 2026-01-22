@@ -119,6 +119,6 @@ export const POST = withSecurity(
       { status: 200 }
     );
   }
-}, { feature: 'POST API' }),
+}, { feature: 'Feature Flags Evaluation', allowPublic: true }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
 );

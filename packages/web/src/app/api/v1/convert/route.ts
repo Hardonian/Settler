@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/shared/auth/apiKey';
 import { recordServiceUsage } from '@/shared/usage/usageEvent';
 import { checkRequestEntitlement, createEntitlementErrorResponse } from '@/shared/middleware/entitlements';
-import { freeRoute } from '@/middleware/billing-gate-universal';
+import { publicRoute } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
 
@@ -44,7 +44,7 @@ const CURRENCY_RATES: Record<string, number> = {
 };
 
 export const POST = withSecurity(
-  freeRoute(async function POST(request: NextRequest) {
+  publicRoute(async function POST(request: NextRequest) {
   try {
     // Try to authenticate, but allow unauthenticated access for playground
     let isAuthenticated = false;

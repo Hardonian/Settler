@@ -13,6 +13,7 @@ export interface EntitlementError {
   error: string;
   code: string;
   message: string;
+  status?: number;
   details?: {
     currentPlan: string;
     currentUsage: number;
@@ -49,6 +50,7 @@ export async function checkRequestEntitlement(
         error: 'Unauthorized',
         code: 'no_billing_account',
         message: 'No billing account found. Please contact support.',
+        status: 401,
       },
     };
   }
@@ -60,6 +62,7 @@ export async function checkRequestEntitlement(
         error: 'Invalid Service',
         code: 'invalid_service',
         message: `Invalid service code: ${service}. Only 'reconcile' and 'exceptions' are supported.`,
+        status: 400,
       },
     };
   }
@@ -74,6 +77,7 @@ export async function checkRequestEntitlement(
           error: 'Plan Limit Exceeded',
           code: 'plan_limit_exceeded',
           message: `You have exceeded your monthly quota for ${service}. Current usage: ${entitlement.currentUsage}/${entitlement.limit}.`,
+          status: 403,
           details: {
             currentPlan: entitlement.planCode,
             currentUsage: entitlement.currentUsage,
@@ -86,15 +90,22 @@ export async function checkRequestEntitlement(
 
     return { allowed: true };
   } catch (error) {
-    // Fail open on errors - allow request if entitlement check fails
-    // This prevents service disruption due to billing system issues
-    // eslint-disable-next-line no-console
+    // Fail closed on errors - deny request if entitlement check fails
+    // This prevents users from bypassing plan enforcement
     console.error('[Entitlement Middleware] Error checking entitlement:', {
       billingAccountId: auth.billingAccountId,
       service,
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    return { allowed: true };
+    return {
+      allowed: false,
+      error: {
+        error: 'Entitlement Check Failed',
+        code: 'entitlement_check_failed',
+        message: 'Unable to verify your plan limits right now. Please retry in a moment.',
+        status: 503,
+      },
+    };
   }
 }
 
@@ -102,5 +113,5 @@ export async function checkRequestEntitlement(
  * Create entitlement error response
  */
 export function createEntitlementErrorResponse(error: EntitlementError): NextResponse {
-  return NextResponse.json(error, { status: 403 });
+  return NextResponse.json(error, { status: error.status ?? 403 });
 }

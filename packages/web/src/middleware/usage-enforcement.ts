@@ -112,8 +112,18 @@ export async function enforceUsageLimit(
     return { allowed: true };
   } catch (error) {
     console.error('[Usage Enforcement] Error:', error);
-    // Fail open - allow request if enforcement fails
-    return { allowed: true };
+    // Fail closed - deny request if enforcement fails
+    return {
+      allowed: false,
+      response: NextResponse.json(
+        createErrorResponse(
+          'USAGE_ENFORCEMENT_FAILED',
+          'Unable to verify usage limits right now. Please retry in a moment.',
+          503
+        ),
+        { status: 503 }
+      ),
+    };
   }
 }
 

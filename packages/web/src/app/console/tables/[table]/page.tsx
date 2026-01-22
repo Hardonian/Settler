@@ -197,7 +197,12 @@ export default function TablePage() {
   
   const displayName = table.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   const columns = data.length > 0 && data[0] ? Object.keys(data[0]) : [];
-  const canEdit = subscription?.tier === 'subscribed_paid' || subscription?.tier === 'enterprise';
+  const currentTier = subscription?.tier ?? 'unsubscribed';
+  const canEdit = currentTier === 'subscribed_paid' || currentTier === 'enterprise';
+  const readOnlyMessage =
+    currentTier === 'subscribed_unpaid'
+      ? 'Update your billing method to enable edits and deletions.'
+      : 'Upgrade to a paid plan to edit and delete records.';
   
   return (
     <SubscriptionGate requiredTier="subscribed_unpaid" feature="Table Viewing">
@@ -209,7 +214,7 @@ export default function TablePage() {
       </div>
       {!canEdit && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-          <strong>Read-only mode:</strong> Upgrade to a paid plan to edit and delete records.
+          <strong>Read-only mode:</strong> {readOnlyMessage}
         </div>
       )}
       <div className="flex justify-between items-center mb-6">

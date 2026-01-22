@@ -81,6 +81,13 @@ function AccessDenied({
     enterprise: 'Enterprise',
   };
 
+  const isUnsubscribed = currentTier === 'unsubscribed' || !currentTier;
+  const isUnpaid = currentTier === 'subscribed_unpaid';
+  const ctaHref = isUnsubscribed ? '/pricing' : '/console/billing';
+  const ctaLabel = isUnsubscribed ? 'View Pricing' : 'Update Billing';
+  const secondaryHref = isUnsubscribed ? '/signup' : '/console';
+  const secondaryLabel = isUnsubscribed ? 'Sign In' : 'Back to Console';
+
   return (
     <div className="border border-yellow-200 bg-yellow-50 rounded-lg p-6">
       <div className="flex items-start gap-4">
@@ -89,6 +96,16 @@ function AccessDenied({
           <h3 className="font-semibold text-yellow-900 mb-2">Subscription Required</h3>
           <p className="text-yellow-800 mb-4">
             {feature} requires a {requiredTier ? tierLabels[requiredTier] : 'subscription'}.
+            {isUnsubscribed && (
+              <span className="block mt-1">
+                Start on a paid plan to unlock this feature and higher monthly limits.
+              </span>
+            )}
+            {isUnpaid && (
+              <span className="block mt-1">
+                Your subscription is unpaid. Update billing to restore full access.
+              </span>
+            )}
             {currentTier && (
               <span className="block mt-1">
                 Your current plan: <strong>{tierLabels[currentTier]}</strong>
@@ -97,17 +114,17 @@ function AccessDenied({
           </p>
           <div className="flex gap-3">
             <Link
-              href="/console/billing"
+              href={ctaHref}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               <CreditCard className="w-4 h-4" />
-              Upgrade Plan
+              {ctaLabel}
             </Link>
             <Link
-              href="/console"
+              href={secondaryHref}
               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
             >
-              Back to Console
+              {secondaryLabel}
             </Link>
           </div>
         </div>
