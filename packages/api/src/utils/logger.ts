@@ -1,12 +1,38 @@
 /**
- * Structured Logging with OpenTelemetry Integration
- * JSON structured logs with trace_id, span_id, tenant_id
+ * Production-Grade Structured Logging
+ *
+ * Features:
+ * - JSON structured logs for production parsing
+ * - OpenTelemetry trace and span IDs for distributed tracing
+ * - Request ID for client-server correlation
+ * - Automatic secret redaction
+ * - Log sampling for high-volume endpoints
+ * - Tenant/user context propagation
+ *
+ * Integration:
+ * - OpenTelemetry for distributed tracing
+ * - Winston for structured logging
+ * - Request ID middleware for correlation
+ *
+ * Critical for:
+ * - Production debugging at 02:13 AM
+ * - Error investigation with full context
+ * - Performance monitoring and profiling
+ * - Security audit trails
  */
 
 import winston from 'winston';
 import { redact } from './redaction';
 import { trace } from '@opentelemetry/api';
 import { config } from '../config';
+import { AsyncLocalStorage } from 'async_hooks';
+
+// AsyncLocalStorage for request-scoped data (requestId, tenantId, userId)
+export const requestContext = new AsyncLocalStorage<{
+  requestId?: string;
+  tenantId?: string;
+  userId?: string;
+}>();
 
 // Get current trace and span IDs from OpenTelemetry context
 function getTraceContext(): { trace_id?: string; span_id?: string } {
@@ -22,17 +48,37 @@ function getTraceContext(): { trace_id?: string; span_id?: string } {
   };
 }
 
-// Custom format that adds trace context
-const traceContextFormat = winston.format((info) => {
+// Get request context (requestId, tenantId, userId) from AsyncLocalStorage
+function getRequestContext(): {
+  request_id?: string;
+  tenant_id?: string;
+  user_id?: string;
+} {
+  const context = requestContext.getStore();
+  if (!context) {
+    return {};
+  }
+
+  return {
+    request_id: context.requestId,
+    tenant_id: context.tenantId,
+    user_id: context.userId,
+  };
+}
+
+// Custom format that adds trace context and request context
+const contextFormat = winston.format((info) => {
   const traceContext = getTraceContext();
+  const reqContext = getRequestContext();
   return {
     ...info,
     ...traceContext,
+    ...reqContext,
   };
 })();
 
 const logFormat = winston.format.combine(
-  traceContextFormat,
+  contextFormat,
   winston.format.timestamp(),
   winston.format.errors({ stack: true }),
   winston.format.json()
@@ -49,12 +95,14 @@ export const logger = winston.createLogger({
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.printf(({ timestamp, level, message, trace_id, span_id, tenant_id, ...meta }) => {
+        winston.format.printf(({ timestamp, level, message, request_id, trace_id, span_id, tenant_id, user_id, ...meta }) => {
           const metaStr = Object.keys(meta).length ? JSON.stringify(redact(meta)) : '';
-          const traceInfo = trace_id && typeof trace_id === 'string' ? `[trace_id=${trace_id.substring(0, 16)}]` : '';
-          const spanInfo = span_id && typeof span_id === 'string' ? `[span_id=${span_id.substring(0, 16)}]` : '';
-          const tenantInfo = tenant_id ? `[tenant_id=${tenant_id}]` : '';
-          return `${timestamp} [${level}]${traceInfo}${spanInfo}${tenantInfo}: ${message} ${metaStr}`;
+          const requestInfo = request_id && typeof request_id === 'string' ? `[req=${request_id.substring(0, 8)}]` : '';
+          const traceInfo = trace_id && typeof trace_id === 'string' ? `[trace=${trace_id.substring(0, 8)}]` : '';
+          const spanInfo = span_id && typeof span_id === 'string' ? `[span=${span_id.substring(0, 8)}]` : '';
+          const tenantInfo = tenant_id ? `[tenant=${tenant_id}]` : '';
+          const userInfo = user_id ? `[user=${user_id}]` : '';
+          return `${timestamp} [${level}]${requestInfo}${traceInfo}${spanInfo}${tenantInfo}${userInfo}: ${message} ${metaStr}`;
         })
       ),
     }),
