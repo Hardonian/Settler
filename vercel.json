@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @settler/web build",
+  "buildCommand": "pnpm --filter @settler/web... build",
   "devCommand": "pnpm --filter @settler/web dev",
   "installCommand": "pnpm install --frozen-lockfile",
   "framework": "nextjs",
