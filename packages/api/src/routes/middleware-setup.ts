@@ -11,6 +11,9 @@ import { idempotencyMiddleware } from '../middleware/idempotency';
 import { versionMiddleware } from '../middleware/versioning';
 import { setCsrfToken, csrfProtection, getCsrfToken } from '../middleware/csrf';
 import { profilingMiddleware } from '../infrastructure/observability/profiling';
+import { requestIdMiddleware } from '../middleware/request-id';
+import { contextMiddleware } from '../middleware/context';
+import { errorHandlerMiddleware } from '../utils/error-normalizer';
 import cookieParser from 'cookie-parser';
 import { jobsRouter } from './jobs';
 import { reportsRouter } from './reports';
@@ -49,8 +52,14 @@ import { mountVersionedRoutes } from './route-helpers';
  * @param app - Express application instance
  */
 export function setupMiddlewareAndRoutes(app: Express): void {
+  // Request ID generation and propagation (must be first for all logs)
+  app.use(requestIdMiddleware());
+
   // Cookie parser (needed for CSRF protection)
   app.use(cookieParser());
+
+  // Request context propagation (after requestId, before other middleware)
+  app.use(contextMiddleware);
 
   // Performance profiling middleware
   app.use(profilingMiddleware);
@@ -127,4 +136,7 @@ export function setupMiddlewareAndRoutes(app: Express): void {
 
   // Optimized reconciliation summary endpoint
   app.use('/api/v1/reconciliations', authMiddleware, reconciliationSummaryRouter);
+
+  // Error handling middleware (must be last - catches all unhandled errors)
+  app.use(errorHandlerMiddleware);
 }
