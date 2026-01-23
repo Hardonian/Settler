@@ -227,7 +227,7 @@ export function errorHandlerMiddleware(
   req: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: (error?: unknown) => void
+  _next: (error?: unknown) => void
 ): void {
   sendErrorResponse(res, error, req.requestId);
 }

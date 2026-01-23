@@ -24,7 +24,7 @@ import { requestContext } from '../utils/logger';
  *
  * Must be used after requestIdMiddleware and authMiddleware
  */
-export function contextMiddleware(req: Request, res: Response, next: NextFunction): void {
+export function contextMiddleware(req: Request, _res: Response, next: NextFunction): void {
   const context = {
     requestId: req.requestId,
     tenantId: (req as any).tenantId, // Set by auth middleware
