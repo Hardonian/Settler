@@ -37,7 +37,7 @@ export async function validateHMACSignature(
   const keyData = encoder.encode(secret);
   const payloadData = encoder.encode(payload);
 
-  let cryptoKey: CryptoKey;
+  let cryptoKey: Awaited<ReturnType<typeof crypto.subtle.importKey>>;
   try {
     cryptoKey = await crypto.subtle.importKey(
       "raw",

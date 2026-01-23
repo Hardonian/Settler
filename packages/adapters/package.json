@@ -13,7 +13,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@settler/types": "*",
+    "@settler/types": "workspace:*",
     "@supabase/supabase-js": "^2.39.0",
     "zod": "^3.22.4",
     "stripe": "^14.21.0",

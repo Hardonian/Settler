@@ -38,13 +38,13 @@ export class ECBProvider implements FXRateProvider {
       // If either currency is EUR, use direct rate
       if (fromCurrency === "EUR") {
         const response = await fetch(`${this.baseUrl}/${dateStr}?base=EUR&symbols=${toCurrency}`);
-        const data = await response.json();
+        const data = await response.json() as any;
         if (data.success && data.rates && data.rates[toCurrency]) {
           return data.rates[toCurrency];
         }
       } else if (toCurrency === "EUR") {
         const response = await fetch(`${this.baseUrl}/${dateStr}?base=EUR&symbols=${fromCurrency}`);
-        const data = await response.json();
+        const data = await response.json() as any;
         if (data.success && data.rates && data.rates[fromCurrency]) {
           return 1.0 / data.rates[fromCurrency]; // Inverse rate
         }

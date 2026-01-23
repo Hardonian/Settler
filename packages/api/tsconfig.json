@@ -2,20 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "exactOptionalPropertyTypes": false
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "exactOptionalPropertyTypes": false,
+    "skipLibCheck": true,
+    "paths": {}
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/__tests__/**/*"],
-  "references": [
-    {
-      "path": "../types"
-    },
-    {
-      "path": "../adapters"
-    }
-  ]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/__tests__/**/*"]
 }
