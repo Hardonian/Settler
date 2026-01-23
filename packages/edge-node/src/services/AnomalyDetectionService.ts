@@ -80,7 +80,8 @@ export class AnomalyDetectionService {
   }
 
   private checkDuplicate(transaction: Record<string, unknown>): boolean {
-    const id = String(transaction.id || transaction.transaction_id || "");
+    const rawId = transaction.id || transaction.transaction_id;
+    const id = typeof rawId === 'string' || typeof rawId === 'number' ? String(rawId) : "";
     if (!id) return false;
 
     const result = this.db

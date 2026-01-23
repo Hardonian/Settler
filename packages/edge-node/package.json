@@ -22,7 +22,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@settler/types": "*",
+    "@settler/types": "workspace:*",
     "axios": "^1.6.2",
     "better-sqlite3": "^12.5.0",
     "dotenv": "^16.3.1",
