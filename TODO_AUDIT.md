@@ -171,3 +171,174 @@ packages/web/src/lib/support/ticket-system.ts:164:  // TODO: Ticket comments not
 packages/web/src/lib/ux-events/logger.ts:85:  // TODO: Send to backend analytics (stub for now)
 packages/web/src/types/database.types.ts:9: * TODO: Generate actual types from Supabase schema
 packages/web/templates/WorkflowBuilderPage.tsx:22:    // TODO: Save to API
+
+================================================================================
+PRIORITIZED TODO ANALYSIS
+Generated: 2026-01-23
+Total Markers: 173
+================================================================================
+
+## PRIORITY BREAKDOWN
+
+### P0: SECURITY & DATA INTEGRITY (13 items) - IMMEDIATE ACTION REQUIRED
+
+**Encryption & Secrets:**
+- packages/api/src/routes/v1/ingestion.ts:62 - Encrypt config properly (currently JSON.stringify)
+- packages/api/src/services/ingestion/stripe-connector.ts:42 - Implement proper encryption using SecretsManager
+- packages/api/src/services/ingestion/stripe-connector.ts:51 - Implement proper decryption
+
+**Authentication & Authorization:**
+- packages/api/src/security/edge-function-security.ts:103 - Verify full API key hash
+- packages/api/src/security/edge-function-security.ts:140 - Query tenant_id from users table
+- packages/web/src/lib/auth/investor-auth.ts:7 - Install next-auth package
+- packages/web/src/lib/auth/next-auth-config.ts:4 - Configure next-auth with Prisma adapter
+
+**Data Validation:**
+- packages/api/src/services/datapane/wasm-transforms.ts:69 - Implement schema validation
+- packages/api/src/services/drift/drift-detector.ts:197 - Implement statistical drift detection
+
+**Billing:**
+- packages/api/src/services/recon-core/recon-core-engine.ts:529 - Use billingAccount to fetch reconciliation rules
+
+**Status:** These TODOs represent incomplete security implementations that could lead to:
+- Credential exposure (unencrypted configs)
+- Authentication bypass (incomplete API key verification)
+- Authorization gaps (missing tenant isolation)
+- Data integrity issues (no validation)
+
+**Action:** Address within current sprint
+
+---
+
+### P1: FEATURE COMPLETENESS (91 items) - NEXT SPRINT
+
+**AI/ML Features (35 items):**
+- Anomaly detection logic incomplete (8 TODOs in ai-agents/anomaly-detector.ts)
+- Infrastructure optimization stubs (7 TODOs in infrastructure-optimizer.ts)
+- Multi-agent fallback not implemented (multi-agent-fallback.ts:88)
+- WASM transform execution missing (wasm-transforms.ts:48)
+- Streaming reconciliation incomplete (3 TODOs in streaming-recon.ts)
+- Edge AI validation missing (edge-ai.ts:615)
+
+**Integration Features (25 items):**
+- Amazon Seller shipment events parsing (amazon-seller.ts:148)
+- Xero token refresh verification (xero.ts:107)
+- Stripe connector encryption (stripe-connector.ts:42,51)
+- FX rate syncing (FXService.ts:188)
+- Fee currency conversion (FeeExtractionService.ts:276)
+
+**Workflow Features (15 items):**
+- Approval workflow notifications (approval-workflows.ts:112,182)
+- Post-approval actions (approval-workflows.ts:182)
+- Export file generation (audit-trail.ts:158, export-system.ts:160,237)
+- Contract mitigation documentation (contract-manager.ts:184)
+
+**Monitoring Features (16 items):**
+- Adapter health monitoring (adapter-health-monitoring.ts:189)
+- Alert delivery systems (10 TODOs for PagerDuty/Slack/email integration)
+- API usage tracking (autonomous-evolution-layer.ts:329)
+- Performance metrics analysis (infrastructure-optimizer.ts:187,196)
+
+**Status:** These represent planned features that are stubbed but not implemented.
+Most have placeholder return values or mock data.
+
+**Action:** Prioritize based on customer demand and roadmap
+
+---
+
+### P2: CODE QUALITY & REFACTORING (69 items) - BACKLOG
+
+**Database Queries (30 items):**
+- "Query database for..." patterns throughout codebase
+- Examples:
+  - Query slow queries (infrastructure-optimizer.ts:131)
+  - Query usage data (ecosystem-analytics.ts:61)
+  - Query reconciliation patterns (anomaly-detector.ts:133)
+  - Query partner integrations (ecosystem-analytics.ts:73)
+
+**Configuration Management (12 items):**
+- Store in database patterns (ai-config-manager.ts:37,56)
+- Load from database or config (anomaly-detector.ts:297)
+- Map account IDs (connector-runtime.ts:473)
+- Get from context (UserService.ts:33 - tenantId)
+
+**Implementation Stubs (27 items):**
+- "Implement actual..." patterns
+- Examples:
+  - Implement pattern detection (ecosystem-analytics.ts:125)
+  - Implement workflow evaluation (marketplace-intelligence.ts:175)
+  - Implement optimization logic (infrastructure-optimizer.ts:205)
+  - Progressive reconciliation (streaming-recon.ts:137,180)
+
+**Status:** These are non-critical improvements and feature enhancements.
+Code is functional but incomplete or using placeholder logic.
+
+**Action:** Address during refactoring sprints or when features become critical
+
+---
+
+## CATEGORY SUMMARY
+
+| Category | Count | Priority | Risk Level |
+|----------|-------|----------|----------|
+| Security & Auth | 10 | P0 | HIGH |
+| Data Integrity | 3 | P0 | HIGH |
+| AI/ML Features | 35 | P1 | MEDIUM |
+| Integrations | 25 | P1 | MEDIUM |
+| Workflows | 15 | P1 | LOW |
+| Monitoring | 16 | P1 | LOW |
+| Database Queries | 30 | P2 | LOW |
+| Config Management | 12 | P2 | LOW |
+| Implementation Stubs | 27 | P2 | LOW |
+
+---
+
+## RECOMMENDED ACTIONS
+
+### Immediate (This Sprint)
+1. **Fix encryption gaps** in ingestion config storage
+2. **Complete API key verification** in edge-function-security.ts
+3. **Add tenant isolation** checks in security layer
+4. **Implement schema validation** for data transforms
+5. **Install and configure next-auth** for web authentication
+
+### Short-term (Next 2-3 Sprints)
+1. **Complete AI agent implementations** (anomaly detection, infrastructure optimization)
+2. **Finish integration adapters** (Amazon Seller, Xero, etc.)
+3. **Implement notification delivery** for alerts and approvals
+4. **Add FX rate syncing** for multi-currency support
+5. **Build export functionality** for compliance reports
+
+### Long-term (Backlog)
+1. **Refactor database query patterns** to use consistent abstraction
+2. **Centralize configuration management** (move hardcoded values to config store)
+3. **Complete stub implementations** as features are prioritized
+4. **Add comprehensive monitoring** for adapter health and performance
+5. **Enhance workflow automation** with post-approval actions
+
+---
+
+## TECHNICAL DEBT METRICS
+
+- **Total Technical Debt:** 173 markers
+- **Security Debt:** 13 items (7.5%)
+- **Feature Debt:** 91 items (52.6%)
+- **Quality Debt:** 69 items (39.9%)
+
+**Debt Ratio:** High feature debt suggests aggressive feature development with planned iteration.
+**Risk Assessment:** Security debt is manageable at 7.5% but requires immediate attention.
+
+---
+
+## NOTES
+
+- Most TODOs are in `packages/api/src/services/` (110 items, 63.6%)
+- AI/ML services have highest concentration (35 items)
+- Notification/alerting integration is a common pattern (10 instances)
+- "Query database for..." is the most common TODO pattern (30+ instances)
+- Auth-related TODOs span both API and web packages (need coordination)
+
+---
+
+Generated by: Codebase Analysis (claude/plan-codebase-analysis-tQaWx)
+Session: https://claude.ai/code/session_01LUr8UFWnQitdHcGWb61QAg

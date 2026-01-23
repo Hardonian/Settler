@@ -21,7 +21,7 @@ function getCrypto(): CryptoModule {
   // Node.js environment
   if (typeof require !== "undefined") {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
       const crypto = require("crypto") as CryptoModule;
       return crypto;
     } catch {
@@ -109,7 +109,7 @@ export function verifyWebhookSignature(
       result |= expectedSignature.charCodeAt(i) ^ calculatedSignature.charCodeAt(i);
     }
     return result === 0;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
