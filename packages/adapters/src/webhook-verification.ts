@@ -14,8 +14,25 @@ export interface WebhookVerificationResult {
 
 /**
  * Timing-safe comparison of two hex strings
+ * SECURITY: Validates hex format before comparison to prevent invalid input attacks
  */
 function safeCompareHex(a: string, b: string): boolean {
+  // Validate both inputs are valid hex strings (even length, valid hex characters)
+  // This prevents silent buffer truncation that would bypass timing-safe comparison
+  const isValidHex = (str: string): boolean => {
+    return (
+      typeof str === "string" &&
+      str.length > 0 &&
+      str.length % 2 === 0 &&
+      /^[0-9a-fA-F]*$/.test(str)
+    );
+  };
+
+  // Reject if either input is not valid hex
+  if (!isValidHex(a) || !isValidHex(b)) {
+    return false;
+  }
+
   try {
     const bufA = Buffer.from(a, "hex");
     const bufB = Buffer.from(b, "hex");
