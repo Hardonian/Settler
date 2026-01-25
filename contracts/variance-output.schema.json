@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VarianceReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["variances", "summary_hash", "schema_version"],
+  "properties": {
+    "variances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "variance_id",
+          "variance_type",
+          "severity",
+          "left_record_id",
+          "right_record_id",
+          "amount_delta_minor_units",
+          "rationale",
+          "schema_version"
+        ],
+        "properties": {
+          "variance_id": { "type": "string" },
+          "variance_type": {
+            "type": "string",
+            "enum": [
+              "missing_left",
+              "missing_right",
+              "amount_delta",
+              "attribute_mismatch"
+            ]
+          },
+          "severity": { "type": "string", "enum": ["info", "warning", "critical"] },
+          "left_record_id": { "type": ["string", "null"] },
+          "right_record_id": { "type": ["string", "null"] },
+          "amount_delta_minor_units": { "type": ["integer", "null"] },
+          "rationale": { "type": "string" },
+          "schema_version": { "type": "string" }
+        }
+      }
+    },
+    "summary_hash": { "type": "string" },
+    "schema_version": { "type": "string" }
+  }
+}

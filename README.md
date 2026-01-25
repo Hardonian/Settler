@@ -240,6 +240,13 @@ All reports are saved to `ops/reports/`:
 - **Console**: [Developer Console](/console)
 - **Issues**: Contact support via console
 
+## Deterministic verification
+
+Settler includes a Rust reconciliation kernel and verifier that provide deterministic outputs and local verification. These components surface discrepancies between normalized inputs and outputs; they do not make compliance or correctness guarantees. Verification is optional and runs client-side when the wasm verifier is available.
+
+- Kernel docs: [docs/kernel/DETERMINISM.md](docs/kernel/DETERMINISM.md)
+- Verifier quickstart: [docs/verify/QUICKSTART.md](docs/verify/QUICKSTART.md)
+
 ## 🎉 Release v1.0.0
 
 **First Official Release** - December 21, 2024
