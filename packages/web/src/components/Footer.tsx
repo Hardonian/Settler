@@ -28,8 +28,8 @@ export function Footer() {
               />
             </Link>
             <p className="text-sm text-muted-foreground">
-              Reconciliation-as-a-Service API. Automate financial data reconciliation across all
-              platforms.
+              Open-source reconciliation engine for deterministic, inspectable financial data
+              matching.
             </p>
           </div>
 
@@ -37,6 +37,22 @@ export function Footer() {
           <nav aria-label="Product navigation">
             <h3 className="font-semibold text-foreground mb-4">Product</h3>
             <ul className="space-y-2 text-sm">
+              <li>
+                <Link
+                  href="/product"
+                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
+                >
+                  Product Overview
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/open-source"
+                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
+                >
+                  Open Source
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/docs"
@@ -47,42 +63,18 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/cookbooks"
+                  href="/integrations"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Cookbook
+                  Integrations
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/runbooks"
+                  href="/security-and-audit"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Runbooks
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/schematics"
-                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
-                >
-                  Schematics
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/playground"
-                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
-                >
-                  Playground
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/pricing"
-                  className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
-                >
-                  Pricing
+                  Security & Audit
                 </Link>
               </li>
               <li>
@@ -102,18 +94,18 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
-                  href="/support"
+                  href="/about"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Support
+                  About
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/community"
+                  href="/changelog"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  Community
+                  Changelog
                 </Link>
               </li>
               <li>
@@ -129,10 +121,10 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/docs"
+                  href="/docs/quickstart"
                   className="text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded motion-reduce:transition-none"
                 >
-                  API Reference
+                  Quickstart
                 </Link>
               </li>
               <li>

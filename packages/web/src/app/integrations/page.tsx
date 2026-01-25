@@ -5,9 +5,9 @@ import { PageLayout } from '@/components/content/PageLayout';
 import { getContentPage } from '@/lib/content/pages';
 
 export function generateMetadata(): Metadata {
-  const page = getContentPage('enterprise');
+  const page = getContentPage('integrations');
   if (!page) {
-    return { title: 'Enterprise' };
+    return { title: 'Integrations' };
   }
   return {
     title: page.title,
@@ -15,8 +15,8 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function EnterprisePage() {
-  const page = getContentPage('enterprise');
+export default function IntegrationsPage() {
+  const page = getContentPage('integrations');
   if (!page) {
     notFound();
   }

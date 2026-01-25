@@ -9,7 +9,7 @@ import { Rocket, Code, Zap, Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Documentation - Settler',
-  description: 'Complete API documentation, guides, and examples',
+  description: 'Documentation, quickstart guides, and determinism notes for Settler',
 };
 
 export default function DocsPage() {
@@ -18,7 +18,8 @@ export default function DocsPage() {
       <h1>Documentation</h1>
       
       <p className="text-lg text-slate-600 dark:text-slate-400">
-        Everything you need to integrate Settler into your application. Get started in minutes.
+        Everything you need to integrate Settler into your reconciliation workflows, with explicit rules
+        and deterministic outputs.
       </p>
 
       {/* Docs Interface Screenshot */}
@@ -43,7 +44,7 @@ export default function DocsPage() {
           <CardHeader>
             <Rocket className="w-8 h-8 mb-2 text-blue-600" />
             <CardTitle>Getting Started</CardTitle>
-            <CardDescription>New to Settler? Start here</CardDescription>
+            <CardDescription>New to Settler? Start with the basics</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/docs/getting-started">
@@ -58,7 +59,7 @@ export default function DocsPage() {
           <CardHeader>
             <Zap className="w-8 h-8 mb-2 text-green-600" />
             <CardTitle>Quickstart</CardTitle>
-            <CardDescription>Create your first reconciliation in 5 minutes</CardDescription>
+            <CardDescription>Create your first deterministic reconciliation run</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/docs/quickstart">
@@ -88,7 +89,7 @@ export default function DocsPage() {
           <CardHeader>
             <Shield className="w-8 h-8 mb-2 text-amber-600" />
             <CardTitle>Auth & Security</CardTitle>
-            <CardDescription>Authentication and security best practices</CardDescription>
+            <CardDescription>Auth flows and security boundaries</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/docs/auth">
