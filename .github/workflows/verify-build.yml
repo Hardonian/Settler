@@ -45,3 +45,22 @@ jobs:
 
       - name: Validate
         run: npm run validate
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Rust fmt
+        run: cargo fmt --all -- --check
+
+      - name: Rust clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+
+      - name: Rust tests
+        run: cargo test --workspace
+
+      - name: Build wasm verifier
+        run: cargo build -p settler-verify-wasm --target wasm32-unknown-unknown

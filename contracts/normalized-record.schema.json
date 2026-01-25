@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NormalizedRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_id",
+    "source",
+    "timestamp",
+    "amount_minor_units",
+    "currency",
+    "attributes",
+    "schema_version"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "description": "Stable record identifier."
+    },
+    "source": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "RFC3339 timestamp or explicit date string."
+    },
+    "amount_minor_units": {
+      "type": "integer"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "attributes": {
+      "type": "object",
+      "description": "String map with stable key ordering rules applied during canonicalization.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "schema_version": {
+      "type": "string"
+    }
+  }
+}

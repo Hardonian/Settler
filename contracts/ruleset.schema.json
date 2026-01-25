@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ruleset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "match_keys",
+    "compare_keys",
+    "tolerance_minor_units",
+    "rounding_mode",
+    "timezone",
+    "schema_version"
+  ],
+  "properties": {
+    "match_keys": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "compare_keys": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "tolerance_minor_units": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rounding_mode": {
+      "type": "string",
+      "enum": ["exact", "up", "down"]
+    },
+    "timezone": {
+      "type": "string",
+      "description": "Explicit timezone rule used for comparisons (e.g., UTC)."
+    },
+    "schema_version": {
+      "type": "string"
+    }
+  }
+}

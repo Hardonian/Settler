@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvidenceManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "input_hashes",
+    "ruleset_hash",
+    "output_hashes",
+    "files",
+    "kernel_version",
+    "deterministic_statement",
+    "schema_version"
+  ],
+  "properties": {
+    "input_hashes": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "ruleset_hash": { "type": "string" },
+    "output_hashes": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "role"],
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": { "type": "string" },
+          "role": { "type": "string" }
+        }
+      }
+    },
+    "kernel_version": { "type": "string" },
+    "deterministic_statement": { "type": "string" },
+    "schema_version": { "type": "string" }
+  }
+}
