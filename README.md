@@ -1,9 +1,11 @@
-# Settler Enterprise
+# Settler (OSS-first)
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Settler** automates financial reconciliation at $0.01 per transaction. Connect Stripe, Shopify, and other payment systems to automatically match transactions and catch accounting errors.
+**Settler** is an OSS-first reconciliation engine that surfaces discrepancies from local or hosted data sources. Enterprise offerings are optional hosting and support layers that do not change core reconciliation logic.
+
+Settler does not provide compliance or correctness guarantees. It deterministically surfaces discrepancies so operators can review and act.
 
 **Pricing:** 
 - **Free:** 100 transactions/month free, then $0.01 per transaction

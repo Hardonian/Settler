@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://settler.dev/schemas/engine_output.schema.json",
+  "title": "Settler Engine Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "tool_version",
+    "normalization_summary",
+    "variance_summary",
+    "variance_items_path",
+    "evidence_manifest",
+    "deterministic_statement"
+  ],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "tool_version": { "type": "string" },
+    "normalization_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transactions", "settlements", "warnings"],
+      "properties": {
+        "transactions": { "type": "integer" },
+        "settlements": { "type": "integer" },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "variance_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "by_type"],
+      "properties": {
+        "total": { "type": "integer" },
+        "by_type": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "count"],
+            "properties": {
+              "type": { "type": "string" },
+              "count": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "variance_items_path": { "type": "string" },
+    "evidence_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "tool_version", "generated_at", "input_files", "outputs"],
+      "properties": {
+        "schema_version": { "type": "string" },
+        "tool_version": { "type": "string" },
+        "generated_at": { "type": "string" },
+        "input_files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256"],
+            "properties": {
+              "path": { "type": "string" },
+              "sha256": { "type": "string" }
+            }
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256"],
+            "properties": {
+              "path": { "type": "string" },
+              "sha256": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "deterministic_statement": { "type": "string" }
+  }
+}

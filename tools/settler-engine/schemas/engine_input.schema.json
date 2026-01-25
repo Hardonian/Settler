@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://settler.dev/schemas/engine_input.schema.json",
+  "title": "Settler Engine Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "input_files",
+    "input_format",
+    "ruleset_path",
+    "rounding_mode",
+    "timezone",
+    "output_dir",
+    "mode",
+    "determinism"
+  ],
+  "properties": {
+    "input_files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "input_format": {
+      "type": "string",
+      "enum": ["csv", "json", "auto"]
+    },
+    "mapping_config_path": {
+      "type": "string"
+    },
+    "ruleset_path": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "rounding_mode": {
+      "type": "string",
+      "enum": ["bankers", "half-up", "half_up", "halfup", "half-even", "banker"]
+    },
+    "timezone": {
+      "type": "string",
+      "default": "UTC"
+    },
+    "output_dir": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["local", "ci"]
+    },
+    "determinism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sort_keys", "rounding", "timezone"],
+      "properties": {
+        "sort_keys": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rounding": { "type": "string" },
+        "timezone": { "type": "string" }
+      }
+    }
+  }
+}

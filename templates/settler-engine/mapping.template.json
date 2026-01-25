@@ -1,0 +1,25 @@
+{
+  "record_type_field": "record_type",
+  "record_type_values": {
+    "transaction": "transaction",
+    "settlement": "settlement"
+  },
+  "transactions": {
+    "id": "id",
+    "amount": "amount",
+    "currency": "currency",
+    "date": "date",
+    "reference_id": "reference_id",
+    "provider_transaction_id": "provider_transaction_id",
+    "provider_settlement_id": "provider_settlement_id"
+  },
+  "settlements": {
+    "id": "id",
+    "amount": "amount",
+    "currency": "currency",
+    "date": "date",
+    "reference_id": "reference_id",
+    "provider_transaction_id": "provider_transaction_id",
+    "provider_settlement_id": "provider_settlement_id"
+  }
+}

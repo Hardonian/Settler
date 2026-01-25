@@ -1,0 +1,62 @@
+{
+  "transactions": [
+    {
+      "id": "txn-1",
+      "amount": "100.00",
+      "currency": "USD",
+      "date": "2024-01-02",
+      "reference_id": "ref-1",
+      "provider_transaction_id": "ptxn-1"
+    },
+    {
+      "id": "txn-2",
+      "amount": "50.00",
+      "currency": "USD",
+      "date": "2024-01-02",
+      "reference_id": "ref-2",
+      "provider_transaction_id": "ptxn-2"
+    },
+    {
+      "id": "txn-3",
+      "amount": "75.00",
+      "currency": "EUR",
+      "date": "2024-01-03",
+      "reference_id": "ref-3",
+      "provider_transaction_id": "ptxn-3"
+    }
+  ],
+  "settlements": [
+    {
+      "id": "set-1",
+      "amount": "100.00",
+      "currency": "USD",
+      "date": "2024-01-02",
+      "reference_id": "ref-1",
+      "provider_transaction_id": "ptxn-1"
+    },
+    {
+      "id": "set-2",
+      "amount": "55.00",
+      "currency": "USD",
+      "date": "2024-01-02",
+      "reference_id": "ref-2",
+      "provider_transaction_id": "ptxn-2"
+    },
+    {
+      "id": "set-3",
+      "amount": "75.00",
+      "currency": "USD",
+      "date": "2024-01-05",
+      "reference_id": "ref-3",
+      "provider_transaction_id": "ptxn-3"
+    },
+    {
+      "id": "set-4",
+      "amount": "20.00",
+      "currency": "USD",
+      "date": "2024-01-04",
+      "reference_id": "ref-4",
+      "provider_transaction_id": "ptxn-4"
+    }
+  ]
+}
