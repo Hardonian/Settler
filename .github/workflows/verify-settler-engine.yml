@@ -1,0 +1,35 @@
+name: Verify Settler Engine
+
+on:
+  pull_request:
+    paths:
+      - 'tools/settler-engine/**'
+      - '.github/workflows/verify-settler-engine.yml'
+      - 'templates/settler-engine/**'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/settler-engine/**'
+      - '.github/workflows/verify-settler-engine.yml'
+      - 'templates/settler-engine/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Run engine tests
+        run: |
+          cd tools/settler-engine
+          go test ./...
+
+      - name: Run fixture verification
+        run: |
+          tools/settler-engine/scripts/run-fixtures.sh
