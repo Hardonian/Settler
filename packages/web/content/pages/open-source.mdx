@@ -1,0 +1,31 @@
+---
+title: Open Source
+description: Governance, licenses, and fork safety for the Settler reconciliation engine.
+---
+
+## What is open source in Settler
+
+Settler’s reconciliation protocols and SDKs are published as open-source packages. The canonical repositories live in this monorepo under `packages/`, and the SDKs are intended to be fork-safe.
+
+## Licenses
+
+- **MIT licensed**: reconciliation protocol and SDK packages (see `packages/protocol/LICENSE` and `packages/react-settler/LICENSE`).
+- **Repository license**: additional components in this repository are covered by the root `LICENSE`.
+
+Review licenses before redistributing or deploying derivatives.
+
+## Governance
+
+Changes are proposed through GitHub pull requests, reviewed by maintainers, and merged with a public changelog. Design discussions and issues live in the same repo to keep history inspectable.
+
+## Fork safety
+
+The OSS packages are structured to remain usable without the hosted service. Forks can:
+
+- pin a stable protocol version,
+- maintain local adapters,
+- and control data handling without SaaS dependencies.
+
+## Code of conduct
+
+Community contributions follow the repository’s contribution guidelines and code of conduct. See `CONTRIBUTING.md` for details.

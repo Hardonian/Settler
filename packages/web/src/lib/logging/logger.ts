@@ -5,7 +5,6 @@
  */
 
 import type { LogLevel, LogEntry, Logger } from './types';
-import { analytics } from '../analytics';
 
 class AppLogger implements Logger {
   private minLevel: LogLevel;
@@ -77,20 +76,6 @@ class AppLogger implements Logger {
         entry.message,
         entry.context || '',
         entry.error || ''
-      );
-    }
-
-    // Send to analytics for error tracking
-    if (entry.level === 'error' || entry.level === 'critical') {
-      analytics.trackError(
-        entry.error || new Error(entry.message),
-        {
-          message: entry.message,
-          level: entry.level,
-          context: entry.context,
-          sessionId: entry.sessionId,
-          userId: entry.userId,
-        }
       );
     }
 

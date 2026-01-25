@@ -7,13 +7,13 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Quickstart - Docs',
-  description: 'Get started with Settler in 5 minutes',
+  description: 'Get started with deterministic reconciliation in Settler',
 };
 
 const steps = [
   {
     title: 'Create a Workspace',
-    description: 'Sign up and create your first workspace',
+    description: 'Create a workspace to organize reconciliation runs',
     code: `# Using the SDK
 import { Settler } from '@settler/sdk';
 
@@ -21,13 +21,13 @@ const client = new Settler({
   apiKey: process.env.SETTLER_API_KEY,
 });
 
-# Or use the Console
-# Visit /console to create a workspace via UI`,
-    action: { label: 'Go to Console', href: '/console' },
+# Or use the App
+# Visit /app to create a workspace via UI`,
+    action: { label: 'Open App', href: '/app' },
   },
   {
     title: 'Create a Reconciliation Run',
-    description: 'Set up your first reconciliation job',
+    description: 'Define deterministic rules for matching',
     code: `const job = await client.jobs.create({
   name: "My First Reconciliation",
   source: {
@@ -51,11 +51,11 @@ const client = new Settler({
 });
 
 console.log("Job created:", job.id);`,
-    action: { label: 'Try in Playground', href: '/console/playground/reconcile' },
+    action: { label: 'See Integrations', href: '/integrations' },
   },
   {
     title: 'Upload Receipt/Data',
-    description: 'Parse receipts or upload transaction data',
+    description: 'Upload transactions or normalized data',
     code: `# Parse a receipt
 const receipt = await client.receipts.parse({
   file: "https://example.com/receipt.jpg",
@@ -68,11 +68,11 @@ const upload = await client.data.upload({
   file: fileBuffer,
   format: "csv",
 });`,
-    action: { label: 'Try Receipt Parser', href: '/console/playground/receipts' },
+    action: { label: 'Review API Formats', href: '/docs/api' },
   },
   {
     title: 'View Results',
-    description: 'Check reconciliation results and reports',
+    description: 'Review variances and evidence',
     code: `# Get job status
 const status = await client.jobs.get(job.id);
 console.log("Status:", status.status);
@@ -81,7 +81,7 @@ console.log("Status:", status.status);
 const report = await client.reports.get(job.id);
 console.log("Matched:", report.summary.matched);
 console.log("Unmatched:", report.summary.unmatched);`,
-    action: { label: 'View Dashboard', href: '/console' },
+    action: { label: 'Open Reports', href: '/docs/api' },
   },
 ];
 
@@ -91,16 +91,12 @@ export default function QuickstartPage() {
       <h1>Quickstart Guide</h1>
       
       <p className="text-lg text-slate-600 dark:text-slate-400">
-        Get started with Settler in 5 minutes. Follow these steps to create your first reconciliation.
+        Get started with Settler. Follow these steps to create a deterministic reconciliation run.
       </p>
 
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 my-6">
         <p className="text-sm text-blue-800 dark:text-blue-200">
-          <strong>💡 New to Settler?</strong> Try the{' '}
-          <Link href="/console/playground" className="underline hover:text-blue-600 dark:hover:text-blue-300">
-            interactive playground
-          </Link>{' '}
-          to test the API without signing up, or follow this guide to integrate into your application.
+          <strong>Note:</strong> Settler surfaces variances and evidence. Your team reviews and resolves outcomes.
         </p>
       </div>
 
@@ -138,9 +134,9 @@ export default function QuickstartPage() {
         </h2>
         <ul className="space-y-2 text-slate-700 dark:text-slate-300">
           <li>• <Link href="/docs/api" className="text-blue-600 dark:text-blue-400 hover:underline">Explore the API Reference</Link></li>
-          <li>• <Link href="/docs/integrations" className="text-blue-600 dark:text-blue-400 hover:underline">Browse available integrations</Link></li>
+          <li>• <Link href="/integrations" className="text-blue-600 dark:text-blue-400 hover:underline">Browse available integrations</Link></li>
           <li>• <Link href="/docs/auth" className="text-blue-600 dark:text-blue-400 hover:underline">Learn about authentication</Link></li>
-          <li>• <Link href="/console/api-playground" className="text-blue-600 dark:text-blue-400 hover:underline">Try the API Playground</Link></li>
+          <li>• <Link href="/open-source" className="text-blue-600 dark:text-blue-400 hover:underline">Review the open-source governance</Link></li>
         </ul>
       </div>
     </div>

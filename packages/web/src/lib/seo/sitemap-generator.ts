@@ -21,9 +21,13 @@ function getStaticRoutes(): SitemapEntry[] {
   const routes: Array<{ path: string; priority: number; changeFrequency: SitemapEntry['changeFrequency'] }> = [
     // High priority pages
     { path: '', priority: 1.0, changeFrequency: 'daily' },
-    { path: '/pricing', priority: 0.9, changeFrequency: 'weekly' },
-    { path: '/signup', priority: 0.9, changeFrequency: 'weekly' },
+    { path: '/product', priority: 0.9, changeFrequency: 'weekly' },
+    { path: '/open-source', priority: 0.9, changeFrequency: 'monthly' },
     { path: '/docs', priority: 0.9, changeFrequency: 'daily' },
+    { path: '/integrations', priority: 0.8, changeFrequency: 'monthly' },
+    { path: '/security-and-audit', priority: 0.8, changeFrequency: 'monthly' },
+    { path: '/enterprise', priority: 0.7, changeFrequency: 'monthly' },
+    { path: '/about', priority: 0.6, changeFrequency: 'yearly' },
     
     // Documentation pages
     { path: '/docs/quickstart', priority: 0.8, changeFrequency: 'weekly' },
@@ -33,17 +37,14 @@ function getStaticRoutes(): SitemapEntry[] {
     { path: '/docs/examples', priority: 0.7, changeFrequency: 'monthly' },
     
     // Product pages
-    { path: '/how-it-works', priority: 0.8, changeFrequency: 'monthly' },
-    { path: '/why-settler', priority: 0.8, changeFrequency: 'monthly' },
-    { path: '/architecture', priority: 0.7, changeFrequency: 'monthly' },
-    { path: '/feature-flags', priority: 0.7, changeFrequency: 'monthly' },
-    { path: '/receipts', priority: 0.7, changeFrequency: 'monthly' },
-    
+    { path: '/architecture', priority: 0.6, changeFrequency: 'monthly' },
+    { path: '/feature-flags', priority: 0.6, changeFrequency: 'monthly' },
+    { path: '/receipts', priority: 0.6, changeFrequency: 'monthly' },
+
     // Enterprise & Support
-    { path: '/enterprise', priority: 0.8, changeFrequency: 'monthly' },
-    { path: '/support', priority: 0.7, changeFrequency: 'weekly' },
+    { path: '/support', priority: 0.6, changeFrequency: 'weekly' },
     { path: '/status', priority: 0.6, changeFrequency: 'daily' },
-    { path: '/security', priority: 0.7, changeFrequency: 'monthly' },
+    { path: '/security-and-audit', priority: 0.7, changeFrequency: 'monthly' },
     
     // Legal
     { path: '/legal', priority: 0.5, changeFrequency: 'yearly' },
@@ -57,7 +58,7 @@ function getStaticRoutes(): SitemapEntry[] {
     { path: '/roadmap', priority: 0.6, changeFrequency: 'monthly' },
     
     // Comparison
-    { path: '/comparison', priority: 0.7, changeFrequency: 'monthly' },
+    { path: '/changelog', priority: 0.7, changeFrequency: 'monthly' },
   ];
 
   return routes.map((route) => ({
@@ -72,16 +73,7 @@ function getStaticRoutes(): SitemapEntry[] {
  * Get dynamic use case routes
  */
 function getUseCaseRoutes(): SitemapEntry[] {
-  const useCases = [
-    'ecommerce-reconciliation',
-    'payment-reconciliation',
-    'receipt-processing',
-    'multi-currency-reconciliation',
-    'compliance-auditing',
-    'stripe-shopify-reconciliation',
-    'quickbooks-integration',
-    'webhook-reliability',
-  ];
+  const useCases: string[] = [];
 
   return useCases.map((useCase) => ({
     url: `${baseUrl}/use-cases/${useCase}`,

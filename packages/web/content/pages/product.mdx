@@ -1,0 +1,34 @@
+---
+title: Product
+description: Deterministic reconciliation engine that normalizes data, applies explicit rules, and surfaces variances.
+---
+
+## Data → Normalize → Rules → Variances
+
+Settler is a reconciliation engine with a deliberate pipeline:
+
+1. **Ingest data** from adapters, files, or internal pipelines.
+2. **Normalize records** into a canonical schema.
+3. **Apply explicit rules** for matching, tolerances, and transformations.
+4. **Surface variances** with evidence for human review.
+
+## Deterministic and inspectable
+
+The engine is deterministic: the same inputs and rules produce the same outputs. Outputs are designed to be inspectable so teams can review evidence and rule paths.
+
+## Human-in-the-loop by design
+
+Settler does not decide outcomes for you. It provides variance sets and evidence so your team can review and resolve exceptions.
+
+## Provider-agnostic core
+
+Adapters are optional. You can bring your own data model and map it into the canonical schema without coupling to a single provider.
+
+## Non-goals
+
+Settler is **not**:
+
+- Accounting software
+- An audit
+- Compliance tooling
+- A guarantee of correctness
