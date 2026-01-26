@@ -1,17 +1,17 @@
 /**
  * Pattern Extraction Engine
- * 
+ *
  * Analyzes usage patterns and extracts reusable templates
  * Part of Section 6: Multi-Agent Evolution Layer
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - PrismaClient is generated at build time
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 // logInfo imported but unused - may be used in future
 
 export interface ExtractedPattern {
-  type: 'workflow' | 'template' | 'validation_rule' | 'transform_recipe' | 'mapping_template';
+  type: "workflow" | "template" | "validation_rule" | "transform_recipe" | "mapping_template";
   pattern: Record<string, unknown>;
   frequency: number;
   confidence: number;
@@ -65,7 +65,7 @@ export class PatternExtractor {
     const failures = await this.prisma.reconResult.findMany({
       where: {
         ...(tenantId && { tenantId }),
-        status: 'failed',
+        status: "failed",
         startedAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
         },
@@ -76,7 +76,7 @@ export class PatternExtractor {
     // Group by error message
     const errorGroups = new Map<string, number>();
     for (const failure of failures) {
-      const error = failure.errorMessage || 'unknown';
+      const error = failure.errorMessage || "unknown";
       errorGroups.set(error, (errorGroups.get(error) || 0) + 1);
     }
 
@@ -84,7 +84,7 @@ export class PatternExtractor {
     for (const [error, count] of errorGroups.entries()) {
       if (count >= 5) {
         patterns.push({
-          type: 'validation_rule',
+          type: "validation_rule",
           pattern: { error },
           frequency: count,
           confidence: Math.min(count / 10, 1.0),
@@ -122,7 +122,7 @@ export class PatternExtractor {
     // Group by field path
     const fieldGroups = new Map<string, number>();
     for (const drift of drifts) {
-      const field = drift.fieldPath || 'unknown';
+      const field = drift.fieldPath || "unknown";
       fieldGroups.set(field, (fieldGroups.get(field) || 0) + 1);
     }
 
@@ -130,7 +130,7 @@ export class PatternExtractor {
     for (const [field, count] of fieldGroups.entries()) {
       if (count >= 3) {
         patterns.push({
-          type: 'mapping_template',
+          type: "mapping_template",
           pattern: { fieldPath: field },
           frequency: count,
           confidence: Math.min(count / 5, 1.0),
@@ -152,18 +152,20 @@ export class PatternExtractor {
         deletedAt: null,
       },
       orderBy: {
-        usageCount: 'desc',
+        usageCount: "desc",
       },
       take: 10,
     });
 
-    return mappings.map((mapping: { name: string; usageCount: number; [key: string]: unknown }) => ({
-      type: 'mapping_template' as const,
-      pattern: mapping,
-      frequency: mapping.usageCount,
-      confidence: 0.9,
-      recommendation: `Popular mapping template: ${mapping.name}`,
-    }));
+    return mappings.map(
+      (mapping: { name: string; usageCount: number; [key: string]: unknown }) => ({
+        type: "mapping_template" as const,
+        pattern: mapping,
+        frequency: mapping.usageCount,
+        confidence: 0.9,
+        recommendation: `Popular mapping template: ${mapping.name}`,
+      })
+    );
   }
 
   /**
@@ -176,18 +178,20 @@ export class PatternExtractor {
         deletedAt: null,
       },
       orderBy: {
-        usageCount: 'desc',
+        usageCount: "desc",
       },
       take: 10,
     });
 
-    return transforms.map((transform: { name: string; usageCount: number; [key: string]: unknown }) => ({
-      type: 'transform_recipe' as const,
-      pattern: transform,
-      frequency: transform.usageCount,
-      confidence: 0.9,
-      recommendation: `Popular transform recipe: ${transform.name}`,
-    }));
+    return transforms.map(
+      (transform: { name: string; usageCount: number; [key: string]: unknown }) => ({
+        type: "transform_recipe" as const,
+        pattern: transform,
+        frequency: transform.usageCount,
+        confidence: 0.9,
+        recommendation: `Popular transform recipe: ${transform.name}`,
+      })
+    );
   }
 
   /**
@@ -215,7 +219,7 @@ export class PatternExtractor {
     for (const [workflowId, count] of workflowGroups.entries()) {
       if (count >= 10) {
         patterns.push({
-          type: 'workflow',
+          type: "workflow",
           pattern: { workflowId },
           frequency: count,
           confidence: Math.min(count / 20, 1.0),
@@ -230,12 +234,14 @@ export class PatternExtractor {
   /**
    * Generate recommendations from patterns
    */
-  async generateRecommendations(tenantId?: string): Promise<Array<{
-    type: string;
-    recommendation: string;
-    priority: 'low' | 'medium' | 'high';
-    action: Record<string, unknown>;
-  }>> {
+  async generateRecommendations(tenantId?: string): Promise<
+    Array<{
+      type: string;
+      recommendation: string;
+      priority: "low" | "medium" | "high";
+      action: Record<string, unknown>;
+    }>
+  > {
     const patterns = await this.extractPatterns(tenantId);
     const recommendations = [];
 
@@ -244,11 +250,16 @@ export class PatternExtractor {
         recommendations.push({
           type: pattern.type,
           recommendation: pattern.recommendation,
-          priority: (pattern.frequency > 20 ? 'high' : pattern.frequency > 10 ? 'medium' : 'low') as 'high' | 'medium' | 'low',
+          priority: (pattern.frequency > 20
+            ? "high"
+            : pattern.frequency > 10
+              ? "medium"
+              : "low") as "low" | "medium" | "high",
           action: {
-            createTemplate: pattern.type === 'mapping_template' || pattern.type === 'transform_recipe',
-            createWorkflow: pattern.type === 'workflow',
-            createValidationRule: pattern.type === 'validation_rule',
+            createTemplate:
+              pattern.type === "mapping_template" || pattern.type === "transform_recipe",
+            createWorkflow: pattern.type === "workflow",
+            createValidationRule: pattern.type === "validation_rule",
           },
         });
       }
