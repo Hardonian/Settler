@@ -17,6 +17,7 @@
 ├── yaml-configs/         # YAML configuration files (experiments, snapshots)
 ├── audit-reports/        # Audit and review reports
 ├── implementation-reports/ # Implementation completion reports
+├── legacy_designs/        # Design exports and reference materials
 └── ARCHIVE_INDEX.md       # This file
 ```
 
@@ -147,6 +148,23 @@ Historical or unused database migrations are preserved here for reference but ar
 - **Archived Migrations:** To be moved here if identified as unused/historical
 
 **Note:** Only migrations that are confirmed unused or superseded should be archived. Active migrations remain in `/supabase/migrations/`.
+
+---
+
+## Legacy Designs (`/archive/legacy_designs/`)
+
+Design exports and reference materials from design tools (Figma, etc.) are preserved here for historical reference but are not needed in active development.
+
+### Files Archived
+
+1. **`stitch_settler.dev_homepage.zip`** (13MB)
+   - **Reason:** Design tool export containing HTML/CSS code snippets and screenshots
+   - **Status:** Historical reference
+   - **Contents:** 157 design files covering various UI pages (homepage, dashboard, findings engine, integrations gallery, etc.)
+   - **Date Archived:** January 2026
+   - **Relevant To:** Stitch design system reference materials
+
+**Note:** These are design artifacts exported from Figma or similar tools. Active implementation is in the source code, not in these exports.
 
 ---
 
