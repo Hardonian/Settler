@@ -636,6 +636,9 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
       framer-motion:
         specifier: ^12.23.24
         version: 12.29.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -6115,6 +6118,9 @@ packages:
 
   fflate@0.8.1:
     resolution: {integrity: sha512-/exOvEuc+/iaUm105QIiOt4LpBdMTWsXxqR0HDF35vx3fmaKzw7354gTilCh5rkzEt8WYyG//ku3h3nRmd7CHQ==}
+
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
   figures@3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
@@ -17125,6 +17131,8 @@ snapshots:
   fecha@4.2.3: {}
 
   fflate@0.8.1: {}
+
+  fflate@0.8.2: {}
 
   figures@3.2.0:
     dependencies:

@@ -1,4 +1,4 @@
-declare module '@prisma/client' {
+declare module "@prisma/client" {
   export type PrismaModelDelegate<T = any> = {
     findUnique: (...args: any[]) => Promise<T | null>;
     findFirst: (...args: any[]) => Promise<T | null>;
@@ -30,8 +30,8 @@ declare module '@prisma/client' {
     export type JsonArray = any[];
     export type InputJsonValue = any;
     export type ExperimentUpdateInput = Record<string, any>;
-    export type TenantPageGetPayload<T> = any;
-    export type ExperimentGetPayload<T> = any;
+    export type TenantPageGetPayload = any;
+    export type ExperimentGetPayload = any;
   }
 
   export type IdempotencyKey = any;

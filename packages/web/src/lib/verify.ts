@@ -1,8 +1,4 @@
-import type {
-  EvidenceManifest,
-  NamedFile,
-  VerificationResult,
-} from '@/types/verification';
+import type { EvidenceManifest, NamedFile, VerificationResult } from "@/types/verification";
 
 export type WasmVerificationResponse = {
   success: boolean;
@@ -10,20 +6,19 @@ export type WasmVerificationResponse = {
   error?: string;
 };
 
-let wasmModule: { verify_manifest: (manifestJson: string, filesJson: string) => string } | null = null;
+let wasmModule: { verify_manifest: (manifestJson: string, filesJson: string) => string } | null =
+  null;
 
 export async function loadVerifier(): Promise<typeof wasmModule> {
   if (wasmModule) {
     return wasmModule;
   }
   try {
-    const module = await import(
-      /* webpackIgnore: true */ '/wasm/settler_verify_wasm.js'
-    );
-    wasmModule = module as typeof wasmModule;
+    const importedModule = await import(/* webpackIgnore: true */ "/wasm/settler_verify_wasm.js");
+    wasmModule = importedModule as typeof wasmModule;
     return wasmModule;
   } catch (error) {
-    console.warn('[verify] wasm verifier unavailable', error);
+    console.warn("[verify] wasm verifier unavailable", error);
     return null;
   }
 }
@@ -32,12 +27,12 @@ export async function verifyBundle(
   manifest: EvidenceManifest,
   files: NamedFile[]
 ): Promise<VerificationResult | null> {
-  const module = await loadVerifier();
-  if (!module) {
+  const wasmModuleInstance = await loadVerifier();
+  if (!wasmModuleInstance) {
     return null;
   }
 
-  const responseJson = module.verify_manifest(
+  const responseJson = wasmModuleInstance.verify_manifest(
     JSON.stringify(manifest),
     JSON.stringify(files)
   );
