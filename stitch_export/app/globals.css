@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Simple globals for Stitch marketing facelift */
+:root {
+  --background: #ffffff;
+  --foreground: #0f1020;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  --primary: #4f46e5;
+  --radius: 0.5rem;
+}
+.btn {
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--primary);
+}
+.text-muted-foreground {
+  color: var(--muted-foreground);
+}
+.max-w-7xl {
+  max-width: 80rem;
+}
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.py-6 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+.py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+.mt-6 {
+  margin-top: 1.5rem;
+}
+.mt-8 {
+  margin-top: 2rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+.grid {
+  display: grid;
+}
+.grid-cols-1 {
+  grid-template-columns: 1fr;
+}
+.md\:grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.gap-6 {
+  gap: 1.5rem;
+}
+.border {
+  border: 1px solid var(--border);
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
+}
+.text-6xl {
+  font-size: 3.75rem;
+}
+.font-extrabold {
+  font-weight: 800;
+}
+.text-center {
+  text-align: center;
+}
+.text-xl {
+  font-size: 1.25rem;
+}
+.text-2xl {
+  font-size: 1.5rem;
+}
+.max-w-2xl {
+  max-width: 42rem;
+}
+.flex {
+  display: flex;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.justify-center {
+  justify-content: center;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.text-muted-foreground {
+  color: #6b7280;
+}

@@ -1,0 +1,43 @@
+:root {
+  --background: #ffffff;
+  --foreground: #0b1220;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+}
+html,
+body,
+#__next {
+  height: 100%;
+}
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto;
+}
+.btn {
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--primary);
+}
+.hidden {
+  display: none;
+}
