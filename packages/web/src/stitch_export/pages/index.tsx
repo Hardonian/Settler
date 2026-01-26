@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { StitchHeader } from "./components/Header";
-import { StitchFooter } from "./components/Footer";
+import { StitchHeader } from "../components/Header";
+import { StitchFooter } from "../components/Footer";
 
 // Simple landing page using Stitch-like UI skeleton
 export default function StitchHome() {
