@@ -16,15 +16,15 @@
  * - Security (no information leakage)
  */
 
-import { Request, Response } from 'express';
-import { logError } from './logger';
-import { redact } from './redaction';
+import { Request, Response } from "express";
+import { logError } from "./logger";
+import { redact } from "./redaction";
 
 /**
  * Standard error response shape
  */
 export interface ErrorResponse {
-  status: 'error';
+  status: "error";
   code: string;
   message: string;
   requestId?: string;
@@ -39,11 +39,11 @@ export class HttpError extends Error {
   constructor(
     message: string,
     public statusCode: number = 500,
-    public code: string = 'INTERNAL_ERROR',
+    public code: string = "INTERNAL_ERROR",
     public details?: Record<string, unknown>
   ) {
     super(message);
-    this.name = 'HttpError';
+    this.name = "HttpError";
     Error.captureStackTrace(this, this.constructor);
   }
 }
@@ -53,53 +53,50 @@ export class HttpError extends Error {
  */
 export class BadRequestError extends HttpError {
   constructor(message: string, details?: Record<string, unknown>) {
-    super(message, 400, 'BAD_REQUEST', details);
-    this.name = 'BadRequestError';
+    super(message, 400, "BAD_REQUEST", details);
+    this.name = "BadRequestError";
   }
 }
 
 export class UnauthorizedError extends HttpError {
-  constructor(message: string = 'Authentication required', details?: Record<string, unknown>) {
-    super(message, 401, 'UNAUTHORIZED', details);
-    this.name = 'UnauthorizedError';
+  constructor(message: string = "Authentication required", details?: Record<string, unknown>) {
+    super(message, 401, "UNAUTHORIZED", details);
+    this.name = "UnauthorizedError";
   }
 }
 
 export class ForbiddenError extends HttpError {
-  constructor(message: string = 'Access denied', details?: Record<string, unknown>) {
-    super(message, 403, 'FORBIDDEN', details);
-    this.name = 'ForbiddenError';
+  constructor(message: string = "Access denied", details?: Record<string, unknown>) {
+    super(message, 403, "FORBIDDEN", details);
+    this.name = "ForbiddenError";
   }
 }
 
 export class NotFoundError extends HttpError {
-  constructor(resource: string = 'Resource', details?: Record<string, unknown>) {
-    super(`${resource} not found`, 404, 'NOT_FOUND', details);
-    this.name = 'NotFoundError';
+  constructor(resource: string = "Resource", details?: Record<string, unknown>) {
+    super(`${resource} not found`, 404, "NOT_FOUND", details);
+    this.name = "NotFoundError";
   }
 }
 
 export class ConflictError extends HttpError {
   constructor(message: string, details?: Record<string, unknown>) {
-    super(message, 409, 'CONFLICT', details);
-    this.name = 'ConflictError';
+    super(message, 409, "CONFLICT", details);
+    this.name = "ConflictError";
   }
 }
 
 export class TooManyRequestsError extends HttpError {
-  constructor(
-    message: string = 'Rate limit exceeded',
-    details?: Record<string, unknown>
-  ) {
-    super(message, 429, 'RATE_LIMIT_EXCEEDED', details);
-    this.name = 'TooManyRequestsError';
+  constructor(message: string = "Rate limit exceeded", details?: Record<string, unknown>) {
+    super(message, 429, "RATE_LIMIT_EXCEEDED", details);
+    this.name = "TooManyRequestsError";
   }
 }
 
 export class InternalServerError extends HttpError {
-  constructor(message: string = 'Internal server error', details?: Record<string, unknown>) {
-    super(message, 500, 'INTERNAL_ERROR', details);
-    this.name = 'InternalServerError';
+  constructor(message: string = "Internal server error", details?: Record<string, unknown>) {
+    super(message, 500, "INTERNAL_ERROR", details);
+    this.name = "InternalServerError";
   }
 }
 
@@ -116,7 +113,7 @@ export function normalizeError(error: unknown, requestId?: string): ErrorRespons
   // Handle HttpError instances
   if (error instanceof HttpError) {
     return {
-      status: 'error',
+      status: "error",
       code: error.code,
       message: error.message,
       requestId,
@@ -128,21 +125,21 @@ export function normalizeError(error: unknown, requestId?: string): ErrorRespons
   // Handle standard Error instances
   if (error instanceof Error) {
     // Check if it's a known error type by name
-    if (error.name === 'ValidationError') {
+    if (error.name === "ValidationError") {
       return {
-        status: 'error',
-        code: 'VALIDATION_ERROR',
+        status: "error",
+        code: "VALIDATION_ERROR",
         message: error.message,
         requestId,
         timestamp,
       };
     }
 
-    if (error.name === 'UnauthorizedError' || error.message.includes('unauthorized')) {
+    if (error.name === "UnauthorizedError" || error.message.includes("unauthorized")) {
       return {
-        status: 'error',
-        code: 'UNAUTHORIZED',
-        message: 'Authentication required',
+        status: "error",
+        code: "UNAUTHORIZED",
+        message: "Authentication required",
         requestId,
         timestamp,
       };
@@ -150,9 +147,9 @@ export function normalizeError(error: unknown, requestId?: string): ErrorRespons
 
     // Generic error response (don't leak internal error messages)
     return {
-      status: 'error',
-      code: 'INTERNAL_ERROR',
-      message: 'An internal error occurred',
+      status: "error",
+      code: "INTERNAL_ERROR",
+      message: "An internal error occurred",
       requestId,
       timestamp,
     };
@@ -160,9 +157,9 @@ export function normalizeError(error: unknown, requestId?: string): ErrorRespons
 
   // Handle unknown error types
   return {
-    status: 'error',
-    code: 'UNKNOWN_ERROR',
-    message: 'An unexpected error occurred',
+    status: "error",
+    code: "UNKNOWN_ERROR",
+    message: "An unexpected error occurred",
     requestId,
     timestamp,
   };
@@ -198,16 +195,12 @@ export function sendErrorResponse(
   }
 
   // Log the full error with stack trace (for internal debugging)
-  logError(
-    `Error handling request: ${normalizedError.message}`,
-    error,
-    {
-      requestId,
-      code: normalizedError.code,
-      statusCode,
-      ...normalizedError.details,
-    }
-  );
+  logError(`Error handling request: ${normalizedError.message}`, error, {
+    requestId,
+    code: normalizedError.code,
+    statusCode,
+    ...normalizedError.details,
+  });
 
   // Send safe error response to client (no stack traces)
   res.status(statusCode).json(normalizedError);

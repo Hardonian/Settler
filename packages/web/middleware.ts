@@ -33,80 +33,10 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       return addSecurityHeaders(response);
     }
 
-    // Public routes that should never require auth or throw errors
-    // These routes must always render, even if Supabase/auth fails
-    // NOTE: /console, /admin, /dashboard, and data-bearing routes are authenticated
-    const publicExactRoutes = new Set([
-      '/',
-      '/pricing',
-      '/support',
-      '/status',
-      '/trust',
-      '/security',
-      '/roadmap',
-      '/proof',
-      '/comparison',
-      '/vision',
-      '/why-settler',
-      '/how-it-works',
-      '/architecture',
-      '/founder',
-      '/enterprise',
-      '/benchmarks',
-      '/roi-calculator',
-      '/playground',
-      '/demo',
-      '/receipts',
-      '/feature-flags',
-      '/cookbook',
-      '/cookbooks',
-      '/runbooks',
-      '/schematics',
-      '/react-settler-demo',
-      '/edge-ai',
-      '/community',
-      '/community/contributors',
-      '/changelog',
-      '/oss',
-      '/offline',
-      '/mobile',
-      '/docs',
-      '/signup',
-      '/integrations/request',
-      '/support/contact',
-      '/legal',
-    ]);
-
-    const publicPrefixes = [
-      '/docs/',
-      '/support/',
-      '/legal/',
-      '/changelog/',
-      '/community/',
-      '/use-cases/',
-      '/demo/',
-      '/playground/',
-      '/builder/',
-      '/invite/',
-      '/oss/',
-      '/cookbook/',
-      '/cookbooks/',
-    ];
-
-    const publicExceptions = [
-      '/console/playground',
-    ];
-
-    const isPublicRoute =
-      publicExactRoutes.has(pathname) ||
-      publicPrefixes.some((prefix) => pathname.startsWith(prefix)) ||
-      publicExceptions.some(
-        (route) => pathname === route || pathname.startsWith(`${route}/`)
-      );
-
     const isApiRoute = pathname.startsWith('/api');
 
     const authRequiredPrefixes = [
+      '/app',
       '/console',
       '/dashboard',
       '/admin',
@@ -120,32 +50,31 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     ];
 
     const isAuthRequiredRoute =
-      !isPublicRoute &&
       !isApiRoute &&
       authRequiredPrefixes.some((prefix) =>
         pathname === prefix || pathname.startsWith(`${prefix}/`)
       );
 
-  let response = NextResponse.next({
-    request: {
-      headers: new Headers(request.headers),
-    },
-  });
+    let response = NextResponse.next({
+      request: {
+        headers: new Headers(request.headers),
+      },
+    });
 
-  // Add trace_id to response headers
-  response.headers.set("x-trace-id", traceId);
+    // Add trace_id to response headers
+    response.headers.set("x-trace-id", traceId);
 
-  // Set trace_id cookie for client-side access
-  response.cookies.set("trace-id", traceId, {
-    httpOnly: false, // Allow client-side access
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: "/",
-  });
+    // Set trace_id cookie for client-side access
+    response.cookies.set("trace-id", traceId, {
+      httpOnly: false, // Allow client-side access
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey =
-    process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey =
+      process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseAnonKey) {
       // If Supabase not configured, skip auth middleware for public/API routes
@@ -160,9 +89,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       return addSecurityHeaders(response);
     }
 
-  // For public routes, skip auth checks but still refresh session if possible
-  // This allows authenticated users to see elevated features without blocking unauthenticated access
-  if (isPublicRoute || isApiRoute) {
+    // For public and API routes, skip auth entirely
+    if (!isAuthRequiredRoute) {
+      return addSecurityHeaders(response);
+    }
+
+    // For protected routes, attempt auth refresh but never throw
     try {
       const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
         cookies: {
@@ -206,82 +138,37 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         },
       });
 
-      // Try to refresh session silently - don't fail if it errors
+      // Refresh session if expired - required for Server Components
+      // Wrap in try/catch to prevent middleware from crashing on auth errors
       try {
-        await supabase.auth.getUser();
+        const { data, error } = await supabase.auth.getUser();
+        if (isAuthRequiredRoute && (error || !data?.user)) {
+          const redirectUrl = new URL('/signup', request.url);
+          redirectUrl.searchParams.set('next', pathname);
+          const redirectResponse = NextResponse.redirect(redirectUrl);
+          redirectResponse.headers.set('x-trace-id', traceId);
+          return addSecurityHeaders(redirectResponse);
+        }
       } catch (authError) {
-        // Silent fail for public routes - auth is optional
+        // Log but don't fail - let the route handler deal with auth
+        console.warn(
+          "[Middleware] Auth refresh failed (non-fatal):",
+          authError instanceof Error ? authError.message : "Unknown error"
+        );
+        if (isAuthRequiredRoute) {
+          const redirectUrl = new URL('/signup', request.url);
+          redirectUrl.searchParams.set('next', pathname);
+          const redirectResponse = NextResponse.redirect(redirectUrl);
+          redirectResponse.headers.set('x-trace-id', traceId);
+          return addSecurityHeaders(redirectResponse);
+        }
       }
     } catch (error) {
-      // If Supabase client creation fails, continue anyway for public routes
-      console.warn('[Middleware] Failed to create Supabase client for public route (non-fatal):', 
-        error instanceof Error ? error.message : 'Unknown error'
-      );
-    }
-    
-    return addSecurityHeaders(response);
-  }
-
-  // For protected routes, attempt auth refresh but never throw
-  try {
-    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: "",
-            ...options,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value: "",
-            ...options,
-          });
-        },
-      },
-    });
-
-    // Refresh session if expired - required for Server Components
-    // Wrap in try/catch to prevent middleware from crashing on auth errors
-    try {
-      const { data, error } = await supabase.auth.getUser();
-      if (isAuthRequiredRoute && (error || !data?.user)) {
-        const redirectUrl = new URL('/signup', request.url);
-        redirectUrl.searchParams.set('next', pathname);
-        const redirectResponse = NextResponse.redirect(redirectUrl);
-        redirectResponse.headers.set('x-trace-id', traceId);
-        return addSecurityHeaders(redirectResponse);
-      }
-    } catch (authError) {
-      // Log but don't fail - let the route handler deal with auth
-      console.warn(
-        "[Middleware] Auth refresh failed (non-fatal):",
-        authError instanceof Error ? authError.message : "Unknown error"
+      // If Supabase client creation fails, log but continue
+      // Routes will handle auth errors themselves
+      console.error(
+        "[Middleware] Failed to create Supabase client (non-fatal):",
+        error instanceof Error ? error.message : "Unknown error"
       );
       if (isAuthRequiredRoute) {
         const redirectUrl = new URL('/signup', request.url);
@@ -291,28 +178,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         return addSecurityHeaders(redirectResponse);
       }
     }
-  } catch (error) {
-    // If Supabase client creation fails, log but continue
-    // Routes will handle auth errors themselves
-    console.error(
-      "[Middleware] Failed to create Supabase client (non-fatal):",
-      error instanceof Error ? error.message : "Unknown error"
-    );
-    if (isAuthRequiredRoute) {
-      const redirectUrl = new URL('/signup', request.url);
-      redirectUrl.searchParams.set('next', pathname);
-      const redirectResponse = NextResponse.redirect(redirectUrl);
-      redirectResponse.headers.set('x-trace-id', traceId);
-      return addSecurityHeaders(redirectResponse);
-    }
-  }
 
-  // Add route protection logic here if needed
-  // Example: Protect /dashboard routes
-  // const { data: { user } } = await supabase.auth.getUser();
-  // if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-  //   return NextResponse.redirect(new URL('/login', request.url));
-  // }
+    // Add route protection logic here if needed
+    // Example: Protect /dashboard routes
+    // const { data: { user } } = await supabase.auth.getUser();
+    // if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+    //   return NextResponse.redirect(new URL('/login', request.url));
+    // }
 
     // Add security headers to all responses
     // CRITICAL: Always return a response, never throw

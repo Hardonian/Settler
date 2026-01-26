@@ -1,4 +1,5 @@
 # Settler Quickstart Guide
+
 ## First Reconciliation in <30 Minutes
 
 This guide will help you get your first reconciliation running in under 30 minutes. We'll walk through setting up Settler, creating a reconciliation job, and viewing your first results.
@@ -43,7 +44,7 @@ pnpm add @settler/sdk
 Create a file `reconcile.js`:
 
 ```javascript
-import { SettlerClient } from '@settler/sdk';
+import { SettlerClient } from "@settler/sdk";
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY, // or 'sk_your_api_key_here'
@@ -52,34 +53,34 @@ const client = new SettlerClient({
 async function createFirstJob() {
   // Create a reconciliation job
   const job = await client.jobs.create({
-    name: 'My First Reconciliation',
+    name: "My First Reconciliation",
     source: {
-      adapter: 'stripe', // Source platform
+      adapter: "stripe", // Source platform
       config: {
         apiKey: process.env.STRIPE_SECRET_KEY, // Your Stripe secret key
       },
     },
     target: {
-      adapter: 'shopify', // Target platform
+      adapter: "shopify", // Target platform
       config: {
         apiKey: process.env.SHOPIFY_API_KEY,
-        shopDomain: 'your-shop.myshopify.com',
+        shopDomain: "your-shop.myshopify.com",
       },
     },
     rules: {
       matching: [
-        { field: 'order_id', type: 'exact' },
-        { field: 'amount', type: 'exact', tolerance: 0.01 },
-        { field: 'date', type: 'range', days: 1 },
+        { field: "order_id", type: "exact" },
+        { field: "amount", type: "exact", tolerance: 0.01 },
+        { field: "date", type: "range", days: 1 },
       ],
-      conflictResolution: 'last-wins',
+      conflictResolution: "last-wins",
     },
   });
 
-  console.log('✅ Job created:', job.data.id);
-  console.log('   Name:', job.data.name);
-  console.log('   Status:', job.data.status);
-  
+  console.log("✅ Job created:", job.data.id);
+  console.log("   Name:", job.data.name);
+  console.log("   Status:", job.data.status);
+
   return job.data.id;
 }
 
@@ -150,10 +151,10 @@ curl -X POST https://api.settler.io/api/v1/jobs \
 ```javascript
 // Run the job
 const execution = await client.jobs.run(jobId);
-console.log('✅ Reconciliation started:', execution.data.id);
+console.log("✅ Reconciliation started:", execution.data.id);
 
 // Wait a few seconds for it to complete (or poll for status)
-await new Promise(resolve => setTimeout(resolve, 5000));
+await new Promise((resolve) => setTimeout(resolve, 5000));
 
 // Get the report
 const report = await client.reports.get(jobId, {
@@ -161,11 +162,11 @@ const report = await client.reports.get(jobId, {
   endDate: new Date().toISOString(),
 });
 
-console.log('\n📊 Reconciliation Report:');
-console.log('   Matched:', report.data.summary.matched);
-console.log('   Unmatched (source):', report.data.summary.unmatchedSource);
-console.log('   Unmatched (target):', report.data.summary.unmatchedTarget);
-console.log('   Accuracy:', report.data.summary.accuracy + '%');
+console.log("\n📊 Reconciliation Report:");
+console.log("   Matched:", report.data.summary.matched);
+console.log("   Unmatched (source):", report.data.summary.unmatchedSource);
+console.log("   Unmatched (target):", report.data.summary.unmatchedTarget);
+console.log("   Accuracy:", report.data.summary.accuracy + "%");
 ```
 
 ### Using the CLI:
@@ -193,9 +194,9 @@ settler reports get <job_id>
 ```javascript
 const report = await client.reports.get(jobId);
 
-console.log('Summary:', report.data.summary);
-console.log('Matched transactions:', report.data.matched);
-console.log('Unmatched transactions:', report.data.unmatched);
+console.log("Summary:", report.data.summary);
+console.log("Matched transactions:", report.data.matched);
+console.log("Unmatched transactions:", report.data.unmatched);
 ```
 
 ### View via CLI
@@ -213,42 +214,38 @@ Get real-time notifications when reconciliation completes:
 ```javascript
 // Create a webhook
 const webhook = await client.webhooks.create({
-  url: 'https://your-app.com/webhooks/settler',
-  events: [
-    'reconciliation.completed',
-    'reconciliation.failed',
-    'reconciliation.mismatch',
-  ],
+  url: "https://your-app.com/webhooks/settler",
+  events: ["reconciliation.completed", "reconciliation.failed", "reconciliation.mismatch"],
 });
 
-console.log('✅ Webhook created:', webhook.data.id);
+console.log("✅ Webhook created:", webhook.data.id);
 ```
 
 **Webhook Handler Example (Express.js):**
 
 ```javascript
-import express from 'express';
-import { verifyWebhookSignature } from '@settler/sdk';
+import express from "express";
+import { verifyWebhookSignature } from "@settler/sdk";
 
 const app = express();
 
-app.post('/webhooks/settler', express.raw({ type: 'application/json' }), (req, res) => {
-  const signature = req.headers['x-settler-signature'];
+app.post("/webhooks/settler", express.raw({ type: "application/json" }), (req, res) => {
+  const signature = req.headers["x-settler-signature"];
   const secret = process.env.WEBHOOK_SECRET;
 
   if (!verifyWebhookSignature(req.body, signature, secret)) {
-    return res.status(401).send('Invalid signature');
+    return res.status(401).send("Invalid signature");
   }
 
   const event = JSON.parse(req.body.toString());
-  
+
   switch (event.type) {
-    case 'reconciliation.completed':
-      console.log('✅ Reconciliation completed:', event.data.jobId);
-      console.log('   Matched:', event.data.summary.matched);
+    case "reconciliation.completed":
+      console.log("✅ Reconciliation completed:", event.data.jobId);
+      console.log("   Matched:", event.data.summary.matched);
       break;
-    case 'reconciliation.mismatch':
-      console.log('⚠️  Mismatch detected:', event.data);
+    case "reconciliation.mismatch":
+      console.log("⚠️  Mismatch detected:", event.data);
       // Alert your team, create a ticket, etc.
       break;
   }
@@ -267,13 +264,13 @@ app.listen(3000);
 
 ```javascript
 const job = await client.jobs.create({
-  name: 'Stripe to QuickBooks',
+  name: "Stripe to QuickBooks",
   source: {
-    adapter: 'stripe',
+    adapter: "stripe",
     config: { apiKey: process.env.STRIPE_SECRET_KEY },
   },
   target: {
-    adapter: 'quickbooks',
+    adapter: "quickbooks",
     config: {
       clientId: process.env.QB_CLIENT_ID,
       clientSecret: process.env.QB_CLIENT_SECRET,
@@ -282,11 +279,11 @@ const job = await client.jobs.create({
   },
   rules: {
     matching: [
-      { field: 'transaction_id', type: 'exact' },
-      { field: 'amount', type: 'exact' },
+      { field: "transaction_id", type: "exact" },
+      { field: "amount", type: "exact" },
     ],
   },
-  schedule: '0 2 * * *', // Daily at 2 AM
+  schedule: "0 2 * * *", // Daily at 2 AM
 });
 ```
 
@@ -295,21 +292,23 @@ const job = await client.jobs.create({
 ```javascript
 // Reconcile Stripe + PayPal + Shopify → QuickBooks
 const job = await client.jobs.create({
-  name: 'Multi-Gateway Reconciliation',
+  name: "Multi-Gateway Reconciliation",
   sources: [
-    { adapter: 'stripe', config: { apiKey: process.env.STRIPE_KEY } },
-    { adapter: 'paypal', config: { apiKey: process.env.PAYPAL_KEY } },
-    { adapter: 'shopify', config: { apiKey: process.env.SHOPIFY_KEY } },
+    { adapter: "stripe", config: { apiKey: process.env.STRIPE_KEY } },
+    { adapter: "paypal", config: { apiKey: process.env.PAYPAL_KEY } },
+    { adapter: "shopify", config: { apiKey: process.env.SHOPIFY_KEY } },
   ],
   target: {
-    adapter: 'quickbooks',
-    config: { /* ... */ },
+    adapter: "quickbooks",
+    config: {
+      /* ... */
+    },
   },
   rules: {
     matching: [
-      { field: 'transaction_id', type: 'fuzzy', threshold: 0.8 },
-      { field: 'amount', type: 'exact' },
-      { field: 'customer_email', type: 'exact' },
+      { field: "transaction_id", type: "fuzzy", threshold: 0.8 },
+      { field: "amount", type: "exact" },
+      { field: "customer_email", type: "exact" },
     ],
   },
 });
@@ -319,19 +318,19 @@ const job = await client.jobs.create({
 
 ```javascript
 // In your webhook handler (e.g., Stripe webhook)
-app.post('/webhooks/stripe', async (req, res) => {
+app.post("/webhooks/stripe", async (req, res) => {
   const event = req.body;
-  
+
   // Forward to Settler for real-time reconciliation
-  await fetch('https://api.settler.io/api/v1/webhooks/receive/stripe', {
-    method: 'POST',
+  await fetch("https://api.settler.io/api/v1/webhooks/receive/stripe", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-API-Key': process.env.SETTLER_API_KEY,
+      "Content-Type": "application/json",
+      "X-API-Key": process.env.SETTLER_API_KEY,
     },
     body: JSON.stringify(event),
   });
-  
+
   res.json({ received: true });
 });
 ```

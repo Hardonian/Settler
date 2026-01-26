@@ -1,0 +1,14 @@
+{
+  "input_files": ["data.json"],
+  "input_format": "json",
+  "ruleset_path": "ruleset.json",
+  "rounding_mode": "bankers",
+  "timezone": "UTC",
+  "output_dir": "../output",
+  "mode": "ci",
+  "determinism": {
+    "sort_keys": ["record_type", "id", "source_file", "source_row"],
+    "rounding": "bankers",
+    "timezone": "UTC"
+  }
+}

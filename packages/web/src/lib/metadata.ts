@@ -28,16 +28,15 @@ export function generateMetadata({
   const canonicalUrl = canonical || siteUrl;
 
   const defaultKeywords = [
-    "reconciliation API",
+    "reconciliation engine",
     "financial reconciliation",
-    "data reconciliation",
-    "SaaS reconciliation",
-    "e-commerce reconciliation",
-    "payment reconciliation",
-    "Stripe reconciliation",
-    "Shopify reconciliation",
-    "API integration",
-    "financial automation",
+    "deterministic reconciliation",
+    "variance detection",
+    "provider-agnostic adapters",
+    "rules-based reconciliation",
+    "open source finance",
+    "audit evidence",
+    "data normalization",
   ];
 
   return {
@@ -100,17 +99,11 @@ export function generateMetadata({
  */
 export function generatePricingMetadata(): Metadata {
   return generateMetadata({
-    title: "Pricing - Simple, Transparent Plans",
+    title: "Enterprise - Hosted Infrastructure",
     description:
-      "Start your 30-day free trial with full access to all features. No credit card required. Plans from $0/month for small businesses to custom enterprise solutions.",
-    keywords: [
-      "reconciliation pricing",
-      "API pricing",
-      "financial reconciliation cost",
-      "reconciliation software pricing",
-      "free trial",
-    ],
-    canonical: "https://settler.dev/pricing",
+      "Optional hosted infrastructure for organizations that want managed deployment and scale without changing core reconciliation logic.",
+    keywords: ["enterprise hosting", "managed reconciliation", "infrastructure scale"],
+    canonical: "https://settler.dev/enterprise",
   });
 }
 
@@ -122,7 +115,7 @@ export function generateDocsMetadata(section?: string): Metadata {
   return generateMetadata({
     title,
     description:
-      "Complete API documentation, guides, and examples for integrating Settler into your application. Get started in minutes with our comprehensive developer resources.",
+      "Developer documentation, quickstart guides, and determinism notes for integrating Settler into reconciliation workflows.",
     keywords: [
       "API documentation",
       "developer docs",
@@ -140,7 +133,7 @@ export function generateDocsMetadata(section?: string): Metadata {
 export function generateIntegrationMetadata(integrationName: string): Metadata {
   return generateMetadata({
     title: `${integrationName} Integration - Settler`,
-    description: `Connect ${integrationName} with Settler to automatically reconcile transactions across platforms. Set up in 5 minutes with our pre-built adapter.`,
+    description: `Connect ${integrationName} with Settler to normalize data and apply deterministic reconciliation rules across providers.`,
     keywords: [
       `${integrationName} reconciliation`,
       `${integrationName} integration`,

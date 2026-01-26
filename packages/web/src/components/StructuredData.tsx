@@ -23,7 +23,8 @@ export function OrganizationSchema() {
     name: 'Settler',
     url: 'https://settler.dev',
     logo: getImageUrl('logoMain'),
-    description: 'Reconciliation-as-a-Service API. Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems.',
+    description:
+      'Open-source reconciliation engine for deterministic, inspectable financial data matching.',
     sameAs: [
       'https://github.com/shardie-github/Settler-API',
       'https://twitter.com/settler_io',
@@ -76,7 +77,8 @@ export function WebSiteSchema() {
     '@type': 'WebSite',
     name: 'Settler',
     url: 'https://settler.dev',
-    description: 'Reconciliation-as-a-Service API. Automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems.',
+    description:
+      'Open-source reconciliation engine for deterministic, inspectable financial data matching.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {

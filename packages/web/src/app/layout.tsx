@@ -7,8 +7,6 @@ import {
   WebSiteSchema,
   SoftwareApplicationSchema,
 } from "@/components/StructuredData";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
@@ -18,7 +16,6 @@ import { requireEnvironment } from "@/lib/env/validation";
 import { ToastContainer } from "@/components/ux/ToastContainer";
 import { initSentry } from "@/lib/monitoring/sentry";
 import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
-import { CookieConsent } from "@/components/consent/CookieConsent";
 import { RuntimeUiConfigProvider } from "@/lib/runtime-ui-config/client";
 import { AnnouncementBanner } from "@/components/polish/AnnouncementBanner";
 import { RuntimeUiOptionalFeatures } from "@/components/polish/RuntimeUiOptionalFeatures";
@@ -32,21 +29,20 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
   title: {
-    default: "Settler - Stop Spending Hours on Month-End Reconciliation",
+    default: "Settler - Open-Source Reconciliation Engine",
     template: "%s | Settler",
   },
   description:
-    "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail. No manual work.",
+    "Settler is an open-source reconciliation engine that normalizes financial data, applies explicit rules, and surfaces variances for human review.",
   keywords: [
-    "reconciliation API",
+    "reconciliation engine",
     "financial reconciliation",
-    "receipt parsing",
-    "feature flags",
-    "deterministic math",
-    "financial infrastructure",
-    "fintech API",
-    "API integration",
-    "financial automation",
+    "deterministic reconciliation",
+    "variance detection",
+    "open source finance",
+    "provider-agnostic reconciliation",
+    "rules-based reconciliation",
+    "audit evidence",
   ],
   authors: [{ name: "Settler" }],
   creator: "Settler",
@@ -108,9 +104,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://settler.dev",
     siteName: "Settler",
-    title: "Settler - Stop Spending Hours on Month-End Reconciliation",
+    title: "Settler - Open-Source Reconciliation Engine",
     description:
-      "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail.",
+      "Settler is an open-source reconciliation engine that normalizes financial data, applies explicit rules, and surfaces variances for human review.",
     images: [
       {
         url: getImageUrl("ogImage"),
@@ -122,9 +118,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Settler - Stop Spending Hours on Month-End Reconciliation",
+    title: "Settler - Open-Source Reconciliation Engine",
     description:
-      "For B2B SaaS operators: Automatically match Stripe payments to Shopify orders, QuickBooks entries, and 50+ platforms. 95%+ instant resolution. Complete audit trail.",
+      "Settler is an open-source reconciliation engine that normalizes financial data, applies explicit rules, and surfaces variances for human review.",
     images: [getImageUrl("twitterCard")],
     creator: "@settler_io",
   },
@@ -281,9 +277,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <PwaInstallPrompt />
                 <ToastContainer />
                 <RuntimeUiOptionalFeatures />
-                <CookieConsent />
-                <Analytics />
-                <SpeedInsights />
               </QueryProvider>
             </RuntimeUiConfigProvider>
           </TenantThemeProvider>

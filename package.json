@@ -129,7 +129,8 @@
     "mirror:dryrun": "tsx scripts/mirror-dryrun.ts",
     "mirror:verify": "tsx scripts/mirror-verify.ts",
     "mirror:publish": "tsx scripts/mirror-publish.ts",
-    "setup:open-core": "bash scripts/setup-open-core.sh"
+    "setup:open-core": "bash scripts/setup-open-core.sh",
+    "settler:run": "node scripts/settler-engine.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

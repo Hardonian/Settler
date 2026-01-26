@@ -8,7 +8,6 @@
 
 import { useEffect } from 'react';
 import { logger } from '@/lib/logging/logger';
-import { analytics } from '@/lib/analytics';
 
 export default function GlobalError({
   error,
@@ -26,12 +25,6 @@ export default function GlobalError({
       stack: error.stack,
     });
 
-    // Track in analytics
-    analytics.trackError(error, {
-      message: error.message,
-      type: 'global_error',
-      digest: error.digest,
-    });
   }, [error]);
 
   return (

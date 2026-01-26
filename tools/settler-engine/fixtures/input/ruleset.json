@@ -1,0 +1,50 @@
+{
+  "id": "oss-default-ruleset",
+  "name": "OSS Default Ruleset",
+  "priority": "exact-first",
+  "conflictResolution": "first-wins",
+  "rules": [
+    {
+      "id": "match-reference",
+      "name": "Match on reference ID",
+      "field": "referenceId",
+      "type": "exact",
+      "priority": 1,
+      "enabled": true
+    },
+    {
+      "id": "match-transaction-id",
+      "name": "Match on provider transaction ID",
+      "field": "providerTransactionId",
+      "type": "exact",
+      "priority": 2,
+      "enabled": true
+    },
+    {
+      "id": "match-amount",
+      "name": "Match on amount within tolerance",
+      "field": "amount",
+      "type": "range",
+      "priority": 3,
+      "enabled": true,
+      "tolerance": { "amount": "0.01" }
+    },
+    {
+      "id": "match-date",
+      "name": "Match on date within tolerance",
+      "field": "date",
+      "type": "range",
+      "priority": 4,
+      "enabled": true,
+      "tolerance": { "days": 1 }
+    },
+    {
+      "id": "match-currency",
+      "name": "Match on currency",
+      "field": "currency",
+      "type": "exact",
+      "priority": 5,
+      "enabled": true
+    }
+  ]
+}

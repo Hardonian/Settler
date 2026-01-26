@@ -1,0 +1,49 @@
+name: Release Settler Engine
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, darwin, windows]
+        goarch: [amd64, arm64]
+        exclude:
+          - goos: windows
+            goarch: arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build binary
+        run: |
+          mkdir -p dist
+          BIN_NAME="settler-engine"
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            BIN_NAME="settler-engine.exe"
+          fi
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o "dist/${BIN_NAME}" ./tools/settler-engine
+
+      - name: Create checksum
+        run: |
+          cd dist
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256sum * > checksums.txt
+          else
+            shasum -a 256 * > checksums.txt
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: settler-engine-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/

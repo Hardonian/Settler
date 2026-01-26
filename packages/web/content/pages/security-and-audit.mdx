@@ -1,0 +1,30 @@
+---
+title: Security & Audit
+description: How Settler approaches security, audit evidence, and disclosure without making guarantees.
+---
+
+## Security posture
+
+Settler is designed to be conservative and auditable. The engine emphasizes deterministic behavior and explicit rule configuration over implicit automation.
+
+## Audit evidence, not audit results
+
+Settler produces reconciliation artifacts (inputs, rules, outputs, and variances) to support human review. It is **not** an audit, and it does not certify outcomes or compliance.
+
+## Non-guarantees
+
+Settler does **not**:
+
+- guarantee correctness or completeness,
+- replace professional judgment,
+- or provide compliance certification.
+
+You are responsible for review, approval, and downstream reporting.
+
+## Responsible disclosure
+
+Report security issues to `security@settler.dev`. We follow responsible disclosure timelines and coordinate public fixes once remediation is available.
+
+## Data handling expectations
+
+Data handling depends on your deployment model (self-hosted OSS vs. hosted enterprise). Always review configuration, retention, and access control policies for your environment.

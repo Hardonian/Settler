@@ -171,11 +171,11 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-insights.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co https://*.vercel-insights.com https://status.settler.dev wss://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co https://status.settler.dev wss://*.supabase.co",
               "frame-src 'self' https://js.stripe.com",
               "object-src 'none'",
               "base-uri 'self'",
@@ -191,6 +191,71 @@ const nextConfig = {
   // Redirects for route consistency
   async redirects() {
     return [
+      {
+        source: '/oss',
+        destination: '/open-source',
+        permanent: true,
+      },
+      {
+        source: '/security',
+        destination: '/security-and-audit',
+        permanent: true,
+      },
+      {
+        source: '/pricing',
+        destination: '/product',
+        permanent: true,
+      },
+      {
+        source: '/demo',
+        destination: '/product',
+        permanent: true,
+      },
+      {
+        source: '/comparison',
+        destination: '/product',
+        permanent: true,
+      },
+      {
+        source: '/roi-calculator',
+        destination: '/product',
+        permanent: true,
+      },
+      {
+        source: '/why-settler',
+        destination: '/product',
+        permanent: true,
+      },
+      {
+        source: '/how-it-works',
+        destination: '/product',
+        permanent: true,
+      },
+      {
+        source: '/vision',
+        destination: '/about',
+        permanent: true,
+      },
+      {
+        source: '/roadmap',
+        destination: '/changelog',
+        permanent: true,
+      },
+      {
+        source: '/trust',
+        destination: '/security-and-audit',
+        permanent: true,
+      },
+      {
+        source: '/proof',
+        destination: '/product',
+        permanent: true,
+      },
+      {
+        source: '/use-cases/:path*',
+        destination: '/product',
+        permanent: true,
+      },
       // Redirect /cookbooks (plural) to /cookbook (singular)
       {
         source: '/cookbooks',
@@ -241,6 +306,18 @@ const nextConfig = {
         source: '/playground-home',
         destination: '/playground',
         permanent: true,
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/app',
+        destination: '/console',
+      },
+      {
+        source: '/app/:path*',
+        destination: '/console/:path*',
       },
     ];
   },
