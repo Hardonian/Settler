@@ -18,8 +18,8 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "prebuild": "cd ../.. && npm run prisma:generate || npx prisma generate || echo 'Warning: Prisma generate may have failed'",
-    "pretypecheck": "cd ../.. && npm run prisma:generate || npx prisma generate || echo 'Warning: Prisma generate may have failed'",
+    "prebuild": "cd ../.. && pnpm prisma:generate || echo 'Skipping prisma generate (may not be available in this environment)'",
+    "pretypecheck": "cd ../.. && pnpm prisma:generate || echo 'Skipping prisma generate (may not be available in this environment)'",
     "build": "tsc --skipLibCheck --noEmit false",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
