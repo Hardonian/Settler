@@ -250,11 +250,12 @@ export class PatternExtractor {
         recommendations.push({
           type: pattern.type,
           recommendation: pattern.recommendation,
-          priority: (pattern.frequency > 20
-            ? "high"
-            : pattern.frequency > 10
-              ? "medium"
-              : "low"),
+          priority:
+            pattern.frequency > 20
+              ? ("high" as const)
+              : pattern.frequency > 10
+                ? ("medium" as const)
+                : ("low" as const),
           action: {
             createTemplate:
               pattern.type === "mapping_template" || pattern.type === "transform_recipe",

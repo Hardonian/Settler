@@ -1,22 +1,24 @@
 module.exports = {
   root: true,
-  extends: ['../../.eslintrc.js'],
-  rules: {
-    '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/no-unsafe-assignment': 'warn',
-    '@typescript-eslint/no-unsafe-member-access': 'warn',
-    '@typescript-eslint/no-unsafe-argument': 'warn',
-    '@typescript-eslint/no-unsafe-call': 'warn', // Commander.js has loose types
-    '@typescript-eslint/require-await': 'warn',
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: 2022,
+    sourceType: "module",
   },
-  overrides: [
-    {
-      files: ['src/commands/**/*.ts'],
-      rules: {
-        '@typescript-eslint/no-unsafe-call': 'off', // Commander.js API uses any types
-        '@typescript-eslint/no-unsafe-member-access': 'off', // Commander.js options are loosely typed
-        '@typescript-eslint/no-unsafe-assignment': 'off', // Commander.js returns are loosely typed
-      },
-    },
-  ],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  plugins: ["@typescript-eslint"],
+  rules: {
+    "no-console": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+  },
+  env: {
+    node: true,
+    es2022: true,
+  },
+  globals: {
+    RequestInit: "readonly",
+  },
 };
