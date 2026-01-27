@@ -1,4 +1,3 @@
-"use client";
 import React from 'react'
 import { StitchHeader } from '../../../../stitch_export/components/Header'
 import { StitchFooter } from '../../../../stitch_export/components/Footer'
