@@ -7,7 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build --filter @settler/web...",
+    "build:all": "turbo run build",
     "dev": "turbo run dev",
     "test": "turbo run test",
     "test:e2e": "playwright test",
