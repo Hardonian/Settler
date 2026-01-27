@@ -7,7 +7,6 @@
  * Includes in all logs and error responses
  */
 
-import { randomBytes } from 'crypto';
 import { NextRequest } from 'next/server';
 
 const TRACE_ID_HEADER = 'x-trace-id';
@@ -16,8 +15,25 @@ const TRACE_ID_COOKIE = 'trace-id';
 /**
  * Generate a new trace ID
  */
+const toHex = (value: number): string => value.toString(16).padStart(2, '0');
+
+const getRandomBytes = (size: number): Uint8Array => {
+  if (typeof crypto !== 'undefined' && 'getRandomValues' in crypto) {
+    const bytes = new Uint8Array(size);
+    crypto.getRandomValues(bytes);
+    return bytes;
+  }
+
+  const fallback = new Uint8Array(size);
+  for (let index = 0; index < size; index += 1) {
+    fallback[index] = Math.floor(Math.random() * 256);
+  }
+  return fallback;
+};
+
 export function generateTraceId(): string {
-  return randomBytes(16).toString('hex');
+  const bytes = getRandomBytes(16);
+  return Array.from(bytes, (byte) => toHex(byte)).join('');
 }
 
 /**
