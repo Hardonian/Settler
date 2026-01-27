@@ -35,7 +35,7 @@ export async function rotateRefreshToken(oldRefreshToken: string): Promise<Token
     // Verify and decode the old refresh token
     const decoded = jwt.verify(
       oldRefreshToken,
-      config.jwt.refreshSecret || config.jwt.secret!,
+      config.jwt.refreshSecret || config.jwt.secret,
       {
         issuer: 'settler-api',
         audience: 'settler-client',
@@ -96,7 +96,7 @@ export async function rotateRefreshToken(oldRefreshToken: string): Promise<Token
       throw new Error('JWT secret not configured');
     }
     
-    const jwtSecret = config.jwt.secret as string;
+    const jwtSecret = config.jwt.secret;
     const accessTokenExpiry: string | number = typeof config.jwt.accessTokenExpiry === 'string' 
       ? config.jwt.accessTokenExpiry 
       : (typeof config.jwt.accessTokenExpiry === 'number' ? config.jwt.accessTokenExpiry : '15m');
@@ -110,7 +110,7 @@ export async function rotateRefreshToken(oldRefreshToken: string): Promise<Token
       } as jwt.SignOptions
     );
 
-    const refreshSecret = (config.jwt.refreshSecret || jwtSecret) as string;
+    const refreshSecret = (config.jwt.refreshSecret || jwtSecret);
     const refreshTokenExpiry: string | number = typeof config.jwt.refreshTokenExpiry === 'string'
       ? config.jwt.refreshTokenExpiry
       : (typeof config.jwt.refreshTokenExpiry === 'number' ? config.jwt.refreshTokenExpiry : '7d');

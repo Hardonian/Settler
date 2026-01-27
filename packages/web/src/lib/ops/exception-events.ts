@@ -60,7 +60,7 @@ export async function emitExceptionCreatedEvent(params: {
         confidence: Number(match.confidence),
       },
     });
-  } catch (error) {
+  } catch {
     // Don't throw - event tracking should never break the main flow
     console.error('Failed to emit exception created event:', error);
   }
@@ -107,7 +107,7 @@ export async function emitExceptionResolvedEvent(params: {
         reviewed_at: match.reviewedAt?.toISOString(),
       },
     });
-  } catch (error) {
+  } catch {
     // Don't throw - event tracking should never break the main flow
     console.error('Failed to emit exception resolved event:', error);
   }

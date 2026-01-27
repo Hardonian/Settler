@@ -15,7 +15,7 @@ interface ShutdownOptions {
 }
 
 let shutdownInProgress = false;
-let shutdownHandlers: Array<() => Promise<void>> = [];
+const shutdownHandlers: Array<() => Promise<void>> = [];
 
 /**
  * Register a shutdown handler

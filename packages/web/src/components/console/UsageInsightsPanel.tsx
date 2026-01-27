@@ -24,7 +24,7 @@ export function UsageInsightsPanel() {
           const data = await response.json();
           setInsights(data.emphasis || []);
         }
-      } catch (error) {
+      } catch {
         console.error('Failed to fetch usage insights:', error);
       } finally {
         setLoading(false);

@@ -57,7 +57,7 @@ export async function getGitHubStats(
       openIssues: data.open_issues_count || 0,
       lastUpdated: data.updated_at || new Date().toISOString(),
     };
-  } catch (error) {
+  } catch {
     console.warn('GitHub API unavailable, using demo data:', error);
     // Return realistic demo data (clearly marked as such in UI)
     return {
@@ -103,7 +103,7 @@ export async function getNPMStats(
       version: latestVersion,
       lastUpdated: lastModified,
     };
-  } catch (error) {
+  } catch {
     console.warn('NPM API unavailable, using demo data:', error);
     // Return realistic demo data
     return {

@@ -129,7 +129,7 @@ export default function BillingDashboardPage() {
         },
         warnings: [],
       });
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : "Failed to load billing data");
     } finally {
       setIsLoading(false);

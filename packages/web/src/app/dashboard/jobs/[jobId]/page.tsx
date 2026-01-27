@@ -113,7 +113,7 @@ export default function JobDetailPage() {
       };
 
       setJob(jobDetail);
-    } catch (error) {
+    } catch {
       logger.error("Failed to fetch job", error instanceof Error ? error : new Error(String(error)), { jobId: id });
       setJob(null);
     } finally {

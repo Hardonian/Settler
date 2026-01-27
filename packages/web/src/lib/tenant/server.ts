@@ -62,7 +62,7 @@ export async function getTenantContext(): Promise<TenantContext> {
     let headersList;
     try {
       headersList = await headers();
-    } catch (error) {
+    } catch {
       // If headers() fails (e.g., during static generation), return default
       if (error instanceof Error && error.message.includes('DYNAMIC_SERVER_USAGE')) {
         return DEFAULT_CONTEXT;
@@ -93,7 +93,7 @@ export async function getTenantContext(): Promise<TenantContext> {
       const supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
       userId = user?.id || null;
-    } catch (error) {
+    } catch {
       // Auth not available, continue without user
       // Only log in development to avoid build noise
       if (process.env.NODE_ENV === 'development') {
@@ -105,7 +105,7 @@ export async function getTenantContext(): Promise<TenantContext> {
     let resolution;
     try {
       resolution = await resolveTenant(request, userId);
-    } catch (error) {
+    } catch {
       // Only log errors in development or if it's not a build-time issue
       if (process.env.NODE_ENV === 'development' || !isBuildTime()) {
         console.error('Failed to resolve tenant:', error);
@@ -121,7 +121,7 @@ export async function getTenantContext(): Promise<TenantContext> {
     let tenant;
     try {
       tenant = await getTenantById(resolution.tenantId);
-    } catch (error) {
+    } catch {
       // Only log errors in development
       if (process.env.NODE_ENV === 'development') {
         console.error('Failed to fetch tenant by ID:', error);
@@ -171,7 +171,7 @@ export async function getTenantContext(): Promise<TenantContext> {
           }
         : null,
     };
-  } catch (error) {
+  } catch {
     // Catch any unexpected errors and return default context
     // Only log in development to avoid build noise
     if (process.env.NODE_ENV === 'development') {

@@ -1,12 +1,12 @@
 /**
  * Token Refresh
- * 
+ *
  * Automatic token refresh for OAuth2 connectors
  */
 
-import { ConnectorDriver } from './connector-driver';
-import { createClient } from '@supabase/supabase-js';
-import { encryptToken, decryptToken } from './credential-encryption';
+import { ConnectorDriver } from "./connector-driver";
+import { createClient } from "@supabase/supabase-js";
+import { encryptToken, decryptToken } from "./credential-encryption";
 
 export interface TokenRefreshResult {
   refreshed: boolean;
@@ -35,10 +35,10 @@ export async function refreshTokenIfNeeded(
   // Check if token is expired or expiring soon (within 5 minutes)
   const expiresAt = credentials.token_expires_at as Date | string | undefined;
   if (expiresAt) {
-    const expiryDate = typeof expiresAt === 'string' ? new Date(expiresAt) : expiresAt;
+    const expiryDate = typeof expiresAt === "string" ? new Date(expiresAt) : expiresAt;
     const now = new Date();
     const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
-    
+
     if (expiryDate > fiveMinutesFromNow) {
       return { refreshed: false }; // Token still valid
     }
@@ -46,17 +46,17 @@ export async function refreshTokenIfNeeded(
 
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    
+
     // Get connector record
     const { data: connector } = await supabase
-      .from('connectors')
-      .select('id, config')
-      .eq('tenant_id', tenantId)
-      .eq('provider_id', connectorId)
+      .from("connectors")
+      .select("id, config")
+      .eq("tenant_id", tenantId)
+      .eq("provider_id", connectorId)
       .single();
 
     if (!connector) {
-      return { refreshed: false, error: 'Connector not found' };
+      return { refreshed: false, error: "Connector not found" };
     }
 
     // Decrypt refresh token
@@ -67,7 +67,10 @@ export async function refreshTokenIfNeeded(
     );
 
     // Refresh token
-    const refreshResult = await driver.refreshToken!(refreshToken, connector.config as Record<string, unknown>);
+    const refreshResult = await driver.refreshToken(
+      refreshToken,
+      connector.config as Record<string, unknown>
+    );
 
     // Encrypt and store new tokens
     const encryptedAccessToken = await encryptToken(
@@ -75,10 +78,10 @@ export async function refreshTokenIfNeeded(
       supabaseUrl,
       supabaseServiceKey
     );
-    
+
     const encryptedRefreshToken = refreshResult.refreshToken
       ? await encryptToken(refreshResult.refreshToken, supabaseUrl, supabaseServiceKey)
-      : credentials.refresh_token as string;
+      : (credentials.refresh_token as string);
 
     const tokenExpiresAt = refreshResult.expiresIn
       ? new Date(Date.now() + refreshResult.expiresIn * 1000).toISOString()
@@ -86,14 +89,14 @@ export async function refreshTokenIfNeeded(
 
     // Update credentials
     const { error: updateError } = await supabase
-      .from('connector_credentials')
+      .from("connector_credentials")
       .update({
         access_token_encrypted: encryptedAccessToken,
         refresh_token_encrypted: encryptedRefreshToken,
         token_expires_at: tokenExpiresAt,
         updated_at: new Date().toISOString(),
       })
-      .eq('connector_id', connector.id);
+      .eq("connector_id", connector.id);
 
     if (updateError) {
       return { refreshed: false, error: updateError.message };
@@ -108,7 +111,7 @@ export async function refreshTokenIfNeeded(
   } catch (error) {
     return {
       refreshed: false,
-      error: error instanceof Error ? error.message : 'Token refresh failed',
+      error: error instanceof Error ? error.message : "Token refresh failed",
     };
   }
 }

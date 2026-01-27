@@ -43,7 +43,7 @@ export function hasConsent(category: ConsentCategory): boolean {
         const prefs = JSON.parse(stored) as ConsentPreferences;
         return prefs[category] === true;
       }
-    } catch (error) {
+    } catch {
       console.warn('[Analytics Consent] Failed to read preferences:', error);
     }
   }

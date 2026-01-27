@@ -254,7 +254,7 @@ export class PatternExtractor {
             ? "high"
             : pattern.frequency > 10
               ? "medium"
-              : "low") as "low" | "medium" | "high",
+              : "low"),
           action: {
             createTemplate:
               pattern.type === "mapping_template" || pattern.type === "transform_recipe",

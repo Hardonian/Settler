@@ -48,7 +48,7 @@ export const GET = withSecurity(
     ];
 
     return NextResponse.json({ queues });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in retry-queues GET", error);
     return NextResponse.json(
       {

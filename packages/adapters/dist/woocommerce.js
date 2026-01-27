@@ -52,7 +52,7 @@ class WooCommerceAdapter {
                 });
                 return fetch(`${this.config.storeUrl}/wp-json/${this.apiVersion}/orders?${params.toString()}`, {
                     headers: {
-                        "Authorization": `Basic ${auth}`,
+                        Authorization: `Basic ${auth}`,
                         "Content-Type": "application/json",
                     },
                 });
@@ -60,7 +60,7 @@ class WooCommerceAdapter {
             if (!response.ok) {
                 throw new Error(`WooCommerce API error: ${response.status} ${response.statusText}`);
             }
-            const data = await response.json();
+            const data = (await response.json());
             if (data.length === 0) {
                 hasMore = false;
             }

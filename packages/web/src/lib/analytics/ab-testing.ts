@@ -96,7 +96,7 @@ export async function trackABTestConversion(
     }).catch((error) => {
       console.error('Failed to track A/B test conversion:', error);
     });
-  } catch (error) {
+  } catch {
     console.error('A/B test tracking error:', error);
   }
 }

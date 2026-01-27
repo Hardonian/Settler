@@ -70,7 +70,7 @@ export async function trackActivationEvent(event: ActivationEvent): Promise<void
       });
       // Don't throw - activation tracking is non-critical
     }
-  } catch (error) {
+  } catch {
     console.error('[Activation Events] Error tracking activation event:', {
       eventType: event.eventType,
       userId: event.userId,
@@ -102,7 +102,7 @@ export async function hasActivationMilestone(
     }
 
     return true;
-  } catch (error) {
+  } catch {
     console.error('[Activation Events] Error checking milestone:', {
       eventType,
       userId,

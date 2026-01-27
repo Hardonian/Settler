@@ -48,7 +48,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     if (result.data) {
       kpiData = result.data;
     }
-  } catch (err) {
+  } catch {
     console.warn('RPC function not available, using fallback queries:', err);
   }
 
@@ -60,7 +60,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       .select('*', { count: 'exact', head: true })
       .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString());
     recentActivityCount = count || 0;
-  } catch (err) {
+  } catch {
     console.warn('Error fetching activity count:', err);
   }
 
@@ -72,7 +72,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       .select('*', { count: 'exact', head: true })
       .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
     newUsersCount = count || 0;
-  } catch (err) {
+  } catch {
     console.warn('Error fetching new users count:', err);
   }
 
@@ -98,7 +98,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
         }, firstPost);
       }
     }
-  } catch (err) {
+  } catch {
     console.warn('Error fetching posts:', err);
   }
 
@@ -110,7 +110,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       .select('*', { count: 'exact', head: true })
       .eq('status', 'published');
     totalPosts = count || 0;
-  } catch (err) {
+  } catch {
     console.warn('Error fetching total posts:', err);
   }
 
@@ -121,7 +121,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       .from('profiles')
       .select('*', { count: 'exact', head: true });
     totalProfiles = count || 0;
-  } catch (err) {
+  } catch {
     console.warn('Error fetching total profiles:', err);
   }
 
@@ -142,7 +142,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 export async function getExternalMetricsData(): Promise<ExternalMetrics> {
   try {
     return await getExternalMetrics();
-  } catch (err) {
+  } catch {
     console.warn('Failed to fetch external metrics:', err);
     return {
       github: {

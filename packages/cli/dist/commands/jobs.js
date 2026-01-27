@@ -9,9 +9,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const sdk_1 = __importDefault(require("@settler/sdk"));
 const jobsCommand = new commander_1.Command("jobs");
 exports.jobsCommand = jobsCommand;
-jobsCommand
-    .description("Manage reconciliation jobs")
-    .alias("job");
+jobsCommand.description("Manage reconciliation jobs").alias("job");
 jobsCommand
     .command("list")
     .description("List all reconciliation jobs")
@@ -116,7 +114,7 @@ jobsCommand
             let attempts = 0;
             const maxAttempts = 60; // 5 minutes max
             while (!completed && attempts < maxAttempts) {
-                await new Promise(resolve => setTimeout(resolve, 5000));
+                await new Promise((resolve) => setTimeout(resolve, 5000));
                 // Check execution status via reports endpoint instead of job status
                 // Job status is "active" | "paused" | "archived", not execution status
                 try {
@@ -170,11 +168,11 @@ jobsCommand
             },
         });
         if (!response.ok) {
-            const error = await response.json();
+            const error = (await response.json());
             console.error(chalk_1.default.red(`Error: ${error?.message || "Failed to fetch logs"}`));
             process.exit(1);
         }
-        const logs = await response.json();
+        const logs = (await response.json());
         if (!logs.data || logs.data.length === 0) {
             console.log(chalk_1.default.yellow("No logs found"));
             return;
@@ -183,10 +181,13 @@ jobsCommand
         logs.data.forEach((log) => {
             const timestamp = new Date(log.timestamp).toLocaleString();
             const level = log.level.toUpperCase();
-            const levelColor = level === "ERROR" ? chalk_1.default.red :
-                level === "WARN" ? chalk_1.default.yellow :
-                    level === "INFO" ? chalk_1.default.blue :
-                        chalk_1.default.gray;
+            const levelColor = level === "ERROR"
+                ? chalk_1.default.red
+                : level === "WARN"
+                    ? chalk_1.default.yellow
+                    : level === "INFO"
+                        ? chalk_1.default.blue
+                        : chalk_1.default.gray;
             console.log(`${chalk_1.default.gray(timestamp)} ${levelColor(level)} ${log.message}`);
             if (log.metadata) {
                 console.log(chalk_1.default.gray(`  ${JSON.stringify(log.metadata, null, 2)}`));
@@ -236,11 +237,11 @@ jobsCommand
             body: JSON.stringify(body),
         });
         if (!response.ok) {
-            const error = await response.json();
+            const error = (await response.json());
             console.error(chalk_1.default.red(`Error: ${error.message || "Failed to replay events"}`));
             process.exit(1);
         }
-        const result = await response.json();
+        const result = (await response.json());
         if (options.dryRun) {
             console.log(chalk_1.default.yellow("Dry run mode - no events were actually replayed"));
         }

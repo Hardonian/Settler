@@ -84,7 +84,7 @@ export default function FlagsPlayground() {
           throw new Error('Context must be a JSON object');
         }
       }
-    } catch (err) {
+    } catch {
       setError({
         message: err instanceof Error ? err.message : 'Invalid JSON context. Please provide a valid JSON object.',
         code: 'INVALID_JSON'
@@ -133,7 +133,7 @@ export default function FlagsPlayground() {
       let data: FlagEvaluationResult;
       try {
         data = await res.json() as FlagEvaluationResult;
-      } catch (parseError) {
+      } catch {
         setError({
           message: 'Failed to parse response',
           code: 'PARSE_ERROR'
@@ -168,7 +168,7 @@ export default function FlagsPlayground() {
         body: data,
         duration
       });
-    } catch (err) {
+    } catch {
       const duration = Date.now() - startTime;
       if (err instanceof Error && err.name === 'AbortError') {
         setError({

@@ -35,7 +35,7 @@ export function UsageMeter() {
           const data = await response.json();
           setUsage(data.usage || []);
         }
-      } catch (error) {
+      } catch {
         console.error('[UsageMeter] Failed to fetch usage:', error);
       } finally {
         setLoading(false);

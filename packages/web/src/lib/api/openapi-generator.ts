@@ -139,7 +139,7 @@ export function generateOpenAPISpec(routes: OpenAPIRoute[]): Record<string, unkn
             },
           },
         };
-      } catch (error) {
+      } catch {
         // Skip if schema conversion fails
         console.warn('Failed to convert request schema to OpenAPI', error);
       }

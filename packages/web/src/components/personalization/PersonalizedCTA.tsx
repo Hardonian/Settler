@@ -64,7 +64,7 @@ export function PersonalizedCTA({
           window.location.pathname
         );
         setCta(personalized);
-      } catch (error) {
+      } catch {
         console.error("Failed to load personalized CTA:", error);
       } finally {
         setLoading(false);

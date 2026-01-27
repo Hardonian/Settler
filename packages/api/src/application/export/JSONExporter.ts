@@ -109,7 +109,7 @@ export class JSONExporter {
       } = {
         id: match.id,
         tenantId: match.tenantId,
-        matchType: match.matchType as MatchType,
+        matchType: match.matchType,
         confidenceScore: match.confidenceScore,
         matchingRules: match.matchingRules,
         matchedAt: match.matchedAt.toISOString(),

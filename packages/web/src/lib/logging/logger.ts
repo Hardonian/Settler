@@ -107,7 +107,7 @@ class AppLogger implements Logger {
         },
         body: JSON.stringify(entry),
       });
-    } catch (error) {
+    } catch {
       // Silently fail
     }
   }

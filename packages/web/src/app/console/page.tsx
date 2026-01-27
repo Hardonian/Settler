@@ -75,7 +75,7 @@ async function ConsoleOverviewContent() {
           email: user.email ? '***' : undefined, // Don't log full email
         });
       }
-    } catch (error) {
+    } catch {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       appLogger.error('Failed to get user', undefined, {
         ...logContext,
@@ -404,7 +404,7 @@ async function ConsoleOverviewContent() {
         }
       }
     }
-  } catch (error) {
+  } catch {
     appLogger.error('Failed to load Prisma or fetch billing account', error);
     // Continue without billing account - use user.id as fallback
     billingAccount = null;
@@ -485,7 +485,7 @@ async function ConsoleOverviewContent() {
     } else {
       appLogger.error('Failed to fetch usage summary', usageSummaryResult.reason);
     }
-  } catch (error) {
+  } catch {
     appLogger.error('Error fetching overview data', error);
     // Continue with empty/default values - page will still render
   }
@@ -740,7 +740,7 @@ async function ConsoleOverviewContent() {
       </RBACGate>
     </div>
   );
-  } catch (error) {
+  } catch {
     // Top-level error boundary - catch any unhandled errors
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;

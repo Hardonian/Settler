@@ -79,7 +79,7 @@ function ReceiptsPageContent() {
           setReceipts([]); // Show empty state for client errors
         }
       }
-    } catch (error) {
+    } catch {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       console.error('Failed to fetch receipts:', errorMessage);
       setError('Failed to load receipts. Please try again.');
@@ -114,7 +114,7 @@ function ReceiptsPageContent() {
       } else {
         console.error('Failed to fetch receipt details:', res.status, res.statusText);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch receipt details:', error);
       setDetailDialogOpen(false);
     }

@@ -59,7 +59,7 @@ export default function SiteDesignerPage() {
       if (!response.ok) throw new Error('Failed to load pages');
       const data = await response.json();
       setPages(data.pages || []);
-    } catch (error) {
+    } catch {
       console.error('Error loading pages:', error);
     } finally {
       setLoading(false);
@@ -91,7 +91,7 @@ export default function SiteDesignerPage() {
       setNewPageSlug('');
       setNewPageType('marketing');
       await loadPages();
-    } catch (error) {
+    } catch {
       console.error('Error creating page:', error);
       alert(error instanceof Error ? error.message : 'Failed to create page');
     } finally {
@@ -111,7 +111,7 @@ export default function SiteDesignerPage() {
       if (!response.ok) throw new Error('Failed to delete page');
       
       await loadPages();
-    } catch (error) {
+    } catch {
       console.error('Error deleting page:', error);
       alert('Failed to delete page');
     } finally {

@@ -62,7 +62,7 @@ export function AnalysisPanel() {
         const data = await res.json();
         setTokenUsage(data.usage);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch token usage:', error);
     } finally {
       setLoading(false);
@@ -76,7 +76,7 @@ export function AnalysisPanel() {
         const data = await res.json();
         setAnalyses(data.analyses || []);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch analyses:', error);
     }
   };
@@ -103,7 +103,7 @@ export function AnalysisPanel() {
         // Payment required - tokens exhausted
         setShowPurchaseDialog(true);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to run analysis:', error);
     } finally {
       setRunning(false);

@@ -79,7 +79,7 @@ export const POST = withUniversalBillingGate(async function POST(
       result,
       message: `Backfilled data from ${since} to ${until || 'now'}`,
     });
-  } catch (error) {
+  } catch {
     appLogger.error('Error in backfill route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

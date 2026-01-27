@@ -120,7 +120,7 @@ export function PreTestQuestionnaire({ onComplete, onSkip, className }: PreTestQ
           // Still call onComplete even if save fails
           onComplete(newAnswers);
         }
-      } catch (error) {
+      } catch {
         console.error("Error saving pre-test answers:", error);
         // Still call onComplete even if save fails
         onComplete(newAnswers);
@@ -146,7 +146,7 @@ export function PreTestQuestionnaire({ onComplete, onSkip, className }: PreTestQ
           console.error("Failed to save pre-test answers");
           onComplete(answers);
         }
-      } catch (error) {
+      } catch {
         console.error("Error saving pre-test answers:", error);
         onComplete(answers);
       }

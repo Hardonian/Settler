@@ -65,7 +65,7 @@ export const GET = withSecurity(
     ];
 
     return NextResponse.json({ health });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in system-health GET", error);
     return NextResponse.json(
       {

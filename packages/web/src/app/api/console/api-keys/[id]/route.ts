@@ -31,7 +31,7 @@ export const DELETE = withSecurity(
     await revokeApiKey(id);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     // If auth error, return 401
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

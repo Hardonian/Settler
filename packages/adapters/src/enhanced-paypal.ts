@@ -1,6 +1,6 @@
 /**
  * Enhanced PayPal Adapter
- * 
+ *
  * Production-ready PayPal integration with:
  * - OAuth 2.0 authentication
  * - Circuit breaker protection
@@ -36,9 +36,7 @@ export class EnhancedPayPalAdapter implements Adapter {
 
   constructor(config: PayPalConfig) {
     this.config = config;
-    this.baseUrl = config.sandbox
-      ? "https://api.sandbox.paypal.com"
-      : "https://api.paypal.com";
+    this.baseUrl = config.sandbox ? "https://api.sandbox.paypal.com" : "https://api.paypal.com";
   }
 
   /**
@@ -50,29 +48,28 @@ export class EnhancedPayPalAdapter implements Adapter {
       return this.accessToken;
     }
 
-    const auth = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString("base64");
-
-    const response = await withCircuitBreaker(
-      "paypal-auth",
-      async () => {
-        return fetch(`${this.baseUrl}/v1/oauth2/token`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Basic ${auth}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: "grant_type=client_credentials",
-        });
-      }
+    const auth = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString(
+      "base64"
     );
+
+    const response = await withCircuitBreaker("paypal-auth", async () => {
+      return fetch(`${this.baseUrl}/v1/oauth2/token`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: "grant_type=client_credentials",
+      });
+    });
 
     if (!response.ok) {
       throw new Error(`PayPal token request failed: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json() as { access_token: string; expires_in: number };
+    const data = (await response.json()) as { access_token: string; expires_in: number };
     this.accessToken = data.access_token;
-    this.tokenExpiry = Date.now() + (data.expires_in * 1000) - 60000; // Refresh 1 minute early
+    this.tokenExpiry = Date.now() + data.expires_in * 1000 - 60000; // Refresh 1 minute early
 
     return this.accessToken;
   }
@@ -100,23 +97,20 @@ export class EnhancedPayPalAdapter implements Adapter {
         params.append("page", nextPageToken);
       }
 
-      const response = await withCircuitBreaker(
-        "paypal-api",
-        async () => {
-          return fetch(`${this.baseUrl}/v1/reporting/transactions?${params.toString()}`, {
-            headers: {
-              "Authorization": `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          });
-        }
-      );
+      const response = await withCircuitBreaker("paypal-api", async () => {
+        return fetch(`${this.baseUrl}/v1/reporting/transactions?${params.toString()}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+      });
 
       if (!response.ok) {
         throw new Error(`PayPal API error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         transaction_details?: Array<{
           transaction_info?: {
             transaction_id?: string;
@@ -184,7 +178,8 @@ export class EnhancedPayPalAdapter implements Adapter {
     const id = transaction.transaction_id || "";
     const amount = parseFloat(transaction.transaction_amount?.value || "0");
     const currency = transaction.transaction_amount?.currency_code || "USD";
-    const dateStr = transaction.transaction_initiation_date || transaction.transaction_updated_date || "";
+    const dateStr =
+      transaction.transaction_initiation_date || transaction.transaction_updated_date || "";
     const date = dateStr ? new Date(dateStr) : new Date();
 
     return {

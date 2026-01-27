@@ -3,7 +3,7 @@
  *
  * Orchestrates connector execution, credential management, sync runs, and error handling.
  */
-import { ConnectorDriver, SyncOptions, SyncResult } from './connector-driver';
+import { ConnectorDriver, SyncOptions, SyncResult } from "./connector-driver";
 export interface RuntimeConfig {
     supabaseUrl: string;
     supabaseServiceKey: string;
@@ -36,7 +36,7 @@ export declare class ConnectorRuntime {
      * Update sync run status
      */
     updateSyncRun(syncRunId: string, updates: {
-        status?: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+        status?: "pending" | "running" | "completed" | "failed" | "cancelled";
         finishedAt?: Date;
         accountsSynced?: number;
         transactionsSynced?: number;
@@ -165,7 +165,7 @@ export declare class ConnectorRuntime {
     /**
      * Save normalized data in batches (for large datasets)
      */
-    saveNormalizedDataBatched(tenantId: string, connectorId: string, syncRunId: string, data: Parameters<ConnectorRuntime['saveNormalizedData']>[3]): Promise<void>;
+    saveNormalizedDataBatched(tenantId: string, connectorId: string, syncRunId: string, data: Parameters<ConnectorRuntime["saveNormalizedData"]>[3]): Promise<void>;
     /**
      * Update sync cursor
      */

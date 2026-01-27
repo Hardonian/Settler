@@ -122,7 +122,7 @@ export default function ReceiptsPlayground() {
           ]
         });
       }
-    } catch (error) {
+    } catch {
       // Handle timeout and network errors
       if (error instanceof Error && error.name === 'AbortError') {
         console.error('Receipt parsing timed out');

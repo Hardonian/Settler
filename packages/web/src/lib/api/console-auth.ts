@@ -60,7 +60,7 @@ export async function requireConsoleApiAccess(
       // Fail open - allow access if subscription check fails
       return null;
     }
-  } catch (error) {
+  } catch {
     console.error('[requireConsoleApiAccess] Auth check failed:', error);
     return NextResponse.json(
       { 

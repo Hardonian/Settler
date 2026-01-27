@@ -80,7 +80,7 @@ router.get(
            SUM((summary->>'unmatchedAmount')::decimal) as unmatched_amount
          FROM executions
          WHERE job_id = $1 AND started_at >= $2 AND started_at <= $3`,
-        [jobId!, start.toISOString(), end.toISOString()]
+        [jobId, start.toISOString(), end.toISOString()]
       );
 
       const stats = summary[0] || {
@@ -107,7 +107,7 @@ router.get(
          WHERE job_id = $1 AND started_at >= $2 AND started_at <= $3
          ORDER BY started_at DESC
          LIMIT 10`,
-        [jobId!, start.toISOString(), end.toISOString()]
+        [jobId, start.toISOString(), end.toISOString()]
       );
 
       // Get exception count
@@ -116,7 +116,7 @@ router.get(
          FROM exceptions e
          JOIN jobs j ON e.job_id = j.id
          WHERE j.id = $1 AND e.created_at >= $2 AND e.created_at <= $3 AND e.resolution_status = 'open'`,
-        [jobId!, start.toISOString(), end.toISOString()]
+        [jobId, start.toISOString(), end.toISOString()]
       );
 
       // Format response based on format type

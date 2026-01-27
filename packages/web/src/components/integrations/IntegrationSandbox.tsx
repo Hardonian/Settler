@@ -47,7 +47,7 @@ export function IntegrationSandbox({ integrationId, onTestComplete }: Integratio
         });
         onTestComplete?.(false, result);
       }
-    } catch (error) {
+    } catch {
       const errorRecord: Record<string, unknown> = {
         error: error instanceof Error ? error.message : String(error),
         type: 'exception',

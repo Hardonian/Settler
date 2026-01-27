@@ -56,7 +56,8 @@ class MatchingService {
         return candidates.slice(0, 100);
     }
     extractId(record) {
-        return String(record.id || record.transaction_id || record.order_id || "");
+        const rawId = record.id || record.transaction_id || record.order_id;
+        return typeof rawId === 'string' || typeof rawId === 'number' ? String(rawId) : "";
     }
     calculateMatchScore(source, target) {
         let totalScore = 0;
@@ -126,8 +127,10 @@ class MatchingService {
         return null;
     }
     compareString(source, target, field) {
-        const sourceValue = String(source[field] || "").toLowerCase();
-        const targetValue = String(target[field] || "").toLowerCase();
+        const sourceRaw = source[field];
+        const targetRaw = target[field];
+        const sourceValue = (typeof sourceRaw === 'string' || typeof sourceRaw === 'number' ? String(sourceRaw) : "").toLowerCase();
+        const targetValue = (typeof targetRaw === 'string' || typeof targetRaw === 'number' ? String(targetRaw) : "").toLowerCase();
         if (!sourceValue || !targetValue) {
             return 0;
         }

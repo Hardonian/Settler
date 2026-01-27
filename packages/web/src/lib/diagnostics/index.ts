@@ -191,7 +191,7 @@ if (typeof window !== 'undefined') {
     });
 
     observer.observe({ type: 'layout-shift', buffered: true });
-  } catch (error) {
+  } catch {
     // PerformanceObserver not supported
   }
 }

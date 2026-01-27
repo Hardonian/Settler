@@ -74,7 +74,7 @@ export async function calculateRevenue(
       totalRevenue,
       recognizedAt: new Date(),
     };
-  } catch (error) {
+  } catch {
     console.error('[Revenue Recognition] Error calculating revenue:', error);
     return null;
   }
@@ -108,7 +108,7 @@ export async function recognizeRevenueForPeriod(
     }
 
     return recognitions;
-  } catch (error) {
+  } catch {
     console.error('[Revenue Recognition] Error recognizing revenue:', error);
     return [];
   }

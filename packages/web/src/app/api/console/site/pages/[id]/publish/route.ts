@@ -68,7 +68,7 @@ export const POST = withSecurity(
       });
 
       return NextResponse.json({ success: true, page: updated }, { status: 200 });
-    } catch (error) {
+    } catch {
       return handleApiError(error, "Failed to publish page");
     }
   },

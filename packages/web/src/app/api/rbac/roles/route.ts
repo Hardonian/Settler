@@ -88,7 +88,7 @@ export const GET = withSecurity(
     ].filter(role => role.userCount > 0 || ['admin', 'developer', 'support', 'viewer'].includes(role.id));
 
     return NextResponse.json({ roles });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in roles GET", error);
     // Never return 500 - return empty roles array with graceful error message
     return NextResponse.json({ 

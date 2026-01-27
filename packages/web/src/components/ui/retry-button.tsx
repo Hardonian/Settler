@@ -34,7 +34,7 @@ export function RetryButton({
 
     try {
       await onRetry();
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : 'Retry failed');
     } finally {
       setIsRetrying(false);

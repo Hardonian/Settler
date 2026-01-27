@@ -53,7 +53,7 @@ export default function WebhooksPage() {
         const data = await res.json();
         setWebhooks(data.webhooks || []);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch webhooks:', error);
     } finally {
       setLoading(false);
@@ -95,7 +95,7 @@ export default function WebhooksPage() {
         const error = await res.json();
         alert(error.error || 'Failed to create webhook');
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to create webhook:', error);
       alert('Failed to create webhook. Please try again.');
     }
@@ -114,7 +114,7 @@ export default function WebhooksPage() {
       } else {
         alert('Failed to delete webhook');
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to delete webhook:', error);
       alert('Failed to delete webhook');
     }
@@ -133,7 +133,7 @@ export default function WebhooksPage() {
           webhooks.map((w) => (w.id === id ? { ...w, active: !active } : w))
         );
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to toggle webhook:', error);
     }
   };

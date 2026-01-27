@@ -73,7 +73,7 @@ export const GET = withSecurity(
       default:
         return await handleAllExamples();
     }
-  } catch (error) {
+  } catch {
     // Never return 500 - return graceful error response
     return NextResponse.json(
       {
@@ -118,7 +118,7 @@ export const POST = withSecurity(
       size: result.size ?? 0,
       contentType: result.contentType,
     });
-  } catch (error) {
+  } catch {
     // Never return 500 - return graceful error response
     return NextResponse.json(
       {

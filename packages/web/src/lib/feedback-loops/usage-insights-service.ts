@@ -157,7 +157,7 @@ export async function analyzeUsageInsights(
         });
       }
     }
-  } catch (error) {
+  } catch {
     console.error('[Usage Insights] Error analyzing insights:', error);
   }
 

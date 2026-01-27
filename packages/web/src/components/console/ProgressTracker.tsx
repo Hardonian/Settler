@@ -67,7 +67,7 @@ export function ProgressTracker({
 
       const data = await res.json();
       setProgress(data);
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : 'Failed to load progress');
     } finally {
       setLoading(false);

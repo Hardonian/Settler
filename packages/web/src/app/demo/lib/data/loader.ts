@@ -37,7 +37,7 @@ export function loadTransactions(): Transaction[] {
     // Load Stripe charges
     const stripeCharges = z.array(StripeChargeSchema).parse(stripeChargesData);
     transactions.push(...stripeCharges);
-  } catch (error) {
+  } catch {
     console.warn("[Demo] Failed to load Stripe charges:", error);
   }
 
@@ -45,7 +45,7 @@ export function loadTransactions(): Transaction[] {
     // Load Shopify orders
     const shopifyOrders = z.array(ShopifyOrderSchema).parse(shopifyOrdersData);
     transactions.push(...shopifyOrders);
-  } catch (error) {
+  } catch {
     console.warn("[Demo] Failed to load Shopify orders:", error);
   }
 
@@ -53,7 +53,7 @@ export function loadTransactions(): Transaction[] {
     // Load QuickBooks entries
     const qbEntries = z.array(QuickBooksEntrySchema).parse(quickbooksEntriesData);
     transactions.push(...qbEntries);
-  } catch (error) {
+  } catch {
     console.warn("[Demo] Failed to load QuickBooks entries:", error);
   }
 
@@ -61,7 +61,7 @@ export function loadTransactions(): Transaction[] {
     // Load bank payouts
     const payouts = z.array(BankPayoutSchema).parse(bankPayoutsData);
     transactions.push(...payouts);
-  } catch (error) {
+  } catch {
     console.warn("[Demo] Failed to load bank payouts:", error);
   }
 
@@ -74,7 +74,7 @@ export function loadTransactions(): Transaction[] {
 export function loadReceipts(): Receipt[] {
   try {
     return z.array(ReceiptSchema).parse(receiptsData);
-  } catch (error) {
+  } catch {
     console.warn("[Demo] Failed to load receipts:", error);
     return [];
   }

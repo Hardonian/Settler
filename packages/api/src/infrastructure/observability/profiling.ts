@@ -27,8 +27,8 @@ export function profilingMiddleware(req: Request, res: Response, next: NextFunct
   const startMemory = process.memoryUsage();
 
   // Track database queries
-  let queryCount = 0;
-  let dbDuration = 0;
+  const queryCount = 0;
+  const dbDuration = 0;
 
   // Override res.end to capture metrics
   const originalEnd = res.end.bind(res);
@@ -66,19 +66,19 @@ export function profilingMiddleware(req: Request, res: Response, next: NextFunct
     // Call original end with proper typing
     if (typeof encoding === 'function') {
       // encoding is actually a callback function
-      originalEnd(chunk as unknown, encoding as unknown as () => void);
+      originalEnd(chunk, encoding as unknown as () => void);
     } else if (typeof chunk === 'function') {
       // chunk is actually a callback function
       originalEnd(chunk as unknown as () => void);
     } else if (encoding !== undefined && typeof encoding === 'string') {
       // encoding is a BufferEncoding string
-      originalEnd(chunk as unknown, encoding as BufferEncoding, cb);
+      originalEnd(chunk, encoding as BufferEncoding, cb);
     } else if (cb !== undefined) {
       // cb is provided but encoding is not - call with chunk and cb only
-      originalEnd(chunk as unknown, cb);
+      originalEnd(chunk, cb);
     } else {
       // Only chunk provided
-      originalEnd(chunk as unknown);
+      originalEnd(chunk);
     }
   } as typeof originalEnd;
 

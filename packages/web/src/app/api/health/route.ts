@@ -127,7 +127,7 @@ export const GET = withSecurity(
       };
       overallStatus = 'unhealthy';
     }
-  } catch (error) {
+  } catch {
     checks.supabaseClientInit = {
       status: 'error',
       message: error instanceof Error ? error.message : 'Initialization failed',
@@ -157,7 +157,7 @@ export const GET = withSecurity(
       };
       // Database is optional, don't mark as unhealthy
     }
-  } catch (error) {
+  } catch {
     checks.database = {
       status: 'error',
       message: error instanceof Error ? error.message : 'Connection failed',
@@ -185,7 +185,7 @@ export const GET = withSecurity(
           ]);
 
           tableChecks[table] = !error || error.code === 'PGRST116'; // PGRST116 = no rows, which is fine
-        } catch (e) {
+        } catch {
           tableChecks[table] = false;
         }
       }
@@ -207,7 +207,7 @@ export const GET = withSecurity(
         message: 'Service role key not available for backend verification',
       };
     }
-  } catch (error) {
+  } catch {
     checks.backendContract = {
       status: 'error',
       message: `Backend verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

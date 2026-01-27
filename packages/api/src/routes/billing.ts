@@ -590,20 +590,20 @@ router.post("/webhook", async (req: AuthRequest, res: Response) => {
     switch (event.type) {
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
-        const subscription = event.data.object as Stripe.Subscription;
+        const subscription = event.data.object;
         await handleSubscriptionUpdate(supabase, subscription);
         break;
       }
 
       case "invoice.paid":
       case "invoice.payment_failed": {
-        const invoice = event.data.object as Stripe.Invoice;
+        const invoice = event.data.object;
         await handleInvoiceEvent(supabase, invoice);
         break;
       }
 
       case "invoice.upcoming": {
-        const invoice = event.data.object as Stripe.Invoice;
+        const invoice = event.data.object;
         await handleInvoiceUpcoming(supabase, invoice);
         break;
       }

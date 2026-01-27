@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 export interface DemoSummary {
   totalSource: number;
@@ -41,12 +41,12 @@ export interface DemoResult {
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
-const isString = (value: unknown): value is string => typeof value === 'string';
+const isString = (value: unknown): value is string => typeof value === "string";
 
 const isNumber = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isFinite(value);
+  typeof value === "number" && Number.isFinite(value);
 
 const isDemoSummary = (value: unknown): value is DemoSummary =>
   isRecord(value) &&
@@ -92,22 +92,22 @@ const isDemoResult = (value: unknown): value is DemoResult =>
   value.unmatchedTarget.every(isDemoUnmatched);
 
 export async function runDemoSimulation(): Promise<DemoResult> {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-  
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
   // Try to hit the API. In dev, if API is on 3001, we might need to adjust.
   // We'll try a few common ports if localhost.
   const ports = [3000, 3001, 3002, 8080];
-  
+
   for (const port of ports) {
     try {
-      const baseUrl = API_URL.includes('localhost') ? `http://localhost:${port}` : API_URL;
+      const baseUrl = API_URL.includes("localhost") ? `http://localhost:${port}` : API_URL;
       const response = await fetch(`${baseUrl}/api/v1/playground/demo-run`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({}),
-        cache: 'no-store'
+        cache: "no-store",
       });
 
       if (response.ok) {
@@ -115,12 +115,12 @@ export async function runDemoSimulation(): Promise<DemoResult> {
         if (isDemoResult(payload)) {
           return payload;
         }
-        throw new Error('Unexpected demo response payload');
+        throw new Error("Unexpected demo response payload");
       }
-    } catch (e) {
+    } catch {
       // Continue to next port
     }
   }
 
-  throw new Error('Could not connect to Settler API. Please ensure the backend is running.');
+  throw new Error("Could not connect to Settler API. Please ensure the backend is running.");
 }

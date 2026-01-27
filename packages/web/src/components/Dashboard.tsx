@@ -35,7 +35,7 @@ export default function Dashboard({ apiKey }: DashboardProps) {
       setLoading(true);
       const response = await client.jobs.list({ limit: 100 });
       setJobs(response.data || []);
-    } catch (error) {
+    } catch {
       console.error("Failed to load jobs:", error);
     } finally {
       setLoading(false);
@@ -46,7 +46,7 @@ export default function Dashboard({ apiKey }: DashboardProps) {
     try {
       await client.jobs.run(jobId);
       await loadJobs();
-    } catch (error) {
+    } catch {
       console.error("Failed to run job:", error);
     }
   }
@@ -247,7 +247,7 @@ function JobDetailModal({
       setLoading(true);
       const response = await client.reports.get(job.id);
       setReport(response.data);
-    } catch (error) {
+    } catch {
       console.error("Failed to load report:", error);
     } finally {
       setLoading(false);

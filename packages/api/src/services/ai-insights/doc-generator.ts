@@ -190,7 +190,7 @@ export async function generateMarkdownDocs(report: DocumentationReport): Promise
     if (!byMethod[method]) {
       byMethod[method] = [];
     }
-    byMethod[method]!.push(route);
+    byMethod[method].push(route);
   }
 
   for (const method of ["GET", "POST", "PUT", "DELETE", "PATCH"]) {

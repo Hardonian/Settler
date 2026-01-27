@@ -3,7 +3,7 @@
  *
  * Automatic token refresh for OAuth2 connectors
  */
-import { ConnectorDriver } from './connector-driver';
+import { ConnectorDriver } from "./connector-driver";
 export interface TokenRefreshResult {
     refreshed: boolean;
     accessToken?: string;

@@ -41,7 +41,7 @@ export class TrueLayerDriver implements ConnectorDriver {
       sandbox: 'https://api.truelayer-sandbox.com',
       production: 'https://api.truelayer.com',
     };
-    return (urls[env] ?? urls.sandbox) as string;
+    return (urls[env] ?? urls.sandbox);
   }
 
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {

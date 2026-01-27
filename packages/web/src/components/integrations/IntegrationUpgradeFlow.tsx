@@ -42,7 +42,7 @@ export function IntegrationUpgradeFlow({
         const data = await response.json();
         setVersion(data);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch version info:", error);
     } finally {
       setLoading(false);
@@ -63,7 +63,7 @@ export function IntegrationUpgradeFlow({
         const error = await response.json();
         alert(`Upgrade failed: ${error.error}`);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to upgrade:", error);
       alert("Failed to upgrade integration");
     } finally {

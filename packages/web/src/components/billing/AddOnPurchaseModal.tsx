@@ -52,7 +52,7 @@ export function AddOnPurchaseModal({
     try {
       await onPurchase(addOn.id);
       onClose();
-    } catch (error) {
+    } catch {
       console.error("Purchase failed:", error);
     } finally {
       setIsProcessing(false);

@@ -109,7 +109,7 @@ router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
       traceId: run.trace_id as string | null,
       metadata:
         typeof run.metadata === "string"
-          ? JSON.parse(run.metadata as string)
+          ? JSON.parse(run.metadata)
           : run.metadata,
     });
   } catch (error) {

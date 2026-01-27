@@ -87,7 +87,7 @@ export const POST = withSecurity(
       suggestions: aiResponse.suggestions,
       related_docs: aiResponse.relatedDocs,
     });
-  } catch (error) {
+  } catch {
     appLogger.error("AI support assistant error", error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

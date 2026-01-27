@@ -182,7 +182,7 @@ export async function getEntitlementStatus(): Promise<EntitlementStatus | null> 
       subscriptionId: subscription.id,
       status: subscription.status as 'active' | 'trialing' | 'past_due' | 'cancelled',
     };
-  } catch (error) {
+  } catch {
     console.error('[getEntitlementStatus] Error:', error);
     return null; // Fail safe - return null (free tier)
   }
@@ -342,7 +342,7 @@ export async function requireEntitlement(
       limit,
       currentUsage,
     };
-  } catch (error) {
+  } catch {
     console.error('[requireEntitlement] Error:', error);
     // CRITICAL: Fail closed - deny access on error (prevents revenue leakage)
     return {

@@ -20,7 +20,7 @@ class ConnectorError extends Error {
         this.code = code;
         this.connector = connector;
         this.cause = cause;
-        this.name = 'ConnectorError';
+        this.name = "ConnectorError";
     }
 }
 exports.ConnectorError = ConnectorError;
@@ -34,7 +34,7 @@ class ValidationError extends Error {
         super(message);
         this.field = field;
         this.value = value;
-        this.name = 'ValidationError';
+        this.name = "ValidationError";
     }
 }
 exports.ValidationError = ValidationError;
@@ -42,21 +42,21 @@ exports.ValidationError = ValidationError;
  * Default validation rules for connectors
  */
 exports.DEFAULT_VALIDATION_RULES = {
-    minInterfaceVersion: '1.0.0',
-    requiredMethods: ['name', 'version', 'fetch', 'normalize', 'validate'],
+    minInterfaceVersion: "1.0.0",
+    requiredMethods: ["name", "version", "fetch", "normalize", "validate"],
     dataValidation: {
-        requiredFields: ['id', 'amount', 'currency', 'date'],
+        requiredFields: ["id", "amount", "currency", "date"],
         fieldTypes: {
-            id: 'string',
-            amount: 'number',
-            currency: 'string',
-            date: 'date',
-            metadata: 'object',
+            id: "string",
+            amount: "number",
+            currency: "string",
+            date: "date",
+            metadata: "object",
         },
     },
     security: {
         requiresHttps: true,
-        credentialEncryption: 'required',
+        credentialEncryption: "required",
     },
 };
 /**
@@ -66,24 +66,24 @@ function validateConnector(connector, rules = exports.DEFAULT_VALIDATION_RULES) 
     const errors = [];
     // Check required methods
     for (const method of rules.requiredMethods) {
-        if (!(method in connector) || typeof connector[method] !== 'function') {
+        if (!(method in connector) || typeof connector[method] !== "function") {
             errors.push(`Missing required method: ${method}`);
         }
     }
     // Validate name
-    if (!connector.name || typeof connector.name !== 'string') {
-        errors.push('Connector name must be a non-empty string');
+    if (!connector.name || typeof connector.name !== "string") {
+        errors.push("Connector name must be a non-empty string");
     }
     // Validate version
-    if (!connector.version || typeof connector.version !== 'string') {
-        errors.push('Connector version must be a non-empty string');
+    if (!connector.version || typeof connector.version !== "string") {
+        errors.push("Connector version must be a non-empty string");
     }
     // Test normalize with sample data
     try {
         const normalized = connector.normalize({});
         const validation = connector.validate(normalized);
         if (!validation.valid) {
-            errors.push(`Validation failed: ${validation.errors?.join(', ')}`);
+            errors.push(`Validation failed: ${validation.errors?.join(", ")}`);
         }
     }
     catch (error) {

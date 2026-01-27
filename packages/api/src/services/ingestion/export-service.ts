@@ -145,7 +145,7 @@ async function exportMatchedToCSV(
 
   // Data rows
   for (const match of matches) {
-    const row = match as Record<string, unknown>;
+    const row = match;
     const escapeCSV = (val: unknown): string => {
       if (val === null || val === undefined) return "";
       const str = String(val);
@@ -213,7 +213,7 @@ async function exportUnmatchedToCSV(
 
   // Data rows
   for (const transaction of unmatched) {
-    const row = transaction as Record<string, unknown>;
+    const row = transaction;
     const escapeCSV = (val: unknown): string => {
       if (val === null || val === undefined) return "";
       const str = String(val);
@@ -266,7 +266,7 @@ async function exportAllToCSV(
 
   // Data rows
   for (const transaction of transactions) {
-    const row = transaction as Record<string, unknown>;
+    const row = transaction;
     const escapeCSV = (val: unknown): string => {
       if (val === null || val === undefined) return "";
       const str = String(val);
@@ -352,7 +352,7 @@ async function exportReconciliationReportToCSV(
 
   // Match rows
   for (const match of matches) {
-    const row = match as Record<string, unknown>;
+    const row = match;
     csvRows.push(
       [
         String(row.match_type || ""),

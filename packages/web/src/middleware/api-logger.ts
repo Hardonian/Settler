@@ -43,7 +43,7 @@ async function getTenantFromRequest(_request: NextRequest): Promise<string | und
     }
     
     return undefined;
-    } catch (error) {
+    } catch {
       await safeLogger.error('[api-logger] Failed to get tenant', {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
@@ -69,7 +69,7 @@ async function getUserId(_request: NextRequest): Promise<string | undefined> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     return user?.id;
-  } catch (error) {
+  } catch {
     return undefined;
   }
 }
@@ -93,7 +93,7 @@ async function sanitizeRequestBody(request: NextRequest): Promise<unknown> {
     }
     
     return undefined;
-  } catch (error) {
+  } catch {
     // If body parsing fails, return undefined
     return undefined;
   }
@@ -147,7 +147,7 @@ export async function logApiRequest(
           responseBody = sanitizeApiData({ body: data }).body;
         }
       }
-    } catch (error) {
+    } catch {
       // Ignore response body parsing errors
     }
     
@@ -181,7 +181,7 @@ export async function logApiRequest(
       userAgent,
       ipAddress: ipAddress !== 'unknown' ? ipAddress : undefined,
     });
-  } catch (error) {
+  } catch {
     // Don't let logging errors break the request
     await safeLogger.error('[api-logger] Failed to log API call', {
       error: error instanceof Error ? error.message : String(error),
@@ -216,7 +216,7 @@ export function withApiLogging(
     let response: NextResponse;
     try {
       response = await handler(request);
-    } catch (error) {
+    } catch {
       // Create error response - never return 500, return 200 with error message
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       response = NextResponse.json(

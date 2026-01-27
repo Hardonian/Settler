@@ -31,7 +31,7 @@ export function IPAllowlistManager() {
         const data = await response.json();
         setAllowlist(data.allowlist || []);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch allowlist:", error);
     }
   };
@@ -49,7 +49,7 @@ export function IPAllowlistManager() {
         setDescription("");
         await fetchAllowlist();
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to add IP:", error);
     }
   };
@@ -58,7 +58,7 @@ export function IPAllowlistManager() {
     try {
       await fetch(`/api/enterprise/ip-allowlist/${id}`, { method: "DELETE" });
       await fetchAllowlist();
-    } catch (error) {
+    } catch {
       console.error("Failed to delete IP:", error);
     }
   };

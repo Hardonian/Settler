@@ -85,7 +85,7 @@ export async function checkErrorRate(
     }
 
     return null;
-  } catch (error) {
+  } catch {
     console.error('[Error Alerts] Error checking error rate:', error);
     return null;
   }
@@ -155,7 +155,7 @@ export async function checkErrorSpike(
     }
 
     return null;
-  } catch (error) {
+  } catch {
     console.error('[Error Alerts] Error checking error spike:', error);
     return null;
   }
@@ -192,7 +192,7 @@ export async function getActiveAlerts(userId: string): Promise<ErrorAlert[]> {
     if (!billingAccount) return [];
 
     return await checkAllAlerts(billingAccount.id);
-  } catch (error) {
+  } catch {
     console.error('[Error Alerts] Error getting active alerts:', error);
     return [];
   }

@@ -40,7 +40,7 @@ export default function NavigationEditorPage() {
       const data = await response.json();
       setNavItems(data.navigation?.navItems || []);
       setFooterItems(data.navigation?.footerItems || []);
-    } catch (error) {
+    } catch {
       console.error('Error loading navigation:', error);
     } finally {
       setLoading(false);
@@ -65,7 +65,7 @@ export default function NavigationEditorPage() {
       }
 
       alert('Navigation saved successfully');
-    } catch (error) {
+    } catch {
       console.error('Error saving navigation:', error);
       alert(error instanceof Error ? error.message : 'Failed to save navigation');
     } finally {

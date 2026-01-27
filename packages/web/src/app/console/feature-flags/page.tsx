@@ -57,7 +57,7 @@ export default function FeatureFlagsPage() {
         const data = await res.json();
         setFlags(data.flags || []);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch feature flags:', error);
     } finally {
       setLoading(false);
@@ -74,7 +74,7 @@ export default function FeatureFlagsPage() {
       if (res.ok) {
         await fetchFlags();
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to toggle flag:', error);
     }
   };

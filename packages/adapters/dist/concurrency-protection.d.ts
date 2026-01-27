@@ -13,7 +13,7 @@ export interface ConcurrencyLock {
  */
 export declare function acquireSyncLock(tenantId: string, connectorId: string, supabaseUrl: string, supabaseServiceKey: string): Promise<ConcurrencyLock>;
 /**
- * Release sync lock
+ * Release lock for sync
  */
 export declare function releaseSyncLock(lockId: string, supabaseUrl: string, supabaseServiceKey: string): Promise<void>;
 //# sourceMappingURL=concurrency-protection.d.ts.map

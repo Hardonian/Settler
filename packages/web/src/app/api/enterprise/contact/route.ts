@@ -57,7 +57,7 @@ export const POST = withSecurity(
       success: true,
       message: 'Thank you! Our sales team will contact you within 24 hours.',
     });
-  } catch (error) {
+  } catch {
     appLogger.error('[Enterprise Contact] Error', error);
     return NextResponse.json(
       {

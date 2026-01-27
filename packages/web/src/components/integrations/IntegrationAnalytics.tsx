@@ -32,7 +32,7 @@ export function IntegrationAnalytics() {
         const data = await response.json();
         setRevenue(data.revenue || []);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch analytics:", error);
     } finally {
       setLoading(false);

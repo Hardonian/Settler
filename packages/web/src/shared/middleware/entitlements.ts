@@ -89,7 +89,7 @@ export async function checkRequestEntitlement(
     }
 
     return { allowed: true };
-  } catch (error) {
+  } catch {
     // Fail closed on errors - deny request if entitlement check fails
     // This prevents users from bypassing plan enforcement
     console.error('[Entitlement Middleware] Error checking entitlement:', {

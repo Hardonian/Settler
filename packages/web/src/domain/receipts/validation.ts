@@ -56,7 +56,7 @@ export function validateReceipt(data: unknown): {
         errors: result.error,
       };
     }
-  } catch (error) {
+  } catch {
     return {
       valid: false,
       errors: error instanceof z.ZodError ? error : new z.ZodError([]),

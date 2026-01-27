@@ -50,7 +50,7 @@ export default function BillingPage() {
       }
       const result = await response.json();
       setData(result);
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : 'Failed to load billing data');
     } finally {
       setIsLoading(false);
@@ -72,7 +72,7 @@ export default function BillingPage() {
       }
       const { url } = await response.json();
       window.location.href = url;
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : 'Failed to open billing portal');
       setIsCreatingPortal(false);
     }
@@ -95,7 +95,7 @@ export default function BillingPage() {
       }
       const { url } = await response.json();
       window.location.href = url;
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : 'Failed to start checkout');
       setIsCreatingCheckout(null);
     }

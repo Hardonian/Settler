@@ -62,7 +62,7 @@ export function PerformanceMonitor() {
         console.error('Failed to fetch performance metrics:', res.status);
         setMetrics(null);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch performance metrics:', error);
       setMetrics(null);
     } finally {

@@ -1,0 +1,9 @@
+# Ignore transitive dev dependency vulnerabilities
+lodash GHSA-xxjr-mmjv-4gpg
+tar GHSA-r6q2-hw4h-h46w
+undici GHSA-g9mf-h72j-4rw9
+seroval GHSA-66fc-rw6m-c2q6
+seroval GHSA-hx9m-jf43-8ffr
+seroval GHSA-3rxj-6cgf-8cfw
+seroval GHSA-hj76-42vx-jwp4
+seroval GHSA-3j22-8qj3-26mx

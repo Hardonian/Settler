@@ -225,7 +225,7 @@ export const POST = withSecurity(
       originalValue: value,
       originalUnit: from,
     });
-  } catch (error) {
+  } catch {
     // Never return 500 - always return 200 with error info for playground
     appLogger.error('Convert API error', error);
     return NextResponse.json(

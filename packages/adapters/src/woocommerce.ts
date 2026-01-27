@@ -1,6 +1,6 @@
 /**
  * WooCommerce Adapter
- * 
+ *
  * Production-ready WooCommerce integration with:
  * - REST API authentication
  * - Circuit breaker protection
@@ -45,39 +45,41 @@ export class WooCommerceAdapter implements Adapter {
     const endDate = options.dateRange.end.toISOString();
 
     // WooCommerce REST API uses Basic Auth with consumer key/secret
-    const auth = Buffer.from(`${this.config.consumerKey}:${this.config.consumerSecret}`).toString("base64");
+    const auth = Buffer.from(`${this.config.consumerKey}:${this.config.consumerSecret}`).toString(
+      "base64"
+    );
 
     const orders: NormalizedData[] = [];
     let page = 1;
     let hasMore = true;
 
     while (hasMore) {
-      const response = await withCircuitBreaker(
-        "woocommerce-api",
-        async () => {
-          const params = new URLSearchParams({
-            after: startDate,
-            before: endDate,
-            page: page.toString(),
-            per_page: "100", // Max per page
-            orderby: "date",
-            order: "asc",
-          });
+      const response = await withCircuitBreaker("woocommerce-api", async () => {
+        const params = new URLSearchParams({
+          after: startDate,
+          before: endDate,
+          page: page.toString(),
+          per_page: "100", // Max per page
+          orderby: "date",
+          order: "asc",
+        });
 
-          return fetch(`${this.config.storeUrl}/wp-json/${this.apiVersion}/orders?${params.toString()}`, {
+        return fetch(
+          `${this.config.storeUrl}/wp-json/${this.apiVersion}/orders?${params.toString()}`,
+          {
             headers: {
-              "Authorization": `Basic ${auth}`,
+              Authorization: `Basic ${auth}`,
               "Content-Type": "application/json",
             },
-          });
-        }
-      );
+          }
+        );
+      });
 
       if (!response.ok) {
         throw new Error(`WooCommerce API error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json() as Array<{
+      const data = (await response.json()) as Array<{
         id?: number;
         number?: string;
         date_created?: string;

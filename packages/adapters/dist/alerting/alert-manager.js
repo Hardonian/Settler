@@ -20,38 +20,38 @@ class AlertManager {
     loadDefaultRules() {
         this.rules = [
             {
-                id: 'consecutive_failures_5',
-                condition: 'consecutive_failures',
+                id: "consecutive_failures_5",
+                condition: "consecutive_failures",
                 threshold: 5,
-                severity: 'warning',
+                severity: "warning",
                 enabled: true,
             },
             {
-                id: 'consecutive_failures_10',
-                condition: 'consecutive_failures',
+                id: "consecutive_failures_10",
+                condition: "consecutive_failures",
                 threshold: 10,
-                severity: 'critical',
+                severity: "critical",
                 enabled: true,
             },
             {
-                id: 'error_rate_10',
-                condition: 'error_rate',
+                id: "error_rate_10",
+                condition: "error_rate",
                 threshold: 10, // 10% error rate
-                severity: 'warning',
+                severity: "warning",
                 enabled: true,
             },
             {
-                id: 'sync_delay_24h',
-                condition: 'sync_delay',
+                id: "sync_delay_24h",
+                condition: "sync_delay",
                 threshold: 24 * 60 * 60 * 1000, // 24 hours in ms
-                severity: 'warning',
+                severity: "warning",
                 enabled: true,
             },
             {
-                id: 'rate_limit_hit',
-                condition: 'rate_limit',
+                id: "rate_limit_hit",
+                condition: "rate_limit",
                 threshold: 1,
-                severity: 'info',
+                severity: "info",
                 enabled: true,
             },
         ];
@@ -62,7 +62,7 @@ class AlertManager {
     async checkSyncFailure(connectorId, tenantId, consecutiveFailures, errorType, errorMessage) {
         const alerts = [];
         // Check consecutive failures rule
-        const consecutiveRule = this.rules.find((r) => r.condition === 'consecutive_failures' && consecutiveFailures >= r.threshold);
+        const consecutiveRule = this.rules.find((r) => r.condition === "consecutive_failures" && consecutiveFailures >= r.threshold);
         if (consecutiveRule) {
             const alert = await this.createAlert({
                 connectorId,
@@ -86,7 +86,7 @@ class AlertManager {
      */
     async checkErrorRate(connectorId, tenantId, errorRate) {
         const alerts = [];
-        const errorRateRule = this.rules.find((r) => r.condition === 'error_rate' && errorRate >= r.threshold);
+        const errorRateRule = this.rules.find((r) => r.condition === "error_rate" && errorRate >= r.threshold);
         if (errorRateRule) {
             const alert = await this.createAlert({
                 connectorId,
@@ -113,7 +113,7 @@ class AlertManager {
             return alerts;
         }
         const delay = Date.now() - lastSyncAt.getTime();
-        const delayRule = this.rules.find((r) => r.condition === 'sync_delay' && delay >= r.threshold);
+        const delayRule = this.rules.find((r) => r.condition === "sync_delay" && delay >= r.threshold);
         if (delayRule) {
             const hoursDelayed = Math.round(delay / (60 * 60 * 1000));
             const alert = await this.createAlert({
@@ -140,30 +140,30 @@ class AlertManager {
         try {
             // Check if alert already exists (deduplication)
             const { data: existing } = await this.supabase
-                .from('connector_alerts')
-                .select('id')
-                .eq('connector_id', data.connectorId)
-                .eq('tenant_id', data.tenantId)
-                .eq('severity', data.severity)
-                .is('resolved_at', null)
-                .eq('title', data.title)
+                .from("connector_alerts")
+                .select("id")
+                .eq("connector_id", data.connectorId)
+                .eq("tenant_id", data.tenantId)
+                .eq("severity", data.severity)
+                .is("resolved_at", null)
+                .eq("title", data.title)
                 .limit(1);
             if (existing && existing.length > 0) {
                 return null; // Alert already exists
             }
             // Get connector record
             const { data: connector } = await this.supabase
-                .from('connectors')
-                .select('id')
-                .eq('provider_id', data.connectorId)
-                .eq('tenant_id', data.tenantId)
+                .from("connectors")
+                .select("id")
+                .eq("provider_id", data.connectorId)
+                .eq("tenant_id", data.tenantId)
                 .single();
             if (!connector) {
                 return null;
             }
             // Create alert
             const { data: alert, error } = await this.supabase
-                .from('connector_alerts')
+                .from("connector_alerts")
                 .insert({
                 connector_id: connector.id,
                 tenant_id: data.tenantId,
@@ -176,7 +176,7 @@ class AlertManager {
                 .select()
                 .single();
             if (error || !alert) {
-                console.error('Failed to create alert:', error);
+                console.error("Failed to create alert:", error);
                 return null;
             }
             // Send notification (email, Slack, etc.)
@@ -184,7 +184,7 @@ class AlertManager {
             return alert;
         }
         catch (error) {
-            console.error('Error creating alert:', error);
+            console.error("Error creating alert:", error);
             return null;
         }
     }
@@ -199,8 +199,8 @@ class AlertManager {
         if (webhookUrl) {
             try {
                 await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         severity: alert.severity,
                         title: alert.title,
@@ -212,7 +212,7 @@ class AlertManager {
                 });
             }
             catch (error) {
-                console.error('Failed to send webhook notification:', error);
+                console.error("Failed to send webhook notification:", error);
             }
         }
     }
@@ -221,32 +221,32 @@ class AlertManager {
      */
     async resolveAlert(alertId, resolvedBy) {
         await this.supabase
-            .from('connector_alerts')
+            .from("connector_alerts")
             .update({
             resolved_at: new Date().toISOString(),
             resolved_by: resolvedBy,
         })
-            .eq('id', alertId);
+            .eq("id", alertId);
     }
     /**
      * Get active alerts for connector
      */
     async getActiveAlerts(connectorId, tenantId) {
         const { data: connector } = await this.supabase
-            .from('connectors')
-            .select('id')
-            .eq('provider_id', connectorId)
-            .eq('tenant_id', tenantId)
+            .from("connectors")
+            .select("id")
+            .eq("provider_id", connectorId)
+            .eq("tenant_id", tenantId)
             .single();
         if (!connector) {
             return [];
         }
         const { data: alerts } = await this.supabase
-            .from('connector_alerts')
-            .select('*')
-            .eq('connector_id', connector.id)
-            .is('resolved_at', null)
-            .order('created_at', { ascending: false });
+            .from("connector_alerts")
+            .select("*")
+            .eq("connector_id", connector.id)
+            .is("resolved_at", null)
+            .order("created_at", { ascending: false });
         return (alerts || []);
     }
 }

@@ -8,7 +8,7 @@
  * ```ts
  * try {
  *   // ... route logic
- * } catch (error) {
+ * } catch {
  *   return gracefulError(error, 'Unable to process request');
  * }
  * ```

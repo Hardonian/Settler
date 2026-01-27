@@ -99,7 +99,7 @@ export function validateRequestBody<T extends Record<string, unknown>>(
     if (rule.sanitize) {
       try {
         sanitized[key] = rule.sanitize(value);
-      } catch (error) {
+      } catch {
         errors.push(`Field '${key}' failed sanitization: ${error instanceof Error ? error.message : 'Unknown error'}`);
         continue;
       }
@@ -224,7 +224,7 @@ export async function getTenantIdFromRequest(request: NextRequest): Promise<{
         }
       }
     }
-  } catch (error) {
+  } catch {
     // Ignore errors, return null
   }
   

@@ -157,7 +157,7 @@ export const GET = withSecurity(
       steps,
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch {
     appLogger.error('[Onboarding API] Error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
@@ -275,7 +275,7 @@ export const POST = withSecurity(
       steps,
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch {
     appLogger.error('[Onboarding API] Error', error);
     
     if (error instanceof z.ZodError) {

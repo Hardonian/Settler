@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       summary,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch {
     appLogger.error('[Cron Alerts] Error', error);
     // Don't fail the cron job - return success but log error
     return NextResponse.json({

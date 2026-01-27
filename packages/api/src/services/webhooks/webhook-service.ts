@@ -164,7 +164,7 @@ export class WebhookService {
 
     // Filter webhooks that subscribe to this event type
     const subscribedWebhooks = webhooks.filter((webhook: { events: unknown }) => {
-      const events = webhook.events as unknown;
+      const events = webhook.events;
       if (Array.isArray(events)) {
         return events.includes(eventType);
       }

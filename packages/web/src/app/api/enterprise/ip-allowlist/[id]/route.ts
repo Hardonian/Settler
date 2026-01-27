@@ -28,7 +28,7 @@ export const DELETE = withSecurity(
     // await supabase.from("ip_allowlists").delete().eq("id", id);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in ip-allowlist DELETE", error);
     return NextResponse.json(
       {

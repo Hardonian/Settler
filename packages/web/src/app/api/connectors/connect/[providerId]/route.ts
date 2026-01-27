@@ -115,7 +115,7 @@ export const POST = withUniversalBillingGate(async function POST(
       success: true,
       message: 'Please provide API credentials',
     });
-  } catch (error) {
+  } catch {
     appLogger.error('Error in connect route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

@@ -81,7 +81,7 @@ export default function UsagePage() {
         });
         setEvents([]);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch usage data:', error);
       // Set empty state on error
       setSummary({

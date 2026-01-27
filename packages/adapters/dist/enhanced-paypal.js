@@ -30,9 +30,7 @@ class EnhancedPayPalAdapter {
     tokenExpiry = 0;
     constructor(config) {
         this.config = config;
-        this.baseUrl = config.sandbox
-            ? "https://api.sandbox.paypal.com"
-            : "https://api.paypal.com";
+        this.baseUrl = config.sandbox ? "https://api.sandbox.paypal.com" : "https://api.paypal.com";
     }
     /**
      * Get OAuth access token
@@ -47,7 +45,7 @@ class EnhancedPayPalAdapter {
             return fetch(`${this.baseUrl}/v1/oauth2/token`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Basic ${auth}`,
+                    Authorization: `Basic ${auth}`,
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: "grant_type=client_credentials",
@@ -56,9 +54,9 @@ class EnhancedPayPalAdapter {
         if (!response.ok) {
             throw new Error(`PayPal token request failed: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
+        const data = (await response.json());
         this.accessToken = data.access_token;
-        this.tokenExpiry = Date.now() + (data.expires_in * 1000) - 60000; // Refresh 1 minute early
+        this.tokenExpiry = Date.now() + data.expires_in * 1000 - 60000; // Refresh 1 minute early
         return this.accessToken;
     }
     /**
@@ -83,7 +81,7 @@ class EnhancedPayPalAdapter {
             const response = await withCircuitBreaker("paypal-api", async () => {
                 return fetch(`${this.baseUrl}/v1/reporting/transactions?${params.toString()}`, {
                     headers: {
-                        "Authorization": `Bearer ${accessToken}`,
+                        Authorization: `Bearer ${accessToken}`,
                         "Content-Type": "application/json",
                     },
                 });
@@ -91,7 +89,7 @@ class EnhancedPayPalAdapter {
             if (!response.ok) {
                 throw new Error(`PayPal API error: ${response.status} ${response.statusText}`);
             }
-            const data = await response.json();
+            const data = (await response.json());
             // Normalize transactions
             if (data.transaction_details) {
                 for (const detail of data.transaction_details) {

@@ -185,8 +185,8 @@ healthCommand.action(async (options) => {
             process.exit(1);
         }
     }
-    catch (error) {
-        console.error(chalk_1.default.red("❌ Health check failed:"), error instanceof Error ? error.message : "Unknown error");
+    catch {
+        console.error(chalk_1.default.red("❌ Health check failed:"), "Unknown error");
         process.exit(1);
     }
 });

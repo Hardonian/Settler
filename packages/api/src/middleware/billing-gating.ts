@@ -464,7 +464,7 @@ export function featureGate(featureName: string) {
               message: "Plan limits not configured",
             });
           }
-          const limit = planLimits[gate.requiresUsage.eventType as keyof PlanLimits] as number;
+          const limit = planLimits[gate.requiresUsage.eventType as keyof PlanLimits];
 
           if (limit > 0 && currentUsage >= limit) {
             return res.status(403).json({
@@ -553,7 +553,7 @@ export async function checkUsageQuotaForEvent(
       );
       return { allowed: true }; // Fail open
     }
-    const limit = planLimits[eventType as keyof PlanLimits] as number;
+    const limit = planLimits[eventType as keyof PlanLimits];
 
     // Check if limit is exceeded
     if (limit > 0 && currentUsage + quantity > limit) {

@@ -417,7 +417,7 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await settler.jobs.create(config);
-    } catch (error) {
+    } catch {
       if (error instanceof SettlerError) {
         if (error.type === "RateLimitError" && i < maxRetries - 1) {
           const delay = Math.pow(2, i) * 1000;

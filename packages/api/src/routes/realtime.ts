@@ -86,7 +86,7 @@ router.get(
             ORDER BY started_at DESC
             LIMIT 1
           `,
-          [jobId!, tenantId!]
+          [jobId, tenantId]
         );
 
         if (executions.length > 0 && executions[0]) {

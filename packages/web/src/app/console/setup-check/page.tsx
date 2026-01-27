@@ -71,7 +71,7 @@ async function SetupChecks() {
         message: 'Cannot test - missing environment variables',
       });
     }
-  } catch (error) {
+  } catch {
     checks.push({
       name: 'Supabase Connection',
       status: 'fail',
@@ -94,7 +94,7 @@ async function SetupChecks() {
         message: 'Prisma client not properly initialized',
       });
     }
-  } catch (error) {
+  } catch {
     checks.push({
       name: 'Prisma Client',
       status: 'fail',
@@ -111,7 +111,7 @@ async function SetupChecks() {
         status: 'pass',
         message: 'Table exists and accessible',
       });
-    } catch (error) {
+    } catch {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       if (errorMsg.includes('does not exist') || errorMsg.includes('relation') || errorMsg.includes('table')) {
         checks.push({
@@ -164,7 +164,7 @@ async function SetupChecks() {
         message: 'Cannot test - missing Supabase credentials',
       });
     }
-  } catch (error) {
+  } catch {
     checks.push({
       name: 'api_keys Table (Supabase)',
       status: 'fail',

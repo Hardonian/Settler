@@ -1,6 +1,6 @@
 /**
  * Performance Optimizations for Large Syncs
- * 
+ *
  * Batch processing, parallelization, and optimization utilities
  */
 
@@ -90,7 +90,7 @@ class Semaphore {
 
   release(): void {
     if (this.waiters.length > 0) {
-      const resolve = this.waiters.shift()!;
+      const resolve = this.waiters.shift();
       resolve();
     } else {
       this.available++;
@@ -165,7 +165,7 @@ export async function batchInsert<T>(
   batchSize: number = 1000
 ): Promise<void> {
   const batches = chunk(items, batchSize);
-  
+
   for (const batch of batches) {
     await inserter(batch);
   }
@@ -180,18 +180,20 @@ export async function* streamProcess<T, R>(
   bufferSize: number = 100
 ): AsyncGenerator<R> {
   const buffer: Promise<R>[] = [];
-  
+
   for await (const item of items) {
     const promise = processor(item);
     buffer.push(promise);
-    
+
     if (buffer.length >= bufferSize) {
-      const result = await Promise.race(buffer.map((p, i) => p.then((r) => ({ result: r, index: i }))));
+      const result = await Promise.race(
+        buffer.map((p, i) => p.then((r) => ({ result: r, index: i })))
+      );
       yield result.result;
       buffer.splice(result.index, 1);
     }
   }
-  
+
   // Process remaining items
   for (const promise of buffer) {
     yield await promise;
@@ -213,13 +215,13 @@ export async function processLargeDataset<T, R>(
 
   for await (const item of items) {
     batch.push(item);
-    
+
     if (batch.length >= batchSize) {
       const batchResults = await processor(batch);
       results.push(...batchResults);
       processed += batch.length;
       batch = []; // Clear batch to free memory
-      
+
       // Check memory usage (simplified)
       if (global.gc && process.memoryUsage().heapUsed > maxMemoryMB * 1024 * 1024) {
         global.gc();

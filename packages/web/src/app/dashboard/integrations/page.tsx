@@ -153,7 +153,7 @@ export default function IntegrationsPage() {
 
       setIntegrations([...integrationList, ...existingIntegrations]);
       setFilteredIntegrations([...integrationList, ...existingIntegrations]);
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch integrations:", error);
     } finally {
       setIsLoading(false);
@@ -186,7 +186,7 @@ export default function IntegrationsPage() {
         // API key flow - redirect to configuration page
         router.push(`/dashboard/integrations/${integrationId}`);
       }
-    } catch (error) {
+    } catch {
       console.error("Connection failed:", error);
       alert("Failed to connect. Please try again.");
     } finally {
@@ -220,7 +220,7 @@ export default function IntegrationsPage() {
         const error = await response.json();
         alert(`Disconnect failed: ${error.message || 'Unknown error'}`);
       }
-    } catch (error) {
+    } catch {
       console.error("Disconnection failed:", error);
       alert("Failed to disconnect. Please try again.");
     } finally {
@@ -254,7 +254,7 @@ export default function IntegrationsPage() {
         const error = await response.json();
         alert(`Sync failed: ${error.message || 'Unknown error'}`);
       }
-    } catch (error) {
+    } catch {
       console.error("Sync failed:", error);
       alert("Failed to start sync. Please try again.");
     } finally {
@@ -292,7 +292,7 @@ export default function IntegrationsPage() {
         const error = await response.json();
         alert(`Backfill failed: ${error.message || 'Unknown error'}`);
       }
-    } catch (error) {
+    } catch {
       console.error("Backfill failed:", error);
       alert("Failed to start backfill. Please try again.");
     } finally {

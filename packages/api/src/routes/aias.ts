@@ -234,7 +234,7 @@ router.get(
       }
 
       const aiasClient = getAIASClient();
-      const status = await aiasClient.getOptimizationStatus(jobId!);
+      const status = await aiasClient.getOptimizationStatus(jobId);
 
       // If completed, update model version
       if (status.status === "completed" && status.result) {
@@ -242,7 +242,7 @@ router.get(
           `UPDATE model_versions 
          SET benchmark_results = $1, updated_at = NOW()
          WHERE id = $2`,
-          [JSON.stringify(status.result.benchmarkResults), (modelCheck[0]?.id || "") as string]
+          [JSON.stringify(status.result.benchmarkResults), (modelCheck[0]?.id || "")]
         );
       }
 
@@ -341,14 +341,14 @@ router.get(
       }
 
       const aiasClient = getAIASClient();
-      const results = await aiasClient.getBenchmarkResults(jobId!);
+      const results = await aiasClient.getBenchmarkResults(jobId);
 
       // Update model version with benchmark results
       await query(
         `UPDATE model_versions 
        SET benchmark_results = $1, updated_at = NOW()
        WHERE id = $2`,
-        [JSON.stringify(results), (modelCheck[0]?.id || "") as string]
+        [JSON.stringify(results), (modelCheck[0]?.id || "")]
       );
 
       sendSuccess(res, results);

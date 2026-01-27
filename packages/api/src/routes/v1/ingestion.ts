@@ -389,7 +389,7 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
       completedAt: ingestion.completed_at as Date | null,
       errorMessage: ingestion.error_message as string | null,
       metadata: typeof ingestion.metadata === "string"
-        ? JSON.parse(ingestion.metadata as string)
+        ? JSON.parse(ingestion.metadata)
         : ingestion.metadata,
     });
   } catch (error) {
@@ -452,7 +452,7 @@ router.get(
           reference: t.reference as string | null,
           metadata:
             typeof t.metadata === "string"
-              ? JSON.parse(t.metadata as string)
+              ? JSON.parse(t.metadata)
               : t.metadata,
           createdAt: t.created_at as Date,
         })),

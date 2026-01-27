@@ -44,7 +44,7 @@ class PatternExtractor {
         const failures = await this.prisma.reconResult.findMany({
             where: {
                 ...(tenantId && { tenantId }),
-                status: 'failed',
+                status: "failed",
                 startedAt: {
                     gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
                 },
@@ -54,14 +54,14 @@ class PatternExtractor {
         // Group by error message
         const errorGroups = new Map();
         for (const failure of failures) {
-            const error = failure.errorMessage || 'unknown';
+            const error = failure.errorMessage || "unknown";
             errorGroups.set(error, (errorGroups.get(error) || 0) + 1);
         }
         const patterns = [];
         for (const [error, count] of errorGroups.entries()) {
             if (count >= 5) {
                 patterns.push({
-                    type: 'validation_rule',
+                    type: "validation_rule",
                     pattern: { error },
                     frequency: count,
                     confidence: Math.min(count / 10, 1.0),
@@ -95,14 +95,14 @@ class PatternExtractor {
         // Group by field path
         const fieldGroups = new Map();
         for (const drift of drifts) {
-            const field = drift.fieldPath || 'unknown';
+            const field = drift.fieldPath || "unknown";
             fieldGroups.set(field, (fieldGroups.get(field) || 0) + 1);
         }
         const patterns = [];
         for (const [field, count] of fieldGroups.entries()) {
             if (count >= 3) {
                 patterns.push({
-                    type: 'mapping_template',
+                    type: "mapping_template",
                     pattern: { fieldPath: field },
                     frequency: count,
                     confidence: Math.min(count / 5, 1.0),
@@ -122,12 +122,12 @@ class PatternExtractor {
                 deletedAt: null,
             },
             orderBy: {
-                usageCount: 'desc',
+                usageCount: "desc",
             },
             take: 10,
         });
         return mappings.map((mapping) => ({
-            type: 'mapping_template',
+            type: "mapping_template",
             pattern: mapping,
             frequency: mapping.usageCount,
             confidence: 0.9,
@@ -144,12 +144,12 @@ class PatternExtractor {
                 deletedAt: null,
             },
             orderBy: {
-                usageCount: 'desc',
+                usageCount: "desc",
             },
             take: 10,
         });
         return transforms.map((transform) => ({
-            type: 'transform_recipe',
+            type: "transform_recipe",
             pattern: transform,
             frequency: transform.usageCount,
             confidence: 0.9,
@@ -179,7 +179,7 @@ class PatternExtractor {
         for (const [workflowId, count] of workflowGroups.entries()) {
             if (count >= 10) {
                 patterns.push({
-                    type: 'workflow',
+                    type: "workflow",
                     pattern: { workflowId },
                     frequency: count,
                     confidence: Math.min(count / 20, 1.0),
@@ -200,11 +200,15 @@ class PatternExtractor {
                 recommendations.push({
                     type: pattern.type,
                     recommendation: pattern.recommendation,
-                    priority: (pattern.frequency > 20 ? 'high' : pattern.frequency > 10 ? 'medium' : 'low'),
+                    priority: (pattern.frequency > 20
+                        ? "high"
+                        : pattern.frequency > 10
+                            ? "medium"
+                            : "low"),
                     action: {
-                        createTemplate: pattern.type === 'mapping_template' || pattern.type === 'transform_recipe',
-                        createWorkflow: pattern.type === 'workflow',
-                        createValidationRule: pattern.type === 'validation_rule',
+                        createTemplate: pattern.type === "mapping_template" || pattern.type === "transform_recipe",
+                        createWorkflow: pattern.type === "workflow",
+                        createValidationRule: pattern.type === "validation_rule",
                     },
                 });
             }

@@ -55,7 +55,7 @@ export async function sendSlackAlert(options: AlertOptions): Promise<void> {
         ],
       }),
     });
-  } catch (error) {
+  } catch {
     console.error('[Alerts] Failed to send Slack alert:', error);
   }
 }
@@ -112,7 +112,7 @@ export async function sendPagerDutyAlert(options: AlertOptions): Promise<void> {
         },
       }),
     });
-  } catch (error) {
+  } catch {
     console.error('[Alerts] Failed to send PagerDuty alert:', error);
   }
 }

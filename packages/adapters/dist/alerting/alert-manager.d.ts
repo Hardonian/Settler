@@ -3,7 +3,7 @@
  *
  * Manages alerts for sync failures and other critical events
  */
-export type AlertSeverity = 'critical' | 'warning' | 'info';
+export type AlertSeverity = "critical" | "warning" | "info";
 export interface Alert {
     id: string;
     connectorId: string;
@@ -20,7 +20,7 @@ export interface Alert {
 export interface AlertRule {
     id: string;
     connectorId?: string;
-    condition: 'consecutive_failures' | 'error_rate' | 'sync_delay' | 'rate_limit';
+    condition: "consecutive_failures" | "error_rate" | "sync_delay" | "rate_limit";
     threshold: number;
     severity: AlertSeverity;
     enabled: boolean;

@@ -70,7 +70,7 @@ export function Playground() {
       if (data.data?.length > 0) {
         setSelectedExample(data.data[0]);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to load examples:', error);
     }
   };
@@ -94,7 +94,7 @@ export function Playground() {
       const data = await response.json();
       setResult(data.data || null);
       setActiveTab('results');
-    } catch (error) {
+    } catch {
       console.error('Failed to run reconciliation:', error);
     } finally {
       setLoading(false);

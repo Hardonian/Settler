@@ -173,7 +173,7 @@ export async function generateChangeReport(report: ChangeReport): Promise<string
     if (change && change.type) {
       const typeKey = change.type;
       if (byType[typeKey]) {
-        byType[typeKey]!.push(change);
+        byType[typeKey].push(change);
       }
     }
   }

@@ -53,7 +53,7 @@ export default function CostsPage() {
         }
         const data = await response.json();
         setCosts(data);
-      } catch (err) {
+      } catch {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setLoading(false);

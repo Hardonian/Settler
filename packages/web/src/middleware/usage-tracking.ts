@@ -51,7 +51,7 @@ export async function recordUsageEvent(event: UsageEvent): Promise<void> {
       console.error('[Usage Tracking] Failed to record event:', error);
       // Don't throw - usage tracking should not break the request
     }
-  } catch (error) {
+  } catch {
     console.error('[Usage Tracking] Error:', error);
     // Don't throw - usage tracking should not break the request
   }
@@ -218,7 +218,7 @@ export function withUsageTracking<T extends (...args: unknown[]) => Promise<Next
             },
           });
         }
-      } catch (error) {
+      } catch {
         // Don't fail the request if usage tracking fails
         console.error('[Usage Tracking] Failed to track usage:', error);
       }

@@ -24,7 +24,7 @@ export function UserImpersonation() {
   //       // In production, redirect to user's dashboard
   //       window.location.href = "/dashboard";
   //     }
-  //   } catch (error) {
+  //   } catch {
   //     console.error("Failed to impersonate user:", error);
   //   }
   // };
@@ -34,7 +34,7 @@ export function UserImpersonation() {
       await fetch("/api/admin/impersonate/stop", { method: "POST" });
       setImpersonating(null);
       window.location.reload();
-    } catch (error) {
+    } catch {
       // Error stopping impersonation - handled by error state
       if (process.env.NODE_ENV === 'development') {
         // eslint-disable-next-line no-console

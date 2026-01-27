@@ -65,7 +65,7 @@ export const GET = withSecurity(
     logger.info('Metrics fetched successfully', { correlationId });
     const response = NextResponse.json(metrics);
     return addCorrelationHeaders(response, correlationId);
-  } catch (error) {
+  } catch {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Error fetching metrics', {
       correlationId,

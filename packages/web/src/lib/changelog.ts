@@ -57,7 +57,7 @@ export function getChangelogPost(slug: string): ChangelogPost | null {
       content,
       ...(data as any),
     } as ChangelogPost;
-  } catch (e) {
+  } catch {
     return null;
   }
 }

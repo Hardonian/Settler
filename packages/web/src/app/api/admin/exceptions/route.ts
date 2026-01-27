@@ -141,7 +141,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         'X-RateLimit-Reset': String(rateLimit.resetAt),
       },
     });
-  } catch (error) {
+  } catch {
     adminLogger.error('Failed to retrieve exceptions', error);
     
     if (error instanceof Error && error.name === 'ZodError') {

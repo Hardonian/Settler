@@ -103,7 +103,7 @@ export default async function PagesList() {
       </Card>
     </div>
   );
-  } catch (error) {
+  } catch {
     // Top-level error boundary for admin pages
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     adminLogger.error('Error in admin pages page', new Error(errorMessage));

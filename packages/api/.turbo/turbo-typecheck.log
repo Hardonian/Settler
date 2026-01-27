@@ -1,11 +1,10 @@
-npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
-npm warn config `--include=optional` to include them.
-npm warn config
-npm warn config       Default value does install optional deps unless otherwise omitted.
 
-> @settler/api@1.0.0 pretypecheck
+> @settler/api@1.0.0 pretypecheck C:\Users\scott\Documents\GitHub\Settler\packages\api
 > cd ../.. && npm run prisma:generate || npx prisma generate || echo 'Warning: Prisma generate may have failed'
 
+npm warn Unknown env config "pnpm". This will stop working in the next major version of npm.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
 npm warn config
@@ -14,17 +13,25 @@ npm warn config       Default value does install optional deps unless otherwise 
 > settler-monorepo@1.0.0 prisma:generate
 > PRISMA_CLIENT_ENGINE_TYPE=binary PRISMA_ENGINES_MIRROR= prisma generate
 
+'PRISMA_CLIENT_ENGINE_TYPE' is not recognized as an internal or external command,
+operable program or batch file.
+npm warn Unknown env config "pnpm". This will stop working in the next major version of npm.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
+npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
+npm warn config `--include=optional` to include them.
+npm warn config
+npm warn config       Default value does install optional deps unless otherwise omitted.
 Loaded Prisma config from prisma.config.ts.
 
-Prisma schema loaded from prisma/schema.prisma.
+Prisma schema loaded from prisma\schema.prisma.
 
-✔ Generated Prisma Client (v7.2.0) to ./node_modules/@prisma/client in 297ms
+✔ Generated Prisma Client (v7.3.0) to .\node_modules\.pnpm\@prisma+client@7.3.0_prisma_efc9348d8c027de17c7e00b84b73d1eb\node_modules\@prisma\client in 550ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
 
 
-> @settler/api@1.0.0 typecheck
+> @settler/api@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\api
 > tsc --noEmit
 

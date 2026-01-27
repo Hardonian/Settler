@@ -45,7 +45,7 @@ export function LiveActivityFeed() {
         }));
         setActivities(mappedActivities);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch activities:', error);
     } finally {
       setLoading(false);

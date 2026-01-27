@@ -19,7 +19,7 @@ async function refreshTokenIfNeeded(driver, connectorId, tenantId, credentials, 
     // Check if token is expired or expiring soon (within 5 minutes)
     const expiresAt = credentials.token_expires_at;
     if (expiresAt) {
-        const expiryDate = typeof expiresAt === 'string' ? new Date(expiresAt) : expiresAt;
+        const expiryDate = typeof expiresAt === "string" ? new Date(expiresAt) : expiresAt;
         const now = new Date();
         const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
         if (expiryDate > fiveMinutesFromNow) {
@@ -30,13 +30,13 @@ async function refreshTokenIfNeeded(driver, connectorId, tenantId, credentials, 
         const supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseServiceKey);
         // Get connector record
         const { data: connector } = await supabase
-            .from('connectors')
-            .select('id, config')
-            .eq('tenant_id', tenantId)
-            .eq('provider_id', connectorId)
+            .from("connectors")
+            .select("id, config")
+            .eq("tenant_id", tenantId)
+            .eq("provider_id", connectorId)
             .single();
         if (!connector) {
-            return { refreshed: false, error: 'Connector not found' };
+            return { refreshed: false, error: "Connector not found" };
         }
         // Decrypt refresh token
         const refreshToken = await (0, credential_encryption_1.decryptToken)(credentials.refresh_token, supabaseUrl, supabaseServiceKey);
@@ -52,14 +52,14 @@ async function refreshTokenIfNeeded(driver, connectorId, tenantId, credentials, 
             : null;
         // Update credentials
         const { error: updateError } = await supabase
-            .from('connector_credentials')
+            .from("connector_credentials")
             .update({
             access_token_encrypted: encryptedAccessToken,
             refresh_token_encrypted: encryptedRefreshToken,
             token_expires_at: tokenExpiresAt,
             updated_at: new Date().toISOString(),
         })
-            .eq('connector_id', connector.id);
+            .eq("connector_id", connector.id);
         if (updateError) {
             return { refreshed: false, error: updateError.message };
         }
@@ -73,7 +73,7 @@ async function refreshTokenIfNeeded(driver, connectorId, tenantId, credentials, 
     catch (error) {
         return {
             refreshed: false,
-            error: error instanceof Error ? error.message : 'Token refresh failed',
+            error: error instanceof Error ? error.message : "Token refresh failed",
         };
     }
 }
