@@ -106,7 +106,7 @@ export async function getPage(id: string): Promise<ActionState> {
     }
 
     return { success: true, data: page };
-  } catch {
+  } catch (error) {
     console.error("Failed to fetch page:", error);
     return { success: false, error: "Failed to fetch page" };
   }
@@ -148,7 +148,7 @@ export async function createPage(formData: FormData): Promise<ActionState> {
 
     revalidatePath("/admin/pages");
     return { success: true, data: newPage };
-  } catch {
+  } catch (error) {
     console.error("Failed to create page:", error);
     return { success: false, error: "Failed to create page" };
   }
@@ -190,7 +190,7 @@ export async function updatePageBlocks(
     revalidatePath(`/${existingPage.slug}`); // Revalidate the public path too
 
     return { success: true };
-  } catch {
+  } catch (error) {
     console.error("Failed to update page:", error);
     return { success: false, error: "Failed to update page" };
   }
@@ -214,7 +214,7 @@ export async function deletePage(id: string): Promise<ActionState> {
 
     revalidatePath("/admin/pages");
     return { success: true };
-  } catch {
+  } catch (error) {
     console.error("Failed to delete page:", error);
     return { success: false, error: "Failed to delete page" };
   }
