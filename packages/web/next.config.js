@@ -6,8 +6,8 @@ const withMDX = require("@next/mdx")({
   },
 });
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
 });
 
 /** @type {import('next').NextConfig} */
@@ -16,7 +16,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   // Optimize build output
-  output: 'standalone',
+  // Note: output: 'standalone' removed for Vercel compatibility
   // Reduce memory footprint during build
   compress: true,
   // Enable instrumentation
@@ -28,42 +28,42 @@ const nextConfig = {
     swcMinify: true,
     // Optimize package imports
     optimizePackageImports: [
-      'lucide-react', 
-      '@radix-ui/react-progress', 
-      '@radix-ui/react-radio-group',
-      'framer-motion',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-select',
+      "lucide-react",
+      "@radix-ui/react-progress",
+      "@radix-ui/react-radio-group",
+      "framer-motion",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-select",
     ],
     // Exclude server-only packages from client bundles
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
+    serverComponentsExternalPackages: ["@prisma/client", "prisma"],
   },
   eslint: {
     // Ignore linting during builds - we run linting in pre-commit hooks and CI
     // This prevents build failures from warnings while maintaining code quality checks
     ignoreDuringBuilds: true,
     // Only lint src and app directories
-    dirs: ['src', 'app'],
+    dirs: ["src", "app"],
   },
   typescript: {
     // Strict type checking - fail build on errors
     ignoreBuildErrors: false,
     // Show type errors during build
-    tsconfigPath: './tsconfig.json',
+    tsconfigPath: "./tsconfig.json",
   },
   // Environment variables configuration
   // Note: Runtime-only env vars (DB_PASSWORD, ENCRYPTION_KEY, JWT_SECRET, etc.)
   // are not required during build and will be validated at runtime
   env: {
     // Flag to indicate build context (used by env validation helpers)
-    SKIP_ENV_VALIDATION: process.env.VERCEL ? 'true' : undefined,
+    SKIP_ENV_VALIDATION: process.env.VERCEL ? "true" : undefined,
   },
   transpilePackages: [
-    '@settler/api',
-    '@settler/sdk',
-    '@settler/react-settler',
-    '@settler/protocol',
-    '@settler/types',
+    "@settler/api",
+    "@settler/sdk",
+    "@settler/react-settler",
+    "@settler/protocol",
+    "@settler/types",
   ],
   webpack: (config, { isServer }) => {
     // Ensure webpack can resolve path aliases in dynamic imports
@@ -73,61 +73,52 @@ const nextConfig = {
       ...originalResolve,
       alias: {
         ...originalResolve.alias,
-        '@': require('path').resolve(__dirname, 'src'),
+        "@": require("path").resolve(__dirname, "src"),
       },
-      extensions: [
-        ...(originalResolve.extensions || []),
-        '.ts',
-        '.tsx',
-        '.js',
-        '.jsx',
-      ],
+      extensions: [...(originalResolve.extensions || []), ".ts", ".tsx", ".js", ".jsx"],
     };
-    
+
     // Exclude Prisma Client from client bundles completely
     // This prevents webpack from trying to bundle server-only code
     if (!isServer) {
-      const path = require('path');
-      const stubPath = path.resolve(__dirname, 'src/shared/db/prismaClient.stub.ts');
-      
+      const path = require("path");
+      const stubPath = path.resolve(__dirname, "src/shared/db/prismaClient.stub.ts");
+
       // Primary mechanism: Use alias to replace prismaClient with stub in client bundles
       // This happens during module resolution, before webpack tries to bundle the code
-      config.resolve.alias['@/shared/db/prismaClient'] = stubPath;
-      
+      config.resolve.alias["@/shared/db/prismaClient"] = stubPath;
+
       // Fallback: Use NormalModuleReplacementPlugin to catch any other import patterns
-      const NormalModuleReplacementPlugin = require('webpack').NormalModuleReplacementPlugin;
+      const NormalModuleReplacementPlugin = require("webpack").NormalModuleReplacementPlugin;
       config.plugins.push(
-        new NormalModuleReplacementPlugin(
-          /shared[\\/]db[\\/]prismaClient/,
-          stubPath
-        )
+        new NormalModuleReplacementPlugin(/shared[\\/]db[\\/]prismaClient/, stubPath)
       );
-      
+
       // Also mark Prisma packages as externals to prevent bundling
       config.externals = config.externals || [];
-      if (typeof config.externals === 'function') {
+      if (typeof config.externals === "function") {
         const originalExternals = config.externals;
         config.externals = [
           originalExternals,
           ({ request }, callback) => {
-            if (request && (request.includes('@prisma/client') || request.includes('prisma'))) {
-              return callback(null, 'commonjs ' + request);
+            if (request && (request.includes("@prisma/client") || request.includes("prisma"))) {
+              return callback(null, "commonjs " + request);
             }
             callback();
           },
         ];
       } else if (Array.isArray(config.externals)) {
         config.externals.push({
-          '@prisma/client': 'commonjs @prisma/client',
+          "@prisma/client": "commonjs @prisma/client",
         });
       }
     }
-    
+
     return config;
   },
   // Image Optimization
   images: {
-    formats: ['image/webp', 'image/avif'],
+    formats: ["image/webp", "image/avif"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Add external image domains here if needed
@@ -192,119 +183,119 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/oss',
-        destination: '/open-source',
+        source: "/oss",
+        destination: "/open-source",
         permanent: true,
       },
       {
-        source: '/security',
-        destination: '/security-and-audit',
+        source: "/security",
+        destination: "/security-and-audit",
         permanent: true,
       },
       {
-        source: '/pricing',
-        destination: '/product',
+        source: "/pricing",
+        destination: "/product",
         permanent: true,
       },
       {
-        source: '/demo',
-        destination: '/product',
+        source: "/demo",
+        destination: "/product",
         permanent: true,
       },
       {
-        source: '/comparison',
-        destination: '/product',
+        source: "/comparison",
+        destination: "/product",
         permanent: true,
       },
       {
-        source: '/roi-calculator',
-        destination: '/product',
+        source: "/roi-calculator",
+        destination: "/product",
         permanent: true,
       },
       {
-        source: '/why-settler',
-        destination: '/product',
+        source: "/why-settler",
+        destination: "/product",
         permanent: true,
       },
       {
-        source: '/how-it-works',
-        destination: '/product',
+        source: "/how-it-works",
+        destination: "/product",
         permanent: true,
       },
       {
-        source: '/vision',
-        destination: '/about',
+        source: "/vision",
+        destination: "/about",
         permanent: true,
       },
       {
-        source: '/roadmap',
-        destination: '/changelog',
+        source: "/roadmap",
+        destination: "/changelog",
         permanent: true,
       },
       {
-        source: '/trust',
-        destination: '/security-and-audit',
+        source: "/trust",
+        destination: "/security-and-audit",
         permanent: true,
       },
       {
-        source: '/proof',
-        destination: '/product',
+        source: "/proof",
+        destination: "/product",
         permanent: true,
       },
       {
-        source: '/use-cases/:path*',
-        destination: '/product',
+        source: "/use-cases/:path*",
+        destination: "/product",
         permanent: true,
       },
       // Redirect /cookbooks (plural) to /cookbook (singular)
       {
-        source: '/cookbooks',
-        destination: '/cookbook',
+        source: "/cookbooks",
+        destination: "/cookbook",
         permanent: true,
       },
       // Redirect /cookbooks/* to /cookbook/*
       {
-        source: '/cookbooks/:path*',
-        destination: '/cookbook/:path*',
+        source: "/cookbooks/:path*",
+        destination: "/cookbook/:path*",
         permanent: true,
       },
       // Redirect /console/playground to /playground
       {
-        source: '/console/playground',
-        destination: '/playground',
+        source: "/console/playground",
+        destination: "/playground",
         permanent: true,
       },
       // Redirect /console/playground/* to /playground/*
       {
-        source: '/console/playground/:path*',
-        destination: '/playground/:path*',
+        source: "/console/playground/:path*",
+        destination: "/playground/:path*",
         permanent: true,
       },
       // Legacy dashboard routes -> console
       {
-        source: '/dashboard',
-        destination: '/console',
+        source: "/dashboard",
+        destination: "/console",
         permanent: false, // Temporary redirect for migration
       },
       {
-        source: '/app/console',
-        destination: '/console',
+        source: "/app/console",
+        destination: "/console",
         permanent: true,
       },
       {
-        source: '/console-home',
-        destination: '/console',
+        source: "/console-home",
+        destination: "/console",
         permanent: true,
       },
       // Legacy playground routes
       {
-        source: '/app/playground',
-        destination: '/playground',
+        source: "/app/playground",
+        destination: "/playground",
         permanent: true,
       },
       {
-        source: '/playground-home',
-        destination: '/playground',
+        source: "/playground-home",
+        destination: "/playground",
         permanent: true,
       },
     ];
@@ -312,12 +303,12 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/app',
-        destination: '/console',
+        source: "/app",
+        destination: "/console",
       },
       {
-        source: '/app/:path*',
-        destination: '/console/:path*',
+        source: "/app/:path*",
+        destination: "/console/:path*",
       },
     ];
   },
