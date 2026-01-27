@@ -58,9 +58,7 @@ function parseExperimentUpdateInput(value: unknown): ExperimentUpdateInput | nul
   return update;
 }
 
-export async function getExperiments(): Promise<
-  ActionState<Prisma.ExperimentGetPayload<{ include: { targetPage: true } }>[]>
-> {
+export async function getExperiments(): Promise<ActionState<unknown>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
     const experiments = await prisma.experiment.findMany({
@@ -69,17 +67,13 @@ export async function getExperiments(): Promise<
       orderBy: { createdAt: "desc" },
     });
     return { success: true, data: experiments };
-  } catch {
+  } catch (err) {
     console.error(err);
     return { success: false, error: "Failed to fetch experiments" };
   }
 }
 
-export async function getExperiment(
-  id: string
-): Promise<
-  ActionState<Prisma.ExperimentGetPayload<{ include: { targetPage: true; variants: true } }>>
-> {
+export async function getExperiment(id: string): Promise<ActionState<unknown>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
     const experiment = await prisma.experiment.findUnique({
@@ -95,7 +89,7 @@ export async function getExperiment(
     }
 
     return { success: true, data: experiment };
-  } catch {
+  } catch (err) {
     console.error(err);
     return { success: false, error: "Failed to fetch experiment" };
   }
@@ -134,7 +128,7 @@ export async function createExperiment(formData: FormData): Promise<ActionState>
 
     revalidatePath("/admin/experiments");
     return { success: true, data: experiment };
-  } catch {
+  } catch (err) {
     console.error(err);
     return { success: false, error: "Failed to create experiment" };
   }
@@ -149,7 +143,6 @@ export async function updateExperiment(id: string, data: unknown): Promise<Actio
       return { success: false, error: "Invalid update payload" };
     }
 
-    // Verify ownership
     const existing = await prisma.experiment.findUnique({ where: { id } });
     if (!existing || existing.tenantId !== tenantId) {
       return { success: false, error: "Unauthorized" };
@@ -179,7 +172,7 @@ export async function updateExperiment(id: string, data: unknown): Promise<Actio
     revalidatePath(`/admin/experiments/${id}`);
     revalidatePath("/admin/experiments");
     return { success: true };
-  } catch {
+  } catch (err) {
     console.error(err);
     return { success: false, error: "Failed to update experiment" };
   }
