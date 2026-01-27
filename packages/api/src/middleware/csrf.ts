@@ -13,12 +13,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { logWarn } from '../utils/logger';
 import { config } from '../config';
 
-// Extend Express Request to include cookies
-declare global {
-  namespace Express {
-    interface Request {
-      cookies: { [key: string]: string };
-    }
+declare module 'express' {
+  interface Request {
+    cookies: Record<string, string>;
   }
 }
 

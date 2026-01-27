@@ -3,12 +3,15 @@
  * Circuit Breaker Utilities
  * Prevents cascading failures from external service calls
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCircuitBreaker = createCircuitBreaker;
 exports.createAdapterCircuitBreaker = createAdapterCircuitBreaker;
 exports.createWebhookCircuitBreaker = createWebhookCircuitBreaker;
 exports.createFXRateCircuitBreaker = createFXRateCircuitBreaker;
-const opossum_1 = require("opossum");
+const opossum_1 = __importDefault(require("opossum"));
 const logger_1 = require("./logger");
 /**
  * Create a circuit breaker for external calls
@@ -16,7 +19,7 @@ const logger_1 = require("./logger");
 function createCircuitBreaker(fn, options = {}) {
     const { timeout = 10000, errorThresholdPercentage = 50, resetTimeout = 30000, name = "circuit-breaker", } = options;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const breaker = new opossum_1.CircuitBreaker(fn, {
+    const breaker = new opossum_1.default(fn, {
         timeout,
         errorThresholdPercentage,
         resetTimeout,

@@ -11,11 +11,13 @@ import { TenantTier } from '../../domain/entities/Tenant';
 import { QuotaType, QuotaExceededError } from '../../application/services/QuotaService';
 import { hashPassword } from '../../infrastructure/security/password';
 
-describe('Quota Enforcement', () => {
+const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const describeQuotaTests = shouldRunDbTests ? describe : describe.skip;
+
+describeQuotaTests('Quota Enforcement', () => {
   let tenantService: TenantService;
   let quotaService: QuotaService;
   let tenant: any;
-  let user: any;
 
   beforeAll(async () => {
     const tenantRepo = new TenantRepository();
@@ -33,7 +35,6 @@ describe('Quota Enforcement', () => {
     });
 
     tenant = result.tenant;
-    user = result.owner;
   });
 
   describe('Storage Quota', () => {

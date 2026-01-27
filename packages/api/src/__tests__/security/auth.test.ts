@@ -25,14 +25,17 @@ describe('Security Tests', () => {
 
     it('should reject revoked API keys', async () => {
       // Create and revoke an API key
-      const user = await query(
+      const user = await query<{ id: string }>(
         `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id`,
         ['test@example.com', 'hash']
       );
-      const userId = user[0].id;
+      const userId = user[0]?.id;
+      if (!userId) {
+        throw new Error('Failed to create test user');
+      }
 
       const keyHash = await bcrypt.hash('rk_test_key_12345', 10);
-      const apiKey = await query(
+      await query(
         `INSERT INTO api_keys (user_id, key_prefix, key_hash, revoked_at)
          VALUES ($1, $2, $3, NOW())
          RETURNING id`,
@@ -47,11 +50,14 @@ describe('Security Tests', () => {
 
     it('should reject expired API keys', async () => {
       // Create an expired API key
-      const user = await query(
+      const user = await query<{ id: string }>(
         `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id`,
         ['test@example.com', 'hash']
       );
-      const userId = user[0].id;
+      const userId = user[0]?.id;
+      if (!userId) {
+        throw new Error('Failed to create test user');
+      }
 
       const keyHash = await bcrypt.hash('rk_test_key_12345', 10);
       await query(

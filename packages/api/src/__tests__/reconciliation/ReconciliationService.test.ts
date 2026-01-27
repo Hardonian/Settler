@@ -13,6 +13,7 @@ import {
   RetryReconciliationCommand,
   CancelReconciliationCommand,
 } from '../../application/cqrs/commands/ReconciliationCommands';
+import type { EventEnvelope } from '../../domain/eventsourcing/EventEnvelope';
 
 describe('ReconciliationService', () => {
   let service: ReconciliationService;
@@ -20,8 +21,32 @@ describe('ReconciliationService', () => {
   let mockEventBus: jest.Mocked<IEventBus>;
   let mockShopifyAdapter: jest.Mocked<ShopifyAdapter>;
   let mockStripeAdapter: jest.Mocked<StripeAdapter>;
+  let baseEvent: EventEnvelope;
 
   beforeEach(() => {
+    baseEvent = {
+      id: 'event-1',
+      aggregate_id: 'recon-123',
+      aggregate_type: 'reconciliation',
+      event_type: 'reconciliation.started',
+      event_version: 1,
+      data: {
+        job_id: 'job-123',
+        source_adapter: 'shopify',
+        target_adapter: 'stripe',
+        date_range: {
+          start: new Date('2024-01-01').toISOString(),
+          end: new Date('2024-01-31').toISOString(),
+        },
+      },
+      metadata: {
+        tenant_id: 'tenant-123',
+        correlation_id: 'corr-123',
+        timestamp: new Date().toISOString(),
+      },
+      created_at: new Date(),
+    };
+
     // Mock EventStore
     mockEventStore = {
       append: jest.fn().mockResolvedValue(undefined),
@@ -58,22 +83,14 @@ describe('ReconciliationService', () => {
   describe('startReconciliation', () => {
     it('should start a reconciliation successfully', async () => {
       const command: StartReconciliationCommand = {
-        reconciliationId: 'recon-123',
-        jobId: 'job-123',
-        tenantId: 'tenant-123',
-        sourceAdapter: 'shopify',
-        targetAdapter: 'stripe',
-        sourceConfig: { apiKey: 'test-key' },
-        targetConfig: { apiKey: 'test-key' },
-        matchingRules: {
-          matching: [
-            { field: 'order_id', type: 'exact' },
-            { field: 'amount', type: 'exact', tolerance: 0.01 },
-          ],
-        },
-        dateRange: {
-          start: new Date('2024-01-01'),
-          end: new Date('2024-01-31'),
+        reconciliation_id: 'recon-123',
+        job_id: 'job-123',
+        tenant_id: 'tenant-123',
+        source_adapter: 'shopify',
+        target_adapter: 'stripe',
+        date_range: {
+          start: new Date('2024-01-01').toISOString(),
+          end: new Date('2024-01-31').toISOString(),
         },
       };
 
@@ -87,14 +104,15 @@ describe('ReconciliationService', () => {
       mockEventStore.append.mockRejectedValue(new Error('Database error'));
 
       const command: StartReconciliationCommand = {
-        reconciliationId: 'recon-123',
-        jobId: 'job-123',
-        tenantId: 'tenant-123',
-        sourceAdapter: 'shopify',
-        targetAdapter: 'stripe',
-        sourceConfig: {},
-        targetConfig: {},
-        matchingRules: { matching: [] },
+        reconciliation_id: 'recon-123',
+        job_id: 'job-123',
+        tenant_id: 'tenant-123',
+        source_adapter: 'shopify',
+        target_adapter: 'stripe',
+        date_range: {
+          start: new Date('2024-01-01').toISOString(),
+          end: new Date('2024-01-31').toISOString(),
+        },
       };
 
       await expect(service.startReconciliation(command)).rejects.toThrow('Database error');
@@ -103,9 +121,10 @@ describe('ReconciliationService', () => {
 
   describe('retryReconciliation', () => {
     it('should retry a failed reconciliation', async () => {
+      mockEventStore.getEvents.mockResolvedValue([baseEvent]);
       const command: RetryReconciliationCommand = {
-        reconciliationId: 'recon-123',
-        tenantId: 'tenant-123',
+        reconciliation_id: 'recon-123',
+        tenant_id: 'tenant-123',
       };
 
       await service.retryReconciliation(command);
@@ -115,10 +134,11 @@ describe('ReconciliationService', () => {
 
     it('should handle retry errors', async () => {
       mockEventStore.append.mockRejectedValue(new Error('Retry failed'));
+      mockEventStore.getEvents.mockResolvedValue([baseEvent]);
 
       const command: RetryReconciliationCommand = {
-        reconciliationId: 'recon-123',
-        tenantId: 'tenant-123',
+        reconciliation_id: 'recon-123',
+        tenant_id: 'tenant-123',
       };
 
       await expect(service.retryReconciliation(command)).rejects.toThrow('Retry failed');
@@ -127,9 +147,10 @@ describe('ReconciliationService', () => {
 
   describe('cancelReconciliation', () => {
     it('should cancel an active reconciliation', async () => {
+      mockEventStore.getEvents.mockResolvedValue([baseEvent]);
       const command: CancelReconciliationCommand = {
-        reconciliationId: 'recon-123',
-        tenantId: 'tenant-123',
+        reconciliation_id: 'recon-123',
+        tenant_id: 'tenant-123',
         reason: 'User requested cancellation',
       };
 
@@ -143,14 +164,15 @@ describe('ReconciliationService', () => {
   describe('saga integration', () => {
     it('should trigger saga when reconciliation starts', async () => {
       const command: StartReconciliationCommand = {
-        reconciliationId: 'recon-123',
-        jobId: 'job-123',
-        tenantId: 'tenant-123',
-        sourceAdapter: 'shopify',
-        targetAdapter: 'stripe',
-        sourceConfig: {},
-        targetConfig: {},
-        matchingRules: { matching: [] },
+        reconciliation_id: 'recon-123',
+        job_id: 'job-123',
+        tenant_id: 'tenant-123',
+        source_adapter: 'shopify',
+        target_adapter: 'stripe',
+        date_range: {
+          start: new Date('2024-01-01').toISOString(),
+          end: new Date('2024-01-31').toISOString(),
+        },
       };
 
       await service.startReconciliation(command);

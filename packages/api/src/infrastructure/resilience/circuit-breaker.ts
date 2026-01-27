@@ -3,7 +3,8 @@
  * Prevents cascading failures by opening circuit after threshold failures
  */
 
-import { CircuitBreaker, CircuitBreakerOptions } from 'opossum';
+import CircuitBreaker from 'opossum';
+import type { CircuitBreaker as CircuitBreakerType, CircuitBreakerOptions } from 'opossum';
 import { logError, logWarn, logInfo } from '../../utils/logger';
 
 export interface CircuitBreakerConfig {
@@ -26,7 +27,7 @@ const DEFAULT_CONFIG: Required<CircuitBreakerConfig> = {
 export function createCircuitBreaker<T extends unknown[], R>(
   fn: (...args: T) => Promise<R>,
   config: CircuitBreakerConfig = {}
-): CircuitBreaker<R> {
+): CircuitBreakerType<R> {
   const opts = { ...DEFAULT_CONFIG, ...config };
   
   const breakerOptions: CircuitBreakerOptions = {
@@ -72,7 +73,7 @@ export function createCircuitBreaker<T extends unknown[], R>(
     });
   });
 
-  return breaker;
+  return breaker as CircuitBreakerType<R>;
 }
 
 /**
@@ -81,7 +82,7 @@ export function createCircuitBreaker<T extends unknown[], R>(
 export function createApiCircuitBreaker<T extends unknown[], R>(
   fn: (...args: T) => Promise<R>,
   apiName: string
-): CircuitBreaker<R> {
+): CircuitBreakerType<R> {
   return createCircuitBreaker(fn, {
     name: `api-${apiName}`,
     timeout: 30000,

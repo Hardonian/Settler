@@ -43,6 +43,20 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
   }
 }
 
+async function loadResendModule(): Promise<typeof import('resend') | null> {
+  return import('resend').catch((error: unknown) => {
+    logError('Resend SDK not available', error);
+    return null;
+  });
+}
+
+async function loadSendGridModule(): Promise<typeof import('@sendgrid/mail') | null> {
+  return import('@sendgrid/mail').catch((error: unknown) => {
+    logError('SendGrid SDK not available', error);
+    return null;
+  });
+}
+
 /**
  * Send email via Resend
  */
@@ -54,11 +68,16 @@ async function sendViaResend(options: EmailOptions): Promise<boolean> {
     return false;
   }
 
-  try {
-    // Dynamic import to avoid requiring Resend in package.json if not used
-    const { Resend } = await import("resend");
-    const resend = new Resend(apiKey);
+  // Dynamic import to avoid requiring Resend in package.json if not used
+  const resendModule = await loadResendModule();
+  if (!resendModule) {
+    return false;
+  }
 
+  const { Resend } = resendModule;
+  const resend = new Resend(apiKey);
+
+  try {
     const emailData: {
       from: string;
       to: string;
@@ -116,12 +135,18 @@ async function sendViaSendGrid(options: EmailOptions): Promise<boolean> {
     return false;
   }
 
+  // Dynamic import to avoid requiring SendGrid in package.json if not used
+  // Note: @sendgrid/mail types may not be available
+  const sgMailModule = await loadSendGridModule();
+  if (!sgMailModule) {
+    return false;
+  }
+
+  const sgMail =
+    "default" in sgMailModule ? sgMailModule.default : sgMailModule;
+
   try {
-    // Dynamic import to avoid requiring SendGrid in package.json if not used
-    // Note: @sendgrid/mail types may not be available
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const sgMail = require("@sendgrid/mail");
-    sgMail.default.setApiKey(apiKey);
+    sgMail.setApiKey(apiKey);
 
     const msg = {
       to: options.to,
@@ -132,7 +157,7 @@ async function sendViaSendGrid(options: EmailOptions): Promise<boolean> {
       replyTo: options.replyTo,
     };
 
-    await sgMail.default.send(msg);
+    await sgMail.send(msg);
 
     logInfo("Email sent via SendGrid", {
       to: options.to,

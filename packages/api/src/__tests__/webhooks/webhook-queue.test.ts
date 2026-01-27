@@ -41,7 +41,7 @@ describe('Webhook Queue', () => {
         id: 'delivery-123',
         webhookId: 'webhook-123',
         url: 'https://example.com/webhook',
-        payload: { event: 'test' },
+        payload: { event: 'test', data: {}, timestamp: new Date().toISOString() },
         secret: 'test-secret',
       };
 
@@ -76,7 +76,7 @@ describe('Webhook Queue', () => {
         id: 'delivery-123',
         webhookId: 'webhook-123',
         url: 'https://example.com/webhook',
-        payload: { event: 'test' },
+        payload: { event: 'test', data: {}, timestamp: new Date().toISOString() },
         secret: 'test-secret',
       };
 
@@ -106,7 +106,7 @@ describe('Webhook Queue', () => {
         id: 'delivery-123',
         webhookId: 'webhook-123',
         url: 'https://example.com/webhook',
-        payload: { event: 'test' },
+        payload: { event: 'test', data: {}, timestamp: new Date().toISOString() },
         secret: 'test-secret',
       };
 
@@ -132,7 +132,7 @@ describe('Webhook Queue', () => {
         id: 'delivery-123',
         webhookId: 'webhook-123',
         url: 'https://example.com/webhook',
-        payload: { event: 'test' },
+        payload: { event: 'test', data: {}, timestamp: new Date().toISOString() },
         secret: 'test-secret',
       };
 
@@ -158,18 +158,19 @@ describe('Webhook Queue', () => {
           id: 'delivery-1',
           webhookId: 'webhook-1',
           url: 'https://example.com/webhook1',
-          payload: { event: 'test1' },
+          payload: { event: 'test1', data: {}, timestamp: new Date().toISOString() },
           secret: 'secret-1',
         },
         {
           id: 'delivery-2',
           webhookId: 'webhook-2',
           url: 'https://example.com/webhook2',
-          payload: { event: 'test2' },
+          payload: { event: 'test2', data: {}, timestamp: new Date().toISOString() },
           secret: 'secret-2',
         },
       ];
 
+      mockQuery.mockResolvedValueOnce([]);
       mockQuery.mockResolvedValueOnce(pendingWebhooks as any);
       (global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
@@ -180,8 +181,9 @@ describe('Webhook Queue', () => {
 
       await processPendingWebhooks();
 
-      expect(mockQuery).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT'),
+      expect(mockQuery).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining('SELECT wd.id'),
         [config.webhook.maxRetries]
       );
 

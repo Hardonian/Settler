@@ -125,7 +125,7 @@ async function getCurrentUsage(
     : resetDate;
 
   switch (usageType) {
-    case 'ingestions':
+    case 'ingestions': {
       const ingestionCount = await query<{ count: number }>(
         `SELECT COUNT(*) as count
          FROM ingestions
@@ -135,8 +135,9 @@ async function getCurrentUsage(
         [tenantId, startDate]
       );
       return Number(ingestionCount[0]?.count || 0);
+    }
 
-    case 'reconciliations':
+    case 'reconciliations': {
       const reconCount = await query<{ count: number }>(
         `SELECT COUNT(*) as count
          FROM reconciliation_runs
@@ -145,8 +146,9 @@ async function getCurrentUsage(
         [tenantId, startDate]
       );
       return Number(reconCount[0]?.count || 0);
+    }
 
-    case 'api_requests':
+    case 'api_requests': {
       const requestCount = await query<{ count: number }>(
         `SELECT COUNT(*) as count
          FROM audit_logs
@@ -155,6 +157,7 @@ async function getCurrentUsage(
         [tenantId, startDate]
       );
       return Number(requestCount[0]?.count || 0);
+    }
 
     case 'storage':
       // Estimate storage usage (would need actual storage tracking)

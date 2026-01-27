@@ -3,10 +3,13 @@
  * Circuit Breaker Implementation
  * Prevents cascading failures by opening circuit after threshold failures
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCircuitBreaker = createCircuitBreaker;
 exports.createApiCircuitBreaker = createApiCircuitBreaker;
-const opossum_1 = require("opossum");
+const opossum_1 = __importDefault(require("opossum"));
 const logger_1 = require("../../utils/logger");
 const DEFAULT_CONFIG = {
     timeout: 30000, // 30 seconds
@@ -25,7 +28,7 @@ function createCircuitBreaker(fn, config = {}) {
         resetTimeout: opts.resetTimeout,
         name: opts.name,
     };
-    const breaker = new opossum_1.CircuitBreaker(fn, breakerOptions);
+    const breaker = new opossum_1.default(fn, breakerOptions);
     // Event handlers
     breaker.on('open', () => {
         (0, logger_1.logWarn)('Circuit breaker opened', {

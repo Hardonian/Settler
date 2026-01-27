@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { Pool, PoolClient } from 'pg';
 import { config } from '../config';
 import { logError, logWarn } from '../utils/logger';
@@ -26,9 +28,11 @@ pool.on('error', (err) => {
 });
 
 // Helper function to execute queries
+type QueryParam = string | number | boolean | null | Date | string[];
+
 export async function query<T = Record<string, unknown>>(
   text: string,
-  params?: (string | number | boolean | null | Date)[]
+  params?: QueryParam[]
 ): Promise<T[]> {
   const client = await pool.connect();
   try {
@@ -59,43 +63,48 @@ export async function transaction<T>(
 
 // Initialize database schema
 export async function initDatabase(): Promise<void> {
-  const { runMigrations } = require('./migrate');
-  
-  try {
-    // Run all migrations in order
-    await runMigrations();
-  } catch (error: unknown) {
-    // Fallback to basic schema if migration runner fails
+  const migrationModule = await import('./migrate').catch((error: unknown) => {
     const message = error instanceof Error ? error.message : 'Unknown error';
     logWarn('Migration runner failed, falling back to basic schema', { message });
-    
-    const fs = require('fs');
-    const path = require('path');
-    
-    // Run consolidated initial schema migration
-    const migrationPath = path.join(__dirname, 'migrations', '001-initial-schema.sql');
-    if (fs.existsSync(migrationPath)) {
-      const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
-      // Split by semicolon and execute each statement
-      const statements = migrationSQL.split(';').filter((s: string) => s.trim().length > 0);
-      for (const statement of statements) {
-        if (statement.trim() && !statement.trim().startsWith('--')) {
-          try {
-            await query(statement);
-          } catch (error: unknown) {
-            // Ignore "already exists" errors (idempotent migration)
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            if (!errorMessage.includes('already exists') && 
-                !errorMessage.includes('duplicate') &&
-                !errorMessage.includes('already enabled')) {
-              logWarn('Migration warning', { errorMessage });
-            }
+    return null;
+  });
+
+  if (migrationModule?.runMigrations) {
+    try {
+      // Run all migrations in order
+      await migrationModule.runMigrations();
+      return;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      logWarn('Migration runner failed, falling back to basic schema', { message });
+    }
+  }
+
+  // Fallback to basic schema if migration runner fails
+  // Run consolidated initial schema migration
+  const migrationPath = path.join(__dirname, 'migrations', '001-initial-schema.sql');
+  if (fs.existsSync(migrationPath)) {
+    const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+    // Split by semicolon and execute each statement
+    const statements = migrationSQL.split(';').filter((s: string) => s.trim().length > 0);
+    for (const statement of statements) {
+      if (statement.trim() && !statement.trim().startsWith('--')) {
+        try {
+          await query(statement);
+        } catch (error: unknown) {
+          // Ignore "already exists" errors (idempotent migration)
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          if (!errorMessage.includes('already exists') &&
+              !errorMessage.includes('duplicate') &&
+              !errorMessage.includes('already enabled')) {
+            logWarn('Migration warning', { errorMessage });
           }
         }
       }
-    } else {
-      // Fallback: create basic tables if migration file doesn't exist
-      await query(`
+    }
+  } else {
+    // Fallback: create basic tables if migration file doesn't exist
+    await query(`
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
@@ -303,7 +312,6 @@ export async function initDatabase(): Promise<void> {
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     );
-      `);
-    }
+    `);
   }
 }

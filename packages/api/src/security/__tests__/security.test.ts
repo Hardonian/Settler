@@ -6,8 +6,7 @@
  * separately in the web package tests.
  */
 
-import { describe, it, expect } from "@jest/globals";
-import { validateHMACSignature, checkRateLimit } from "../edge-function-security";
+import { checkRateLimit } from "../edge-function-security";
 
 describe("Edge Function Security", () => {
   describe("HMAC Validation", () => {

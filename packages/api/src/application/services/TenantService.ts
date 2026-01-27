@@ -7,6 +7,7 @@ import { Tenant, TenantTier, TenantStatus, TenantQuotas, TenantProps } from '../
 import { ITenantRepository } from '../../domain/repositories/ITenantRepository';
 import { IUserRepository } from '../../domain/repositories/IUserRepository';
 import { User, UserRole, UserProps } from '../../domain/entities/User';
+import { config } from '../../config';
 import { query } from '../../db';
 import { logInfo } from '../../utils/logger';
 
@@ -55,7 +56,6 @@ export class TenantService {
     await this.tenantRepo.save(tenant);
 
     // Create tenant schema if using schema-per-tenant
-    const { config } = require('../../config');
     if (config.features.enableSchemaPerTenant) {
       await query(`SELECT create_tenant_schema($1)`, [data.slug]);
     }

@@ -14,9 +14,7 @@ class FaultTolerantRecon {
     checkpoints = new Map();
     constructor(prisma) {
         this._prisma = prisma;
-        // Reference unused variables to prevent TypeScript warnings (reserved for future use)
-        // Self-assignment satisfies TypeScript that the variable is "used"
-        this._prisma = this._prisma;
+        void this._prisma;
         void this._hashInput({});
     }
     /**

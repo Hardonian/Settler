@@ -1,12 +1,7 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { SettlerClient } from '../client';
-import {
-  NetworkError,
-  AuthError,
-  ValidationError,
-  RateLimitError,
-} from '../errors';
-import { mockCreateJobRequest, mockJob } from './fixtures';
+import { AuthError, ValidationError, RateLimitError } from '../errors';
+import { mockCreateJobRequest } from './fixtures';
 
 describe('SettlerClient', () => {
   let client: SettlerClient;
@@ -15,6 +10,7 @@ describe('SettlerClient', () => {
     client = new SettlerClient({
       apiKey: 'test_api_key',
       baseUrl: 'https://api.settler.dev',
+      retry: { maxRetries: 0 },
     });
   });
 
@@ -54,7 +50,7 @@ describe('SettlerClient', () => {
 
     it('should list jobs', async () => {
       const response = await client.jobs.list();
-      expect(response.data).toBeInstanceOf(Array);
+      expect(Array.isArray(response.data)).toBe(true);
       expect(response.count).toBeGreaterThan(0);
     });
 

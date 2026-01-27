@@ -6,7 +6,10 @@
 import { JobRepository } from '../../infrastructure/repositories/JobRepository';
 import { query } from '../../db';
 
-describe('Repository Pattern Integration', () => {
+const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const describeRepositoryTests = shouldRunDbTests ? describe : describe.skip;
+
+describeRepositoryTests('Repository Pattern Integration', () => {
   let repository: JobRepository;
   let testUserId: string;
 
@@ -40,6 +43,7 @@ describe('Repository Pattern Integration', () => {
         target: { adapter: 'shopify', config: {} },
         rules: { matching: [] },
         status: 'active',
+        version: 1,
       });
 
       expect(job).toHaveProperty('id');
@@ -55,6 +59,7 @@ describe('Repository Pattern Integration', () => {
         target: { adapter: 'shopify', config: {} },
         rules: { matching: [] },
         status: 'active',
+        version: 1,
       });
 
       const found = await repository.findById(created.id, testUserId);
@@ -76,6 +81,7 @@ describe('Repository Pattern Integration', () => {
         target: { adapter: 'shopify', config: {} },
         rules: { matching: [] },
         status: 'active',
+        version: 1,
       });
 
       const result = await repository.findByUserId(testUserId, 1, 10);
@@ -91,6 +97,7 @@ describe('Repository Pattern Integration', () => {
         target: { adapter: 'shopify', config: {} },
         rules: { matching: [] },
         status: 'active',
+        version: 1,
       });
 
       const updated = await repository.updateStatus(created.id, testUserId, 'running', created.version);
@@ -106,6 +113,7 @@ describe('Repository Pattern Integration', () => {
         target: { adapter: 'shopify', config: {} },
         rules: { matching: [] },
         status: 'active',
+        version: 1,
       });
 
       // Try with wrong version
@@ -121,6 +129,7 @@ describe('Repository Pattern Integration', () => {
         target: { adapter: 'shopify', config: {} },
         rules: { matching: [] },
         status: 'active',
+        version: 1,
       });
 
       const deleted = await repository.delete(created.id, testUserId);

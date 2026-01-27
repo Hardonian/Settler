@@ -156,12 +156,14 @@ function requireResourceOwnership(req, res, next, resourceType, resourceId) {
                     owned = result.length > 0;
                     break;
                 }
-                default:
+                default: {
                     // For unknown resource types, allow if user has admin permissions
                     const user = await (0, db_1.query)(`SELECT role FROM users WHERE id = $1 AND tenant_id = $2`, [req.userId, req.tenantId]);
                     if (user.length > 0 && user[0]) {
                         owned = user[0].role === User_1.UserRole.OWNER || user[0].role === User_1.UserRole.ADMIN;
                     }
+                    break;
+                }
             }
             if (!owned) {
                 const error = { error: 'Forbidden', message: 'Resource not found or access denied' };

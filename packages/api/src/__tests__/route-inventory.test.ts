@@ -5,7 +5,6 @@
  * This test imports the router tree and verifies handlers mount correctly.
  */
 
-import { Express } from 'express';
 import app from '../index';
 
 describe('Route Inventory', () => {

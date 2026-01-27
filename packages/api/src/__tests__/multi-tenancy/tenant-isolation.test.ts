@@ -7,13 +7,16 @@ import { Pool } from 'pg';
 import { TenantService } from '../../application/services/TenantService';
 import { TenantRepository } from '../../infrastructure/repositories/TenantRepository';
 import { UserRepository } from '../../infrastructure/repositories/UserRepository';
-import { Tenant, TenantTier, TenantStatus } from '../../domain/entities/Tenant';
-import { User, UserRole } from '../../domain/entities/User';
+import { Tenant, TenantTier } from '../../domain/entities/Tenant';
+import { User } from '../../domain/entities/User';
 import { TenantContext } from '../../infrastructure/tenancy/TenantContext';
 import { query } from '../../db';
 import { hashPassword } from '../../infrastructure/security/password';
 
-describe('Tenant Isolation', () => {
+const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const describeTenantIsolation = shouldRunDbTests ? describe : describe.skip;
+
+describeTenantIsolation('Tenant Isolation', () => {
   let tenant1: Tenant;
   let tenant2: Tenant;
   let user1: User;

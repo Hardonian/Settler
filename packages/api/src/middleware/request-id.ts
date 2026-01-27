@@ -19,12 +19,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 
-// Extend Express Request type to include requestId
-declare global {
-  namespace Express {
-    interface Request {
-      requestId: string;
-    }
+declare module 'express' {
+  interface Request {
+    requestId?: string;
   }
 }
 

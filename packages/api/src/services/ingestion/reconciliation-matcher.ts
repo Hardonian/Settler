@@ -4,6 +4,7 @@
  * Uses proprietary ML models trained on historical matches for improved accuracy.
  */
 
+import { v4 as uuidv4 } from "uuid";
 import { query, transaction } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
 import { MatchResult, ReconciliationConfig } from "./types";
@@ -360,8 +361,8 @@ export async function runReconciliation(
   userId: string,
   config: ReconciliationConfig = {}
 ): Promise<string> {
-  const runId = require("uuid").v4();
-  const traceId = require("uuid").v4();
+  const runId = uuidv4();
+  const traceId = uuidv4();
 
   try {
     // Create reconciliation run
@@ -441,7 +442,7 @@ export async function runReconciliation(
             amount_diff, date_diff, reviewed, metadata, created_at, updated_at
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())`,
           [
-            require("uuid").v4(),
+            uuidv4(),
             runId,
             match.sourceTransactionId,
             match.targetTransactionId || null,

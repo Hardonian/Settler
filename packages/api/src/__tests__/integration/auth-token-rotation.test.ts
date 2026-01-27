@@ -8,9 +8,11 @@ import app from '../../index';
 import { query } from '../../db';
 import { revokeAllUserTokens } from '../../infrastructure/security/token-rotation';
 
-describe('Token Rotation Integration', () => {
+const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const describeTokenRotation = shouldRunDbTests ? describe : describe.skip;
+
+describeTokenRotation('Token Rotation Integration', () => {
   let testUserId: string;
-  let accessToken: string;
   let refreshToken: string;
 
   beforeAll(async () => {
@@ -32,7 +34,6 @@ describe('Token Rotation Integration', () => {
       });
 
     if (loginResponse.status === 200 && loginResponse.body.data) {
-      accessToken = loginResponse.body.data.accessToken;
       refreshToken = loginResponse.body.data.refreshToken;
     }
   });

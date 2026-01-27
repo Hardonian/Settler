@@ -3,9 +3,10 @@
  * Tests for encryption/decryption edge cases and backward compatibility
  */
 
+import { createCipheriv, randomBytes, scryptSync } from 'crypto';
 import { encrypt, decrypt } from '../../infrastructure/security/encryption';
 import { SecretsManager } from '../../infrastructure/security/SecretsManager';
-import { config } from '../../config';
+import * as configModule from '../../config';
 
 // Mock SecretsManager
 jest.mock('../../infrastructure/security/SecretsManager');
@@ -14,6 +15,11 @@ jest.mock('../../config', () => ({
     encryption: {
       key: 'test-encryption-key-32-bytes-long!!',
     },
+    logging: {
+      level: 'info',
+      samplingRate: 1,
+    },
+    nodeEnv: 'test',
   },
 }));
 
@@ -109,11 +115,10 @@ describe('Encryption', () => {
 
     it('should handle legacy base64 format', () => {
       // Create legacy format encrypted data
-      const crypto = require('crypto');
-      const key = crypto.scryptSync('test-key', 'salt', 32);
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-      const salt = crypto.randomBytes(64);
+      const key = scryptSync('test-key', 'salt', 32);
+      const iv = randomBytes(16);
+      const cipher = createCipheriv('aes-256-gcm', key, iv);
+      const salt = randomBytes(64);
 
       cipher.setAAD(salt);
       let encrypted = cipher.update('legacy-data', 'utf8');
@@ -149,11 +154,11 @@ describe('Encryption', () => {
     it('should throw error when key is missing', () => {
       mockSecretsManager.getSecret.mockReturnValue(undefined);
       // Also need to mock config to return undefined
-      jest.spyOn(require('../../config'), 'config', 'get').mockReturnValue({
-        encryption: { key: undefined },
-      });
+      const originalKey = configModule.config.encryption.key;
+      configModule.config.encryption.key = undefined as unknown as string;
 
       expect(() => encrypt('test-data')).toThrow('Encryption key');
+      configModule.config.encryption.key = originalKey;
     });
 
     it('should handle empty string', () => {

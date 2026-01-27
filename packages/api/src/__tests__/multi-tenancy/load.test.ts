@@ -11,7 +11,10 @@ import { TenantTier } from '../../domain/entities/Tenant';
 import { hashPassword } from '../../infrastructure/security/password';
 import { query } from '../../db';
 
-describe('Load Testing', () => {
+const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const describeLoadTests = shouldRunDbTests ? describe : describe.skip;
+
+describeLoadTests('Load Testing', () => {
   let tenantService: TenantService;
   let quotaService: QuotaService;
 

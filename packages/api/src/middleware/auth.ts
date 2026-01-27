@@ -11,6 +11,7 @@ export interface AuthRequest extends Request {
   apiKey?: string;
   traceId?: string;
   tenantId?: string;
+  requestId?: string;
 }
 
 /**

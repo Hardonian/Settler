@@ -52,7 +52,7 @@ export class QuotaService {
     let currentUsage: number = 0;
 
     switch (quotaType) {
-      case QuotaType.STORAGE:
+      case QuotaType.STORAGE: {
         limit = quotas.storageBytes;
         const storageResult = await query<{ current_storage_bytes: number }>(
           `SELECT COALESCE(current_storage_bytes, 0) as current_storage_bytes
@@ -61,8 +61,9 @@ export class QuotaService {
         );
         currentUsage = storageResult[0]?.current_storage_bytes || 0;
         break;
+      }
 
-      case QuotaType.CONCURRENT_JOBS:
+      case QuotaType.CONCURRENT_JOBS: {
         limit = quotas.concurrentJobs;
         const jobsResult = await query<{ count: number }>(
           `SELECT COUNT(*)::INTEGER as count
@@ -72,8 +73,9 @@ export class QuotaService {
         );
         currentUsage = jobsResult[0]?.count || 0;
         break;
+      }
 
-      case QuotaType.MONTHLY_RECONCILIATIONS:
+      case QuotaType.MONTHLY_RECONCILIATIONS: {
         limit = quotas.monthlyReconciliations;
         const reconResult = await query<{ sum: number }>(
           `SELECT COALESCE(SUM(metric_value), 0)::BIGINT as sum
@@ -85,8 +87,9 @@ export class QuotaService {
         );
         currentUsage = reconResult[0]?.sum || 0;
         break;
+      }
 
-      case QuotaType.CUSTOM_DOMAINS:
+      case QuotaType.CUSTOM_DOMAINS: {
         limit = quotas.customDomains === -1 ? Infinity : quotas.customDomains;
         const domainResult = await query<{ count: number }>(
           `SELECT COUNT(*)::INTEGER as count
@@ -97,6 +100,7 @@ export class QuotaService {
         );
         currentUsage = domainResult[0]?.count || 0;
         break;
+      }
 
       case QuotaType.RATE_LIMIT:
         // Rate limiting is handled separately by RateLimitService

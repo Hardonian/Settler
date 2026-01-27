@@ -7,29 +7,19 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
+import { COST_BASELINES as BASELINE_CONFIG } from '../../../../../ops/cost_baselines';
 
-// Import cost baselines - handle both relative and absolute paths
-let COST_BASELINES: any;
-try {
-  COST_BASELINES = require('../../../../ops/cost_baselines').COST_BASELINES;
-} catch {
-  try {
-    COST_BASELINES = require(join(process.cwd(), 'ops', 'cost_baselines')).COST_BASELINES;
-  } catch {
-    // Fallback if cost baselines not found
-    COST_BASELINES = {
-      vercel: {
-        serverlessRequest: { costPerUnit: 0.0000002 },
-      },
-      supabase: {
-        query: { costPerUnit: 0.000001 },
-      },
-      storage: {
-        artifactGb: { costPerUnit: 0.023 },
-      },
-    };
-  }
-}
+const COST_BASELINES = BASELINE_CONFIG ?? {
+  vercel: {
+    serverlessRequest: { costPerUnit: 0.0000002 },
+  },
+  supabase: {
+    query: { costPerUnit: 0.000001 },
+  },
+  storage: {
+    artifactGb: { costPerUnit: 0.023 },
+  },
+};
 
 const prisma = new PrismaClient();
 

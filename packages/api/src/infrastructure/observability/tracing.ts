@@ -12,7 +12,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-console */
 
 import { config } from "../../config";
@@ -33,39 +32,47 @@ let trace: any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let SpanStatusCode: any;
 
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const sdkNode = require("@opentelemetry/sdk-node");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const autoInstrumentations = require("@opentelemetry/auto-instrumentations-node");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const resources = require("@opentelemetry/resources");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const semanticConventions = require("@opentelemetry/semantic-conventions");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const traceExporter = require("@opentelemetry/exporter-trace-otlp-http");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const api = require("@opentelemetry/api");
+let loadPromise: Promise<void> | null = null;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  NodeSDK = sdkNode.NodeSDK;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  getNodeAutoInstrumentations = autoInstrumentations.getNodeAutoInstrumentations;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  Resource = resources.Resource;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  SemanticResourceAttributes = semanticConventions.SemanticResourceAttributes;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  OTLPTraceExporter = traceExporter.OTLPTraceExporter;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  trace = api.trace;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  SpanStatusCode = api.SpanStatusCode;
-} catch (error) {
-  // OpenTelemetry packages not installed - tracing will be disabled
-  // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-  // eslint-disable-next-line no-console
-  console.warn("OpenTelemetry packages not found, tracing disabled");
+function loadOpenTelemetry(): Promise<void> {
+  if (loadPromise) {
+    return loadPromise;
+  }
+
+  loadPromise = Promise.all([
+    import("@opentelemetry/sdk-node"),
+    import("@opentelemetry/auto-instrumentations-node"),
+    import("@opentelemetry/resources"),
+    import("@opentelemetry/semantic-conventions"),
+    import("@opentelemetry/exporter-trace-otlp-http"),
+    import("@opentelemetry/api"),
+  ])
+    .then(
+      ([
+        sdkNode,
+        autoInstrumentations,
+        resources,
+        semanticConventions,
+        traceExporter,
+        api,
+      ]) => {
+        NodeSDK = sdkNode.NodeSDK;
+        getNodeAutoInstrumentations = autoInstrumentations.getNodeAutoInstrumentations;
+        Resource = resources.Resource;
+        SemanticResourceAttributes = semanticConventions.SemanticResourceAttributes;
+        OTLPTraceExporter = traceExporter.OTLPTraceExporter;
+        trace = api.trace;
+        SpanStatusCode = api.SpanStatusCode;
+      }
+    )
+    .catch(() => {
+      // OpenTelemetry packages not installed - tracing will be disabled
+      // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+      // eslint-disable-next-line no-console
+      console.warn("OpenTelemetry packages not found, tracing disabled");
+    });
+
+  return loadPromise;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,51 +83,57 @@ export function initializeTracing(): void {
     return; // Already initialized
   }
 
-  // Check if OpenTelemetry packages are available
-  if (!NodeSDK || !Resource || !SemanticResourceAttributes) {
-    // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-    // eslint-disable-next-line no-console
-    console.warn("OpenTelemetry packages not installed, tracing disabled");
-    return;
-  }
+  void loadOpenTelemetry()
+    .then(() => {
+      // Check if OpenTelemetry packages are available
+      if (!NodeSDK || !Resource || !SemanticResourceAttributes) {
+        // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+        // eslint-disable-next-line no-console
+        console.warn("OpenTelemetry packages not installed, tracing disabled");
+        return;
+      }
 
-  const otlpEndpoint = config.observability.otlpEndpoint;
+      const otlpEndpoint = config.observability.otlpEndpoint;
 
-  if (!otlpEndpoint) {
-    // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-    // eslint-disable-next-line no-console
-    console.warn("OTLP_ENDPOINT not set, tracing disabled");
-    return;
-  }
+      if (!otlpEndpoint) {
+        // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+        // eslint-disable-next-line no-console
+        console.warn("OTLP_ENDPOINT not set, tracing disabled");
+        return;
+      }
 
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    sdk = new NodeSDK({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-      resource: new Resource({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        [SemanticResourceAttributes.SERVICE_NAME]: config.observability.serviceName,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        [SemanticResourceAttributes.SERVICE_VERSION]: process.env.npm_package_version || "1.0.0",
-      }),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-      traceExporter: new OTLPTraceExporter({
-        url: `${otlpEndpoint}/v1/traces`,
-      }),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-      instrumentations: [getNodeAutoInstrumentations()],
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+        sdk = new NodeSDK({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+          resource: new Resource({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            [SemanticResourceAttributes.SERVICE_NAME]: config.observability.serviceName,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            [SemanticResourceAttributes.SERVICE_VERSION]: process.env.npm_package_version || "1.0.0",
+          }),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+          traceExporter: new OTLPTraceExporter({
+            url: `${otlpEndpoint}/v1/traces`,
+          }),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+          instrumentations: [getNodeAutoInstrumentations()],
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        sdk.start();
+        // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+        // eslint-disable-next-line no-console
+        console.log("OpenTelemetry tracing initialized");
+      } catch (error) {
+        // Note: Can't use logger here as it may depend on tracing - use console for initialization only
+        // eslint-disable-next-line no-console
+        console.warn("Failed to initialize OpenTelemetry tracing:", error);
+      }
+    })
+    .catch(() => {
+      // loadOpenTelemetry already logs missing dependencies
     });
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    sdk.start();
-    // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-    // eslint-disable-next-line no-console
-    console.log("OpenTelemetry tracing initialized");
-  } catch (error) {
-    // Note: Can't use logger here as it may depend on tracing - use console for initialization only
-    // eslint-disable-next-line no-console
-    console.warn("Failed to initialize OpenTelemetry tracing:", error);
-  }
 }
 
 export function shutdownTracing(): Promise<void> {

@@ -2,8 +2,7 @@
  * Insights Engine Tests
  */
 
-import { describe, it, expect, beforeEach } from '@jest/globals';
-import { generateInsights, InsightType } from '../insights-engine';
+import { generateInsights } from '../insights-engine';
 
 // Mock Supabase client
 jest.mock('@supabase/supabase-js', () => ({

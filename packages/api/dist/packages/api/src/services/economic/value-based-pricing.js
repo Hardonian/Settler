@@ -15,9 +15,7 @@ class ValueBasedPricing {
     constructor(prisma) {
         this.prisma = prisma;
         this._metaModels = new meta_models_1.MetaModels();
-        // Reference _metaModels to prevent unused warning (reserved for future use)
-        // Using in type assertion that TypeScript recognizes as "usage"
-        this._metaModels = this._metaModels;
+        void this._metaModels;
     }
     /**
      * Analyze pricing for tenant

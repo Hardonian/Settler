@@ -243,18 +243,26 @@ export class PatternExtractor {
     }>
   > {
     const patterns = await this.extractPatterns(tenantId);
-    const recommendations = [];
+    const recommendations: Array<{
+      type: string;
+      recommendation: string;
+      priority: "low" | "medium" | "high";
+      action: Record<string, unknown>;
+    }> = [];
 
     for (const pattern of patterns) {
       if (pattern.confidence > 0.7) {
-        recommendations.push({
-          type: pattern.type,
-          recommendation: pattern.recommendation,
-          priority: (pattern.frequency > 20
+        const priority: "low" | "medium" | "high" =
+          pattern.frequency > 20
             ? "high"
             : pattern.frequency > 10
               ? "medium"
-              : "low"),
+              : "low";
+
+        recommendations.push({
+          type: pattern.type,
+          recommendation: pattern.recommendation,
+          priority,
           action: {
             createTemplate:
               pattern.type === "mapping_template" || pattern.type === "transform_recipe",
