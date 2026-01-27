@@ -21,6 +21,17 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     if (!traceId) {
       traceId = generateTraceId();
     }
+    const traceCookieOptions = {
+      httpOnly: false,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    };
+    const applyTraceContext = (nextResponse: NextResponse): NextResponse => {
+      nextResponse.headers.set("x-trace-id", traceId);
+      nextResponse.cookies.set("trace-id", traceId, traceCookieOptions);
+      return nextResponse;
+    };
 
     // Explicitly bypass Stripe webhook - it needs raw body and no auth
     if (request.nextUrl.pathname === "/api/stripe/webhook") {
@@ -62,15 +73,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     });
 
     // Add trace_id to response headers
-    response.headers.set("x-trace-id", traceId);
-
-    // Set trace_id cookie for client-side access
-    response.cookies.set("trace-id", traceId, {
-      httpOnly: false, // Allow client-side access
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: "/",
-    });
+    applyTraceContext(response);
 
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey =
@@ -117,6 +120,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
               value,
               ...options,
             });
+            applyTraceContext(response);
           },
           remove(name: string, options: CookieOptions) {
             request.cookies.set({
@@ -134,6 +138,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
               value: "",
               ...options,
             });
+            applyTraceContext(response);
           },
         },
       });
