@@ -132,9 +132,23 @@ export function validateParams<T extends z.ZodTypeAny>(schema: T) {
 export function sanitizeString(input: string): string {
   // Remove null bytes
   let sanitized = input.replace(/\0/g, '');
-  
+
   // Remove control characters except newlines and tabs
-  sanitized = sanitized.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+  const sanitizedChars: string[] = [];
+  for (const char of sanitized) {
+    const code = char.charCodeAt(0);
+    const isAllowedControl = code === 0x09 || code === 0x0a; // tab or newline
+    const isDisallowedControl =
+      (code >= 0x00 && code <= 0x08) ||
+      (code >= 0x0b && code <= 0x0c) ||
+      (code >= 0x0e && code <= 0x1f) ||
+      code === 0x7f;
+
+    if (!isDisallowedControl || isAllowedControl) {
+      sanitizedChars.push(char);
+    }
+  }
+  sanitized = sanitizedChars.join('');
   
   // Truncate to max length
   if (sanitized.length > REQUEST_LIMITS.MAX_FIELD_LENGTH) {

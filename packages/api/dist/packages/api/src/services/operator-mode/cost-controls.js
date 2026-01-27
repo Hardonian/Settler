@@ -86,25 +86,28 @@ async function getCurrentUsage(tenantId, usageType, resetDate) {
         ? new Date(new Date().getFullYear(), new Date().getMonth(), 1)
         : resetDate;
     switch (usageType) {
-        case 'ingestions':
+        case 'ingestions': {
             const ingestionCount = await (0, db_1.query)(`SELECT COUNT(*) as count
          FROM ingestions
          WHERE tenant_id = $1
            AND created_at >= $2
            AND status != 'failed'`, [tenantId, startDate]);
             return Number(ingestionCount[0]?.count || 0);
-        case 'reconciliations':
+        }
+        case 'reconciliations': {
             const reconCount = await (0, db_1.query)(`SELECT COUNT(*) as count
          FROM reconciliation_runs
          WHERE tenant_id = $1
            AND started_at >= $2`, [tenantId, startDate]);
             return Number(reconCount[0]?.count || 0);
-        case 'api_requests':
+        }
+        case 'api_requests': {
             const requestCount = await (0, db_1.query)(`SELECT COUNT(*) as count
          FROM audit_logs
          WHERE tenant_id = $1
            AND timestamp >= $2`, [tenantId, startDate]);
             return Number(requestCount[0]?.count || 0);
+        }
         case 'storage':
             // Estimate storage usage (would need actual storage tracking)
             return 0;

@@ -18,7 +18,20 @@ import { ReconCoreEngine } from "../services/recon-core/recon-core-engine";
 import { NormalizedRecord } from "../services/recon-core/normalized-types";
 
 const router = Router();
-const prisma = new PrismaClient(); // Instantiate for playground usage
+let prisma: PrismaClient | null = null;
+
+const getPrismaClient = (): PrismaClient | null => {
+  if (prisma) {
+    return prisma;
+  }
+
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+
+  prisma = new PrismaClient();
+  return prisma;
+};
 
 // No auth required for playground (rate-limited)
 
@@ -144,8 +157,14 @@ router.post(
       const sourceData = JSON.parse(fs.readFileSync(path.join(demoDir, 'stripe_normalized.json'), 'utf-8')) as NormalizedRecord[];
       const targetData = JSON.parse(fs.readFileSync(path.join(demoDir, 'bank_normalized.json'), 'utf-8')) as NormalizedRecord[];
 
+      const prismaClient = getPrismaClient();
+      if (!prismaClient) {
+        res.status(503).json({ error: "Database not configured for playground." });
+        return;
+      }
+
       // 2. Instantiate Engine
-      const engine = new ReconCoreEngine(prisma);
+      const engine = new ReconCoreEngine(prismaClient);
 
       // 3. Create Dummy Job (for Type Compatibility)
       const dummyJob: any = {

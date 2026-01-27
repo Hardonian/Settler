@@ -2,6 +2,10 @@ module.exports = {
   root: true,
   extends: ['../../.eslintrc.js'],
   ignorePatterns: ['*.d.ts'],
+  parserOptions: {
+    project: ['./tsconfig.json'],
+    tsconfigRootDir: __dirname,
+  },
   rules: {
     // Relax type safety for third-party API integrations
     '@typescript-eslint/no-unsafe-assignment': 'warn',

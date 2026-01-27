@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
@@ -76,7 +77,7 @@ router.post(
       }
 
       // Generate secret if not provided
-      const webhookSecret = secret || `whsec_${require('crypto').randomBytes(32).toString('base64url')}`;
+      const webhookSecret = secret || `whsec_${randomBytes(32).toString('base64url')}`;
 
       const result = await query<{ id: string }>(
         `INSERT INTO webhooks (user_id, url, events, secret, status)

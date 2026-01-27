@@ -41,4 +41,7 @@ declare module 'opossum' {
   }
 
   export type CircuitBreakerOptions = Options;
+
+  const defaultExport: typeof CircuitBreaker;
+  export default defaultExport;
 }

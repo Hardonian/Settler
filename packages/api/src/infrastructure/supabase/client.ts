@@ -15,6 +15,16 @@ import { config } from '../../config';
 const supabaseUrl = process.env.SUPABASE_URL || config.database.host;
 const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
+type PRetryModule = typeof import('p-retry');
+let pRetryModulePromise: Promise<PRetryModule> | null = null;
+
+const getPRetryModule = (): Promise<PRetryModule> => {
+  if (!pRetryModulePromise) {
+    pRetryModulePromise = import('p-retry');
+  }
+  return pRetryModulePromise;
+};
+
 // Runtime-safe configuration check - don't crash on missing env in non-production
 function createSupabaseClient(): SupabaseClient {
   if (!supabaseUrl || !supabaseKey) {
@@ -147,8 +157,10 @@ export async function executeSQL<T = unknown>(
   query: string,
   params?: unknown[]
 ): Promise<T[]> {
-  const pRetry = require('p-retry');
-  
+  const pRetryModule = await getPRetryModule();
+  const pRetry = pRetryModule.default;
+  const { AbortError } = pRetryModule;
+
   return pRetry(
     async () => {
       const { data, error } = await supabase.rpc('execute_sql', {
@@ -167,7 +179,7 @@ export async function executeSQL<T = unknown>(
           throw new Error(`Transient Supabase error: ${error.message}`);
         }
         // Don't retry on permanent errors (syntax errors, etc.)
-        throw new pRetry.AbortError(`SQL execution failed: ${error.message}`);
+        throw new AbortError(`SQL execution failed: ${error.message}`);
       }
 
       return data || [];
@@ -200,8 +212,9 @@ export async function transaction<T>(
  * Initialize Supabase extensions with retry logic
  */
 export async function initializeSupabaseExtensions(): Promise<void> {
-  const pRetry = require('p-retry');
-  
+  const pRetryModule = await getPRetryModule();
+  const pRetry = pRetryModule.default;
+
   try {
     await pRetry(
       async () => {

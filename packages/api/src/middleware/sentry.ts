@@ -5,7 +5,7 @@
 
 import * as Sentry from '@sentry/node';
 import { ProfilingIntegration } from '@sentry/profiling-node';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { validatedConfig } from '../config/validation';
 import { AuthRequest } from './auth';
 import { logInfo } from '../utils/logger';
@@ -52,7 +52,7 @@ export function initializeSentry(): void {
  * Sentry request handler middleware
  * Must be added before other middleware
  */
-export function sentryRequestHandler() {
+export function sentryRequestHandler(): RequestHandler {
   if (!sentryInitialized) {
     return (_req: Request, _res: Response, next: NextFunction) => next();
   }
@@ -67,7 +67,7 @@ export function sentryRequestHandler() {
  * Sentry tracing handler middleware
  * Adds performance tracing
  */
-export function sentryTracingHandler() {
+export function sentryTracingHandler(): RequestHandler {
   if (!sentryInitialized) {
     return (_req: Request, _res: Response, next: NextFunction) => next();
   }

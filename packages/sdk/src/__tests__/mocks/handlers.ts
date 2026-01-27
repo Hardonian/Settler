@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+import { mockJob } from '../fixtures';
 
 const API_BASE = 'https://api.settler.dev';
 
@@ -10,7 +11,7 @@ export const handlers = [
         {
           id: 'job_123',
           userId: 'user_123',
-          name: 'Test Job',
+          name: mockJob.name,
           source: { adapter: 'shopify', config: {} },
           target: { adapter: 'stripe', config: {} },
           rules: { matching: [] },
@@ -28,7 +29,7 @@ export const handlers = [
       data: {
         id: params.id,
         userId: 'user_123',
-        name: 'Test Job',
+        name: mockJob.name,
         source: { adapter: 'shopify', config: {} },
         target: { adapter: 'stripe', config: {} },
         rules: { matching: [] },

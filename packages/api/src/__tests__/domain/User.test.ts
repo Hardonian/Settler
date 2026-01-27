@@ -8,6 +8,7 @@ describe('User Entity', () => {
   describe('create', () => {
     it('should create a new user with required fields', () => {
       const user = User.create({
+        tenantId: 'tenant-123',
         email: 'test@example.com',
         passwordHash: 'hashed-password',
         role: UserRole.DEVELOPER,
@@ -23,6 +24,7 @@ describe('User Entity', () => {
 
     it('should generate a UUID for the user ID', () => {
       const user1 = User.create({
+        tenantId: 'tenant-123',
         email: 'user1@example.com',
         passwordHash: 'hash1',
         role: UserRole.DEVELOPER,
@@ -31,6 +33,7 @@ describe('User Entity', () => {
       });
 
       const user2 = User.create({
+        tenantId: 'tenant-123',
         email: 'user2@example.com',
         passwordHash: 'hash2',
         role: UserRole.DEVELOPER,
@@ -45,6 +48,7 @@ describe('User Entity', () => {
   describe('isDeleted', () => {
     it('should return false for active users', () => {
       const user = User.create({
+        tenantId: 'tenant-123',
         email: 'test@example.com',
         passwordHash: 'hash',
         role: UserRole.DEVELOPER,
@@ -57,6 +61,7 @@ describe('User Entity', () => {
 
     it('should return true for deleted users', () => {
       const user = User.create({
+        tenantId: 'tenant-123',
         email: 'test@example.com',
         passwordHash: 'hash',
         role: UserRole.DEVELOPER,
@@ -72,6 +77,7 @@ describe('User Entity', () => {
   describe('scheduleDeletion', () => {
     it('should schedule deletion with grace period', () => {
       const user = User.create({
+        tenantId: 'tenant-123',
         email: 'test@example.com',
         passwordHash: 'hash',
         role: UserRole.DEVELOPER,
@@ -88,6 +94,7 @@ describe('User Entity', () => {
   describe('updatePassword', () => {
     it('should update password hash', () => {
       const user = User.create({
+        tenantId: 'tenant-123',
         email: 'test@example.com',
         passwordHash: 'old-hash',
         role: UserRole.DEVELOPER,

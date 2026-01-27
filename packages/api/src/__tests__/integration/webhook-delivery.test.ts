@@ -7,7 +7,10 @@ import { processPendingWebhooks, queueWebhookDelivery } from '../../utils/webhoo
 import { query } from '../../db';
 import { WebhookPayload } from '../../utils/webhook-queue';
 
-describe('Webhook Delivery Integration', () => {
+const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const describeWebhookTests = shouldRunDbTests ? describe : describe.skip;
+
+describeWebhookTests('Webhook Delivery Integration', () => {
   let testWebhookId: string;
   let testUserId: string;
 

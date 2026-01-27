@@ -6,12 +6,15 @@
 import { TenantService } from '../../application/services/TenantService';
 import { TenantRepository } from '../../infrastructure/repositories/TenantRepository';
 import { UserRepository } from '../../infrastructure/repositories/UserRepository';
-import { QuotaService } from '../../application/services/QuotaService';
+import { QuotaService, QuotaType } from '../../application/services/QuotaService';
 import { TenantTier } from '../../domain/entities/Tenant';
 import { hashPassword } from '../../infrastructure/security/password';
 import { query } from '../../db';
 
-describe('Chaos Engineering', () => {
+const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const describeChaosTests = shouldRunDbTests ? describe : describe.skip;
+
+describeChaosTests('Chaos Engineering', () => {
   let tenantService: TenantService;
   let quotaService: QuotaService;
 

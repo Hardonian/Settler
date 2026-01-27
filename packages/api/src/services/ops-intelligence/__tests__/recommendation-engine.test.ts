@@ -2,7 +2,6 @@
  * Recommendation Engine Tests
  */
 
-import { describe, it, expect } from '@jest/globals';
 import { generateRecommendations } from '../recommendation-engine';
 import { Insight } from '../insights-engine';
 

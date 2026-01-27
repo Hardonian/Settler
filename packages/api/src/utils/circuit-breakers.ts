@@ -3,7 +3,8 @@
  * Prevents cascading failures from external service calls
  */
 
-import { CircuitBreaker } from "opossum";
+import CircuitBreaker from "opossum";
+import type { CircuitBreaker as CircuitBreakerType } from "opossum";
 import { logWarn, logError } from "./logger";
 
 export interface CircuitBreakerOptions {
@@ -22,7 +23,7 @@ export function createCircuitBreaker<
 >(
   fn: (...args: TArgs) => Promise<TReturn>,
   options: CircuitBreakerOptions = {}
-): CircuitBreaker<TReturn> {
+): CircuitBreakerType<TReturn> {
   const {
     timeout = 10000,
     errorThresholdPercentage = 50,
@@ -58,7 +59,7 @@ export function createCircuitBreaker<
     logError("Circuit breaker failure", error instanceof Error ? error : new Error(String(error)), { name });
   });
 
-  return breaker;
+  return breaker as CircuitBreakerType<TReturn>;
 }
 
 /**
@@ -70,7 +71,7 @@ export function createAdapterCircuitBreaker<
 >(
   adapterName: string,
   fn: (...args: TArgs) => Promise<TReturn>
-): CircuitBreaker<TReturn> {
+): CircuitBreakerType<TReturn> {
   return createCircuitBreaker(fn, {
     name: `adapter-${adapterName}`,
     timeout: 30000, // 30s timeout for adapters
@@ -87,7 +88,7 @@ export function createWebhookCircuitBreaker<
   TReturn
 >(
   fn: (...args: TArgs) => Promise<TReturn>
-): CircuitBreaker<TReturn> {
+): CircuitBreakerType<TReturn> {
   return createCircuitBreaker(fn, {
     name: "webhook-delivery",
     timeout: 10000, // 10s timeout for webhooks
@@ -104,7 +105,7 @@ export function createFXRateCircuitBreaker<
   TReturn
 >(
   fn: (...args: TArgs) => Promise<TReturn>
-): CircuitBreaker<TReturn> {
+): CircuitBreakerType<TReturn> {
   return createCircuitBreaker(fn, {
     name: "fx-rate-provider",
     timeout: 5000, // 5s timeout for FX rates

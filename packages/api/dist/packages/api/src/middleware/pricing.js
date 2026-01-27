@@ -74,25 +74,28 @@ function checkFeatureLimit(feature) {
         try {
             let currentUsage;
             switch (feature) {
-                case "edgeNodes":
+                case "edgeNodes": {
                     const nodesResult = await (0, db_1.query)(`SELECT COUNT(*) as count FROM edge_nodes 
              WHERE tenant_id = $1 AND deleted_at IS NULL`, [tenantId]);
                     currentUsage = Number(nodesResult[0]?.count || 0);
                     break;
-                case "modelOptimizations":
+                }
+                case "modelOptimizations": {
                     // Count optimizations this month
                     const optimizationsResult = await (0, db_1.query)(`SELECT COUNT(*) as count FROM model_versions 
              WHERE tenant_id = $1 
              AND created_at >= date_trunc('month', CURRENT_DATE)`, [tenantId]);
                     currentUsage = Number(optimizationsResult[0]?.count || 0);
                     break;
-                case "monthlyReconciliations":
+                }
+                case "monthlyReconciliations": {
                     // Count reconciliations this month
                     const reconciliationsResult = await (0, db_1.query)(`SELECT COUNT(*) as count FROM executions 
              WHERE tenant_id = $1 
              AND created_at >= date_trunc('month', CURRENT_DATE)`, [tenantId]);
                     currentUsage = Number(reconciliationsResult[0]?.count || 0);
                     break;
+                }
                 case "apiCalls":
                     // This would typically come from usage tracking
                     currentUsage = 0; // Placeholder

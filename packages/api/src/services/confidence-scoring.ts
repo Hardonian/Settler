@@ -91,7 +91,7 @@ export function calculateConfidenceScore(
         }
         break;
 
-      case "fuzzy":
+      case "fuzzy": {
         const similarity = calculateSimilarity(String(sourceValue), String(targetValue));
         const threshold = rule.threshold || 0.8;
         if (similarity >= threshold) {
@@ -103,6 +103,7 @@ export function calculateConfidenceScore(
           reason = `Fuzzy match below threshold: similarity ${similarity.toFixed(2)} < ${threshold}`;
         }
         break;
+      }
 
       case "range":
         if (rule.days !== undefined && rule.field.includes("date")) {

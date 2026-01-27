@@ -36,10 +36,26 @@ export const redis = redisUrl && redisToken
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ioredisClient: any = null;
 
-if (!redis && process.env.REDIS_HOST) {
+async function initializeIoredis(): Promise<void> {
+  if (ioredisClient || redis || !process.env.REDIS_HOST) {
+    return;
+  }
+
+  const ioredisModule = await import('ioredis').catch((error: unknown) => {
+    // Note: Can't use logger here as it may depend on Redis - use console for initialization only
+    // eslint-disable-next-line no-console
+    console.warn('Failed to load Redis client module:', error);
+    return null;
+  });
+
+  if (!ioredisModule) {
+    return;
+  }
+
   try {
-    const Redis = require('ioredis');
-    ioredisClient = new Redis({
+    const RedisClient =
+      'default' in ioredisModule ? ioredisModule.default : ioredisModule;
+    ioredisClient = new RedisClient({
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD,
@@ -61,6 +77,8 @@ if (!redis && process.env.REDIS_HOST) {
     console.warn('Failed to initialize Redis client:', error);
   }
 }
+
+void initializeIoredis();
 
 /**
  * Get Redis client (Upstash or ioredis fallback)

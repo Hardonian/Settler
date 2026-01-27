@@ -40,6 +40,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.matchTransaction = matchTransaction;
 exports.runReconciliation = runReconciliation;
+const uuid_1 = require("uuid");
 const db_1 = require("../../db");
 const logger_1 = require("../../utils/logger");
 const ml_matching_engine_1 = require("../matching/ml-matching-engine");
@@ -299,8 +300,8 @@ async function matchTransaction(sourceTransactionId, targetTransactionIds, confi
  * Run reconciliation for an ingestion
  */
 async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
-    const runId = require("uuid").v4();
-    const traceId = require("uuid").v4();
+    const runId = (0, uuid_1.v4)();
+    const traceId = (0, uuid_1.v4)();
     try {
         // Create reconciliation run
         await (0, db_1.query)(`INSERT INTO reconciliation_runs (
@@ -358,7 +359,7 @@ async function runReconciliation(ingestionId, tenantId, userId, config = {}) {
             tenant_id, match_type, confidence, match_reason,
             amount_diff, date_diff, reviewed, metadata, created_at, updated_at
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())`, [
-                    require("uuid").v4(),
+                    (0, uuid_1.v4)(),
                     runId,
                     match.sourceTransactionId,
                     match.targetTransactionId || null,

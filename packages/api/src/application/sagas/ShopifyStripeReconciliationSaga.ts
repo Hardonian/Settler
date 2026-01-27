@@ -14,7 +14,7 @@ import { StripeAdapter } from '@settler/adapters';
 import { IEventStore } from '../../infrastructure/eventsourcing/EventStore';
 import { ReconciliationEvents } from '../../domain/eventsourcing/reconciliation/ReconciliationEvents';
 import { createCircuitBreaker } from '../../infrastructure/resilience/circuit-breaker';
-import { CircuitBreaker } from 'opossum';
+import type { CircuitBreaker } from 'opossum';
 import { logError } from '../../utils/logger';
 
 export class ShopifyStripeReconciliationSaga {

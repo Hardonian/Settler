@@ -215,7 +215,7 @@ export function requireResourceOwnership(
           owned = result.length > 0;
           break;
         }
-        default:
+        default: {
           // For unknown resource types, allow if user has admin permissions
           const user = await query<{ role: UserRole }>(
             `SELECT role FROM users WHERE id = $1 AND tenant_id = $2`,
@@ -224,6 +224,8 @@ export function requireResourceOwnership(
           if (user.length > 0 && user[0]) {
             owned = user[0].role === UserRole.OWNER || user[0].role === UserRole.ADMIN;
           }
+          break;
+        }
       }
 
       if (!owned) {

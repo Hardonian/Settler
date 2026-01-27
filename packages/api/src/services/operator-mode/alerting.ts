@@ -143,7 +143,7 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
             shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
             break;
 
-          case 'slow_endpoint':
+          case 'slow_endpoint': {
             // Check if any endpoint exceeds threshold (using P95)
             const slowestEndpoint = intelligence?.slowEndpoints?.[0];
             if (slowestEndpoint && typeof slowestEndpoint.p95 === 'number') {
@@ -151,6 +151,7 @@ export async function checkAlertThresholds(): Promise<Alert[]> {
               shouldAlert = evaluateThreshold(value, rule.threshold, rule.operator);
             }
             break;
+          }
 
           case 'failed_ingestion':
             value = intelligence?.failedIngestions?.length ?? 0;

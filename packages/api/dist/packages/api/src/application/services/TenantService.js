@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TenantService = void 0;
 const Tenant_1 = require("../../domain/entities/Tenant");
 const User_1 = require("../../domain/entities/User");
+const config_1 = require("../../config");
 const db_1 = require("../../db");
 const logger_1 = require("../../utils/logger");
 class TenantService {
@@ -44,8 +45,7 @@ class TenantService {
         const tenant = Tenant_1.Tenant.create(tenantProps);
         await this.tenantRepo.save(tenant);
         // Create tenant schema if using schema-per-tenant
-        const { config } = require('../../config');
-        if (config.features.enableSchemaPerTenant) {
+        if (config_1.config.features.enableSchemaPerTenant) {
             await (0, db_1.query)(`SELECT create_tenant_schema($1)`, [data.slug]);
         }
         // Create owner user

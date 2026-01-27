@@ -21,7 +21,17 @@ const confidence_scoring_1 = require("../services/confidence-scoring");
 const recon_core_engine_1 = require("../services/recon-core/recon-core-engine");
 const router = (0, express_1.Router)();
 exports.playgroundRouter = router;
-const prisma = new client_1.PrismaClient(); // Instantiate for playground usage
+let prisma = null;
+const getPrismaClient = () => {
+    if (prisma) {
+        return prisma;
+    }
+    if (!process.env.DATABASE_URL) {
+        return null;
+    }
+    prisma = new client_1.PrismaClient();
+    return prisma;
+};
 // No auth required for playground (rate-limited)
 const playgroundReconcileSchema = zod_1.z.object({
     body: zod_1.z.object({
@@ -131,8 +141,13 @@ router.post("/playground/demo-run", (async (_req, res) => {
         // 1. Load Data
         const sourceData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, 'stripe_normalized.json'), 'utf-8'));
         const targetData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, 'bank_normalized.json'), 'utf-8'));
+        const prismaClient = getPrismaClient();
+        if (!prismaClient) {
+            res.status(503).json({ error: "Database not configured for playground." });
+            return;
+        }
         // 2. Instantiate Engine
-        const engine = new recon_core_engine_1.ReconCoreEngine(prisma);
+        const engine = new recon_core_engine_1.ReconCoreEngine(prismaClient);
         // 3. Create Dummy Job (for Type Compatibility)
         const dummyJob = {
             id: 'demo-job-123',

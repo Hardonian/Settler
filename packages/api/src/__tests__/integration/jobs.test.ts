@@ -7,23 +7,28 @@ import request from 'supertest';
 import app from '../../index';
 import { query } from '../../db';
 
-describe('Jobs API Integration Tests', () => {
-  let authToken: string;
+const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const describeJobsTests = shouldRunDbTests ? describe : describe.skip;
+
+describeJobsTests('Jobs API Integration Tests', () => {
   let userId: string;
 
   beforeAll(async () => {
     // Setup: Create a test user and get auth token
     // In a real test, you'd use a test database
-    const testUser = await query(
+    const testUser = await query<{ id: string }>(
       `INSERT INTO users (email, password_hash, role) 
        VALUES ($1, $2, $3) 
        RETURNING id`,
       ['test@example.com', 'hashed-password', 'developer']
     );
-    userId = testUser[0].id;
+    userId = testUser[0]?.id ?? '';
+    if (!userId) {
+      throw new Error('Failed to create test user');
+    }
 
     // Create API key for testing
-    const apiKey = await query(
+    await query(
       `INSERT INTO api_keys (user_id, key_prefix, key_hash, scopes)
        VALUES ($1, $2, $3, $4)
        RETURNING id`,
@@ -33,9 +38,11 @@ describe('Jobs API Integration Tests', () => {
 
   afterAll(async () => {
     // Cleanup test data
-    await query('DELETE FROM jobs WHERE user_id = $1', [userId]);
-    await query('DELETE FROM api_keys WHERE user_id = $1', [userId]);
-    await query('DELETE FROM users WHERE id = $1', [userId]);
+    if (userId) {
+      await query('DELETE FROM jobs WHERE user_id = $1', [userId]);
+      await query('DELETE FROM api_keys WHERE user_id = $1', [userId]);
+      await query('DELETE FROM users WHERE id = $1', [userId]);
+    }
   });
 
   describe('POST /api/v1/jobs', () => {

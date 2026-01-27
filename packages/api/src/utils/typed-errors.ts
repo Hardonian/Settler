@@ -141,6 +141,11 @@ export class ServiceUnavailableError extends ApiError {
   }
 }
 
+export class PayloadTooLargeError extends ApiError {
+  readonly statusCode = 413;
+  readonly errorCode = 'PAYLOAD_TOO_LARGE';
+}
+
 /**
  * Type guard to check if error is an ApiError
  */
@@ -157,6 +162,17 @@ export function toApiError(error: unknown): ApiError {
   }
 
   if (error instanceof Error) {
+    const errorWithStatus = error as Error & {
+      status?: number;
+      statusCode?: number;
+      type?: string;
+    };
+    const status = errorWithStatus.status ?? errorWithStatus.statusCode;
+    if (status === 413 || errorWithStatus.type === 'entity.too.large') {
+      return new PayloadTooLargeError('Request entity too large', {
+        originalError: error.name,
+      });
+    }
     return new InternalServerError(error.message, { originalError: error.name });
   }
 

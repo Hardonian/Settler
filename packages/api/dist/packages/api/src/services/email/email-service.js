@@ -70,6 +70,18 @@ async function sendEmail(options) {
         return false;
     }
 }
+async function loadResendModule() {
+    return Promise.resolve().then(() => __importStar(require('resend'))).catch((error) => {
+        (0, logger_1.logError)('Resend SDK not available', error);
+        return null;
+    });
+}
+async function loadSendGridModule() {
+    return Promise.resolve().then(() => __importStar(require('@sendgrid/mail'))).catch((error) => {
+        (0, logger_1.logError)('SendGrid SDK not available', error);
+        return null;
+    });
+}
 /**
  * Send email via Resend
  */
@@ -79,10 +91,14 @@ async function sendViaResend(options) {
         (0, logger_1.logError)("Resend API key not configured", new Error("Missing RESEND_API_KEY"));
         return false;
     }
+    // Dynamic import to avoid requiring Resend in package.json if not used
+    const resendModule = await loadResendModule();
+    if (!resendModule) {
+        return false;
+    }
+    const { Resend } = resendModule;
+    const resend = new Resend(apiKey);
     try {
-        // Dynamic import to avoid requiring Resend in package.json if not used
-        const { Resend } = await Promise.resolve().then(() => __importStar(require("resend")));
-        const resend = new Resend(apiKey);
         const emailData = {
             from: options.from,
             to: options.to,
@@ -127,12 +143,15 @@ async function sendViaSendGrid(options) {
         (0, logger_1.logError)("SendGrid API key not configured", new Error("Missing SENDGRID_API_KEY"));
         return false;
     }
+    // Dynamic import to avoid requiring SendGrid in package.json if not used
+    // Note: @sendgrid/mail types may not be available
+    const sgMailModule = await loadSendGridModule();
+    if (!sgMailModule) {
+        return false;
+    }
+    const sgMail = "default" in sgMailModule ? sgMailModule.default : sgMailModule;
     try {
-        // Dynamic import to avoid requiring SendGrid in package.json if not used
-        // Note: @sendgrid/mail types may not be available
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const sgMail = require("@sendgrid/mail");
-        sgMail.default.setApiKey(apiKey);
+        sgMail.setApiKey(apiKey);
         const msg = {
             to: options.to,
             from: options.from,
@@ -141,7 +160,7 @@ async function sendViaSendGrid(options) {
             html: options.html,
             replyTo: options.replyTo,
         };
-        await sgMail.default.send(msg);
+        await sgMail.send(msg);
         (0, logger_1.logInfo)("Email sent via SendGrid", {
             to: options.to,
             subject: options.subject,

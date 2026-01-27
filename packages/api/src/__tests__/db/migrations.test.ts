@@ -3,10 +3,13 @@
  * Tests for database migrations
  */
 
-import { query, initDatabase } from '../../db';
+import { initDatabase } from '../../db';
 import { Pool } from 'pg';
 
-describe('Database Migrations', () => {
+const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const describeDatabase = shouldRunDbTests ? describe : describe.skip;
+
+describeDatabase('Database Migrations', () => {
   let testPool: Pool;
 
   beforeAll(async () => {

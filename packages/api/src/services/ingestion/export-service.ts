@@ -13,11 +13,12 @@
  * This creates a data moat: users can export raw data, but lose accumulated intelligence.
  */
 
+import fs from "node:fs";
+import { join } from "path";
+import { tmpdir } from "os";
 import { v4 as uuidv4 } from "uuid";
 import { query } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
-import { join } from "path";
-import { tmpdir } from "os";
 
 export type ExportType = "csv" | "json";
 export type ExportFormat =
@@ -530,7 +531,6 @@ export async function generateExport(
     // Write to temporary file (in production, upload to S3)
     const fileName = `${exportId}.${fileExtension}`;
     const filePath = join(tmpdir(), fileName);
-    const fs = require("fs");
     fs.writeFileSync(filePath, content, "utf8");
     const fileSize = fs.statSync(filePath).size;
 

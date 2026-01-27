@@ -3,6 +3,7 @@
  * Fetches transactions from Stripe API and normalizes them
  */
 
+import { v4 as uuidv4 } from "uuid";
 import { query } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
 import { NormalizedTransactionInput } from "./types";
@@ -233,7 +234,7 @@ export async function createStripeSource(
   name: string,
   config: StripeConnectorConfig
 ): Promise<string> {
-  const sourceId = require("uuid").v4();
+  const sourceId = uuidv4();
   const encryptedConfig = await encryptConfig(config);
 
   try {

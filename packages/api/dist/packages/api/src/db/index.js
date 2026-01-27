@@ -1,9 +1,47 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.pool = void 0;
 exports.query = query;
 exports.transaction = transaction;
 exports.initDatabase = initDatabase;
+const node_fs_1 = __importDefault(require("node:fs"));
+const node_path_1 = __importDefault(require("node:path"));
 const pg_1 = require("pg");
 const config_1 = require("../config");
 const logger_1 = require("../utils/logger");
@@ -28,7 +66,6 @@ exports.pool.on('error', (err) => {
     (0, logger_1.logError)('Unexpected error on idle client', err);
     process.exit(-1);
 });
-// Helper function to execute queries
 async function query(text, params) {
     const client = await exports.pool.connect();
     try {
@@ -58,43 +95,49 @@ async function transaction(callback) {
 }
 // Initialize database schema
 async function initDatabase() {
-    const { runMigrations } = require('./migrate');
-    try {
-        // Run all migrations in order
-        await runMigrations();
-    }
-    catch (error) {
-        // Fallback to basic schema if migration runner fails
+    const migrationModule = await Promise.resolve().then(() => __importStar(require('./migrate'))).catch((error) => {
         const message = error instanceof Error ? error.message : 'Unknown error';
         (0, logger_1.logWarn)('Migration runner failed, falling back to basic schema', { message });
-        const fs = require('fs');
-        const path = require('path');
-        // Run consolidated initial schema migration
-        const migrationPath = path.join(__dirname, 'migrations', '001-initial-schema.sql');
-        if (fs.existsSync(migrationPath)) {
-            const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
-            // Split by semicolon and execute each statement
-            const statements = migrationSQL.split(';').filter((s) => s.trim().length > 0);
-            for (const statement of statements) {
-                if (statement.trim() && !statement.trim().startsWith('--')) {
-                    try {
-                        await query(statement);
-                    }
-                    catch (error) {
-                        // Ignore "already exists" errors (idempotent migration)
-                        const errorMessage = error instanceof Error ? error.message : String(error);
-                        if (!errorMessage.includes('already exists') &&
-                            !errorMessage.includes('duplicate') &&
-                            !errorMessage.includes('already enabled')) {
-                            (0, logger_1.logWarn)('Migration warning', { errorMessage });
-                        }
+        return null;
+    });
+    if (migrationModule?.runMigrations) {
+        try {
+            // Run all migrations in order
+            await migrationModule.runMigrations();
+            return;
+        }
+        catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            (0, logger_1.logWarn)('Migration runner failed, falling back to basic schema', { message });
+        }
+    }
+    // Fallback to basic schema if migration runner fails
+    // Run consolidated initial schema migration
+    const migrationPath = node_path_1.default.join(__dirname, 'migrations', '001-initial-schema.sql');
+    if (node_fs_1.default.existsSync(migrationPath)) {
+        const migrationSQL = node_fs_1.default.readFileSync(migrationPath, 'utf8');
+        // Split by semicolon and execute each statement
+        const statements = migrationSQL.split(';').filter((s) => s.trim().length > 0);
+        for (const statement of statements) {
+            if (statement.trim() && !statement.trim().startsWith('--')) {
+                try {
+                    await query(statement);
+                }
+                catch (error) {
+                    // Ignore "already exists" errors (idempotent migration)
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    if (!errorMessage.includes('already exists') &&
+                        !errorMessage.includes('duplicate') &&
+                        !errorMessage.includes('already enabled')) {
+                        (0, logger_1.logWarn)('Migration warning', { errorMessage });
                     }
                 }
             }
         }
-        else {
-            // Fallback: create basic tables if migration file doesn't exist
-            await query(`
+    }
+    else {
+        // Fallback: create basic tables if migration file doesn't exist
+        await query(`
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
@@ -302,8 +345,7 @@ async function initDatabase() {
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     );
-      `);
-        }
+    `);
     }
 }
 //# sourceMappingURL=index.js.map

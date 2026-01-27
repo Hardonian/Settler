@@ -10,7 +10,7 @@
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
     "test": "jest --passWithNoTests",
-    "lint": "eslint src --ext .ts --max-warnings 200",
+    "lint": "../api/node_modules/.bin/eslint src --ext .ts --max-warnings 200",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },

@@ -13,14 +13,18 @@
  *
  * This creates a data moat: users can export raw data, but lose accumulated intelligence.
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createExport = createExport;
 exports.generateExport = generateExport;
+const node_fs_1 = __importDefault(require("node:fs"));
+const path_1 = require("path");
+const os_1 = require("os");
 const uuid_1 = require("uuid");
 const db_1 = require("../../db");
 const logger_1 = require("../../utils/logger");
-const path_1 = require("path");
-const os_1 = require("os");
 /**
  * Generate signed URL (mock implementation - should use S3 or similar in production)
  */
@@ -398,9 +402,8 @@ async function generateExport(exportId) {
         // Write to temporary file (in production, upload to S3)
         const fileName = `${exportId}.${fileExtension}`;
         const filePath = (0, path_1.join)((0, os_1.tmpdir)(), fileName);
-        const fs = require("fs");
-        fs.writeFileSync(filePath, content, "utf8");
-        const fileSize = fs.statSync(filePath).size;
+        node_fs_1.default.writeFileSync(filePath, content, "utf8");
+        const fileSize = node_fs_1.default.statSync(filePath).size;
         // Generate signed URL
         const { url, expiresAt } = generateSignedUrl(filePath, 24);
         // Update export record

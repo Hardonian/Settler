@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.webhooksRouter = void 0;
+const crypto_1 = require("crypto");
 const express_1 = require("express");
 const zod_1 = require("zod");
 const validation_1 = require("../middleware/validation");
@@ -70,7 +71,7 @@ router.post("/", (0, authorization_1.requirePermission)(Permissions_1.Permission
             }
         }
         // Generate secret if not provided
-        const webhookSecret = secret || `whsec_${require('crypto').randomBytes(32).toString('base64url')}`;
+        const webhookSecret = secret || `whsec_${(0, crypto_1.randomBytes)(32).toString('base64url')}`;
         const result = await (0, db_1.query)(`INSERT INTO webhooks (user_id, url, events, secret, status)
          VALUES ($1, $2, $3, $4, 'active')
          RETURNING id`, [userId, url, events, webhookSecret]);

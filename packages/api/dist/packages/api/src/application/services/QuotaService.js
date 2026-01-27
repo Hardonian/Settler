@@ -49,20 +49,22 @@ class QuotaService {
         let limit;
         let currentUsage = 0;
         switch (quotaType) {
-            case QuotaType.STORAGE:
+            case QuotaType.STORAGE: {
                 limit = quotas.storageBytes;
                 const storageResult = await (0, db_1.query)(`SELECT COALESCE(current_storage_bytes, 0) as current_storage_bytes
            FROM tenant_quota_usage WHERE tenant_id = $1`, [tenantId]);
                 currentUsage = storageResult[0]?.current_storage_bytes || 0;
                 break;
-            case QuotaType.CONCURRENT_JOBS:
+            }
+            case QuotaType.CONCURRENT_JOBS: {
                 limit = quotas.concurrentJobs;
                 const jobsResult = await (0, db_1.query)(`SELECT COUNT(*)::INTEGER as count
            FROM executions
            WHERE tenant_id = $1 AND status = 'running'`, [tenantId]);
                 currentUsage = jobsResult[0]?.count || 0;
                 break;
-            case QuotaType.MONTHLY_RECONCILIATIONS:
+            }
+            case QuotaType.MONTHLY_RECONCILIATIONS: {
                 limit = quotas.monthlyReconciliations;
                 const reconResult = await (0, db_1.query)(`SELECT COALESCE(SUM(metric_value), 0)::BIGINT as sum
            FROM tenant_usage
@@ -71,7 +73,8 @@ class QuotaService {
              AND period_start >= date_trunc('month', NOW())`, [tenantId]);
                 currentUsage = reconResult[0]?.sum || 0;
                 break;
-            case QuotaType.CUSTOM_DOMAINS:
+            }
+            case QuotaType.CUSTOM_DOMAINS: {
                 limit = quotas.customDomains === -1 ? Infinity : quotas.customDomains;
                 const domainResult = await (0, db_1.query)(`SELECT COUNT(*)::INTEGER as count
            FROM tenants
@@ -79,6 +82,7 @@ class QuotaService {
              AND config->>'customDomainVerified' = 'true'`, [tenantId]);
                 currentUsage = domainResult[0]?.count || 0;
                 break;
+            }
             case QuotaType.RATE_LIMIT:
                 // Rate limiting is handled separately by RateLimitService
                 limit = quotas.rateLimitRpm;

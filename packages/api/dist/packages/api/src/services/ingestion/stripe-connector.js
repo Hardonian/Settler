@@ -44,6 +44,7 @@ exports.normalizeStripePayout = normalizeStripePayout;
 exports.createStripeSource = createStripeSource;
 exports.getStripeConfig = getStripeConfig;
 exports.syncStripeSource = syncStripeSource;
+const uuid_1 = require("uuid");
 const db_1 = require("../../db");
 const logger_1 = require("../../utils/logger");
 const retry_with_backoff_1 = require("../../utils/retry-with-backoff");
@@ -201,7 +202,7 @@ function normalizeStripePayout(payout) {
  * Create or update Stripe connector source
  */
 async function createStripeSource(tenantId, userId, name, config) {
-    const sourceId = require("uuid").v4();
+    const sourceId = (0, uuid_1.v4)();
     const encryptedConfig = await encryptConfig(config);
     try {
         await (0, db_1.query)(`INSERT INTO ingestion_sources (

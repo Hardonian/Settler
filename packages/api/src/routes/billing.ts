@@ -45,12 +45,13 @@ router.post("/create-customer", authMiddleware, async (req: AuthRequest, res: Re
     }
 
     // Check if billing account already exists
-    let { data: billingAccount, error: fetchError } = await supabase
+    const { data: billingAccountData, error: fetchError } = await supabase
       .from("billing_accounts")
       .select("*")
       .eq("user_id", userId)
       .is("deleted_at", null)
       .single();
+    let billingAccount = billingAccountData;
 
     if (fetchError && fetchError.code !== "PGRST116") {
       logError("Error fetching billing account", fetchError);
