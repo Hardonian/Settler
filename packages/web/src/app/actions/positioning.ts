@@ -77,7 +77,7 @@ export async function submitPositioningFeedback(
       impactScore: data?.impact_score ?? undefined,
       feedbackId: data?.id ?? undefined,
     };
-  } catch {
+  } catch (error) {
     console.error('Positioning feedback error:', error);
     return {
       success: false,
