@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     if (!traceId) {
       traceId = generateTraceId();
     }
-    const traceCookieOptions = {
+    const traceCookieOptions: CookieOptions = {
       httpOnly: false,
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7,
