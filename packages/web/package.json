@@ -8,10 +8,10 @@
   "scripts": {
     "dev": "next dev",
     "clean:build": "rm -rf .next dist out .next/tsconfig.tsbuildinfo",
-    "prebuild": "cd ../.. && npm run prisma:generate 2>/dev/null || echo Skipping prisma generate (unavailable in this environment) && cd packages/web && npm run validate:prebuild",
+    "prebuild": "cd ../.. && npm run prisma:generate 2>/dev/null || echo 'Skipping prisma generate (unavailable in this environment)' && cd packages/web && npm run validate:prebuild",
     "validate:api-routes": "test -f ../../scripts/validate-api-routes.ts && tsx ../../scripts/validate-api-routes.ts || echo '⚠️  API route validation skipped (script not found)'",
-    "build": "if [ \"$VERCEL\" = \"1\" ]; then [ -f \"../../scripts/vercel-build-optimizer.js\" ] && node ../../scripts/vercel-build-optimizer.js || echo Build optimizer script not available; else echo Not Vercel environment; fi && NODE_OPTIONS=--max-old-space-size=4096 next build 2>/dev/null || echo Build completed with warnings",
-    "build:vercel": "[ -f \"../../scripts/vercel-build-optimizer.js\" ] && node ../../scripts/vercel-build-optimizer.js || echo Build optimizer script not available && NODE_OPTIONS=--max-old-space-size=4096 next build",
+    "build": "if [ \"$VERCEL\" = \"1\" ]; then [ -f \"../../scripts/vercel-build-optimizer.js\" ] && node ../../scripts/vercel-build-optimizer.js || echo 'Build optimizer script not available'; else echo 'Not Vercel environment'; fi && NODE_OPTIONS=--max-old-space-size=4096 next build 2>/dev/null || echo 'Build completed with warnings'",
+    "build:vercel": "[ -f \"../../scripts/vercel-build-optimizer.js\" ] && node ../../scripts/vercel-build-optimizer.js || echo 'Build optimizer script not available' && NODE_OPTIONS=--max-old-space-size=4096 next build",
     "postinstall": "export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true",
     "start": "next start",
     "lint": "next lint --max-warnings 1000000",
