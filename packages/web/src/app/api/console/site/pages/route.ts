@@ -55,7 +55,7 @@ export const GET = withSecurity(
       });
 
       return NextResponse.json({ pages }, { status: 200 });
-    } catch (error) {
+    } catch {
       return handleApiError(error, "Failed to load pages");
     }
   },
@@ -113,7 +113,7 @@ export const POST = withSecurity(
       });
 
       return NextResponse.json({ page }, { status: 201 });
-    } catch (error) {
+    } catch {
       if (error instanceof z.ZodError) {
         return NextResponse.json({ error: "Invalid request", details: error.issues }, { status: 400 });
       }

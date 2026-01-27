@@ -56,7 +56,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
       const response = await fetch('/api/v1/rules/templates');
       const data = (await response.json()) as { data?: RuleTemplate[] };
       setTemplates(data.data || []);
-    } catch (error) {
+    } catch {
       console.error('Failed to load templates:', error);
     }
   }, []);
@@ -72,7 +72,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
         data?: { suggestions?: Array<{ rules?: MatchingRule[] }> };
       };
       setAiSuggestions(data.data?.suggestions?.[0]?.rules || []);
-    } catch (error) {
+    } catch {
       console.error('Failed to load AI suggestions:', error);
     }
   }, [jobId]);
@@ -136,7 +136,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
       });
       const data = (await response.json()) as { data?: { insights?: PreviewResult } };
       setPreviewResult(data.data?.insights || null);
-    } catch (error) {
+    } catch {
       console.error('Failed to preview rules:', error);
     }
   };
@@ -150,7 +150,7 @@ export function RulesEditor({ jobId }: { jobId?: string }) {
       });
       const data = (await response.json()) as { data?: { impact?: ImpactAnalysis } };
       setImpactAnalysis(data.data?.impact || null);
-    } catch (error) {
+    } catch {
       console.error('Failed to analyze impact:', error);
     }
   };

@@ -64,7 +64,7 @@ export default function BrandingEditorPage() {
       if (data.branding) {
         setBranding(data.branding);
       }
-    } catch (error) {
+    } catch {
       console.error('Error loading branding:', error);
     } finally {
       setLoading(false);
@@ -105,7 +105,7 @@ export default function BrandingEditorPage() {
 
       alert('Branding saved successfully');
       await loadBranding();
-    } catch (error) {
+    } catch {
       console.error('Error saving branding:', error);
       alert(error instanceof Error ? error.message : 'Failed to save branding');
     } finally {

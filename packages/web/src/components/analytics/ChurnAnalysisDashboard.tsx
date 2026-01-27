@@ -31,7 +31,7 @@ export function ChurnAnalysisDashboard() {
         const data = await response.json();
         setMetrics(data.metrics);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch churn metrics:", error);
     } finally {
       setLoading(false);

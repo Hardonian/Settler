@@ -42,7 +42,7 @@ export function StatusIndicator() {
             // Map status page status to our status
             const pageStatus = data?.status?.indicator || 'operational';
             setStatus(pageStatus === 'none' ? 'operational' : pageStatus === 'minor' ? 'degraded' : 'down');
-          } catch (jsonError) {
+          } catch {
             // Invalid JSON response - default to operational
             setStatus('operational');
           }
@@ -50,7 +50,7 @@ export function StatusIndicator() {
           // Non-200 response - default to operational
           setStatus('operational');
         }
-      } catch (error) {
+      } catch {
         // Any other error - default to operational
         console.debug('Status check error:', error);
         setStatus('operational');

@@ -52,7 +52,7 @@ export default function PageEditorPage() {
       const data = await response.json();
       setPage(data.page);
       setBlocks((data.page.blocks || []) as PageBlock[]);
-    } catch (error) {
+    } catch {
       console.error('Error loading page:', error);
     } finally {
       setLoading(false);
@@ -78,7 +78,7 @@ export default function PageEditorPage() {
       const data = await response.json();
       setPage(data.page);
       alert('Page saved successfully');
-    } catch (error) {
+    } catch {
       console.error('Error saving page:', error);
       alert(error instanceof Error ? error.message : 'Failed to save page');
     } finally {
@@ -98,7 +98,7 @@ export default function PageEditorPage() {
       
       await loadPage();
       alert('Page published successfully');
-    } catch (error) {
+    } catch {
       console.error('Error publishing page:', error);
       alert('Failed to publish page');
     }

@@ -73,7 +73,7 @@ export default async function ConsoleRootLayout({
         <Footer />
       </ErrorBoundary>
     );
-  } catch (error) {
+  } catch {
     // Log unexpected errors for debugging (server-side only, no secrets)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const duration = Date.now() - startTime;

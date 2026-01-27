@@ -68,7 +68,7 @@ export const GET = withSecurity(
         },
         { status: 200 }
       );
-    } catch (error) {
+    } catch {
       return handleApiError(error, "Failed to fetch navigation");
     }
   },
@@ -110,7 +110,7 @@ export const PUT = withSecurity(
         },
         { status: 200 }
       );
-    } catch (error) {
+    } catch {
       if (error instanceof z.ZodError) {
         return NextResponse.json({ error: "Invalid request", details: error.issues }, { status: 400 });
       }

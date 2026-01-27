@@ -62,7 +62,7 @@ export async function getCached<T>(
 
     await trackMetric({ name: 'cache.miss', value: 1, tags: { key: key.substring(0, 50) } });
     return null;
-  } catch (error) {
+  } catch {
     await trackMetric({ name: 'cache.error', value: 1, tags: { key: key.substring(0, 50) } });
     return null;
   }
@@ -89,7 +89,7 @@ export async function setCached<T>(
     );
 
     await trackMetric({ name: 'cache.set', value: 1, tags: { key: key.substring(0, 50) } });
-  } catch (error) {
+  } catch {
     await trackMetric({ name: 'cache.error', value: 1, tags: { key: key.substring(0, 50) } });
   }
 }
@@ -119,7 +119,7 @@ export async function invalidateCache(pattern: string): Promise<void> {
     );
 
     await trackMetric({ name: 'cache.invalidate', value: 1, tags: { pattern: pattern.substring(0, 50) } });
-  } catch (error) {
+  } catch {
     await trackMetric({ name: 'cache.error', value: 1, tags: { operation: 'invalidate' } });
   }
 }

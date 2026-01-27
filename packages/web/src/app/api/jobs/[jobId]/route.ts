@@ -142,7 +142,7 @@ export const GET = withSecurity(
             });
             tenantId = billingAccount?.tenantId || null;
           }
-        } catch (supabaseError) {
+        } catch {
           // Both auth methods failed
           return NextResponse.json(
             {
@@ -153,7 +153,7 @@ export const GET = withSecurity(
           );
         }
       }
-    } catch (authError) {
+    } catch {
       return NextResponse.json(
         {
           error: 'Unauthorized',
@@ -276,7 +276,7 @@ export const GET = withSecurity(
     });
 
     return NextResponse.json(response, { status: 200 });
-  } catch (error) {
+  } catch {
     const duration = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;

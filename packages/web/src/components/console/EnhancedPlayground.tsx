@@ -92,7 +92,7 @@ export function EnhancedPlayground() {
         status: res.status,
         data,
       });
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : 'Request failed');
     } finally {
       setLoading(false);

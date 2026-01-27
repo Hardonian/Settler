@@ -31,7 +31,7 @@ export function InsightsBanner() {
           const data = await response.json();
           setInsights(data.insights || []);
         }
-      } catch (error) {
+      } catch {
         console.error('[Insights] Error fetching insights:', error);
       } finally {
         setLoading(false);

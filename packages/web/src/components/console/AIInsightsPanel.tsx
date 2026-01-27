@@ -53,7 +53,7 @@ export function InsightsPanel() {
         console.error('Failed to fetch insights:', res.status, errorData);
         setInsights([]); // Show empty state
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch insights:', error);
       setInsights([]); // Show empty state on error
     } finally {

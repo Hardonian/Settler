@@ -73,7 +73,7 @@ async function getBillingHandler(_request: NextRequest) {
     let planCode: string;
     try {
       planCode = await getAccountPlanCode(billingAccount.id);
-    } catch (error) {
+    } catch {
       appLogger.error('[Console Billing] Error getting plan code', error, {
         billingAccountId: billingAccount.id,
       });
@@ -86,7 +86,7 @@ async function getBillingHandler(_request: NextRequest) {
     let usage;
     try {
       usage = await getAccountUsage(billingAccount.id);
-    } catch (error) {
+    } catch {
       appLogger.error('[Console Billing] Error getting account usage', error, {
         billingAccountId: billingAccount.id,
       });
@@ -139,7 +139,7 @@ async function getBillingHandler(_request: NextRequest) {
         : null,
       usage: usageWithLimits,
     });
-  } catch (error) {
+  } catch {
     appLogger.error('[Console Billing] Error fetching billing data', error, {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,

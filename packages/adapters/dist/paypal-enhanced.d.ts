@@ -4,8 +4,8 @@
  * Implements webhook ingestion, API polling, and comprehensive normalization
  * as specified in the Product & Technical Specification.
  */
-import { EnhancedAdapter, AdapterConfig, DateRange, NormalizedEvent } from './enhanced-base';
-import { Transaction, Settlement, Fee, RefundDispute, RefundDisputeType } from '@settler/types';
+import { EnhancedAdapter, AdapterConfig, DateRange, NormalizedEvent } from "./enhanced-base";
+import { Transaction, Settlement, Fee, RefundDispute, RefundDisputeType } from "@settler/types";
 export declare class PayPalEnhancedAdapter implements EnhancedAdapter {
     name: string;
     version: string;

@@ -57,7 +57,7 @@ export default function ExperimentsPage() {
       if (!response.ok) throw new Error('Failed to load experiments');
       const data = await response.json();
       setExperiments(data.experiments || []);
-    } catch (error) {
+    } catch {
       console.error('Error loading experiments:', error);
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ export default function ExperimentsPage() {
       });
       if (!response.ok) throw new Error('Failed to start experiment');
       await loadExperiments();
-    } catch (error) {
+    } catch {
       console.error('Error starting experiment:', error);
       alert('Failed to start experiment');
     }

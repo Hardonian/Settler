@@ -38,7 +38,7 @@ export const GET = withSecurity(
     ];
 
     return NextResponse.json({ projects });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in projects GET", error);
     return NextResponse.json(
       {

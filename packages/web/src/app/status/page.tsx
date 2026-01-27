@@ -45,7 +45,7 @@ export default function StatusPage() {
         const data: StatusResponse = await response.json();
         setSystems(data.systems || systems);
         setOverallStatus(data.overallStatus || "operational");
-      } catch (err) {
+      } catch {
         console.error('Failed to load status:', err);
         setError(err instanceof Error ? err.message : 'Failed to load status');
         // Keep default values on error

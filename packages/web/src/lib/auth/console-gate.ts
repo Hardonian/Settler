@@ -32,7 +32,7 @@ export async function requireConsoleAccess(): Promise<null> {
       const authResult = await supabase.auth.getUser();
       user = authResult.data?.user;
       authError = authResult.error;
-    } catch (error) {
+    } catch {
       // If auth.getUser() throws (e.g., invalid client), treat as unauthenticated
       console.error('[requireConsoleAccess] Auth check failed:', error);
       authError = { message: 'Authentication check failed', status: 500 };
@@ -59,7 +59,7 @@ export async function requireConsoleAccess(): Promise<null> {
       
       // User is authenticated and has subscription - allow access
       return null;
-    } catch (error) {
+    } catch {
       // CRITICAL: Fail closed - do not allow access if subscription check fails
       // This prevents revenue leakage. Show friendly error instead of granting access.
       console.error('[requireConsoleAccess] Subscription check failed:', error);
@@ -68,7 +68,7 @@ export async function requireConsoleAccess(): Promise<null> {
       const upgradeUrl = `/pricing?next=${encodeURIComponent('/console')}&error=subscription_check_failed`;
       redirect(upgradeUrl);
     }
-  } catch (error) {
+  } catch {
     // Catch any unexpected errors (including redirect throws)
     // Re-throw redirects (they're expected)
     if (error && typeof error === 'object' && 'digest' in error) {
@@ -97,7 +97,7 @@ export async function getConsoleAccessStatus(): Promise<ConsoleAccessResult> {
       const authResult = await supabase.auth.getUser();
       user = authResult.data?.user;
       authError = authResult.error;
-    } catch (error) {
+    } catch {
       // If auth.getUser() throws (e.g., invalid client), treat as unauthenticated
       console.error('[getConsoleAccessStatus] Auth check failed:', error);
       authError = { message: 'Authentication check failed', status: 500 };
@@ -124,7 +124,7 @@ export async function getConsoleAccessStatus(): Promise<ConsoleAccessResult> {
       }
       
       return { allowed: true };
-    } catch (error) {
+    } catch {
       console.error('[getConsoleAccessStatus] Subscription check failed:', error);
       // CRITICAL: Fail closed - deny access if subscription check fails
       return {
@@ -133,7 +133,7 @@ export async function getConsoleAccessStatus(): Promise<ConsoleAccessResult> {
         redirectTo: `/pricing?next=${encodeURIComponent('/console')}&error=subscription_check_failed`,
       };
     }
-  } catch (error) {
+  } catch {
     console.error('[getConsoleAccessStatus] Auth check failed:', error);
     return {
       allowed: false,

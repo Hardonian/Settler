@@ -35,21 +35,21 @@ class ConnectorRuntime {
      */
     async getCredentials(tenantId, connectorId) {
         const { data: connector, error: connectorError } = await this.supabase
-            .from('connectors')
-            .select('id')
-            .eq('tenant_id', tenantId)
-            .eq('provider_id', connectorId)
+            .from("connectors")
+            .select("id")
+            .eq("tenant_id", tenantId)
+            .eq("provider_id", connectorId)
             .single();
         if (connectorError || !connector) {
-            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, 'CONNECTOR_NOT_FOUND', connectorId);
+            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, "CONNECTOR_NOT_FOUND", connectorId);
         }
         const { data: credentials, error: credError } = await this.supabase
-            .from('connector_credentials')
-            .select('encrypted_credentials, access_token_encrypted, refresh_token_encrypted')
-            .eq('connector_id', connector.id)
+            .from("connector_credentials")
+            .select("encrypted_credentials, access_token_encrypted, refresh_token_encrypted")
+            .eq("connector_id", connector.id)
             .single();
         if (credError || !credentials) {
-            throw new connector_driver_1.ConnectorError(`Credentials not found for connector: ${connectorId}`, 'CREDENTIALS_NOT_FOUND', connectorId);
+            throw new connector_driver_1.ConnectorError(`Credentials not found for connector: ${connectorId}`, "CREDENTIALS_NOT_FOUND", connectorId);
         }
         // Decrypt credentials
         let decrypted = {};
@@ -58,7 +58,7 @@ class ConnectorRuntime {
             try {
                 decrypted = await (0, credential_encryption_1.decryptCredentials)(JSON.stringify(creds.encrypted_credentials), this.config.supabaseUrl, this.config.supabaseServiceKey);
             }
-            catch (error) {
+            catch (_error) {
                 // Fallback: use as-is if decryption fails (backwards compatibility)
                 decrypted = creds.encrypted_credentials;
             }
@@ -67,7 +67,7 @@ class ConnectorRuntime {
             try {
                 decrypted.access_token = await (0, credential_encryption_1.decryptToken)(creds.access_token_encrypted, this.config.supabaseUrl, this.config.supabaseServiceKey);
             }
-            catch (error) {
+            catch (_error) {
                 decrypted.access_token = creds.access_token_encrypted;
             }
         }
@@ -75,7 +75,7 @@ class ConnectorRuntime {
             try {
                 decrypted.refresh_token = await (0, credential_encryption_1.decryptToken)(creds.refresh_token_encrypted, this.config.supabaseUrl, this.config.supabaseServiceKey);
             }
-            catch (error) {
+            catch (_error) {
                 decrypted.refresh_token = creds.refresh_token_encrypted;
             }
         }
@@ -86,28 +86,28 @@ class ConnectorRuntime {
      */
     async createSyncRun(tenantId, connectorId, options) {
         const { data: connector, error: connectorError } = await this.supabase
-            .from('connectors')
-            .select('id')
-            .eq('tenant_id', tenantId)
-            .eq('provider_id', connectorId)
+            .from("connectors")
+            .select("id")
+            .eq("tenant_id", tenantId)
+            .eq("provider_id", connectorId)
             .single();
         if (connectorError || !connector) {
-            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, 'CONNECTOR_NOT_FOUND', connectorId);
+            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, "CONNECTOR_NOT_FOUND", connectorId);
         }
         const { data: syncRun, error: syncError } = await this.supabase
-            .from('sync_runs')
+            .from("sync_runs")
             .insert({
             connector_id: connector.id,
             tenant_id: tenantId,
-            status: 'running',
+            status: "running",
             sync_since: options.since?.toISOString(),
             sync_until: options.until?.toISOString(),
             cursor: options.cursor,
         })
-            .select('id')
+            .select("id")
             .single();
         if (syncError || !syncRun) {
-            throw new connector_driver_1.ConnectorError(`Failed to create sync run: ${syncError?.message}`, 'SYNC_RUN_CREATE_FAILED', connectorId);
+            throw new connector_driver_1.ConnectorError(`Failed to create sync run: ${syncError?.message}`, "SYNC_RUN_CREATE_FAILED", connectorId);
         }
         return syncRun.id;
     }
@@ -143,11 +143,11 @@ class ConnectorRuntime {
         if (updates.cursor)
             updateData.cursor = updates.cursor;
         const { error } = await this.supabase
-            .from('sync_runs')
+            .from("sync_runs")
             .update(updateData)
-            .eq('id', syncRunId);
+            .eq("id", syncRunId);
         if (error) {
-            throw new connector_driver_1.ConnectorError(`Failed to update sync run: ${error.message}`, 'SYNC_RUN_UPDATE_FAILED', '');
+            throw new connector_driver_1.ConnectorError(`Failed to update sync run: ${error.message}`, "SYNC_RUN_UPDATE_FAILED", "");
         }
     }
     /**
@@ -156,13 +156,13 @@ class ConnectorRuntime {
     async saveNormalizedData(tenantId, connectorId, syncRunId, data) {
         // Get connector record
         const { data: connector, error: connectorError } = await this.supabase
-            .from('connectors')
-            .select('id')
-            .eq('tenant_id', tenantId)
-            .eq('provider_id', connectorId)
+            .from("connectors")
+            .select("id")
+            .eq("tenant_id", tenantId)
+            .eq("provider_id", connectorId)
             .single();
         if (connectorError || !connector) {
-            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, 'CONNECTOR_NOT_FOUND', connectorId);
+            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, "CONNECTOR_NOT_FOUND", connectorId);
         }
         // Save accounts
         if (data.accounts && data.accounts.length > 0) {
@@ -178,13 +178,13 @@ class ConnectorRuntime {
                 metadata: acc.metadata || {},
             }));
             const { error: accountsError } = await this.supabase
-                .from('connector_accounts')
+                .from("connector_accounts")
                 .upsert(accountsToInsert, {
-                onConflict: 'connector_id,provider_account_id',
+                onConflict: "connector_id,provider_account_id",
                 ignoreDuplicates: false,
             });
             if (accountsError) {
-                console.error('Failed to save accounts:', accountsError);
+                console.error("Failed to save accounts:", accountsError);
                 // Don't throw, continue with other data
             }
         }
@@ -194,9 +194,9 @@ class ConnectorRuntime {
             const accountMap = new Map();
             if (data.transactions.some((t) => t.accountId)) {
                 const { data: accounts } = await this.supabase
-                    .from('connector_accounts')
-                    .select('id, provider_account_id')
-                    .eq('connector_id', connector.id);
+                    .from("connector_accounts")
+                    .select("id, provider_account_id")
+                    .eq("connector_id", connector.id);
                 if (accounts) {
                     accounts.forEach((acc) => {
                         accountMap.set(acc.provider_account_id, acc.id);
@@ -220,22 +220,22 @@ class ConnectorRuntime {
                 idempotency_key: tx.idempotencyKey || `${tx.externalId}-${tx.occurredAt.toISOString()}`,
             }));
             const { error: transactionsError } = await this.supabase
-                .from('financial_transactions')
+                .from("financial_transactions")
                 .upsert(transactionsToInsert, {
-                onConflict: 'tenant_id,connector_id,idempotency_key',
+                onConflict: "tenant_id,connector_id,idempotency_key",
                 ignoreDuplicates: false,
             });
             if (transactionsError) {
-                console.error('Failed to save transactions:', transactionsError);
+                console.error("Failed to save transactions:", transactionsError);
             }
         }
         // Save balances
         if (data.balances && data.balances.length > 0) {
             const accountMap = new Map();
             const { data: accounts } = await this.supabase
-                .from('connector_accounts')
-                .select('id, provider_account_id')
-                .eq('connector_id', connector.id);
+                .from("connector_accounts")
+                .select("id, provider_account_id")
+                .eq("connector_id", connector.id);
             if (accounts) {
                 accounts.forEach((acc) => {
                     accountMap.set(acc.provider_account_id, acc.id);
@@ -253,13 +253,13 @@ class ConnectorRuntime {
                 raw_payload: bal.rawPayload ? bal.rawPayload : null,
             }));
             const { error: balancesError } = await this.supabase
-                .from('financial_balances')
+                .from("financial_balances")
                 .upsert(balancesToInsert, {
-                onConflict: 'account_id,snapshot_at',
+                onConflict: "account_id,snapshot_at",
                 ignoreDuplicates: false,
             });
             if (balancesError) {
-                console.error('Failed to save balances:', balancesError);
+                console.error("Failed to save balances:", balancesError);
             }
         }
         // Save payouts
@@ -284,13 +284,13 @@ class ConnectorRuntime {
                 idempotency_key: payout.idempotencyKey,
             }));
             const { error: payoutsError } = await this.supabase
-                .from('financial_payouts')
+                .from("financial_payouts")
                 .upsert(payoutsToInsert, {
-                onConflict: 'tenant_id,connector_id,idempotency_key',
+                onConflict: "tenant_id,connector_id,idempotency_key",
                 ignoreDuplicates: false,
             });
             if (payoutsError) {
-                console.error('Failed to save payouts:', payoutsError);
+                console.error("Failed to save payouts:", payoutsError);
             }
         }
         // Save invoices
@@ -305,8 +305,8 @@ class ConnectorRuntime {
                 amount_cents: inv.amountCents,
                 currency: inv.currency,
                 status: inv.status,
-                issue_date: inv.issueDate?.toISOString().split('T')[0],
-                due_date: inv.dueDate?.toISOString().split('T')[0],
+                issue_date: inv.issueDate?.toISOString().split("T")[0],
+                due_date: inv.dueDate?.toISOString().split("T")[0],
                 paid_at: inv.paidAt?.toISOString(),
                 line_items: inv.lineItems || [],
                 provider_metadata: inv.providerMetadata || {},
@@ -314,13 +314,13 @@ class ConnectorRuntime {
                 idempotency_key: inv.idempotencyKey,
             }));
             const { error: invoicesError } = await this.supabase
-                .from('financial_invoices')
+                .from("financial_invoices")
                 .upsert(invoicesToInsert, {
-                onConflict: 'tenant_id,connector_id,idempotency_key',
+                onConflict: "tenant_id,connector_id,idempotency_key",
                 ignoreDuplicates: false,
             });
             if (invoicesError) {
-                console.error('Failed to save invoices:', invoicesError);
+                console.error("Failed to save invoices:", invoicesError);
             }
         }
         // Save subscriptions
@@ -346,13 +346,13 @@ class ConnectorRuntime {
                 idempotency_key: sub.idempotencyKey,
             }));
             const { error: subscriptionsError } = await this.supabase
-                .from('financial_subscriptions')
+                .from("financial_subscriptions")
                 .upsert(subscriptionsToInsert, {
-                onConflict: 'tenant_id,connector_id,idempotency_key',
+                onConflict: "tenant_id,connector_id,idempotency_key",
                 ignoreDuplicates: false,
             });
             if (subscriptionsError) {
-                console.error('Failed to save subscriptions:', subscriptionsError);
+                console.error("Failed to save subscriptions:", subscriptionsError);
             }
         }
         // Save tax estimates
@@ -375,13 +375,13 @@ class ConnectorRuntime {
                 idempotency_key: tax.idempotencyKey,
             }));
             const { error: taxError } = await this.supabase
-                .from('financial_tax_estimates')
+                .from("financial_tax_estimates")
                 .upsert(taxEstimatesToInsert, {
-                onConflict: 'tenant_id,connector_id,idempotency_key',
+                onConflict: "tenant_id,connector_id,idempotency_key",
                 ignoreDuplicates: false,
             });
             if (taxError) {
-                console.error('Failed to save tax estimates:', taxError);
+                console.error("Failed to save tax estimates:", taxError);
             }
         }
         // Save raw payloads for audit
@@ -389,20 +389,20 @@ class ConnectorRuntime {
             const rawEventsToInsert = data.rawPayloads.map((raw, idx) => ({
                 connector_id: connector.id,
                 tenant_id: tenantId,
-                event_type: 'sync',
+                event_type: "sync",
                 event_id: `${syncRunId}-${idx}`,
                 payload: raw.payload,
                 processed: true,
                 processed_at: new Date().toISOString(),
             }));
             const { error: rawError } = await this.supabase
-                .from('raw_events')
+                .from("raw_events")
                 .upsert(rawEventsToInsert, {
-                onConflict: 'connector_id,event_id',
+                onConflict: "connector_id,event_id",
                 ignoreDuplicates: false,
             });
             if (rawError) {
-                console.error('Failed to save raw events:', rawError);
+                console.error("Failed to save raw events:", rawError);
             }
         }
     }
@@ -434,7 +434,8 @@ class ConnectorRuntime {
             (data.payouts?.length || 0) +
             (data.invoices?.length || 0) +
             (data.subscriptions?.length || 0) +
-            (data.taxEstimates?.length || 0) > 0) {
+            (data.taxEstimates?.length || 0) >
+            0) {
             await this.saveNormalizedData(tenantId, connectorId, syncRunId, remainingData);
         }
     }
@@ -443,17 +444,15 @@ class ConnectorRuntime {
      */
     async updateSyncCursor(tenantId, connectorId, cursorKey, cursorValue, accountId) {
         const { data: connector, error: connectorError } = await this.supabase
-            .from('connectors')
-            .select('id')
-            .eq('tenant_id', tenantId)
-            .eq('provider_id', connectorId)
+            .from("connectors")
+            .select("id")
+            .eq("tenant_id", tenantId)
+            .eq("provider_id", connectorId)
             .single();
         if (connectorError || !connector) {
-            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, 'CONNECTOR_NOT_FOUND', connectorId);
+            throw new connector_driver_1.ConnectorError(`Connector not found: ${connectorId}`, "CONNECTOR_NOT_FOUND", connectorId);
         }
-        const { error } = await this.supabase
-            .from('sync_cursors')
-            .upsert({
+        const { error } = await this.supabase.from("sync_cursors").upsert({
             connector_id: connector.id,
             tenant_id: tenantId,
             account_id: accountId || null,
@@ -461,11 +460,11 @@ class ConnectorRuntime {
             cursor_value: cursorValue,
             last_synced_at: new Date().toISOString(),
         }, {
-            onConflict: 'connector_id,COALESCE(account_id, \'00000000-0000-0000-0000-000000000000\'::uuid),cursor_key',
+            onConflict: "connector_id,COALESCE(account_id, '00000000-0000-0000-0000-000000000000'::uuid),cursor_key",
             ignoreDuplicates: false,
         });
         if (error) {
-            console.error('Failed to update sync cursor:', error);
+            console.error("Failed to update sync cursor:", error);
             // Don't throw, cursor updates are best-effort
         }
     }
@@ -474,24 +473,24 @@ class ConnectorRuntime {
      */
     async getSyncCursor(tenantId, connectorId, cursorKey, accountId) {
         const { data: connector, error: connectorError } = await this.supabase
-            .from('connectors')
-            .select('id')
-            .eq('tenant_id', tenantId)
-            .eq('provider_id', connectorId)
+            .from("connectors")
+            .select("id")
+            .eq("tenant_id", tenantId)
+            .eq("provider_id", connectorId)
             .single();
         if (connectorError || !connector) {
             return null;
         }
         let query = this.supabase
-            .from('sync_cursors')
-            .select('cursor_value')
-            .eq('connector_id', connector.id)
-            .eq('cursor_key', cursorKey);
+            .from("sync_cursors")
+            .select("cursor_value")
+            .eq("connector_id", connector.id)
+            .eq("cursor_key", cursorKey);
         if (accountId) {
-            query = query.eq('account_id', accountId);
+            query = query.eq("account_id", accountId);
         }
         else {
-            query = query.is('account_id', null);
+            query = query.is("account_id", null);
         }
         const { data: cursor } = await query.single();
         return cursor?.cursor_value || null;
@@ -503,12 +502,12 @@ class ConnectorRuntime {
         // Check rate limits
         const rateLimitCheck = await (0, rate_limiting_1.checkRateLimit)(connectorId, tenantId, this.config.supabaseUrl, this.config.supabaseServiceKey);
         if (!rateLimitCheck.allowed) {
-            throw new connector_driver_1.ConnectorError(`Rate limit exceeded. Retry after ${rateLimitCheck.retryAfter} seconds`, 'RATE_LIMIT_EXCEEDED', connectorId);
+            throw new connector_driver_1.ConnectorError(`Rate limit exceeded. Retry after ${rateLimitCheck.retryAfter} seconds`, "RATE_LIMIT_EXCEEDED", connectorId);
         }
         // Acquire concurrency lock
         const lock = await (0, concurrency_protection_1.acquireSyncLock)(tenantId, connectorId, this.config.supabaseUrl, this.config.supabaseServiceKey);
         if (!lock.acquired) {
-            throw new connector_driver_1.ConnectorError(lock.error || 'Sync already in progress', 'SYNC_IN_PROGRESS', connectorId);
+            throw new connector_driver_1.ConnectorError(lock.error || "Sync already in progress", "SYNC_IN_PROGRESS", connectorId);
         }
         const startTime = Date.now();
         try {
@@ -521,7 +520,7 @@ class ConnectorRuntime {
             // Record API call
             await (0, rate_limiting_1.recordApiCall)(connectorId, tenantId, this.config.supabaseUrl, this.config.supabaseServiceKey);
             // Get last cursor if exists
-            const lastCursor = await this.getSyncCursor(tenantId, connectorId, 'default', options.accountId);
+            const lastCursor = await this.getSyncCursor(tenantId, connectorId, "default", options.accountId);
             const syncOptions = {
                 ...options,
                 cursor: options.cursor || lastCursor || undefined,
@@ -553,7 +552,7 @@ class ConnectorRuntime {
                 }));
                 // Map balances to ensure accountId is present (required by saveNormalizedData)
                 const balancesWithAccountId = result.balances?.map((bal) => ({
-                    accountId: bal.accountId || '',
+                    accountId: bal.accountId || "",
                     balanceCents: bal.balanceCents,
                     availableBalanceCents: bal.availableBalanceCents,
                     currency: bal.currency,
@@ -569,12 +568,14 @@ class ConnectorRuntime {
                 // Map invoices to ensure idempotencyKey is present
                 const invoicesWithIdempotency = result.invoices?.map((invoice) => ({
                     ...invoice,
-                    idempotencyKey: invoice.idempotencyKey || `${invoice.externalId}-${invoice.issueDate?.toISOString() || Date.now()}`,
+                    idempotencyKey: invoice.idempotencyKey ||
+                        `${invoice.externalId}-${invoice.issueDate?.toISOString() || Date.now()}`,
                 }));
                 // Map subscriptions to ensure idempotencyKey is present
                 const subscriptionsWithIdempotency = result.subscriptions?.map((sub) => ({
                     ...sub,
-                    idempotencyKey: sub.idempotencyKey || `${sub.externalId}-${sub.currentPeriodStart?.toISOString() || Date.now()}`,
+                    idempotencyKey: sub.idempotencyKey ||
+                        `${sub.externalId}-${sub.currentPeriodStart?.toISOString() || Date.now()}`,
                 }));
                 // Map taxEstimates to ensure idempotencyKey is present
                 const taxEstimatesWithIdempotency = result.taxEstimates?.map((tax) => ({
@@ -609,11 +610,11 @@ class ConnectorRuntime {
                 }
                 // Update cursor if provided
                 if (result.nextCursor) {
-                    await this.updateSyncCursor(tenantId, connectorId, 'default', result.nextCursor, options.accountId);
+                    await this.updateSyncCursor(tenantId, connectorId, "default", result.nextCursor, options.accountId);
                 }
                 // Update sync run as completed
                 await this.updateSyncRun(syncRunId, {
-                    status: 'completed',
+                    status: "completed",
                     finishedAt: new Date(),
                     accountsSynced: result.counts.accounts || 0,
                     transactionsSynced: result.counts.transactions || 0,
@@ -627,22 +628,22 @@ class ConnectorRuntime {
                 });
                 // Update connector last sync
                 const { data: connector } = await this.supabase
-                    .from('connectors')
-                    .select('id')
-                    .eq('tenant_id', tenantId)
-                    .eq('provider_id', connectorId)
+                    .from("connectors")
+                    .select("id")
+                    .eq("tenant_id", tenantId)
+                    .eq("provider_id", connectorId)
                     .single();
                 if (connector) {
                     await this.supabase
-                        .from('connectors')
+                        .from("connectors")
                         .update({
                         last_sync_at: new Date().toISOString(),
                         last_successful_sync_at: new Date().toISOString(),
                         error_count: 0,
                         consecutive_failures: 0,
-                        status: 'connected',
+                        status: "connected",
                     })
-                        .eq('id', connector.id);
+                        .eq("id", connector.id);
                 }
                 // Track metrics
                 const duration = Date.now() - startTime;
@@ -655,11 +656,11 @@ class ConnectorRuntime {
             }
             catch (error) {
                 const duration = Date.now() - startTime;
-                const errorType = error instanceof connector_driver_1.ConnectorError ? error.code : 'UNKNOWN_ERROR';
+                const errorType = error instanceof connector_driver_1.ConnectorError ? error.code : "UNKNOWN_ERROR";
                 const errorMessage = error instanceof Error ? error.message : String(error);
                 // Update sync run as failed
                 await this.updateSyncRun(syncRunId, {
-                    status: 'failed',
+                    status: "failed",
                     finishedAt: new Date(),
                     errorMessage,
                     errorDetails: {
@@ -669,25 +670,25 @@ class ConnectorRuntime {
                 });
                 // Update connector error state
                 const { data: connector } = await this.supabase
-                    .from('connectors')
-                    .select('id, consecutive_failures')
-                    .eq('tenant_id', tenantId)
-                    .eq('provider_id', connectorId)
+                    .from("connectors")
+                    .select("id, consecutive_failures")
+                    .eq("tenant_id", tenantId)
+                    .eq("provider_id", connectorId)
                     .single();
                 if (connector) {
                     const conn = connector;
                     const newFailureCount = (conn.consecutive_failures || 0) + 1;
                     await this.supabase
-                        .from('connectors')
+                        .from("connectors")
                         .update({
                         last_sync_at: new Date().toISOString(),
                         last_error: errorMessage,
                         error_count: newFailureCount,
                         consecutive_failures: newFailureCount,
-                        status: newFailureCount >= 5 ? 'error' : 'needs_attention',
+                        status: newFailureCount >= 5 ? "error" : "needs_attention",
                         auto_disabled: newFailureCount >= 10,
                     })
-                        .eq('id', conn.id);
+                        .eq("id", conn.id);
                     // Track metrics
                     (0, prometheus_1.trackSyncFailure)(connectorId, tenantId, duration, errorType);
                     // Check alerts

@@ -162,7 +162,7 @@ export const revalidate = 60;
 if (typeof window === "undefined") {
   try {
     requireEnvironment();
-  } catch (error) {
+  } catch {
     // Log but never throw - allow app to render even with missing env vars
     console.warn(
       "Environment validation warning (non-fatal):",
@@ -181,7 +181,7 @@ if (typeof window === "undefined") {
       console.warn("[Node Version]", nodeCheck.error);
       // Don't throw - allow app to run but log warning
     }
-  } catch (error) {
+  } catch {
     // Node version check failed - non-fatal
     console.warn(
       "Node version check failed (non-fatal):",
@@ -204,7 +204,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   let tenantContext;
   try {
     tenantContext = await getTenantContext();
-  } catch (error) {
+  } catch {
     // Fallback to default context if tenant resolution fails
     // This ensures the app still renders even if tenant service is unavailable
     tenantContext = {

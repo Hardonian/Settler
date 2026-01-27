@@ -40,7 +40,7 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
         message: 'Connected successfully',
       });
     }
-  } catch (error) {
+  } catch {
     diagnostics.push({
       name: 'Supabase Connection',
       status: 'error',
@@ -56,7 +56,7 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
       status: 'ok',
       message: 'Connected successfully',
     });
-  } catch (error) {
+  } catch {
     diagnostics.push({
       name: 'Database Connection',
       status: 'error',
@@ -101,7 +101,7 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
         message: 'No webhooks received yet',
       });
     }
-  } catch (error) {
+  } catch {
     diagnostics.push({
       name: 'Last Stripe Webhook',
       status: 'error',
@@ -129,7 +129,7 @@ async function getDiagnostics(): Promise<DiagnosticItem[]> {
         message: 'No reconciliation runs yet',
       });
     }
-  } catch (error) {
+  } catch {
     diagnostics.push({
       name: 'Last Reconciliation Run',
       status: 'error',

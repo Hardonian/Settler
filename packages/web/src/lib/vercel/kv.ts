@@ -38,7 +38,7 @@ export const kv = {
 
     try {
       return await vercelKv.get<T>(key);
-    } catch (error) {
+    } catch {
       console.error(`[KV] Error getting key "${key}":`, error);
       return null;
     }
@@ -60,7 +60,7 @@ export const kv = {
         await vercelKv.set(key, value);
       }
       return true;
-    } catch (error) {
+    } catch {
       console.error(`[KV] Error setting key "${key}":`, error);
       return false;
     }
@@ -78,7 +78,7 @@ export const kv = {
     try {
       await vercelKv.del(key);
       return true;
-    } catch (error) {
+    } catch {
       console.error(`[KV] Error deleting key "${key}":`, error);
       return false;
     }
@@ -95,7 +95,7 @@ export const kv = {
     try {
       const value = await vercelKv.get(key);
       return value !== null;
-    } catch (error) {
+    } catch {
       console.error(`[KV] Error checking existence of key "${key}":`, error);
       return false;
     }
@@ -112,7 +112,7 @@ export const kv = {
     try {
       const values = await Promise.all(keys.map((key) => vercelKv.get<T>(key)));
       return values;
-    } catch (error) {
+    } catch {
       console.error(`[KV] Error getting multiple keys:`, error);
       return keys.map(() => null);
     }
@@ -137,7 +137,7 @@ export const kv = {
         )
       );
       return true;
-    } catch (error) {
+    } catch {
       console.error(`[KV] Error setting multiple keys:`, error);
       return false;
     }
@@ -156,7 +156,7 @@ export const kv = {
       const newValue = current + by;
       await vercelKv.set(key, newValue);
       return newValue;
-    } catch (error) {
+    } catch {
       console.error(`[KV] Error incrementing key "${key}":`, error);
       return null;
     }
@@ -175,7 +175,7 @@ export const kv = {
       const newValue = Math.max(0, current - by);
       await vercelKv.set(key, newValue);
       return newValue;
-    } catch (error) {
+    } catch {
       console.error(`[KV] Error decrementing key "${key}":`, error);
       return null;
     }
@@ -197,7 +197,7 @@ export const kv = {
         return true;
       }
       return false;
-    } catch (error) {
+    } catch {
       console.error(`[KV] Error setting expiration on key "${key}":`, error);
       return false;
     }

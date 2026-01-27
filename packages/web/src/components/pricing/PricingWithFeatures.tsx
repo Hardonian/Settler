@@ -140,7 +140,7 @@ export function PricingWithFeatures() {
       if (url) {
         window.location.href = url;
       }
-    } catch (error) {
+    } catch {
       // eslint-disable-next-line no-console
       console.error('Failed to start checkout:', error);
       // Fallback to signup page

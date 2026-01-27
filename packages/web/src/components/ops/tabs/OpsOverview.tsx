@@ -40,7 +40,7 @@ export function OpsOverview() {
         }
         const result = await response.json();
         setData(result);
-      } catch (error) {
+      } catch {
         console.error('Failed to fetch ops overview:', error);
         // Set default error state
         setData({

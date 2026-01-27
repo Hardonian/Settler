@@ -1,8 +1,4 @@
-npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
-npm warn config `--include=optional` to include them.
-npm warn config
-npm warn config       Default value does install optional deps unless otherwise omitted.
 
-> @settler/react-settler@0.1.0 build
+> @settler/react-settler@0.1.0 build C:\Users\scott\Documents\GitHub\Settler\packages\react-settler
 > tsc
 

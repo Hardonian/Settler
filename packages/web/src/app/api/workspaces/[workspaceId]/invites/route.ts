@@ -102,7 +102,7 @@ export const POST = withSecurity(
       inviteUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${token}`,
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch {
     appLogger.error('[Invite API] Error', error);
     
     if (error instanceof z.ZodError) {
@@ -185,7 +185,7 @@ export const GET = withSecurity(
       invites,
       trace_id: traceId,
     });
-  } catch (error) {
+  } catch {
     appLogger.error('[Invite API] Error', error);
     // Never return 500 - return empty invites array with graceful error message
     return NextResponse.json(

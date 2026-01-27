@@ -29,7 +29,7 @@ export function CodeBlock({ code, language, className, showCopy = true }: CodeBl
       await navigator.clipboard.writeText(code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       console.error('Failed to copy code:', error);
     }
   };

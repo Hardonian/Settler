@@ -62,7 +62,7 @@ export function withApiWrapper<T extends (...args: any[]) => Promise<NextRespons
       await trackApiMetric(path, request.method, status, Date.now() - startTime);
 
       return response;
-    } catch (error) {
+    } catch {
       // Track error metrics
       await trackApiMetric(path, request.method, 500, Date.now() - startTime);
 

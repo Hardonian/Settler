@@ -121,7 +121,7 @@ export function initWebVitals(): void {
         rating: getRating('LCP', lcpValue),
       });
     }).observe({ type: 'largest-contentful-paint', buffered: true });
-  } catch (error) {
+  } catch {
     // PerformanceObserver not supported
   }
 
@@ -141,7 +141,7 @@ export function initWebVitals(): void {
         });
       }
     }).observe({ type: 'first-input', buffered: true });
-  } catch (error) {
+  } catch {
     // PerformanceObserver not supported
   }
 
@@ -159,7 +159,7 @@ export function initWebVitals(): void {
         rating: getRating('TTFB', ttfb),
       });
     }
-  } catch (error) {
+  } catch {
     // Not supported
   }
 }

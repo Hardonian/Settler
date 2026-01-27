@@ -65,7 +65,7 @@ export async function recordReconciliationValueEvents(
         },
       });
     }
-  } catch (error) {
+  } catch {
     // Log but don't throw - value tracking should never break reconciliation
     console.error('[recordReconciliationValueEvents] Failed to record value events:', error);
   }

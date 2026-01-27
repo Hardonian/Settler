@@ -41,7 +41,7 @@ export default function InviteAcceptancePage() {
         const errorData = await response.json();
         setError(errorData.error || 'Invalid or expired invite');
       }
-    } catch (error) {
+    } catch {
       console.error('[Invite] Error loading invite:', error);
       setError('Failed to load invite');
     } finally {
@@ -66,7 +66,7 @@ export default function InviteAcceptancePage() {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to accept invite');
       }
-    } catch (error) {
+    } catch {
       console.error('[Invite] Error accepting invite:', error);
       setError('Failed to accept invite');
     } finally {

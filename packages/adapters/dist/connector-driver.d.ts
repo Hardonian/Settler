@@ -240,15 +240,15 @@ export interface ConnectorDriver {
 export declare class ConnectorError extends Error {
     readonly code: string;
     readonly connectorId: string;
-    readonly cause?: Error | undefined;
-    constructor(message: string, code: string, connectorId: string, cause?: Error | undefined);
+    readonly cause?: Error;
+    constructor(message: string, code: string, connectorId: string, cause?: Error);
 }
 /**
  * Validation Error
  */
 export declare class ValidationError extends Error {
-    readonly field?: string | undefined;
-    readonly value?: unknown | undefined;
-    constructor(message: string, field?: string | undefined, value?: unknown | undefined);
+    readonly field?: string;
+    readonly value?: unknown;
+    constructor(message: string, field?: string, value?: unknown);
 }
 //# sourceMappingURL=connector-driver.d.ts.map

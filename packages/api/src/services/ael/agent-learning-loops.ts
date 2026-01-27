@@ -209,7 +209,7 @@ export class AgentLearningLoops {
       });
       
       const usage = allJobs.filter((job: { id: string; validationRules: unknown }) => {
-        const rules = job.validationRules as unknown;
+        const rules = job.validationRules;
         if (Array.isArray(rules)) {
           return rules.some((r: unknown) => 
             (typeof r === 'object' && r !== null && 'id' in r && (r as { id: string }).id === rule.id) ||

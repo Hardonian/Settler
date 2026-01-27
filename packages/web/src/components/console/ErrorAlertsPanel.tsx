@@ -46,7 +46,7 @@ export function ErrorAlertsPanel() {
         console.error('Failed to fetch alerts:', res.status);
         setAlerts([]); // Show empty state
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch alerts:', error);
       setAlerts([]); // Show empty state on error
     } finally {

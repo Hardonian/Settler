@@ -107,7 +107,7 @@ export async function getCostBreakdown(
       total,
       estimatedMonthly,
     };
-  } catch (error) {
+  } catch {
     console.error('[Cost Visibility] Error getting cost breakdown:', error);
     return null;
   }

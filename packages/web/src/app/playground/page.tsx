@@ -79,7 +79,7 @@ console.log(report.data.summary);`);
     try {
       const result = await runDemoSimulation();
       setDemoResult(result);
-    } catch (err) {
+    } catch {
       const message = err instanceof Error ? err.message : "Failed to run demo";
       setDemoError(message);
     } finally {

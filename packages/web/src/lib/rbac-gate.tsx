@@ -68,7 +68,7 @@ export function RBACGate({
         const roleData = await roleResponse.json() as { role?: string };
         setUserRole(roleData.role || null);
       }
-    } catch (err) {
+    } catch {
       console.error('Failed to load access:', err);
       // Default to unsubscribed on error
       setSubscription({

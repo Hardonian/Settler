@@ -40,7 +40,7 @@ export class PrometheusMetrics {
     if (!this.histograms.has(key)) {
       this.histograms.set(key, []);
     }
-    this.histograms.get(key)!.push(value);
+    this.histograms.get(key).push(value);
   }
 
   /**

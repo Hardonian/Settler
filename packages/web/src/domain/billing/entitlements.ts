@@ -130,7 +130,7 @@ export async function checkEntitlement(
   let usage;
   try {
     usage = await getAccountUsage(billingAccountId);
-  } catch (error) {
+  } catch {
     // If usage calculation fails, log error and fail closed for paid plans
     // Fail open only for starter/free plans to avoid blocking legitimate users
     await safeLogger.error('[Entitlements] Failed to get account usage', {
@@ -210,7 +210,7 @@ export async function canUseService(
   try {
     const result = await checkEntitlement(billingAccountId, service);
     return result.allowed;
-  } catch (error) {
+  } catch {
     // Fail closed on errors for paid features - log and deny access
     // This prevents abuse if entitlement system is down
     await safeLogger.error('[Entitlements] Error checking service entitlement', {

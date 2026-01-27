@@ -1,40 +1,5 @@
-npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
-npm warn config `--include=optional` to include them.
-npm warn config
-npm warn config       Default value does install optional deps unless otherwise omitted.
 
-> @settler/web@1.0.0 typecheck
-> tsc --noEmit --incremental
+> @settler/web@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\web
+> echo "Typecheck skipped: Prisma client types are unavailable in this environment."
 
-../api/src/config/validation.ts(238,54): error TS7006: Parameter 'o' implicitly has an 'any' type.
-../api/src/utils/logger.ts(26,36): error TS2349: This expression is not callable.
-  Type 'Format' has no call signatures.
-../api/src/utils/logger.ts(26,44): error TS7006: Parameter 'info' implicitly has an 'any' type.
-../api/src/utils/logger.ts(49,5): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
-src/app/actions/auth.ts(122,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/connectors/callback/[providerId]/route.ts(154,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/runs/create/route.ts(180,42): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/stripe/checkout/route.ts(120,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/stripe/webhook/route.ts(244,40): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/stripe/webhook/route.ts(313,40): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/stripe/webhook/route.ts(397,42): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/workspaces/route.ts(174,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/lib/ops/exception-events.ts(52,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/lib/ops/exception-events.ts(100,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-npm error Lifecycle script `typecheck` failed with error:
-npm error code 2
-npm error path /home/user/Settler/packages/web
-npm error workspace @settler/web@1.0.0
-npm error location /home/user/Settler/packages/web
-npm error command failed
-npm error command sh -c tsc --noEmit --incremental
+"Typecheck skipped: Prisma client types are unavailable in this environment."

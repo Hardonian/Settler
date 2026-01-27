@@ -64,7 +64,7 @@ export async function trackConversion(
       console.error('Failed to track conversion:', error);
       // Don't throw - analytics failures shouldn't break the app
     });
-  } catch (error) {
+  } catch {
     console.error('Conversion tracking error:', error);
   }
 }

@@ -62,7 +62,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         try {
           const json = JSON.stringify(data);
           controller.enqueue(encoder.encode(`data: ${json}\n\n`));
-        } catch (error) {
+        } catch {
           appLogger.error('[SSE Stream] Error encoding event', error);
         }
       };
@@ -243,7 +243,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
               }
             }
           }
-        } catch (error) {
+        } catch {
           appLogger.error('[SSE Stream] Polling error', error);
           sendHealth('reconnecting', null);
         }

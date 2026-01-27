@@ -16,7 +16,7 @@ describe('Route Inventory', () => {
 
   it('should have health routes mounted', () => {
     // Health routes should be accessible
-    const routes = (app as Express)._router?.stack || [];
+    const routes = (app)._router?.stack || [];
     const healthRoutes = routes.filter((layer: any) => 
       layer?.route?.path?.includes('/health') || 
       layer?.regexp?.toString().includes('health')
@@ -25,7 +25,7 @@ describe('Route Inventory', () => {
   });
 
   it('should have API v1 routes mounted', () => {
-    const routes = (app as Express)._router?.stack || [];
+    const routes = (app)._router?.stack || [];
     const v1Routes = routes.filter((layer: any) => 
       layer?.route?.path?.includes('/api/v1') || 
       layer?.regexp?.toString().includes('api/v1')
@@ -34,7 +34,7 @@ describe('Route Inventory', () => {
   });
 
   it('should have API v2 routes mounted', () => {
-    const routes = (app as Express)._router?.stack || [];
+    const routes = (app)._router?.stack || [];
     const v2Routes = routes.filter((layer: any) => 
       layer?.route?.path?.includes('/api/v2') || 
       layer?.regexp?.toString().includes('api/v2')
@@ -43,14 +43,14 @@ describe('Route Inventory', () => {
   });
 
   it('should have 404 handler for unknown routes', () => {
-    const routes = (app as Express)._router?.stack || [];
+    const routes = (app)._router?.stack || [];
     // The 404 handler should be the last middleware
     const lastLayer = routes[routes.length - 1];
     expect(lastLayer).toBeDefined();
   });
 
   it('should have error handler middleware', () => {
-    const routes = (app as Express)._router?.stack || [];
+    const routes = (app)._router?.stack || [];
     const errorHandlers = routes.filter((layer: any) => 
       layer?.handle?.length === 4 // Error handlers have 4 parameters (err, req, res, next)
     );

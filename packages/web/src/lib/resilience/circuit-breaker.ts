@@ -71,7 +71,7 @@ export class CircuitBreaker {
       const result = await fn();
       this.onSuccess();
       return result;
-    } catch (error) {
+    } catch {
       this.onFailure();
       throw error;
     }

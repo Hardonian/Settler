@@ -4,9 +4,7 @@ import Settler from "@settler/sdk";
 
 const adaptersCommand = new Command("adapters");
 
-adaptersCommand
-  .description("List available adapters")
-  .alias("adapter");
+adaptersCommand.description("List available adapters").alias("adapter");
 
 adaptersCommand
   .command("list")
@@ -25,7 +23,7 @@ adaptersCommand
       });
 
       const response = await client.adapters.list();
-      
+
       console.log(chalk.bold("\nAvailable Adapters:\n"));
       response.data.forEach((adapter) => {
         console.log(chalk.cyan(`  ${adapter.id}`));
@@ -35,7 +33,9 @@ adaptersCommand
         console.log();
       });
     } catch (error) {
-      console.error(chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`));
+      console.error(
+        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
+      );
       process.exit(1);
     }
   });

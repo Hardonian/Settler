@@ -33,7 +33,7 @@ export const GET = withSecurity(
       const result = await supabase.rpc('get_kpi_health_status').single();
       data = result.data;
       error = result.error;
-    } catch (err) {
+    } catch {
       error = err as Error;
     }
     
@@ -149,7 +149,7 @@ export const GET = withSecurity(
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch {
     appLogger.error('Health check error', error);
     // Never return 500 - return degraded status with graceful error message
     return NextResponse.json(

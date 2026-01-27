@@ -127,7 +127,7 @@ export async function exportLimitationsMiddleware(
     }
 
     // Check size limit (if export size is known)
-    const estimatedRows = (req.body as any).estimatedRows || 0;
+    const estimatedRows = (req.body).estimatedRows || 0;
     if (estimatedRows > limits.sizeLimit) {
       res.status(400).json({
         error: "Export size exceeds limit",

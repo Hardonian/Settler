@@ -21,11 +21,11 @@
  * - Security audit trails
  */
 
-import winston from 'winston';
-import { redact } from './redaction';
-import { trace } from '@opentelemetry/api';
-import { config } from '../config';
-import { AsyncLocalStorage } from 'async_hooks';
+import winston from "winston";
+import { redact } from "./redaction";
+import { trace } from "@opentelemetry/api";
+import { config } from "../config";
+import { AsyncLocalStorage } from "async_hooks";
 
 // AsyncLocalStorage for request-scoped data (requestId, tenantId, userId)
 export const requestContext = new AsyncLocalStorage<{
@@ -88,22 +88,43 @@ export const logger = winston.createLogger({
   level: config.logging.level,
   format: logFormat,
   defaultMeta: {
-    service: 'settler-api',
+    service: "settler-api",
     environment: config.nodeEnv,
   },
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.printf(({ timestamp, level, message, request_id, trace_id, span_id, tenant_id, user_id, ...meta }) => {
-          const metaStr = Object.keys(meta).length ? JSON.stringify(redact(meta)) : '';
-          const requestInfo = request_id && typeof request_id === 'string' ? `[req=${request_id.substring(0, 8)}]` : '';
-          const traceInfo = trace_id && typeof trace_id === 'string' ? `[trace=${trace_id.substring(0, 8)}]` : '';
-          const spanInfo = span_id && typeof span_id === 'string' ? `[span=${span_id.substring(0, 8)}]` : '';
-          const tenantInfo = tenant_id ? `[tenant=${tenant_id}]` : '';
-          const userInfo = user_id ? `[user=${user_id}]` : '';
-          return `${timestamp} [${level}]${requestInfo}${traceInfo}${spanInfo}${tenantInfo}${userInfo}: ${message} ${metaStr}`;
-        })
+        winston.format.printf(
+          ({
+            timestamp,
+            level,
+            message,
+            request_id,
+            trace_id,
+            span_id,
+            tenant_id,
+            user_id,
+            ...meta
+          }) => {
+            const metaStr = Object.keys(meta).length ? JSON.stringify(redact(meta)) : "";
+            const requestInfo =
+              request_id && typeof request_id === "string"
+                ? `[req=${request_id.substring(0, 8)}]`
+                : "";
+            const traceInfo =
+              trace_id && typeof trace_id === "string" ? `[trace=${trace_id.substring(0, 8)}]` : "";
+            const spanInfo =
+              span_id && typeof span_id === "string" ? `[span=${span_id.substring(0, 8)}]` : "";
+            const tenantInfo =
+              tenant_id && typeof tenant_id === "string" ? `[tenant=${tenant_id}]` : "";
+            const userInfo = user_id && typeof user_id === "string" ? `[user=${user_id}]` : "";
+            const timestampStr = typeof timestamp === "string" ? timestamp : String(timestamp);
+            const messageStr = typeof message === "string" ? message : String(message);
+            const levelStr = typeof level === "string" ? level : String(level);
+            return `${timestampStr} [${levelStr}]${requestInfo}${traceInfo}${spanInfo}${tenantInfo}${userInfo}: ${messageStr} ${metaStr}`;
+          }
+        )
       ),
     }),
   ],
@@ -131,7 +152,10 @@ export function logError(message: string, error?: unknown, meta?: Record<string,
   logger.error(message, {
     ...redact(meta),
     error: errorObj.message,
-    stack: error instanceof Error && 'stack' in errorObj && errorObj.stack ? String(errorObj.stack) : undefined,
+    stack:
+      error instanceof Error && "stack" in errorObj && errorObj.stack
+        ? String(errorObj.stack)
+        : undefined,
   });
 }
 

@@ -79,7 +79,7 @@ export const GET = withSecurity(
     }));
 
     return NextResponse.json({ tickets: ticketsWithUsers });
-  } catch (error) {
+  } catch {
     appLogger.error('Failed to fetch support tickets', error);
     // Never return 500 - return empty array with graceful error message
     return NextResponse.json({ 

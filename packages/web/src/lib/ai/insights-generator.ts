@@ -117,7 +117,7 @@ async function generateCostInsights(
         confidence: 0.8,
       });
     }
-  } catch (error) {
+  } catch {
     console.error('[AI Insights] Error generating cost insights:', error);
   }
 
@@ -209,7 +209,7 @@ async function generatePerformanceInsights(
         });
       }
     }
-  } catch (error) {
+  } catch {
     console.error('[AI Insights] Error generating performance insights:', error);
   }
 
@@ -298,7 +298,7 @@ async function generateUsagePatternInsights(
         confidence: 0.7,
       });
     }
-  } catch (error) {
+  } catch {
     console.error('[AI Insights] Error generating usage pattern insights:', error);
   }
 
@@ -348,7 +348,7 @@ export async function getCurrentUserInsights(): Promise<Insight[]> {
     if (!billingAccount) return [];
 
     return await generateAllInsights(billingAccount.id);
-  } catch (error) {
+  } catch {
     console.error('[AI Insights] Error getting insights:', error);
     return [];
   }

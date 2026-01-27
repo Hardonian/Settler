@@ -30,7 +30,7 @@ export function RetentionCohortDashboard() {
         const data = await response.json();
         setCohorts(data.cohorts || []);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch cohort data:", error);
     } finally {
       setLoading(false);

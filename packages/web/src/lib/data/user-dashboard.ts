@@ -140,7 +140,7 @@ export async function getUserDashboardData(): Promise<UserDashboardData | null> 
       metrics,
       isFirstVisit,
     };
-  } catch (error) {
+  } catch {
     const logger = (await import('@/lib/logging/logger')).logger;
     logger.error("Error fetching user dashboard data", error instanceof Error ? error : new Error(String(error)));
     return null;
@@ -186,7 +186,7 @@ export async function savePreTestAnswers(
     }
 
     return { success: true };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to save answers",

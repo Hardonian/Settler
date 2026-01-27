@@ -41,7 +41,7 @@ export default function BillingSuccessPage() {
           setStatus('error');
           setError('Failed to verify subscription');
         }
-      } catch (err) {
+      } catch {
         setStatus('error');
         setError(err instanceof Error ? err.message : 'Failed to verify subscription');
       }

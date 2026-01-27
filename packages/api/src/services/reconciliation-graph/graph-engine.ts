@@ -249,7 +249,7 @@ export class ReconciliationGraphEngine extends EventEmitter {
     const graph = this.getOrCreateGraph(query.jobId);
     
     let nodes = Array.from(graph.nodes.values());
-    let edges = Array.from(graph.edges.values());
+    const edges = Array.from(graph.edges.values());
 
     // Filter by node type
     if (query.nodeType) {

@@ -118,7 +118,7 @@ export function useRealtimeExecution({
             addLog('Reconciliation finished. Connection closed.');
           }
         }
-      } catch (error) {
+      } catch {
         console.error('Failed to parse SSE message:', error);
         addError('Failed to parse update message');
       }

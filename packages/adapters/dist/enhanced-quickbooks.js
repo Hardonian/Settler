@@ -51,7 +51,7 @@ class EnhancedQuickBooksAdapter {
             return fetch("https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer", {
                 method: "POST",
                 headers: {
-                    "Authorization": `Basic ${auth}`,
+                    Authorization: `Basic ${auth}`,
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: new URLSearchParams({
@@ -63,7 +63,7 @@ class EnhancedQuickBooksAdapter {
         if (!response.ok) {
             throw new Error(`QuickBooks token refresh failed: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
+        const data = (await response.json());
         this.config.accessToken = data.access_token;
         this.config.refreshToken = data.refresh_token;
         return data.access_token;
@@ -81,14 +81,14 @@ class EnhancedQuickBooksAdapter {
      */
     async fetch(options) {
         const accessToken = await this.getAccessToken();
-        const startDate = options.dateRange.start.toISOString().split('T')[0];
-        const endDate = options.dateRange.end.toISOString().split('T')[0];
+        const startDate = options.dateRange.start.toISOString().split("T")[0];
+        const endDate = options.dateRange.end.toISOString().split("T")[0];
         // Fetch payments
         const payments = await withCircuitBreaker("quickbooks-api", async () => {
             const response = await fetch(`${this.baseUrl}/v3/company/${this.config.realmId}/query?query=SELECT * FROM Payment WHERE TxnDate >= '${startDate}' AND TxnDate <= '${endDate}' MAXRESULTS 1000`, {
                 headers: {
-                    "Authorization": `Bearer ${accessToken}`,
-                    "Accept": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                    Accept: "application/json",
                 },
             });
             if (!response.ok) {
@@ -100,8 +100,8 @@ class EnhancedQuickBooksAdapter {
         const expenses = await withCircuitBreaker("quickbooks-api", async () => {
             const response = await fetch(`${this.baseUrl}/v3/company/${this.config.realmId}/query?query=SELECT * FROM Purchase WHERE TxnDate >= '${startDate}' AND TxnDate <= '${endDate}' MAXRESULTS 1000`, {
                 headers: {
-                    "Authorization": `Bearer ${accessToken}`,
-                    "Accept": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                    Accept: "application/json",
                 },
             });
             if (!response.ok) {

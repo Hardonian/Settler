@@ -112,7 +112,7 @@ export async function getTokenUsage(tenantId: TenantId): Promise<TokenUsage | nu
     }
 
     return tokenUsage;
-  } catch (error) {
+  } catch {
     await safeLogger.error("[getTokenUsage] Error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),
@@ -197,7 +197,7 @@ export async function consumeTokens(tenantId: TenantId, tokens: number): Promise
     );
 
     return true;
-  } catch (error) {
+  } catch {
     await safeLogger.error("[consumeTokens] Error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),

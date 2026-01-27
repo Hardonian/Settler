@@ -142,7 +142,7 @@ export class PipelineRewriter {
 
     // Analyze step configurations
     for (const run of runs) {
-      const steps = (run.steps || []) as WorkflowStep[];
+      const steps = (run.steps || []);
       for (const step of steps) {
         // Check for deprecated step types
         if (this.isDeprecatedStepType(step.type)) {

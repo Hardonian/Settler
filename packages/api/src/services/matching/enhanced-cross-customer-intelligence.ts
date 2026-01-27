@@ -131,7 +131,7 @@ export class EnhancedCrossCustomerIntelligence {
       const aggregatedPatterns = new Map<string, ReconciliationPattern>();
 
       for (const pattern of patterns) {
-        const metadata = pattern.metadata as any;
+        const metadata = pattern.metadata;
         const patternHash = metadata.patternHash;
 
         if (!aggregatedPatterns.has(patternHash)) {

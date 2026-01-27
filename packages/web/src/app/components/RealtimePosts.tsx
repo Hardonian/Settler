@@ -50,7 +50,7 @@ export function RealtimePosts() {
           } else {
             setPosts(data || []);
           }
-        } catch (err) {
+        } catch {
           console.error('Error in fetchPosts:', err);
         } finally {
           setIsLoading(false);
@@ -92,15 +92,15 @@ export function RealtimePosts() {
         return () => {
           try {
             supabase.removeChannel(channel);
-          } catch (err) {
+          } catch {
             console.error('Error removing channel:', err);
           }
         };
-      } catch (err) {
+      } catch {
         console.error('Error setting up realtime subscription:', err);
         return () => {};
       }
-    } catch (err) {
+    } catch {
       console.error('Error initializing Supabase client:', err);
       setIsLoading(false);
       return () => {};

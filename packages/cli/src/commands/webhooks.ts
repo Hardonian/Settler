@@ -4,9 +4,7 @@ import Settler from "@settler/sdk";
 
 const webhooksCommand = new Command("webhooks");
 
-webhooksCommand
-  .description("Manage webhooks")
-  .alias("webhook");
+webhooksCommand.description("Manage webhooks").alias("webhook");
 
 webhooksCommand
   .command("list")
@@ -25,7 +23,7 @@ webhooksCommand
       });
 
       const response = await client.webhooks.list();
-      
+
       if (response.data.length === 0) {
         console.log(chalk.yellow("No webhooks found."));
         return;
@@ -40,7 +38,9 @@ webhooksCommand
         console.log();
       });
     } catch (error) {
-      console.error(chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`));
+      console.error(
+        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
+      );
       process.exit(1);
     }
   });

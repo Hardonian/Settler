@@ -1,11 +1,10 @@
-npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
-npm warn config `--include=optional` to include them.
-npm warn config
-npm warn config       Default value does install optional deps unless otherwise omitted.
 
-> @settler/edge-node@1.0.0 prebuild
+> @settler/edge-node@1.0.0 prebuild C:\Users\scott\Documents\GitHub\Settler\packages\edge-node
 > npm run typecheck
 
+npm warn Unknown env config "pnpm". This will stop working in the next major version of npm.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
 npm warn config optional Use `--omit=optional` to exclude optional dependencies, or
 npm warn config `--include=optional` to include them.
 npm warn config
@@ -15,6 +14,6 @@ npm warn config       Default value does install optional deps unless otherwise 
 > tsc --noEmit
 
 
-> @settler/edge-node@1.0.0 build
+> @settler/edge-node@1.0.0 build C:\Users\scott\Documents\GitHub\Settler\packages\edge-node
 > tsc
 

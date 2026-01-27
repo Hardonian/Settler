@@ -76,7 +76,7 @@ export class CSVExporter {
     // Add fees if included
     if (includeFees) {
       for (const match of matches) {
-        const transactionId = (match as Record<string, unknown>).transaction_id;
+        const transactionId = (match).transaction_id;
         if (typeof transactionId === 'string') {
           const fees = await query(
             `SELECT type, amount_value, amount_currency, description 

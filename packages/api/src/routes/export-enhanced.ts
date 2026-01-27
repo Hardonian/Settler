@@ -76,7 +76,7 @@ router.get(
         `SELECT id FROM executions
          WHERE job_id = $1 AND started_at >= $2 AND started_at <= $3
          ORDER BY started_at DESC LIMIT 1`,
-        [jobId!, start.toISOString(), end.toISOString()]
+        [jobId, start.toISOString(), end.toISOString()]
       );
 
       if (executions.length === 0 || !executions[0]) {

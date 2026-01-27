@@ -67,7 +67,7 @@ class CustomProvider implements AnalyticsProvider {
       if (!response.ok) {
         console.warn(`Analytics event failed: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch {
       console.warn('Failed to send analytics event:', error);
     }
   }

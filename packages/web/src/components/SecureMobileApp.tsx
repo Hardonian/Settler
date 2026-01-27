@@ -173,7 +173,7 @@ export default function SecureMobileApp({
           setIsPWAInstalled(true);
         }
       }
-    } catch (error) {
+    } catch {
       logger.error("Error installing PWA", error instanceof Error ? error : new Error(String(error)));
     }
     

@@ -63,7 +63,7 @@ export async function authenticateRequest(
         };
       }
       // API key invalid, try session auth (graceful degradation)
-    } catch (error) {
+    } catch {
       // API key validation failed, try session auth
       // Don't log here to avoid noise - graceful degradation
     }
@@ -112,7 +112,7 @@ export async function authenticateRequest(
 
       return context;
     }
-  } catch (error) {
+  } catch {
     // Session auth failed
     console.error('[UnifiedAuth] Session auth error:', error);
   }

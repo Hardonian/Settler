@@ -29,7 +29,7 @@ export function FunnelDashboard() {
         const data = await response.json();
         setFunnel(data.funnel || []);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch funnel data:", error);
     } finally {
       setLoading(false);

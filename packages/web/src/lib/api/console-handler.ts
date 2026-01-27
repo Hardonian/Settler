@@ -79,7 +79,7 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
       let auth: UnifiedAuthContext;
       try {
         auth = await requireAuth(request);
-      } catch (error) {
+      } catch {
         logger.warn('Authentication failed', { error: error instanceof Error ? error.message : 'Unknown' });
         const response = NextResponse.json<ConsoleApiResponse>(
           { error: 'Unauthorized', meta: { correlationId, timestamp: new Date().toISOString() } },
@@ -121,7 +121,7 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
             return addCorrelationHeaders(response, correlationId) as NextResponse<ConsoleApiResponse<TOutput>>;
           }
           input = parsed.data;
-        } catch (error) {
+        } catch {
           logger.warn('Failed to parse request body', { error: error instanceof Error ? error.message : 'Unknown' });
           const response = NextResponse.json<ConsoleApiResponse>(
             {
@@ -163,7 +163,7 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
       );
 
       return addCorrelationHeaders(response, correlationId);
-    } catch (error) {
+    } catch {
       // Track error metrics
       await trackApiMetric(request.nextUrl.pathname, request.method, 500, Date.now() - startTime);
 

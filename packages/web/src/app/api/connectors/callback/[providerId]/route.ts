@@ -168,7 +168,7 @@ export const GET = withUniversalBillingGate(async function GET(
     return NextResponse.redirect(
       new URL('/dashboard/integrations?success=Connected successfully', request.url)
     );
-  } catch (error) {
+  } catch {
     appLogger.error('Error in callback route', error);
     return NextResponse.redirect(
       new URL(

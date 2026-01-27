@@ -138,12 +138,12 @@ export async function getEntitlements(): Promise<Entitlements> {
               }
             }
           }
-        } catch (supabaseError) {
+        } catch {
           // Supabase query failed - use defaults
           console.warn('[Entitlements] Failed to query Supabase subscription:', supabaseError);
         }
       }
-    } catch (error) {
+    } catch {
       // Profile/subscription lookup failed - use defaults
       console.warn('[Entitlements] Failed to get user profile/subscription:', error);
     }
@@ -155,7 +155,7 @@ export async function getEntitlements(): Promise<Entitlements> {
       isPaid,
       userId: user.id,
     };
-  } catch (error) {
+  } catch {
     // Auth check failed - return defaults
     console.warn('[Entitlements] Failed to get entitlements:', error);
     return defaults;

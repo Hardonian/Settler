@@ -225,7 +225,7 @@ export const GET = withSecurity(
     });
 
     return addCorrelationHeaders(response, correlationId);
-  } catch (error) {
+  } catch {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Error calculating analytics', {
       correlationId,

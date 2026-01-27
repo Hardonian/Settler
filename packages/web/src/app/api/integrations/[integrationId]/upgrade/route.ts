@@ -66,7 +66,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ success: true, version: "2.1.0" });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in upgrade POST", error);
     return NextResponse.json(
       {

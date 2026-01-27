@@ -72,7 +72,7 @@ export const GET = withSecurity(
     ];
 
     return NextResponse.json({ revenue });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in integrations/analytics GET", error);
     return NextResponse.json(
       {

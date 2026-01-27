@@ -36,8 +36,8 @@ class NetSuiteAdapter {
      */
     async fetch(options) {
         // Ensure dates are strings (toISOString().split('T')[0] always returns a string)
-        const startDate = options.dateRange.start.toISOString().split('T')[0];
-        const endDate = options.dateRange.end.toISOString().split('T')[0];
+        const startDate = options.dateRange.start.toISOString().split("T")[0];
+        const endDate = options.dateRange.end.toISOString().split("T")[0];
         // NetSuite RESTlet or SuiteScript 2.0 REST API
         // This is a simplified implementation - in production, use NetSuite's REST API
         const response = await withCircuitBreaker("netsuite-api", async () => {
@@ -51,7 +51,7 @@ class NetSuiteAdapter {
             // Simplified - in production, use proper OAuth 1.0 library
             return fetch(`${url}?${new URLSearchParams(params).toString()}`, {
                 headers: {
-                    "Authorization": `OAuth realm="${this.config.accountId}", oauth_consumer_key="${this.config.consumerKey}", oauth_token="${this.config.tokenId}", oauth_signature_method="HMAC-SHA256", oauth_timestamp="${Math.floor(Date.now() / 1000)}", oauth_nonce="${Math.random().toString(36).substring(7)}", oauth_version="1.0"`,
+                    Authorization: `OAuth realm="${this.config.accountId}", oauth_consumer_key="${this.config.consumerKey}", oauth_token="${this.config.tokenId}", oauth_signature_method="HMAC-SHA256", oauth_timestamp="${Math.floor(Date.now() / 1000)}", oauth_nonce="${Math.random().toString(36).substring(7)}", oauth_version="1.0"`,
                     "Content-Type": "application/json",
                 },
             });
@@ -59,7 +59,7 @@ class NetSuiteAdapter {
         if (!response.ok) {
             throw new Error(`NetSuite API error: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
+        const data = (await response.json());
         const transactions = data.items || [];
         return transactions.map((t) => this.normalize(t));
     }

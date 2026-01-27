@@ -78,7 +78,7 @@ export function withTenantContainment<T extends unknown[]>(
       }
 
       return response;
-    } catch (error) {
+    } catch {
       const errorObj = error instanceof Error ? error : new Error(String(error));
       logger.error('Error in containment middleware', errorObj);
       // On error, allow request (fail open)

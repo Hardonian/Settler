@@ -72,7 +72,7 @@ export const POST = withSecurity(
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in retry-payment POST", error);
     return NextResponse.json(
       {

@@ -120,7 +120,7 @@ async function analyzeOnboardingDropOff(days: number): Promise<DropOffAnalysis> 
        WHERE step = $1
          AND completed = true
          AND created_at > NOW() - INTERVAL '${days} days'`,
-      [step!]
+      [step]
     );
     const avgTimeSpent = timeResult[0]?.avg_seconds ? parseFloat(timeResult[0].avg_seconds) : 0;
 

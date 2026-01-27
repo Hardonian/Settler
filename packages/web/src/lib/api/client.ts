@@ -125,7 +125,7 @@ export class ApiClient {
       );
 
       return response;
-    } catch (error) {
+    } catch {
       // Handle error
       if (this.config.onError) {
         this.config.onError(error);
@@ -182,7 +182,7 @@ export async function fetchWithFallback<T>(
 ): Promise<T> {
   try {
     return await apiClient.get<T>(url, options);
-  } catch (error) {
+  } catch {
     if (typeof fallback === 'function') {
       return await (fallback as () => T | Promise<T>)();
     }
@@ -199,7 +199,7 @@ export async function defensiveFetch<T>(
 ): Promise<T | null> {
   try {
     return await apiClient.get<T>(url, options);
-  } catch (error) {
+  } catch {
     console.error('[defensiveFetch] Failed:', error);
     return null;
   }

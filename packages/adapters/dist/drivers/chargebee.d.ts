@@ -4,7 +4,7 @@
  * Subscription billing engine
  * Supports API key authentication
  */
-import { ConnectorDriver, ConnectorMetadata, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedSubscription, NormalizedInvoice } from '../connector-driver';
+import { ConnectorDriver, ConnectorMetadata, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedSubscription, NormalizedInvoice } from "../connector-driver";
 export declare class ChargebeeDriver implements ConnectorDriver {
     readonly metadata: ConnectorMetadata;
     private getApiUrl;

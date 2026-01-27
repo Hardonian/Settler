@@ -69,7 +69,7 @@ export function EnhancedRulesEngine() {
       if (!res.ok) throw new Error('Failed to fetch rules');
       const data = await res.json();
       setRules(data.data || []);
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : 'Failed to load rules');
     } finally {
       setLoading(false);
@@ -112,7 +112,7 @@ export function EnhancedRulesEngine() {
 
       await fetchRules();
       setSelectedRule(null);
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : 'Failed to save rule');
     } finally {
       setLoading(false);
@@ -153,7 +153,7 @@ export function EnhancedRulesEngine() {
       if (!res.ok) throw new Error('Failed to test rule');
       const data = await res.json();
       setTestResult(data);
-    } catch (err) {
+    } catch {
       setError(err instanceof Error ? err.message : 'Failed to test rule');
     } finally {
       setLoading(false);

@@ -234,11 +234,8 @@ healthCommand.action(async (options: { parent?: { baseUrl?: string } }) => {
     if (data.status !== "healthy") {
       process.exit(1);
     }
-  } catch (error) {
-    console.error(
-      chalk.red("❌ Health check failed:"),
-      error instanceof Error ? error.message : "Unknown error"
-    );
+  } catch {
+    console.error(chalk.red("❌ Health check failed:"), "Unknown error");
     process.exit(1);
   }
 });

@@ -88,7 +88,7 @@ export function ActivationChecklist({
         const completed = new Set((data.completedItems || []) as string[]);
         setCompletedItems(completed);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch checklist status:", error);
     } finally {
       setLoading(false);
@@ -119,7 +119,7 @@ export function ActivationChecklist({
   //         onAllComplete?.();
   //       }
   //     }
-  //   } catch (error) {
+  //   } catch {
   //     console.error("Failed to mark item complete:", error);
   //   }
   // };

@@ -61,7 +61,7 @@ export function UsageAnalyticsDashboard() {
         console.error('Failed to fetch analytics:', res.status, errorData);
         setAnalytics(null);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch analytics:', error);
       setAnalytics(null);
     } finally {
@@ -87,7 +87,7 @@ export function UsageAnalyticsDashboard() {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to export data:', error);
     }
   };

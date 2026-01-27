@@ -65,7 +65,7 @@ async function getRequestMetadata(): Promise<{ ipAddress?: string; userAgent?: s
     const userAgent = headersList.get('user-agent') || undefined;
     
     return { ipAddress, userAgent };
-  } catch (error) {
+  } catch {
     // Headers not available (e.g., in background job)
     return {};
   }
@@ -92,7 +92,7 @@ export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
         metadata: (entry.metadata || {}) as never,
       },
     });
-  } catch (error) {
+  } catch {
     // Don't block operations if audit logging fails
     console.error('[Audit Logger] Error logging audit event:', error);
   }
@@ -155,7 +155,7 @@ export async function queryAuditLogs(options: {
       limit,
       offset,
     };
-  } catch (error) {
+  } catch {
     console.error('[Audit Logger] Error querying audit logs:', error);
     return {
       logs: [],

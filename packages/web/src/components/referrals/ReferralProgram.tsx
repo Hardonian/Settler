@@ -29,7 +29,7 @@ export function ReferralProgram() {
       const referralStats = await getReferralStats(userId);
       setStats(referralStats);
       setReferralCode(referralStats.referralCode);
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch referral stats:", error);
     } finally {
       setLoading(false);

@@ -51,7 +51,7 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
       const data = await res.json();
       setSummary(data.reconciliation);
       setItems(data.items || []);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch reconciliation:', err);
       setError(err instanceof Error ? err.message : 'Failed to load reconciliation');
     } finally {
@@ -88,7 +88,7 @@ export function ReconciliationView({ reconciliationId, onRunReconciliation }: Re
       if (onRunReconciliation) {
         onRunReconciliation();
       }
-    } catch (err) {
+    } catch {
       console.error('Failed to run reconciliation:', err);
       setError(err instanceof Error ? err.message : 'Failed to run reconciliation');
     } finally {

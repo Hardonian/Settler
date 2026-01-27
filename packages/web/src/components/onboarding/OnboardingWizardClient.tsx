@@ -33,7 +33,7 @@ export function OnboardingWizardClient() {
           const data = await response.json();
           setProgress(data);
         }
-      } catch (error) {
+      } catch {
         console.error('[Onboarding] Error fetching progress:', error);
       } finally {
         setLoading(false);

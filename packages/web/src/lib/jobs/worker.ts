@@ -95,7 +95,7 @@ export async function claimNextJob(): Promise<Job | null> {
       last_error: updated.last_error || undefined,
       available_at: new Date(updated.available_at),
     };
-  } catch (error) {
+  } catch {
     logger.error('Error claiming job', error as Error);
     return null;
   }
@@ -149,7 +149,7 @@ export async function executeJob(job: Job, handler: JobHandler): Promise<void> {
       .eq('attempt_no', attemptNo));
 
     logger.info('Job succeeded', { jobId: job.id });
-  } catch (error) {
+  } catch {
     const errorObj = {
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,

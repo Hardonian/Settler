@@ -55,7 +55,7 @@ export function CodeEditor({
       await navigator.clipboard.writeText(value);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       console.error('Failed to copy:', error);
     }
   };

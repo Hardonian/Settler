@@ -94,7 +94,7 @@ export default function ReconcilePlayground() {
       if (typeof parsedConfig !== 'object' || Array.isArray(parsedConfig)) {
         throw new Error('Configuration must be a JSON object');
       }
-    } catch (err) {
+    } catch {
       setError({
         message: err instanceof Error ? err.message : 'Invalid JSON configuration. Please check your syntax.',
         code: 'INVALID_JSON'
@@ -148,7 +148,7 @@ export default function ReconcilePlayground() {
       let data: { id?: string; jobId?: string };
       try {
         data = await res.json() as { id?: string; jobId?: string };
-      } catch (parseError) {
+      } catch {
         setError({
           message: 'Failed to parse response',
           code: 'PARSE_ERROR'
@@ -226,7 +226,7 @@ export default function ReconcilePlayground() {
         setJobId(null);
         setRequestCount(prev => prev + 1);
       }, 5000);
-    } catch (err) {
+    } catch {
       // Cleanup intervals and timeout if they were created
       if (progressInterval) clearInterval(progressInterval);
       if (logInterval) clearInterval(logInterval);

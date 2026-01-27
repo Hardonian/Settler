@@ -17,7 +17,7 @@ async function getPrisma(): Promise<PrismaTenantClient | null> {
   try {
     const { prisma } = (await import('../db/prismaClient')) as unknown as { prisma: PrismaTenantClient };
     return prisma;
-  } catch (error) {
+  } catch {
     console.error('[TenantResolver] Failed to load Prisma:', error);
     return null;
   }
@@ -83,7 +83,7 @@ async function findTenantByDomain(host: string): Promise<TenantSelect | null> {
       },
     });
     return tenant as TenantSelect | null;
-  } catch (error) {
+  } catch {
     console.error('Failed to find tenant by domain:', error);
     return null;
   }
@@ -110,7 +110,7 @@ async function findTenantBySlug(slug: string): Promise<TenantSelect | null> {
       },
     });
     return tenant as TenantSelect | null;
-  } catch (error) {
+  } catch {
     console.error('Failed to find tenant by slug:', error);
     return null;
   }
@@ -137,7 +137,7 @@ async function getDefaultTenant(): Promise<TenantSelect | null> {
       },
     });
     return tenant as TenantSelect | null;
-  } catch (error) {
+  } catch {
     console.error('Failed to get default tenant:', error);
     return null;
   }
@@ -161,7 +161,7 @@ async function canAccessTenant(
       UserRole.TENANT_ADMIN, 
       UserRole.TENANT_EDITOR
     ].includes(role);
-  } catch (error) {
+  } catch {
     console.error('Failed to check tenant access:', error);
     return false;
   }
@@ -227,7 +227,7 @@ export async function resolveTenant(
         tenant: defaultTenant,
       };
     }
-  } catch (error) {
+  } catch {
     console.error('Error resolving tenant:', error);
   }
   
@@ -256,7 +256,7 @@ export async function getTenantById(tenantId: string) {
         navigation: true,
       },
     });
-  } catch (error) {
+  } catch {
     console.error('Failed to get tenant by ID:', error);
     return null;
   }
@@ -279,7 +279,7 @@ export async function getTenantBySlug(slug: string) {
         navigation: true,
       },
     });
-  } catch (error) {
+  } catch {
     console.error('Failed to get tenant by slug:', error);
     return null;
   }

@@ -19,59 +19,38 @@ async function acquireSyncLock(tenantId, connectorId, supabaseUrl, supabaseServi
         const lockKey = `tenant:${tenantId}:connector:${connectorId}`;
         const lockHash = Buffer.from(lockKey).readUInt32BE(0);
         // Try to acquire lock (non-blocking)
-        const { data, error } = await supabase.rpc('pg_try_advisory_lock', {
+        const { data, error } = await supabase.rpc("pg_try_advisory_lock", {
             lock_id: lockHash,
         });
-        if (error || !data) {
-            return {
-                acquired: false,
-                error: 'Failed to acquire lock',
-            };
+        if (error) {
+            return { acquired: false, error: error.message };
         }
-        if (data === false) {
-            return {
-                acquired: false,
-                error: 'Sync already in progress',
-            };
-        }
+        const lockIdString = String(lockHash);
         return {
-            acquired: true,
-            lockId: lockHash.toString(),
+            acquired: Boolean(data),
+            lockId: lockIdString,
         };
     }
     catch (error) {
-        // Fallback: Check for running sync runs
-        const { data: runningSyncs } = await supabase
-            .from('sync_runs')
-            .select('id')
-            .eq('connector_id', connectorId)
-            .eq('tenant_id', tenantId)
-            .eq('status', 'running')
-            .limit(1);
-        if (runningSyncs && runningSyncs.length > 0) {
-            return {
-                acquired: false,
-                error: 'Sync already in progress',
-            };
-        }
         return {
-            acquired: true,
+            acquired: false,
+            error: error instanceof Error ? error.message : String(error),
         };
     }
 }
 /**
- * Release sync lock
+ * Release lock for sync
  */
 async function releaseSyncLock(lockId, supabaseUrl, supabaseServiceKey) {
     const supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseServiceKey);
     try {
-        await supabase.rpc('pg_advisory_unlock', {
+        await supabase.rpc("pg_advisory_unlock", {
             lock_id: parseInt(lockId, 10),
         });
     }
     catch (error) {
         // Lock will expire automatically
-        console.warn('Failed to release lock:', error);
+        console.warn("Failed to release lock:", error);
     }
 }
 //# sourceMappingURL=concurrency-protection.js.map

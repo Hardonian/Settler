@@ -54,7 +54,7 @@ export default function ApiKeysPage() {
         const data = await res.json();
         setKeys(data.keys || []);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch API keys:', error);
     } finally {
       setLoading(false);
@@ -79,7 +79,7 @@ export default function ApiKeysPage() {
           setMilestone('first_api_key');
         }
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to create API key:', error);
     }
   };
@@ -95,7 +95,7 @@ export default function ApiKeysPage() {
       if (res.ok) {
         await fetchKeys();
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to revoke API key:', error);
     }
   };
@@ -105,7 +105,7 @@ export default function ApiKeysPage() {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       console.error('Failed to copy:', error);
     }
   };

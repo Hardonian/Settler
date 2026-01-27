@@ -36,7 +36,7 @@ router.post('/:jobId/nodes', async (req: Request, res: Response) => {
       metadata: req.body.metadata,
     };
 
-    graphEngine.addNode(jobId!, node);
+    graphEngine.addNode(jobId, node);
 
     // Add to stream processor for real-time matching
     const event: {
@@ -51,7 +51,7 @@ router.post('/:jobId/nodes', async (req: Request, res: Response) => {
       timestamp: Date;
     } = {
       id: node.id,
-      jobId: jobId!,
+      jobId: jobId,
       type: node.sourceId ? 'source' : 'target',
       data: node.data,
       timestamp: node.timestamp,
@@ -101,7 +101,7 @@ router.post('/:jobId/edges', async (req: Request, res: Response) => {
       createdAt: req.body.createdAt ? new Date(req.body.createdAt) : new Date(),
     };
 
-    graphEngine.addEdge(jobId!, edge);
+    graphEngine.addEdge(jobId, edge);
 
     res.status(201).json({
       data: edge,

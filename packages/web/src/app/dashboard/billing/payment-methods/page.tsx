@@ -39,7 +39,7 @@ export default function PaymentMethodsPage() {
       }
       // Fallback: Empty state if API fails
       setPaymentMethods([]);
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch payment methods:", error);
     } finally {
       setIsLoading(false);

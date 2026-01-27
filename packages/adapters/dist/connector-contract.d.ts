@@ -4,7 +4,7 @@
  * This is the public contract that third-party connectors must implement.
  * External developers can build connectors without reading internal code.
  */
-import { NormalizedData, FetchOptions, ValidationResult } from './base';
+import { NormalizedData, FetchOptions, ValidationResult } from "./base";
 /**
  * Connector interface that all adapters must implement
  *
@@ -68,16 +68,16 @@ export interface Connector {
 export declare class ConnectorError extends Error {
     readonly code: string;
     readonly connector: string;
-    readonly cause?: Error | undefined;
-    constructor(message: string, code: string, connector: string, cause?: Error | undefined);
+    readonly cause?: Error;
+    constructor(message: string, code: string, connector: string, cause?: Error);
 }
 /**
  * Validation error for data normalization failures
  */
 export declare class ValidationError extends Error {
-    readonly field?: string | undefined;
-    readonly value?: unknown | undefined;
-    constructor(message: string, field?: string | undefined, value?: unknown | undefined);
+    readonly field?: string;
+    readonly value?: unknown;
+    constructor(message: string, field?: string, value?: unknown);
 }
 /**
  * Connector metadata for registration
@@ -87,7 +87,7 @@ export interface ConnectorMetadata {
     version: string;
     displayName: string;
     description: string;
-    category: 'payment' | 'ecommerce' | 'accounting' | 'other';
+    category: "payment" | "ecommerce" | "accounting" | "other";
     icon?: string;
     documentationUrl?: string;
     supportsWebhooks: boolean;
@@ -111,7 +111,7 @@ export interface ConnectorValidationRules {
      */
     dataValidation: {
         requiredFields: string[];
-        fieldTypes: Record<string, 'string' | 'number' | 'date' | 'object' | 'array'>;
+        fieldTypes: Record<string, "string" | "number" | "date" | "object" | "array">;
         constraints?: Record<string, unknown>;
     };
     /**
@@ -127,7 +127,7 @@ export interface ConnectorValidationRules {
     security: {
         requiresHttps: boolean;
         allowedOrigins?: string[];
-        credentialEncryption: 'required' | 'optional' | 'none';
+        credentialEncryption: "required" | "optional" | "none";
     };
 }
 /**

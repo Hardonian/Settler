@@ -90,7 +90,7 @@ export const GET = withSecurity(
         },
         { status: 200 }
       );
-    } catch (error) {
+    } catch {
       return handleApiError(error, "Failed to load UI config");
     }
   },
@@ -135,7 +135,7 @@ export const PUT = withSecurity(
       });
 
       return NextResponse.json({ success: true, environment, scope: body.scope, config: sanitized }, { status: 200 });
-    } catch (error) {
+    } catch {
       if (error instanceof z.ZodError) {
         return NextResponse.json({ error: "Invalid request", details: error.issues }, { status: 400 });
       }

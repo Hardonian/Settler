@@ -77,7 +77,7 @@ export const GET = withSecurity(
     logger.info('Receipt detail fetched successfully', { correlationId, receiptId: id });
     const response = NextResponse.json({ receipt });
     return addCorrelationHeaders(response, correlationId);
-  } catch (error) {
+  } catch {
     // If auth error, return 401
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       logger.warn('Authentication failed', { correlationId, error: error.message });

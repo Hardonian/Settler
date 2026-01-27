@@ -117,7 +117,7 @@ async function verifyBillingAccountAccess(billingAccountId: string): Promise<boo
     }
     
     return true;
-  } catch (error) {
+  } catch {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[verifyBillingAccountAccess] Error', {
       error: errorMessage,
@@ -221,7 +221,7 @@ export async function listReceipts(
       itemCount: receipt.items.length,
       createdAt: receipt.createdAt,
     }));
-  } catch (error) {
+  } catch {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[listReceipts] Error', {
       error: errorMessage,
@@ -376,7 +376,7 @@ export async function getReceiptDetail(
         category: item.category,
       })),
     };
-  } catch (error) {
+  } catch {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[getReceiptDetail] Error', {
       error: errorMessage,

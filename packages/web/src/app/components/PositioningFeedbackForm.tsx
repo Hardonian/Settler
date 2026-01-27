@@ -60,7 +60,7 @@ export function PositioningFeedbackForm() {
           message: response.error || 'Failed to submit feedback',
         });
       }
-    } catch (error) {
+    } catch {
       setResult({
         success: false,
         message: 'An unexpected error occurred',

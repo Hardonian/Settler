@@ -49,7 +49,7 @@ export function ROIProofBlock({
           const roi = await response.json();
           setMetrics(roi);
         }
-      } catch (error) {
+      } catch {
         console.error('[ROIProofBlock] Failed to load metrics:', error);
       } finally {
         setLoading(false);

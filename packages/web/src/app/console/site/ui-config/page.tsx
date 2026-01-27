@@ -62,7 +62,7 @@ export default function RuntimeUiConfigPage() {
         setChatbot(resolved.features?.chatbot ?? true);
         setFloatingHelp(resolved.features?.floatingHelp ?? true);
       }
-    } catch (e) {
+    } catch {
       console.error(e);
     } finally {
       setLoading(false);
@@ -108,7 +108,7 @@ export default function RuntimeUiConfigPage() {
       }
       await load();
       alert("Saved");
-    } catch (e) {
+    } catch {
       console.error(e);
       alert(e instanceof Error ? e.message : "Failed to save");
     } finally {

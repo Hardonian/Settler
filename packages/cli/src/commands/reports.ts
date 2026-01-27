@@ -4,9 +4,7 @@ import Settler from "@settler/sdk";
 
 const reportsCommand = new Command("reports");
 
-reportsCommand
-  .description("View reconciliation reports")
-  .alias("report");
+reportsCommand.description("View reconciliation reports").alias("report");
 
 reportsCommand
   .command("get <jobId>")
@@ -32,10 +30,12 @@ reportsCommand
       });
 
       const { summary } = response.data;
-      
+
       console.log(chalk.bold("\nReconciliation Report:\n"));
       console.log(`  Job ID: ${jobId}`);
-      console.log(`  Date Range: ${response.data.dateRange.start} to ${response.data.dateRange.end}`);
+      console.log(
+        `  Date Range: ${response.data.dateRange.start} to ${response.data.dateRange.end}`
+      );
       console.log();
       console.log(chalk.bold("Summary:"));
       console.log(`  Matched: ${chalk.green(summary.matched)}`);
@@ -44,7 +44,9 @@ reportsCommand
       console.log(`  Accuracy: ${chalk.cyan(summary.accuracy.toFixed(2))}%`);
       console.log(`  Total Transactions: ${summary.totalTransactions}`);
     } catch (error) {
-      console.error(chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`));
+      console.error(
+        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
+      );
       process.exit(1);
     }
   });

@@ -34,7 +34,7 @@ async function _checkConnectionPool(): Promise<HealthCheck> {
     const idleConnections = pool.idleCount;
     const waitingCount = pool.waitingCount;
     
-    const utilization = (totalConnections - idleConnections) / pool.options.max!;
+    const utilization = (totalConnections - idleConnections) / pool.options.max;
     
     if (utilization > 0.9) {
       return {

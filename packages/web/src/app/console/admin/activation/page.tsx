@@ -68,7 +68,7 @@ export default function ActivationFunnelPage() {
         setMetrics24h(results.find((r) => r.label === '24h')?.metrics || null);
         setMetrics7d(results.find((r) => r.label === '7d')?.metrics || null);
         setMetrics30d(results.find((r) => r.label === '30d')?.metrics || null);
-      } catch (err) {
+      } catch {
         setError(err instanceof Error ? err.message : 'Failed to load activation metrics');
       } finally {
         setLoading(false);

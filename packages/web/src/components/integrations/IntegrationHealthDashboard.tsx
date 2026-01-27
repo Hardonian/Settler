@@ -37,7 +37,7 @@ export function IntegrationHealthDashboard() {
         const data = await response.json();
         setIntegrations(data.integrations || []);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch integration health:", error);
     } finally {
       setLoading(false);

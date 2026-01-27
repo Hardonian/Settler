@@ -36,7 +36,7 @@ export const GET = withSecurity(
     ];
 
     return NextResponse.json({ allowlist });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in ip-allowlist GET", error);
     return NextResponse.json(
       {
@@ -68,7 +68,7 @@ export const POST = withSecurity(
 
     // In production, insert into ip_allowlists table
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     appLogger.error("Error in ip-allowlist POST", error);
     return NextResponse.json(
       {

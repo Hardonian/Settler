@@ -129,7 +129,7 @@ export function Chatbot({ className }: ChatbotProps) {
       } else {
         throw new Error(data.error || 'Failed to get response');
       }
-    } catch (error) {
+    } catch {
       console.error('Chatbot error:', error);
       const errorMessage: Message = {
         id: `error_${Date.now()}`,

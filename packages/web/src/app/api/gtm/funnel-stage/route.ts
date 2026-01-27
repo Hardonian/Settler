@@ -30,7 +30,7 @@ export const GET = withSecurity(
     const stage = await getCurrentFunnelStage(userId);
 
     return NextResponse.json({ stage });
-  } catch (error) {
+  } catch {
     appLogger.error('[Funnel Stage API] Error', error);
     return NextResponse.json(
       {

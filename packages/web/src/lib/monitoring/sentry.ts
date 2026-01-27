@@ -86,7 +86,7 @@ class SentryClient {
 
       this.initialized = true;
       console.info('[Sentry] Initialized successfully');
-    } catch (error) {
+    } catch {
       console.error('[Sentry] Failed to initialize:', error);
     }
   }
@@ -124,7 +124,7 @@ class SentryClient {
 
       this.initialized = true;
       console.info('[Sentry] Server initialized successfully');
-    } catch (error) {
+    } catch {
       console.error('[Sentry] Failed to initialize server:', error);
     }
   }
@@ -148,7 +148,7 @@ class SentryClient {
         // Sentry not available, log to console instead
         console.error('[Error]', error, context);
       });
-    } catch (err) {
+    } catch {
       console.error('[Error]', error, context);
     }
   }
@@ -181,7 +181,7 @@ class SentryClient {
         // Sentry not available, log to console instead
         (console[consoleLevel as 'info' | 'warn' | 'error'] as typeof console.log)('[Message]', message, context);
       });
-    } catch (err) {
+    } catch {
       (console[consoleLevel as 'info' | 'warn' | 'error'] as typeof console.log)('[Message]', message, context);
     }
   }
@@ -198,7 +198,7 @@ class SentryClient {
       }).catch(() => {
         // Sentry not available, silently fail
       });
-    } catch (err) {
+    } catch {
       // Silently fail if Sentry not available
     }
   }
@@ -226,7 +226,7 @@ class SentryClient {
       }).catch(() => {
         // Sentry not available, silently fail
       });
-    } catch (err) {
+    } catch {
       // Silently fail if Sentry not available
     }
   }
@@ -250,7 +250,7 @@ class SentryClient {
           // Transaction will be finished automatically by Sentry
         },
       };
-    } catch (err) {
+    } catch {
       console.error('[Sentry] Failed to start transaction:', err);
       return null;
     }

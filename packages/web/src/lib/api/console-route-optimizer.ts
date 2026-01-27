@@ -52,7 +52,7 @@ export async function verifyBillingAccountAccessOptimized(
     );
 
     return !!billingAccount && billingAccount.userId === userId;
-  } catch (error) {
+  } catch {
     console.error('[verifyBillingAccountAccessOptimized] Error:', error);
     return false;
   }

@@ -1,6 +1,6 @@
 /**
  * Enhanced QuickBooks Adapter
- * 
+ *
  * Production-ready QuickBooks integration with:
  * - OAuth 2.0 authentication
  * - Circuit breaker protection
@@ -56,31 +56,34 @@ export class EnhancedQuickBooksAdapter implements Adapter {
     }
 
     // Refresh token
-    const response = await withCircuitBreaker(
-      "quickbooks-auth",
-      async () => {
-        const auth = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString("base64");
-        // refreshToken is guaranteed to exist due to check above
-        const refreshToken = this.config.refreshToken!;
-        return fetch("https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer", {
-          method: "POST",
-          headers: {
-            "Authorization": `Basic ${auth}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({
-            grant_type: "refresh_token",
-            refresh_token: refreshToken,
-          }),
-        });
-      }
-    );
+    const response = await withCircuitBreaker("quickbooks-auth", async () => {
+      const auth = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString(
+        "base64"
+      );
+      // refreshToken is guaranteed to exist due to check above
+      const refreshToken = this.config.refreshToken;
+      return fetch("https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer", {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          grant_type: "refresh_token",
+          refresh_token: refreshToken,
+        }),
+      });
+    });
 
     if (!response.ok) {
       throw new Error(`QuickBooks token refresh failed: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json() as { access_token: string; refresh_token: string; expires_in: number };
+    const data = (await response.json()) as {
+      access_token: string;
+      refresh_token: string;
+      expires_in: number;
+    };
     this.config.accessToken = data.access_token;
     this.config.refreshToken = data.refresh_token;
 
@@ -101,56 +104,54 @@ export class EnhancedQuickBooksAdapter implements Adapter {
    */
   async fetch(options: FetchOptions): Promise<NormalizedData[]> {
     const accessToken = await this.getAccessToken();
-    const startDate = options.dateRange.start.toISOString().split('T')[0];
-    const endDate = options.dateRange.end.toISOString().split('T')[0];
+    const startDate = options.dateRange.start.toISOString().split("T")[0];
+    const endDate = options.dateRange.end.toISOString().split("T")[0];
 
     // Fetch payments
-    const payments = await withCircuitBreaker(
-      "quickbooks-api",
-      async () => {
-        const response = await fetch(
-          `${this.baseUrl}/v3/company/${this.config.realmId}/query?query=SELECT * FROM Payment WHERE TxnDate >= '${startDate}' AND TxnDate <= '${endDate}' MAXRESULTS 1000`,
-          {
-            headers: {
-              "Authorization": `Bearer ${accessToken}`,
-              "Accept": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`QuickBooks API error: ${response.status} ${response.statusText}`);
+    const payments = await withCircuitBreaker("quickbooks-api", async () => {
+      const response = await fetch(
+        `${this.baseUrl}/v3/company/${this.config.realmId}/query?query=SELECT * FROM Payment WHERE TxnDate >= '${startDate}' AND TxnDate <= '${endDate}' MAXRESULTS 1000`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+          },
         }
+      );
 
-        return response.json() as Promise<{ QueryResponse?: { Payment?: unknown[] } }>;
+      if (!response.ok) {
+        throw new Error(`QuickBooks API error: ${response.status} ${response.statusText}`);
       }
-    );
+
+      return response.json() as Promise<{ QueryResponse?: { Payment?: unknown[] } }>;
+    });
 
     // Fetch expenses
-    const expenses = await withCircuitBreaker(
-      "quickbooks-api",
-      async () => {
-        const response = await fetch(
-          `${this.baseUrl}/v3/company/${this.config.realmId}/query?query=SELECT * FROM Purchase WHERE TxnDate >= '${startDate}' AND TxnDate <= '${endDate}' MAXRESULTS 1000`,
-          {
-            headers: {
-              "Authorization": `Bearer ${accessToken}`,
-              "Accept": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`QuickBooks API error: ${response.status} ${response.statusText}`);
+    const expenses = await withCircuitBreaker("quickbooks-api", async () => {
+      const response = await fetch(
+        `${this.baseUrl}/v3/company/${this.config.realmId}/query?query=SELECT * FROM Purchase WHERE TxnDate >= '${startDate}' AND TxnDate <= '${endDate}' MAXRESULTS 1000`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+          },
         }
+      );
 
-        return response.json() as Promise<{ QueryResponse?: { Purchase?: unknown[] } }>;
+      if (!response.ok) {
+        throw new Error(`QuickBooks API error: ${response.status} ${response.statusText}`);
       }
-    );
+
+      return response.json() as Promise<{ QueryResponse?: { Purchase?: unknown[] } }>;
+    });
 
     // Normalize and combine
-    const normalizedPayments = (payments.QueryResponse?.Payment || []).map((p) => this.normalize(p));
-    const normalizedExpenses = (expenses.QueryResponse?.Purchase || []).map((e) => this.normalize(e));
+    const normalizedPayments = (payments.QueryResponse?.Payment || []).map((p) =>
+      this.normalize(p)
+    );
+    const normalizedExpenses = (expenses.QueryResponse?.Purchase || []).map((e) =>
+      this.normalize(e)
+    );
 
     return [...normalizedPayments, ...normalizedExpenses];
   }

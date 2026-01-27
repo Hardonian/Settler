@@ -112,7 +112,7 @@ export const POST = withUniversalBillingGate(async function POST(
       message: 'Token refreshed successfully',
       result,
     });
-  } catch (error) {
+  } catch {
     appLogger.error('Error in refresh route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

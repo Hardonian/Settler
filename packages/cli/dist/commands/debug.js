@@ -41,8 +41,7 @@ const commander_1 = require("commander");
 const chalk_1 = __importDefault(require("chalk"));
 const debugCommand = new commander_1.Command("debug");
 exports.debugCommand = debugCommand;
-debugCommand
-    .description("Debugging and diagnostic tools");
+debugCommand.description("Debugging and diagnostic tools");
 // Test connection to an adapter
 debugCommand
     .command("test-connection")
@@ -71,7 +70,7 @@ debugCommand
             }),
         });
         if (response.ok) {
-            const data = await response.json();
+            const data = (await response.json());
             console.log(chalk_1.default.green("✅ Connection successful!"));
             if (data.adapter) {
                 console.log(chalk_1.default.gray(`   Adapter: ${data.adapter}`));
@@ -84,7 +83,7 @@ debugCommand
             }
         }
         else {
-            const error = await response.json();
+            const error = (await response.json());
             console.error(chalk_1.default.red("❌ Connection failed:"));
             console.error(chalk_1.default.red(`   ${error.message || "Unknown error"}`));
             process.exit(1);
@@ -136,7 +135,7 @@ debugCommand
         }
         if (errors.length > 0) {
             console.error(chalk_1.default.red("❌ Validation failed:"));
-            errors.forEach(err => console.error(chalk_1.default.red(`   - ${err}`)));
+            errors.forEach((err) => console.error(chalk_1.default.red(`   - ${err}`)));
             process.exit(1);
         }
         console.log(chalk_1.default.green("✅ Config file is valid!"));

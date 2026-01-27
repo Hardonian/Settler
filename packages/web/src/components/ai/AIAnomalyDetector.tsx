@@ -25,7 +25,7 @@ export function AIAnomalyDetector({ userId }: { userId?: string }) {
     try {
       const detected = await detectAllAnomalies(userId);
       setAnomalies(detected);
-    } catch (error) {
+    } catch {
       console.error("Failed to detect anomalies:", error);
     } finally {
       setLoading(false);

@@ -49,7 +49,7 @@ export function TenantsObservabilityDashboard() {
       if (data.tenants) {
         setTenants(data.tenants);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to load tenants:', error);
     } finally {
       setLoading(false);

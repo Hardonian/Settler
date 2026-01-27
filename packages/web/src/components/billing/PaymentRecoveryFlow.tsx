@@ -43,7 +43,7 @@ export function PaymentRecoveryFlow({ userId, subscriptionId }: PaymentRecoveryF
         const data = await response.json();
         setRecovery(data.recovery);
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch recovery status:", error);
     } finally {
       setLoading(false);
@@ -55,7 +55,7 @@ export function PaymentRecoveryFlow({ userId, subscriptionId }: PaymentRecoveryF
     try {
       // Redirect to payment update page
       window.location.href = "/dashboard/billing?action=update_payment";
-    } catch (error) {
+    } catch {
       console.error("Failed to update payment:", error);
     } finally {
       setUpdating(false);
@@ -74,7 +74,7 @@ export function PaymentRecoveryFlow({ userId, subscriptionId }: PaymentRecoveryF
       if (response.ok) {
         await fetchRecoveryStatus();
       }
-    } catch (error) {
+    } catch {
       console.error("Failed to retry payment:", error);
     } finally {
       setUpdating(false);

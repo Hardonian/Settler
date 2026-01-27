@@ -4,7 +4,7 @@
  * eBay marketplace integration
  * Supports OAuth2 flow
  */
-import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedPayout, NormalizedTransaction } from '../connector-driver';
+import { ConnectorDriver, ConnectorMetadata, AuthUrlOptions, AuthCallbackResult, TestConnectionOptions, TestConnectionResult, SyncOptions, SyncResult, NormalizedPayout, NormalizedTransaction } from "../connector-driver";
 export declare class EbayDriver implements ConnectorDriver {
     readonly metadata: ConnectorMetadata;
     private getApiUrl;

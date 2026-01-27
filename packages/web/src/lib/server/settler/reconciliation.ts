@@ -173,7 +173,7 @@ export async function runReconciliation(
       startedAt: result.startedAt,
       completedAt: result.completedAt || undefined,
     };
-  } catch (error) {
+  } catch {
     await safeLogger.error("[runReconciliation] Unexpected error", {
       tenantId,
       sourceId: params.sourceId,
@@ -236,7 +236,7 @@ export async function getReconciliationSummary(
       startedAt: result.startedAt,
       completedAt: result.completedAt || undefined,
     };
-  } catch (error) {
+  } catch {
     await safeLogger.error("[getReconciliationSummary] Unexpected error", {
       tenantId,
       reconciliationId,
@@ -347,7 +347,7 @@ export async function listReconciliationItems(
     items.sort((a, b) => b.impact.riskScore - a.impact.riskScore);
 
     return items;
-  } catch (error) {
+  } catch {
     await safeLogger.error("[listReconciliationItems] Unexpected error", {
       tenantId,
       reconciliationId,

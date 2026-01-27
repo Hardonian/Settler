@@ -1,12 +1,12 @@
 /**
  * Alert Manager
- * 
+ *
  * Manages alerts for sync failures and other critical events
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-export type AlertSeverity = 'critical' | 'warning' | 'info';
+export type AlertSeverity = "critical" | "warning" | "info";
 
 export interface Alert {
   id: string;
@@ -25,7 +25,7 @@ export interface Alert {
 export interface AlertRule {
   id: string;
   connectorId?: string; // undefined = applies to all connectors
-  condition: 'consecutive_failures' | 'error_rate' | 'sync_delay' | 'rate_limit';
+  condition: "consecutive_failures" | "error_rate" | "sync_delay" | "rate_limit";
   threshold: number;
   severity: AlertSeverity;
   enabled: boolean;
@@ -46,38 +46,38 @@ export class AlertManager {
   private loadDefaultRules(): void {
     this.rules = [
       {
-        id: 'consecutive_failures_5',
-        condition: 'consecutive_failures',
+        id: "consecutive_failures_5",
+        condition: "consecutive_failures",
         threshold: 5,
-        severity: 'warning',
+        severity: "warning",
         enabled: true,
       },
       {
-        id: 'consecutive_failures_10',
-        condition: 'consecutive_failures',
+        id: "consecutive_failures_10",
+        condition: "consecutive_failures",
         threshold: 10,
-        severity: 'critical',
+        severity: "critical",
         enabled: true,
       },
       {
-        id: 'error_rate_10',
-        condition: 'error_rate',
+        id: "error_rate_10",
+        condition: "error_rate",
         threshold: 10, // 10% error rate
-        severity: 'warning',
+        severity: "warning",
         enabled: true,
       },
       {
-        id: 'sync_delay_24h',
-        condition: 'sync_delay',
+        id: "sync_delay_24h",
+        condition: "sync_delay",
         threshold: 24 * 60 * 60 * 1000, // 24 hours in ms
-        severity: 'warning',
+        severity: "warning",
         enabled: true,
       },
       {
-        id: 'rate_limit_hit',
-        condition: 'rate_limit',
+        id: "rate_limit_hit",
+        condition: "rate_limit",
         threshold: 1,
-        severity: 'info',
+        severity: "info",
         enabled: true,
       },
     ];
@@ -97,7 +97,7 @@ export class AlertManager {
 
     // Check consecutive failures rule
     const consecutiveRule = this.rules.find(
-      (r) => r.condition === 'consecutive_failures' && consecutiveFailures >= r.threshold
+      (r) => r.condition === "consecutive_failures" && consecutiveFailures >= r.threshold
     );
 
     if (consecutiveRule) {
@@ -123,15 +123,11 @@ export class AlertManager {
   /**
    * Check error rate alerts
    */
-  async checkErrorRate(
-    connectorId: string,
-    tenantId: string,
-    errorRate: number
-  ): Promise<Alert[]> {
+  async checkErrorRate(connectorId: string, tenantId: string, errorRate: number): Promise<Alert[]> {
     const alerts: Alert[] = [];
 
     const errorRateRule = this.rules.find(
-      (r) => r.condition === 'error_rate' && errorRate >= r.threshold
+      (r) => r.condition === "error_rate" && errorRate >= r.threshold
     );
 
     if (errorRateRule) {
@@ -168,9 +164,7 @@ export class AlertManager {
     }
 
     const delay = Date.now() - lastSyncAt.getTime();
-    const delayRule = this.rules.find(
-      (r) => r.condition === 'sync_delay' && delay >= r.threshold
-    );
+    const delayRule = this.rules.find((r) => r.condition === "sync_delay" && delay >= r.threshold);
 
     if (delayRule) {
       const hoursDelayed = Math.round(delay / (60 * 60 * 1000));
@@ -208,13 +202,13 @@ export class AlertManager {
     try {
       // Check if alert already exists (deduplication)
       const { data: existing } = await this.supabase
-        .from('connector_alerts')
-        .select('id')
-        .eq('connector_id', data.connectorId)
-        .eq('tenant_id', data.tenantId)
-        .eq('severity', data.severity)
-        .is('resolved_at', null)
-        .eq('title', data.title)
+        .from("connector_alerts")
+        .select("id")
+        .eq("connector_id", data.connectorId)
+        .eq("tenant_id", data.tenantId)
+        .eq("severity", data.severity)
+        .is("resolved_at", null)
+        .eq("title", data.title)
         .limit(1);
 
       if (existing && existing.length > 0) {
@@ -223,10 +217,10 @@ export class AlertManager {
 
       // Get connector record
       const { data: connector } = await this.supabase
-        .from('connectors')
-        .select('id')
-        .eq('provider_id', data.connectorId)
-        .eq('tenant_id', data.tenantId)
+        .from("connectors")
+        .select("id")
+        .eq("provider_id", data.connectorId)
+        .eq("tenant_id", data.tenantId)
         .single();
 
       if (!connector) {
@@ -235,7 +229,7 @@ export class AlertManager {
 
       // Create alert
       const { data: alert, error } = await this.supabase
-        .from('connector_alerts')
+        .from("connector_alerts")
         .insert({
           connector_id: (connector as { id: string }).id,
           tenant_id: data.tenantId,
@@ -249,7 +243,7 @@ export class AlertManager {
         .single();
 
       if (error || !alert) {
-        console.error('Failed to create alert:', error);
+        console.error("Failed to create alert:", error);
         return null;
       }
 
@@ -258,7 +252,7 @@ export class AlertManager {
 
       return alert as Alert;
     } catch (error) {
-      console.error('Error creating alert:', error);
+      console.error("Error creating alert:", error);
       return null;
     }
   }
@@ -269,14 +263,14 @@ export class AlertManager {
   private async sendNotification(alert: Alert): Promise<void> {
     // TODO: Integrate with notification service (email, Slack, PagerDuty, etc.)
     console.log(`Alert: [${alert.severity.toUpperCase()}] ${alert.title} - ${alert.message}`);
-    
+
     // Example: Send to webhook
     const webhookUrl = process.env.ALERT_WEBHOOK_URL;
     if (webhookUrl) {
       try {
         await fetch(webhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             severity: alert.severity,
             title: alert.title,
@@ -287,7 +281,7 @@ export class AlertManager {
           }),
         });
       } catch (error) {
-        console.error('Failed to send webhook notification:', error);
+        console.error("Failed to send webhook notification:", error);
       }
     }
   }
@@ -297,12 +291,12 @@ export class AlertManager {
    */
   async resolveAlert(alertId: string, resolvedBy: string): Promise<void> {
     await this.supabase
-      .from('connector_alerts')
+      .from("connector_alerts")
       .update({
         resolved_at: new Date().toISOString(),
         resolved_by: resolvedBy,
       } as never)
-      .eq('id', alertId);
+      .eq("id", alertId);
   }
 
   /**
@@ -310,10 +304,10 @@ export class AlertManager {
    */
   async getActiveAlerts(connectorId: string, tenantId: string): Promise<Alert[]> {
     const { data: connector } = await this.supabase
-      .from('connectors')
-      .select('id')
-      .eq('provider_id', connectorId)
-      .eq('tenant_id', tenantId)
+      .from("connectors")
+      .select("id")
+      .eq("provider_id", connectorId)
+      .eq("tenant_id", tenantId)
       .single();
 
     if (!connector) {
@@ -321,11 +315,11 @@ export class AlertManager {
     }
 
     const { data: alerts } = await this.supabase
-      .from('connector_alerts')
-      .select('*')
-      .eq('connector_id', (connector as { id: string }).id)
-      .is('resolved_at', null)
-      .order('created_at', { ascending: false });
+      .from("connector_alerts")
+      .select("*")
+      .eq("connector_id", (connector as { id: string }).id)
+      .is("resolved_at", null)
+      .order("created_at", { ascending: false });
 
     return (alerts || []) as Alert[];
   }

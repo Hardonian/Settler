@@ -280,7 +280,7 @@ export class ReconciliationProjectionHandlers {
     await this.db.query(query, [
       data.reconciliation_id,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (data as any).job_id || 'unknown',
+      (data).job_id || 'unknown',
       data.error.type,
       data.step || 'unknown',
       new Date(data.failed_at),

@@ -232,7 +232,7 @@ export async function getConnectionPoolMetrics(): Promise<ConnectionPoolMetrics>
       healthy,
       timestamp: new Date(),
     };
-  } catch (error) {
+  } catch {
     appLogger.error('[DB Observability] Connection pool health check failed', { error });
 
     return {
@@ -293,7 +293,7 @@ export async function getTableBloatMetrics(): Promise<TableBloatMetrics[]> {
       lastVacuum: row.lastVacuum ? new Date(row.lastVacuum) : null,
       lastAutovacuum: row.lastAutovacuum ? new Date(row.lastAutovacuum) : null,
     }));
-  } catch (error) {
+  } catch {
     appLogger.error('[DB Observability] Failed to get table bloat metrics', { error });
     return [];
   }
@@ -349,7 +349,7 @@ export async function getIndexUsageMetrics(): Promise<IndexUsageMetrics[]> {
       indexSize: row.indexSize,
       usageCategory: row.usageCategory,
     }));
-  } catch (error) {
+  } catch {
     appLogger.error('[DB Observability] Failed to get index usage metrics', { error });
     return [];
   }

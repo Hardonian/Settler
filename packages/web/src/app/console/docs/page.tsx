@@ -364,7 +364,7 @@ export default function DocsPage() {
             setApiKey(`rk_${activeKey.keyPrefix}...`);
           }
         }
-      } catch (error) {
+      } catch {
         // Ignore errors
       }
     };

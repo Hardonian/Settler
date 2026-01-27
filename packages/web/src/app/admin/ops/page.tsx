@@ -116,7 +116,7 @@ export default function AdminOpsConsole() {
       }
       // Refresh data
       window.location.reload();
-    } catch (error) {
+    } catch {
       // Error handling would trigger toast notification
       if (error instanceof Error) {
         adminLogger.error('Failed to resolve exception', error, { exceptionId: id });
@@ -136,7 +136,7 @@ export default function AdminOpsConsole() {
       }
       // Refresh data
       window.location.reload();
-    } catch (error) {
+    } catch {
       // Error handling would trigger toast notification
       if (error instanceof Error) {
         adminLogger.error('Failed to escalate exception', error, { exceptionId: id });
@@ -312,7 +312,7 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
         // Toast would be shown here
         window.location.reload();
       }
-    } catch (error) {
+    } catch {
       adminLogger.error('Failed to resolve exception', error);
     } finally {
       setIsResolving(false);
@@ -331,7 +331,7 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
         // Toast would be shown here
         window.location.reload();
       }
-    } catch (error) {
+    } catch {
       adminLogger.error('Failed to escalate exception', error);
     } finally {
       setIsEscalating(false);

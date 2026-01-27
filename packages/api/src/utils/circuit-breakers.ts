@@ -58,7 +58,7 @@ export function createCircuitBreaker<
     logError("Circuit breaker failure", error instanceof Error ? error : new Error(String(error)), { name });
   });
 
-  return breaker as CircuitBreaker<TReturn>;
+  return breaker;
 }
 
 /**
