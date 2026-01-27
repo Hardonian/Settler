@@ -135,7 +135,7 @@ export async function signUpUser(
       success: true,
       userId: authData.user.id,
     };
-  } catch {
+  } catch (error: unknown) {
     console.error('Sign-up error:', error);
     return {
       success: false,
@@ -177,7 +177,7 @@ export async function logActivity(
     }
 
     return { success: true };
-  } catch {
+  } catch (error: unknown) {
     console.error('Log activity error:', error);
     return {
       success: false,
