@@ -44,7 +44,7 @@ export default function AdminDatabasePage() {
           setLoading(false);
           return;
         }
-      } catch {
+      } catch (error) {
         // Fall through to fallback
       }
       
@@ -55,7 +55,7 @@ export default function AdminDatabasePage() {
         if (result.tables) {
           setTables(result.tables);
         }
-      } catch {
+      } catch (error) {
         // Use empty list
         setTables([]);
       }

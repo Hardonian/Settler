@@ -70,7 +70,7 @@ export default function AdminAnalyticsPage() {
       if (!kpisResult.success && !workspacesResult.success) {
         setError('Unable to load analytics data. Please try again.');
       }
-    } catch {
+    } catch (error) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       adminLogger.error('Error loading analytics data', new Error(errorMessage));
       setError('Failed to load analytics data. Please try again.');

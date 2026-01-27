@@ -69,7 +69,7 @@ export async function getExperiments(): Promise<
       orderBy: { createdAt: "desc" },
     });
     return { success: true, data: experiments };
-  } catch {
+  } catch (error) {
     console.error(err);
     return { success: false, error: "Failed to fetch experiments" };
   }
@@ -95,7 +95,7 @@ export async function getExperiment(
     }
 
     return { success: true, data: experiment };
-  } catch {
+  } catch (error) {
     console.error(err);
     return { success: false, error: "Failed to fetch experiment" };
   }
@@ -134,7 +134,7 @@ export async function createExperiment(formData: FormData): Promise<ActionState>
 
     revalidatePath("/admin/experiments");
     return { success: true, data: experiment };
-  } catch {
+  } catch (error) {
     console.error(err);
     return { success: false, error: "Failed to create experiment" };
   }
@@ -179,7 +179,7 @@ export async function updateExperiment(id: string, data: unknown): Promise<Actio
     revalidatePath(`/admin/experiments/${id}`);
     revalidatePath("/admin/experiments");
     return { success: true };
-  } catch {
+  } catch (error) {
     console.error(err);
     return { success: false, error: "Failed to update experiment" };
   }
