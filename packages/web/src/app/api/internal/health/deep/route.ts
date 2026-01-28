@@ -71,7 +71,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
           name: `Table: ${table}`,
           status: 'ok',
         });
-      } catch {
+      } catch (error) {
         allOk = false;
         checks.push({
           name: `Table: ${table}`,
@@ -94,7 +94,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         status: 'ok',
         message: 'RLS check requires authenticated context',
       });
-    } catch {
+    } catch (error) {
       checks.push({
         name: 'RLS: recon_runs',
         status: 'ok',
@@ -117,7 +117,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
           status: 'ok',
           details: { canRead: true, membershipCount: data?.length || 0 },
         });
-      } catch {
+      } catch (error) {
         allOk = false;
         checks.push({
           name: 'Workspace Membership',
@@ -151,7 +151,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         status: 'ok',
         details: { accessible: true },
       });
-    } catch {
+    } catch (error) {
       allOk = false;
       checks.push({
         name: 'Job Queue',
@@ -169,7 +169,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         status: 'ok',
         message: error ? 'Connected (function may not exist)' : 'Connected',
       });
-    } catch {
+    } catch (error) {
       allOk = false;
       checks.push({
         name: 'Database Connection',
@@ -183,7 +183,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
       checks,
       timestamp: new Date().toISOString(),
     });
-  } catch {
+  } catch (error) {
     logger.error('Deep health check failed', error as Error);
     return NextResponse.json(
       {

@@ -78,7 +78,7 @@ export function getGuestSession(): GuestSession | null {
     if (stored) {
       return JSON.parse(stored) as GuestSession;
     }
-  } catch {
+  } catch (error) {
     // Ignore parse errors
   }
   

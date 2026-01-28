@@ -5,9 +5,11 @@
  * Uses SDK for consistent API access
  */
 
-import { Command } from "commander";
-import Settler from "@settler/sdk";
 import chalk from "chalk";
+import { Command } from "commander";
+
+import Settler from "@settler/sdk";
+import type { ApiKey, UsageSummary } from "@settler/sdk";
 
 export const consoleCommand = new Command("console").description("Manage Console resources");
 
@@ -44,7 +46,7 @@ apiKeysCommand
 
       console.log(chalk.bold("\nAPI Keys:"));
       console.log("─".repeat(80));
-      keys.forEach((key) => {
+      keys.forEach((key: ApiKey) => {
         console.log(chalk.cyan(`\nID: ${key.id}`));
         if (key.name) console.log(`Name: ${key.name}`);
         console.log(`Prefix: ${key.keyPrefix}`);
@@ -174,7 +176,16 @@ usageCommand
 
       const days = parseInt(options.days || "7", 10);
       const data = await client.console.getUsage(days);
-      const summary = data.summary || {};
+      const summary: UsageSummary = data.summary || {
+        totalCalls: 0,
+        byService: {},
+        byOperation: {},
+        errorRate: 0,
+        period: {
+          start: "",
+          end: "",
+        },
+      };
 
       console.log(chalk.bold(`\n📊 Usage Summary (Last ${days} days)`));
       console.log("─".repeat(80));
@@ -184,7 +195,8 @@ usageCommand
 
       if (summary.byService && Object.keys(summary.byService).length > 0) {
         console.log(chalk.bold("\nBy Service:"));
-        Object.entries(summary.byService).forEach(([service, count]: [string, number]) => {
+        const byServiceEntries = Object.entries(summary.byService) as Array<[string, number]>;
+        byServiceEntries.forEach(([service, count]) => {
           console.log(`  ${service}: ${chalk.cyan(count.toLocaleString())} calls`);
         });
       }

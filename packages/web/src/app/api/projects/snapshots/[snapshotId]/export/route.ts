@@ -60,7 +60,7 @@ export const GET = withSecurity(
         "Content-Disposition": `attachment; filename="snapshot-${snapshotId}.json"`,
       },
     });
-  } catch {
+  } catch (error) {
     appLogger.error("Error in export", error);
     return NextResponse.json(
       {

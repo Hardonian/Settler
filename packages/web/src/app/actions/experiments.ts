@@ -3,7 +3,7 @@
 import { prisma } from "@/shared/db/prismaClient";
 import { getTenantContext } from "@/lib/tenant/server";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 async function getAuthenticatedTenantId() {
   const context = await getTenantContext();
@@ -19,6 +19,25 @@ type ActionState<T = unknown> = {
   success: boolean;
   data?: T;
   error?: string;
+};
+
+type ExperimentWithTargetPage = {
+  id: string;
+  name: string;
+  slug: string;
+  status: string;
+  targetPage: { slug: string | null } | null;
+};
+
+type ExperimentVariant = {
+  id: string;
+  key: string;
+  label: string;
+};
+
+type ExperimentWithDetails = ExperimentWithTargetPage & {
+  trafficSplit: Record<string, number>;
+  variants: ExperimentVariant[];
 };
 
 type ExperimentUpdateInput = {
@@ -58,29 +77,36 @@ function parseExperimentUpdateInput(value: unknown): ExperimentUpdateInput | nul
   return update;
 }
 
-export async function getExperiments(): Promise<ActionState<unknown>> {
+export async function getExperiments(): Promise<ActionState<ExperimentWithTargetPage[]>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
     const experiments = await prisma.experiment.findMany({
       where: { tenantId },
-      include: { targetPage: true },
+      include: { targetPage: { select: { slug: true } } },
       orderBy: { createdAt: "desc" },
     });
-    return { success: true, data: experiments };
+    const formattedExperiments: ExperimentWithTargetPage[] = experiments.map((experiment) => ({
+      id: experiment.id,
+      name: experiment.name,
+      slug: experiment.slug,
+      status: experiment.status,
+      targetPage: experiment.targetPage ? { slug: experiment.targetPage.slug } : null,
+    }));
+    return { success: true, data: formattedExperiments };
   } catch (err) {
     console.error(err);
     return { success: false, error: "Failed to fetch experiments" };
   }
 }
 
-export async function getExperiment(id: string): Promise<ActionState<unknown>> {
+export async function getExperiment(id: string): Promise<ActionState<ExperimentWithDetails>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
     const experiment = await prisma.experiment.findUnique({
       where: { id },
       include: {
-        targetPage: true,
-        variants: true,
+        targetPage: { select: { slug: true } },
+        variants: { select: { id: true, key: true, label: true } },
       },
     });
 
@@ -88,14 +114,26 @@ export async function getExperiment(id: string): Promise<ActionState<unknown>> {
       return { success: false, error: "Experiment not found" };
     }
 
-    return { success: true, data: experiment };
+    const response: ExperimentWithDetails = {
+      id: experiment.id,
+      name: experiment.name,
+      slug: experiment.slug,
+      status: experiment.status,
+      targetPage: experiment.targetPage ? { slug: experiment.targetPage.slug } : null,
+      trafficSplit: (experiment.trafficSplit ?? {}) as Record<string, number>,
+      variants: experiment.variants,
+    };
+
+    return { success: true, data: response };
   } catch (err) {
     console.error(err);
     return { success: false, error: "Failed to fetch experiment" };
   }
 }
 
-export async function createExperiment(formData: FormData): Promise<ActionState> {
+export async function createExperiment(
+  formData: FormData
+): Promise<ActionState<{ id: string }>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
     const name = formData.get("name");
@@ -127,7 +165,7 @@ export async function createExperiment(formData: FormData): Promise<ActionState>
     });
 
     revalidatePath("/admin/experiments");
-    return { success: true, data: experiment };
+    return { success: true, data: { id: experiment.id } };
   } catch (err) {
     console.error(err);
     return { success: false, error: "Failed to create experiment" };

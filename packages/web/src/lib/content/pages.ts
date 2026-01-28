@@ -23,7 +23,7 @@ export function getContentPage(slug: string): ContentPage | null {
       description: (data.description as string) || '',
       content,
     };
-  } catch {
+  } catch (error) {
     return null;
   }
 }

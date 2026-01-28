@@ -24,8 +24,8 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
         };
       }
       user = authUser;
-    } catch {
-      console.error('[getSubscriptionStatus] Auth check failed:', authError);
+    } catch (error) {
+      console.error('[getSubscriptionStatus] Auth check failed:', error);
       return {
         tier: 'unsubscribed',
         hasSubscription: false,
@@ -177,7 +177,7 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
       planName: (subscription as { plan_name?: string } | null)?.plan_name,
       subscriptionId: (subscription as { id?: string } | null)?.id,
     };
-  } catch {
+  } catch (error) {
     // Catch-all error handler - never throw
     console.error('[getSubscriptionStatus] Unexpected error:', error);
     return {

@@ -152,7 +152,7 @@ export async function calculatePerformanceMetrics(
       byEndpoint: byEndpoint.sort((a, b) => b.requests - a.requests),
       trends: { hourly, daily },
     };
-  } catch {
+  } catch (error) {
     console.error('[Performance Monitor] Error:', error);
     return {
       overall: {
@@ -201,7 +201,7 @@ export async function getCurrentUserPerformanceMetrics(
       startDate,
       endDate
     );
-  } catch {
+  } catch (error) {
     console.error('[Performance Monitor] Error:', error);
     throw error;
   }

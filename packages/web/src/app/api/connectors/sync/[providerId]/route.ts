@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
-import { getConnectorDriver } from '@settler/adapters/dist/drivers';
-import { ConnectorRuntime, RuntimeConfig } from '@settler/adapters/dist/connector-runtime';
+import { ConnectorRuntime, getConnectorDriver, type RuntimeConfig } from '@settler/adapters';
 import { generateIdempotencyKey } from '@/lib/idempotency/key';
 import { checkIdempotencyKey, createIdempotencyKey, completeIdempotencyKey, failIdempotencyKey } from '@/lib/idempotency/store';
 import { createLogger } from '@/lib/logger';
@@ -126,7 +125,7 @@ export const POST = withSecurity(
       result,
       correlationId,
     });
-  } catch {
+  } catch (error) {
     const errorObj = error instanceof Error ? error : new Error(String(error));
     logger.error('Error in sync route', errorObj, { correlationId });
 
@@ -148,7 +147,7 @@ export const POST = withSecurity(
           await failIdempotencyKey(idempotencyKey);
         }
       }
-    } catch {
+    } catch (error) {
       // Ignore errors marking idempotency as failed
     }
 

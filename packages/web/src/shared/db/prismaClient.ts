@@ -79,6 +79,11 @@ if (typeof process !== 'undefined' && process.env) {
 // @ts-ignore - PrismaClient is generated at build time
 import { PrismaClient } from '@prisma/client';
 
+type PrismaQueryRaw = {
+  $queryRaw<T = unknown>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
+  $queryRaw<T = unknown>(query: string, ...values: unknown[]): Promise<T>;
+};
+
 // Prevent multiple instances in development
 const globalForPrisma = globalThis as typeof globalThis & {
   prisma?: PrismaClient;
@@ -125,7 +130,7 @@ function getOptimizedDatabaseUrl(): string | undefined {
     }
     
     return url.toString();
-  } catch {
+  } catch (error) {
     // If URL parsing fails, return original
     return dbUrl;
   }
@@ -176,7 +181,7 @@ try {
   if (nodeEnv === 'development' && optimizedDbUrl) {
     console.log('[Prisma] Client initialized successfully with connection pooling');
   }
-} catch {
+} catch (error) {
   // If Prisma initialization fails (e.g., missing DATABASE_URL or engine type mismatch),
   // create a stub client that returns null/empty results gracefully
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -264,7 +269,7 @@ async function checkConnectionHealth(): Promise<boolean> {
   try {
     await prismaInstance.$queryRaw`SELECT 1`;
     return true;
-  } catch {
+  } catch (error) {
     console.error('[Prisma] Connection health check failed:', error);
     return false;
   }
@@ -297,7 +302,7 @@ if (typeof process !== 'undefined') {
   process.on('beforeExit', shutdown);
 }
 
-export const prisma = prismaInstance;
+export const prisma = prismaInstance as PrismaClient & PrismaQueryRaw;
 
 if (nodeEnv !== 'production') {
   globalForPrisma.prisma = prisma;

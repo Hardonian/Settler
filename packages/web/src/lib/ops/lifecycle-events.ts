@@ -41,7 +41,7 @@ async function getActivationFunnel(): Promise<ActivationFunnelModule> {
     }
     cachedModule = { emitLifecycleEvent: mod.emitLifecycleEvent };
     return cachedModule;
-  } catch {
+  } catch (error) {
     // Fallback: implement inline if import fails
     cachedModule = {
       emitLifecycleEvent: async function emitLifecycleEventFallback(eventType: string, params: any) {
@@ -101,7 +101,7 @@ export async function emitLifecycleEventSafe(
   try {
     const mod = await getActivationFunnel();
     await mod.emitLifecycleEvent(eventType, params);
-  } catch {
+  } catch (error) {
     // Don't throw - event tracking should never break the main flow
     console.error(`Failed to emit lifecycle event ${eventType}:`, error);
   }

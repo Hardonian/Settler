@@ -70,7 +70,7 @@ export const GET = withSecurity(
       },
       trace_id: traceId,
     });
-  } catch {
+  } catch (error) {
     appLogger.error('[Invite API] Error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(
@@ -185,7 +185,7 @@ export const POST = withSecurity(
       workspaceId: invite.tenantId,
       trace_id: traceId,
     });
-  } catch {
+  } catch (error) {
     appLogger.error('[Invite API] Error', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

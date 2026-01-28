@@ -57,7 +57,7 @@ async function verifyBillingAccountAccess(billingAccountId: string): Promise<boo
     });
     
     return !!billingAccount;
-  } catch {
+  } catch (error) {
     console.error('[verifyBillingAccountAccess] Error:', error);
     return false;
   }
@@ -113,7 +113,7 @@ export async function listFeatureFlags(
       createdAt: flag.createdAt,
       updatedAt: flag.updatedAt,
     }));
-  } catch {
+  } catch (error) {
     console.error('[listFeatureFlags] Error:', error);
     // Return empty array instead of throwing to prevent 500 errors
     return [];

@@ -18,7 +18,7 @@ export const GET = withSecurity(
   try {
     const subscription = await getSubscriptionInfo();
     return NextResponse.json(subscription);
-  } catch {
+  } catch (error) {
     appLogger.error('[Subscription API] Error', error);
     return NextResponse.json(
       { 

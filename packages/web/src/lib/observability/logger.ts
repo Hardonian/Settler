@@ -48,7 +48,7 @@ class Logger {
     if (!traceId) {
       try {
         traceId = await getTraceId();
-      } catch {
+      } catch (error) {
         // If we can't get trace_id, continue without it
       }
     }

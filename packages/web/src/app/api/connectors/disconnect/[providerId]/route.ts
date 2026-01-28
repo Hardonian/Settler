@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
-import { getConnectorDriver } from '@settler/adapters/dist/drivers';
+import { getConnectorDriver } from '@settler/adapters';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 
@@ -85,7 +85,7 @@ export const POST = withUniversalBillingGate(async function POST(
         if (accessToken) {
           await driver.revoke(accessToken, { tenantId });
         }
-      } catch {
+      } catch (error) {
         appLogger.error('Failed to revoke token', error);
         // Continue with disconnection even if revoke fails
       }
@@ -110,7 +110,7 @@ export const POST = withUniversalBillingGate(async function POST(
       success: true,
       message: 'Connector disconnected successfully',
     });
-  } catch {
+  } catch (error) {
     appLogger.error('Error in disconnect route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
 
         results.processed++;
         results.emails.push(user.email);
-      } catch {
+      } catch (error) {
         logger.error("Failed to send low activity email", error instanceof Error ? error : new Error(String(error)), { user: user.email });
         results.errors++;
       }
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
       processed: results.processed,
       errors: results.errors,
     });
-  } catch {
+  } catch (error) {
     logger.error("Low activity cron job failed", error instanceof Error ? error : new Error(String(error)));
     // Never return 500 - return graceful error response (cron can retry)
     return NextResponse.json(

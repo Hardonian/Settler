@@ -55,7 +55,7 @@ if (CACHE_CONFIG.enabled && process.env.REDIS_URL) {
       url: process.env.REDIS_URL,
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
-  } catch {
+  } catch (error) {
     appLogger.warn('[Query Gateway] Redis initialization failed, caching disabled', { error });
   }
 }
@@ -150,7 +150,7 @@ async function getCached<T>(key: string): Promise<T | null> {
   try {
     const cached = await redis.get<T>(key);
     return cached;
-  } catch {
+  } catch (error) {
     appLogger.warn('[Query Gateway] Cache read failed', { key, error });
     return null;
   }
@@ -161,7 +161,7 @@ async function setCache<T>(key: string, value: T, ttl: number): Promise<void> {
 
   try {
     await redis.setex(key, ttl, value);
-  } catch {
+  } catch (error) {
     appLogger.warn('[Query Gateway] Cache write failed', { key, error });
   }
 }
@@ -237,7 +237,7 @@ export async function executePrismaQuery<T>(
     try {
       const result = await withTimeout(queryFn(), timeout, queryName);
       return result;
-    } catch {
+    } catch (error) {
       appLogger.error('[Query Gateway] Query failed', {
         queryName,
         error: error instanceof Error ? error.message : String(error),
@@ -350,7 +350,7 @@ export async function executeSupabaseQuery<T>(
       }
 
       return data;
-    } catch {
+    } catch (error) {
       appLogger.error('[Query Gateway] Supabase query failed', {
         queryName,
         tableName,
@@ -431,7 +431,7 @@ export async function executeWrite<T>(
       data,
       meta: { duration, cacheHit: false, rowCount: null, queryName },
     };
-  } catch {
+  } catch (error) {
     appLogger.error('[Query Gateway] Write failed', {
       queryName,
       error: error instanceof Error ? error.message : String(error),
@@ -458,7 +458,7 @@ export async function invalidateCache(keyPrefix: string): Promise<void> {
 
     // For now, we'll rely on TTL expiration
     // Future: Implement tag-based invalidation
-  } catch {
+  } catch (error) {
     appLogger.warn('[Query Gateway] Cache invalidation failed', { keyPrefix, error });
   }
 }
@@ -496,7 +496,7 @@ export async function checkConnectionPoolHealth(): Promise<{
         // In production, consider using a custom pooling solution or monitoring
       },
     };
-  } catch {
+  } catch (error) {
     appLogger.error('[Query Gateway] Connection pool health check failed', { error });
     return { healthy: false, metrics: {} };
   }

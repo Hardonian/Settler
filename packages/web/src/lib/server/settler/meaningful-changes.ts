@@ -46,7 +46,7 @@ export async function listMeaningfulChanges(
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch {
+    } catch (error) {
       // RPC might not exist, continue anyway
     }
 
@@ -195,7 +195,7 @@ export async function listMeaningfulChanges(
     });
 
     return changes.slice(0, limit);
-  } catch {
+  } catch (error) {
     await safeLogger.error("[listMeaningfulChanges] Unexpected error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),

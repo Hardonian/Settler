@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
-import { getConnectorDriver } from '@settler/adapters/dist/drivers';
+import { getConnectorDriver } from '@settler/adapters';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { emitLifecycleEventSafe, LifecycleEventType } from '@/lib/ops/lifecycle-events';
 import { prisma } from '@/shared/db/prismaClient';
@@ -168,7 +168,7 @@ export const GET = withUniversalBillingGate(async function GET(
     return NextResponse.redirect(
       new URL('/dashboard/integrations?success=Connected successfully', request.url)
     );
-  } catch {
+  } catch (error) {
     appLogger.error('Error in callback route', error);
     return NextResponse.redirect(
       new URL(

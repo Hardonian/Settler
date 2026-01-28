@@ -45,7 +45,7 @@ export const POST = withUniversalBillingGate(async function POST(request: NextRe
     }
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
     appLogger.error("Error in import POST", error);
     return NextResponse.json(
       {

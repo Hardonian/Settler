@@ -99,7 +99,7 @@ export const POST = withSecurity(
       } else {
         tenantId = result as string;
       }
-    } catch {
+    } catch (error) {
       appLogger.error('[Workspace API] Error creating workspace', error);
       // Never return 500 - return graceful error response
       return NextResponse.json(
@@ -124,7 +124,7 @@ export const POST = withSecurity(
         p_trace_id: traceId,
         p_properties: JSON.stringify({ workspace_name: validated.name, workspace_slug: validated.slug }),
       });
-    } catch {
+    } catch (error) {
       // Fallback: insert directly
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from('onboarding_events') as any).insert({
@@ -146,7 +146,7 @@ export const POST = withSecurity(
         p_step_id: 'create_workspace',
         p_trace_id: traceId,
       });
-    } catch {
+    } catch (error) {
       // Fallback: update directly
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from('tenant_onboarding_progress') as any).upsert({
@@ -190,7 +190,7 @@ export const POST = withSecurity(
       },
       trace_id: traceId,
     });
-  } catch {
+  } catch (error) {
     appLogger.error('[Workspace API] Error', error);
     
     if (error instanceof z.ZodError) {
@@ -285,7 +285,7 @@ export const GET = withSecurity(
       workspaces: workspacesWithRole,
       trace_id: traceId,
     });
-  } catch {
+  } catch (error) {
     appLogger.error('[Workspace API] Error', error);
     // Never return 500 - return empty workspaces array with graceful error message
     return NextResponse.json(

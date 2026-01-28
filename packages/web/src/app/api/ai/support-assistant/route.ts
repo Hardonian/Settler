@@ -77,7 +77,7 @@ export const POST = withSecurity(
           ai_response: aiResponse.answer,
           helpful: null, // User can rate later
         } as never);
-      } catch {
+      } catch (error) {
         // Table might not exist, that's okay
       }
     }
@@ -87,7 +87,7 @@ export const POST = withSecurity(
       suggestions: aiResponse.suggestions,
       related_docs: aiResponse.relatedDocs,
     });
-  } catch {
+  } catch (error) {
     appLogger.error("AI support assistant error", error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

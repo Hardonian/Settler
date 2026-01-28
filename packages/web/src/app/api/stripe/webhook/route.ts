@@ -36,7 +36,7 @@ async function isEventProcessed(eventId: string): Promise<boolean> {
       select: { id: true, status: true },
     });
     return existing !== null && existing.status === 'processed';
-  } catch {
+  } catch (error) {
     await safeLogger.error('[Stripe Webhook] Error checking event idempotency', {
       eventId,
       error: error instanceof Error ? error.message : String(error),
@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
   try {
     // Verify signature using RAW body
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-  } catch {
+  } catch (error) {
     const error = err as Error;
     await safeLogger.error('[Stripe Webhook] Signature verification failed', {
       error: error.message,
@@ -252,7 +252,7 @@ export async function POST(request: NextRequest) {
   // Record event receipt (with idempotency protection)
   try {
     await recordEventReceived(event.id, event.type, JSON.parse(body));
-  } catch {
+  } catch (error) {
     await safeLogger.error('[Stripe Webhook] Failed to record event', {
       eventId: event.id,
       error: error instanceof Error ? error.message : String(error),
@@ -338,7 +338,7 @@ export async function POST(request: NextRequest) {
               object: result.data,
             },
           } as Stripe.Event);
-        } catch {
+        } catch (error) {
           await safeLogger.error('[Stripe Webhook] Failed to sync subscription from checkout', {
             eventId: event.id,
             subscriptionId,
@@ -484,7 +484,7 @@ export async function POST(request: NextRequest) {
           where: { eventId: event.id },
           data: { billingAccountId },
         });
-      } catch {
+      } catch (error) {
         // Non-critical - just log
         await safeLogger.warn('[Stripe Webhook] Failed to update billing account ID', {
           eventId: event.id,
@@ -531,7 +531,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ received: true, trace_id: traceId });
     response.headers.set('x-trace-id', traceId);
     return response;
-  } catch {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     await logger.error('Stripe webhook processing failed', {
       trace_id: traceId,

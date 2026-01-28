@@ -91,7 +91,7 @@ export async function recordValueEvent(event: ValueEvent): Promise<void> {
         event_count = value_ledger_daily.event_count + 1,
         updated_at = NOW()
     `;
-  } catch {
+  } catch (error) {
     // Log but don't throw - value tracking should never break user flows
     console.error('[recordValueEvent] Failed to record value event:', error);
   }
@@ -123,11 +123,7 @@ export async function getValueMetrics(
       : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
     // Query daily aggregates for performance
-    const aggregates = await prisma.$queryRaw<Array<{
-      event_type: string;
-      total_quantity: number;
-      event_count: number;
-    }>>`
+    const aggregates = (await prisma.$queryRaw`
       SELECT
         event_type,
         SUM(total_quantity) as total_quantity,
@@ -136,7 +132,11 @@ export async function getValueMetrics(
       WHERE billing_account_id = ${billingAccountId}::uuid
         AND date >= ${startDate}::date
       GROUP BY event_type
-    `;
+    `) as Array<{
+      event_type: string;
+      total_quantity: number;
+      event_count: number;
+    }>;
 
     const metrics: ValueMetrics = {
       reconciliationsCompleted: 0,
@@ -179,7 +179,7 @@ export async function getValueMetrics(
     }
 
     return metrics;
-  } catch {
+  } catch (error) {
     console.error('[getValueMetrics] Failed to get value metrics:', error);
     // Return zero metrics on error
     return {

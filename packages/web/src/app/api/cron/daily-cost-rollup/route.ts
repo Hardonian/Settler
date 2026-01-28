@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
         errors,
       },
     });
-  } catch {
+  } catch (error) {
     // Use dynamic import to avoid circular dependencies in cron jobs
     import('@/lib/utils/logger').then(({ appLogger }) => {
       appLogger.error('[Daily Rollup] Error', error);

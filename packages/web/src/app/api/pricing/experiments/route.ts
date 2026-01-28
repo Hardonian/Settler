@@ -43,7 +43,7 @@ export const GET = withSecurity(
     ];
 
     return NextResponse.json({ experiments });
-  } catch {
+  } catch (error) {
     appLogger.error("Error in experiments GET", error);
     return NextResponse.json(
       {

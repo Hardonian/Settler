@@ -25,7 +25,7 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
       getBillingStatus: mod.getBillingStatus,
     };
     return cachedBilling;
-  } catch {
+  } catch (error) {
     cachedBilling = {
       checkEntitlements: async (billingAccountId: string, _options?: any) => {
         const prisma = new PrismaClient();
@@ -162,7 +162,7 @@ export async function checkUserEntitlements(
       allowed: true,
       entitlements,
     };
-  } catch {
+  } catch (error) {
     await safeLogger.error('[Entitlement Checks] Entitlement check failed', {
       billingAccountId,
       error: error instanceof Error ? error.message : String(error),
@@ -200,7 +200,7 @@ export async function getUserBillingStatus(billingAccountId: string): Promise<st
   try {
     const billing = await getBillingHardening();
     return await billing.getBillingStatus(billingAccountId);
-  } catch {
+  } catch (error) {
     await safeLogger.error('[Entitlement Checks] Billing status check failed', {
       billingAccountId,
       error: error instanceof Error ? error.message : String(error),

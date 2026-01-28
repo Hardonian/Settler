@@ -32,7 +32,7 @@ export async function listAlerts(
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch {
+    } catch (error) {
       // RPC might not exist, continue anyway
     }
 
@@ -86,7 +86,7 @@ export async function listAlerts(
       acknowledgedAt: a.acknowledged_at ? new Date(a.acknowledged_at) : undefined,
       createdAt: new Date(a.created_at),
     }));
-  } catch {
+  } catch (error) {
     await safeLogger.error("[listAlerts] Unexpected error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),
@@ -115,7 +115,7 @@ export async function acknowledgeAlert(tenantId: TenantId, alertId: string): Pro
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch {
+    } catch (error) {
       // RPC might not exist, continue anyway
     }
 
@@ -139,7 +139,7 @@ export async function acknowledgeAlert(tenantId: TenantId, alertId: string): Pro
     }
 
     return true;
-  } catch {
+  } catch (error) {
     await safeLogger.error("[acknowledgeAlert] Unexpected error", {
       tenantId,
       alertId,

@@ -26,7 +26,7 @@ export const GET = withSecurity(
       activeAlerts: getActiveAlerts(),
       timestamp: new Date().toISOString(),
     });
-  } catch {
+  } catch (error) {
     appLogger.error('[health] Error', error);
     // Never return 500 - return degraded health status
     return NextResponse.json(

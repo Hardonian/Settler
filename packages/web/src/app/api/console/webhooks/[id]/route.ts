@@ -39,7 +39,7 @@ export const PATCH = withSecurity(
     });
 
     return NextResponse.json({ webhook });
-  } catch {
+  } catch (error) {
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -66,7 +66,7 @@ export const DELETE = withSecurity(
     await deleteWebhook(id, authContext.userId, authContext.tenantId || authContext.userId);
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

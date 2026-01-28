@@ -99,7 +99,7 @@ export function withErrorHandling<T extends unknown[]>(
   return async (...args: T): Promise<NextResponse> => {
     try {
       return await handler(...args);
-    } catch {
+    } catch (error) {
       return createErrorResponse(error, defaultMessage, defaultStatusCode);
     }
   };

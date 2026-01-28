@@ -111,7 +111,7 @@ export async function cleanupExpiredData(resourceType: string): Promise<number> 
       default:
         return 0;
     }
-  } catch {
+  } catch (error) {
     console.error(`[Data Retention] Error cleaning up ${resourceType}:`, error);
     return 0;
   }
@@ -207,7 +207,7 @@ export async function getRetentionSummary(): Promise<Array<{
         expiredRecords,
         nextCleanup: cutoffDate,
       });
-    } catch {
+    } catch (error) {
       console.error(`[Data Retention] Error getting summary for ${policy.resourceType}:`, error);
     }
   }

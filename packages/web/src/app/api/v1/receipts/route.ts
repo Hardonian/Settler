@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
     let body;
     try {
         body = await request.json();
-    } catch {
+    } catch (error) {
         const response = createErrorResponse("BAD_REQUEST", "Invalid JSON", 400);
         return addCorrelationHeaders(response, correlationId);
     }
@@ -350,7 +350,7 @@ export async function POST(request: NextRequest) {
           })).catch(() => {
             // Ignore errors updating failed status
           });
-        } catch {
+        } catch (error) {
           // Ignore errors updating failed status
         }
       }
@@ -371,7 +371,7 @@ export async function POST(request: NextRequest) {
       const response = NextResponse.json(demoReceipt, { status: 200 });
       return addCorrelationHeaders(response, correlationId);
     }
-  } catch {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Receipt parse request error', { 
       correlationId,

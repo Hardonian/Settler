@@ -28,7 +28,7 @@ export async function initAnalytics(): Promise<void> {
       trackPageView: (path, properties) => provider.trackPageView(path, properties),
       identify: (userId, traits) => provider.identify(userId, traits),
     };
-  } catch {
+  } catch (error) {
     console.warn('[Analytics] Failed to initialize:', error);
   }
 }
@@ -49,7 +49,7 @@ export function trackEvent(
 
   try {
     analyticsProvider.trackEvent(name, properties);
-  } catch {
+  } catch (error) {
     console.error('[Analytics] Failed to track event:', error);
   }
 }
@@ -70,7 +70,7 @@ export function trackPageView(
 
   try {
     analyticsProvider.trackPageView(path, properties);
-  } catch {
+  } catch (error) {
     console.error('[Analytics] Failed to track page view:', error);
   }
 }
@@ -91,7 +91,7 @@ export function identify(
 
   try {
     analyticsProvider.identify(userId, traits);
-  } catch {
+  } catch (error) {
     console.error('[Analytics] Failed to identify user:', error);
   }
 }

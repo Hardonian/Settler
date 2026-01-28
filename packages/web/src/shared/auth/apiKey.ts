@@ -11,6 +11,19 @@ import bcrypt from 'bcrypt';
 import { prisma } from '../db/prismaClient';
 import type { Database } from '@/types/database.types';
 
+type ApiKeyRow = {
+  id: string;
+  user_id: string;
+  key_hash: string;
+  scopes: string[] | null;
+  revoked_at: string | null;
+  expires_at: string | null;
+};
+
+type ApiKeyUpdate = {
+  last_used_at: string;
+};
+
 async function verifyApiKey(apiKey: string, hash: string): Promise<boolean> {
   return bcrypt.compare(apiKey, hash);
 }
@@ -71,7 +84,7 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext 
     return null;
   }
 
-  const key = keyRecords as Database['public']['Tables']['api_keys']['Row'];
+  const key = keyRecords as ApiKeyRow;
 
   // Verify full key against hash
   const isValid = await verifyApiKey(apiKey, key.key_hash);
@@ -103,7 +116,7 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext 
   // Update last used timestamp
   await supabase
     .from('api_keys')
-    .update({ last_used_at: new Date().toISOString() } satisfies Database['public']['Tables']['api_keys']['Update'])
+    .update({ last_used_at: new Date().toISOString() } satisfies ApiKeyUpdate)
     .eq('id', key.id);
 
   return {
@@ -111,7 +124,7 @@ export async function validateApiKey(apiKey: string): Promise<ApiKeyAuthContext 
     userId: key.user_id,
     billingAccountId: billingAccount?.id,
     tenantId: billingAccount?.tenantId || undefined,
-    scopes: key.scopes || [],
+    scopes: key.scopes ?? [],
   };
 }
 

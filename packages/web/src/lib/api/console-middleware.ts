@@ -60,7 +60,7 @@ export function withConsoleLogging(
     let response: NextResponse;
     try {
       response = await handler(req);
-    } catch {
+    } catch (error) {
       // Log error
       console.error('[Console API Error]', {
         type: 'error',

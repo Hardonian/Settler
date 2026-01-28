@@ -156,7 +156,7 @@ export function withConsoleErrorHandler<T extends (...args: any[]) => Promise<Ne
   return (async (...args: Parameters<T>) => {
     try {
       return await handler(...args);
-    } catch {
+    } catch (error) {
       return await createConsoleErrorResponse(error);
     }
   }) as T;

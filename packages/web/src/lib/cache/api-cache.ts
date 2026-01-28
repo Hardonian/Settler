@@ -144,7 +144,7 @@ export function withCache(
           
           setCached(key, { body: data, headers }, config.ttl);
         }
-      } catch {
+      } catch (error) {
         // Ignore caching errors
       }
     }

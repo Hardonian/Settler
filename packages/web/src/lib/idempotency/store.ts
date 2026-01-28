@@ -58,7 +58,7 @@ export async function checkIdempotencyKey<T = unknown>(
 
     // Failed - allow retry
     return { isDuplicate: false, key };
-  } catch {
+  } catch (error) {
     // On error, assume not duplicate (fail open)
     console.error('[Idempotency] Error checking key:', error);
     return { isDuplicate: false, key };
@@ -87,7 +87,7 @@ export async function createIdempotencyKey(
     });
 
     return record;
-  } catch {
+  } catch (error) {
     // If unique constraint violation, key already exists
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return null; // Already exists
@@ -113,7 +113,7 @@ export async function completeIdempotencyKey<T = unknown>(
         completedAt: new Date(),
       },
     });
-  } catch {
+  } catch (error) {
     console.error('[Idempotency] Error completing key:', error);
     // Don't throw - idempotency is best-effort
   }
@@ -130,7 +130,7 @@ export async function failIdempotencyKey(key: string): Promise<void> {
         status: 'failed',
       },
     });
-  } catch {
+  } catch (error) {
     console.error('[Idempotency] Error failing key:', error);
     // Don't throw
   }
@@ -149,7 +149,7 @@ export async function cleanupExpiredIdempotencyKeys(): Promise<number> {
       },
     });
     return result.count;
-  } catch {
+  } catch (error) {
     console.error('[Idempotency] Error cleaning up expired keys:', error);
     return 0;
   }

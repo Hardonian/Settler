@@ -29,7 +29,7 @@ export async function saveAnalyticsEvent(data: {
     //   },
     // });
     console.log('Analytics event (not persisted):', data.type);
-  } catch {
+  } catch (error) {
     console.error('Failed to save analytics event:', error);
     // Don't throw - analytics failures shouldn't break the app
   }
@@ -64,7 +64,7 @@ export async function saveSDKDownload(data: {
     //   },
     // });
     console.log('SDK download (not persisted):', data.packageName);
-  } catch {
+  } catch (error) {
     console.error('Failed to save SDK download:', error);
   }
 }
@@ -98,7 +98,7 @@ export async function savePlaygroundUsage(data: {
     //   },
     // });
     console.log('Playground usage (not persisted):', data.feature);
-  } catch {
+  } catch (error) {
     console.error('Failed to save playground usage:', error);
   }
 }
@@ -130,7 +130,7 @@ export async function saveChatbotConversation(data: {
     //   },
     // });
     console.log('Chatbot conversation (not persisted):', data.conversationId);
-  } catch {
+  } catch (error) {
     console.error('Failed to save chatbot conversation:', error);
   }
 }
@@ -156,7 +156,7 @@ export async function saveChatbotAnalytics(data: {
     //   },
     // });
     console.log('Chatbot analytics (not persisted):', data.type);
-  } catch {
+  } catch (error) {
     console.error('Failed to save chatbot analytics:', error);
   }
 }

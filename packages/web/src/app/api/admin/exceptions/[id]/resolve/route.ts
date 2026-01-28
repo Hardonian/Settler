@@ -55,7 +55,7 @@ export const POST = withSecurity(async function POST(
     });
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
     appLogger.error('[Resolve Exception] Error', error);
     return NextResponse.json(
       { error: 'Failed to resolve exception', message: error instanceof Error ? error.message : 'Unknown error' },

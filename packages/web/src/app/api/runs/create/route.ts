@@ -208,7 +208,7 @@ export const POST = withSecurity(
       created: true,
       correlationId,
     });
-  } catch {
+  } catch (error) {
     logger.error('Error creating run', error as Error);
 
     if (error instanceof z.ZodError) {

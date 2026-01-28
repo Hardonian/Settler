@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
-import { getConnectorDriver } from '@settler/adapters/dist/drivers';
-import { verifyWebhook } from '@settler/adapters/dist/webhook-verification';
+import { getConnectorDriver, verifyWebhook } from '@settler/adapters';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 
@@ -84,7 +83,7 @@ export const POST = withUniversalBillingGate(async function POST(
       success: true,
       message: 'Webhook received',
     });
-  } catch {
+  } catch (error) {
     appLogger.error('Error in webhook route', error);
     // Never return 500 - return graceful error response (webhooks should retry via their own mechanism)
     return NextResponse.json(

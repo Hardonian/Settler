@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
-import { getConnectorDriver } from '@settler/adapters/dist/drivers';
-import { refreshTokenIfNeeded } from '@settler/adapters/dist/token-refresh';
+import { getConnectorDriver, refreshTokenIfNeeded } from '@settler/adapters';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 
@@ -112,7 +111,7 @@ export const POST = withUniversalBillingGate(async function POST(
       message: 'Token refreshed successfully',
       result,
     });
-  } catch {
+  } catch (error) {
     appLogger.error('Error in refresh route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

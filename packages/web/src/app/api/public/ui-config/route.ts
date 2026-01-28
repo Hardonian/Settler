@@ -45,7 +45,7 @@ export const GET = withSecurity(
       res.headers.set("Cache-Control", "public, max-age=0, s-maxage=60, stale-while-revalidate=300");
       res.headers.set("Vary", "Host");
       return res;
-    } catch {
+    } catch (error) {
       // Never 500 for public config; return safe default.
       const res = NextResponse.json(
         {

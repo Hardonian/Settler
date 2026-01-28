@@ -60,7 +60,7 @@ export function validateInputManifest(data: unknown): {
   try {
     const manifest = InputManifestSchema.parse(data);
     return { valid: true, manifest };
-  } catch {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return { valid: false, errors: error };
     }
