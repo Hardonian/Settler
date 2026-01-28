@@ -6,15 +6,15 @@ on:
       - main
       - master
     paths-ignore:
-      - '**.md'
-      - '.github/**'
-      - 'docs/**'
+      - "**.md"
+      - ".github/**"
+      - "docs/**"
   workflow_dispatch:
     inputs:
       force_sync:
-        description: 'Force sync all OSS content (ignores changes)'
+        description: "Force sync all OSS content (ignores changes)"
         required: false
-        default: 'false'
+        default: "false"
         type: boolean
 
 env:
@@ -29,40 +29,52 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout private repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-      
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-store-
+
       - name: Install dependencies
         run: |
           if [ -f "package.json" ]; then
-            npm ci || npm install
+            pnpm install --frozen-lockfile
           fi
-      
+
       - name: Classify OSS_PUBLIC content
         id: classify
         run: |
           echo "🔍 Classifying OSS_PUBLIC content..."
-          
+
           # Create classification script if it doesn't exist
           if [ ! -f "scripts/classify-oss.sh" ]; then
             mkdir -p scripts
             cat > scripts/classify-oss.sh << 'SCRIPT'
           #!/bin/bash
           # Classify files as OSS_PUBLIC or private
-          
+
           OSS_FILES=""
-          
+
           # Find all files marked as OSS_PUBLIC
           find . -type f \( -name "OSS_PUBLIC" -o -name ".oss-public" \) | while read marker; do
             dir=$(dirname "$marker")
@@ -70,7 +82,7 @@ jobs:
               echo "$file"
             done
           done
-          
+
           # Also check for explicit OSS_PUBLIC directories
           for dir in packages/sdk packages/sdk-python packages/sdk-go packages/sdk-ruby packages/api-client packages/protocol packages/react-settler packages/cli examples docs; do
             if [ -d "$dir" ] && [ ! -f "$dir/.private" ]; then
@@ -82,16 +94,16 @@ jobs:
           SCRIPT
             chmod +x scripts/classify-oss.sh
           fi
-          
+
           # Run classification
           OSS_FILES=$(./scripts/classify-oss.sh | sort -u)
           echo "$OSS_FILES" > /tmp/oss_files.txt
-          
+
           # Count files
           FILE_COUNT=$(echo "$OSS_FILES" | grep -v '^$' | wc -l)
           echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
           echo "Found $FILE_COUNT OSS_PUBLIC files"
-      
+
       - name: Check for changes
         id: changes
         run: |
@@ -127,7 +139,7 @@ jobs:
               echo "has_oss_changes=false" >> $GITHUB_OUTPUT
             fi
           fi
-      
+
       - name: Sync to OSS repository
         if: steps.changes.outputs.has_oss_changes == 'true' || steps.changes.outputs.force_sync == 'true'
         env:
@@ -137,18 +149,18 @@ jobs:
           GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
         run: |
           echo "🚀 Syncing to OSS repository..."
-          
+
           # Clone OSS repo
           git clone --depth 1 "https://${{ env.OSS_REPO_USERNAME }}:${{ env.OSS_REPO_TOKEN }}@github.com/shardie-github/settler-oss.git" /tmp/oss-repo
           cd /tmp/oss-repo
-          
+
           # Configure git
           git config user.name "${{ env.OSS_REPO_USERNAME }}"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           # Get OSS files list
           OSS_FILES=$(cat /tmp/oss_files.txt)
-          
+
           # Copy OSS files
           echo "📋 Copying OSS_PUBLIC files..."
           echo "$OSS_FILES" | while read file; do
@@ -162,7 +174,7 @@ jobs:
               echo "  ✓ $file"
             fi
           done
-          
+
           # Copy common OSS files
           for file in LICENSE README.public.md CONTRIBUTING.md SECURITY.md; do
             if [ -f "${{ github.workspace }}/$file" ]; then
@@ -172,7 +184,7 @@ jobs:
               fi
             fi
           done
-          
+
           # Handle deletions - check what was deleted
           if [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
             DELETED_FILES=$(git diff --name-only --diff-filter=D ${{ github.event.before }} ${{ github.sha }} || true)
@@ -185,10 +197,10 @@ jobs:
               fi
             done
           fi
-          
+
           # Stage all changes
           git add -A
-          
+
           # Check if there are changes
           if git diff --staged --quiet; then
             echo "ℹ️  No changes to sync"
@@ -198,7 +210,7 @@ jobs:
 
           Auto-synced from: ${{ github.repository }}@${{ github.sha }}
           Commit: ${{ github.event.head_commit.message || 'Auto-sync' }}
-          
+
           [skip ci]"
             
             git commit -m "$COMMIT_MSG" || exit 0
@@ -208,7 +220,7 @@ jobs:
             
             echo "✅ Successfully synced to OSS repository"
           fi
-      
+
       - name: Summary
         if: always()
         run: |
