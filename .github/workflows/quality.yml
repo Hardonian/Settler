@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -36,7 +40,7 @@ jobs:
         run: cd packages/web && npm run lint
 
       - name: Typecheck
-        run: cd packages/web && npm run type-check || npm run build -- --no-lint # build often includes typecheck
+        run: cd packages/web && npm run typecheck
 
       - name: Security Audit
         run: npm audit --audit-level=high

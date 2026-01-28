@@ -35,6 +35,10 @@ paths-ignore:
   - "grafana-dashboards/**"
   - "sre/**"
 
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
 jobs:
   validate-env:
     name: Validate Environment Schema
@@ -454,7 +458,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - run: pnpm install --frozen-lockfile
       - name: Build application
-        run: npm run build --workspace=packages/web
+        run: npx turbo run build --filter @settler/web...
         env:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
@@ -510,7 +514,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - run: pnpm install --frozen-lockfile
       - name: Build application
-        run: npm run build --workspace=packages/web
+        run: npx turbo run build --filter @settler/web...
         env:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
@@ -569,7 +573,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - run: pnpm install --frozen-lockfile
       - name: Build application
-        run: npm run build --workspace=packages/web
+        run: npx turbo run build --filter @settler/web...
         env:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
@@ -622,7 +626,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - run: pnpm install --frozen-lockfile
       - name: Build application
-        run: npm run build --workspace=packages/web
+        run: npx turbo run build --filter @settler/web...
         env:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co

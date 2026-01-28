@@ -4,10 +4,14 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'packages/**'
-      - 'config/**'
-      - 'scripts/**'
-      - '.github/workflows/deploy-preview.yml'
+      - "packages/**"
+      - "config/**"
+      - "scripts/**"
+      - ".github/workflows/deploy-preview.yml"
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   deploy-preview:
@@ -17,11 +21,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
       - run: npm ci
       - name: Build application
-        run: npm run build
+        run: npx turbo run build
       - name: Verify build artifacts
         run: |
           test -d packages/api/dist || (echo "❌ API dist missing" && exit 1)
@@ -33,7 +37,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--yes'
+          vercel-args: "--yes"
           working-directory: ./packages/web
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL_PREVIEW || secrets.DATABASE_URL }}

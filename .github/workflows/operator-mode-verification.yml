@@ -4,32 +4,36 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to run tests in'
+        description: "Environment to run tests in"
         required: true
-        default: 'staging'
+        default: "staging"
         type: choice
         options:
           - production
           - staging
   pull_request:
     paths:
-      - 'packages/api/src/services/operator-mode/**'
-      - 'packages/api/src/__tests__/operator-mode-verification.ts'
-      - '.github/workflows/operator-mode-verification.yml'
+      - "packages/api/src/services/operator-mode/**"
+      - "packages/api/src/__tests__/operator-mode-verification.ts"
+      - ".github/workflows/operator-mode-verification.yml"
   push:
     branches:
       - main
     paths:
-      - 'packages/api/src/services/operator-mode/**'
-      - 'packages/api/src/__tests__/operator-mode-verification.ts'
-      - '.github/workflows/operator-mode-verification.yml'
+      - "packages/api/src/services/operator-mode/**"
+      - "packages/api/src/__tests__/operator-mode-verification.ts"
+      - ".github/workflows/operator-mode-verification.yml"
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   verify-operator-mode:
     name: Verify Operator Mode
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'staging' }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,8 +41,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -51,7 +55,7 @@ jobs:
       - name: Build API package
         run: |
           cd packages/api
-          npm run build
+          npx turbo run build
 
       - name: Run Operator Mode Verification Tests
         env:
