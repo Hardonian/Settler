@@ -28,7 +28,7 @@ const createWorkspaceSchema = z.object({
  */
 export const POST = withSecurity(
   withUniversalBillingGate(async function POST(request: NextRequest) {
-  const traceId = getTraceId(request);
+  const traceId = await getTraceId(request);
   
   try {
     const supabase = await createClient();
@@ -220,7 +220,7 @@ export const POST = withSecurity(
  */
 export const GET = withSecurity(
   withUniversalBillingGate(async function GET(request: NextRequest) {
-  const traceId = getTraceId(request);
+  const traceId = await getTraceId(request);
   
   try {
     const supabase = await createClient();
