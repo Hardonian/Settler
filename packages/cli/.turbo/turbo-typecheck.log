@@ -2,3 +2,38 @@
 > @settler/cli@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\cli
 > tsc --noEmit
 
+src/commands/adapters.ts(1,19): error TS2307: Cannot find module 'chalk' or its corresponding type declarations.
+src/commands/adapters.ts(2,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
+src/commands/admin.ts(6,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
+src/commands/admin.ts(17,20): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/admin.ts(28,20): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/admin.ts(38,20): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/admin.ts(48,20): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/admin.ts(58,20): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/admin.ts(68,20): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/admin.ts(78,20): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/admin.ts(87,20): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/admin.ts(100,20): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/console.ts(8,19): error TS2307: Cannot find module 'chalk' or its corresponding type declarations.
+src/commands/console.ts(9,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
+src/commands/debug.ts(1,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
+src/commands/debug.ts(2,19): error TS2307: Cannot find module 'chalk' or its corresponding type declarations.
+src/commands/debug.ts(15,18): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/debug.ts(76,18): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/debug.ts(87,35): error TS2307: Cannot find module 'yaml' or its corresponding type declarations.
+src/commands/debug.ts(143,18): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/jobs.ts(1,19): error TS2307: Cannot find module 'chalk' or its corresponding type declarations.
+src/commands/jobs.ts(2,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
+src/commands/receipts.ts(1,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
+src/commands/receipts.ts(3,19): error TS2307: Cannot find module 'chalk' or its corresponding type declarations.
+src/commands/receipts.ts(12,18): error TS7006: Parameter 'file' implicitly has an 'any' type.
+src/commands/receipts.ts(12,24): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/receipts.ts(40,18): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/commands/reports.ts(1,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
+src/commands/reports.ts(2,19): error TS2307: Cannot find module 'chalk' or its corresponding type declarations.
+src/commands/reports.ts(14,18): error TS7006: Parameter 'jobId' implicitly has an 'any' type.
+src/commands/reports.ts(14,25): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/commands/webhooks.ts(1,19): error TS2307: Cannot find module 'chalk' or its corresponding type declarations.
+src/commands/webhooks.ts(2,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
+src/index.ts(3,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
+ ELIFECYCLE  Command failed with exit code 2.

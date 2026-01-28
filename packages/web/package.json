@@ -14,7 +14,7 @@
     "build:vercel": "next build",
     "postinstall": "export SENTRY_SKIP_AUTO_INSTALL=1 || set SENTRY_SKIP_AUTO_INSTALL=1 || true",
     "start": "next start",
-    "lint": "next lint --max-warnings 1000000",
+    "lint": "next lint",
     "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit",
     "typecheck:ci": "tsc --noEmit",

@@ -1,5 +1,4 @@
 
 > @settler/web@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\web
-> echo "Typecheck skipped: Prisma client types are unavailable in this environment."
+> tsc --noEmit
 
-"Typecheck skipped: Prisma client types are unavailable in this environment."

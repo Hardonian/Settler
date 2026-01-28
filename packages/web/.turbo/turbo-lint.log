@@ -1,0 +1,7 @@
+
+> @settler/web@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\web
+> next lint --max-warnings 1000000
+
+'next' is not recognized as an internal or external command,
+operable program or batch file.
+ ELIFECYCLE  Command failed with exit code 1.
