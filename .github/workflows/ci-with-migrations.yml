@@ -6,15 +6,19 @@ on:
       - main
       - develop
     paths:
-      - 'supabase/migrations/**'
-      - 'packages/web/**'
-      - '.github/workflows/**'
+      - "supabase/migrations/**"
+      - "packages/web/**"
+      - ".github/workflows/**"
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   validate-migrations:
     name: Validate Migrations
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,7 +36,7 @@ jobs:
         run: |
           echo "Validating migration syntax (non-blocking)..."
           export PGPASSWORD="$SUPABASE_DB_PASSWORD"
-          
+
           for migration in supabase/migrations/*.sql; do
             if [ -f "$migration" ]; then
               echo "Checking: $(basename $migration)"
@@ -48,7 +52,7 @@ jobs:
   typecheck:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -56,8 +60,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: |
@@ -72,7 +76,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -80,8 +84,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: |
@@ -96,7 +100,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -104,8 +108,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: |
@@ -115,4 +119,4 @@ jobs:
       - name: Build
         run: |
           cd packages/web
-          npm run build
+          npx turbo run build

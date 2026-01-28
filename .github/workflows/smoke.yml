@@ -8,6 +8,10 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
 jobs:
   smoke:
     name: Smoke Tests
@@ -16,11 +20,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
       - run: npm ci
       - name: Build application
-        run: npm run build
+        run: npx turbo run build
         env:
           # Use dummy values for build (smoke tests will use actual deployment URL)
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
@@ -40,7 +44,7 @@ jobs:
           # Try to get preview URL from Vercel deployment comment
           # This is a best-effort attempt
           PREVIEW_URL=$(gh pr view ${{ github.event.pull_request.number }} --json comments --jq '.comments[] | select(.author.login == "vercel[bot]") | .body' | grep -oP 'https://[^/]+-.*\.vercel\.app' | head -1 || echo "")
-          
+
           if [ -n "$PREVIEW_URL" ]; then
             echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
             echo "✅ Found Vercel preview URL: $PREVIEW_URL"
@@ -51,14 +55,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
-      
+
       - name: Run smoke tests against preview
         if: github.event_name == 'pull_request' && steps.vercel-preview.outputs.preview_url != ''
         run: npm run qa:smoke
         env:
           BASE_URL: ${{ steps.vercel-preview.outputs.preview_url }}
         continue-on-error: true
-      
+
       - name: Skip smoke tests (no preview URL)
         if: github.event_name == 'pull_request' && steps.vercel-preview.outputs.preview_url == ''
         run: |

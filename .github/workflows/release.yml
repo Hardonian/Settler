@@ -4,13 +4,17 @@ on:
   push:
     branches: [main]
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (e.g., 1.2.3)'
+        description: "Version to release (e.g., 1.2.3)"
         required: true
         type: string
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   release:
@@ -21,40 +25,40 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run doctor
         run: npm run doctor
-      
+
       - name: Run tests
         run: npm test
-      
+
       - name: Run build
-        run: npm run build
-      
+        run: npx turbo run build
+
       - name: Generate changelog
         id: changelog
         run: |
           TAG=${GITHUB_REF#refs/tags/}
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          
+
           if [ -z "$PREVIOUS_TAG" ]; then
             CHANGELOG=$(git log --pretty=format:"- %s (%h)" $TAG)
           else
             CHANGELOG=$(git log --pretty=format:"- %s (%h)" $PREVIOUS_TAG..$TAG)
           fi
-          
+
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-      
+
       - name: Create Release
         uses: actions/create-release@v1
         env:
@@ -64,17 +68,17 @@ jobs:
           release_name: Release ${{ github.ref }}
           body: |
             ## Changes
-            
+
             ${{ steps.changelog.outputs.changelog }}
-            
+
             ## Verification
-            
+
             - ✅ All tests passed
             - ✅ Build successful
             - ✅ Doctor checks passed
           draft: false
           prerelease: false
-      
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -92,22 +96,22 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      
+
       - name: Bump version
         run: |
           VERSION=${{ github.event.inputs.version }}
           npm version $VERSION --no-git-tag-version
-          
+
           # Update CHANGELOG.md
           echo "# Changelog" > CHANGELOG.md
           echo "" >> CHANGELOG.md
@@ -115,7 +119,7 @@ jobs:
           echo "" >> CHANGELOG.md
           echo "### Changed" >> CHANGELOG.md
           echo "- Version bump to $VERSION" >> CHANGELOG.md
-      
+
       - name: Commit and tag
         run: |
           git add package.json CHANGELOG.md

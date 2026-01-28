@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to setup alerts in'
+        description: "Environment to setup alerts in"
         required: true
-        default: 'production'
+        default: "production"
         type: choice
         options:
           - production
@@ -15,15 +15,19 @@ on:
     branches:
       - main
     paths:
-      - 'scripts/setup-operator-mode-alerts.ts'
-      - '.github/workflows/operator-mode-setup-alerts.yml'
+      - "scripts/setup-operator-mode-alerts.ts"
+      - ".github/workflows/operator-mode-setup-alerts.yml"
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   setup-alerts:
     name: Setup Default Alert Rules
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'production' }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,8 +35,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -40,7 +44,7 @@ jobs:
       - name: Build API package
         run: |
           cd packages/api
-          npm run build
+          npx turbo run build
 
       - name: Setup Default Alert Rules
         env:

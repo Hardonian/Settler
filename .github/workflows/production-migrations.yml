@@ -9,6 +9,10 @@ on:
       - main
   workflow_dispatch: # Allow manual trigger
 
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
 jobs:
   run-production-migrations:
     name: Run Production Migrations
@@ -19,11 +23,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
       - run: npm ci
       - name: Build application
-        run: npm run build
+        run: npx turbo run build
       - name: Run production migrations
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

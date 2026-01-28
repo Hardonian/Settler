@@ -4,32 +4,34 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'packages/web/src/app/api/v1/receipts/**'
-      - 'packages/web/src/app/api/console/receipts/**'
-      - 'packages/web/src/app/console/receipts/**'
-      - 'packages/web/src/domain/console/receipts.ts'
-      - 'packages/web/src/domain/receipts/**'
-      - 'supabase/migrations/**receipt*'
-      - '.github/workflows/receipt-console-ci.yml'
+      - "packages/web/src/app/api/v1/receipts/**"
+      - "packages/web/src/app/api/console/receipts/**"
+      - "packages/web/src/app/console/receipts/**"
+      - "packages/web/src/domain/console/receipts.ts"
+      - "packages/web/src/domain/receipts/**"
+      - "supabase/migrations/**receipt*"
+      - ".github/workflows/receipt-console-ci.yml"
   pull_request:
     branches: [main, develop]
     paths:
-      - 'packages/web/src/app/api/v1/receipts/**'
-      - 'packages/web/src/app/api/console/receipts/**'
-      - 'packages/web/src/app/console/receipts/**'
-      - 'packages/web/src/domain/console/receipts.ts'
-      - 'packages/web/src/domain/receipts/**'
-      - 'supabase/migrations/**receipt*'
-      - '.github/workflows/receipt-console-ci.yml'
+      - "packages/web/src/app/api/v1/receipts/**"
+      - "packages/web/src/app/api/console/receipts/**"
+      - "packages/web/src/app/console/receipts/**"
+      - "packages/web/src/domain/console/receipts.ts"
+      - "packages/web/src/domain/receipts/**"
+      - "supabase/migrations/**receipt*"
+      - ".github/workflows/receipt-console-ci.yml"
 
 env:
-  NODE_VERSION: '24'
+  NODE_VERSION: "24"
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   typecheck:
@@ -37,16 +39,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run typecheck
         run: npm run typecheck
         env:
@@ -57,16 +59,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run lint
         run: npm run lint
 
@@ -75,16 +77,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run receipt smoke test
         run: npx tsx scripts/smoke-receipts.ts
         env:
@@ -97,19 +99,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
-      
+
       - name: Run E2E tests
         run: npm run test:e2e -- tests/e2e/receipt-console.spec.ts
         env:
@@ -120,7 +122,7 @@ jobs:
           E2E_TEST_USER_EMAIL: ${{ secrets.E2E_TEST_USER_EMAIL }}
           E2E_TEST_USER_PASSWORD: ${{ secrets.E2E_TEST_USER_PASSWORD }}
           E2E_TEST_API_KEY: ${{ secrets.E2E_TEST_API_KEY }}
-      
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -134,16 +136,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Verify Supabase migrations
         run: npm run db:verify
         env:
@@ -157,23 +159,23 @@ jobs:
     needs: [typecheck, lint]
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Generate Prisma client
         run: npm run prisma:generate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      
+
       - name: Build packages
-        run: npm run build
+        run: npx turbo run build
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -188,16 +190,16 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Deploy Supabase migrations
         run: npm run db:push
         env:
