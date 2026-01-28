@@ -1,5 +1,0 @@
-
-> @settler/web@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\web
-> next lint --max-warnings 1000000
-
-✔ No ESLint warnings or errors

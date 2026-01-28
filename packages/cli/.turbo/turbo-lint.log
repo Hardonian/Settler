@@ -1,39 +1,7 @@
 
 > @settler/cli@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\cli
-> eslint src --ext .ts --max-warnings 200
+> ../api/node_modules/.bin/eslint src --ext .ts --max-warnings 200
 
-
-C:\Users\scott\Documents\GitHub\Settler\packages\cli\src\commands\admin.ts
-   17:29  warning  Async arrow function has no 'await' expression  @typescript-eslint/require-await
-   28:29  warning  Async arrow function has no 'await' expression  @typescript-eslint/require-await
-   38:29  warning  Async arrow function has no 'await' expression  @typescript-eslint/require-await
-   48:29  warning  Async arrow function has no 'await' expression  @typescript-eslint/require-await
-   58:29  warning  Async arrow function has no 'await' expression  @typescript-eslint/require-await
-   68:29  warning  Async arrow function has no 'await' expression  @typescript-eslint/require-await
-   78:29  warning  Async arrow function has no 'await' expression  @typescript-eslint/require-await
-   87:29  warning  Async arrow function has no 'await' expression  @typescript-eslint/require-await
-  100:29  warning  Async arrow function has no 'await' expression  @typescript-eslint/require-await
-
-C:\Users\scott\Documents\GitHub\Settler\packages\cli\src\commands\debug.ts
-   36:49  warning  Unsafe argument of type `any` assigned to a parameter of type `string`                 @typescript-eslint/no-unsafe-argument
-   82:41  warning  Unsafe argument of type `any` assigned to a parameter of type `PathLike | FileHandle`  @typescript-eslint/no-unsafe-argument
-   83:32  warning  Unsafe argument of type `any` assigned to a parameter of type `string`                 @typescript-eslint/no-unsafe-argument
-   85:19  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
-  190:23  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
-
-C:\Users\scott\Documents\GitHub\Settler\packages\cli\src\commands\jobs.ts
-  125:46  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
-  141:38  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
-  187:32  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
-
-C:\Users\scott\Documents\GitHub\Settler\packages\cli\src\commands\receipts.ts
-  22:47  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
-  32:21  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
-  46:49  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
-  48:21  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
-
-C:\Users\scott\Documents\GitHub\Settler\packages\cli\src\commands\reports.ts
-  27:49  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
-
-✖ 22 problems (0 errors, 22 warnings)
-
+'..' is not recognized as an internal or external command,
+operable program or batch file.
+ ELIFECYCLE  Command failed with exit code 1.
