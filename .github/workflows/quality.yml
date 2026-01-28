@@ -28,7 +28,7 @@ jobs:
         run: cd packages/web && npm run lint
 
       - name: Typecheck
-        run: cd packages/web && npm run type-check || npx turbo run build --filter @settler/web... -- --no-lint # build often includes typecheck
+        run: cd packages/web && npm run typecheck
 
       - name: Security Audit
         run: npm audit --audit-level=high
