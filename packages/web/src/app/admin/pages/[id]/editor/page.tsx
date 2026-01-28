@@ -1,6 +1,7 @@
 import { getPage } from '@/app/actions/admin';
 import EditorClient from './EditorClient';
 import { notFound } from 'next/navigation';
+import type { PageBlock } from '@/domain/siteBuilder/pageSchema';
 
 export default async function PageEditor({ params }: { params: { id: string } }) {
     const { data: page, success } = await getPage(params.id);
@@ -10,7 +11,7 @@ export default async function PageEditor({ params }: { params: { id: string } })
     }
 
     // Transform blocks if necessary or ensure array
-    const blocks = Array.isArray(page.blocks) ? page.blocks : [];
+    const blocks = Array.isArray(page.blocks) ? (page.blocks as PageBlock[]) : [];
 
     return <EditorClient initialPage={page} initialBlocks={blocks} />;
 }

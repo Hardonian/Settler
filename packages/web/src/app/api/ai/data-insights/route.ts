@@ -128,7 +128,7 @@ export const GET = withSecurity(
     }
 
     return NextResponse.json(insights);
-  } catch {
+  } catch (error) {
     appLogger.error("AI data insights error", error);
     return NextResponse.json(
       {

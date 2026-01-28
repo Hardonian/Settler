@@ -77,7 +77,7 @@ export const GET = withSecurity(
     }
 
     return NextResponse.json({ moment: null });
-  } catch {
+  } catch (error) {
     appLogger.error("Value moments error", error);
     return NextResponse.json({ moment: null });
   }

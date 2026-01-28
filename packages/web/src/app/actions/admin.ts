@@ -23,6 +23,18 @@ type FormattedPage = {
   lastUpdated: string;
 };
 
+type TenantPageRecord = {
+  id: string;
+  tenantId: string;
+  slug: string;
+  pageType: string;
+  isDraft: boolean;
+  metadata: Record<string, unknown> | null;
+  blocks: unknown[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -96,7 +108,7 @@ export async function getPages(): Promise<ActionState<FormattedPage[]>> {
   }
 }
 
-export async function getPage(id: string): Promise<ActionState> {
+export async function getPage(id: string): Promise<ActionState<TenantPageRecord>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
 
@@ -108,7 +120,7 @@ export async function getPage(id: string): Promise<ActionState> {
       return { success: false, error: 'Page not found' };
     }
 
-    return { success: true, data: page };
+    return { success: true, data: page as TenantPageRecord };
   } catch (error) {
     console.error(
       'Failed to fetch page:',
@@ -118,7 +130,7 @@ export async function getPage(id: string): Promise<ActionState> {
   }
 }
 
-export async function createPage(formData: FormData): Promise<ActionState> {
+export async function createPage(formData: FormData): Promise<ActionState<TenantPageRecord>> {
   try {
     const tenantId = await getAuthenticatedTenantId();
     const title = formData.get('title');
@@ -153,7 +165,7 @@ export async function createPage(formData: FormData): Promise<ActionState> {
     });
 
     revalidatePath('/admin/pages');
-    return { success: true, data: newPage };
+    return { success: true, data: newPage as TenantPageRecord };
   } catch (error) {
     console.error(
       'Failed to create page:',

@@ -181,7 +181,14 @@
     "typecheck": {
       "outputs": [".next/tsconfig.tsbuildinfo", "tsconfig.tsbuildinfo"],
       "cache": true,
-      "inputs": ["src/**/*.ts", "src/**/*.tsx", "tsconfig.json", "package.json"],
+      "inputs": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "app/**/*.ts",
+        "app/**/*.tsx",
+        "tsconfig.json",
+        "package.json"
+      ],
       "env": [
         "NODE_ENV",
         "NEXT_PUBLIC_SITE_URL",

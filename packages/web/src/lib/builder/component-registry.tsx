@@ -7,13 +7,28 @@ import { Builder } from '@builder.io/react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import components for better performance
-const AnimatedCodeBlock = dynamic(() => import('@/components/AnimatedCodeBlock'), { ssr: false });
-const AnimatedFeatureCard = dynamic(() => import('@/components/AnimatedFeatureCard'));
-const ConversionCTA = dynamic(() => import('@/components/ConversionCTA'));
-const EnhancedConversionCTA = dynamic(() => import('@/components/EnhancedConversionCTA'));
-const EnhancedTrustBadges = dynamic(() => import('@/components/EnhancedTrustBadges'));
-const CustomerTestimonials = dynamic(() => import('@/components/CustomerTestimonials'));
-const IntegrationLogos = dynamic(() => import('@/components/IntegrationLogos'));
+const AnimatedCodeBlock = dynamic(
+  () => import('@/components/AnimatedCodeBlock').then((mod) => mod.AnimatedCodeBlock),
+  { ssr: false }
+);
+const AnimatedFeatureCard = dynamic(
+  () => import('@/components/AnimatedFeatureCard').then((mod) => mod.AnimatedFeatureCard)
+);
+const ConversionCTA = dynamic(
+  () => import('@/components/ConversionCTA').then((mod) => mod.ConversionCTA)
+);
+const EnhancedConversionCTA = dynamic(
+  () => import('@/components/EnhancedConversionCTA').then((mod) => mod.EnhancedConversionCTA)
+);
+const EnhancedTrustBadges = dynamic(
+  () => import('@/components/EnhancedTrustBadges').then((mod) => mod.EnhancedTrustBadges)
+);
+const CustomerTestimonials = dynamic(
+  () => import('@/components/CustomerTestimonials').then((mod) => mod.CustomerTestimonials)
+);
+const IntegrationLogos = dynamic(
+  () => import('@/components/IntegrationLogos').then((mod) => mod.IntegrationLogos)
+);
 
 /**
  * Register all custom components with Builder.io

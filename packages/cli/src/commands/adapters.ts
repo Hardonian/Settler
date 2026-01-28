@@ -1,6 +1,8 @@
-import { Command } from "commander";
 import chalk from "chalk";
+import { Command } from "commander";
+
 import Settler from "@settler/sdk";
+import type { Adapter } from "@settler/sdk";
 
 const adaptersCommand = new Command("adapters");
 
@@ -25,7 +27,7 @@ adaptersCommand
       const response = await client.adapters.list();
 
       console.log(chalk.bold("\nAvailable Adapters:\n"));
-      response.data.forEach((adapter) => {
+      response.data.forEach((adapter: Adapter) => {
         console.log(chalk.cyan(`  ${adapter.id}`));
         console.log(`    Name: ${adapter.name}`);
         console.log(`    Description: ${adapter.description}`);

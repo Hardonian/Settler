@@ -173,7 +173,7 @@ export async function runReconciliation(
       startedAt: result.startedAt,
       completedAt: result.completedAt || undefined,
     };
-  } catch {
+  } catch (error) {
     await safeLogger.error("[runReconciliation] Unexpected error", {
       tenantId,
       sourceId: params.sourceId,
@@ -236,7 +236,7 @@ export async function getReconciliationSummary(
       startedAt: result.startedAt,
       completedAt: result.completedAt || undefined,
     };
-  } catch {
+  } catch (error) {
     await safeLogger.error("[getReconciliationSummary] Unexpected error", {
       tenantId,
       reconciliationId,
@@ -280,12 +280,18 @@ export async function listReconciliationItems(
     
     // Get source transactions for matches
     const sourceTransactionIds = matches.map(m => m.sourceTransactionId);
-    const sourceTransactions = await prisma.normalizedTransaction.findMany({
+    const sourceTransactions = (await prisma.normalizedTransaction.findMany({
       where: {
         id: { in: sourceTransactionIds },
         tenantId,
       },
-    });
+    })) as Array<{
+      id: string;
+      amount: number;
+      currency: string;
+      date: string;
+      description: string | null;
+    }>;
     
     const sourceTransactionMap = new Map(sourceTransactions.map(t => [t.id, t]));
 
@@ -347,7 +353,7 @@ export async function listReconciliationItems(
     items.sort((a, b) => b.impact.riskScore - a.impact.riskScore);
 
     return items;
-  } catch {
+  } catch (error) {
     await safeLogger.error("[listReconciliationItems] Unexpected error", {
       tenantId,
       reconciliationId,

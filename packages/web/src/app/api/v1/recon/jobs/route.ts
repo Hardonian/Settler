@@ -34,7 +34,7 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
     let body;
     try {
       body = await request.json();
-    } catch {
+    } catch (error) {
       return NextResponse.json(
         { error: 'Invalid JSON body' },
         { status: 400 }
@@ -166,7 +166,7 @@ export const POST = withSecurity(async function POST(request: NextRequest) {
     };
 
     return NextResponse.json(jobResponse, { status: 201 });
-  } catch {
+  } catch (error) {
     // Never return 500 - always return 200 with error info for playground
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     appLogger.error('[Recon Jobs API] Error', error, { errorMessage });
@@ -239,7 +239,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
           });
           tenantId = billingAccount?.tenantId || null;
         }
-      } catch {
+      } catch (error) {
         // Unauthenticated access allowed for playground
       }
     }
@@ -347,7 +347,7 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
         hasMore: offset + limit < totalCount,
       },
     }, { status: 200 });
-  } catch {
+  } catch (error) {
     const duration = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;

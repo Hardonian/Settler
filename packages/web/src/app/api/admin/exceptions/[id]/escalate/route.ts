@@ -44,7 +44,7 @@ export const POST = withSecurity(async function POST(
     });
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
     appLogger.error('[Escalate Exception] Error', error);
     return NextResponse.json(
       { error: 'Failed to escalate exception', message: error instanceof Error ? error.message : 'Unknown error' },

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { asExtendedClient } from '@/lib/supabase/types';
-import { getConnectorDriver } from '@settler/adapters/dist/drivers';
-import { ConnectorRuntime, RuntimeConfig } from '@settler/adapters/dist/connector-runtime';
+import { ConnectorRuntime, getConnectorDriver, type RuntimeConfig } from '@settler/adapters';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 
@@ -79,7 +78,7 @@ export const POST = withUniversalBillingGate(async function POST(
       result,
       message: `Backfilled data from ${since} to ${until || 'now'}`,
     });
-  } catch {
+  } catch (error) {
     appLogger.error('Error in backfill route', error);
     // Never return 500 - return graceful error response
     return NextResponse.json(

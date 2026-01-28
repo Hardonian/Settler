@@ -121,7 +121,7 @@ export function safeRouteHandler<T extends (...args: any[]) => Promise<NextRespo
   return (async (...args: Parameters<T>) => {
     try {
       return await handler(...args);
-    } catch {
+    } catch (error) {
       return await normalizeError(error, context);
     }
   }) as T;
@@ -138,7 +138,7 @@ export async function safeServerAction<T>(
   try {
     const data = await action();
     return { success: true, data };
-  } catch {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const traceId = await getTraceId();
     

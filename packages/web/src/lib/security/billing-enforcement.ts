@@ -202,7 +202,7 @@ export async function requireActiveSubscription(
       billingAccountId: billingAccountTyped.id,
       planId: sub.plan_id || undefined,
     };
-  } catch {
+  } catch (error) {
     await logger.error('Billing enforcement check failed', {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
@@ -371,7 +371,7 @@ export async function requireAddOn(
       ...subscriptionCheck,
       allowed: true,
     };
-  } catch {
+  } catch (error) {
     await logger.error('Add-on check failed', {
       error: error instanceof Error ? error.message : String(error),
       add_on: addOnIntegrationId,

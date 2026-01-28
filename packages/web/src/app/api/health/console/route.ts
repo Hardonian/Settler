@@ -153,7 +153,7 @@ export const GET = withSecurity(
         if (tableError && (tableError.code === '42P01' || tableError.message.includes('does not exist'))) {
           missingTables.push(table);
         }
-      } catch {
+      } catch (error) {
         // Table check failed - might be RLS blocking, that's ok
       }
     }
@@ -167,7 +167,7 @@ export const GET = withSecurity(
       health.checks.migrations.criticalTablesExist = true;
       health.checks.migrations.status = 'ok';
     }
-  } catch {
+  } catch (error) {
     health.checks.supabase.status = 'error';
     health.checks.supabase.error = error instanceof Error ? error.message : 'Unknown error';
     health.status = 'unhealthy';

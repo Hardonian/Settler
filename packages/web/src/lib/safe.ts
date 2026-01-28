@@ -29,7 +29,7 @@ export async function safeAsync<T>(
     } else {
       return await fn();
     }
-  } catch {
+  } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     if (onError) {
       onError(err);
@@ -65,7 +65,7 @@ export async function safeResult<T>(
       data = await fn();
     }
     return { success: true, data };
-  } catch {
+  } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     if (onError) {
       onError(err);
@@ -93,7 +93,7 @@ export async function safeModeGuard<T>(
   }
   try {
     return await fn();
-  } catch {
+  } catch (error) {
     console.warn('[safeModeGuard] Operation failed, using default:', error);
     return defaultValue;
   }

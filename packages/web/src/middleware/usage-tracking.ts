@@ -51,7 +51,7 @@ export async function recordUsageEvent(event: UsageEvent): Promise<void> {
       console.error('[Usage Tracking] Failed to record event:', error);
       // Don't throw - usage tracking should not break the request
     }
-  } catch {
+  } catch (error) {
     console.error('[Usage Tracking] Error:', error);
     // Don't throw - usage tracking should not break the request
   }
@@ -182,7 +182,9 @@ export async function checkUsageLimit(
 /**
  * Middleware to track usage for API routes
  */
-export function withUsageTracking<T extends (...args: unknown[]) => Promise<NextResponse>>(
+export function withUsageTracking<
+  T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>
+>(
   handler: T,
   options: {
     eventType: string;
@@ -218,7 +220,7 @@ export function withUsageTracking<T extends (...args: unknown[]) => Promise<Next
             },
           });
         }
-      } catch {
+      } catch (error) {
         // Don't fail the request if usage tracking fails
         console.error('[Usage Tracking] Failed to track usage:', error);
       }

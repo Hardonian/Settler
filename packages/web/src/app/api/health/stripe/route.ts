@@ -160,7 +160,7 @@ export const GET = withSecurity(
         error: dbError instanceof Error ? dbError.message : 'Unknown error',
       });
     }
-  } catch {
+  } catch (error) {
     // Never throw - always return health check result
     logger.error('Health check error', {
       correlationId,

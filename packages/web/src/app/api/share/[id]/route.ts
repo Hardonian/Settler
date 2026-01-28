@@ -53,7 +53,7 @@ export const POST = withSecurity(
       shareUrl,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     });
-  } catch {
+  } catch (error) {
     appLogger.error("Share artifact error", error);
     return NextResponse.json(
       {
@@ -139,7 +139,7 @@ export const GET = withSecurity(
         expiresAt: typedArtifact.expires_at,
       },
     });
-  } catch {
+  } catch (error) {
     appLogger.error("Get shareable artifact error", error);
     return NextResponse.json(
       {

@@ -42,7 +42,7 @@ export default async function ExperimentsList() {
                 </TableRow>
                 </TableHeader>
                 <TableBody>
-                {experiments.map((exp: any) => (
+                {experiments.map((exp) => (
                     <TableRow key={exp.id}>
                     <TableCell className="font-medium">{exp.name}</TableCell>
                     <TableCell className="font-mono text-xs text-slate-500">{exp.slug}</TableCell>
@@ -66,7 +66,7 @@ export default async function ExperimentsList() {
       </Card>
     </div>
   );
-  } catch {
+  } catch (error) {
     // Top-level error boundary for admin experiments
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     adminLogger.error('Error in admin experiments page', new Error(errorMessage));

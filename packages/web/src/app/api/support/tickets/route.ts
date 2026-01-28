@@ -61,7 +61,7 @@ export const GET = withSecurity(
         if (user?.email) {
           userMap.set(userId, user.email);
         }
-      } catch {
+      } catch (error) {
         // Skip if user not found
       }
     }
@@ -79,7 +79,7 @@ export const GET = withSecurity(
     }));
 
     return NextResponse.json({ tickets: ticketsWithUsers });
-  } catch {
+  } catch (error) {
     appLogger.error('Failed to fetch support tickets', error);
     // Never return 500 - return empty array with graceful error message
     return NextResponse.json({ 

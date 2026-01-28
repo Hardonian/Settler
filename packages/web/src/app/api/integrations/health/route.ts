@@ -73,7 +73,7 @@ export const GET = withSecurity(
     });
 
     return NextResponse.json({ integrations });
-  } catch {
+  } catch (error) {
     appLogger.error("Error in integrations/health GET", error);
     // Return empty array instead of 500 - graceful degradation
     return NextResponse.json({ 

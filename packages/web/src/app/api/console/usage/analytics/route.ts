@@ -147,7 +147,7 @@ export const GET = withSecurity(
           existing.errors += quantity;
         }
         dailyMap.set(date, existing);
-      } catch {
+      } catch (error) {
         // Skip invalid events
       }
     }
@@ -162,7 +162,7 @@ export const GET = withSecurity(
       avgDaily = daily.length > 0
         ? daily.reduce((sum, d) => sum + d.calls, 0) / daily.length
         : 0;
-    } catch {
+    } catch (error) {
       avgDaily = 0;
     }
 
@@ -177,7 +177,7 @@ export const GET = withSecurity(
       const planCode = await getAccountPlanCode(billingAccount.id).catch(() => 'starter');
       const planConfig = getPlanConfig(planCode);
       costEstimate = planCode === 'starter' ? 0 : (planConfig?.monthlyPrice || 0);
-    } catch {
+    } catch (error) {
       costEstimate = 0;
     }
 
@@ -225,7 +225,7 @@ export const GET = withSecurity(
     });
 
     return addCorrelationHeaders(response, correlationId);
-  } catch {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Error calculating analytics', {
       correlationId,

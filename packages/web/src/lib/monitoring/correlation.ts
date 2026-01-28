@@ -23,7 +23,7 @@ export async function getCorrelationId(): Promise<string> {
       randomUUID();
     
     return correlationId;
-  } catch {
+  } catch (error) {
     // If headers() fails (e.g., during build), generate new ID
     return randomUUID();
   }

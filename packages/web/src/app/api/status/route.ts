@@ -66,7 +66,7 @@ export const GET = withSecurity(
     
     // Add CORS headers
     return addCorsHeaders(response, request);
-  } catch {
+  } catch (error) {
     appLogger.error("Error in status GET", error);
     // Never return 500 - return degraded status with graceful error message
     const errorResponse = NextResponse.json(
@@ -94,7 +94,7 @@ async function checkDatabaseHealth(): Promise<boolean> {
     const { prisma } = await import('@/shared/db/prismaClient');
     await prisma.$queryRaw`SELECT 1`;
     return true;
-  } catch {
+  } catch (error) {
     return false;
   }
 }
@@ -108,7 +108,7 @@ async function checkSupabaseHealth(): Promise<boolean> {
     const supabase = await createClient();
     const { error } = await supabase.from('users').select('id').limit(1);
     return !error;
-  } catch {
+  } catch (error) {
     return false;
   }
 }
@@ -124,7 +124,7 @@ async function checkAPIHealth(): Promise<boolean> {
       signal: AbortSignal.timeout(5000),
     });
     return response.ok;
-  } catch {
+  } catch (error) {
     // If we can't check ourselves, assume operational
     return true;
   }

@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch {
+  } catch (error) {
     console.error('Error processing Builder.io webhook:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

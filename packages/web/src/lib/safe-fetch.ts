@@ -42,7 +42,7 @@ export async function safeFetch<T = unknown>(
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorData.error || errorMessage;
-      } catch {
+      } catch (error) {
         // Ignore JSON parse errors
       }
 
@@ -62,7 +62,7 @@ export async function safeFetch<T = unknown>(
       success: true,
       data,
     };
-  } catch {
+  } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
         return {

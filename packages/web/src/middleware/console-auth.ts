@@ -21,7 +21,7 @@ export async function requireConsoleAuth(_request: NextRequest): Promise<NextRes
 
     // User is authenticated, allow request
     return null;
-  } catch {
+  } catch (error) {
     console.error('[Console Auth] Error checking auth:', error);
     // On error, allow request through but route will handle it
     return null;

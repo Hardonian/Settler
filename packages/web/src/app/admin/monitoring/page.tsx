@@ -153,7 +153,7 @@ export default function MonitoringDashboard() {
         setUnitEconomics(unitEconData);
         setOperational(operationalData);
         setBusiness(businessData);
-      } catch {
+      } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load metrics');
       } finally {
         setLoading(false);

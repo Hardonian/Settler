@@ -39,7 +39,7 @@ export async function recordUsageEvent(input: UsageEventInput): Promise<void> {
         metadata: input.metadata ? JSON.parse(JSON.stringify(input.metadata)) : {},
       },
     });
-  } catch {
+  } catch (error) {
     // Log error but don't fail the request
     console.error('Failed to record usage event:', error);
   }

@@ -62,7 +62,7 @@ class FeatureFlagManager {
 
       this.initialized = true;
       console.info("[FeatureFlags] Initialized with", this.flags.size, "flags");
-    } catch {
+    } catch (error) {
       console.error("[FeatureFlags] Failed to initialize:", error);
       // Continue with empty flags (fail open)
     }

@@ -62,7 +62,7 @@ export const GET = withSecurity(
       run,
       events: events || [],
     });
-  } catch {
+  } catch (error) {
     logger.error('Error fetching run', error as Error);
     // Never return 500 - return actionable error message
     return NextResponse.json(

@@ -260,7 +260,7 @@ export function useAdminStream(
               setLatency(health.latency);
               break;
           }
-        } catch {
+        } catch (error) {
           // Error parsing event - non-critical, continue processing
           if (process.env.NODE_ENV === 'development') {
             // eslint-disable-next-line no-console

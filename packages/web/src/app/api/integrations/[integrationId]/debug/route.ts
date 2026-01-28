@@ -41,7 +41,7 @@ export const POST = withSecurity(
     };
 
     return NextResponse.json(debugResult);
-  } catch {
+  } catch (error) {
     appLogger.error("Error in debug POST", error);
     return NextResponse.json(
       {

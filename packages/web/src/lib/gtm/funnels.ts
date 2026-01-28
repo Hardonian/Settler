@@ -182,7 +182,7 @@ export async function trackFunnelTransition(
         ...transition.metadata,
       });
     }
-  } catch {
+  } catch (error) {
     console.error('[trackFunnelTransition] Failed to track:', error);
   }
 }
@@ -261,7 +261,7 @@ export async function getCurrentFunnelStage(
     if (user) return 'signed_up';
 
     return 'visitor';
-  } catch {
+  } catch (error) {
     console.error('[getCurrentFunnelStage] Error:', error);
     return 'visitor';
   }

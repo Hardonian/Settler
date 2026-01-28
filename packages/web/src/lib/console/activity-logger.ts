@@ -96,7 +96,7 @@ export async function logActivity(params: {
       console.error('[ActivityLogger] Failed to log activity:', error);
       // Don't throw - logging failures shouldn't break the app
     }
-  } catch {
+  } catch (error) {
     console.error('[ActivityLogger] Error logging activity:', error);
     // Don't throw - logging failures shouldn't break the app
   }
@@ -133,7 +133,7 @@ export async function getRecentActivities(limit = 10) {
     }
 
     return data || [];
-  } catch {
+  } catch (error) {
     console.error('[ActivityLogger] Error fetching activities:', error);
     return [];
   }

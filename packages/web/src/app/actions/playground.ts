@@ -117,7 +117,7 @@ export async function runDemoSimulation(): Promise<DemoResult> {
         }
         throw new Error("Unexpected demo response payload");
       }
-    } catch {
+    } catch (error) {
       // Continue to next port
     }
   }

@@ -35,7 +35,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
     const env = getSupabaseEnv();
     supabaseUrl = env.url;
     supabaseAnonKey = env.anonKey;
-  } catch {
+  } catch (error) {
     // Log error but don't crash - return a safe fallback client
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     await safeLogger.error('[Supabase] Failed to get environment variables', {
@@ -65,7 +65,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
   let cookieStore;
   try {
     cookieStore = await cookies();
-  } catch {
+  } catch (error) {
     await safeLogger.error('[Supabase] Failed to get cookies', {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
@@ -95,7 +95,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
       get(name: string) {
         try {
           return cookieStore.get(name)?.value;
-        } catch {
+        } catch (error) {
           // Silently fail - cookie access is optional
           return undefined;
         }
@@ -103,7 +103,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
       set(name: string, value: string, options: CookieOptions) {
         try {
           cookieStore.set({ name, value, ...options });
-        } catch {
+        } catch (error) {
           // The `set` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing
           // user sessions.
@@ -112,7 +112,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
       remove(name: string, options: CookieOptions) {
         try {
           cookieStore.set({ name, value: "", ...options });
-        } catch {
+        } catch (error) {
           // The `delete` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing
           // user sessions.
@@ -143,7 +143,7 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
   try {
     const env = getSupabaseEnv();
     supabaseUrl = env.url;
-  } catch {
+  } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     await safeLogger.error('[Supabase Admin] Failed to get Supabase URL', {
       error: errorMessage,
@@ -191,7 +191,7 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
     adminClientCacheTimestamp = now;
 
     return adminClient;
-  } catch {
+  } catch (error) {
     await safeLogger.error('[Supabase Admin] Failed to create admin client', {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,

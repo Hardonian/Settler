@@ -93,7 +93,7 @@ export const GET = withSecurity(
     };
 
     return NextResponse.json(response);
-  } catch {
+  } catch (error) {
     appLogger.error('Error in public reality API', error);
     // Return safe defaults
     return NextResponse.json({

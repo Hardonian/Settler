@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { metrics } from '@settler/adapters/dist/metrics/prometheus';
+import { metrics } from '@settler/adapters';
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
@@ -31,7 +31,7 @@ export const GET = withSecurity(
         'Content-Type': 'text/plain; version=0.0.4',
       },
     });
-  } catch {
+  } catch (error) {
     appLogger.error('Error exporting metrics', error);
     return NextResponse.json(
       {

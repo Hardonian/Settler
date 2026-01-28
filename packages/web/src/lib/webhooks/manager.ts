@@ -48,7 +48,7 @@ export async function createWebhook(
     if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:') {
       throw new Error('Webhook URLs must use HTTPS in production');
     }
-  } catch {
+  } catch (error) {
     if (error instanceof Error && error.message.includes('HTTPS')) {
       throw error;
     }
@@ -174,7 +174,7 @@ export async function updateWebhook(
   if (updates.url) {
     try {
       new URL(updates.url);
-    } catch {
+    } catch (error) {
       throw new Error('Invalid webhook URL');
     }
   }

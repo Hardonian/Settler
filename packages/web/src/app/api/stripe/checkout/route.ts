@@ -40,7 +40,7 @@ function isValidOriginUrl(url: unknown): boolean {
     const parsed = new URL(url);
     const origin = process.env.NEXT_PUBLIC_APP_URL || 'https://settler.dev';
     return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && url.startsWith(origin);
-  } catch {
+  } catch (error) {
     return false;
   }
 }
@@ -167,7 +167,7 @@ export const POST = withSecurity(
     await trackApiMetric('/api/stripe/checkout', 'POST', 200, Date.now() - startTime);
 
     return NextResponse.json({ url: session.url });
-  } catch {
+  } catch (error) {
     appLogger.error('[Stripe Checkout] Error creating checkout session', error, {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,

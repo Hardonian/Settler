@@ -19,7 +19,7 @@ export async function validateBody<T>(
     const body = await request.json();
     const validated = schema.parse(body);
     return { success: true, data: validated };
-  } catch {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -61,7 +61,7 @@ export function validateQuery<T>(
     });
     const validated = schema.parse(params);
     return { success: true, data: validated };
-  } catch {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,

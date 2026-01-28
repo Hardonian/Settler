@@ -61,7 +61,7 @@ export const POST = withSecurity(
     }
     
     return NextResponse.json({ reconciliation: summary }, { status: 201 });
-  } catch {
+  } catch (error) {
     // Return typed error, not 500
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -121,7 +121,7 @@ export const GET = withSecurity(
     
     // List all reconciliations (placeholder - would need list function)
     return NextResponse.json({ reconciliations: [] }, { status: 200 });
-  } catch {
+  } catch (error) {
     appLogger.error('[Reconciliation API] Error', error);
     return NextResponse.json({ reconciliations: [] }, { status: 200 });
   }

@@ -48,8 +48,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     if (result.data) {
       kpiData = result.data;
     }
-  } catch {
-    console.warn('RPC function not available, using fallback queries:', err);
+  } catch (error) {
+    console.warn('RPC function not available, using fallback queries:', error);
   }
 
   // Fetch recent activity count
@@ -60,8 +60,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       .select('*', { count: 'exact', head: true })
       .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString());
     recentActivityCount = count || 0;
-  } catch {
-    console.warn('Error fetching activity count:', err);
+  } catch (error) {
+    console.warn('Error fetching activity count:', error);
   }
 
   // Fetch new users this week
@@ -72,8 +72,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       .select('*', { count: 'exact', head: true })
       .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
     newUsersCount = count || 0;
-  } catch {
-    console.warn('Error fetching new users count:', err);
+  } catch (error) {
+    console.warn('Error fetching new users count:', error);
   }
 
   // Fetch most engaged post
@@ -98,8 +98,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
         }, firstPost);
       }
     }
-  } catch {
-    console.warn('Error fetching posts:', err);
+  } catch (error) {
+    console.warn('Error fetching posts:', error);
   }
 
   // Fetch total posts count
@@ -110,8 +110,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       .select('*', { count: 'exact', head: true })
       .eq('status', 'published');
     totalPosts = count || 0;
-  } catch {
-    console.warn('Error fetching total posts:', err);
+  } catch (error) {
+    console.warn('Error fetching total posts:', error);
   }
 
   // Fetch total profiles count
@@ -121,8 +121,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       .from('profiles')
       .select('*', { count: 'exact', head: true });
     totalProfiles = count || 0;
-  } catch {
-    console.warn('Error fetching total profiles:', err);
+  } catch (error) {
+    console.warn('Error fetching total profiles:', error);
   }
 
   return {
@@ -142,8 +142,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 export async function getExternalMetricsData(): Promise<ExternalMetrics> {
   try {
     return await getExternalMetrics();
-  } catch {
-    console.warn('Failed to fetch external metrics:', err);
+  } catch (error) {
+    console.warn('Failed to fetch external metrics:', error);
     return {
       github: {
         stars: 0,

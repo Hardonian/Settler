@@ -60,13 +60,13 @@ export const GET = withSecurity(
             assignedAt: tenantUserTyped?.joined_at || new Date().toISOString(),
           });
         }
-      } catch {
+      } catch (error) {
         // Skip if user not found
       }
     }
 
     return NextResponse.json({ users });
-  } catch {
+  } catch (error) {
     appLogger.error("Error in users GET", error);
     // Never return 500 - return empty users array with graceful error message
     return NextResponse.json({ 

@@ -33,7 +33,7 @@ export const GET = withSecurity(
     }));
 
     return NextResponse.json({ webhooks: safeWebhooks });
-  } catch {
+  } catch (error) {
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -74,7 +74,7 @@ export const POST = withSecurity(
 
     // Return full secret only on creation
     return NextResponse.json({ webhook }, { status: 201 });
-  } catch {
+  } catch (error) {
     if (error instanceof Error && error.message.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

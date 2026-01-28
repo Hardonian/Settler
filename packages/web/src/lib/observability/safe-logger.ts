@@ -41,7 +41,7 @@ async function safeLog(
         await logger.debug(message, enrichedMeta);
         break;
     }
-  } catch {
+  } catch (error) {
     // Logging failure should never crash the app
     // Silently fail - logging is non-critical
   }

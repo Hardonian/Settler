@@ -48,7 +48,7 @@ export const GET = withSecurity(
             "AI tokens are no longer part of pricing. Pricing is now based on reconciliation volume and exception supervision.",
         });
         return addCorrelationHeaders(response, correlationId);
-      } catch {
+      } catch (error) {
         // Never return 500 - return graceful error response
         const response = NextResponse.json(
           {
@@ -97,7 +97,7 @@ export const POST = withSecurity(
           { status: 410 } // 410 Gone
         );
         return addCorrelationHeaders(response, correlationId);
-      } catch {
+      } catch (error) {
         // Never return 500 - return graceful error response
         const response = NextResponse.json(
           {

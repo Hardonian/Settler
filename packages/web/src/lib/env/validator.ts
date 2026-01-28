@@ -61,7 +61,7 @@ export function getSupabaseEnv(): {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
-    const missing = [];
+    const missing: string[] = [];
     if (!url) missing.push('NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL');
     if (!anonKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY');
     

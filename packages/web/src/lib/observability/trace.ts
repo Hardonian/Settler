@@ -69,7 +69,7 @@ export async function getTraceId(request?: NextRequest | Request): Promise<strin
         return headerTraceId;
       }
     }
-  } catch {
+  } catch (error) {
     // Not in server context or headers() unavailable, continue to generate new ID
   }
 

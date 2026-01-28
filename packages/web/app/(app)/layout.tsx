@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { StitchFooter } from '../../../../stitch_export/components/Footer';
-import { StitchHeader } from '../../../../stitch_export/components/Header';
+import { Footer } from '@/components/Footer';
+import { Navigation } from '@/components/Navigation';
 
 // App shell layout for authenticated routes, skinned with Stitch UI.
 export const metadata = {
@@ -15,9 +15,9 @@ export default function AppLayout({
 }): JSX.Element {
   return (
     <div className="min-h-screen flex flex-col">
-      <StitchHeader />
+      <Navigation />
       <main className="flex-1 w-full mx-auto px-4 py-6">{children}</main>
-      <StitchFooter />
+      <Footer />
     </div>
   );
 }

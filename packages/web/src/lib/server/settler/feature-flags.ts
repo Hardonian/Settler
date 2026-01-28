@@ -29,7 +29,7 @@ export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> 
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch {
+    } catch (error) {
       // RPC might not exist, continue anyway
     }
 
@@ -83,7 +83,7 @@ export async function getFeatureFlags(tenantId: TenantId): Promise<FlagValue[]> 
     }
 
     return Array.from(flagMap.values());
-  } catch {
+  } catch (error) {
     await safeLogger.error("[getFeatureFlags] Unexpected error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),
@@ -157,7 +157,7 @@ export async function setFeatureFlag(
     // Set tenant context for RLS
     try {
       await (supabase.rpc as any)("set_tenant_context", { tenant_id: tenantId });
-    } catch {
+    } catch (error) {
       // RPC might not exist, continue anyway
     }
 
@@ -184,7 +184,7 @@ export async function setFeatureFlag(
     }
 
     return true;
-  } catch {
+  } catch (error) {
     await safeLogger.error("[setFeatureFlag] Unexpected error", {
       tenantId,
       key,
