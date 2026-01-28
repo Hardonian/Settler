@@ -179,8 +179,7 @@
       "env": ["NODE_ENV"]
     },
     "typecheck": {
-      "dependsOn": ["^build"],
-      "outputs": [],
+      "outputs": [".next/tsconfig.tsbuildinfo", "tsconfig.tsbuildinfo"],
       "cache": true,
       "inputs": ["src/**/*.ts", "src/**/*.tsx", "tsconfig.json", "package.json"],
       "env": [
