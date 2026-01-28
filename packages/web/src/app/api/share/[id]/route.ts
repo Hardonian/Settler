@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { nanoid } from "nanoid";
+import { randomBytes } from "crypto";
 import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
@@ -33,7 +33,7 @@ export const POST = withSecurity(
     }
 
     // Generate shareable ID
-    const shareId = nanoid(12);
+    const shareId = randomBytes(9).toString("base64url");
 
     // Store shareable link
     await ((supabase.from("shareable_artifacts") as any).insert({
@@ -112,33 +112,56 @@ export const GET = withSecurity(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    // Get artifact data based on type
-    let artifactData = null;
+    const metadata = {
+      type: typedArtifact.artifact_type,
+      createdAt: typedArtifact.created_at,
+      expiresAt: typedArtifact.expires_at,
+    };
 
-    if (typedArtifact.artifact_type === "reconciliation_report") {
+    if (typedArtifact.artifact_type === 'reconciliation_report') {
       const reportResult = await ((supabase
-        .from("reconciliation_jobs") as any)
-        .select("*")
-        .eq("id", typedArtifact.artifact_id)
-        .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
-      artifactData = reportResult.data;
-    } else if (typedArtifact.artifact_type === "receipt") {
-      const receiptResult = await ((supabase
-        .from("receipts") as any)
-        .select("*")
-        .eq("id", typedArtifact.artifact_id)
-        .single() as Promise<{ data: Record<string, unknown> | null; error: { message?: string } | null }>);
-      artifactData = receiptResult.data;
+        .from('reconciliation_jobs') as any)
+        .select('*')
+        .eq('id', typedArtifact.artifact_id)
+        .single() as Promise<{
+          data: Record<string, unknown> | null;
+          error: { message?: string } | null;
+        }>);
+
+      if (reportResult.error || !reportResult.data) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        artifact: reportResult.data,
+        metadata,
+      });
     }
 
-    return NextResponse.json({
-      artifact: artifactData,
-      metadata: {
-        type: typedArtifact.artifact_type,
-        createdAt: typedArtifact.created_at,
-        expiresAt: typedArtifact.expires_at,
-      },
-    });
+    if (typedArtifact.artifact_type === 'receipt') {
+      const receiptResult = await ((supabase
+        .from('receipts') as any)
+        .select('*')
+        .eq('id', typedArtifact.artifact_id)
+        .single() as Promise<{
+          data: Record<string, unknown> | null;
+          error: { message?: string } | null;
+        }>);
+
+      if (receiptResult.error || !receiptResult.data) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        artifact: receiptResult.data,
+        metadata,
+      });
+    }
+
+    return NextResponse.json(
+      { error: 'Unsupported artifact type' },
+      { status: 400 }
+    );
   } catch (error) {
     appLogger.error("Get shareable artifact error", error);
     return NextResponse.json(
