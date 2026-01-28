@@ -31,7 +31,7 @@ export const POST = withSecurity(
   request: NextRequest,
   { params }: { params: { workspaceId: string } }
 ) {
-  const traceId = getTraceId(request);
+  const traceId = await getTraceId(request);
   
   try {
     const supabase = await createClient();
@@ -135,7 +135,7 @@ export const GET = withSecurity(
   request: NextRequest,
   { params }: { params: { workspaceId: string } }
 ) {
-  const traceId = getTraceId(request);
+  const traceId = await getTraceId(request);
   
   try {
     const supabase = await createClient();

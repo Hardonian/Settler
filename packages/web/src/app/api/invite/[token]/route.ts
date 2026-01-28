@@ -24,7 +24,7 @@ export const GET = withSecurity(
   request: NextRequest,
   { params }: { params: { token: string } }
 ) {
-  const traceId = getTraceId(request);
+  const traceId = await getTraceId(request);
   
   try {
     const invite = await prisma.workspaceInvite.findUnique({
@@ -95,7 +95,7 @@ export const POST = withSecurity(
   request: NextRequest,
   { params }: { params: { token: string } }
 ) {
-  const traceId = getTraceId(request);
+  const traceId = await getTraceId(request);
   
   try {
     const supabase = await createClient();
