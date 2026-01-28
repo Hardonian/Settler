@@ -66,7 +66,11 @@
     "clean": "node scripts/clean.mjs",
     "clean:deps": "node scripts/clean.mjs --deps",
     "clean:all": "node scripts/clean.mjs --all",
-    "verify": "node scripts/verify.mjs",
+    "verify": "node scripts/verify.mjs --full",
+    "verify:fast": "node scripts/verify.mjs --fast",
+    "verify:full": "node scripts/verify.mjs --full",
+    "verify:app-router": "tsx scripts/validate-app-router.ts",
+    "verify:env:typed": "tsx scripts/validate-typed-env.ts",
     "verify:skip-tests": "node scripts/verify.mjs --skip-tests",
     "verify:skip-build": "node scripts/verify.mjs --skip-build",
     "validate": "npm run lint && npm run typecheck && npm run format:check",
@@ -163,7 +167,8 @@
   },
   "engines": {
     "node": ">=24.0.0",
-    "npm": ">=10.0.0"
+    "npm": ">=10.0.0",
+    "pnpm": ">=10.13.1"
   },
   "packageManager": "pnpm@10.13.1",
   "overrides": {

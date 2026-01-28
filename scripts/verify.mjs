@@ -26,6 +26,8 @@ const args = process.argv.slice(2);
 const skipTests = args.includes('--skip-tests');
 const skipBuild = args.includes('--skip-build');
 const fast = args.includes('--fast');
+const full = args.includes('--full') || !fast;
+const changedOnly = args.includes('--changed');
 
 const results = [];
 
@@ -59,23 +61,32 @@ function runStep(name, command, required = true) {
 
 console.log('🔍 Settler Verify - Running Quality Pipeline\n');
 console.log(`Working directory: ${rootDir}`);
-console.log(`Mode: ${fast ? 'FAST' : 'FULL'}`);
+const modeLabel = changedOnly ? 'CHANGED' : fast ? 'FAST' : 'FULL';
+
+console.log(`Mode: ${modeLabel}`);
 console.log('');
 
-// Step 1: Lint
-runStep('Lint (ESLint)', 'pnpm run lint', true);
+if (changedOnly) {
+  runStep('Typed Env Validation (Build)', 'pnpm run verify:env:typed -- --mode=build', true);
+  runStep('App Router Validation (Changed)', 'pnpm run verify:app-router -- --changed', true);
+  runStep('Lint Staged Files', 'pnpm exec lint-staged', true);
+} else {
+  runStep('Typed Env Validation (Build)', 'pnpm run verify:env:typed -- --mode=build', true);
+  runStep('App Router Validation', 'pnpm run verify:app-router', true);
+  runStep('Lint (ESLint)', 'pnpm run lint -- --no-cache', true);
+  runStep('Type Check (TypeScript)', 'pnpm run typecheck -- --no-cache', true);
 
-// Step 2: Type checking
-runStep('Type Check (TypeScript)', 'pnpm run typecheck', true);
+  if (full) {
+    runStep('Typed Env Validation (Runtime)', 'pnpm run verify:env:typed -- --mode=runtime', true);
+  }
 
-// Step 3: Tests (unless skipped or fast mode)
-if (!skipTests && !fast) {
-  runStep('Tests (Jest)', 'pnpm run test', true);
-}
+  if (full && !skipBuild) {
+    runStep('Build (Turbo)', 'pnpm run build -- --no-cache', true);
+  }
 
-// Step 4: Build (unless skipped or fast mode)
-if (!skipBuild && !fast) {
-  runStep('Build (Turbo)', 'pnpm run build', true);
+  if (full && !skipTests) {
+    runStep('Tests (Jest)', 'pnpm run test -- --no-cache', true);
+  }
 }
 
 // Print summary

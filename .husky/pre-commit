@@ -13,36 +13,34 @@ fi
 # Generate types if schema changed
 if git diff --cached --name-only | grep -q "prisma/schema.prisma"; then
   echo "🔍 Prisma schema changed, generating client..."
-  npm run prisma:generate || npx prisma generate || true
+  pnpm prisma:generate || npx prisma generate || true
   git add src/types/ 2>/dev/null || true
 fi
 
 # Validate ESLint config dependencies before linting
 echo "🔍 Validating ESLint config dependencies..."
-npm run validate:eslint-config || {
+pnpm validate:eslint-config || {
   echo "❌ ESLint config dependency issues found. Please fix them before committing."
   exit 1
 }
 
 # Validate build safety
 echo "🔍 Validating build safety..."
-npm run validate:build-safety || {
+pnpm validate:build-safety || {
   echo "❌ Build safety issues found. Please fix them before committing."
   exit 1
 }
 
 # Validate lint configuration
 echo "🔍 Validating lint configuration..."
-npm run validate:lint-config || {
+pnpm validate:lint-config || {
   echo "❌ Lint configuration issues found. Please fix them before committing."
   exit 1
 }
 
-# Run typecheck before lint-staged to catch TypeScript errors early
-echo "🔍 Running TypeScript typecheck..."
-npm run typecheck || {
-  echo "❌ TypeScript errors found. Please fix them before committing."
+# Run fast verification for staged files
+echo "🔍 Running fast verification for staged files..."
+pnpm verify:fast --changed || {
+  echo "❌ Fast verification failed. Please fix errors before committing."
   exit 1
 }
-
-npx lint-staged
