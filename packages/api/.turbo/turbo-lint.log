@@ -2,3 +2,37 @@
 > @settler/api@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\api
 > eslint src --ext .ts
 
+
+C:\Users\scott\Documents\GitHub\Settler\packages\api\src\__tests__\operator-mode-verification.ts
+  11:3  warning  'getFailedIngestions' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\scott\Documents\GitHub\Settler\packages\api\src\__tests__\type-tests.ts
+   8:18  warning  'Option' is defined but never used            @typescript-eslint/no-unused-vars
+   8:26  warning  'isNotNull' is defined but never used         @typescript-eslint/no-unused-vars
+  36:13  warning  'failure' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\scott\Documents\GitHub\Settler\packages\api\src\infrastructure\jobs\scheduler-service.ts
+  31:10  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\scott\Documents\GitHub\Settler\packages\api\src\infrastructure\security\SSRFProtection.ts
+  66:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  72:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  94:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\scott\Documents\GitHub\Settler\packages\api\src\jobs\email-scheduler.ts
+  13:10  warning  '_calculateDaysRemaining' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\scott\Documents\GitHub\Settler\packages\api\src\middleware\api-gateway-cache.ts
+  182:16  warning  '_pattern' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\scott\Documents\GitHub\Settler\packages\api\src\routes\export-enhanced.ts
+  54:77  warning  '_includeUnmatched' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\scott\Documents\GitHub\Settler\packages\api\src\services\knowledge\decision-log.ts
+  228:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\scott\Documents\GitHub\Settler\packages\api\src\services\reconciliation\automated-review.ts
+  453:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 13 problems (0 errors, 13 warnings)
+

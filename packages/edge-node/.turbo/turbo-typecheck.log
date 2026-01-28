@@ -13,4 +13,3 @@ src/services/MatchingService.ts(6,22): error TS2307: Cannot find module 'better-
 src/services/SyncService.ts(6,31): error TS2307: Cannot find module 'axios' or its corresponding type declarations.
 src/services/SyncService.ts(7,22): error TS2307: Cannot find module 'better-sqlite3' or its corresponding type declarations.
 src/utils/logger.ts(1,21): error TS2307: Cannot find module 'winston' or its corresponding type declarations.
- ELIFECYCLE  Command failed with exit code 2.

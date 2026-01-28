@@ -1,7 +1,8 @@
-import { http, HttpResponse } from 'msw';
-import { mockJob } from '../fixtures';
+// @ts-ignore
+import { http, HttpResponse } from "msw";
+import { mockJob } from "../fixtures";
 
-const API_BASE = 'https://api.settler.dev';
+const API_BASE = "https://api.settler.dev";
 
 export const handlers = [
   // Jobs API
@@ -9,15 +10,15 @@ export const handlers = [
     return HttpResponse.json({
       data: [
         {
-          id: 'job_123',
-          userId: 'user_123',
+          id: "job_123",
+          userId: "user_123",
           name: mockJob.name,
-          source: { adapter: 'shopify', config: {} },
-          target: { adapter: 'stripe', config: {} },
+          source: { adapter: "shopify", config: {} },
+          target: { adapter: "stripe", config: {} },
           rules: { matching: [] },
-          status: 'active',
-          createdAt: '2026-01-15T10:00:00Z',
-          updatedAt: '2026-01-15T10:00:00Z',
+          status: "active",
+          createdAt: "2026-01-15T10:00:00Z",
+          updatedAt: "2026-01-15T10:00:00Z",
         },
       ],
       count: 1,
@@ -28,34 +29,35 @@ export const handlers = [
     return HttpResponse.json({
       data: {
         id: params.id,
-        userId: 'user_123',
+        userId: "user_123",
         name: mockJob.name,
-        source: { adapter: 'shopify', config: {} },
-        target: { adapter: 'stripe', config: {} },
+        source: { adapter: "shopify", config: {} },
+        target: { adapter: "stripe", config: {} },
         rules: { matching: [] },
-        status: 'active',
-        createdAt: '2026-01-15T10:00:00Z',
-        updatedAt: '2026-01-15T10:00:00Z',
+        status: "active",
+        createdAt: "2026-01-15T10:00:00Z",
+        updatedAt: "2026-01-15T10:00:00Z",
       },
     });
   }),
 
   http.post(`${API_BASE}/api/v1/jobs`, async ({ request }) => {
-    const body = await request.json() as Record<string, unknown> | null | undefined;
-    const bodyObj: Record<string, unknown> = body && typeof body === 'object' && !Array.isArray(body) && body !== null ? body : {};
+    const body = (await request.json()) as Record<string, unknown> | null | undefined;
+    const bodyObj: Record<string, unknown> =
+      body && typeof body === "object" && !Array.isArray(body) && body !== null ? body : {};
     return HttpResponse.json(
       {
         data: Object.assign(
           {
-            id: 'job_new',
-            userId: 'user_123',
-            status: 'active',
-            createdAt: '2026-01-15T10:00:00Z',
-            updatedAt: '2026-01-15T10:00:00Z',
+            id: "job_new",
+            userId: "user_123",
+            status: "active",
+            createdAt: "2026-01-15T10:00:00Z",
+            updatedAt: "2026-01-15T10:00:00Z",
           },
           bodyObj
         ),
-        message: 'Reconciliation job created successfully',
+        message: "Reconciliation job created successfully",
       },
       { status: 201 }
     );
@@ -64,12 +66,12 @@ export const handlers = [
   http.post(`${API_BASE}/api/v1/jobs/:id/run`, ({ params }) => {
     return HttpResponse.json({
       data: {
-        id: 'exec_123',
+        id: "exec_123",
         jobId: params.id,
-        status: 'running',
-        startedAt: '2026-01-15T10:00:00Z',
+        status: "running",
+        startedAt: "2026-01-15T10:00:00Z",
       },
-      message: 'Job execution started',
+      message: "Job execution started",
     });
   }),
 
@@ -83,8 +85,8 @@ export const handlers = [
       data: {
         jobId: params.jobId,
         dateRange: {
-          start: '2026-01-01T00:00:00Z',
-          end: '2026-01-31T23:59:59Z',
+          start: "2026-01-01T00:00:00Z",
+          end: "2026-01-31T23:59:59Z",
         },
         summary: {
           matched: 145,
@@ -96,7 +98,7 @@ export const handlers = [
         matches: [],
         unmatched: [],
         errors: [],
-        generatedAt: '2026-01-15T10:00:00Z',
+        generatedAt: "2026-01-15T10:00:00Z",
       },
     });
   }),
@@ -105,10 +107,10 @@ export const handlers = [
     return HttpResponse.json({
       data: [
         {
-          jobId: 'job_123',
+          jobId: "job_123",
           dateRange: {
-            start: '2026-01-01T00:00:00Z',
-            end: '2026-01-31T23:59:59Z',
+            start: "2026-01-01T00:00:00Z",
+            end: "2026-01-31T23:59:59Z",
           },
           summary: {
             matched: 145,
@@ -117,7 +119,7 @@ export const handlers = [
             accuracy: 98.7,
             totalTransactions: 149,
           },
-          generatedAt: '2026-01-15T10:00:00Z',
+          generatedAt: "2026-01-15T10:00:00Z",
         },
       ],
       count: 1,
@@ -129,13 +131,13 @@ export const handlers = [
     return HttpResponse.json({
       data: [
         {
-          id: 'wh_123',
-          userId: 'user_123',
-          url: 'https://example.com/webhook',
-          events: ['reconciliation.matched'],
-          secret: 'whsec_abc123',
-          status: 'active',
-          createdAt: '2026-01-15T10:00:00Z',
+          id: "wh_123",
+          userId: "user_123",
+          url: "https://example.com/webhook",
+          events: ["reconciliation.matched"],
+          secret: "whsec_abc123",
+          status: "active",
+          createdAt: "2026-01-15T10:00:00Z",
         },
       ],
       count: 1,
@@ -143,21 +145,22 @@ export const handlers = [
   }),
 
   http.post(`${API_BASE}/api/v1/webhooks`, async ({ request }) => {
-    const body = await request.json() as Record<string, unknown> | null | undefined;
-    const bodyObj: Record<string, unknown> = body && typeof body === 'object' && !Array.isArray(body) && body !== null ? body : {};
+    const body = (await request.json()) as Record<string, unknown> | null | undefined;
+    const bodyObj: Record<string, unknown> =
+      body && typeof body === "object" && !Array.isArray(body) && body !== null ? body : {};
     return HttpResponse.json(
       {
         data: Object.assign(
           {
-            id: 'wh_new',
-            userId: 'user_123',
-            secret: 'whsec_abc123',
-            status: 'active',
-            createdAt: '2026-01-15T10:00:00Z',
+            id: "wh_new",
+            userId: "user_123",
+            secret: "whsec_abc123",
+            status: "active",
+            createdAt: "2026-01-15T10:00:00Z",
           },
           bodyObj
         ),
-        message: 'Webhook created successfully',
+        message: "Webhook created successfully",
       },
       { status: 201 }
     );
@@ -172,26 +175,26 @@ export const handlers = [
     return HttpResponse.json({
       data: [
         {
-          id: 'stripe',
-          name: 'Stripe',
-          description: 'Reconcile Stripe payments and charges',
-          version: '1.0.0',
+          id: "stripe",
+          name: "Stripe",
+          description: "Reconcile Stripe payments and charges",
+          version: "1.0.0",
           config: {
-            required: ['apiKey'],
-            optional: ['webhookSecret'],
+            required: ["apiKey"],
+            optional: ["webhookSecret"],
           },
-          supportedEvents: ['payment.succeeded', 'charge.refunded'],
+          supportedEvents: ["payment.succeeded", "charge.refunded"],
         },
         {
-          id: 'shopify',
-          name: 'Shopify',
-          description: 'Reconcile Shopify orders and transactions',
-          version: '1.0.0',
+          id: "shopify",
+          name: "Shopify",
+          description: "Reconcile Shopify orders and transactions",
+          version: "1.0.0",
           config: {
-            required: ['apiKey', 'shopDomain'],
-            optional: ['webhookSecret'],
+            required: ["apiKey", "shopDomain"],
+            optional: ["webhookSecret"],
           },
-          supportedEvents: ['order.created', 'order.updated'],
+          supportedEvents: ["order.created", "order.updated"],
         },
       ],
       count: 2,
@@ -201,33 +204,33 @@ export const handlers = [
   http.get(`${API_BASE}/api/v1/adapters/:id`, ({ params }) => {
     const adapters: Record<string, any> = {
       stripe: {
-        id: 'stripe',
-        name: 'Stripe',
-        description: 'Reconcile Stripe payments and charges',
-        version: '1.0.0',
+        id: "stripe",
+        name: "Stripe",
+        description: "Reconcile Stripe payments and charges",
+        version: "1.0.0",
         config: {
-          required: ['apiKey'],
-          optional: ['webhookSecret'],
+          required: ["apiKey"],
+          optional: ["webhookSecret"],
         },
-        supportedEvents: ['payment.succeeded', 'charge.refunded'],
+        supportedEvents: ["payment.succeeded", "charge.refunded"],
       },
       shopify: {
-        id: 'shopify',
-        name: 'Shopify',
-        description: 'Reconcile Shopify orders and transactions',
-        version: '1.0.0',
+        id: "shopify",
+        name: "Shopify",
+        description: "Reconcile Shopify orders and transactions",
+        version: "1.0.0",
         config: {
-          required: ['apiKey', 'shopDomain'],
-          optional: ['webhookSecret'],
+          required: ["apiKey", "shopDomain"],
+          optional: ["webhookSecret"],
         },
-        supportedEvents: ['order.created', 'order.updated'],
+        supportedEvents: ["order.created", "order.updated"],
       },
     };
 
     const adapter = adapters[params.id as string];
     if (!adapter) {
       return HttpResponse.json(
-        { error: 'Not Found', message: 'Adapter not found' },
+        { error: "Not Found", message: "Adapter not found" },
         { status: 404 }
       );
     }
@@ -239,9 +242,9 @@ export const handlers = [
   http.get(`${API_BASE}/api/v1/error/400`, () => {
     return HttpResponse.json(
       {
-        error: 'ValidationError',
-        message: 'Invalid request parameters',
-        details: [{ field: 'name', message: 'Name is required' }],
+        error: "ValidationError",
+        message: "Invalid request parameters",
+        details: [{ field: "name", message: "Name is required" }],
       },
       { status: 400 }
     );
@@ -250,8 +253,8 @@ export const handlers = [
   http.get(`${API_BASE}/api/v1/error/401`, () => {
     return HttpResponse.json(
       {
-        error: 'AuthError',
-        message: 'Invalid API key',
+        error: "AuthError",
+        message: "Invalid API key",
       },
       { status: 401 }
     );
@@ -260,16 +263,16 @@ export const handlers = [
   http.get(`${API_BASE}/api/v1/error/429`, () => {
     return HttpResponse.json(
       {
-        error: 'RateLimitError',
-        message: 'Rate limit exceeded',
+        error: "RateLimitError",
+        message: "Rate limit exceeded",
       },
       {
         status: 429,
         headers: {
-          'X-RateLimit-Limit': '100',
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': String(Math.floor(Date.now() / 1000) + 60),
-          'Retry-After': '60',
+          "X-RateLimit-Limit": "100",
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(Math.floor(Date.now() / 1000) + 60),
+          "Retry-After": "60",
         },
       }
     );
@@ -278,8 +281,8 @@ export const handlers = [
   http.get(`${API_BASE}/api/v1/error/500`, () => {
     return HttpResponse.json(
       {
-        error: 'ServerError',
-        message: 'Internal server error',
+        error: "ServerError",
+        message: "Internal server error",
       },
       { status: 500 }
     );

@@ -36,4 +36,4 @@ src/commands/reports.ts(14,25): error TS7006: Parameter 'options' implicitly has
 src/commands/webhooks.ts(1,19): error TS2307: Cannot find module 'chalk' or its corresponding type declarations.
 src/commands/webhooks.ts(2,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
 src/index.ts(3,25): error TS2307: Cannot find module 'commander' or its corresponding type declarations.
- ELIFECYCLE  Command failed with exit code 2.
+ ELIFECYCLE  Command failed with exit code 1.

@@ -2,3 +2,14 @@
 > @settler/adapters@1.0.0 build C:\Users\scott\Documents\GitHub\Settler\packages\adapters
 > tsc
 
+src/alerting/alert-manager.ts(7,30): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+src/concurrency-protection.ts(7,30): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+src/connector-runtime.ts(8,30): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+src/credential-encryption.ts(7,30): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+src/rate-limiting.ts(7,30): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+src/retry-queue/retry-queue.ts(7,30): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+src/stripe-enhanced.ts(21,20): error TS2307: Cannot find module 'stripe' or its corresponding type declarations.
+src/stripe.ts(2,20): error TS2307: Cannot find module 'stripe' or its corresponding type declarations.
+src/token-refresh.ts(8,30): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+ ELIFECYCLE  Command failed with exit code 1.
+ WARN   Local package.json exists, but node_modules missing, did you mean to install?

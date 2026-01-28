@@ -2,3 +2,14 @@
 > @settler/edge-node@1.0.0 lint C:\Users\scott\Documents\GitHub\Settler\packages\edge-node
 > eslint src --ext .ts
 
+
+C:\Users\scott\Documents\GitHub\Settler\packages\edge-node\src\index.ts
+  127:7  warning  Unexpected console statement  no-console
+  128:7  warning  Unexpected console statement  no-console
+  129:7  warning  Unexpected console statement  no-console
+  130:7  warning  Unexpected console statement  no-console
+  131:7  warning  Unexpected console statement  no-console
+  132:7  warning  Unexpected console statement  no-console
+
+✖ 6 problems (0 errors, 6 warnings)
+
