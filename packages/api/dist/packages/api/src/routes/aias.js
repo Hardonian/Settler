@@ -190,7 +190,7 @@ router.get("/jobs/:jobId/status", (0, validation_1.validateRequest)(zod_1.z.obje
         if (status.status === "completed" && status.result) {
             await (0, db_1.query)(`UPDATE model_versions 
          SET benchmark_results = $1, updated_at = NOW()
-         WHERE id = $2`, [JSON.stringify(status.result.benchmarkResults), (modelCheck[0]?.id || "")]);
+         WHERE id = $2`, [JSON.stringify(status.result.benchmarkResults), modelCheck[0]?.id || ""]);
         }
         (0, api_response_1.sendSuccess)(res, status);
     }
@@ -264,7 +264,7 @@ router.get("/jobs/:jobId/benchmark-results", (0, validation_1.validateRequest)(z
         // Update model version with benchmark results
         await (0, db_1.query)(`UPDATE model_versions 
        SET benchmark_results = $1, updated_at = NOW()
-       WHERE id = $2`, [JSON.stringify(results), (modelCheck[0]?.id || "")]);
+       WHERE id = $2`, [JSON.stringify(results), modelCheck[0]?.id || ""]);
         (0, api_response_1.sendSuccess)(res, results);
     }
     catch (error) {

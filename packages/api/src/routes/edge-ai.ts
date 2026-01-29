@@ -22,7 +22,7 @@ import bcrypt from "bcrypt";
 // Import shared edge-ai-core utilities (brand-neutral)
 import { generateNodeKey, hashNodeKey, generateEnrollmentKey } from "@settler/edge-ai-core";
 
-const router = Router();
+const router: Router = Router();
 
 // ============================================================================
 // Validation Schemas

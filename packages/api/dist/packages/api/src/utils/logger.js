@@ -58,9 +58,9 @@ function getRequestContext() {
         return {};
     }
     return {
-        request_id: context.requestId,
-        tenant_id: context.tenantId,
-        user_id: context.userId,
+        request_id: context.requestId || undefined,
+        tenant_id: context.tenantId || undefined,
+        user_id: context.userId || undefined,
     };
 }
 // Custom format that adds trace context and request context
@@ -94,7 +94,7 @@ exports.logger = winston_1.default.createLogger({
                 const userInfo = user_id && typeof user_id === "string" ? `[user=${user_id}]` : "";
                 const timestampStr = typeof timestamp === "string" ? timestamp : String(timestamp);
                 const messageStr = typeof message === "string" ? message : String(message);
-                const levelStr = typeof level === "string" ? level : String(level);
+                const levelStr = level;
                 return `${timestampStr} [${levelStr}]${requestInfo}${traceInfo}${spanInfo}${tenantInfo}${userInfo}: ${messageStr} ${metaStr}`;
             })),
         }),
@@ -102,10 +102,11 @@ exports.logger = winston_1.default.createLogger({
 });
 // Log sampling configuration
 function shouldLog() {
-    if (config_1.config.logging.samplingRate >= 1.0) {
+    const samplingRate = config_1.config.logging.samplingRate;
+    if (samplingRate >= 1.0) {
         return true;
     }
-    return Math.random() < config_1.config.logging.samplingRate;
+    return Math.random() < samplingRate;
 }
 // Helper to log with automatic redaction and trace context
 function logInfo(message, meta) {
@@ -116,13 +117,11 @@ function logInfo(message, meta) {
 }
 function logError(message, error, meta) {
     // Always log errors (no sampling)
-    const errorObj = error instanceof Error ? error : { message: String(error) };
     exports.logger.error(message, {
         ...(0, redaction_1.redact)(meta),
-        error: errorObj.message,
-        stack: error instanceof Error && "stack" in errorObj && errorObj.stack
-            ? String(errorObj.stack)
-            : undefined,
+        ...(error instanceof Error
+            ? { message: String(error), stack: error.stack }
+            : { message: String(error) }),
     });
 }
 function logWarn(message, meta) {

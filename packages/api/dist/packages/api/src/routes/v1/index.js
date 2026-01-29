@@ -36,43 +36,43 @@ const dedicated_infrastructure_1 = __importDefault(require("./dedicated-infrastr
 const automated_review_1 = __importDefault(require("./automated-review"));
 exports.v1Router = (0, express_1.Router)();
 // Mount v1 routes
-exports.v1Router.use('/webhooks/receive', receive_1.default);
-exports.v1Router.use('/webhooks', events_1.default); // Events discovery endpoint
-exports.v1Router.use('/realtime', realtime_1.realtimeRouter);
-exports.v1Router.use('/reconciliations', reconciliation_summary_1.reconciliationSummaryRouter);
+exports.v1Router.use("/webhooks/receive", receive_1.default);
+exports.v1Router.use("/webhooks", events_1.default); // Events discovery endpoint
+exports.v1Router.use("/realtime", realtime_1.realtimeRouter);
+exports.v1Router.use("/reconciliations", reconciliation_summary_1.reconciliationSummaryRouter);
 // Canonical data model routes
-exports.v1Router.use('/transactions', transactions_1.default);
-exports.v1Router.use('/settlements', settlements_1.default);
-exports.v1Router.use('/fees', fees_1.default);
-exports.v1Router.use('/exports', exports_1.default);
-exports.v1Router.use('/currency', currency_1.default);
+exports.v1Router.use("/transactions", transactions_1.default);
+exports.v1Router.use("/settlements", settlements_1.default);
+exports.v1Router.use("/fees", fees_1.default);
+exports.v1Router.use("/exports", exports_1.default);
+exports.v1Router.use("/currency", currency_1.default);
 // Ingestion pipeline routes
-exports.v1Router.use('/ingestion', ingestion_1.default);
-exports.v1Router.use('/reconciliation', reconciliation_1.default);
-exports.v1Router.use('/ingestion/exports', ingestion_exports_1.default);
-exports.v1Router.use('/automated-review', automated_review_1.default);
+exports.v1Router.use("/ingestion", ingestion_1.default);
+exports.v1Router.use("/reconciliation", reconciliation_1.default);
+exports.v1Router.use("/ingestion/exports", ingestion_exports_1.default);
+exports.v1Router.use("/automated-review", automated_review_1.default);
 // Phase 1: Core Features
-exports.v1Router.use('/multi-source-reconciliation', multi_source_reconciliation_1.default);
-exports.v1Router.use('/approvals', approvals_1.default);
-exports.v1Router.use('/progress', progress_1.default);
-exports.v1Router.use('/notifications', notifications_1.default);
-exports.v1Router.use('/audit-trail', audit_trail_1.default);
+exports.v1Router.use("/multi-source-reconciliation", multi_source_reconciliation_1.default);
+exports.v1Router.use("/approvals", approvals_1.default);
+exports.v1Router.use("/progress", progress_1.default);
+exports.v1Router.use("/notifications", notifications_1.default);
+exports.v1Router.use("/audit-trail", audit_trail_1.default);
 // Phase 2: Premium Features
-exports.v1Router.use('/receipt-matching', receipt_matching_1.default);
-exports.v1Router.use('/bulk-operations', bulk_operations_1.default);
-exports.v1Router.use('/advanced-matching-rules', advanced_matching_rules_1.default);
+exports.v1Router.use("/receipt-matching", receipt_matching_1.default);
+exports.v1Router.use("/bulk-operations", bulk_operations_1.default);
+exports.v1Router.use("/advanced-matching-rules", advanced_matching_rules_1.default);
 // Currency routes already exist at /currency
 // Phase 3: Enterprise Features
-exports.v1Router.use('/sla', sla_1.default);
-exports.v1Router.use('/custom-integrations', custom_integrations_1.default);
-exports.v1Router.use('/dedicated-infrastructure', dedicated_infrastructure_1.default);
+exports.v1Router.use("/sla", sla_1.default);
+exports.v1Router.use("/custom-integrations", custom_integrations_1.default);
+exports.v1Router.use("/dedicated-infrastructure", dedicated_infrastructure_1.default);
 // Operator mode routes
-exports.v1Router.use('/', operator_mode_1.operatorModeRouter);
+exports.v1Router.use("/", operator_mode_1.operatorModeRouter);
 // Health check
-exports.v1Router.get('/health', (_req, res) => {
+exports.v1Router.get("/health", (_req, res) => {
     res.json({
-        version: '1.0.0',
-        status: 'healthy',
+        version: "1.0.0",
+        status: "healthy",
         timestamp: new Date().toISOString(),
     });
 });

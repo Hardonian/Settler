@@ -16,7 +16,7 @@ import { checkExportLimit } from "../../middleware/usage-enforcement";
 import { trackExportUsage } from "../../utils/usage-tracking";
 import { getBillingAccount } from "../../utils/billing-helpers";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v1/ingestion/exports

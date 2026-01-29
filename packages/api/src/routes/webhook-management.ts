@@ -13,7 +13,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { logInfo, logError } from '../utils/logger';
 import { generateRequestSignature, verifyRequestSignature } from '../middleware/request-signing';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * Test webhook endpoint (for development/testing)

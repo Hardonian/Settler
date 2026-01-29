@@ -8,7 +8,7 @@ import { AdminService } from '../application/admin/AdminService';
 import { handleRouteError } from '../utils/error-handler';
 
 export function createAdminRouter(adminService: AdminService): Router {
-  const router = Router();
+  const router: Router = Router();
 
   // Get saga status
   router.get('/sagas/:sagaType/:sagaId', async (req, res) => {

@@ -14,7 +14,7 @@ import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError, ValidationError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
 
-const router = Router();
+const router: Router = Router();
 
 const listExceptionsSchema = z.object({
   query: z.object({

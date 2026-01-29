@@ -87,20 +87,7 @@ export function getPlan(planId: string): PricingPlan | undefined {
     // Default to free if plan not found
     return PRICING_PLANS.free;
   }
-  return plan!;
-}
-
-/**
- * Check if transaction count exceeds plan limits
- */
-export function exceedsPlanLimit(planId: string, transactionCount: number): boolean {
-  const plan = getPlan(planId);
-  // For free tier, check against included transactions
-  // For paid tiers, no hard limit (just billing)
-  if (planId === "free") {
-    return transactionCount > plan.includedTransactions;
-  }
-  return false; // Paid plans have no hard limit
+  return plan || undefined;
 }
 
 /**
@@ -108,5 +95,21 @@ export function exceedsPlanLimit(planId: string, transactionCount: number): bool
  */
 export function getPricingExplanation(planId: string): string {
   const plan = getPlan(planId);
-  return plan.description;
+  return plan?.description ?? "Plan not found";
+}
+
+/**
+ * Check if transaction count exceeds plan limits
+ */
+export function exceedsPlanLimit(planId: string, transactionCount: number): boolean {
+  const plan = getPlan(planId);
+  if (!plan) {
+    return false;
+  }
+
+  // For free tier, check against included transactions
+  if (planId === "free") {
+    return transactionCount > (plan.includedTransactions ?? 0);
+  }
+  return false; // Paid plans have no hard limit
 }

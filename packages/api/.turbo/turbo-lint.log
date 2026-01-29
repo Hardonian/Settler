@@ -26,7 +26,7 @@ C:\Users\scott\Documents\GitHub\Settler\packages\api\src\middleware\api-gateway-
   182:16  warning  '_pattern' is assigned a value but never used  @typescript-eslint/no-unused-vars
 
 C:\Users\scott\Documents\GitHub\Settler\packages\api\src\routes\export-enhanced.ts
-  54:77  warning  '_includeUnmatched' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  71:27  warning  '_includeUnmatched' is assigned a value but never used  @typescript-eslint/no-unused-vars
 
 C:\Users\scott\Documents\GitHub\Settler\packages\api\src\services\knowledge\decision-log.ts
   228:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars

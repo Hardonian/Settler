@@ -71,8 +71,8 @@ exports.env = (0, envalid_1.cleanEnv)(process.env, {
     // Redis Configuration
     REDIS_HOST: (0, envalid_1.host)({ default: "localhost" }),
     REDIS_PORT: (0, envalid_1.port)({ default: 6379 }),
-    REDIS_URL: (0, envalid_1.url)({}),
-    REDIS_PASSWORD: (0, envalid_1.str)({}),
+    REDIS_URL: (0, envalid_1.url)({ default: undefined }),
+    REDIS_PASSWORD: (0, envalid_1.str)({ default: undefined }),
     REDIS_TLS: (0, envalid_1.bool)({ default: false }),
     // JWT Configuration
     // Runtime-only: provide default during build, will be validated at runtime
@@ -115,11 +115,11 @@ exports.env = (0, envalid_1.cleanEnv)(process.env, {
     LOG_SAMPLING_RATE: (0, envalid_1.num)({ default: 1.0 }),
     // Observability Configuration
     SERVICE_NAME: (0, envalid_1.str)({ default: "settler-api" }),
-    OTLP_ENDPOINT: (0, envalid_1.url)({}),
-    JAEGER_ENDPOINT: (0, envalid_1.url)({}),
+    OTLP_ENDPOINT: (0, envalid_1.url)({ default: undefined }),
+    JAEGER_ENDPOINT: (0, envalid_1.url)({ default: undefined }),
     // Sentry Configuration
-    SENTRY_DSN: (0, envalid_1.url)({}),
-    SENTRY_ENVIRONMENT: (0, envalid_1.str)({}),
+    SENTRY_DSN: (0, envalid_1.url)({ default: undefined }),
+    SENTRY_ENVIRONMENT: (0, envalid_1.str)({ default: undefined }),
     SENTRY_TRACES_SAMPLE_RATE: (0, envalid_1.num)({ default: 0.1 }),
     // Feature Flags
     ENABLE_SCHEMA_PER_TENANT: (0, envalid_1.bool)({ default: false }),

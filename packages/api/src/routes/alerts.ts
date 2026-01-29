@@ -12,7 +12,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 
-const router = Router();
+const router: Router = Router();
 
 const createAlertRuleSchema = z.object({
   body: z.object({

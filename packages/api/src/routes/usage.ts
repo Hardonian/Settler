@@ -13,7 +13,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { getCurrentUsage } from '../middleware/usage-tracking';
 import { logError } from '../utils/logger';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * Get usage summary

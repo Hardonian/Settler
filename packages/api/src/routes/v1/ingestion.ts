@@ -28,7 +28,7 @@ import { getBillingAccount } from "../../utils/billing-helpers";
 import { isConnectorDisabled, isBackgroundJobPaused } from "../../services/operator-mode/kill-switches";
 import { canRunBackgroundJob } from "../../services/operator-mode/cost-controls";
 
-const router = Router();
+const router: Router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 /**

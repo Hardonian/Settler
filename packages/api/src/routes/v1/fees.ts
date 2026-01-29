@@ -14,7 +14,7 @@ import { query } from '../../db';
 import { sendSuccess, sendPaginated } from '../../utils/api-response';
 import { handleRouteError } from '../../utils/error-handler';
 
-const router = Router();
+const router: Router = Router();
 
 // Validation schemas
 const getFeesSchema = z.object({

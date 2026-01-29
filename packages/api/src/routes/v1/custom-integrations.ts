@@ -12,7 +12,7 @@ import {
   updateCustomIntegration,
 } from "../../services/custom-integrations";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/", async (req: AuthRequest, res: Response) => {
   try {

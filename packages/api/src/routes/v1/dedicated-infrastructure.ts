@@ -12,7 +12,7 @@ import {
   deprovisionDedicatedInfrastructure,
 } from "../../services/dedicated-infrastructure";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/", async (req: AuthRequest, res: Response) => {
   try {

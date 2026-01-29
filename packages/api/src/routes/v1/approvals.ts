@@ -16,7 +16,7 @@ import {
   type ApprovalStatus,
 } from "../../services/approval-workflows";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v1/approvals/requests

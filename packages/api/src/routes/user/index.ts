@@ -6,7 +6,7 @@
 import { Router } from "express";
 import onboardingProgressRouter from "./onboarding-progress";
 
-const router = Router();
+const router: Router = Router();
 
 router.use("/onboarding-progress", onboardingProgressRouter);
 

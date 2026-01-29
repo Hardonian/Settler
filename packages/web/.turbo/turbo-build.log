@@ -10,106 +10,25 @@
 > @settler/web@1.0.0 typecheck:ci C:\Users\scott\Documents\GitHub\Settler\packages\web
 > tsc --noEmit
 
-../adapters/src/connector-runtime.ts(928,82): error TS2379: Argument of type '{ rawPayloads?: { type: string; payload: unknown; }[]; taxEstimates?: { idempotencyKey: string; externalId: string; transactionId?: string | undefined; transactionType?: string | undefined; ... 8 more ...; rawPayload?: unknown | undefined; }[]; ... 5 more ...; accounts?: NormalizedAccount[]; }' is not assignable to parameter of type '{ accounts?: { providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]; ... 6 more ...; rawPayloads?: { ...; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'accounts' are incompatible.
-    Type 'NormalizedAccount[]' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]'.
-      Type 'NormalizedAccount' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-        Types of property 'accountType' are incompatible.
-          Type 'string | undefined' is not assignable to type 'string'.
-            Type 'undefined' is not assignable to type 'string'.
-../adapters/src/connector-runtime.ts(931,75): error TS2379: Argument of type '{ rawPayloads?: { type: string; payload: unknown; }[]; taxEstimates?: { idempotencyKey: string; externalId: string; transactionId?: string | undefined; transactionType?: string | undefined; ... 8 more ...; rawPayload?: unknown | undefined; }[]; ... 5 more ...; accounts?: NormalizedAccount[]; }' is not assignable to parameter of type '{ accounts?: { providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]; ... 6 more ...; rawPayloads?: { ...; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'accounts' are incompatible.
-    Type 'NormalizedAccount[]' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]'.
-      Type 'NormalizedAccount' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-        Types of property 'accountType' are incompatible.
-          Type 'string | undefined' is not assignable to type 'string'.
-            Type 'undefined' is not assignable to type 'string'.
-../adapters/src/connector-runtime.ts(983,60): error TS2379: Argument of type '{ transactions: number | undefined; accounts: number | undefined; errors: number; }' is not assignable to parameter of type '{ transactions?: number; accounts?: number; errors?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'transactions' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-../api/src/config/validation.ts(172,24): error TS2339: Property 'length' does not exist on type '{}'.
-../api/src/config/validation.ts(251,19): error TS18046: 'env.ALLOWED_ORIGINS' is of type 'unknown'.
-../api/src/config/validation.ts(251,55): error TS7006: Parameter 'o' implicitly has an 'any' type.
-../api/src/utils/logger.ts(62,3): error TS2375: Type '{ request_id: string | undefined; tenant_id: string | undefined; user_id: string | undefined; }' is not assignable to type '{ request_id?: string; tenant_id?: string; user_id?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'request_id' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
+../adapters/src/index.ts(5,10): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+../adapters/src/index.ts(6,10): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
 ../api/src/utils/logger.ts(70,31): error TS2349: This expression is not callable.
   Type 'Format' has no call signatures.
 ../api/src/utils/logger.ts(70,39): error TS7006: Parameter 'info' implicitly has an 'any' type.
-../api/src/utils/logger.ts(88,3): error TS2322: Type 'unknown' is not assignable to type 'string'.
+../api/src/utils/logger.ts(77,16): error TS2694: Namespace '"winston"' has no exported member 'Logform'.
+../api/src/utils/logger.ts(88,3): error TS2322: Type 'unknown' is not assignable to type 'string | undefined'.
 ../api/src/utils/logger.ts(95,5): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
-../api/src/utils/logger.ts(135,7): error TS18046: 'config.logging.samplingRate' is of type 'unknown'.
-../api/src/utils/logger.ts(138,26): error TS18046: 'config.logging.samplingRate' is of type 'unknown'.
+../api/src/utils/logger.ts(109,22): error TS2694: Namespace '"winston"' has no exported member 'Logform'.
 src/app/actions/auth.ts(124,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
-src/app/api/connectors/webhook/[providerId]/route.ts(19,28): error TS2339: Property 'handleWebhook' does not exist on type 'ConnectorDriver'.
-src/app/api/console/api-logs/route.ts(35,41): error TS2379: Argument of type '{ limit: string | undefined; offset: string | undefined; }' is not assignable to parameter of type '{ limit?: string; offset?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'limit' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/api-logs/route.ts(73,43): error TS2379: Argument of type '{ tenantId: string | undefined; userId: string | undefined; method: string | undefined; path: string | undefined; statusCode: number | undefined; startDate: Date | undefined; endDate: Date | undefined; limit: number; offset: number; }' is not assignable to parameter of type 'ApiLogFilters' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/api-logs/route.ts(77,39): error TS2379: Argument of type '{ tenantId: string | undefined; userId: string | undefined; method: string | undefined; path: string | undefined; statusCode: number | undefined; startDate: Date | undefined; endDate: Date | undefined; limit: number; offset: number; }' is not assignable to parameter of type 'ApiLogFilters' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/receipts-v2/route.ts(54,51): error TS2379: Argument of type '{ canonicalJson: Record<string, unknown>; evidenceRefs: { type: "hash" | "transaction_id" | "source_ref" | "receipt_id"; value: string; description?: string | undefined; }[]; narrative: { ...; }; sourceId?: string | undefined; }' is not assignable to parameter of type '{ sourceId?: string; canonicalJson: Record<string, unknown>; evidenceRefs: Evidence[]; narrative: { summary: string; whyItMatters: string; nextSteps?: string; }; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'sourceId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/app/api/console/receipts/[id]/route.ts(68,48): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/reconciliation/route.ts(50,55): error TS2379: Argument of type '{ sourceId: string; targetAdapter?: string | undefined; rules?: { field: string; tolerance?: number | undefined; window?: string | undefined; }[] | undefined; }' is not assignable to parameter of type 'ReconciliationParams' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'targetAdapter' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/site/experiments/[id]/results/route.ts(67,65): error TS7006: Parameter 'v' implicitly has an 'any' type.
-src/app/api/console/tenants/route.ts(40,41): error TS2379: Argument of type '{ limit: string | undefined; offset: string | undefined; }' is not assignable to parameter of type '{ limit?: string; offset?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'limit' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/app/api/console/usage/export/route.ts(74,24): error TS7006: Parameter 'event' implicitly has an 'any' type.
 src/app/api/console/usage/export/route.ts(91,21): error TS7006: Parameter 'event' implicitly has an 'any' type.
 src/app/api/console/usage/route.ts(111,25): error TS18046: 'usageEvents' is of type 'unknown'.
-src/app/api/cron/email-lifecycle/route.ts(79,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'firstName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/email-lifecycle/route.ts(125,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'firstName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/email-lifecycle/route.ts(173,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'firstName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/email-lifecycle/route.ts(221,19): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'firstName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/email-lifecycle/route.ts(256,17): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'firstName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/low-activity/route.ts(84,15): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial" | undefined; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'firstName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/api/cron/monthly-summary/route.ts(82,15): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial" | undefined; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'firstName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/app/api/exports/route.ts(247,27): error TS7006: Parameter 'match' implicitly has an 'any' type.
 src/app/api/exports/route.ts(272,27): error TS7006: Parameter 'result' implicitly has an 'any' type.
 src/app/api/exports/route.ts(406,30): error TS7006: Parameter 'exp' implicitly has an 'any' type.
-src/app/api/image-optimize/route.ts(48,64): error TS2379: Argument of type '{ width: number | undefined; height: number | undefined; quality: number; format: "webp"; }' is not assignable to parameter of type 'ImageOptimizeOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'width' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
 src/app/api/jobs/[jobId]/exceptions/route.ts(229,30): error TS7006: Parameter 'r' implicitly has an 'any' type.
 src/app/api/jobs/[jobId]/exceptions/route.ts(340,13): error TS7006: Parameter 'm' implicitly has an 'any' type.
 src/app/api/jobs/[jobId]/exceptions/route.ts(341,16): error TS7006: Parameter 'id' implicitly has an 'any' type.
@@ -123,10 +42,6 @@ src/app/api/jobs/[jobId]/exceptions/route.ts(392,79): error TS2339: Property 'de
 src/app/api/jobs/[jobId]/exceptions/route.ts(393,78): error TS2339: Property 'externalId' does not exist on type '{}'.
 src/app/api/jobs/[jobId]/route.ts(216,33): error TS7006: Parameter 'result' implicitly has an 'any' type.
 src/app/api/jobs/bulk/route.ts(161,34): error TS7006: Parameter 'j' implicitly has an 'any' type.
-src/app/api/metrics/route.ts(35,62): error TS2379: Argument of type '{ trace_id: string; user_id: string | undefined; }' is not assignable to parameter of type 'LogContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'user_id' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/app/api/ops/customers/route.ts(29,44): error TS7006: Parameter 'account' implicitly has an 'any' type.
 src/app/api/runs/create/route.ts(180,42): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
@@ -138,10 +53,6 @@ src/app/api/stripe/webhook/route.ts(372,40): error TS2345: Argument of type 'str
   Type 'undefined' is not assignable to type 'string'.
 src/app/api/stripe/webhook/route.ts(456,42): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
-src/app/api/user/upgrade/route.ts(64,15): error TS2375: Type '{ email: string; firstName: string | undefined; industry: string | undefined; companyName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial" | undefined; }' is not assignable to type 'LifecycleUser' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'firstName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/app/api/v1/receipts/[id]/route.ts(86,33): error TS7006: Parameter 'item' implicitly has an 'any' type.
 src/app/api/v1/receipts/route.ts(223,21): error TS18046: 'upload' is of type 'unknown'.
 src/app/api/v1/receipts/route.ts(236,66): error TS18046: 'receipt' is of type 'unknown'.
@@ -182,10 +93,6 @@ src/app/console/api-keys/page.tsx(58,50): error TS2304: Cannot find name 'error'
 src/app/console/api-keys/page.tsx(83,50): error TS2304: Cannot find name 'error'.
 src/app/console/api-keys/page.tsx(99,50): error TS2304: Cannot find name 'error'.
 src/app/console/api-keys/page.tsx(109,40): error TS2304: Cannot find name 'error'.
-src/app/console/api-playground/page.tsx(132,45): error TS2379: Argument of type '{ method: string; headers: Record<string, string>; body: string | undefined; }' is not assignable to parameter of type 'SafeFetchOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'body' are incompatible.
-    Type 'string | undefined' is not assignable to type 'BodyInit | null'.
-      Type 'undefined' is not assignable to type 'BodyInit | null'.
 src/app/console/billing/page.tsx(54,16): error TS2304: Cannot find name 'err'.
 src/app/console/billing/page.tsx(54,39): error TS2304: Cannot find name 'err'.
 src/app/console/billing/page.tsx(76,16): error TS2304: Cannot find name 'err'.
@@ -219,18 +126,10 @@ src/app/console/playground/convert/page.tsx(153,13): error TS2304: Cannot find n
 src/app/console/playground/convert/page.tsx(155,15): error TS2304: Cannot find name 'err'.
 src/app/console/playground/convert/page.tsx(159,15): error TS2304: Cannot find name 'err'.
 src/app/console/playground/convert/page.tsx(159,39): error TS2304: Cannot find name 'err'.
-src/app/console/playground/convert/page.tsx(385,10): error TS2375: Type '{ request: { method?: string; url?: string; headers?: Record<string, string>; body?: unknown; } | undefined; response: { status?: number; statusText?: string; headers?: Record<string, string>; body?: unknown; duration?: number; } | undefined; error: { ...; } | undefined; }' is not assignable to type 'RequestResponseViewerProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'request' are incompatible.
-    Type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; } | undefined' is not assignable to type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; }'.
-      Type 'undefined' is not assignable to type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; }'.
 src/app/console/playground/flags/page.tsx(89,18): error TS2304: Cannot find name 'err'.
 src/app/console/playground/flags/page.tsx(89,41): error TS2304: Cannot find name 'err'.
 src/app/console/playground/flags/page.tsx(173,11): error TS2304: Cannot find name 'err'.
 src/app/console/playground/flags/page.tsx(173,35): error TS2304: Cannot find name 'err'.
-src/app/console/playground/flags/page.tsx(350,14): error TS2375: Type '{ request: { method?: string; url?: string; headers?: Record<string, string>; body?: unknown; } | undefined; response: { status?: number; statusText?: string; headers?: Record<string, string>; body?: unknown; duration?: number; } | undefined; error: { ...; } | undefined; }' is not assignable to type 'RequestResponseViewerProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'request' are incompatible.
-    Type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; } | undefined' is not assignable to type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; }'.
-      Type 'undefined' is not assignable to type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; }'.
 src/app/console/playground/receipts/page.tsx(127,11): error TS2304: Cannot find name 'error'.
 src/app/console/playground/receipts/page.tsx(127,37): error TS2304: Cannot find name 'error'.
 src/app/console/playground/receipts/page.tsx(130,49): error TS2304: Cannot find name 'error'.
@@ -241,10 +140,6 @@ src/app/console/playground/reconcile/page.tsx(237,12): error TS2304: Cannot find
 src/app/console/playground/reconcile/page.tsx(237,86): error TS2304: Cannot find name 'err'.
 src/app/console/playground/reconcile/page.tsx(242,15): error TS2304: Cannot find name 'err'.
 src/app/console/playground/reconcile/page.tsx(242,39): error TS2304: Cannot find name 'err'.
-src/app/console/playground/reconcile/page.tsx(434,14): error TS2375: Type '{ request: { method?: string; url?: string; headers?: Record<string, string>; body?: unknown; } | undefined; response: { status?: number; statusText?: string; headers?: Record<string, string>; body?: unknown; duration?: number; } | undefined; error: { ...; } | undefined; }' is not assignable to type 'RequestResponseViewerProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'request' are incompatible.
-    Type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; } | undefined' is not assignable to type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; }'.
-      Type 'undefined' is not assignable to type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; }'.
 src/app/console/receipts/page.tsx(83,28): error TS2358: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.
 src/app/console/setup-check/page.tsx(78,38): error TS2304: Cannot find name 'error'.
 src/app/console/setup-check/page.tsx(78,63): error TS2304: Cannot find name 'error'.
@@ -292,15 +187,6 @@ src/app/dashboard/addons/page.tsx(151,49): error TS2304: Cannot find name 'error
 src/app/dashboard/addons/page.tsx(168,41): error TS2304: Cannot find name 'error'.
 src/app/dashboard/addons/page.tsx(169,13): error TS2304: Cannot find name 'error'.
 src/app/dashboard/addons/page.tsx(184,39): error TS2304: Cannot find name 'error'.
-src/app/dashboard/addons/page.tsx(226,12): error TS2375: Type '{ key: string; id: string; name: string; description: string; basePrice: number; usagePrice: number | undefined; usageUnit: string | undefined; isPurchased: boolean | undefined; isStandard: boolean; features: string[] | undefined; onPurchase: (_id: string) => Promise<...>; onCancel: () => Promise<...>; isLoading: bo...' is not assignable to type 'AddOnCardProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'usagePrice' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/app/dashboard/addons/page.tsx(261,9): error TS2322: Type '{ id: string; name: string; description: string; basePrice: number; usagePrice: number | undefined; usageUnit: string | undefined; features: string[] | undefined; } | null' is not assignable to type '{ id: string; name: string; description: string; basePrice: number; usagePrice?: number; usageUnit?: string; features?: string[]; } | null'.
-  Type '{ id: string; name: string; description: string; basePrice: number; usagePrice: number | undefined; usageUnit: string | undefined; features: string[] | undefined; }' is not assignable to type '{ id: string; name: string; description: string; basePrice: number; usagePrice?: number; usageUnit?: string; features?: string[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'usagePrice' are incompatible.
-      Type 'number | undefined' is not assignable to type 'number'.
-        Type 'undefined' is not assignable to type 'number'.
 src/app/dashboard/billing/invoices/page.tsx(46,50): error TS2304: Cannot find name 'error'.
 src/app/dashboard/billing/page.tsx(133,16): error TS2304: Cannot find name 'err'.
 src/app/dashboard/billing/page.tsx(133,39): error TS2304: Cannot find name 'err'.
@@ -316,26 +202,6 @@ src/app/dashboard/integrations/page.tsx(190,43): error TS2304: Cannot find name 
 src/app/dashboard/integrations/page.tsx(224,46): error TS2304: Cannot find name 'error'.
 src/app/dashboard/integrations/page.tsx(258,37): error TS2304: Cannot find name 'error'.
 src/app/dashboard/integrations/page.tsx(296,41): error TS2304: Cannot find name 'error'.
-src/app/dashboard/integrations/page.tsx(358,16): error TS2375: Type '{ key: string; id: string; name: string; description: string; isConnected: boolean; isStandard: boolean; isPurchased: boolean; status: "error" | "pending" | "connected" | "active" | "needs_attention" | "inactive" | "not_connected"; ... 7 more ...; isLoading: boolean; }' is not assignable to type 'IntegrationCardProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'lastSync' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-src/app/dashboard/integrations/page.tsx(388,16): error TS2375: Type '{ key: string; id: string; name: string; description: string; isConnected: boolean; isStandard: boolean; isPurchased: boolean; status: "error" | "pending" | "connected" | "active" | "needs_attention" | "inactive" | "not_connected"; ... 7 more ...; isLoading: boolean; }' is not assignable to type 'IntegrationCardProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'lastSync' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-src/app/dashboard/integrations/page.tsx(418,16): error TS2375: Type '{ key: string; id: string; name: string; description: string; isConnected: boolean; isStandard: boolean; isPurchased: boolean; status: "error" | "pending" | "connected" | "active" | "needs_attention" | "inactive" | "not_connected"; ... 7 more ...; isLoading: boolean; }' is not assignable to type 'IntegrationCardProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'lastSync' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-src/app/dashboard/integrations/page.tsx(448,16): error TS2375: Type '{ key: string; id: string; name: string; description: string; isConnected: boolean; isStandard: boolean; isPurchased: boolean; status: "error" | "pending" | "connected" | "active" | "needs_attention" | "inactive" | "not_connected"; ... 7 more ...; isLoading: boolean; }' is not assignable to type 'IntegrationCardProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'lastSync' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-src/app/dashboard/integrations/page.tsx(478,16): error TS2375: Type '{ key: string; id: string; name: string; description: string; isConnected: boolean; isStandard: boolean; isPurchased: boolean; status: "error" | "pending" | "connected" | "active" | "needs_attention" | "inactive" | "not_connected"; ... 7 more ...; isLoading: boolean; }' is not assignable to type 'IntegrationCardProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'lastSync' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
 src/app/dashboard/jobs/[jobId]/exceptions/page.tsx(111,50): error TS2304: Cannot find name 'error'.
 src/app/dashboard/jobs/[jobId]/exceptions/page.tsx(111,75): error TS2304: Cannot find name 'error'.
 src/app/dashboard/jobs/[jobId]/exceptions/page.tsx(111,100): error TS2304: Cannot find name 'error'.
@@ -345,10 +211,6 @@ src/app/dashboard/jobs/[jobId]/exceptions/page.tsx(138,100): error TS2304: Canno
 src/app/dashboard/jobs/[jobId]/exceptions/page.tsx(162,56): error TS2304: Cannot find name 'error'.
 src/app/dashboard/jobs/[jobId]/exceptions/page.tsx(162,81): error TS2304: Cannot find name 'error'.
 src/app/dashboard/jobs/[jobId]/exceptions/page.tsx(162,106): error TS2304: Cannot find name 'error'.
-src/app/dashboard/jobs/[jobId]/page.tsx(83,13): error TS2375: Type '{ id: any; name: any; status: any; source: { adapter: any; config: {}; }; target: { adapter: any; config: {}; }; matchedCount: any; unmatchedCount: any; conflictsCount: any; accuracy: number; createdAt: string; startedAt: string | undefined; completedAt: string | undefined; error: any; summary: { ...; }; }' is not assignable to type 'JobDetail' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'startedAt' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/app/dashboard/jobs/[jobId]/page.tsx(117,43): error TS2304: Cannot find name 'error'.
 src/app/dashboard/jobs/[jobId]/page.tsx(117,68): error TS2304: Cannot find name 'error'.
 src/app/dashboard/jobs/[jobId]/page.tsx(117,93): error TS2304: Cannot find name 'error'.
@@ -366,10 +228,6 @@ src/app/dashboard/page.tsx(330,50): error TS2304: Cannot find name 'error'.
 src/app/dashboard/usage/page.tsx(91,50): error TS2304: Cannot find name 'error'.
 src/app/dashboard/usage/page.tsx(91,75): error TS2304: Cannot find name 'error'.
 src/app/dashboard/usage/page.tsx(91,100): error TS2304: Cannot find name 'error'.
-src/app/dashboard/user/page.tsx(47,10): error TS2375: Type '{ userName: string | undefined; trialEndDate: string | undefined; }' is not assignable to type 'WelcomeDashboardProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'userName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/app/edge-ai/nodes/[nodeId]/page.tsx(65,44): error TS2304: Cannot find name 'error'.
 src/app/edge-ai/nodes/[nodeId]/page.tsx(65,69): error TS2304: Cannot find name 'error'.
 src/app/edge-ai/nodes/[nodeId]/page.tsx(65,94): error TS2304: Cannot find name 'error'.
@@ -382,93 +240,16 @@ src/app/engine/import-results/page.tsx(73,31): error TS2345: Argument of type 'U
   Type 'undefined' is not assignable to type 'Uint8Array<ArrayBufferLike>'.
 src/app/playground/page.tsx(83,23): error TS2304: Cannot find name 'err'.
 src/app/playground/page.tsx(83,46): error TS2304: Cannot find name 'err'.
-src/app/react-settler-demo/page.tsx(137,28): error TS18048: 'data' is possibly 'undefined'.
 src/app/status/page.tsx(49,49): error TS2304: Cannot find name 'err'.
 src/app/status/page.tsx(50,18): error TS2304: Cannot find name 'err'.
 src/app/status/page.tsx(50,41): error TS2304: Cannot find name 'err'.
 src/app/trust/page.tsx(47,7): error TS2304: Cannot find name 'error'.
 src/app/trust/page.tsx(47,32): error TS2304: Cannot find name 'error'.
-src/app/use-cases/[slug]/page.tsx(39,9): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/app/use-cases/[slug]/page.tsx(44,9): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/app/use-cases/[slug]/page.tsx(49,9): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/app/use-cases/[slug]/page.tsx(68,9): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/app/use-cases/[slug]/page.tsx(73,9): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/app/use-cases/[slug]/page.tsx(78,9): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/app/use-cases/[slug]/page.tsx(97,9): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/app/use-cases/[slug]/page.tsx(102,9): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/app/use-cases/[slug]/page.tsx(107,9): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
 src/components/admin/AuditLogViewer.tsx(40,54): error TS2304: Cannot find name 'error'.
 src/components/admin/UserImpersonation.tsx(41,56): error TS2304: Cannot find name 'error'.
 src/components/ai/AIAnomalyDetector.tsx(29,52): error TS2304: Cannot find name 'error'.
 src/components/ai/AIOnboardingAssistant.tsx(67,51): error TS2304: Cannot find name 'error'.
 src/components/ai/AITroubleshootingWizard.tsx(75,53): error TS2304: Cannot find name 'error'.
-src/components/ai/AITroubleshootingWizard.tsx(157,12): error TS2375: Type '{ children: Element; value: string | undefined; onValueChange: (value: string) => void; }' is not assignable to type 'Omit<RadioGroupProps & RefAttributes<HTMLDivElement>, "ref">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'value' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string | null'.
-      Type 'undefined' is not assignable to type 'string | null'.
 src/components/analytics/ChurnAnalysisDashboard.tsx(35,55): error TS2304: Cannot find name 'error'.
 src/components/analytics/ChurnPredictionDashboard.tsx(38,58): error TS2304: Cannot find name 'error'.
 src/components/analytics/FunnelDashboard.tsx(33,53): error TS2304: Cannot find name 'error'.
@@ -479,10 +260,6 @@ src/components/billing/BillingDisputeFlow.tsx(38,50): error TS2304: Cannot find 
 src/components/billing/PaymentRecoveryFlow.tsx(47,57): error TS2304: Cannot find name 'error'.
 src/components/billing/PaymentRecoveryFlow.tsx(59,50): error TS2304: Cannot find name 'error'.
 src/components/billing/PaymentRecoveryFlow.tsx(78,49): error TS2304: Cannot find name 'error'.
-src/components/BuilderPage.tsx(143,8): error TS2375: Type '{ content: any; model: string | undefined; }' is not assignable to type 'BuilderPageProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'model' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/components/chatbot/Chatbot.tsx(133,39): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
 src/components/consent/CookieConsent.tsx(54,77): error TS2304: Cannot find name 'error'.
 src/components/consent/CookieConsent.tsx(84,67): error TS2304: Cannot find name 'error'.
@@ -520,56 +297,12 @@ src/components/console/BulkOperations.tsx(81,16): error TS2304: Cannot find name
 src/components/console/BulkOperations.tsx(81,39): error TS2304: Cannot find name 'err'.
 src/components/console/BulkOperations.tsx(97,16): error TS2304: Cannot find name 'err'.
 src/components/console/BulkOperations.tsx(97,39): error TS2304: Cannot find name 'err'.
-src/components/console/CLIPlayground.tsx(248,73): error TS2769: No overload matches this call.
-  Overload 1 of 3, '(input: string | URL | Request, init?: RequestInit | undefined): Promise<Response>', gave the following error.
-    Argument of type '{ method: string; headers: { 'Content-Type': string; }; body: string | undefined; signal: AbortSignal; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Types of property 'body' are incompatible.
-        Type 'string | undefined' is not assignable to type 'BodyInit | null'.
-          Type 'undefined' is not assignable to type 'BodyInit | null'.
-  Overload 2 of 3, '(input: string | URL | Request, init?: BunFetchRequestInit | undefined): Promise<Response>', gave the following error.
-    Argument of type '{ method: string; headers: { 'Content-Type': string; }; body: string | undefined; signal: AbortSignal; }' is not assignable to parameter of type 'BunFetchRequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Types of property 'body' are incompatible.
-        Type 'string | undefined' is not assignable to type 'BodyInit | null'.
-          Type 'undefined' is not assignable to type 'BodyInit | null'.
-  Overload 3 of 3, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
-    Argument of type '{ method: string; headers: { 'Content-Type': string; }; body: string | undefined; signal: AbortSignal; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Types of property 'body' are incompatible.
-        Type 'string | undefined' is not assignable to type 'BodyInit | null'.
-          Type 'undefined' is not assignable to type 'BodyInit | null'.
 src/components/console/CLIPlayground.tsx(288,18): error TS2304: Cannot find name 'err'.
 src/components/console/CLIPlayground.tsx(288,41): error TS2304: Cannot find name 'err'.
-src/components/console/CLIPlayground.tsx(438,14): error TS2375: Type '{ request: { method?: string; url?: string; headers?: Record<string, string>; body?: unknown; } | undefined; response: { status?: number; statusText?: string; headers?: Record<string, string>; body?: unknown; duration?: number; } | undefined; error: { ...; } | undefined; }' is not assignable to type 'RequestResponseViewerProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'request' are incompatible.
-    Type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; } | undefined' is not assignable to type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; }'.
-      Type 'undefined' is not assignable to type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; }'.
 src/components/console/CodeEditor.tsx(59,40): error TS2304: Cannot find name 'error'.
 src/components/console/CodeGenerator.tsx(60,40): error TS2304: Cannot find name 'error'.
-src/components/console/CodeGenerator.tsx(73,10): error TS2375: Type '{ children: (Element | Element[])[]; defaultValue: string | undefined; }' is not assignable to type 'TabsProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'defaultValue' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/components/console/EnhancedPlayground.tsx(83,41): error TS2769: No overload matches this call.
-  Overload 1 of 3, '(input: string | URL | Request, init?: RequestInit | undefined): Promise<Response>', gave the following error.
-    Argument of type '{ method: "POST" | "GET" | "PATCH" | "DELETE" | "PUT"; headers: Record<string, string>; body: string | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Types of property 'body' are incompatible.
-        Type 'string | undefined' is not assignable to type 'BodyInit | null'.
-          Type 'undefined' is not assignable to type 'BodyInit | null'.
-  Overload 2 of 3, '(input: string | URL | Request, init?: BunFetchRequestInit | undefined): Promise<Response>', gave the following error.
-    Argument of type '{ method: "POST" | "GET" | "PATCH" | "DELETE" | "PUT"; headers: Record<string, string>; body: string | undefined; }' is not assignable to parameter of type 'BunFetchRequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Types of property 'body' are incompatible.
-        Type 'string | undefined' is not assignable to type 'BodyInit | null'.
-          Type 'undefined' is not assignable to type 'BodyInit | null'.
-  Overload 3 of 3, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
-    Argument of type '{ method: "POST" | "GET" | "PATCH" | "DELETE" | "PUT"; headers: Record<string, string>; body: string | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Types of property 'body' are incompatible.
-        Type 'string | undefined' is not assignable to type 'BodyInit | null'.
-          Type 'undefined' is not assignable to type 'BodyInit | null'.
 src/components/console/EnhancedPlayground.tsx(96,16): error TS2304: Cannot find name 'err'.
 src/components/console/EnhancedPlayground.tsx(96,39): error TS2304: Cannot find name 'err'.
-src/components/console/EnhancedPlayground.tsx(223,13): error TS2375: Type '{ method: "POST" | "GET" | "PATCH" | "DELETE" | "PUT"; url: string; headers: Record<string, string> | undefined; body: string; }' is not assignable to type '{ method?: string; url?: string; headers?: Record<string, string>; body?: unknown; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'headers' are incompatible.
-    Type 'Record<string, string> | undefined' is not assignable to type 'Record<string, string>'.
-      Type 'undefined' is not assignable to type 'Record<string, string>'.
 src/components/console/EnhancedRulesEngine.tsx(73,16): error TS2304: Cannot find name 'err'.
 src/components/console/EnhancedRulesEngine.tsx(73,39): error TS2304: Cannot find name 'err'.
 src/components/console/EnhancedRulesEngine.tsx(116,16): error TS2304: Cannot find name 'err'.
@@ -591,16 +324,6 @@ src/components/console/LiveActivityFeed.tsx(49,52): error TS2304: Cannot find na
 src/components/console/MeaningfulChangesFeed.tsx(54,60): error TS2304: Cannot find name 'err'.
 src/components/console/MeaningfulChangesFeed.tsx(55,16): error TS2304: Cannot find name 'err'.
 src/components/console/MeaningfulChangesFeed.tsx(55,39): error TS2304: Cannot find name 'err'.
-src/components/console/MeaningfulChangesFeed.tsx(132,30): error TS2345: Argument of type '{ severity: "warning" | "info" | "critical" | undefined; minRiskScore?: number; }' is not assignable to parameter of type 'SetStateAction<{ severity?: "warning" | "info" | "critical"; minRiskScore?: number; }>'.
-  Type '{ severity: "warning" | "info" | "critical" | undefined; minRiskScore?: number; }' is not assignable to type '{ severity?: "warning" | "info" | "critical"; minRiskScore?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'severity' are incompatible.
-      Type '"warning" | "info" | "critical" | undefined' is not assignable to type '"warning" | "info" | "critical"'.
-        Type 'undefined' is not assignable to type '"warning" | "info" | "critical"'.
-src/components/console/MeaningfulChangesFeed.tsx(154,30): error TS2345: Argument of type '{ minRiskScore: number | undefined; severity?: "info" | "warning" | "critical"; }' is not assignable to parameter of type 'SetStateAction<{ severity?: "warning" | "info" | "critical"; minRiskScore?: number; }>'.
-  Type '{ minRiskScore: number | undefined; severity?: "info" | "warning" | "critical"; }' is not assignable to type '{ severity?: "warning" | "info" | "critical"; minRiskScore?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'minRiskScore' are incompatible.
-      Type 'number | undefined' is not assignable to type 'number'.
-        Type 'undefined' is not assignable to type 'number'.
 src/components/console/MultiSourceReconciliation.tsx(98,16): error TS2304: Cannot find name 'err'.
 src/components/console/MultiSourceReconciliation.tsx(98,39): error TS2304: Cannot find name 'err'.
 src/components/console/MultiSourceReconciliation.tsx(143,16): error TS2304: Cannot find name 'err'.
@@ -648,10 +371,6 @@ src/components/Dashboard.tsx(50,43): error TS2304: Cannot find name 'error'.
 src/components/Dashboard.tsx(251,47): error TS2304: Cannot find name 'error'.
 src/components/data/DataExportImport.tsx(30,42): error TS2304: Cannot find name 'error'.
 src/components/data/DataExportImport.tsx(53,42): error TS2304: Cannot find name 'error'.
-src/components/EnhancedTrustBadges.tsx(116,14): error TS2375: Type '{ src: string; alt: string; width: number; height: number; className: string; fallbackTitle: string; fallbackCaption: string | undefined; unoptimized: true; sizes: string; }' is not assignable to type 'SafeImageProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'fallbackCaption' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/components/enterprise/APIQuotaManager.tsx(33,48): error TS2304: Cannot find name 'error'.
 src/components/enterprise/IPAllowlistManager.tsx(35,51): error TS2304: Cannot find name 'error'.
 src/components/enterprise/IPAllowlistManager.tsx(53,42): error TS2304: Cannot find name 'error'.
@@ -669,10 +388,6 @@ src/components/ExceptionQueue.tsx(77,46): error TS2304: Cannot find name 'error'
 src/components/ExceptionQueue.tsx(91,53): error TS2304: Cannot find name 'error'.
 src/components/ExceptionQueue.tsx(111,48): error TS2304: Cannot find name 'error'.
 src/components/feedback-loops/InsightsBanner.tsx(35,62): error TS2304: Cannot find name 'error'.
-src/components/feedback/SuccessToast.tsx(88,12): error TS2375: Type '{ children: Element; variants: Variants | undefined; initial: string; animate: string; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'variants' are incompatible.
-    Type 'Variants | undefined' is not assignable to type 'Variants'.
-      Type 'undefined' is not assignable to type 'Variants'.
 src/components/gtm/FunnelCTA.tsx(44,60): error TS2304: Cannot find name 'error'.
 src/components/gtm/ROIProofBlock.tsx(53,66): error TS2304: Cannot find name 'error'.
 src/components/integrations/IntegrationAnalytics.tsx(36,51): error TS2304: Cannot find name 'error'.
@@ -683,197 +398,9 @@ src/components/integrations/IntegrationSandbox.tsx(52,41): error TS2304: Cannot 
 src/components/integrations/IntegrationSandbox.tsx(52,64): error TS2304: Cannot find name 'error'.
 src/components/integrations/IntegrationUpgradeFlow.tsx(46,54): error TS2304: Cannot find name 'error'.
 src/components/integrations/IntegrationUpgradeFlow.tsx(67,43): error TS2304: Cannot find name 'error'.
-src/components/marketing/InvestorMetrics.tsx(31,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/InvestorMetrics.tsx(38,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/InvestorMetrics.tsx(45,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/InvestorMetrics.tsx(52,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/InvestorPitch.tsx(27,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/InvestorPitch.tsx(34,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/InvestorPitch.tsx(41,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/InvestorPitch.tsx(48,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/LiveMetricsCounter.tsx(27,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/LiveMetricsCounter.tsx(34,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/LiveMetricsCounter.tsx(41,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/SocialProofCounter.tsx(24,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/SocialProofCounter.tsx(31,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/SocialProofCounter.tsx(38,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/SocialProofCounter.tsx(45,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/ValueProposition.tsx(26,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/ValueProposition.tsx(33,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/ValueProposition.tsx(40,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
-src/components/marketing/ValueProposition.tsx(47,5): error TS2322: Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'ComponentType<{ className?: string; }>'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'FunctionComponent<{ className?: string; }>'.
-    Types of property 'defaultProps' are incompatible.
-      Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> | undefined' is not assignable to type 'Partial<{ className?: string; }> | undefined'.
-        Type 'Partial<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is not assignable to type 'Partial<{ className?: string; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-          Types of property 'className' are incompatible.
-            Type 'string | undefined' is not assignable to type 'string'.
-              Type 'undefined' is not assignable to type 'string'.
 src/components/monitoring/StatusIndicator.tsx(55,46): error TS2304: Cannot find name 'error'.
-src/components/motion/AnimatedButton.tsx(48,10): error TS2375: Type '{ children: ReactNode; variant?: "default" | "secondary" | "outline" | "link" | "destructive" | "ghost"; size?: "default" | "icon" | "sm" | "lg"; asChild?: boolean; fullWidth?: boolean; ... 287 more ...; className: string | undefined; }' is not assignable to type 'ButtonProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'loading' are incompatible.
-    Type 'boolean | undefined' is not assignable to type 'boolean'.
-      Type 'undefined' is not assignable to type 'boolean'.
-src/components/motion/AnimatedButton.tsx(54,11): error TS2375: Type '{ whileHover: { scale: number; transition: SpringOptions; } | undefined; whileTap: { scale: number; transition: SpringOptions; } | undefined; initial: { ...; } | undefined; animate: { ...; } | undefined; transition: SpringOptions; }' is not assignable to type 'MotionProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'initial' are incompatible.
-    Type '{ scale: number; } | undefined' is not assignable to type 'boolean | TargetAndTransition | VariantLabels'.
-      Type 'undefined' is not assignable to type 'boolean | TargetAndTransition | VariantLabels'.
-src/components/motion/AnimatedButton.tsx(74,10): error TS2375: Type '{ children: ReactNode; variant?: "default" | "secondary" | "outline" | "link" | "destructive" | "ghost"; size?: "default" | "icon" | "sm" | "lg"; asChild?: boolean; fullWidth?: boolean; ... 286 more ...; loading: false | undefined; }' is not assignable to type 'ButtonProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'loading' are incompatible.
-    Type 'boolean | undefined' is not assignable to type 'boolean'.
-      Type 'undefined' is not assignable to type 'boolean'.
-src/components/motion/AnimatedCard.tsx(68,11): error TS2375: Type '{ variants: Variants | undefined; initial: false | "hidden"; animate: false | "visible"; transition: { delay: number; }; whileHover: { y: number; transition: SpringOptions; } | undefined; }' is not assignable to type 'MotionProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'variants' are incompatible.
-    Type 'Variants | undefined' is not assignable to type 'Variants'.
-      Type 'undefined' is not assignable to type 'Variants'.
-src/components/motion/PageTransition.tsx(53,8): error TS2375: Type '{ children: ReactNode; id?: string | undefined; title?: string | undefined; role?: AriaRole | undefined; content?: string | undefined; slot?: string | undefined; ... 329 more ...; ref: ForwardedRef<...>; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'style' are incompatible.
-    Type 'CSSProperties | MotionStyle | undefined' is not assignable to type 'MotionStyle'.
-      Type 'undefined' is not assignable to type 'MotionStyle'.
-src/components/motion/Reveal.tsx(88,11): error TS2375: Type '{ variants: Variants | undefined; initial: false | "hidden"; animate: false | "visible" | "hidden"; transition: { delay: number; }; }' is not assignable to type 'MotionProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'variants' are incompatible.
-    Type 'Variants | undefined' is not assignable to type 'Variants'.
-      Type 'undefined' is not assignable to type 'Variants'.
-src/components/motion/Reveal.tsx(113,8): error TS2375: Type '{ children: ReactNode; id?: string | undefined; title?: string | undefined; role?: AriaRole | undefined; content?: string | undefined; slot?: string | undefined; ... 328 more ...; ref: RefObject<...>; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'style' are incompatible.
-    Type 'CSSProperties | MotionStyle | undefined' is not assignable to type 'MotionStyle'.
-      Type 'undefined' is not assignable to type 'MotionStyle'.
 src/components/onboarding/ActivationChecklist.tsx(92,58): error TS2304: Cannot find name 'error'.
 src/components/onboarding/OnboardingWizardClient.tsx(37,64): error TS2304: Cannot find name 'error'.
-src/components/onboarding/WelcomeBannerClient.tsx(15,8): error TS2375: Type '{ userName: string | undefined; }' is not assignable to type 'WelcomeBannerProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'userName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/components/OnboardingProgressClient.tsx(13,11): error TS2375: Type '{ progress: OnboardingProgress | undefined; nextStep: string | undefined; }' is not assignable to type 'OnboardingProgressProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'progress' are incompatible.
-    Type 'OnboardingProgress | undefined' is not assignable to type '{ userId: string; steps: OnboardingStep[]; completionPercentage: number; completedAt?: Date; }'.
-      Type 'undefined' is not assignable to type '{ userId: string; steps: OnboardingStep[]; completionPercentage: number; completedAt?: Date; }'.
 src/components/ops/BriefingsView.tsx(120,28): error TS2304: Cannot find name 'err'.
 src/components/ops/BriefingsView.tsx(120,51): error TS2304: Cannot find name 'err'.
 src/components/ops/BriefingsView.tsx(122,49): error TS2304: Cannot find name 'err'.
@@ -905,10 +432,6 @@ src/components/projects/ProjectSnapshotManager.tsx(66,51): error TS2304: Cannot 
 src/components/projects/ProjectSnapshotManager.tsx(87,51): error TS2304: Cannot find name 'error'.
 src/components/projects/ProjectSnapshotManager.tsx(108,44): error TS2304: Cannot find name 'error'.
 src/components/projects/ProjectSnapshotManager.tsx(140,44): error TS2304: Cannot find name 'error'.
-src/components/readylayer/PlatformProvider.tsx(56,31): error TS2375: Type '{ provider: GitProvider; theme: PlatformTheme; installationId: string | undefined; repositoryId: string | undefined; }' is not assignable to type 'PlatformContextValue' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'installationId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/components/referrals/ReferralProgram.tsx(33,56): error TS2304: Cannot find name 'error'.
 src/components/RulesEditor.tsx(60,50): error TS2304: Cannot find name 'error'.
 src/components/RulesEditor.tsx(76,55): error TS2304: Cannot find name 'error'.
@@ -917,32 +440,16 @@ src/components/RulesEditor.tsx(154,50): error TS2304: Cannot find name 'error'.
 src/components/SecureMobileApp.tsx(177,44): error TS2304: Cannot find name 'error'.
 src/components/SecureMobileApp.tsx(177,69): error TS2304: Cannot find name 'error'.
 src/components/SecureMobileApp.tsx(177,94): error TS2304: Cannot find name 'error'.
-src/components/shared/empty-state.tsx(94,6): error TS2375: Type '{ icon: Element; title: string; description: string; action: { label: string; onClick: () => void; href: string; } | undefined; }' is not assignable to type 'EmptyStateProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'action' are incompatible.
-    Type '{ label: string; onClick: () => void; href: string; } | undefined' is not assignable to type '{ label: string; onClick: () => void; href?: string; }'.
-      Type 'undefined' is not assignable to type '{ label: string; onClick: () => void; href?: string; }'.
-src/components/shared/empty-state.tsx(115,6): error TS2375: Type '{ icon: Element; title: string; description: string; action: { label: string; onClick: () => void; } | undefined; }' is not assignable to type 'EmptyStateProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'action' are incompatible.
-    Type '{ label: string; onClick: () => void; } | undefined' is not assignable to type '{ label: string; onClick: () => void; href?: string; }'.
-      Type 'undefined' is not assignable to type '{ label: string; onClick: () => void; href?: string; }'.
 src/components/support/CannedResponseManager.tsx(38,58): error TS2304: Cannot find name 'error'.
 src/components/support/IssueTracker.tsx(38,49): error TS2304: Cannot find name 'error'.
 src/components/support/ReportIssue.tsx(67,16): error TS2304: Cannot find name 'err'.
 src/components/support/ReportIssue.tsx(67,39): error TS2304: Cannot find name 'err'.
 src/components/support/SupportInbox.tsx(45,51): error TS2304: Cannot find name 'error'.
-src/components/tenant/TenantThemeProvider.tsx(171,5): error TS2375: Type '{ primary: string | undefined; secondary: string | undefined; }' is not assignable to type '{ primary?: string; secondary?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'primary' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/components/ui/code-block.tsx(33,45): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
 src/components/ui/CopyButton.tsx(24,40): error TS2304: Cannot find name 'err'.
 src/components/ui/ErrorState.tsx(153,17): error TS2323: Cannot redeclare exported variable 'InlineError'.
 src/components/ui/ErrorState.tsx(166,22): error TS2323: Cannot redeclare exported variable 'InlineError'.
 src/components/ui/ErrorState.tsx(166,22): error TS2484: Export declaration conflicts with exported declaration of 'InlineError'.
-src/components/ui/HelpText.tsx(13,6): error TS2375: Type '{ children: Element; content: string; className: string | undefined; }' is not assignable to type 'TooltipProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'className' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/components/ui/LoadingState.tsx(15,17): error TS2323: Cannot redeclare exported variable 'LoadingSpinner'.
 src/components/ui/LoadingState.tsx(37,17): error TS2323: Cannot redeclare exported variable 'LoadingSkeleton'.
 src/components/ui/LoadingState.tsx(60,17): error TS2323: Cannot redeclare exported variable 'LoadingDots'.
@@ -955,37 +462,7 @@ src/components/ui/LoadingState.tsx(117,57): error TS2484: Export declaration con
 src/components/ui/retry-button.tsx(38,16): error TS2304: Cannot find name 'err'.
 src/components/ui/retry-button.tsx(38,39): error TS2304: Cannot find name 'err'.
 src/components/WelcomeDashboard.tsx(34,55): error TS2304: Cannot find name 'error'.
-src/domain/billing/planConfig.ts(62,3): error TS2375: Type '{ code: "growth"; name: string; description: string; stripePriceId: string | undefined; monthlyPrice: number; limits: { reconcile: { monthlyVolume: number; pricePerReconciliation: number; }; exceptions: { ...; }; }; }' is not assignable to type 'PlanConfig' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'stripePriceId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/domain/billing/planConfig.ts(79,3): error TS2375: Type '{ code: "scale"; name: string; description: string; stripePriceId: string | undefined; monthlyPrice: number; limits: { reconcile: { monthlyVolume: number; pricePerReconciliation: number; }; exceptions: { ...; }; }; }' is not assignable to type 'PlanConfig' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'stripePriceId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/domain/billing/reconciliation.ts(94,10): error TS7006: Parameter 's' implicitly has an 'any' type.
-src/domain/billing/stripeService.ts(208,11): error TS2375: Type '{ price: string | undefined; quantity: number; }' is not assignable to type 'LineItem' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'price' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/domain/console/api-logs.ts(188,5): error TS2322: Type '{ id: string; tenantId: string; userId: string | undefined; apiKeyId: string | undefined; method: string; path: string; statusCode: number; responseTime: number; timestamp: Date; headers: Record<...> | undefined; ... 5 more ...; ipAddress: string | undefined; }[]' is not assignable to type 'ApiCallLog[]'.
-  Type '{ id: string; tenantId: string; userId: string | undefined; apiKeyId: string | undefined; method: string; path: string; statusCode: number; responseTime: number; timestamp: Date; headers: Record<...> | undefined; ... 5 more ...; ipAddress: string | undefined; }' is not assignable to type 'ApiCallLog' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'userId' are incompatible.
-      Type 'string | undefined' is not assignable to type 'string'.
-        Type 'undefined' is not assignable to type 'string'.
-src/domain/console/apiKeys.ts(139,5): error TS2322: Type '{ id: string; name: string | undefined; keyPrefix: string; createdAt: Date; lastUsedAt: Date | undefined; revokedAt: Date | undefined; expiresAt: Date | undefined; scopes: string[]; }[]' is not assignable to type 'ApiKeyListItem[]'.
-  Type '{ id: string; name: string | undefined; keyPrefix: string; createdAt: Date; lastUsedAt: Date | undefined; revokedAt: Date | undefined; expiresAt: Date | undefined; scopes: string[]; }' is not assignable to type 'ApiKeyListItem' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'name' are incompatible.
-      Type 'string | undefined' is not assignable to type 'string'.
-        Type 'undefined' is not assignable to type 'string'.
-src/domain/console/apiKeys.ts(225,3): error TS2375: Type '{ id: string; key: string; name: string | undefined; createdAt: Date; }' is not assignable to type 'CreateApiKeyResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'name' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/domain/console/featureFlags.ts(175,37): error TS2379: Argument of type '{ flagKey: string; environment: string; billingAccountId: string; projectId: string | undefined; }' is not assignable to parameter of type '{ flagKey: string; environment: string; billingAccountId?: string; projectId?: string; context?: EvaluationContext; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'projectId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/domain/console/receipts.ts(110,24): error TS2339: Property 'userId' does not exist on type '{}'.
 src/domain/console/receipts.ts(112,46): error TS2339: Property 'userId' does not exist on type '{}'.
 src/domain/console/receipts.ts(213,12): error TS18046: 'receipts' is of type 'unknown'.
@@ -1011,14 +488,6 @@ src/domain/console/receipts.ts(368,26): error TS2339: Property 'items' does not 
 src/domain/console/receipts.ts(369,26): error TS2339: Property 'createdAt' does not exist on type '{}'.
 src/domain/console/receipts.ts(370,22): error TS2339: Property 'items' does not exist on type '{}'.
 src/domain/console/receipts.ts(370,33): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/hooks/useValueTracking.ts(27,29): error TS2379: Argument of type '{ timestamp: Date; userId: string | undefined; tenantId: string | undefined; billingAccountId: string | undefined; projectId: string | undefined; type: ValueEventType; metadata?: { sourceAdapter?: string; targetAdapter?: string; reconciliationId?: string; integrationId?: string; planTier?: string; [key: string]: unk...' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'userId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/hooks/useValueTracking.ts(45,35): error TS2379: Argument of type '{ from: FunnelStage; to: FunnelStage; timestamp: Date; userId: string | undefined; metadata: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'FunnelTransition' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'userId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/lib/actions/types.ts(48,22): error TS2304: Cannot find name 'err'.
 src/lib/actions/types.ts(48,45): error TS2304: Cannot find name 'err'.
 src/lib/actions/types.ts(48,66): error TS2304: Cannot find name 'err'.
@@ -1048,333 +517,24 @@ src/lib/admin/metrics/aggregation.ts(192,39): error TS7006: Parameter 'sum' impl
 src/lib/admin/metrics/aggregation.ts(192,44): error TS7006: Parameter 'r' implicitly has an 'any' type.
 src/lib/admin/metrics/aggregation.ts(193,38): error TS7006: Parameter 'sum' implicitly has an 'any' type.
 src/lib/admin/metrics/aggregation.ts(193,43): error TS7006: Parameter 'r' implicitly has an 'any' type.
-src/lib/analytics/providers/custom.ts(44,7): error TS2412: Type 'undefined' is not assignable to type 'Timeout' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
-src/lib/api-response.ts(21,3): error TS2322: Type 'NextResponse<{ error: { code: string; message: string; details: ErrorDetails | undefined; }; }>' is not assignable to type 'NextResponse<ApiErrorResponse>'.
-  Type '{ error: { code: string; message: string; details: ErrorDetails | undefined; }; }' is not assignable to type 'ApiErrorResponse'.
-    The types of 'error.details' are incompatible between these types.
-      Type 'ErrorDetails | undefined' is not assignable to type 'ErrorDetails'.
-        Type 'undefined' is not assignable to type 'ErrorDetails'.
-src/lib/api/auth-gate.ts(66,7): error TS2375: Type '{ id: string; email: string | undefined; }' is not assignable to type '{ id: string; email?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'email' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/api/auth-gate.ts(105,5): error TS2375: Type '{ isAdmin: false; error: NextResponse<unknown> | undefined; }' is not assignable to type '{ isAdmin: boolean; user?: { id: string; email?: string; }; error?: NextResponse<unknown>; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'NextResponse<unknown> | undefined' is not assignable to type 'NextResponse<unknown>'.
-      Type 'undefined' is not assignable to type 'NextResponse<unknown>'.
-src/lib/api/auth-gate.ts(144,5): error TS2375: Type '{ isAdmin: true; user: { id: string; email?: string; } | undefined; }' is not assignable to type '{ isAdmin: boolean; user?: { id: string; email?: string; }; error?: NextResponse<unknown>; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'user' are incompatible.
-    Type '{ id: string; email?: string; } | undefined' is not assignable to type '{ id: string; email?: string; }'.
-      Type 'undefined' is not assignable to type '{ id: string; email?: string; }'.
-src/lib/api/client.ts(56,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { append(name: string, value: string): void; delete(name: string): void; get(name: string): string | null; ... 11 more ...; 'Content-Type': string; } | { ...; } | { ...; }; ... 11 more ...; next?: NextFetchRequestConfig | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'body' are incompatible.
-    Type 'string | undefined' is not assignable to type 'BodyInit | null'.
-      Type 'undefined' is not assignable to type 'BodyInit | null'.
-src/lib/api/client.ts(71,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { append(name: string, value: string): void; delete(name: string): void; get(name: string): string | null; ... 11 more ...; 'Content-Type': string; } | { ...; } | { ...; }; ... 11 more ...; next?: NextFetchRequestConfig | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'body' are incompatible.
-    Type 'string | undefined' is not assignable to type 'BodyInit | null'.
-      Type 'undefined' is not assignable to type 'BodyInit | null'.
-src/lib/api/client.ts(97,7): error TS2375: Type '{ maxAttempts: number | undefined; initialDelay: number | undefined; }' is not assignable to type 'Partial<RetryConfig>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'maxAttempts' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
 src/lib/api/console-route-optimizer.ts(54,47): error TS2339: Property 'userId' does not exist on type '{}'.
-src/lib/api/error-handler-enhanced.ts(53,5): error TS2375: Type '{ code: string; message: string; statusCode: number; details: Record<string, unknown> | undefined; }' is not assignable to type 'ApiError' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'details' are incompatible.
-    Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
-      Type 'undefined' is not assignable to type 'Record<string, unknown>'.
-src/lib/api/error-handler.ts(51,35): error TS2379: Argument of type '{ trace_id: string; route: string | undefined; user_id: string | undefined; tenant_id: string | undefined; error: string; stack: string | undefined; }' is not assignable to parameter of type 'LogContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'route' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/api/openapi-generator.ts(54,21): error TS2352: Conversion of type '$ZodStringDef' to type '{ checks?: { kind: string; value?: unknown; }[]; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Types of property 'checks' are incompatible.
-    Type '$ZodCheck<string>[]' is not comparable to type '{ kind: string; value?: unknown; }[]'.
-      Property 'kind' is missing in type '$ZodCheck<string>' but required in type '{ kind: string; value?: unknown; }'.
-src/lib/api/openapi-generator.ts(65,21): error TS2352: Conversion of type '$ZodNumberDef' to type '{ checks?: { kind: string; value?: unknown; }[]; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Types of property 'checks' are incompatible.
-    Type '$ZodCheck<never>[]' is not comparable to type '{ kind: string; value?: unknown; }[]'.
-      Property 'kind' is missing in type '$ZodCheck<never>' but required in type '{ kind: string; value?: unknown; }'.
-src/lib/api/request-logger.ts(39,9): error TS2375: Type '{ method: string; path: string; status: number; duration_ms: number; timestamp: string; trace_id: string; user_id: string | undefined; user_agent: string | undefined; ip_address: string | undefined; }' is not assignable to type 'LogContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'user_id' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/api/unified-auth.ts(56,9): error TS2375: Type '{ type: "api_key"; userId: string; billingAccountId: string | undefined; tenantId: string | undefined; apiKeyId: string; scopes: string[]; }' is not assignable to type 'UnifiedAuthContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'billingAccountId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/api/unified-auth.ts(90,13): error TS2375: Type '{ type: "session"; userId: string; billingAccountId: string | undefined; tenantId: string | undefined; }' is not assignable to type 'UnifiedAuthContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'billingAccountId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/audit/logger.ts(67,5): error TS2375: Type '{ ipAddress: string | undefined; userAgent: string | undefined; }' is not assignable to type '{ ipAddress?: string; userAgent?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'ipAddress' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/audit/logger.ts(178,23): error TS2379: Argument of type '{ userId: string; billingAccountId: string; action: "create"; resourceType: "api_key"; resourceId: string; metadata: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'AuditLogEntry' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'metadata' are incompatible.
-    Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
-      Type 'undefined' is not assignable to type 'Record<string, unknown>'.
-src/lib/audit/logger.ts(197,23): error TS2379: Argument of type '{ userId: string; billingAccountId: string; action: "delete"; resourceType: "api_key"; resourceId: string; metadata: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'AuditLogEntry' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'metadata' are incompatible.
-    Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
-      Type 'undefined' is not assignable to type 'Record<string, unknown>'.
-src/lib/audit/logger.ts(216,23): error TS2379: Argument of type '{ userId: string; billingAccountId: string; action: "create"; resourceType: "receipt"; resourceId: string; metadata: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'AuditLogEntry' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'metadata' are incompatible.
-    Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
-      Type 'undefined' is not assignable to type 'Record<string, unknown>'.
-src/lib/audit/logger.ts(236,23): error TS2379: Argument of type '{ userId: string; billingAccountId: string; action: "update"; resourceType: "feature_flag"; resourceId: string; changes: { before?: Record<string, unknown>; after?: Record<string, unknown>; }; metadata: Record<...> | undefined; }' is not assignable to parameter of type 'AuditLogEntry' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'metadata' are incompatible.
-    Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
-      Type 'undefined' is not assignable to type 'Record<string, unknown>'.
-src/lib/audit/logger.ts(257,23): error TS2379: Argument of type '{ userId: string; billingAccountId: string; tenantId: string; action: "execute"; resourceType: "reconciliation"; resourceId: string; metadata: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'AuditLogEntry' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'metadata' are incompatible.
-    Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
-      Type 'undefined' is not assignable to type 'Record<string, unknown>'.
 src/lib/auth/entitlements.ts(143,81): error TS2304: Cannot find name 'supabaseError'.
-src/lib/auth/super-admin.ts(76,5): error TS2375: Type '{ isSuperAdmin: boolean; userId: string; email: string | undefined; }' is not assignable to type '{ isSuperAdmin: boolean; userId?: string; email?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'email' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/backup/automation.ts(124,7): error TS2375: Type '{ success: boolean; error: string | undefined; }' is not assignable to type '{ success: boolean; error?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/console/subscription.ts(188,5): error TS2375: Type '{ allowed: boolean; reason: string | undefined; remaining: number | undefined; }' is not assignable to type '{ allowed: boolean; reason?: string; remaining?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'reason' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/data/user-dashboard.ts(128,7): error TS2375: Type '{ id: string; email: string; firstName: string | undefined; planType: "free" | "enterprise" | "trial" | "commercial"; trialEndDate: string | undefined; industry: string | undefined; companyName: string | undefined; preTestCompleted: boolean; }' is not assignable to type '{ id: string; email: string; firstName?: string; planType: "free" | "enterprise" | "trial" | "commercial"; trialEndDate?: string; industry?: string; companyName?: string; preTestCompleted: boolean; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'firstName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/db/analytics.ts(52,19): error TS2379: Argument of type '{ type: string; data: Record<string, any>; userId: string | undefined; sessionId: string | undefined; metadata: Record<string, any> | undefined; }' is not assignable to parameter of type '{ type: string; data: Record<string, any>; userId?: string; sessionId?: string; metadata?: Record<string, any>; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'userId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/lib/db/observability.ts(156,5): error TS2532: Object is possibly 'undefined'.
 src/lib/db/observability.ts(157,5): error TS2532: Object is possibly 'undefined'.
 src/lib/db/observability.ts(160,7): error TS2532: Object is possibly 'undefined'.
-src/lib/db/query-builder.ts(179,37): error TS2379: Argument of type '{ where: { billingAccountId?: string; }; take: number; skip: number; orderBy: Record<string, "desc" | "asc"> | undefined; }' is not assignable to parameter of type '{ where: Record<string, unknown>; take: number; skip: number; orderBy?: Record<string, "desc" | "asc">; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'orderBy' are incompatible.
-    Type 'Record<string, "desc" | "asc"> | undefined' is not assignable to type 'Record<string, "desc" | "asc">'.
-      Type 'undefined' is not assignable to type 'Record<string, "desc" | "asc">'.
 src/lib/db/write-buffer.ts(246,22): error TS2339: Property 'map' does not exist on type 'string'.
 src/lib/db/write-buffer.ts(246,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
 src/lib/db/write-buffer.ts(300,20): error TS2339: Property 'map' does not exist on type 'string'.
 src/lib/db/write-buffer.ts(300,25): error TS7006: Parameter 'item' implicitly has an 'any' type.
 src/lib/db/write-buffer.ts(357,20): error TS2339: Property 'map' does not exist on type 'string'.
 src/lib/db/write-buffer.ts(357,25): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/lib/email/resend.ts(140,45): error TS2379: Argument of type '{ from: string; to: string[]; subject: string; html: string | undefined; text: string | undefined; }' is not assignable to parameter of type '{ from: string; to: string | string[]; subject: string; html?: string; text?: string; tags?: { name: string; value: string; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'html' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/email/resend.ts(148,5): error TS2375: Type '{ success: true; id: string | undefined; }' is not assignable to type '{ success: boolean; id?: string; error?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'id' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/lib/feedback-loops/usage-insights-service.ts(83,21): error TS7006: Parameter 'error' implicitly has an 'any' type.
 src/lib/feedback-loops/usage-insights-service.ts(115,51): error TS7006: Parameter 's' implicitly has an 'any' type.
-src/lib/feedback-loops/usage-insights-service.ts(119,23): error TS2379: Argument of type '{ type: "dropoff_point"; dropoffPoint: string | undefined; frequency: number; recommendation: string; priority: "medium"; }' is not assignable to parameter of type 'UsageInsight' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'dropoffPoint' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/lib/feedback-loops/usage-insights-service.ts(144,63): error TS7006: Parameter 'r' implicitly has an 'any' type.
-src/lib/flags/hooks.ts(306,51): error TS2379: Argument of type '{ planId: string; planName: string; billingCycle: "monthly"; amount: number | undefined; }' is not assignable to parameter of type '{ planId: string; planName: string; billingCycle: "monthly" | "annual"; amount?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'amount' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/get-subscription-status.ts(172,5): error TS2375: Type '{ tier: SubscriptionTier; hasSubscription: false; isPaid: boolean; isEnterprise: boolean; planName: string | undefined; subscriptionId: string | undefined; }' is not assignable to type 'SubscriptionStatus' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'planName' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/idempotency/key.ts(85,3): error TS2375: Type '{ tenantId: string; operation: string; timeWindow: number; payloadHash: string; userId: string | undefined; }' is not assignable to type '{ tenantId: string; operation: string; timeWindow: number; payloadHash: string; userId?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'userId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/idempotency/middleware.ts(54,13): error TS2375: Type '{ tenantId: string; operation: string; timeWindow: number | undefined; payload: Record<string, unknown>; userId: string | undefined; }' is not assignable to type 'IdempotencyKeyOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'timeWindow' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/jobs/handlers/run-processor.ts(17,31): error TS2379: Argument of type '{ jobId: string; runId: string | undefined; workspaceId: string; }' is not assignable to parameter of type 'LogContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'runId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/judgment/rules.ts(196,3): error TS2375: Type '{ summary: string; whyItMatters: string; evidence: Evidence[]; suggestedNextStep: string | undefined; }' is not assignable to type 'Explanation' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'suggestedNextStep' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/judgment/rules.ts(234,3): error TS2375: Type '{ currency: { amount: number; currency: string; } | undefined; riskScore: number; confidence: number; }' is not assignable to type 'Impact' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'currency' are incompatible.
-    Type '{ amount: number; currency: string; } | undefined' is not assignable to type 'CurrencyImpact'.
-      Type 'undefined' is not assignable to type 'CurrencyImpact'.
-src/lib/logger.ts(53,9): error TS2375: Type '{ level: LogLevel; message: string; context: LogContext; error: Error | undefined; timestamp: Date; }' is not assignable to type 'LogEntry' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'Error | undefined' is not assignable to type 'Error'.
-      Type 'undefined' is not assignable to type 'Error'.
-src/lib/logging/logger.ts(55,7): error TS2412: Type '{ name: string; message: string; stack: string | undefined; } | undefined' is not assignable to type 'Error | undefined' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
-src/lib/middleware/api-security.ts(48,5): error TS2379: Argument of type '{ maxRequests: number | undefined; windowMs: number | undefined; }' is not assignable to parameter of type 'RateLimitOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'maxRequests' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/moat/rules-engine.ts(252,3): error TS2375: Type '{ id: string; billingAccountId: string; tenantId: string | undefined; userId: string | undefined; ruleName: string; ruleType: RuleType; sourceField: string | undefined; targetField: string | undefined; ... 6 more ...; updatedAt: Date; }' is not assignable to type 'ReconciliationRule' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/monitoring/alerts.ts(87,41): error TS2379: Argument of type '{ tenantId: string | undefined; }' is not assignable to parameter of type 'ApiLogFilters' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/monitoring/alerts.ts(132,41): error TS2379: Argument of type '{ tenantId: string | undefined; }' is not assignable to parameter of type 'ApiLogFilters' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/monitoring/metrics.ts(35,62): error TS2379: Argument of type '{ tags: Record<string, string> | undefined; unit: "none"; }' is not assignable to parameter of type 'MetricData' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tags' are incompatible.
-    Type 'Record<string, string> | undefined' is not assignable to type 'Record<string, Primitive>'.
-      Type 'undefined' is not assignable to type 'Record<string, Primitive>'.
-src/lib/monitoring/sentry.ts(50,19): error TS2379: Argument of type '{ dsn: string; environment: string | undefined; release: string | undefined; tracesSampleRate: number | undefined; integrations: (BrowserTracing | Replay)[]; beforeSend(event: ErrorEvent, hint: EventHint): ErrorEvent | null; }' is not assignable to parameter of type 'Options<BaseTransportOptions> | BrowserOptions | NodeOptions | VercelEdgeOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ dsn: string; environment: string | undefined; release: string | undefined; tracesSampleRate: number | undefined; integrations: (BrowserTracing | Replay)[]; beforeSend(event: ErrorEvent, hint: EventHint): ErrorEvent | null; }' is not assignable to type 'VercelEdgeOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'environment' are incompatible.
-      Type 'string | undefined' is not assignable to type 'string'.
-        Type 'undefined' is not assignable to type 'string'.
-src/lib/monitoring/sentry.ts(113,19): error TS2379: Argument of type '{ dsn: string; environment: string | undefined; release: string | undefined; tracesSampleRate: number | undefined; integrations: Http[]; }' is not assignable to parameter of type 'Options<BaseTransportOptions> | BrowserOptions | NodeOptions | VercelEdgeOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ dsn: string; environment: string | undefined; release: string | undefined; tracesSampleRate: number | undefined; integrations: Http[]; }' is not assignable to type 'VercelEdgeOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'environment' are incompatible.
-      Type 'string | undefined' is not assignable to type 'string'.
-        Type 'undefined' is not assignable to type 'string'.
-src/lib/monitoring/sentry.ts(144,40): error TS2345: Argument of type '{ extra: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'ExclusiveEventHintOrCaptureContext | undefined'.
-  Type '{ extra: Record<string, unknown> | undefined; }' is not assignable to type '(Scope & Partial<{ event_id?: never; captureContext?: never; mechanism?: never; syntheticException?: never; originalException?: never; attachments?: never; data?: never; integrations?: never; }>) | (Partial<...> & Partial<...>) | (((scope: Scope) => Scope) & Partial<...>) | (EventHint & Partial<...>)'.
-    Type '{ extra: Record<string, unknown> | undefined; }' is not assignable to type 'EventHint & Partial<{ user: never; level: never; extra: never; contexts: never; tags: never; fingerprint: never; requestSession: never; propagationContext: never; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Type '{ extra: Record<string, unknown> | undefined; }' is not assignable to type 'Partial<{ user: never; level: never; extra: never; contexts: never; tags: never; fingerprint: never; requestSession: never; propagationContext: never; }>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-        Types of property 'extra' are incompatible.
-          Type 'Record<string, unknown> | undefined' is not assignable to type 'never'.
-            Type 'undefined' is not assignable to type 'never'.
-src/lib/monitoring/sentry.ts(176,40): error TS2345: Argument of type '{ level: "error" | "warning" | "debug" | "info" | "fatal"; extra: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'CaptureContext | Severity | SeverityLevel | undefined'.
-  Type '{ level: "error" | "warning" | "debug" | "info" | "fatal"; extra: Record<string, unknown> | undefined; }' is not assignable to type 'Partial<ScopeContext>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'extra' are incompatible.
-      Type 'Record<string, unknown> | undefined' is not assignable to type 'Extras'.
-        Type 'undefined' is not assignable to type 'Extras'.
-src/lib/monitoring/sentry.ts(220,30): error TS2379: Argument of type '{ message: string; category: string; level: "debug" | "info" | "warning" | "error" | "fatal"; data: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'Breadcrumb' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'data' are incompatible.
-    Type 'Record<string, unknown> | undefined' is not assignable to type '{ [key: string]: any; }'.
-      Type 'undefined' is not assignable to type '{ [key: string]: any; }'.
-src/lib/monitoring/sentry.ts(261,7): error TS2375: Type '{ dsn: string | undefined; environment: "development" | "production" | "test"; release: string; tracesSampleRate: number; enabled: boolean; }' is not assignable to type 'SentryConfig' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'dsn' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/observability/metrics.ts(33,35): error TS2379: Argument of type '{ trace_id: string | undefined; route: string; duration_ms: number; status: number; }' is not assignable to parameter of type 'LogContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'trace_id' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/observability/metrics.ts(100,33): error TS2379: Argument of type '{ route: string; method: string; duration_ms: number; status: number; timestamp: string; trace_id: string | undefined; }' is not assignable to parameter of type 'MetricEntry' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'trace_id' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/lib/ops/exception-events.ts(52,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
 src/lib/ops/exception-events.ts(100,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
-src/lib/performance/web-vitals.ts(87,18): error TS2379: Argument of type '{ name: string; value: number; id: string; delta: number; rating: "good" | "needs-improvement" | "poor"; navigationType: string | undefined; }' is not assignable to parameter of type 'WebVitalMetric' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'navigationType' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/reconciliation/value-events-integration.ts(42,60): error TS2379: Argument of type '{ tenantId: string; userId: string | undefined; matchedCount: number; unmatchedCount: number; totalAmount: number | undefined; runId: string; }' is not assignable to parameter of type '{ tenantId?: string; userId?: string; matchedCount: number; unmatchedCount: number; totalAmount?: number; jobId?: string; runId?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'userId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/reconciliation/value-events-integration.ts(54,30): error TS2379: Argument of type '{ billingAccountId: any; tenantId: string; userId: string | undefined; eventType: "errors_prevented"; quantity: number; unit: string; metadata: { source: string; runId: string; matchedCount: number; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'userId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/release-notes-generator.ts(51,11): error TS2375: Type '{ type: "feature" | "security" | "fix" | "improvement" | "breaking"; title: string; description: string; prNumber: number | undefined; author: string; }' is not assignable to type 'ReleaseNote' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'prNumber' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/resilience/fallbacks.tsx(53,6): error TS2375: Type '{ title: string; description: string; action: { label: string; onClick: () => void; } | undefined; }' is not assignable to type 'EmptyStateProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'action' are incompatible.
-    Type '{ label: string; onClick: () => void; } | undefined' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "outline" | "ghost"; }'.
-      Type 'undefined' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "outline" | "ghost"; }'.
-src/lib/resilience/fallbacks.tsx(84,6): error TS2375: Type '{ title: string; description: string; action: { label: string; onClick: () => void; } | undefined; }' is not assignable to type 'EmptyStateProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'action' are incompatible.
-    Type '{ label: string; onClick: () => void; } | undefined' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "outline" | "ghost"; }'.
-      Type 'undefined' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "outline" | "ghost"; }'.
-src/lib/resilience/fallbacks.tsx(128,6): error TS2375: Type '{ title: string; description: string; action: { label: string; onClick: () => void; } | undefined; }' is not assignable to type 'EmptyStateProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'action' are incompatible.
-    Type '{ label: string; onClick: () => void; } | undefined' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "outline" | "ghost"; }'.
-      Type 'undefined' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "outline" | "ghost"; }'.
-src/lib/resilience/fallbacks.tsx(155,6): error TS2375: Type '{ title: string; description: string; action: { label: string; onClick: () => void; } | undefined; }' is not assignable to type 'EmptyStateProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'action' are incompatible.
-    Type '{ label: string; onClick: () => void; } | undefined' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "outline" | "ghost"; }'.
-      Type 'undefined' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "outline" | "ghost"; }'.
-src/lib/resilience/fallbacks.tsx(179,8): error TS2375: Type '{ children: Element; fallback: ComponentType<FallbackProps> | undefined; }' is not assignable to type '{ children: ReactNode; fallback?: ComponentType<FallbackProps>; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'fallback' are incompatible.
-    Type 'ComponentType<FallbackProps> | undefined' is not assignable to type 'ComponentType<FallbackProps>'.
-      Type 'undefined' is not assignable to type 'ComponentType<FallbackProps>'.
-src/lib/resilience/graceful-error.ts(43,9): error TS2375: Type '{ error: string; message: string; correlationId: string; retryable: boolean; retryAfter: number | undefined; degraded: boolean | undefined; }' is not assignable to type 'GracefulErrorResponse' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'retryAfter' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/security/billing-enforcement.ts(154,9): error TS2375: Type '{ allowed: false; subscriptionStatus: "expired"; billingAccountId: string; planId: string | undefined; error: NextResponse<{ error: string; message: string; code: string; upgrade_required: boolean; pilot_expired: boolean; }>; reason: string; }' is not assignable to type 'BillingEnforcementResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'planId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/security/billing-enforcement.ts(177,7): error TS2375: Type '{ allowed: true; subscriptionStatus: "active" | "trialing"; billingAccountId: string; planId: string | undefined; }' is not assignable to type 'BillingEnforcementResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'planId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/security/billing-enforcement.ts(189,7): error TS2375: Type '{ allowed: false; subscriptionStatus: "active" | "trialing"; billingAccountId: string; planId: string | undefined; error: NextResponse<unknown>; reason: string; }' is not assignable to type 'BillingEnforcementResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'planId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/security/billing-enforcement.ts(199,5): error TS2375: Type '{ allowed: true; subscriptionStatus: "active" | "trialing"; billingAccountId: string; planId: string | undefined; }' is not assignable to type 'BillingEnforcementResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'planId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/security/billing-enforcement.ts(258,5): error TS2375: Type '{ allowed: false; billingAccountId: string | undefined; planId: string; subscriptionStatus: "none" | "active" | "trialing" | "expired" | undefined; error: NextResponse<{ error: string; message: string; code: string; current_plan: string; required_plan: "free" | ... 3 more ... | "enterprise"; upgrade_required: boolea...' is not assignable to type 'BillingEnforcementResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'billingAccountId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/security/pii-detection.ts(159,5): error TS2412: Type 'string | undefined' is not assignable to type 'string' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
-  Type 'undefined' is not assignable to type 'string'.
-src/lib/security/request-validator.ts(111,3): error TS2375: Type '{ valid: boolean; errors: string[] | undefined; sanitized: T | undefined; }' is not assignable to type 'ValidationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'errors' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-src/lib/security/request-validator.ts(174,3): error TS2375: Type '{ limit: number; offset: number; errors: string[] | undefined; }' is not assignable to type '{ limit: number; offset: number; errors?: string[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'errors' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-src/lib/security/tenant-assertion.ts(121,5): error TS2375: Type '{ allowed: false; error: NextResponse<unknown> | undefined; }' is not assignable to type '{ allowed: boolean; error?: NextResponse<unknown>; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'NextResponse<unknown> | undefined' is not assignable to type 'NextResponse<unknown>'.
-      Type 'undefined' is not assignable to type 'NextResponse<unknown>'.
-src/lib/seo/metadata-enhancer.ts(31,45): error TS2379: Argument of type '{ title: string; description: string; keywords: string[]; ogImage: string | undefined; canonical: string | undefined; noindex: boolean; }' is not assignable to parameter of type 'PageMetadata' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'ogImage' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/seo/metadata-enhancer.ts(44,5): error TS2375: Type '{ canonical: string | URL | AlternateLinkDescriptor | null | undefined; languages?: Languages<null | string | URL | AlternateLinkDescriptor[]>; media?: { [media: string]: null | string | URL | AlternateLinkDescriptor[]; }; types?: { [types: string]: null | string | URL | AlternateLinkDescriptor[]; }; }' is not assignable to type 'AlternateURLs' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'canonical' are incompatible.
-    Type 'string | URL | AlternateLinkDescriptor | null | undefined' is not assignable to type 'string | URL | AlternateLinkDescriptor | null'.
-      Type 'undefined' is not assignable to type 'string | URL | AlternateLinkDescriptor | null'.
-src/lib/seo/metadata-enhancer.ts(79,35): error TS2379: Argument of type '{ title: string; description: string; keywords: string[]; ogImage: string | undefined; canonical: string; structuredData: { '@context': string; '@type': string; headline: string; description: string; image: string | undefined; datePublished: string; dateModified: string; author: { ...; }; }; }' is not assignable to parameter of type 'EnhancedMetadataOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'ogImage' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/server/settler/alerts.ts(60,5): error TS2322: Type '{ id: string; tenantId: string; severity: "warning" | "info" | "critical"; title: string; message: string; explanation: Explanation; threshold: { type: string; value: number; actual: number; } | undefined; acknowledged: boolean; acknowledgedBy: string | undefined; acknowledgedAt: Date | undefined; createdAt: Date; }[]' is not assignable to type 'Alert[]'.
-  Type '{ id: string; tenantId: string; severity: "info" | "warning" | "critical"; title: string; message: string; explanation: Explanation; threshold: { type: string; value: number; actual: number; } | undefined; acknowledged: boolean; acknowledgedBy: string | undefined; acknowledgedAt: Date | undefined; createdAt: Date; }' is not assignable to type 'Alert' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'threshold' are incompatible.
-      Type '{ type: string; value: number; actual: number; } | undefined' is not assignable to type '{ type: string; value: number; actual: number; }'.
-        Type 'undefined' is not assignable to type '{ type: string; value: number; actual: number; }'.
-src/lib/server/settler/receipts.ts(163,7): error TS2375: Type '{ summary: string; whyItMatters: string; nextSteps: string | undefined; }' is not assignable to type '{ summary: string; whyItMatters: string; nextSteps?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'nextSteps' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/server/settler/receipts.ts(295,5): error TS2322: Type '{ id: string; tenantId: string; sourceId: string | undefined; canonicalJson: Record<string, unknown>; hash: string; prevHash: string | undefined; evidenceRefs: Evidence[]; narrative: { ...; }; createdBy: string; createdAt: Date; }[]' is not assignable to type 'Receipt[]'.
-  Type '{ id: string; tenantId: string; sourceId: string | undefined; canonicalJson: Record<string, unknown>; hash: string; prevHash: string | undefined; evidenceRefs: Evidence[]; narrative: { ...; }; createdBy: string; createdAt: Date; }' is not assignable to type 'Receipt' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'sourceId' are incompatible.
-      Type 'string | undefined' is not assignable to type 'string'.
-        Type 'undefined' is not assignable to type 'string'.
 src/lib/server/settler/reconciliation.ts(91,30): error TS7006: Parameter 't' implicitly has an 'any' type.
 src/lib/server/settler/reconciliation.ts(98,30): error TS7006: Parameter 't' implicitly has an 'any' type.
 src/lib/server/settler/reconciliation.ts(114,58): error TS7006: Parameter 'sum' implicitly has an 'any' type.
@@ -1383,136 +543,8 @@ src/lib/server/settler/reconciliation.ts(115,58): error TS7006: Parameter 'sum' 
 src/lib/server/settler/reconciliation.ts(115,63): error TS7006: Parameter 't' implicitly has an 'any' type.
 src/lib/server/settler/reconciliation.ts(282,46): error TS7006: Parameter 'm' implicitly has an 'any' type.
 src/lib/server/settler/reconciliation.ts(326,11): error TS2322: Type 'string' is not assignable to type 'Date'.
-src/lib/services/cost-signal-engine.ts(141,21): error TS2379: Argument of type '{ date: string; source: "vercel"; unitCount: number; unitCostEst: any; totalCostEst: number; confidence: number; derivationMethod: string; derivationMetadata: { eventType: string; eventCount: number; totalDurationMs: number; avgDurationMs: number; }; organizationId: string | undefined; }' is not assignable to parameter of type 'CostInput' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'organizationId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/services/cost-signal-engine.ts(167,21): error TS2379: Argument of type '{ date: string; source: "webhook"; unitCount: number; unitCostEst: any; totalCostEst: number; confidence: number; derivationMethod: string; derivationMetadata: { eventCount: number; }; organizationId: string | undefined; }' is not assignable to parameter of type 'CostInput' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'organizationId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/services/cost-signal-engine.ts(191,21): error TS2379: Argument of type '{ date: string; source: "supabase"; unitCount: number; unitCostEst: any; totalCostEst: number; confidence: number; derivationMethod: string; derivationMetadata: { apiRequestCount: number; queriesPerRequest: number; estimatedQueries: number; }; organizationId: string | undefined; }' is not assignable to parameter of type 'CostInput' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'organizationId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/services/triage-engine.ts(169,3): error TS2375: Type '{ triageScore: number; suggestedPriority: "low" | "medium" | "high" | "critical"; suggestedCategory: string | undefined; confidence: number; triageRulesApplied: { rule: string; matched: boolean; score: number; }[]; correlationIds: string[]; }' is not assignable to type 'TriageResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'suggestedCategory' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/session/session-replay.ts(26,5): error TS2375: Type '{ provider: SessionReplayProvider; enabled: boolean; siteId: string | undefined; apiKey: string | undefined; }' is not assignable to type 'SessionReplayConfig' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'siteId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
 src/lib/support/ticket-system.ts(105,23): error TS7006: Parameter 'log' implicitly has an 'any' type.
-src/lib/support/triage.ts(119,3): error TS2375: Type '{ status: "open" | "triaged"; priority: "low" | "medium" | "high" | "critical"; category: string | null; suggestedActions: string[] | undefined; confidence: number; }' is not assignable to type 'TriageResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'suggestedActions' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-src/lib/toast.tsx(55,17): error TS2379: Argument of type '{ type: "success"; title: string; message: string | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'message' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/toast.tsx(62,17): error TS2379: Argument of type '{ type: "error"; title: string; message: string | undefined; duration: number; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'message' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/toast.tsx(69,17): error TS2379: Argument of type '{ type: "info"; title: string; message: string | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'message' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/toast.tsx(76,17): error TS2379: Argument of type '{ type: "warning"; title: string; message: string | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'message' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/typed-env.ts(228,3): error TS2322: Type '{ NODE_ENV?: "development" | "production" | "test" | undefined; SUPABASE_URL?: string | undefined; SUPABASE_ANON_KEY?: string | undefined; SUPABASE_SERVICE_ROLE_KEY?: string | undefined; ... 8 more ...; RESEND_FROM_EMAIL?: string | undefined; }' is not assignable to type '{ NODE_ENV: "development" | "production" | "test"; SUPABASE_URL: string; SUPABASE_ANON_KEY: string; SUPABASE_SERVICE_ROLE_KEY: string; JWT_SECRET: string; ENCRYPTION_KEY: string; DATABASE_URL?: string | undefined; ... 5 more ...; RESEND_FROM_EMAIL?: string | undefined; }'.
-  Types of property 'NODE_ENV' are incompatible.
-    Type '"development" | "production" | "test" | undefined' is not assignable to type '"development" | "production" | "test"'.
-      Type 'undefined' is not assignable to type '"development" | "production" | "test"'.
-src/lib/usage/tracking.ts(230,5): error TS2375: Type '{ allowed: boolean; current: number; limit: number; remaining: number; resetAt: Date; tier: "free" | "enterprise" | "pro"; reason: string | undefined; }' is not assignable to type 'UsageCheckResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'reason' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/usage/tracking.ts(426,51): error TS7006: Parameter 'tx' implicitly has an 'any' type.
-src/lib/ux-events/logger.ts(200,14): error TS2379: Argument of type '{ type: "error_occurred"; errorMessage: string; errorType: string | undefined; flowId: string | undefined; stepId: string | undefined; recovered: boolean | undefined; }' is not assignable to parameter of type 'Omit<UXEventType, "id" | "timestamp" | "route"> | (Partial<UXEventType> & { type: "step_viewed" | "step_completed" | "flow_started" | ... 4 more ... | "success_feedback_shown"; })' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ type: "error_occurred"; errorMessage: string; errorType: string | undefined; flowId: string | undefined; stepId: string | undefined; recovered: boolean | undefined; }' is not assignable to type 'Omit<UXEventType, "id" | "timestamp" | "route"> | (Partial<ErrorOccurredEvent> & { type: "step_viewed" | "step_completed" | ... 5 more ... | "success_feedback_shown"; })' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Type '{ type: "error_occurred"; errorMessage: string; errorType: string | undefined; flowId: string | undefined; stepId: string | undefined; recovered: boolean | undefined; }' is not assignable to type 'Partial<ErrorOccurredEvent> & { type: "step_viewed" | "step_completed" | "flow_started" | "flow_completed" | "flow_abandoned" | "error_occurred" | "retry_attempted" | "success_feedback_shown"; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Type '{ type: "error_occurred"; errorMessage: string; errorType: string | undefined; flowId: string | undefined; stepId: string | undefined; recovered: boolean | undefined; }' is not assignable to type 'Partial<ErrorOccurredEvent>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-        Types of property 'errorType' are incompatible.
-          Type 'string | undefined' is not assignable to type 'string'.
-            Type 'undefined' is not assignable to type 'string'.
-src/lib/ux/loading-states.ts(41,5): error TS2375: Type '{ isLoading: boolean; message: string | undefined; error: null; progress?: number; }' is not assignable to type 'LoadingState' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'message' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/ux/loading-states.ts(54,5): error TS2375: Type '{ isLoading: true; progress: number; message: string | undefined; error: null; }' is not assignable to type 'LoadingState' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'message' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/ux/toast.ts(70,22): error TS2379: Argument of type '{ type: "success"; message: string; duration: number | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'duration' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/ux/toast.ts(84,22): error TS2379: Argument of type '{ type: "warning"; message: string; duration: number | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'duration' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/ux/toast.ts(91,22): error TS2379: Argument of type '{ type: "info"; message: string; duration: number | undefined; }' is not assignable to parameter of type 'Omit<Toast, "id">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'duration' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-src/lib/validation/api-validation.ts(49,5): error TS2375: Type '{ expiresAt: Date | undefined; name: string | undefined; scopes?: string[] | undefined; }' is not assignable to type '{ name?: string; scopes?: string[]; expiresAt?: Date; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'name' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/validation/component-validation.ts(93,3): error TS2375: Type '{ valid: boolean; errors: string[] | undefined; }' is not assignable to type '{ valid: boolean; errors?: string[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'errors' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-src/lib/value-ledger/index.ts(214,26): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "reconciliation_completed"; quantity: number; unit: string; metadata: { matchedCount: number; unmatchedCount: number; totalAmount: number | undefined; jobId: string | undefined; runId: string | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(233,28): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "time_saved_hours"; quantity: number; unit: string; metadata: { source: string; jobId: string | undefined; runId: string | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(250,28): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "dollars_reconciled"; quantity: number; unit: string; metadata: { jobId: string | undefined; runId: string | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(278,26): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "receipt_processed"; quantity: number; unit: string; metadata: { receiptId: string; totalAmount: number | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(292,26): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "time_saved_hours"; quantity: number; unit: string; metadata: { source: string; receiptId: string; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(319,26): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "export_generated"; quantity: number; unit: string; metadata: { exportId: string; rowCount: number | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/vercel/blob.ts(59,7): error TS2375: Type '{ url: string; downloadUrl: string; pathname: string; contentType: string | undefined; size: number | undefined; }' is not assignable to type '{ url: string; downloadUrl: string; pathname: string; contentType?: string; size?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'contentType' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/verify.ts(17,67): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
-src/lib/webhooks/manager.ts(137,24): error TS7006: Parameter 'w' implicitly has an 'any' type.
-src/lib/webhooks/manager.ts(301,26): error TS7006: Parameter 'd' implicitly has an 'any' type.
-src/lib/xstate/hooks.ts(18,52): error TS2379: Argument of type '[(ActorOptions<AnyStateMachine> & {}) | undefined]' is not assignable to parameter of type 'ConditionalRequired<[options?: ActorOptions<TMachine> & { [K in RequiredActorOptionsKeys<TMachine>]: unknown; }], IsNotNever<RequiredActorOptionsKeys<TMachine>>>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-src/middleware/api-logger.ts(168,22): error TS2379: Argument of type '{ tenantId: string; userId: string | undefined; apiKeyId: string | undefined; method: string; path: string; statusCode: number; responseTime: number; headers: Record<string, string>; ... 5 more ...; ipAddress: string | undefined; }' is not assignable to parameter of type 'Omit<ApiCallLog, "id" | "timestamp">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/middleware/api-logger.ts(208,11): error TS2375: Type '{ tenantId: string | undefined; userId: string | undefined; apiKeyId: string | undefined; startTime: number; }' is not assignable to type 'ApiLogContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/shared/auth/apiKey.ts(12,1): error TS6133: 'Database' is declared but its value is never read.
-src/shared/usage/usageEvent.ts(58,26): error TS2379: Argument of type '{ billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'UsageEventInput' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'metadata' are incompatible.
-    Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
-      Type 'undefined' is not assignable to type 'Record<string, unknown>'.
+src/lib/verify.ts(18,67): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
  ELIFECYCLE  Command failed with exit code 1.
  ELIFECYCLE  Command failed with exit code 1.
  ELIFECYCLE  Command failed with exit code 1.

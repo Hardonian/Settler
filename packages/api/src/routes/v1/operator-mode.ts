@@ -42,7 +42,7 @@ import {
   listBackups,
 } from '../../services/operator-mode/backups';
 
-const router = Router();
+const router: Router = Router();
 
 // ============================================================================
 // DAILY INTELLIGENCE

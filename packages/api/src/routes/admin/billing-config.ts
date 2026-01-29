@@ -22,7 +22,7 @@ import {
   getUsagePricingRule,
 } from "../../config/dynamic-billing-rules";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * Get all add-on configurations

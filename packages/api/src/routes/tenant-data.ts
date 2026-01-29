@@ -17,7 +17,7 @@ import { logInfo, logError } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
 import { UserRole } from "../domain/entities/User";
 
-const router = Router();
+const router: Router = Router();
 
 const exportTenantDataSchema = z.object({
   query: z.object({

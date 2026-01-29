@@ -13,7 +13,7 @@ import {
   type NotificationPreferences,
 } from "../../services/notifications";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * GET /api/v1/notifications/preferences

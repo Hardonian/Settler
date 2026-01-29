@@ -7,7 +7,9 @@
     "packages/adapters/src/**/*.ts",
     "packages/adapters/src/**/*.tsx",
     "packages/types/src/**/*.ts",
+    "packages/types/src/index.ts",
     "config/**/*.ts",
+    "config/env.schema.ts",
     "ops/**/*.ts"
   ],
   "compilerOptions": {

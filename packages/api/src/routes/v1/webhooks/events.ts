@@ -8,7 +8,7 @@ import { Router, Response } from 'express';
 import { AuthRequest } from '../../../middleware/auth';
 import { getPublicEvents, getEventMetadata, isValidEventType } from '../../../services/webhooks/event-registry';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * GET /api/v1/webhooks/events

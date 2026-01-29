@@ -15,7 +15,7 @@ import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 import { PredictiveOps } from '../../services/predictive/predictive-ops';
 import { MetaModels } from '../../services/predictive/meta-models';
 
-const router = Router();
+const router: Router = Router();
 const prisma = new PrismaClient();
 const predictiveOps = new PredictiveOps(prisma);
 const metaModels = new MetaModels();

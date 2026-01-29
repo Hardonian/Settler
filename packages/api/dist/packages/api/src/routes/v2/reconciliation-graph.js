@@ -14,15 +14,15 @@ const router = (0, express_1.Router)();
  * POST /api/v2/reconciliation-graph/:jobId/nodes
  * Add a node to the graph
  */
-router.post('/:jobId/nodes', async (req, res) => {
+router.post("/:jobId/nodes", async (req, res) => {
     try {
         const { jobId } = req.params;
         if (!jobId) {
-            return res.status(400).json({ error: 'Job ID is required' });
+            return res.status(400).json({ error: "Job ID is required" });
         }
         const node = {
             id: req.body.id || `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            type: req.body.type || 'transaction',
+            type: req.body.type || "transaction",
             jobId,
             sourceId: req.body.sourceId || undefined,
             targetId: req.body.targetId || undefined,
@@ -38,7 +38,7 @@ router.post('/:jobId/nodes', async (req, res) => {
         const event = {
             id: node.id,
             jobId: jobId,
-            type: node.sourceId ? 'source' : 'target',
+            type: node.sourceId ? "source" : "target",
             data: node.data,
             timestamp: node.timestamp,
         };
@@ -57,12 +57,12 @@ router.post('/:jobId/nodes', async (req, res) => {
         await stream_processor_1.streamProcessor.addEvent(event);
         res.status(201).json({
             data: node,
-            message: 'Node added successfully',
+            message: "Node added successfully",
         });
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, 'Failed to add node', 400);
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to add node", 400);
         return;
     }
 });
@@ -70,17 +70,17 @@ router.post('/:jobId/nodes', async (req, res) => {
  * POST /api/v2/reconciliation-graph/:jobId/edges
  * Add an edge to the graph
  */
-router.post('/:jobId/edges', async (req, res) => {
+router.post("/:jobId/edges", async (req, res) => {
     try {
         const { jobId } = req.params;
         if (!jobId) {
-            return res.status(400).json({ error: 'Job ID is required' });
+            return res.status(400).json({ error: "Job ID is required" });
         }
         const edge = {
             id: req.body.id || `edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            source: req.body.source || '',
-            target: req.body.target || '',
-            type: req.body.type || 'matches',
+            source: req.body.source || "",
+            target: req.body.target || "",
+            type: req.body.type || "matches",
             confidence: req.body.confidence || 1.0,
             metadata: req.body.metadata,
             createdAt: req.body.createdAt ? new Date(req.body.createdAt) : new Date(),
@@ -88,12 +88,12 @@ router.post('/:jobId/edges', async (req, res) => {
         graph_engine_1.graphEngine.addEdge(jobId, edge);
         res.status(201).json({
             data: edge,
-            message: 'Edge added successfully',
+            message: "Edge added successfully",
         });
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, 'Failed to add edge', 400);
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to add edge", 400);
         return;
     }
 });
@@ -101,11 +101,11 @@ router.post('/:jobId/edges', async (req, res) => {
  * GET /api/v2/reconciliation-graph/:jobId/query
  * Query the graph
  */
-router.get('/:jobId/query', async (req, res) => {
+router.get("/:jobId/query", async (req, res) => {
     try {
         const { jobId } = req.params;
         if (!jobId) {
-            return res.status(400).json({ error: 'Job ID is required' });
+            return res.status(400).json({ error: "Job ID is required" });
         }
         const queryOptions = {
             jobId,
@@ -143,7 +143,7 @@ router.get('/:jobId/query', async (req, res) => {
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, 'Failed to query graph', 400);
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to query graph", 400);
         return;
     }
 });
@@ -151,16 +151,16 @@ router.get('/:jobId/query', async (req, res) => {
  * GET /api/v2/reconciliation-graph/:jobId/state
  * Get current graph state
  */
-router.get('/:jobId/state', async (req, res) => {
+router.get("/:jobId/state", async (req, res) => {
     try {
         const { jobId } = req.params;
         if (!jobId) {
-            return res.status(400).json({ error: 'Job ID is required' });
+            return res.status(400).json({ error: "Job ID is required" });
         }
         const graph = graph_engine_1.graphEngine.getGraphState(jobId);
         if (!graph) {
             return res.status(404).json({
-                error: 'Graph not found',
+                error: "Graph not found",
                 message: `No graph found for job ${jobId}`,
             });
         }
@@ -175,7 +175,7 @@ router.get('/:jobId/state', async (req, res) => {
         return;
     }
     catch (error) {
-        (0, error_handler_1.handleRouteError)(res, error, 'Failed to get graph state', 400);
+        (0, error_handler_1.handleRouteError)(res, error, "Failed to get graph state", 400);
         return;
     }
 });
@@ -183,27 +183,27 @@ router.get('/:jobId/state', async (req, res) => {
  * GET /api/v2/reconciliation-graph/:jobId/stream
  * Server-Sent Events stream for real-time updates
  */
-router.get('/:jobId/stream', (req, res) => {
+router.get("/:jobId/stream", (req, res) => {
     const { jobId } = req.params;
     if (!jobId) {
-        res.status(400).json({ error: 'Job ID is required' });
+        res.status(400).json({ error: "Job ID is required" });
         return;
     }
     // Set up SSE headers
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
     // Subscribe to graph updates
     const unsubscribe = graph_engine_1.graphEngine.subscribe(jobId, (update) => {
         res.write(`data: ${JSON.stringify(update)}\n\n`);
     });
     // Clean up on client disconnect
-    req.on('close', () => {
+    req.on("close", () => {
         unsubscribe();
         res.end();
     });
     // Send initial connection message
-    res.write(`data: ${JSON.stringify({ type: 'connected', jobId })}\n\n`);
+    res.write(`data: ${JSON.stringify({ type: "connected", jobId })}\n\n`);
 });
 exports.default = router;
 //# sourceMappingURL=reconciliation-graph.js.map

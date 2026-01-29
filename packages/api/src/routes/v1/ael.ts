@@ -14,7 +14,7 @@ import { authMiddleware } from '../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../middleware/tenant';
 import { AutonomousEvolutionLayer } from '../../services/ael/autonomous-evolution-layer';
 
-const router = Router();
+const router: Router = Router();
 const prisma = new PrismaClient();
 const ael = new AutonomousEvolutionLayer(prisma);
 

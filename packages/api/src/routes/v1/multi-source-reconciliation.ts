@@ -14,7 +14,7 @@ import {
   type MultiSourceConfig,
 } from "../../services/multi-source-reconciliation";
 
-const router = Router();
+const router: Router = Router();
 
 // Helper function to validate userId exists
 function isValidUserId(userId: string | undefined): boolean {

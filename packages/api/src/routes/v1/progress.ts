@@ -14,7 +14,7 @@ import {
   resumeFromCheckpoint,
 } from "../../services/progress-tracking";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * GET /api/v1/progress/reconciliation-runs/:runId

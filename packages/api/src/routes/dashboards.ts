@@ -13,7 +13,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 
-const router = Router();
+const router: Router = Router();
 
 const dashboardQuerySchema = z.object({
   query: z.object({

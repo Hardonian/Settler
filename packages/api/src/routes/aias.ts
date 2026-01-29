@@ -20,7 +20,7 @@ import { query } from "../db";
 import { logInfo } from "../utils/logger";
 import { trackEventAsync } from "../utils/event-tracker";
 
-const router = Router();
+const router: Router = Router();
 
 // ============================================================================
 // Validation Schemas
@@ -242,7 +242,7 @@ router.get(
           `UPDATE model_versions 
          SET benchmark_results = $1, updated_at = NOW()
          WHERE id = $2`,
-          [JSON.stringify(status.result.benchmarkResults), (modelCheck[0]?.id || "")]
+          [JSON.stringify(status.result.benchmarkResults), modelCheck[0]?.id || ""]
         );
       }
 
@@ -348,7 +348,7 @@ router.get(
         `UPDATE model_versions 
        SET benchmark_results = $1, updated_at = NOW()
        WHERE id = $2`,
-        [JSON.stringify(results), (modelCheck[0]?.id || "")]
+        [JSON.stringify(results), modelCheck[0]?.id || ""]
       );
 
       sendSuccess(res, results);

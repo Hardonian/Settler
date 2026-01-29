@@ -13,13 +13,13 @@ const healthCheckService = new health_1.HealthCheckService();
 async function _checkDatabase() {
     const start = Date.now();
     try {
-        await (0, db_1.query)('SELECT 1');
+        await (0, db_1.query)("SELECT 1");
         const latency = Date.now() - start;
-        return { status: 'healthy', latency };
+        return { status: "healthy", latency };
     }
     catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        return { status: 'unhealthy', error: message };
+        const message = error instanceof Error ? error.message : "Unknown error";
+        return { status: "unhealthy", error: message };
     }
 }
 // Reserved for future detailed health checks
@@ -32,21 +32,21 @@ async function _checkConnectionPool() {
         const utilization = (totalConnections - idleConnections) / db_2.pool.options.max;
         if (utilization > 0.9) {
             return {
-                status: 'degraded',
+                status: "degraded",
                 error: `High connection pool utilization: ${(utilization * 100).toFixed(1)}%`,
             };
         }
         if (waitingCount > 0) {
             return {
-                status: 'degraded',
+                status: "degraded",
                 error: `${waitingCount} connections waiting`,
             };
         }
-        return { status: 'healthy' };
+        return { status: "healthy" };
     }
     catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        return { status: 'unhealthy', error: message };
+        const message = error instanceof Error ? error.message : "Unknown error";
+        return { status: "unhealthy", error: message };
     }
 }
 // Basic health check (liveness probe)
@@ -62,7 +62,7 @@ router.get("/", async (_req, res) => {
 // Detailed health check with dependency checks
 router.get("/detailed", async (_req, res) => {
     const health = await healthCheckService.checkAll();
-    res.status(health.status === 'healthy' ? 200 : 503).json({
+    res.status(health.status === "healthy" ? 200 : 503).json({
         status: health.status,
         checks: health.checks,
         timestamp: health.timestamp,
@@ -78,27 +78,27 @@ router.get("/live", async (_req, res) => {
 // Readiness probe (returns ready only if dependencies are healthy)
 router.get("/ready", async (_req, res) => {
     const health = await healthCheckService.checkReady();
-    res.status(health.status === 'ready' ? 200 : 503).json(health);
+    res.status(health.status === "ready" ? 200 : 503).json(health);
 });
 // Database health check endpoint (for monitoring/debugging)
 router.get("/db", async (_req, res) => {
     try {
         const dbCheck = await healthCheckService.checkDatabase();
-        const statusCode = dbCheck.status === 'healthy' ? 200 : dbCheck.status === 'degraded' ? 200 : 503;
+        const statusCode = dbCheck.status === "healthy" ? 200 : dbCheck.status === "degraded" ? 200 : 503;
         res.status(statusCode).json({
             status: dbCheck.status,
             latency: dbCheck.latency,
             error: dbCheck.error,
             timestamp: dbCheck.timestamp,
-            service: 'settler-api-database',
+            service: "settler-api-database",
         });
     }
     catch (error) {
         res.status(503).json({
-            status: 'unhealthy',
-            error: error instanceof Error ? error.message : 'Unknown error',
+            status: "unhealthy",
+            error: error instanceof Error ? error.message : "Unknown error",
             timestamp: new Date().toISOString(),
-            service: 'settler-api-database',
+            service: "settler-api-database",
         });
     }
 });

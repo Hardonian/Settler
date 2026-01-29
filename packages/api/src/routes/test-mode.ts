@@ -13,7 +13,7 @@ import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { trackEventAsync } from "../utils/event-tracker";
 
-const router = Router();
+const router: Router = Router();
 
 const toggleTestModeSchema = z.object({
   body: z.object({

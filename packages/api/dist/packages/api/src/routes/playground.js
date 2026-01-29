@@ -68,7 +68,7 @@ router.get("/playground/examples", (async (_req, res) => {
                     },
                     {
                         order_id: "12346",
-                        amount: 149.50,
+                        amount: 149.5,
                         currency: "USD",
                         date: "2026-01-15T11:00:00Z",
                         customer_email: "customer2@example.com",
@@ -84,7 +84,7 @@ router.get("/playground/examples", (async (_req, res) => {
                     },
                     {
                         charge_id: "ch_stripe_124",
-                        amount: 149.50,
+                        amount: 149.5,
                         currency: "USD",
                         date: "2026-01-15T11:01:00Z",
                         metadata: { order_id: "12346" },
@@ -112,18 +112,18 @@ router.get("/playground/examples", (async (_req, res) => {
 // Get Demo Dataset (Raw JSON)
 router.get("/playground/demo-dataset", (async (_req, res) => {
     try {
-        const demoDir = path_1.default.join(process.cwd(), 'demo/data');
+        const demoDir = path_1.default.join(process.cwd(), "demo/data");
         if (!fs_1.default.existsSync(demoDir)) {
             res.status(404).json({ error: "Demo data not generated yet." });
             return;
         }
-        const stripeData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, 'stripe_normalized.json'), 'utf-8'));
-        const bankData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, 'bank_normalized.json'), 'utf-8'));
-        const expected = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, 'expected_matches.json'), 'utf-8'));
+        const stripeData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "stripe_normalized.json"), "utf-8"));
+        const bankData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "bank_normalized.json"), "utf-8"));
+        const expected = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "expected_matches.json"), "utf-8"));
         res.json({
             source: { name: "Stripe (Demo)", count: stripeData.length, data: stripeData },
             target: { name: "Bank (Demo)", count: bankData.length, data: bankData },
-            expectedMatches: expected
+            expectedMatches: expected,
         });
     }
     catch (error) {
@@ -133,14 +133,14 @@ router.get("/playground/demo-dataset", (async (_req, res) => {
 // Run Demo Simulation (Uses ReconCoreEngine Logic)
 router.post("/playground/demo-run", (async (_req, res) => {
     try {
-        const demoDir = path_1.default.join(process.cwd(), 'demo/data');
+        const demoDir = path_1.default.join(process.cwd(), "demo/data");
         if (!fs_1.default.existsSync(demoDir)) {
             res.status(404).json({ error: "Demo data not generated yet." });
             return;
         }
         // 1. Load Data
-        const sourceData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, 'stripe_normalized.json'), 'utf-8'));
-        const targetData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, 'bank_normalized.json'), 'utf-8'));
+        const sourceData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "stripe_normalized.json"), "utf-8"));
+        const targetData = JSON.parse(fs_1.default.readFileSync(path_1.default.join(demoDir, "bank_normalized.json"), "utf-8"));
         const prismaClient = getPrismaClient();
         if (!prismaClient) {
             res.status(503).json({ error: "Database not configured for playground." });
@@ -150,21 +150,21 @@ router.post("/playground/demo-run", (async (_req, res) => {
         const engine = new recon_core_engine_1.ReconCoreEngine(prismaClient);
         // 3. Create Dummy Job (for Type Compatibility)
         const dummyJob = {
-            id: 'demo-job-123',
-            tenantId: 'demo-tenant',
-            userId: 'demo-user',
-            sourceAdapter: 'DEMO_STRIPE',
-            targetAdapter: 'DEMO_BANK',
-            reconStrategy: 'deterministic'
+            id: "demo-job-123",
+            tenantId: "demo-tenant",
+            userId: "demo-user",
+            sourceAdapter: "DEMO_STRIPE",
+            targetAdapter: "DEMO_BANK",
+            reconStrategy: "deterministic",
         };
         // 4. Run Matching Logic directly
         // We cast source/target to ReconDataRecord (Record<string, unknown>) as expected by the engine
-        const matches = await engine.performReconciliation(sourceData, targetData, 'deterministic', dummyJob);
+        const matches = await engine.performReconciliation(sourceData, targetData, "deterministic", dummyJob);
         // 5. Calculate Stats
-        const matchedSourceIds = new Set(matches.map(m => m.sourceId));
-        const unmatchedSource = sourceData.filter(r => !matchedSourceIds.has(r.id));
-        const matchedTargetIds = new Set(matches.map(m => m.targetId));
-        const unmatchedTarget = targetData.filter(r => !matchedTargetIds.has(r.id));
+        const matchedSourceIds = new Set(matches.map((m) => m.sourceId));
+        const unmatchedSource = sourceData.filter((r) => !matchedSourceIds.has(r.id));
+        const matchedTargetIds = new Set(matches.map((m) => m.targetId));
+        const unmatchedTarget = targetData.filter((r) => !matchedTargetIds.has(r.id));
         res.json({
             runId: `run_${Date.now()}`,
             timestamp: new Date().toISOString(),
@@ -174,11 +174,11 @@ router.post("/playground/demo-run", (async (_req, res) => {
                 matched: matches.length,
                 unmatchedSource: unmatchedSource.length,
                 unmatchedTarget: unmatchedTarget.length,
-                matchRate: ((matches.length * 2) / (sourceData.length + targetData.length) * 100).toFixed(1) + '%'
+                matchRate: (((matches.length * 2) / (sourceData.length + targetData.length)) * 100).toFixed(1) + "%",
             },
             matches: matches.slice(0, 50), // Limit for UI payload
             unmatchedSource: unmatchedSource.slice(0, 50),
-            unmatchedTarget: unmatchedTarget.slice(0, 50)
+            unmatchedTarget: unmatchedTarget.slice(0, 50),
         });
     }
     catch (error) {
@@ -212,7 +212,7 @@ router.post("/playground/reconcile", (0, validation_1.validateRequest)(playgroun
                     };
                 }
             }
-            if (bestMatch && bestMatch.confidence >= 0.80) {
+            if (bestMatch && bestMatch.confidence >= 0.8) {
                 matches.push({
                     sourceId: String(source.id || source.order_id || source.charge_id || "unknown"),
                     targetId: String(bestMatch.target.id ||
@@ -229,16 +229,14 @@ router.post("/playground/reconcile", (0, validation_1.validateRequest)(playgroun
                     reason: bestMatch
                         ? `Low confidence match (${(bestMatch.confidence * 100).toFixed(1)}%)`
                         : "No matching target found",
-                    severity: bestMatch && bestMatch.confidence >= 0.50 ? "low" : "medium",
+                    severity: bestMatch && bestMatch.confidence >= 0.5 ? "low" : "medium",
                 });
             }
         }
         const total = sourceData.length;
         const matched = matches.length;
         const accuracy = total > 0 ? (matched / total) * 100 : 0;
-        const avgConfidence = matches.length > 0
-            ? matches.reduce((sum, m) => sum + m.confidence, 0) / matches.length
-            : 0;
+        const avgConfidence = matches.length > 0 ? matches.reduce((sum, m) => sum + m.confidence, 0) / matches.length : 0;
         res.json({
             data: {
                 summary: {
@@ -248,7 +246,7 @@ router.post("/playground/reconcile", (0, validation_1.validateRequest)(playgroun
                     accuracy: parseFloat(accuracy.toFixed(2)),
                     averageConfidence: parseFloat((avgConfidence * 100).toFixed(2)),
                 },
-                matches: matches.map(m => ({
+                matches: matches.map((m) => ({
                     ...m,
                     confidence: parseFloat((m.confidence * 100).toFixed(2)),
                 })),

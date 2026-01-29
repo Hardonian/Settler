@@ -10,7 +10,7 @@ import { logInfo } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
 import { UserRole } from "../domain/entities/User";
 
-const router = Router();
+const router: Router = Router();
 
 const deleteUserDataSchema = z.object({
   body: z.object({

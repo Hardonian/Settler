@@ -11,7 +11,7 @@ import { logError, logInfo } from "../../utils/logger";
 import { autoReviewMatch, autoReviewRun, getReviewStatistics } from "../../services/reconciliation/automated-review";
 import { calculateQualityMetrics, checkQualityThresholds, generateQualityReport } from "../../services/reconciliation/quality-monitor";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v1/automated-review/run/:runId

@@ -12,7 +12,7 @@ import {
   getReceiptMatches,
 } from "../../services/receipt-matching";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v1/receipt-matching/match

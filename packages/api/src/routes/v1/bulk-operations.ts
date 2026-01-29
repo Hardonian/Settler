@@ -13,7 +13,7 @@ import {
   type BulkOperationType,
 } from "../../services/bulk-operations";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v1/bulk-operations

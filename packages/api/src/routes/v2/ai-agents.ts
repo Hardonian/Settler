@@ -11,7 +11,7 @@ import { AnomalyDetectorAgent } from '../../services/ai-agents/anomaly-detector'
 import { handleRouteError } from '../../utils/error-handler';
 import { logError } from '../../utils/logger';
 
-const router = Router();
+const router: Router = Router();
 
 // Initialize agents
 const infrastructureOptimizer = new InfrastructureOptimizerAgent({});

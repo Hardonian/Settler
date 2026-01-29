@@ -16,7 +16,7 @@ import { JSONExporter } from '../../application/export/JSONExporter';
 import { sendSuccess, sendError } from '../../utils/api-response';
 import { handleRouteError } from '../../utils/error-handler';
 
-const router = Router();
+const router: Router = Router();
 
 // Validation schemas
 const exportSchema = z.object({

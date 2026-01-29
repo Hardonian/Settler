@@ -7,7 +7,7 @@
 import { Router } from 'express';
 import simulatorRouter from './simulator';
 
-const router = Router();
+const router: Router = Router();
 
 router.use('/simulator', simulatorRouter);
 

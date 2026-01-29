@@ -9,7 +9,7 @@ import { decisionLog } from '../../services/knowledge/decision-log';
 import { aiKnowledgeAssistant } from '../../services/knowledge/ai-assistant';
 import { handleRouteError } from '../../utils/error-handler';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v2/knowledge/decisions

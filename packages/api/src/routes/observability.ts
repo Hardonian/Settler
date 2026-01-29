@@ -4,14 +4,14 @@ import { logError } from "../utils/logger";
 
 /**
  * Observability Routes
- * 
+ *
  * GET /api/v1/observability/metrics - Get metrics
  * GET /api/v1/observability/logs - Query logs
  * GET /api/v1/observability/traces - Query traces
  * GET /api/v1/observability/health - Detailed health check
  */
 
-export const observabilityRouter = Router();
+export const observabilityRouter: Router = Router();
 
 /**
  * GET /api/v1/observability/metrics
@@ -28,7 +28,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
     const tenantId = (req as AuthenticatedRequest).tenantId;
 
     if (!userId || !tenantId) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: "Unauthorized" });
       return;
     }
 
@@ -150,18 +150,11 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
     const tenantId = (req as AuthenticatedRequest).tenantId;
 
     if (!userId || !tenantId) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: "Unauthorized" });
       return;
     }
 
-    const {
-      level,
-      jobId,
-      startDate,
-      endDate,
-      limit = "100",
-      offset = "0",
-    } = req.query;
+    const { level, jobId, startDate, endDate, limit = "100", offset = "0" } = req.query;
 
     let queryStr = `
       SELECT 
@@ -179,25 +172,25 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
 
     if (level) {
       queryStr += ` AND level = $${paramIndex}`;
-      params.push(typeof level === 'string' ? level : String(level));
+      params.push(typeof level === "string" ? level : String(level));
       paramIndex++;
     }
 
     if (jobId) {
       queryStr += ` AND job_id = $${paramIndex}`;
-      params.push(typeof jobId === 'string' ? jobId : String(jobId));
+      params.push(typeof jobId === "string" ? jobId : String(jobId));
       paramIndex++;
     }
 
     if (startDate) {
       queryStr += ` AND created_at >= $${paramIndex}`;
-      params.push(typeof startDate === 'string' ? startDate : String(startDate));
+      params.push(typeof startDate === "string" ? startDate : String(startDate));
       paramIndex++;
     }
 
     if (endDate) {
       queryStr += ` AND created_at <= $${paramIndex}`;
-      params.push(typeof endDate === 'string' ? endDate : String(endDate));
+      params.push(typeof endDate === "string" ? endDate : String(endDate));
       paramIndex++;
     }
 

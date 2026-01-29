@@ -9,7 +9,7 @@ import { Router } from 'express';
 import jobsRouter from './jobs';
 import resultsRouter from './results';
 
-const router = Router();
+const router: Router = Router();
 
 // Mount sub-routers
 router.use('/jobs', jobsRouter);

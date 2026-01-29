@@ -12,7 +12,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
 import { query } from "../db";
 
-const router = Router();
+const router: Router = Router();
 
 const aiQuerySchema = z.object({
   body: z.object({

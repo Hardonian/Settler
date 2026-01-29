@@ -15,7 +15,7 @@ import { NotFoundError } from "../utils/typed-errors";
 import { calculateConfidenceScore, explainConfidenceScore } from "../services/confidence-scoring";
 import { MatchingRule } from "../domain/entities/Job";
 
-const router = Router();
+const router: Router = Router();
 
 const getConfidenceScoreSchema = z.object({
   params: z.object({

@@ -13,7 +13,7 @@ import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
 
-const router = Router();
+const router: Router = Router();
 
 const getEnhancedReportSchema = z.object({
   params: z.object({
@@ -55,7 +55,9 @@ router.get(
         throw new NotFoundError("Job not found", "job", jobId);
       }
 
-      const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const start = startDate
+        ? new Date(startDate)
+        : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
       // Get summary statistics
@@ -141,7 +143,7 @@ router.get(
               unmatchedAmount: parseFloat(stats.unmatched_amount?.toString() || "0"),
               openExceptions: parseInt(exceptionCount[0]?.count || "0"),
             },
-            recentExecutions: recentExecutions.map(e => ({
+            recentExecutions: recentExecutions.map((e) => ({
               id: e.id,
               status: e.status,
               startedAt: e.started_at.toISOString(),

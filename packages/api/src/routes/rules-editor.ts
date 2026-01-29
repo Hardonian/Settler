@@ -13,7 +13,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
 import { calculateConfidenceScore } from "../services/confidence-scoring";
 
-const router = Router();
+const router: Router = Router();
 
 // Reserved for future rule creation endpoint
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

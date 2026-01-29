@@ -93,7 +93,7 @@ class ChargebeeDriver {
             // Normalize subscriptions
             for (const sub of subscriptionsData.list || []) {
                 const subscription = sub.subscription;
-                subscriptions.push({
+                const item = {
                     externalId: subscription.id,
                     customerId: subscription.customer_id,
                     planId: subscription.plan_id,
@@ -102,22 +102,25 @@ class ChargebeeDriver {
                     billingCycle: subscription.billing_period_unit,
                     amountCents: Math.round((subscription.mrr || 0) * 100),
                     currency: subscription.currency_code || "USD",
-                    currentPeriodStart: subscription.current_term_start
-                        ? new Date(subscription.current_term_start * 1000)
-                        : undefined,
-                    currentPeriodEnd: subscription.current_term_end
-                        ? new Date(subscription.current_term_end * 1000)
-                        : undefined,
-                    cancelAtPeriodEnd: subscription.cancel_at_term_end || false,
-                    cancelledAt: subscription.cancelled_at
-                        ? new Date(subscription.cancelled_at * 1000)
-                        : undefined,
                     providerMetadata: {
                         subscription_id: subscription.id,
                         plan_id: subscription.plan_id,
                     },
                     idempotencyKey: `${subscription.id}-${subscription.created_at || Date.now()}`,
-                });
+                };
+                if (subscription.current_term_start) {
+                    item.currentPeriodStart = new Date(subscription.current_term_start * 1000);
+                }
+                if (subscription.current_term_end) {
+                    item.currentPeriodEnd = new Date(subscription.current_term_end * 1000);
+                }
+                if (subscription.cancel_at_term_end) {
+                    item.cancelAtPeriodEnd = subscription.cancel_at_term_end;
+                }
+                if (subscription.cancelled_at) {
+                    item.cancelledAt = new Date(subscription.cancelled_at * 1000);
+                }
+                subscriptions.push(item);
             }
             // Fetch invoices
             let invoicesUrl = `${apiUrl}/invoices`;
@@ -143,21 +146,26 @@ class ChargebeeDriver {
                 // Normalize invoices
                 for (const inv of invoicesData.list || []) {
                     const invoice = inv.invoice;
-                    invoices.push({
+                    const invoiceObj = {
                         externalId: invoice.id,
                         invoiceNumber: invoice.number,
                         customerId: invoice.customer_id,
                         amountCents: Math.round((invoice.total || 0) * 100),
                         currency: invoice.currency_code || "USD",
                         status: invoice.status,
-                        issueDate: invoice.date ? new Date(invoice.date * 1000) : undefined,
-                        paidAt: invoice.paid_at ? new Date(invoice.paid_at * 1000) : undefined,
                         providerMetadata: {
                             invoice_id: invoice.id,
                             subscription_id: invoice.subscription_id,
                         },
                         idempotencyKey: `${invoice.id}-${invoice.date || Date.now()}`,
-                    });
+                    };
+                    if (invoice.date) {
+                        invoiceObj.issueDate = new Date(invoice.date * 1000);
+                    }
+                    if (invoice.paid_at) {
+                        invoiceObj.paidAt = new Date(invoice.paid_at * 1000);
+                    }
+                    invoices.push(invoiceObj);
                 }
             }
             return {

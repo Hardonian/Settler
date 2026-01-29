@@ -10,7 +10,7 @@ import { runReconciliation } from "../../services/ingestion/reconciliation-match
 import { query } from "../../db";
 import { ReconciliationConfig } from "../../services/ingestion/types";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v1/reconciliation/run

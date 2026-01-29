@@ -21,12 +21,24 @@ const exportReportSchema = zod_1.z.object({
         jobId: zod_1.z.string().uuid(),
     }),
     query: zod_1.z.object({
-        format: zod_1.z.enum(["csv", "json", "xlsx", "quickbooks", "xero", "netsuite"]).optional().default("csv"),
+        format: zod_1.z
+            .enum(["csv", "json", "xlsx", "quickbooks", "xero", "netsuite"])
+            .optional()
+            .default("csv"),
         startDate: zod_1.z.string().datetime().optional(),
         endDate: zod_1.z.string().datetime().optional(),
-        includeMatched: zod_1.z.string().transform(v => v === "true").default("true"),
-        includeUnmatched: zod_1.z.string().transform(v => v === "true").default("true"),
-        includeExceptions: zod_1.z.string().transform(v => v === "true").default("true"),
+        includeMatched: zod_1.z
+            .string()
+            .transform((v) => v === "true")
+            .default("true"),
+        includeUnmatched: zod_1.z
+            .string()
+            .transform((v) => v === "true")
+            .default("true"),
+        includeExceptions: zod_1.z
+            .string()
+            .transform((v) => v === "true")
+            .default("true"),
     }),
 });
 const scheduleExportSchema = zod_1.z.object({
@@ -45,7 +57,7 @@ router.get("/jobs/:jobId/export", (0, authorization_1.requirePermission)(Permiss
     try {
         const { jobId } = req.params;
         const queryParams = exportReportSchema.parse({ params: req.params, query: req.query });
-        const { format, startDate, endDate, includeMatched, includeUnmatched: _includeUnmatched, includeExceptions } = queryParams.query;
+        const { format, startDate, endDate, includeMatched, includeUnmatched: _includeUnmatched, includeExceptions, } = queryParams.query;
         const userId = req.userId;
         if (!jobId || !userId) {
             throw new typed_errors_1.NotFoundError("Job ID and User ID are required", "job", jobId || "unknown");
@@ -55,7 +67,9 @@ router.get("/jobs/:jobId/export", (0, authorization_1.requirePermission)(Permiss
         if (jobs.length === 0 || !jobs[0]) {
             throw new typed_errors_1.NotFoundError("Job not found", "job", jobId);
         }
-        const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const start = startDate
+            ? new Date(startDate)
+            : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const end = endDate ? new Date(endDate) : new Date();
         // Get execution
         const executions = await (0, db_1.query)(`SELECT id FROM executions
@@ -176,7 +190,7 @@ router.post("/jobs/:jobId/exports/schedule", (0, authorization_1.requirePermissi
 // Helper functions
 function formatAccountingExport(matches, format) {
     if (format === "quickbooks") {
-        return matches.map(m => ({
+        return matches.map((m) => ({
             Date: m.date.toISOString().split("T")[0],
             Amount: m.amount,
             Currency: m.currency,
@@ -186,7 +200,7 @@ function formatAccountingExport(matches, format) {
         }));
     }
     if (format === "xero") {
-        return matches.map(m => ({
+        return matches.map((m) => ({
             Date: m.date.toISOString().split("T")[0],
             Amount: m.amount,
             Currency: m.currency,
@@ -196,7 +210,7 @@ function formatAccountingExport(matches, format) {
         }));
     }
     if (format === "netsuite") {
-        return matches.map(m => ({
+        return matches.map((m) => ({
             date: m.date.toISOString().split("T")[0],
             amount: m.amount,
             currency: m.currency,

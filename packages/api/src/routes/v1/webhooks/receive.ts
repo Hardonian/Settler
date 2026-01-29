@@ -9,7 +9,7 @@ import { WebhookIngestionService } from '../../../application/webhooks/WebhookIn
 import { sendSuccess, sendError } from '../../../utils/api-response';
 import { handleRouteError } from '../../../utils/error-handler';
 
-const router = Router();
+const router: Router = Router();
 const webhookService = new WebhookIngestionService();
 
 /**

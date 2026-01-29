@@ -10,7 +10,7 @@ import { EdgeAgent } from '../../services/privacy-preserving/edge-agent';
 import { handleRouteError } from '../../utils/error-handler';
 import { AuthRequest } from '../../middleware/auth';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v2/compliance/exports

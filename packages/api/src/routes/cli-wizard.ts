@@ -13,7 +13,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
 import { listAdapters, getAdapterConfigSchema } from "../utils/adapter-config-validator";
 
-const router = Router();
+const router: Router = Router();
 
 const wizardStepSchema = z.object({
   body: z.object({

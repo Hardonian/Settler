@@ -241,11 +241,11 @@ router.post("/subscribe", auth_1.authMiddleware, async (req, res) => {
             stripe_subscription_id: stripeSubscription.id,
             status: subscription.status,
             client_secret: stripeSubscription.latest_invoice &&
-                typeof stripeSubscription.latest_invoice === 'object' &&
-                'payment_intent' in stripeSubscription.latest_invoice &&
+                typeof stripeSubscription.latest_invoice === "object" &&
+                "payment_intent" in stripeSubscription.latest_invoice &&
                 stripeSubscription.latest_invoice.payment_intent &&
-                typeof stripeSubscription.latest_invoice.payment_intent === 'object' &&
-                'client_secret' in stripeSubscription.latest_invoice.payment_intent
+                typeof stripeSubscription.latest_invoice.payment_intent === "object" &&
+                "client_secret" in stripeSubscription.latest_invoice.payment_intent
                 ? String(stripeSubscription.latest_invoice.payment_intent.client_secret)
                 : undefined,
         });

@@ -16,7 +16,7 @@ import { logError, logInfo } from "../utils/logger";
 import Stripe from "stripe";
 import { supabase } from "../infrastructure/supabase/client";
 
-const router = Router();
+const router: Router = Router();
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
@@ -264,14 +264,15 @@ router.post("/subscribe", authMiddleware, async (req: AuthRequest, res: Response
       subscription_id: subscription.id,
       stripe_subscription_id: stripeSubscription.id,
       status: subscription.status,
-      client_secret: stripeSubscription.latest_invoice && 
-        typeof stripeSubscription.latest_invoice === 'object' &&
-        'payment_intent' in stripeSubscription.latest_invoice &&
+      client_secret:
+        stripeSubscription.latest_invoice &&
+        typeof stripeSubscription.latest_invoice === "object" &&
+        "payment_intent" in stripeSubscription.latest_invoice &&
         stripeSubscription.latest_invoice.payment_intent &&
-        typeof stripeSubscription.latest_invoice.payment_intent === 'object' &&
-        'client_secret' in stripeSubscription.latest_invoice.payment_intent
-        ? String(stripeSubscription.latest_invoice.payment_intent.client_secret)
-        : undefined,
+        typeof stripeSubscription.latest_invoice.payment_intent === "object" &&
+        "client_secret" in stripeSubscription.latest_invoice.payment_intent
+          ? String(stripeSubscription.latest_invoice.payment_intent.client_secret)
+          : undefined,
     });
   } catch (error) {
     logError("Failed to create subscription", error);
@@ -653,10 +654,7 @@ async function handleSubscriptionUpdate(
 }
 
 // Helper function to handle invoice events
-async function handleInvoiceEvent(
-  _supabase: unknown,
-  invoice: Stripe.Invoice
-) {
+async function handleInvoiceEvent(_supabase: unknown, invoice: Stripe.Invoice) {
   // In a real implementation, you'd:
   // 1. Update invoice status in database
   // 2. Send email notifications
@@ -669,10 +667,7 @@ async function handleInvoiceEvent(
 }
 
 // Helper function to handle upcoming invoices
-async function handleInvoiceUpcoming(
-  _supabase: unknown,
-  invoice: Stripe.Invoice
-) {
+async function handleInvoiceUpcoming(_supabase: unknown, invoice: Stripe.Invoice) {
   // In a real implementation, you'd:
   // 1. Send email notification about upcoming invoice
   // 2. Check for usage overages

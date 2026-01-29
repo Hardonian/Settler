@@ -39,7 +39,9 @@ router.get("/reports/:jobId/enhanced", (0, authorization_1.requirePermission)(Pe
         if (jobs.length === 0 || !jobs[0] || jobs[0].user_id !== userId) {
             throw new typed_errors_1.NotFoundError("Job not found", "job", jobId);
         }
-        const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const start = startDate
+            ? new Date(startDate)
+            : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const end = endDate ? new Date(endDate) : new Date();
         // Get summary statistics
         const summary = await (0, db_1.query)(`SELECT 
@@ -96,7 +98,7 @@ router.get("/reports/:jobId/enhanced", (0, authorization_1.requirePermission)(Pe
                         unmatchedAmount: parseFloat(stats.unmatched_amount?.toString() || "0"),
                         openExceptions: parseInt(exceptionCount[0]?.count || "0"),
                     },
-                    recentExecutions: recentExecutions.map(e => ({
+                    recentExecutions: recentExecutions.map((e) => ({
                         id: e.id,
                         status: e.status,
                         startedAt: e.started_at.toISOString(),

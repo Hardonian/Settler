@@ -14,7 +14,7 @@ import {
   type SLAMetricType,
 } from "../../services/sla-monitoring";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v1/sla/agreements

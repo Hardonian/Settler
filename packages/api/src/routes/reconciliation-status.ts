@@ -13,7 +13,7 @@ import { query } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
 
-const router = Router();
+const router: Router = Router();
 
 const getStatusSchema = z.object({
   params: z.object({

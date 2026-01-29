@@ -11,7 +11,7 @@ import { getSLAComplianceMetrics, checkSLAViolations } from '../../services/sla/
 import { logError } from '../../utils/logger';
 
 export function createMonitoringRouter(): Router {
-  const router = Router();
+  const router: Router = Router();
 
   /**
    * Get overall system health metrics

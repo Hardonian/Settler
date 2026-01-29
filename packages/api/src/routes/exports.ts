@@ -12,7 +12,7 @@ import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { logInfo, logError } from '../utils/logger';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * Export reconciliation data

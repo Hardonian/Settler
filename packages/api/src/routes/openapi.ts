@@ -6,7 +6,7 @@
 import { Router, Request, Response } from 'express';
 import { config } from '../config';
 
-const router = Router();
+const router: Router = Router();
 
 // OpenAPI 3.0 specification
 const openApiSpec = {

@@ -8,7 +8,7 @@ import { authMiddleware, AuthRequest } from "../../middleware/auth";
 import { getOnboardingProgress, getNextOnboardingStep } from "../../services/onboarding/tracker";
 import { sendSuccess, sendError } from "../../utils/api-response";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * GET /api/user/onboarding-progress

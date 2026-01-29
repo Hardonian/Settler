@@ -14,7 +14,7 @@ import { authMiddleware } from '../../../middleware/auth';
 import { tenantMiddleware, TenantRequest } from '../../../middleware/tenant';
 import { UsageSimulator } from '../../../services/pricing/usage-simulator';
 
-const router = Router();
+const router: Router = Router();
 // Prisma client will be initialized at runtime
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const prisma = {} as PrismaClient;

@@ -13,7 +13,7 @@ import { handleRouteError } from "../utils/error-handler";
 import rateLimit from "express-rate-limit";
 import { isValidEventType, getPublicEvents } from "../services/webhooks/event-registry";
 
-const router = Router();
+const router: Router = Router();
 
 // Rate limiting for webhook receive endpoint
 const webhookReceiveLimiter = rateLimit({
@@ -67,7 +67,7 @@ router.post(
             message: `Invalid event type: ${event}. Use GET /api/v1/webhooks/events to see available events.`,
           });
         }
-        const metadata = getPublicEvents().find(e => e.type === event);
+        const metadata = getPublicEvents().find((e) => e.type === event);
         if (!metadata || !metadata.public) {
           return res.status(400).json({
             error: "INVALID_EVENT_TYPE",
@@ -77,7 +77,7 @@ router.post(
       }
 
       // Generate secret if not provided
-      const webhookSecret = secret || `whsec_${randomBytes(32).toString('base64url')}`;
+      const webhookSecret = secret || `whsec_${randomBytes(32).toString("base64url")}`;
 
       const result = await query<{ id: string }>(
         `INSERT INTO webhooks (user_id, url, events, secret, status)
@@ -87,7 +87,7 @@ router.post(
       );
 
       if (!result[0]) {
-        throw new Error('Failed to create webhook');
+        throw new Error("Failed to create webhook");
       }
       const webhookId = result[0].id;
 
@@ -96,13 +96,13 @@ router.post(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
         [
-          'webhook_created',
+          "webhook_created",
           userId,
           JSON.stringify({ webhookId, url: url.substring(0, 50) }), // Don't log full URL
         ]
       );
 
-      logInfo('Webhook created', { webhookId, userId });
+      logInfo("Webhook created", { webhookId, userId });
 
       res.status(201).json({
         data: {
@@ -149,19 +149,18 @@ router.get(
            LIMIT $2 OFFSET $3`,
           [userId, limit, offset]
         ),
-        query<{ count: string }>(
-          `SELECT COUNT(*) as count FROM webhooks WHERE user_id = $1`,
-          [userId]
-        ),
+        query<{ count: string }>(`SELECT COUNT(*) as count FROM webhooks WHERE user_id = $1`, [
+          userId,
+        ]),
       ]);
 
       if (!totalResult[0]) {
-        throw new Error('Failed to get webhook count');
+        throw new Error("Failed to get webhook count");
       }
       const total = parseInt(totalResult[0].count);
 
       res.json({
-        data: webhooks.map(w => ({
+        data: webhooks.map((w) => ({
           id: w.id,
           userId,
           url: w.url,
@@ -185,73 +184,71 @@ router.get(
 );
 
 // Webhook endpoint for receiving external webhooks with signature verification
-router.post(
-  "/receive/:adapter",
-  webhookReceiveLimiter,
-  async (req: Request, res: Response) => {
-    try {
-      const { adapter } = req.params;
-      const signature = req.headers["x-webhook-signature"] as string;
-      const timestamp = req.headers["x-webhook-timestamp"] as string;
+router.post("/receive/:adapter", webhookReceiveLimiter, async (req: Request, res: Response) => {
+  try {
+    const { adapter } = req.params;
+    const signature = req.headers["x-webhook-signature"] as string;
+    const timestamp = req.headers["x-webhook-timestamp"] as string;
 
-      // Get raw body for signature verification
-      const rawBody = JSON.stringify(req.body);
+    // Get raw body for signature verification
+    const rawBody = JSON.stringify(req.body);
 
-      // Verify timestamp (prevent replay attacks)
-      if (timestamp) {
-        const requestTime = parseInt(timestamp);
-        const currentTime = Math.floor(Date.now() / 1000);
-        const timeDiff = Math.abs(currentTime - requestTime);
+    // Verify timestamp (prevent replay attacks)
+    if (timestamp) {
+      const requestTime = parseInt(timestamp);
+      const currentTime = Math.floor(Date.now() / 1000);
+      const timeDiff = Math.abs(currentTime - requestTime);
 
-        if (timeDiff > 300) { // 5 minutes
-          logWarn('Webhook timestamp too old', { adapter, timeDiff });
-          return res.status(401).json({ error: "Request timestamp too old" });
-        }
+      if (timeDiff > 300) {
+        // 5 minutes
+        logWarn("Webhook timestamp too old", { adapter, timeDiff });
+        return res.status(401).json({ error: "Request timestamp too old" });
       }
-
-      // Verify webhook signature
-      if (!signature) {
-        logWarn('Missing webhook signature', { adapter, ip: req.ip });
-        return res.status(401).json({ error: "Missing webhook signature" });
-      }
-
-      try {
-        if (!adapter) {
-          return res.status(400).json({ error: 'Adapter is required' });
-        }
-        const isValid = await verifyWebhookSignature(adapter, rawBody, signature);
-        if (!isValid) {
-          logWarn('Invalid webhook signature', { adapter, ip: req.ip });
-          return res.status(401).json({ error: "Invalid webhook signature" });
-        }
-      } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'Webhook signature verification failed';
-        logError('Webhook signature verification failed', error, { adapter });
-        return res.status(400).json({ error: message });
-      }
-
-      // Store webhook payload for async processing
-      await query(
-        `INSERT INTO webhook_payloads (adapter, payload, signature, received_at)
-         VALUES ($1, $2, $3, NOW())`,
-        [adapter || '', JSON.stringify(req.body), signature || '']
-      );
-
-      // Queue for async processing (in production, use Bull/Redis queue)
-      // For now, acknowledge immediately
-      logInfo('Webhook received', { adapter, ip: req.ip });
-
-      res.status(202).json({
-        received: true,
-        message: "Webhook received and queued for processing",
-      });
-      return;
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to process webhook", 500, { adapter: req.params.adapter });
-      return;
     }
+
+    // Verify webhook signature
+    if (!signature) {
+      logWarn("Missing webhook signature", { adapter, ip: req.ip });
+      return res.status(401).json({ error: "Missing webhook signature" });
+    }
+
+    try {
+      if (!adapter) {
+        return res.status(400).json({ error: "Adapter is required" });
+      }
+      const isValid = await verifyWebhookSignature(adapter, rawBody, signature);
+      if (!isValid) {
+        logWarn("Invalid webhook signature", { adapter, ip: req.ip });
+        return res.status(401).json({ error: "Invalid webhook signature" });
+      }
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Webhook signature verification failed";
+      logError("Webhook signature verification failed", error, { adapter });
+      return res.status(400).json({ error: message });
+    }
+
+    // Store webhook payload for async processing
+    await query(
+      `INSERT INTO webhook_payloads (adapter, payload, signature, received_at)
+         VALUES ($1, $2, $3, NOW())`,
+      [adapter || "", JSON.stringify(req.body), signature || ""]
+    );
+
+    // Queue for async processing (in production, use Bull/Redis queue)
+    // For now, acknowledge immediately
+    logInfo("Webhook received", { adapter, ip: req.ip });
+
+    res.status(202).json({
+      received: true,
+      message: "Webhook received and queued for processing",
+    });
+    return;
+  } catch (error: unknown) {
+    handleRouteError(res, error, "Failed to process webhook", 500, { adapter: req.params.adapter });
+    return;
   }
-);
+});
 
 // Delete webhook
 router.delete(
@@ -265,34 +262,36 @@ router.delete(
 
       // Check ownership
       await new Promise<void>((resolve, reject) => {
-        requireResourceOwnership(req, res, (err?: unknown) => {
-          if (err) reject(err);
-          else resolve();
-        }, 'webhook', id || '');
+        requireResourceOwnership(
+          req,
+          res,
+          (err?: unknown) => {
+            if (err) reject(err);
+            else resolve();
+          },
+          "webhook",
+          id || ""
+        );
       });
 
-      await query(
-        `DELETE FROM webhooks WHERE id = $1 AND user_id = $2`,
-        [id || '', userId]
-      );
+      await query(`DELETE FROM webhooks WHERE id = $1 AND user_id = $2`, [id || "", userId]);
 
       // Log audit event
       await query(
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
-        [
-          'webhook_deleted',
-          userId,
-          JSON.stringify({ webhookId: id }),
-        ]
+        ["webhook_deleted", userId, JSON.stringify({ webhookId: id })]
       );
 
-      logInfo('Webhook deleted', { webhookId: id, userId });
+      logInfo("Webhook deleted", { webhookId: id, userId });
 
       res.status(204).send();
       return;
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to delete webhook", 500, { userId: req.userId, webhookId: req.params.id });
+      handleRouteError(res, error, "Failed to delete webhook", 500, {
+        userId: req.userId,
+        webhookId: req.params.id,
+      });
       return;
     }
   }

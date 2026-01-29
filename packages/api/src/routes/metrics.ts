@@ -6,7 +6,7 @@
 import { Router, Request, Response } from 'express';
 import { register } from '../infrastructure/observability/metrics';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/', async (_req: Request, res: Response) => {
   try {

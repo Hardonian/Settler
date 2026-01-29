@@ -10,7 +10,7 @@ import { performanceTuningPools } from '../../services/network-effects/performan
 import { handleRouteError } from '../../utils/error-handler';
 import { AuthRequest } from '../../middleware/auth';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v2/network-effects/intelligence/opt-in

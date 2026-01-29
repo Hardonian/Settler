@@ -58,6 +58,7 @@ class TikTokShopAdapter {
                 metrics: JSON.stringify(["spend"]),
             });
             if (dateRange?.start && dateRange?.end) {
+                // Cast to Date to satisfy strict optional property types during compile
                 adsParams.append("start_date", dateRange.start.toISOString().split("T")[0]);
                 adsParams.append("end_date", dateRange.end.toISOString().split("T")[0]);
             }

@@ -14,7 +14,7 @@ import {
   type MatchingRule,
 } from "../../services/advanced-matching-rules";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/v1/advanced-matching-rules

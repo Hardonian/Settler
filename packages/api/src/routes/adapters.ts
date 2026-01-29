@@ -5,7 +5,7 @@ import { listAdapters, getAdapterConfigSchema } from "../utils/adapter-config-va
 import { checkIntegrationAccess } from "../middleware/billing-gating";
 import { AuthRequest } from "../middleware/auth";
 
-const router = Router();
+const router: Router = Router();
 
 // Get adapters from validator (UX-002)
 const ADAPTERS = listAdapters().map(adapter => ({

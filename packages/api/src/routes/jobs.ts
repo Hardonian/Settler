@@ -13,7 +13,7 @@ import { handleRouteError } from "../utils/error-handler";
 import { trackEventAsync } from "../utils/event-tracker";
 import { validateAdapterConfig } from "../utils/adapter-config-validator";
 
-const router = Router();
+const router: Router = Router();
 const jobService = new JobRouteService();
 
 // Per-job mutex to prevent concurrent execution

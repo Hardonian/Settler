@@ -12,7 +12,7 @@ import {
   addExchangeRate,
 } from "../../services/currency-conversion";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * GET /api/v1/currency/rates

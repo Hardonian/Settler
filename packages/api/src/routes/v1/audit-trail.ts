@@ -13,7 +13,7 @@ import {
   type AuditLogFilter,
 } from "../../services/audit-trail";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * GET /api/v1/audit-trail/logs
