@@ -1,16 +1,24 @@
 /**
  * Usage Tracking Service
- * 
+ *
  * Tracks and enforces usage limits for billing accounts.
  * Provides real-time usage tracking with Redis caching and PostgreSQL persistence.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { getRedisClient } from '@/lib/redis/client';
-import type { SubscriptionTier } from '@/lib/console/subscription';
+import { prisma } from "@/shared/db/prismaClient";
+import { getRedisClient } from "@/lib/redis/client";
+import type { SubscriptionTier } from "@/lib/console/subscription";
 
-export type ServiceCode = 'reconcile' | 'exceptions' | 'playground' | 'api' | 'reconciliation' | 'receipts' | 'featureFlags' | 'receipt_parsing';
-export type Period = 'daily' | 'monthly';
+export type ServiceCode =
+  | "reconcile"
+  | "exceptions"
+  | "playground"
+  | "api"
+  | "reconciliation"
+  | "receipts"
+  | "featureFlags"
+  | "receipt_parsing";
+export type Period = "daily" | "monthly";
 
 export interface UsageCheckResult {
   allowed: boolean;
@@ -27,14 +35,14 @@ export interface UsageCheckResult {
  */
 function getPeriodStart(period: Period, date: Date = new Date()): Date {
   const start = new Date(date);
-  
-  if (period === 'daily') {
+
+  if (period === "daily") {
     start.setHours(0, 0, 0, 0);
-  } else if (period === 'monthly') {
+  } else if (period === "monthly") {
     start.setDate(1);
     start.setHours(0, 0, 0, 0);
   }
-  
+
   return start;
 }
 
@@ -43,15 +51,15 @@ function getPeriodStart(period: Period, date: Date = new Date()): Date {
  */
 function getPeriodEnd(period: Period, date: Date = new Date()): Date {
   const end = new Date(date);
-  
-  if (period === 'daily') {
+
+  if (period === "daily") {
     end.setHours(23, 59, 59, 999);
-  } else if (period === 'monthly') {
+  } else if (period === "monthly") {
     end.setMonth(end.getMonth() + 1);
     end.setDate(0); // Last day of current month
     end.setHours(23, 59, 59, 999);
   }
-  
+
   return end;
 }
 
@@ -61,7 +69,10 @@ function getPeriodEnd(period: Period, date: Date = new Date()): Date {
 function getUsageLimit(tier: SubscriptionTier, service: ServiceCode, period: Period): number {
   // Limits from subscription.ts
   // Updated to match new pricing model: only reconcile and exceptions are tracked
-  const limits: Record<SubscriptionTier, Record<ServiceCode, { daily?: number; monthly?: number }>> = {
+  const limits: Record<
+    SubscriptionTier,
+    Record<ServiceCode, { daily?: number; monthly?: number }>
+  > = {
     unauthenticated: {
       reconcile: { daily: 0, monthly: 0 },
       exceptions: { daily: 0, monthly: 0 },
@@ -107,15 +118,20 @@ function getUsageLimit(tier: SubscriptionTier, service: ServiceCode, period: Per
   const serviceLimits = limits[tier]?.[service];
   if (!serviceLimits) return 0;
 
-  const limit = period === 'daily' ? serviceLimits.daily : serviceLimits.monthly;
+  const limit = period === "daily" ? serviceLimits.daily : serviceLimits.monthly;
   return limit ?? -1; // -1 means unlimited
 }
 
 /**
  * Get Redis key for usage counter
  */
-function getRedisKey(billingAccountId: string, service: ServiceCode, period: Period, periodStart: Date): string {
-  const dateStr = periodStart.toISOString().split('T')[0];
+function getRedisKey(
+  billingAccountId: string,
+  service: ServiceCode,
+  period: Period,
+  periodStart: Date
+): string {
+  const dateStr = periodStart.toISOString().split("T")[0];
   return `usage:${billingAccountId}:${service}:${period}:${dateStr}`;
 }
 
@@ -125,7 +141,7 @@ function getRedisKey(billingAccountId: string, service: ServiceCode, period: Per
 export async function getCurrentUsage(
   billingAccountId: string,
   service: ServiceCode,
-  period: Period = 'monthly'
+  period: Period = "monthly"
 ): Promise<UsageCheckResult> {
   try {
     // Get subscription tier from billing account
@@ -134,9 +150,9 @@ export async function getCurrentUsage(
       include: {
         subscriptions: {
           where: {
-            status: { in: ['active', 'trialing'] },
+            status: { in: ["active", "trialing"] },
           },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: "desc" },
           take: 1,
         },
       },
@@ -149,19 +165,19 @@ export async function getCurrentUsage(
         limit: 0,
         remaining: 0,
         resetAt: getPeriodEnd(period),
-        reason: 'Billing account not found',
-        tier: 'unauthenticated',
+        reason: "Billing account not found",
+        tier: "unauthenticated",
       };
     }
 
     // Determine tier from subscription
-    let tier: SubscriptionTier = 'free';
+    let tier: SubscriptionTier = "free";
     if (billingAccount.subscriptions.length > 0) {
-      const planId = billingAccount.subscriptions[0]?.planId?.toLowerCase() || 'base';
-      if (planId.includes('enterprise') || planId.includes('custom')) {
-        tier = 'enterprise';
-      } else if (planId.includes('pro') || planId.includes('paid')) {
-        tier = 'pro';
+      const planId = billingAccount.subscriptions[0]?.planId?.toLowerCase() || "base";
+      if (planId.includes("enterprise") || planId.includes("custom")) {
+        tier = "enterprise";
+      } else if (planId.includes("pro") || planId.includes("paid")) {
+        tier = "pro";
       }
     }
 
@@ -180,21 +196,21 @@ export async function getCurrentUsage(
     }
 
     const periodStart = getPeriodStart(period);
-    
+
     // Try Redis first for fast reads
     const redis = getRedisClient();
     const redisKey = getRedisKey(billingAccountId, service, period, periodStart);
-    
+
     let current = 0;
     if (redis) {
       try {
         const cached = await redis.get(redisKey);
-        if (cached !== null && typeof cached === 'string') {
+        if (cached !== null && typeof cached === "string") {
           current = parseInt(cached, 10);
         }
       } catch (error) {
         // Redis error - fall back to database
-        console.warn('[Usage Tracking] Redis read error, falling back to database:', error);
+        console.warn("[Usage Tracking] Redis read error, falling back to database:", error);
       }
     }
 
@@ -216,10 +232,12 @@ export async function getCurrentUsage(
       // Cache in Redis
       if (redis && counter) {
         try {
-          await redis.set(redisKey, current.toString(), { ex: period === 'daily' ? 86400 : 2592000 });
+          await redis.set(redisKey, current.toString(), {
+            ex: period === "daily" ? 86400 : 2592000,
+          });
         } catch (error) {
           // Redis error - continue without caching
-          console.warn('[Usage Tracking] Redis cache error:', error);
+          console.warn("[Usage Tracking] Redis cache error:", error);
         }
       }
     }
@@ -234,10 +252,10 @@ export async function getCurrentUsage(
       remaining,
       resetAt: getPeriodEnd(period),
       tier,
-      reason: !allowed ? `Usage limit exceeded: ${current}/${limit}` : undefined,
+      ...(!allowed && { reason: `Usage limit exceeded: ${current}/${limit}` }),
     };
   } catch (error) {
-    console.error('[Usage Tracking] Error getting current usage:', error);
+    console.error("[Usage Tracking] Error getting current usage:", error);
     // Fail open - allow request if tracking fails
     return {
       allowed: true,
@@ -245,7 +263,7 @@ export async function getCurrentUsage(
       limit: -1,
       remaining: -1,
       resetAt: getPeriodEnd(period),
-      reason: 'Tracking unavailable',
+      reason: "Tracking unavailable",
     };
   }
 }
@@ -258,7 +276,7 @@ export async function checkAndIncrementUsage(
   billingAccountId: string,
   service: ServiceCode,
   quantity: number = 1,
-  period: Period = 'monthly'
+  period: Period = "monthly"
 ): Promise<UsageCheckResult> {
   try {
     // Get subscription tier from billing account
@@ -267,9 +285,9 @@ export async function checkAndIncrementUsage(
       include: {
         subscriptions: {
           where: {
-            status: { in: ['active', 'trialing'] },
+            status: { in: ["active", "trialing"] },
           },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: "desc" },
           take: 1,
         },
       },
@@ -282,19 +300,19 @@ export async function checkAndIncrementUsage(
         limit: 0,
         remaining: 0,
         resetAt: getPeriodEnd(period),
-        reason: 'Billing account not found',
-        tier: 'unauthenticated',
+        reason: "Billing account not found",
+        tier: "unauthenticated",
       };
     }
 
     // Determine tier from subscription
-    let tier: SubscriptionTier = 'free';
+    let tier: SubscriptionTier = "free";
     if (billingAccount.subscriptions.length > 0) {
-      const planId = billingAccount.subscriptions[0]?.planId?.toLowerCase() || 'base';
-      if (planId.includes('enterprise') || planId.includes('custom')) {
-        tier = 'enterprise';
-      } else if (planId.includes('pro') || planId.includes('paid')) {
-        tier = 'pro';
+      const planId = billingAccount.subscriptions[0]?.planId?.toLowerCase() || "base";
+      if (planId.includes("enterprise") || planId.includes("custom")) {
+        tier = "enterprise";
+      } else if (planId.includes("pro") || planId.includes("paid")) {
+        tier = "pro";
       }
     }
 
@@ -320,10 +338,10 @@ export async function checkAndIncrementUsage(
     if (redis) {
       try {
         const newCount = await redis.incrby(redisKey, quantity);
-        
+
         // Set expiration if this is a new key
         if (newCount === quantity) {
-          await redis.expire(redisKey, period === 'daily' ? 86400 : 2592000);
+          await redis.expire(redisKey, period === "daily" ? 86400 : 2592000);
         }
 
         // Check limit
@@ -343,7 +361,7 @@ export async function checkAndIncrementUsage(
 
         // Persist to database asynchronously (don't block request)
         persistUsageToDatabase(billingAccountId, service, period, periodStart, newCount).catch(
-          (error) => console.error('[Usage Tracking] Error persisting to database:', error)
+          (error) => console.error("[Usage Tracking] Error persisting to database:", error)
         );
 
         return {
@@ -356,14 +374,22 @@ export async function checkAndIncrementUsage(
         };
       } catch (error) {
         // Redis error - fall back to database
-        console.warn('[Usage Tracking] Redis increment error, falling back to database:', error);
+        console.warn("[Usage Tracking] Redis increment error, falling back to database:", error);
       }
     }
 
     // Fallback to database if Redis unavailable
-    return await checkAndIncrementUsageDatabase(billingAccountId, service, quantity, period, limit, periodStart, tier);
+    return await checkAndIncrementUsageDatabase(
+      billingAccountId,
+      service,
+      quantity,
+      period,
+      limit,
+      periodStart,
+      tier
+    );
   } catch (error) {
-    console.error('[Usage Tracking] Error checking and incrementing usage:', error);
+    console.error("[Usage Tracking] Error checking and incrementing usage:", error);
     // Fail open - allow request if tracking fails
     return {
       allowed: true,
@@ -371,7 +397,7 @@ export async function checkAndIncrementUsage(
       limit: -1,
       remaining: -1,
       resetAt: getPeriodEnd(period),
-      reason: 'Tracking unavailable',
+      reason: "Tracking unavailable",
     };
   }
 }
@@ -459,7 +485,7 @@ async function checkAndIncrementUsageDatabase(
           },
         },
       });
-      throw new Error('Usage limit exceeded');
+      throw new Error("Usage limit exceeded");
     }
 
     return counter;
@@ -488,18 +514,18 @@ export async function recordUsageEvent(
   try {
     // Map service code to eventType for UsageEvent model
     const eventTypeMap: Record<ServiceCode, string> = {
-      reconcile: 'settler-reconcile',
-      exceptions: 'settler-exceptions',
-      receipts: 'settler-receipts',
-      featureFlags: 'settler-feature-flags',
-      playground: 'settler-playground',
-      api: 'settler-api',
-      reconciliation: 'settler-reconcile',
-      receipt_parsing: 'settler-receipts',
+      reconcile: "settler-reconcile",
+      exceptions: "settler-exceptions",
+      receipts: "settler-receipts",
+      featureFlags: "settler-feature-flags",
+      playground: "settler-playground",
+      api: "settler-api",
+      reconciliation: "settler-reconcile",
+      receipt_parsing: "settler-receipts",
     };
-    
+
     const eventType = `${eventTypeMap[service]}-${operation}`;
-    
+
     await prisma.usageEvent.create({
       data: {
         billingAccountId,
@@ -510,6 +536,6 @@ export async function recordUsageEvent(
     });
   } catch (error) {
     // Don't block request if event recording fails
-    console.error('[Usage Tracking] Error recording usage event:', error);
+    console.error("[Usage Tracking] Error recording usage event:", error);
   }
 }

@@ -53,7 +53,7 @@
 src/app/actions/auth.ts(124,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
 src/app/api/connectors/webhook/[providerId]/route.ts(19,28): error TS2339: Property 'handleWebhook' does not exist on type 'ConnectorDriver'.
-src/app/api/console/receipts-v2/route.ts(54,51): error TS2379: Argument of type '{ canonicalJson: Record<string, unknown>; evidenceRefs: { type: "hash" | "transaction_id" | "source_ref" | "receipt_id"; value: string; description?: string | undefined; }[]; narrative: { ...; }; sourceId?: string | undefined; }' is not assignable to parameter of type '{ sourceId?: string; canonicalJson: Record<string, unknown>; evidenceRefs: Evidence[]; narrative: { summary: string; whyItMatters: string; nextSteps?: string; }; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/app/api/console/receipts-v2/route.ts(54,51): error TS2379: Argument of type '{ canonicalJson: Record<string, unknown>; evidenceRefs: { type: "hash" | "source_ref" | "transaction_id" | "receipt_id"; value: string; description?: string | undefined; }[]; narrative: { ...; }; sourceId?: string | undefined; }' is not assignable to parameter of type '{ sourceId?: string; canonicalJson: Record<string, unknown>; evidenceRefs: Evidence[]; narrative: { summary: string; whyItMatters: string; nextSteps?: string; }; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'sourceId' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
@@ -1464,49 +1464,13 @@ src/lib/validation/component-validation.ts(93,3): error TS2375: Type '{ valid: b
   Types of property 'errors' are incompatible.
     Type 'string[] | undefined' is not assignable to type 'string[]'.
       Type 'undefined' is not assignable to type 'string[]'.
-src/lib/value-ledger/index.ts(214,26): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "reconciliation_completed"; quantity: number; unit: string; metadata: { matchedCount: number; unmatchedCount: number; totalAmount: number | undefined; jobId: string | undefined; runId: string | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(233,28): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "time_saved_hours"; quantity: number; unit: string; metadata: { source: string; jobId: string | undefined; runId: string | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(250,28): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "dollars_reconciled"; quantity: number; unit: string; metadata: { jobId: string | undefined; runId: string | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(278,26): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "receipt_processed"; quantity: number; unit: string; metadata: { receiptId: string; totalAmount: number | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(292,26): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "time_saved_hours"; quantity: number; unit: string; metadata: { source: string; receiptId: string; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/value-ledger/index.ts(319,26): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string | undefined; userId: string | undefined; eventType: "export_generated"; quantity: number; unit: string; metadata: { exportId: string; rowCount: number | undefined; }; }' is not assignable to parameter of type 'ValueEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/lib/vercel/blob.ts(59,7): error TS2375: Type '{ url: string; downloadUrl: string; pathname: string; contentType: string | undefined; size: number | undefined; }' is not assignable to type '{ url: string; downloadUrl: string; pathname: string; contentType?: string; size?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/lib/vercel/blob.ts(62,7): error TS2375: Type '{ url: string; downloadUrl: string; pathname: string; contentType: string | undefined; size: number | undefined; }' is not assignable to type '{ url: string; downloadUrl: string; pathname: string; contentType?: string; size?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'contentType' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
 src/lib/verify.ts(17,67): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
-src/lib/webhooks/manager.ts(137,24): error TS7006: Parameter 'w' implicitly has an 'any' type.
-src/lib/webhooks/manager.ts(301,26): error TS7006: Parameter 'd' implicitly has an 'any' type.
-src/lib/xstate/hooks.ts(18,52): error TS2379: Argument of type '[(ActorOptions<AnyStateMachine> & {}) | undefined]' is not assignable to parameter of type 'ConditionalRequired<[options?: ActorOptions<TMachine> & { [K in RequiredActorOptionsKeys<TMachine>]: unknown; }], IsNotNever<RequiredActorOptionsKeys<TMachine>>>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-src/middleware/api-logger.ts(168,22): error TS2379: Argument of type '{ tenantId: string; userId: string | undefined; apiKeyId: string | undefined; method: string; path: string; statusCode: number; responseTime: number; headers: Record<string, string>; ... 5 more ...; ipAddress: string | undefined; }' is not assignable to parameter of type 'Omit<ApiCallLog, "id" | "timestamp">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/middleware/api-logger.ts(175,22): error TS2379: Argument of type '{ method: string; path: string; statusCode: number; responseTime: number; headers: Record<string, string>; query: Record<string, string>; body: unknown; responseBody: unknown; error: string | undefined; ... 4 more ...; tenantId: string; }' is not assignable to parameter of type 'Omit<ApiCallLog, "id" | "timestamp">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'error' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
-src/middleware/api-logger.ts(208,11): error TS2375: Type '{ tenantId: string | undefined; userId: string | undefined; apiKeyId: string | undefined; startTime: number; }' is not assignable to type 'ApiLogContext' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'tenantId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/shared/auth/apiKey.ts(12,1): error TS6133: 'Database' is declared but its value is never read.
-src/shared/usage/usageEvent.ts(58,26): error TS2379: Argument of type '{ billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'UsageEventInput' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'metadata' are incompatible.
-    Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, unknown>'.
-      Type 'undefined' is not assignable to type 'Record<string, unknown>'.
  ELIFECYCLE  Command failed with exit code 2.

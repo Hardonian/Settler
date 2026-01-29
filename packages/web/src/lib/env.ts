@@ -50,23 +50,14 @@ export function getEnv(name: string, required = true): string {
   const value = process.env[name];
   const isBuild = isBuildTime();
   const isRuntimeOnly = (RUNTIME_ONLY as readonly string[]).includes(name);
-  
+
   // During build, runtime-only variables are optional (they'll be validated at runtime)
   if (required && !value) {
     if (isBuild && isRuntimeOnly) {
       // Runtime-only vars are optional during build - return empty string
       console.warn(`⚠️  Missing ${name} during build (will be required at runtime)`);
-      return '';
+      return "";
     }
-    
-    // Build-time required vars or runtime validation
-    if (!isBuild || !isRuntimeOnly) {
-      throw new Error(`Missing required environment variable: ${name}`);
-    }
-  }
-  
-  return value ?? '';
-}
 
     // Build-time required vars or runtime validation
     if (!isBuild || !isRuntimeOnly) {
@@ -74,7 +65,7 @@ export function getEnv(name: string, required = true): string {
     }
   }
 
-  return value || "";
+  return value ?? "";
 }
 
 /**
