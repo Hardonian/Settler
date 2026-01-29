@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { strToU8, zipSync } from "fflate";
+import { zipSync } from "fflate";
 
 const defaultReadme = (rulesetName: string) =>
   `# Settler Engine Run Pack\n\nThis run pack is OSS-first and designed to run locally or in CI.\n\n## Run\n\n1) Build the engine binary (or download from releases).\n2) Execute:\n\n   settler-engine --input engine_input.json\n\n## Notes\n- This workflow surfaces discrepancies and produces deterministic evidence bundles.\n- No compliance or correctness guarantees are provided.\n\nRuleset: ${rulesetName}\n`;
@@ -48,16 +48,16 @@ export default function CreateRunPackPage() {
       return;
     }
 
-    const files: Record<string, Uint8Array> = {};
+    const files: Record<string, Uint8Array<ArrayBuffer>> = {};
 
     for (const file of inputFiles) {
       const buffer = await file.arrayBuffer();
-      files[`inputs/${file.name}`] = new Uint8Array(buffer);
+      files[`inputs/${file.name}`] = Buffer.from(buffer);
     }
 
-    files["ruleset.json"] = strToU8(rulesetTemplate);
+    files["ruleset.json"] = Buffer.from(rulesetTemplate);
     if (includeMapping && mappingTemplate) {
-      files["mapping.json"] = strToU8(mappingTemplate);
+      files["mapping.json"] = Buffer.from(mappingTemplate);
     }
 
     const engineInput = {
@@ -76,11 +76,11 @@ export default function CreateRunPackPage() {
       },
     };
 
-    files["engine_input.json"] = strToU8(JSON.stringify(engineInput, null, 2));
-    files["README.txt"] = strToU8(defaultReadme(rulesetName));
+    files["engine_input.json"] = Buffer.from(JSON.stringify(engineInput, null, 2));
+    files["README.txt"] = Buffer.from(defaultReadme(rulesetName));
 
     const zipData = zipSync(files, { level: 9 });
-    const blob = new Blob([zipData], { type: "application/zip" });
+    const blob = new Blob([zipData as BlobPart], { type: "application/zip" });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");

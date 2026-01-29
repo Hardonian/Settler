@@ -1,6 +1,6 @@
 export * from "./connector-contract";
-export { ValidationResult as BaseValidationResult } from "./base";
-export { WebhookVerificationResult as EnhancedWebhookVerificationResult } from "./enhanced-base";
+export type { ValidationResult as BaseValidationResult } from "./base";
+export type { WebhookVerificationResult as EnhancedWebhookVerificationResult } from "./enhanced-base";
 export { type NormalizedData, type FetchOptions, type Adapter } from "./base";
 export { type AdapterConfig, type DateRange, type NormalizedEvent, type EnhancedAdapter, } from "./enhanced-base";
 export * from "./stripe";

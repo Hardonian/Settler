@@ -22,7 +22,6 @@
  */
 
 import winston from "winston";
-import type { TransformableInfo } from "winston";
 import { redact } from "./redaction";
 import { trace } from "@opentelemetry/api";
 import { config } from "../config";
@@ -68,14 +67,14 @@ function getRequestContext(): {
 }
 
 // Custom format that adds trace context and request context
-const contextFormat = winston.format((info: winston.Logform.TransformableInfo) => {
+const contextFormat = winston.format((info: any) => {
   const traceContext = getTraceContext();
   const reqContext = getRequestContext();
   return {
     ...info,
     ...traceContext,
     ...reqContext,
-  } as winston.Logform.TransformableInfo;
+  };
 })();
 
 const logFormat = winston.format.combine(
@@ -107,7 +106,7 @@ export const logger = winston.createLogger({
             tenant_id,
             user_id,
             ...meta
-          }: winston.Logform.TransformableInfo) => {
+          }) => {
             const metaStr = Object.keys(meta).length ? JSON.stringify(redact(meta)) : "";
             const requestInfo =
               request_id && typeof request_id === "string"

@@ -10,18 +10,14 @@
 > @settler/web@1.0.0 typecheck:ci C:\Users\scott\Documents\GitHub\Settler\packages\web
 > tsc --noEmit
 
-../adapters/src/index.ts(5,10): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
-../adapters/src/index.ts(6,10): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
 ../api/src/utils/logger.ts(70,31): error TS2349: This expression is not callable.
   Type 'Format' has no call signatures.
 ../api/src/utils/logger.ts(70,39): error TS7006: Parameter 'info' implicitly has an 'any' type.
-../api/src/utils/logger.ts(77,16): error TS2694: Namespace '"winston"' has no exported member 'Logform'.
 ../api/src/utils/logger.ts(88,3): error TS2322: Type 'unknown' is not assignable to type 'string | undefined'.
 ../api/src/utils/logger.ts(95,5): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
-../api/src/utils/logger.ts(109,22): error TS2694: Namespace '"winston"' has no exported member 'Logform'.
 src/app/actions/auth.ts(124,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/receipts/[id]/route.ts(68,48): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+src/app/api/console/receipts/[id]/route.ts(81,62): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
 src/app/api/console/usage/export/route.ts(74,24): error TS7006: Parameter 'event' implicitly has an 'any' type.
 src/app/api/console/usage/export/route.ts(91,21): error TS7006: Parameter 'event' implicitly has an 'any' type.
@@ -82,7 +78,6 @@ src/app/api/v1/recon/jobs/route.ts(302,32): error TS7006: Parameter 'job' implic
 src/app/api/workspaces/route.ts(174,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
 src/app/api/workspaces/route.ts(276,47): error TS7006: Parameter 'ws' implicitly has an 'any' type.
-src/app/builder/[...page]/page.tsx(55,52): error TS2304: Cannot find name 'error'.
 src/app/components/RealtimePosts.tsx(54,49): error TS2304: Cannot find name 'err'.
 src/app/components/RealtimePosts.tsx(96,54): error TS2304: Cannot find name 'err'.
 src/app/components/RealtimePosts.tsx(100,66): error TS2304: Cannot find name 'err'.
@@ -140,7 +135,6 @@ src/app/console/playground/reconcile/page.tsx(237,12): error TS2304: Cannot find
 src/app/console/playground/reconcile/page.tsx(237,86): error TS2304: Cannot find name 'err'.
 src/app/console/playground/reconcile/page.tsx(242,15): error TS2304: Cannot find name 'err'.
 src/app/console/playground/reconcile/page.tsx(242,39): error TS2304: Cannot find name 'err'.
-src/app/console/receipts/page.tsx(83,28): error TS2358: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.
 src/app/console/setup-check/page.tsx(78,38): error TS2304: Cannot find name 'error'.
 src/app/console/setup-check/page.tsx(78,63): error TS2304: Cannot find name 'error'.
 src/app/console/setup-check/page.tsx(101,33): error TS2304: Cannot find name 'error'.
@@ -231,18 +225,8 @@ src/app/dashboard/usage/page.tsx(91,100): error TS2304: Cannot find name 'error'
 src/app/edge-ai/nodes/[nodeId]/page.tsx(65,44): error TS2304: Cannot find name 'error'.
 src/app/edge-ai/nodes/[nodeId]/page.tsx(65,69): error TS2304: Cannot find name 'error'.
 src/app/edge-ai/nodes/[nodeId]/page.tsx(65,94): error TS2304: Cannot find name 'error'.
-src/app/engine/create-run-pack/page.tsx(82,28): error TS2322: Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'BlobPart'.
-  Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
-    Types of property 'buffer' are incompatible.
-      Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
-        Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
 src/app/engine/import-results/page.tsx(73,31): error TS2345: Argument of type 'Uint8Array<ArrayBufferLike> | undefined' is not assignable to parameter of type 'Uint8Array<ArrayBufferLike>'.
   Type 'undefined' is not assignable to type 'Uint8Array<ArrayBufferLike>'.
-src/app/playground/page.tsx(83,23): error TS2304: Cannot find name 'err'.
-src/app/playground/page.tsx(83,46): error TS2304: Cannot find name 'err'.
-src/app/status/page.tsx(49,49): error TS2304: Cannot find name 'err'.
-src/app/status/page.tsx(50,18): error TS2304: Cannot find name 'err'.
-src/app/status/page.tsx(50,41): error TS2304: Cannot find name 'err'.
 src/app/trust/page.tsx(47,7): error TS2304: Cannot find name 'error'.
 src/app/trust/page.tsx(47,32): error TS2304: Cannot find name 'error'.
 src/components/admin/AuditLogViewer.tsx(40,54): error TS2304: Cannot find name 'error'.
@@ -263,10 +247,6 @@ src/components/billing/PaymentRecoveryFlow.tsx(78,49): error TS2304: Cannot find
 src/components/chatbot/Chatbot.tsx(133,39): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
 src/components/consent/CookieConsent.tsx(54,77): error TS2304: Cannot find name 'error'.
 src/components/consent/CookieConsent.tsx(84,67): error TS2304: Cannot find name 'error'.
-src/components/console/AdvancedAuditTrail.tsx(70,16): error TS2304: Cannot find name 'err'.
-src/components/console/AdvancedAuditTrail.tsx(70,39): error TS2304: Cannot find name 'err'.
-src/components/console/AdvancedAuditTrail.tsx(95,16): error TS2304: Cannot find name 'err'.
-src/components/console/AdvancedAuditTrail.tsx(95,39): error TS2304: Cannot find name 'err'.
 src/components/console/AIAnalysisPanel.tsx(66,53): error TS2304: Cannot find name 'error'.
 src/components/console/AIAnalysisPanel.tsx(80,50): error TS2304: Cannot find name 'error'.
 src/components/console/AIAnalysisPanel.tsx(107,48): error TS2304: Cannot find name 'error'.
@@ -441,12 +421,6 @@ src/components/SecureMobileApp.tsx(177,44): error TS2304: Cannot find name 'erro
 src/components/SecureMobileApp.tsx(177,69): error TS2304: Cannot find name 'error'.
 src/components/SecureMobileApp.tsx(177,94): error TS2304: Cannot find name 'error'.
 src/components/support/CannedResponseManager.tsx(38,58): error TS2304: Cannot find name 'error'.
-src/components/support/IssueTracker.tsx(38,49): error TS2304: Cannot find name 'error'.
-src/components/support/ReportIssue.tsx(67,16): error TS2304: Cannot find name 'err'.
-src/components/support/ReportIssue.tsx(67,39): error TS2304: Cannot find name 'err'.
-src/components/support/SupportInbox.tsx(45,51): error TS2304: Cannot find name 'error'.
-src/components/ui/code-block.tsx(33,45): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
-src/components/ui/CopyButton.tsx(24,40): error TS2304: Cannot find name 'err'.
 src/components/ui/ErrorState.tsx(153,17): error TS2323: Cannot redeclare exported variable 'InlineError'.
 src/components/ui/ErrorState.tsx(166,22): error TS2323: Cannot redeclare exported variable 'InlineError'.
 src/components/ui/ErrorState.tsx(166,22): error TS2484: Export declaration conflicts with exported declaration of 'InlineError'.
@@ -459,9 +433,6 @@ src/components/ui/LoadingState.tsx(117,40): error TS2323: Cannot redeclare expor
 src/components/ui/LoadingState.tsx(117,40): error TS2484: Export declaration conflicts with exported declaration of 'LoadingSkeleton'.
 src/components/ui/LoadingState.tsx(117,57): error TS2323: Cannot redeclare exported variable 'LoadingDots'.
 src/components/ui/LoadingState.tsx(117,57): error TS2484: Export declaration conflicts with exported declaration of 'LoadingDots'.
-src/components/ui/retry-button.tsx(38,16): error TS2304: Cannot find name 'err'.
-src/components/ui/retry-button.tsx(38,39): error TS2304: Cannot find name 'err'.
-src/components/WelcomeDashboard.tsx(34,55): error TS2304: Cannot find name 'error'.
 src/domain/billing/reconciliation.ts(94,10): error TS7006: Parameter 's' implicitly has an 'any' type.
 src/domain/console/receipts.ts(110,24): error TS2339: Property 'userId' does not exist on type '{}'.
 src/domain/console/receipts.ts(112,46): error TS2339: Property 'userId' does not exist on type '{}'.

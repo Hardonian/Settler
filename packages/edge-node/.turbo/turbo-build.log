@@ -6,7 +6,3 @@
 > @settler/edge-node@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\edge-node
 > tsc --noEmit
 
-
-> @settler/edge-node@1.0.0 build C:\Users\scott\Documents\GitHub\Settler\packages\edge-node
-> tsc
-

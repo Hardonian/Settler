@@ -54,28 +54,28 @@ export const GET = withSecurity(
           type: authContext.type,
         });
 
-  // Get billing account
-  let billingAccountId = authContext.billingAccountId;
-  
-  if (!billingAccountId) {
-    logger.warn('No billing account in auth context, looking up', { correlationId });
-    return;
-  }
+        // Get billing account
+        let billingAccountId = authContext.billingAccountId;
 
-  const billingAccount = await prisma.billingAccount.findFirst({
-    where: { userId: authContext.userId },
-    select: { id: true },
-  });
-
-  if (!billingAccount) {
-    logger.warn('No billing account found', { correlationId });
-    const response = NextResponse.json({ error: 'Receipt not found' }, { status: 404 });
-    return addCorrelationHeaders(response, correlationId);
-  }
-
-  billingAccountId = billingAccount?.id || '';
-          logger.info("Found billing account", { correlationId, billingAccountId });
+        if (!billingAccountId) {
+          logger.warn("No billing account in auth context, looking up", { correlationId });
+          const response = NextResponse.json({ error: "Receipt not found" }, { status: 404 });
+          return addCorrelationHeaders(response, correlationId);
         }
+
+        const billingAccount = await prisma.billingAccount.findFirst({
+          where: { userId: authContext.userId },
+          select: { id: true },
+        });
+
+        if (!billingAccount) {
+          logger.warn("No billing account found", { correlationId });
+          const response = NextResponse.json({ error: "Receipt not found" }, { status: 404 });
+          return addCorrelationHeaders(response, correlationId);
+        }
+
+        billingAccountId = billingAccount?.id || "";
+        logger.info("Found billing account", { correlationId, billingAccountId });
 
         logger.info("Fetching receipt detail", { correlationId, receiptId: id, billingAccountId });
         const receipt = await getReceiptDetail(id as string, billingAccountId);
