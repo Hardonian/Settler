@@ -43,12 +43,11 @@ export const POST = withSecurity(
 
       try {
         // Authenticate request
-        let auth;
         let tenantId: string | null = null;
         let userId: string | null = null;
 
         try {
-          auth = await authenticateApiKey(request);
+          const auth = await authenticateApiKey(request);
           if (isValidAuth(auth)) {
             tenantId = auth.tenantId || null;
             userId = auth.userId || null;
@@ -67,25 +66,6 @@ export const POST = withSecurity(
                 });
                 tenantId = billingAccount?.tenantId || null;
               }
-            } catch (error) {
-              return NextResponse.json(
-                {
-                  error: "Unauthorized",
-                  message: "Authentication required",
-                },
-                { status: 401 }
-              );
-            }
-          }
-        } catch (error) {
-          return NextResponse.json(
-            {
-              error: "Unauthorized",
-              message: "Authentication required",
-            },
-            { status: 401 }
-          );
-        }
             } catch (error) {
               return NextResponse.json(
                 {
@@ -228,6 +208,88 @@ export const POST = withSecurity(
 );
 
 /**
+ * GET /api/exports
+ * List exports
+ */
+export const GET = withSecurity(
+  withUniversalBillingGate(
+    async function GET(request: NextRequest) {
+      try {
+        // Authenticate
+        let tenantId: string | null = null;
+        let userId: string | null = null;
+
+        const auth = await authenticateApiKey(request);
+        if (isValidAuth(auth)) {
+          tenantId = auth.tenantId || null;
+          userId = auth.userId || null;
+        } else {
+          // Try Supabase auth as fallback (graceful degradation)
+          try {
+            const supabase = await createClient();
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
+            if (user) {
+              userId = user.id;
+              const billingAccount = await prisma.billingAccount.findFirst({
+                where: { userId: user.id },
+                select: { tenantId: true },
+              });
+              tenantId = billingAccount?.tenantId || null;
+            }
+          } catch (error) {
+            // Supabase auth failed - will return 401 below
+          }
+        }
+
+        if (!tenantId || !userId) {
+          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // Fetch exports
+        const exports = await prisma.export.findMany({
+          where: {
+            tenantId: tenantId,
+            userId: userId,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 100,
+        });
+
+        return NextResponse.json({
+          data: exports.map((exp: any) => ({
+            id: exp.id,
+            type: exp.type,
+            format: exp.format,
+            status: exp.status,
+            createdAt: exp.createdAt,
+            signedUrl: exp.signedUrl,
+            signedUrlExpiresAt: exp.signedUrlExpiresAt,
+            fileSizeBytes: exp.fileSizeBytes,
+            rowCount: exp.rowCount,
+          })),
+        });
+      } catch (error) {
+        // Never return 500 - return empty exports array with graceful error message
+        return NextResponse.json(
+          {
+            data: [],
+            error: "Failed to list exports",
+            message: "Please try again later or contact support if the issue persists",
+          },
+          { status: 200 }
+        );
+      }
+    },
+    { feature: "GET API" }
+  ),
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+);
+
+/**
  * Process export asynchronously
  */
 async function processExport(
@@ -264,18 +326,18 @@ async function processExport(
         take: 10000, // Limit for performance
       });
 
-        data = matches.map((match: any) => ({
-          id: match.id,
-          matchType: match.matchType,
-          confidence: Number(match.confidence || 0),
-          sourceAmount: Number(match.sourceTransaction?.amount || 0),
-          sourceCurrency: match.sourceTransaction?.currency || 'USD',
-          sourceDate: match.sourceTransaction?.date || new Date(),
-          sourceDescription: match.sourceTransaction?.description || '',
-          amountDiff: match.amountDiff ? Number(match.amountDiff) : null,
-          dateDiff: match.dateDiff,
-          reviewed: match.reviewed,
-        }));
+      data = matches.map((match: any) => ({
+        id: match.id,
+        matchType: match.matchType,
+        confidence: Number(match.confidence || 0),
+        sourceAmount: Number(match.sourceTransaction?.amount || 0),
+        sourceCurrency: match.sourceTransaction?.currency || "USD",
+        sourceDate: match.sourceTransaction?.date || new Date(),
+        sourceDescription: match.sourceTransaction?.description || "",
+        amountDiff: match.amountDiff ? Number(match.amountDiff) : null,
+        dateDiff: match.dateDiff,
+        reviewed: match.reviewed,
+      }));
     } else if (jobId) {
       // Export job results
       const results = await prisma.reconResult.findMany({
@@ -289,7 +351,7 @@ async function processExport(
         take: 100,
       });
 
-      data = results.map((result) => ({
+      data = results.map((result: any) => ({
         id: result.id,
         status: result.status,
         startedAt: result.startedAt,
@@ -311,7 +373,7 @@ async function processExport(
       const headers = Object.keys(data[0] || {});
       const csvRows = [
         headers.join(","),
-        ...data.map((row) =>
+        ...data.map((row: any) =>
           headers
             .map((header) => {
               const value = row[header];
@@ -369,85 +431,3 @@ async function processExport(
     throw error;
   }
 }
-
-/**
- * GET /api/exports
- * List exports
- */
-export const GET = withSecurity(
-  withUniversalBillingGate(
-    async function GET(request: NextRequest) {
-      try {
-        // Authenticate
-        let tenantId: string | null = null;
-        let userId: string | null = null;
-
-        const auth = await authenticateApiKey(request);
-        if (auth) {
-          tenantId = auth.tenantId || null;
-          userId = auth.userId || null;
-        } else {
-          // Try Supabase auth as fallback (graceful degradation)
-          try {
-            const supabase = await createClient();
-            const {
-              data: { user },
-            } = await supabase.auth.getUser();
-            if (user) {
-              userId = user.id;
-              const billingAccount = await prisma.billingAccount.findFirst({
-                where: { userId: user.id },
-                select: { tenantId: true },
-              });
-              tenantId = billingAccount?.tenantId || null;
-            }
-          } catch (error) {
-            // Supabase auth failed - will return 401 below
-          }
-        }
-
-        if (!tenantId || !userId) {
-          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        // Fetch exports
-        const exports = await prisma.export.findMany({
-          where: {
-            tenantId: tenantId,
-            userId: userId,
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-          take: 100,
-        });
-
-        return NextResponse.json({
-          data: exports.map((exp) => ({
-            id: exp.id,
-            type: exp.type,
-            format: exp.format,
-            status: exp.status,
-            createdAt: exp.createdAt,
-            signedUrl: exp.signedUrl,
-            signedUrlExpiresAt: exp.signedUrlExpiresAt,
-            fileSizeBytes: exp.fileSizeBytes,
-            rowCount: exp.rowCount,
-          })),
-        });
-      } catch (error) {
-        // Never return 500 - return empty exports array with graceful error message
-        return NextResponse.json(
-          {
-            data: [],
-            error: "Failed to list exports",
-            message: "Please try again later or contact support if the issue persists",
-          },
-          { status: 200 }
-        );
-      }
-    },
-    { feature: "GET API" }
-  ),
-  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
-);

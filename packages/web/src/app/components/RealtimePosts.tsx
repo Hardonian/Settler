@@ -1,15 +1,15 @@
 /**
  * Real-time Posts Component
- * 
+ *
  * Uses Supabase Realtime Subscriptions to display live post updates
  * All frontend display is backed by table queries - no static data
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { MessageSquare, TrendingUp, Eye } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { MessageSquare, TrendingUp, Eye } from "lucide-react";
 
 interface Post {
   id: string;
@@ -29,8 +29,8 @@ export function RealtimePosts() {
       const supabase = createClient();
 
       // Check if supabase client is valid
-      if (!supabase || typeof supabase.from !== 'function') {
-        console.warn('Supabase client not available');
+      if (!supabase || typeof supabase.from !== "function") {
+        console.warn("Supabase client not available");
         setIsLoading(false);
         return;
       }
@@ -39,19 +39,19 @@ export function RealtimePosts() {
       const fetchPosts = async () => {
         try {
           const { data, error } = await supabase
-            .from('posts')
-            .select('id, title, views, upvotes, downvotes, created_at')
-            .eq('status', 'published')
-            .order('created_at', { ascending: false })
+            .from("posts")
+            .select("id, title, views, upvotes, downvotes, created_at")
+            .eq("status", "published")
+            .order("created_at", { ascending: false })
             .limit(10);
 
           if (error) {
-            console.error('Error fetching posts:', error);
+            console.error("Error fetching posts:", error);
           } else {
             setPosts(data || []);
           }
-        } catch {
-          console.error('Error in fetchPosts:', err);
+        } catch (err) {
+          console.error("Error in fetchPosts:", err);
         } finally {
           setIsLoading(false);
         }
@@ -62,27 +62,25 @@ export function RealtimePosts() {
       // Subscribe to real-time changes
       try {
         const channel = supabase
-          .channel('posts-changes')
+          .channel("posts-changes")
           .on(
-            'postgres_changes',
+            "postgres_changes",
             {
-              event: '*',
-              schema: 'public',
-              table: 'posts',
-              filter: 'status=eq.published',
+              event: "*",
+              schema: "public",
+              table: "posts",
+              filter: "status=eq.published",
             },
             (payload) => {
-              console.log('Post change received:', payload);
-              
-              if (payload.eventType === 'INSERT') {
+              console.log("Post change received:", payload);
+
+              if (payload.eventType === "INSERT") {
                 setPosts((prev) => [payload.new as Post, ...prev].slice(0, 10));
-              } else if (payload.eventType === 'UPDATE') {
+              } else if (payload.eventType === "UPDATE") {
                 setPosts((prev) =>
-                  prev.map((post) =>
-                    post.id === payload.new.id ? (payload.new as Post) : post
-                  )
+                  prev.map((post) => (post.id === payload.new.id ? (payload.new as Post) : post))
                 );
-              } else if (payload.eventType === 'DELETE') {
+              } else if (payload.eventType === "DELETE") {
                 setPosts((prev) => prev.filter((post) => post.id !== payload.old.id));
               }
             }
@@ -92,16 +90,13 @@ export function RealtimePosts() {
         return () => {
           try {
             supabase.removeChannel(channel);
-          } catch {
-            console.error('Error removing channel:', err);
-          }
-        };
-      } catch {
-        console.error('Error setting up realtime subscription:', err);
+          } catch (err) {
+            supabase.removeChannel(channel);
+          } catch (err) {
         return () => {};
       }
     } catch {
-      console.error('Error initializing Supabase client:', err);
+      console.error("Error initializing Supabase client:", err);
       setIsLoading(false);
       return () => {};
     }
@@ -136,9 +131,7 @@ export function RealtimePosts() {
           key={post.id}
           className="bg-white dark:bg-slate-800 rounded-lg shadow p-4 border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow"
         >
-          <h4 className="font-semibold text-slate-900 dark:text-white mb-2">
-            {post.title}
-          </h4>
+          <h4 className="font-semibold text-slate-900 dark:text-white mb-2">{post.title}</h4>
           <div className="flex gap-4 text-sm text-slate-600 dark:text-slate-400">
             <span className="flex items-center gap-1">
               <Eye className="w-4 h-4" />
