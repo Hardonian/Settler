@@ -10,239 +10,27 @@
 > @settler/web@1.0.0 typecheck:ci C:\Users\scott\Documents\GitHub\Settler\packages\web
 > tsc --noEmit
 
-../adapters/src/connector-contract.ts(221,3): error TS2375: Type '{ valid: boolean; errors: string[] | undefined; }' is not assignable to type 'ValidationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'errors' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-../adapters/src/connector-runtime.ts(667,71): error TS2379: Argument of type '{ transactions: undefined; accounts?: Array<{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }>; ... 5 more ...; rawPayloads?: Array<{ type: string; payload: unknown; }>; }' is not assignable to parameter of type '{ accounts?: { providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]; ... 6 more ...; rawPayloads?: { ...; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'transactions' are incompatible.
-    Type 'undefined' is not assignable to type '{ externalId: string; accountId?: string; transactionType: string; amountCents: number; currency: string; occurredAt: Date; description?: string; referenceId?: string; referenceType?: string; providerMetadata?: Record<...>; rawPayload?: unknown; idempotencyKey: string; }[]'.
-../adapters/src/connector-runtime.ts(831,13): error TS2375: Type '{ cursor: string | undefined; since?: Date; until?: Date; accountId?: string; limit?: number; }' is not assignable to type 'SyncOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'cursor' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/connector-runtime.ts(844,50): error TS2379: Argument of type '{ transactions: NormalizedTransaction[] | undefined; accounts: NormalizedAccount[] | undefined; balances: NormalizedBalance[] | undefined; payouts: NormalizedPayout[] | undefined; invoices: NormalizedInvoice[] | undefined; subscriptions: NormalizedSubscription[] | undefined; taxEstimates: NormalizedTaxEstimate[] | u...' is not assignable to parameter of type '{ transactions?: NormalizedTransaction[]; accounts?: NormalizedAccount[]; balances?: NormalizedBalance[]; payouts?: NormalizedPayout[]; invoices?: NormalizedInvoice[]; subscriptions?: NormalizedSubscription[]; taxEstimates?: NormalizedTaxEstimate[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'transactions' are incompatible.
-    Type 'NormalizedTransaction[] | undefined' is not assignable to type 'NormalizedTransaction[]'.
-      Type 'undefined' is not assignable to type 'NormalizedTransaction[]'.
-../adapters/src/connector-runtime.ts(929,82): error TS2379: Argument of type '{ accounts: NormalizedAccount[] | undefined; transactions: { idempotencyKey: string; externalId: string; accountId?: string; transactionType: "debit" | "credit" | "transfer" | "fee" | "refund"; ... 7 more ...; rawPayload?: unknown; }[] | undefined; ... 5 more ...; rawPayloads: { ...; }[] | undefined; }' is not assignable to parameter of type '{ accounts?: { providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]; ... 6 more ...; rawPayloads?: { ...; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+../adapters/src/connector-runtime.ts(928,82): error TS2379: Argument of type '{ rawPayloads?: { type: string; payload: unknown; }[]; taxEstimates?: { idempotencyKey: string; externalId: string; transactionId?: string | undefined; transactionType?: string | undefined; ... 8 more ...; rawPayload?: unknown | undefined; }[]; ... 5 more ...; accounts?: NormalizedAccount[]; }' is not assignable to parameter of type '{ accounts?: { providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]; ... 6 more ...; rawPayloads?: { ...; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'accounts' are incompatible.
-    Type 'NormalizedAccount[] | undefined' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]'.
-      Type 'undefined' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]'.
-../adapters/src/connector-runtime.ts(932,75): error TS2379: Argument of type '{ accounts: NormalizedAccount[] | undefined; transactions: { idempotencyKey: string; externalId: string; accountId?: string; transactionType: "debit" | "credit" | "transfer" | "fee" | "refund"; ... 7 more ...; rawPayload?: unknown; }[] | undefined; ... 5 more ...; rawPayloads: { ...; }[] | undefined; }' is not assignable to parameter of type '{ accounts?: { providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]; ... 6 more ...; rawPayloads?: { ...; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+    Type 'NormalizedAccount[]' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]'.
+      Type 'NormalizedAccount' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+        Types of property 'accountType' are incompatible.
+          Type 'string | undefined' is not assignable to type 'string'.
+            Type 'undefined' is not assignable to type 'string'.
+../adapters/src/connector-runtime.ts(931,75): error TS2379: Argument of type '{ rawPayloads?: { type: string; payload: unknown; }[]; taxEstimates?: { idempotencyKey: string; externalId: string; transactionId?: string | undefined; transactionType?: string | undefined; ... 8 more ...; rawPayload?: unknown | undefined; }[]; ... 5 more ...; accounts?: NormalizedAccount[]; }' is not assignable to parameter of type '{ accounts?: { providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]; ... 6 more ...; rawPayloads?: { ...; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'accounts' are incompatible.
-    Type 'NormalizedAccount[] | undefined' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]'.
-      Type 'undefined' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]'.
-../adapters/src/connector-runtime.ts(947,45): error TS2379: Argument of type '{ status: "completed"; finishedAt: Date; accountsSynced: number; transactionsSynced: number; balancesSynced: number; payoutsSynced: number; invoicesSynced: number; subscriptionsSynced: number; errorsCount: number; warningsCount: number; cursor: string | undefined; }' is not assignable to parameter of type '{ status?: "completed" | "running" | "pending" | "failed" | "cancelled"; finishedAt?: Date; accountsSynced?: number; transactionsSynced?: number; balancesSynced?: number; payoutsSynced?: number; ... 6 more ...; cursor?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'cursor' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/connector-runtime.ts(984,60): error TS2379: Argument of type '{ transactions: number | undefined; accounts: number | undefined; errors: number; }' is not assignable to parameter of type '{ transactions?: number; accounts?: number; errors?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+    Type 'NormalizedAccount[]' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }[]'.
+      Type 'NormalizedAccount' is not assignable to type '{ providerAccountId: string; accountName: string; accountType?: string; currency: string; institutionName?: string; institutionId?: string; metadata?: Record<string, unknown>; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+        Types of property 'accountType' are incompatible.
+          Type 'string | undefined' is not assignable to type 'string'.
+            Type 'undefined' is not assignable to type 'string'.
+../adapters/src/connector-runtime.ts(983,60): error TS2379: Argument of type '{ transactions: number | undefined; accounts: number | undefined; errors: number; }' is not assignable to parameter of type '{ transactions?: number; accounts?: number; errors?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'transactions' are incompatible.
     Type 'number | undefined' is not assignable to type 'number'.
       Type 'undefined' is not assignable to type 'number'.
-../adapters/src/drivers/amazon-seller.ts(173,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { payouts: number; }; payouts: never[]; rawPayloads: never[]; warnings: string[]; }' is not assignable to type 'SyncResult & { payouts?: NormalizedPayout[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { payouts: number; }; payouts: never[]; rawPayloads: never[]; warnings: string[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/amazon-seller.ts(187,5): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { payouts: number; }; payouts: NormalizedPayout[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult & { payouts?: NormalizedPayout[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { payouts: number; }; payouts: NormalizedPayout[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/avalara.ts(40,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/avalara.ts(145,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { taxEstimates: number; }; taxEstimates: NormalizedTaxEstimate[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult & { taxEstimates?: NormalizedTaxEstimate[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { taxEstimates: number; }; taxEstimates: NormalizedTaxEstimate[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/chargebee.ts(133,28): error TS2379: Argument of type '{ externalId: any; customerId: any; planId: any; planName: any; status: any; billingCycle: any; amountCents: number; currency: any; currentPeriodStart: Date | undefined; currentPeriodEnd: Date | undefined; cancelAtPeriodEnd: any; cancelledAt: Date | undefined; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedSubscription' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'currentPeriodStart' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-../adapters/src/drivers/chargebee.ts(187,25): error TS2379: Argument of type '{ externalId: any; invoiceNumber: any; customerId: any; amountCents: number; currency: any; status: any; issueDate: Date | undefined; paidAt: Date | undefined; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedInvoice' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'issueDate' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-../adapters/src/drivers/chargebee.ts(205,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { subscriptions: number; invoices: number; }; subscriptions: NormalizedSubscription[]; invoices: NormalizedInvoice[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult & { subscriptions?: NormalizedSubscription[]; invoices?: NormalizedInvoice[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { subscriptions: number; invoices: number; }; subscriptions: NormalizedSubscription[]; invoices: NormalizedInvoice[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/ebay.ts(43,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/ebay.ts(265,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { payouts: number; transactions: number; }; payouts: NormalizedPayout[]; transactions: NormalizedTransaction[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult & { payouts?: NormalizedPayout[]; transactions?: NormalizedTransaction[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { payouts: number; transactions: number; }; payouts: NormalizedPayout[]; transactions: NormalizedTransaction[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/etsy.ts(242,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { transactions: number; payouts: number; }; payouts: NormalizedPayout[]; transactions: NormalizedTransaction[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult & { payouts?: NormalizedPayout[]; transactions?: NormalizedTransaction[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { transactions: number; payouts: number; }; payouts: NormalizedPayout[]; transactions: NormalizedTransaction[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/freshbooks.ts(214,23): error TS2379: Argument of type '{ externalId: any; invoiceNumber: any; customerId: any; customerName: any; amountCents: number; currency: any; status: any; issueDate: Date | undefined; dueDate: Date | undefined; paidAt: Date | undefined; lineItems: any; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedInvoice' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'issueDate' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-../adapters/src/drivers/freshbooks.ts(239,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { invoices: number; }; invoices: NormalizedInvoice[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult & { invoices?: NormalizedInvoice[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { invoices: number; }; invoices: NormalizedInvoice[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/netsuite.ts(133,25): error TS2379: Argument of type '{ externalId: any; invoiceNumber: any; customerId: any; customerName: any; amountCents: number; currency: any; status: any; issueDate: Date | undefined; dueDate: Date | undefined; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedInvoice' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'issueDate' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-../adapters/src/drivers/netsuite.ts(152,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { invoices: number; transactions: number; }; invoices: NormalizedInvoice[]; transactions: NormalizedTransaction[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult & { invoices?: NormalizedInvoice[]; transactions?: NormalizedTransaction[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { invoices: number; transactions: number; }; invoices: NormalizedInvoice[]; transactions: NormalizedTransaction[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/plaid.ts(45,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/plaid.ts(272,23): error TS2379: Argument of type '{ balanceCents: number; accountId: any; availableBalanceCents: number | undefined; currency: any; snapshotAt: Date; providerMetadata: { account_id: any; }; }' is not assignable to parameter of type 'NormalizedBalance' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'availableBalanceCents' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-../adapters/src/drivers/plaid.ts(316,27): error TS2379: Argument of type '{ externalId: any; accountId: any; transactionType: "debit" | "credit"; amountCents: number; currency: any; occurredAt: Date; description: any; referenceId: any; referenceType: string | undefined; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedTransaction' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'referenceType' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/recurly.ts(127,28): error TS2379: Argument of type '{ externalId: any; customerId: any; planId: any; planName: any; status: any; billingCycle: any; amountCents: number; currency: any; currentPeriodStart: Date | undefined; currentPeriodEnd: Date | undefined; cancelAtPeriodEnd: any; cancelledAt: Date | undefined; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedSubscription' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'currentPeriodStart' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-../adapters/src/drivers/recurly.ts(179,25): error TS2379: Argument of type '{ externalId: any; invoiceNumber: any; customerId: any; amountCents: number; currency: any; status: any; issueDate: Date | undefined; paidAt: Date | undefined; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedInvoice' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'issueDate' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-../adapters/src/drivers/recurly.ts(197,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { subscriptions: number; invoices: number; }; subscriptions: NormalizedSubscription[]; invoices: NormalizedInvoice[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult & { subscriptions?: NormalizedSubscription[]; invoices?: NormalizedInvoice[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { subscriptions: number; invoices: number; }; subscriptions: NormalizedSubscription[]; invoices: NormalizedInvoice[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/sap.ts(119,25): error TS2379: Argument of type '{ externalId: any; invoiceNumber: any; customerId: any; customerName: any; amountCents: number; currency: any; status: any; issueDate: Date | undefined; dueDate: Date | undefined; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedInvoice' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'issueDate' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-../adapters/src/drivers/sap.ts(166,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { invoices: number; transactions: number; }; invoices: NormalizedInvoice[]; transactions: NormalizedTransaction[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult & { invoices?: NormalizedInvoice[]; transactions?: NormalizedTransaction[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { invoices: number; transactions: number; }; invoices: NormalizedInvoice[]; transactions: NormalizedTransaction[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/stripe-connect.ts(273,24): error TS2379: Argument of type '{ externalId: any; amountCents: any; currency: any; status: any; initiatedAt: Date; completedAt: Date | undefined; feeCents: any; netAmountCents: number; destinationType: any; destinationId: any; description: any; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedPayout' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'completedAt' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-../adapters/src/drivers/stripe-connect.ts(294,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { accounts: number; payouts: number; balances: number; }; accounts: NormalizedAccount[]; payouts: NormalizedPayout[]; balances: NormalizedBalance[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult & { accounts?: NormalizedAccount[]; payouts?: NormalizedPayout[]; balances?: NormalizedBalance[]; rawPayloads?: { ...; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { accounts: number; payouts: number; balances: number; }; accounts: NormalizedAccount[]; payouts: NormalizedPayout[]; balances: NormalizedBalance[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/taxjar.ts(40,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/taxjar.ts(141,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { taxEstimates: number; }; taxEstimates: NormalizedTaxEstimate[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult & { taxEstimates?: NormalizedTaxEstimate[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { taxEstimates: number; }; taxEstimates: NormalizedTaxEstimate[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/truelayer.ts(44,5): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/truelayer.ts(280,27): error TS2379: Argument of type '{ accountId: any; balanceCents: number; availableBalanceCents: number | undefined; currency: any; snapshotAt: Date; providerMetadata: { account_id: any; }; }' is not assignable to parameter of type 'NormalizedBalance' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'availableBalanceCents' are incompatible.
-    Type 'number | undefined' is not assignable to type 'number'.
-      Type 'undefined' is not assignable to type 'number'.
-../adapters/src/drivers/truelayer.ts(350,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { accounts: number; transactions: number; balances: number; }; accounts: NormalizedAccount[]; transactions: NormalizedTransaction[]; balances: NormalizedBalance[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult & { accounts?: NormalizedAccount[]; transactions?: NormalizedTransaction[]; balances?: NormalizedBalance[]; rawPayloads?: { ...; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { accounts: number; transactions: number; balances: number; }; accounts: NormalizedAccount[]; transactions: NormalizedTransaction[]; balances: NormalizedBalance[]; rawPayloads: { ...; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/drivers/wave.ts(110,23): error TS2379: Argument of type '{ externalId: any; invoiceNumber: any; customerId: any; customerName: any; amountCents: number; currency: any; status: any; issueDate: Date | undefined; dueDate: Date | undefined; paidAt: Date | undefined; lineItems: any; providerMetadata: { ...; }; idempotencyKey: string; }' is not assignable to parameter of type 'NormalizedInvoice' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'issueDate' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
-../adapters/src/drivers/wave.ts(135,7): error TS2375: Type '{ nextCursor: undefined; hasMore: false; counts: { invoices: number; }; invoices: NormalizedInvoice[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult & { invoices?: NormalizedInvoice[]; rawPayloads?: { type: string; payload: unknown; }[]; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type '{ nextCursor: undefined; hasMore: false; counts: { invoices: number; }; invoices: NormalizedInvoice[]; rawPayloads: { type: string; payload: unknown; }[]; }' is not assignable to type 'SyncResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Types of property 'nextCursor' are incompatible.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/enhanced-paypal.ts(221,5): error TS2375: Type '{ valid: boolean; errors: string[] | undefined; }' is not assignable to type 'ValidationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'errors' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-../adapters/src/enhanced-quickbooks.ts(218,5): error TS2375: Type '{ valid: boolean; errors: string[] | undefined; }' is not assignable to type 'ValidationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'errors' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-../adapters/src/index.ts(28,3): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
-../adapters/src/index.ts(29,3): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
-../adapters/src/metrics/prometheus.ts(43,5): error TS2532: Object is possibly 'undefined'.
-../adapters/src/netsuite.ts(49,11): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-../adapters/src/netsuite.ts(50,11): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-../adapters/src/netsuite.ts(136,5): error TS2375: Type '{ valid: boolean; errors: string[] | undefined; }' is not assignable to type 'ValidationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'errors' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-../adapters/src/performance/batch-processor.ts(94,7): error TS2722: Cannot invoke an object which is possibly 'undefined'.
-../adapters/src/stripe.ts(28,42): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(params?: ChargeListParams | undefined, options?: RequestOptions | undefined): ApiListPromise<Charge>', gave the following error.
-    Argument of type '{ created: { gte?: number; lte?: number; } | undefined; limit: number; }' is not assignable to parameter of type 'ChargeListParams' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Types of property 'created' are incompatible.
-        Type '{ gte?: number; lte?: number; } | undefined' is not assignable to type 'number | RangeQueryParam'.
-          Type 'undefined' is not assignable to type 'number | RangeQueryParam'.
-  Overload 2 of 2, '(options?: RequestOptions | undefined): ApiListPromise<Charge>', gave the following error.
-    Object literal may only specify known properties, and 'created' does not exist in type 'RequestOptions'.
-../adapters/src/token-refresh.ts(105,5): error TS2375: Type '{ refreshed: true; accessToken: string; refreshToken: string | undefined; expiresIn: number | undefined; }' is not assignable to type 'TokenRefreshResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'refreshToken' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/webhook-verification.ts(44,5): error TS2375: Type '{ valid: boolean; error: string | undefined; }' is not assignable to type 'WebhookVerificationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/webhook-verification.ts(64,5): error TS2375: Type '{ valid: boolean; error: string | undefined; }' is not assignable to type 'WebhookVerificationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/webhook-verification.ts(84,5): error TS2375: Type '{ valid: boolean; error: string | undefined; }' is not assignable to type 'WebhookVerificationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/webhook-verification.ts(104,5): error TS2375: Type '{ valid: boolean; error: string | undefined; }' is not assignable to type 'WebhookVerificationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'error' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../adapters/src/woocommerce.ts(177,5): error TS2375: Type '{ valid: boolean; errors: string[] | undefined; }' is not assignable to type 'ValidationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'errors' are incompatible.
-    Type 'string[] | undefined' is not assignable to type 'string[]'.
-      Type 'undefined' is not assignable to type 'string[]'.
-../api/src/config/validation.ts(74,20): error TS2379: Argument of type '{ default: string | undefined; devDefault: string; }' is not assignable to parameter of type '{ choices?: string[]; default?: string; devDefault?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(87,18): error TS2379: Argument of type '{ default: undefined; }' is not assignable to parameter of type '{ default?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(88,23): error TS2379: Argument of type '{ default: undefined; }' is not assignable to parameter of type '{ choices?: string[]; default?: string; devDefault?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(93,19): error TS2379: Argument of type '{ default: string | undefined; devDefault: string; desc: string; }' is not assignable to parameter of type '{ choices?: string[]; default?: string; devDefault?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(100,27): error TS2379: Argument of type '{ default: undefined; devDefault: undefined; desc: string; }' is not assignable to parameter of type '{ choices?: string[]; default?: string; devDefault?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(108,23): error TS2379: Argument of type '{ default: string | undefined; devDefault: string; desc: string; }' is not assignable to parameter of type '{ choices?: string[]; default?: string; devDefault?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(141,22): error TS2379: Argument of type '{ default: undefined; }' is not assignable to parameter of type '{ default?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(142,24): error TS2379: Argument of type '{ default: undefined; }' is not assignable to parameter of type '{ default?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(145,19): error TS2379: Argument of type '{ default: undefined; }' is not assignable to parameter of type '{ default?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(146,27): error TS2379: Argument of type '{ default: undefined; }' is not assignable to parameter of type '{ choices?: string[]; default?: string; devDefault?: string; desc?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'default' are incompatible.
-    Type 'undefined' is not assignable to type 'string'.
-../api/src/config/validation.ts(173,93): error TS2339: Property 'length' does not exist on type '{}'.
-../api/src/config/validation.ts(238,19): error TS18046: 'env.ALLOWED_ORIGINS' is of type 'unknown'.
-../api/src/config/validation.ts(238,54): error TS7006: Parameter 'o' implicitly has an 'any' type.
+../api/src/config/validation.ts(172,24): error TS2339: Property 'length' does not exist on type '{}'.
+../api/src/config/validation.ts(251,19): error TS18046: 'env.ALLOWED_ORIGINS' is of type 'unknown'.
+../api/src/config/validation.ts(251,55): error TS7006: Parameter 'o' implicitly has an 'any' type.
 ../api/src/utils/logger.ts(62,3): error TS2375: Type '{ request_id: string | undefined; tenant_id: string | undefined; user_id: string | undefined; }' is not assignable to type '{ request_id?: string; tenant_id?: string; user_id?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'request_id' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
@@ -254,59 +42,9 @@
 ../api/src/utils/logger.ts(95,5): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
 ../api/src/utils/logger.ts(135,7): error TS18046: 'config.logging.samplingRate' is of type 'unknown'.
 ../api/src/utils/logger.ts(138,26): error TS18046: 'config.logging.samplingRate' is of type 'unknown'.
-src/app/[slug]/page.tsx(45,5): error TS2322: Type '{ images: string[] | undefined; }' is not assignable to type 'OpenGraph | null'.
-  Type '{ images: string[] | undefined; }' is not assignable to type 'OpenGraphVideoOther' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-    Type '{ images: string[] | undefined; }' is not assignable to type 'OpenGraphMetadata' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-      Types of property 'images' are incompatible.
-        Type 'string[] | undefined' is not assignable to type 'OGImage | OGImage[]'.
-          Type 'undefined' is not assignable to type 'OGImage | OGImage[]'.
-src/app/[slug]/page.tsx(97,10): error TS2375: Type '{ navItems: TenantNavigationItem[]; logoUrl: string | undefined; tenantName: string; }' is not assignable to type 'TenantNavigationProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'logoUrl' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/actions/admin.ts(85,39): error TS7006: Parameter 'page' implicitly has an 'any' type.
-src/app/actions/auth.ts(122,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+src/app/actions/auth.ts(124,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
-src/app/actions/experiments.ts(88,79): error TS7006: Parameter 'experiment' implicitly has an 'any' type.
-src/app/admin/audit/page.tsx(26,56): error TS2379: Argument of type '{ ruleId: string | undefined; source: string | undefined; actor: string | undefined; limit: number; }' is not assignable to parameter of type '{ ruleId?: string; source?: string; status?: string; actor?: string; tenantId?: string; limit?: number; offset?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'ruleId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/admin/exceptions/page.tsx(27,66): error TS2379: Argument of type '{ status: string | undefined; severity: string | undefined; limit: number; }' is not assignable to parameter of type '{ status?: string; severity?: string; source?: string; tenantId?: string; limit?: number; offset?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'status' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/admin/page.tsx(115,10): error TS2375: Type '{ title: string; value: string; unit: string; trend: "down" | "up" | undefined; icon: Element; isLoading: false; }' is not assignable to type '{ title: string; value: string; unit?: string; trend?: "down" | "up"; icon: ReactNode; isLoading?: boolean; href?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'trend' are incompatible.
-    Type '"down" | "up" | undefined' is not assignable to type '"down" | "up"'.
-      Type 'undefined' is not assignable to type '"down" | "up"'.
-src/app/admin/page.tsx(123,10): error TS2375: Type '{ title: string; value: string; trend: "down" | "up" | undefined; icon: Element; isLoading: false; href: string; }' is not assignable to type '{ title: string; value: string; unit?: string; trend?: "down" | "up"; icon: ReactNode; isLoading?: boolean; href?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'trend' are incompatible.
-    Type '"down" | "up" | undefined' is not assignable to type '"down" | "up"'.
-      Type 'undefined' is not assignable to type '"down" | "up"'.
-src/app/admin/page.tsx(131,10): error TS2375: Type '{ title: string; value: string; trend: "down" | "up" | undefined; icon: Element; isLoading: false; }' is not assignable to type '{ title: string; value: string; unit?: string; trend?: "down" | "up"; icon: ReactNode; isLoading?: boolean; href?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'trend' are incompatible.
-    Type '"down" | "up" | undefined' is not assignable to type '"down" | "up"'.
-      Type 'undefined' is not assignable to type '"down" | "up"'.
-src/app/admin/runs/compare/page.tsx(152,16): error TS2375: Type '{ label: string; value: string; diff: { value: number; percent: number; trend: "down" | "up" | "neutral"; } | undefined; }' is not assignable to type '{ label: string; value: string | number; diff?: { value: number; percent: number; trend: "down" | "up" | "neutral"; }; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'diff' are incompatible.
-    Type '{ value: number; percent: number; trend: "down" | "up" | "neutral"; } | undefined' is not assignable to type '{ value: number; percent: number; trend: "down" | "up" | "neutral"; }'.
-      Type 'undefined' is not assignable to type '{ value: number; percent: number; trend: "down" | "up" | "neutral"; }'.
-src/app/admin/runs/page.tsx(25,54): error TS2379: Argument of type '{ status: string | undefined; limit: number; }' is not assignable to parameter of type '{ status?: string; tenantId?: string; limit?: number; offset?: number; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'status' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/app/admin/webhooks/page.tsx(47,23): error TS7006: Parameter 'e' implicitly has an 'any' type.
-src/app/api/admin/audit/route.ts(85,30): error TS7006: Parameter 'audit' implicitly has an 'any' type.
-src/app/api/admin/exceptions/route.ts(102,34): error TS7006: Parameter 'ex' implicitly has an 'any' type.
-src/app/api/admin/runs/route.ts(82,28): error TS7006: Parameter 'run' implicitly has an 'any' type.
-src/app/api/admin/stream/route.ts(166,50): error TS7006: Parameter 'ex' implicitly has an 'any' type.
-src/app/api/connectors/callback/[providerId]/route.ts(154,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/app/api/connectors/sync/[providerId]/route.ts(105,75): error TS2379: Argument of type '{ since: Date | undefined; until: Date | undefined; accountId: any; }' is not assignable to parameter of type 'SyncOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'since' are incompatible.
-    Type 'Date | undefined' is not assignable to type 'Date'.
-      Type 'undefined' is not assignable to type 'Date'.
+src/app/api/connectors/webhook/[providerId]/route.ts(19,28): error TS2339: Property 'handleWebhook' does not exist on type 'ConnectorDriver'.
 src/app/api/console/api-logs/route.ts(35,41): error TS2379: Argument of type '{ limit: string | undefined; offset: string | undefined; }' is not assignable to parameter of type '{ limit?: string; offset?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'limit' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
@@ -783,12 +521,17 @@ src/components/console/BulkOperations.tsx(81,39): error TS2304: Cannot find name
 src/components/console/BulkOperations.tsx(97,16): error TS2304: Cannot find name 'err'.
 src/components/console/BulkOperations.tsx(97,39): error TS2304: Cannot find name 'err'.
 src/components/console/CLIPlayground.tsx(248,73): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+  Overload 1 of 3, '(input: string | URL | Request, init?: RequestInit | undefined): Promise<Response>', gave the following error.
     Argument of type '{ method: string; headers: { 'Content-Type': string; }; body: string | undefined; signal: AbortSignal; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
       Types of property 'body' are incompatible.
         Type 'string | undefined' is not assignable to type 'BodyInit | null'.
           Type 'undefined' is not assignable to type 'BodyInit | null'.
-  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+  Overload 2 of 3, '(input: string | URL | Request, init?: BunFetchRequestInit | undefined): Promise<Response>', gave the following error.
+    Argument of type '{ method: string; headers: { 'Content-Type': string; }; body: string | undefined; signal: AbortSignal; }' is not assignable to parameter of type 'BunFetchRequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+      Types of property 'body' are incompatible.
+        Type 'string | undefined' is not assignable to type 'BodyInit | null'.
+          Type 'undefined' is not assignable to type 'BodyInit | null'.
+  Overload 3 of 3, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
     Argument of type '{ method: string; headers: { 'Content-Type': string; }; body: string | undefined; signal: AbortSignal; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
       Types of property 'body' are incompatible.
         Type 'string | undefined' is not assignable to type 'BodyInit | null'.
@@ -806,12 +549,17 @@ src/components/console/CodeGenerator.tsx(73,10): error TS2375: Type '{ children:
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
 src/components/console/EnhancedPlayground.tsx(83,41): error TS2769: No overload matches this call.
-  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+  Overload 1 of 3, '(input: string | URL | Request, init?: RequestInit | undefined): Promise<Response>', gave the following error.
     Argument of type '{ method: "POST" | "GET" | "PATCH" | "DELETE" | "PUT"; headers: Record<string, string>; body: string | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
       Types of property 'body' are incompatible.
         Type 'string | undefined' is not assignable to type 'BodyInit | null'.
           Type 'undefined' is not assignable to type 'BodyInit | null'.
-  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+  Overload 2 of 3, '(input: string | URL | Request, init?: BunFetchRequestInit | undefined): Promise<Response>', gave the following error.
+    Argument of type '{ method: "POST" | "GET" | "PATCH" | "DELETE" | "PUT"; headers: Record<string, string>; body: string | undefined; }' is not assignable to parameter of type 'BunFetchRequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+      Types of property 'body' are incompatible.
+        Type 'string | undefined' is not assignable to type 'BodyInit | null'.
+          Type 'undefined' is not assignable to type 'BodyInit | null'.
+  Overload 3 of 3, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
     Argument of type '{ method: "POST" | "GET" | "PATCH" | "DELETE" | "PUT"; headers: Record<string, string>; body: string | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
       Types of property 'body' are incompatible.
         Type 'string | undefined' is not assignable to type 'BodyInit | null'.
@@ -1318,11 +1066,11 @@ src/lib/api/auth-gate.ts(144,5): error TS2375: Type '{ isAdmin: true; user: { id
   Types of property 'user' are incompatible.
     Type '{ id: string; email?: string; } | undefined' is not assignable to type '{ id: string; email?: string; }'.
       Type 'undefined' is not assignable to type '{ id: string; email?: string; }'.
-src/lib/api/client.ts(56,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { append(name: string, value: string): void; delete(name: string): void; get(name: string): string | null; ... 8 more ...; 'Content-Type': string; } | { ...; } | { ...; }; ... 11 more ...; next?: NextFetchRequestConfig | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/lib/api/client.ts(56,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { append(name: string, value: string): void; delete(name: string): void; get(name: string): string | null; ... 11 more ...; 'Content-Type': string; } | { ...; } | { ...; }; ... 11 more ...; next?: NextFetchRequestConfig | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'body' are incompatible.
     Type 'string | undefined' is not assignable to type 'BodyInit | null'.
       Type 'undefined' is not assignable to type 'BodyInit | null'.
-src/lib/api/client.ts(71,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { append(name: string, value: string): void; delete(name: string): void; get(name: string): string | null; ... 8 more ...; 'Content-Type': string; } | { ...; } | { ...; }; ... 11 more ...; next?: NextFetchRequestConfig | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+src/lib/api/client.ts(71,34): error TS2379: Argument of type '{ method: string; body: string | undefined; headers: { 'Content-Type': string; } | { append(name: string, value: string): void; delete(name: string): void; get(name: string): string | null; ... 11 more ...; 'Content-Type': string; } | { ...; } | { ...; }; ... 11 more ...; next?: NextFetchRequestConfig | undefined; }' is not assignable to parameter of type 'RequestInit' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'body' are incompatible.
     Type 'string | undefined' is not assignable to type 'BodyInit | null'.
       Type 'undefined' is not assignable to type 'BodyInit | null'.
@@ -1760,16 +1508,6 @@ src/middleware/api-logger.ts(208,11): error TS2375: Type '{ tenantId: string | u
   Types of property 'tenantId' are incompatible.
     Type 'string | undefined' is not assignable to type 'string'.
       Type 'undefined' is not assignable to type 'string'.
-src/middleware/billing-gate-universal.ts(40,22): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
-src/middleware/billing-gate-universal.ts(64,24): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
-src/middleware/billing-gate-universal.ts(80,20): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
-src/middleware/usage-tracking.ts(72,26): error TS2379: Argument of type '{ billingAccountId: string; tenantId: string; userId: string; eventType: string; integrationId: string | undefined; quantity: number; unit: string; metadata: { tracked_at: string; }; }' is not assignable to parameter of type 'UsageEvent' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'integrationId' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/middleware/usage-tracking.ts(128,50): error TS7006: Parameter 'sum' implicitly has an 'any' type.
-src/middleware/usage-tracking.ts(128,55): error TS7006: Parameter 'event' implicitly has an 'any' type.
-src/middleware/usage-tracking.ts(200,36): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
 src/shared/auth/apiKey.ts(12,1): error TS6133: 'Database' is declared but its value is never read.
 src/shared/usage/usageEvent.ts(58,26): error TS2379: Argument of type '{ billingAccountId: string; eventType: string; quantity: number; unit: string; metadata: Record<string, unknown> | undefined; }' is not assignable to parameter of type 'UsageEventInput' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'metadata' are incompatible.
