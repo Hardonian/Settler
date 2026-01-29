@@ -67,7 +67,7 @@
     "dev:clean": "node scripts/clean.mjs",
     "clean:deps": "node scripts/clean.mjs --deps",
     "clean:all": "node scripts/clean.mjs --all",
-    "verify": "pnpm verify:full",
+    "verify": "node scripts/verify.mjs --full",
     "verify:fast": "node scripts/verify.mjs --fast",
     "verify:full": "node scripts/verify.mjs --full",
     "verify:app-router": "tsx scripts/validate-app-router.ts",
