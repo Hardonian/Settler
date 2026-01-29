@@ -12,15 +12,14 @@
 
 ../api/src/utils/logger.ts(70,31): error TS2349: This expression is not callable.
   Type 'Format' has no call signatures.
-../api/src/utils/logger.ts(70,39): error TS7006: Parameter 'info' implicitly has an 'any' type.
 ../api/src/utils/logger.ts(88,3): error TS2322: Type 'unknown' is not assignable to type 'string | undefined'.
 ../api/src/utils/logger.ts(95,5): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
-src/app/actions/auth.ts(124,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+src/app/actions/auth.ts(125,34): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
 src/app/api/console/receipts/[id]/route.ts(81,62): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
-src/app/api/console/usage/export/route.ts(74,24): error TS7006: Parameter 'event' implicitly has an 'any' type.
-src/app/api/console/usage/export/route.ts(91,21): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/app/api/console/usage/export/route.ts(83,28): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/app/api/console/usage/export/route.ts(101,25): error TS7006: Parameter 'event' implicitly has an 'any' type.
 src/app/api/console/usage/route.ts(111,25): error TS18046: 'usageEvents' is of type 'unknown'.
 src/app/api/exports/route.ts(247,27): error TS7006: Parameter 'match' implicitly has an 'any' type.
 src/app/api/exports/route.ts(272,27): error TS7006: Parameter 'result' implicitly has an 'any' type.
@@ -515,7 +514,12 @@ src/lib/server/settler/reconciliation.ts(115,63): error TS7006: Parameter 't' im
 src/lib/server/settler/reconciliation.ts(282,46): error TS7006: Parameter 'm' implicitly has an 'any' type.
 src/lib/server/settler/reconciliation.ts(326,11): error TS2322: Type 'string' is not assignable to type 'Date'.
 src/lib/support/ticket-system.ts(105,23): error TS7006: Parameter 'log' implicitly has an 'any' type.
+src/lib/type-safety.ts(227,3): error TS6133: 'fallbackValue' is declared but its value is never read.
+src/lib/type-safety.ts(243,69): error TS6133: 'context' is declared but its value is never read.
+src/lib/type-safety.ts(256,3): error TS6133: 'context' is declared but its value is never read.
+src/lib/type-safety.ts(304,3): error TS6133: 'context' is declared but its value is never read.
+src/lib/type-safety.ts(346,3): error TS6133: 'context' is declared but its value is never read.
 src/lib/verify.ts(18,67): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
- ELIFECYCLE  Command failed with exit code 1.
- ELIFECYCLE  Command failed with exit code 1.
- ELIFECYCLE  Command failed with exit code 1.
+ ELIFECYCLE  Command failed with exit code 2.
+ ELIFECYCLE  Command failed with exit code 2.
+ ELIFECYCLE  Command failed with exit code 2.
