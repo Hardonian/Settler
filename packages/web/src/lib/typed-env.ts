@@ -236,17 +236,17 @@ export function parseServerEnv(
   };
 
   // partial() with refinements can throw in some runtimes. Fall back gracefully.
-  let schema: typeof serverEnvSchema;
+  let schema: any;
   if (mode === "build") {
     try {
-      schema = serverEnvSchema.partial(runtimeOptionalKeys);
-    } catch (err) {
+      schema = (serverEnvSchema as any).partial(runtimeOptionalKeys);
+    } catch {
       schema = serverEnvSchema;
     }
   } else {
     schema = serverEnvSchema;
   }
-  const result = schema.parse(pickEnv(input, SERVER_ENV_KEYS));
+  const result = (schema as any).parse(pickEnv(input, SERVER_ENV_KEYS));
   // Cast to ServerEnv - in runtime mode all required fields are validated
   return result as ServerEnv;
 }

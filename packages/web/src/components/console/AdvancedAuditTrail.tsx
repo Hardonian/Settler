@@ -98,7 +98,7 @@ export function AdvancedAuditTrail() {
       const data = await res.json();
       // In a real implementation, you'd download the file
       alert(`Export created: ${data.id}`);
-    } catch {
+    } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to export");
     } finally {
       setLoading(false);

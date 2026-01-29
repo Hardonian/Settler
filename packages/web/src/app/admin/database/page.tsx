@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
-import { AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface TableInfo {
   table_schema: string;
@@ -14,7 +14,7 @@ interface TableInfo {
 /**
  * Admin Database Browser - Full Supabase Table View
  * Route: /admin/database
- * 
+ *
  * Shows ALL tables for admin access
  */
 
@@ -22,40 +22,40 @@ export default function AdminDatabasePage() {
   const [tables, setTables] = useState<TableInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
-  
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
     loadTables();
   }, []);
-  
+
   async function loadTables() {
     try {
       setLoading(true);
       const supabase = createClient();
-      
+
       // Try RPC function first
       try {
-        const { data, error: err } = await supabase.rpc('get_tables', {
-          schema_name: 'public'
+        const { data, error: err } = await supabase.rpc("get_tables", {
+          schema_name: "public",
         } as any); // RPC types not fully generated
-        
+
         if (!err && data) {
           setTables(data);
           setLoading(false);
           return;
         }
-      } catch {
+      } catch (err) {
         // Fall through to fallback
       }
-      
+
       // Fallback: Load from mapping file or use known tables
       try {
-        const response = await fetch('/api/admin/tables');
+        const response = await fetch("/api/admin/tables");
         const result = await response.json();
         if (result.tables) {
           setTables(result.tables);
         }
-      } catch {
+      } catch (err) {
         // Use empty list
         setTables([]);
       }
@@ -65,11 +65,11 @@ export default function AdminDatabasePage() {
       setLoading(false);
     }
   }
-  
-  const filteredTables = tables.filter(t => 
+
+  const filteredTables = tables.filter((t) =>
     t.table_name.toLowerCase().includes(search.toLowerCase())
   );
-  
+
   if (loading) {
     return (
       <div className="container mx-auto p-6">
@@ -77,7 +77,7 @@ export default function AdminDatabasePage() {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="container mx-auto p-6">
@@ -89,14 +89,13 @@ export default function AdminDatabasePage() {
             </h3>
           </div>
           <p className="text-sm text-red-800 dark:text-red-300">
-            We encountered an error while loading the database tables. Please try again or contact support if the problem persists.
+            We encountered an error while loading the database tables. Please try again or contact
+            support if the problem persists.
           </p>
-          {process.env.NODE_ENV === 'development' && (
-            <p className="text-xs font-mono text-red-600 dark:text-red-400 mt-2">
-              {error}
-            </p>
+          {process.env.NODE_ENV === "development" && (
+            <p className="text-xs font-mono text-red-600 dark:text-red-400 mt-2">{error}</p>
           )}
-          <Button 
+          <Button
             onClick={() => {
               setError(null);
               loadTables();
@@ -110,7 +109,7 @@ export default function AdminDatabasePage() {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
@@ -119,7 +118,7 @@ export default function AdminDatabasePage() {
           Full Supabase database browser. All tables accessible for admin operations.
         </p>
       </div>
-      
+
       <div className="mb-4">
         <input
           type="text"
@@ -129,7 +128,7 @@ export default function AdminDatabasePage() {
           className="w-full px-4 py-2 border rounded"
         />
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredTables.map((table) => (
           <Link
@@ -142,11 +141,9 @@ export default function AdminDatabasePage() {
           </Link>
         ))}
       </div>
-      
+
       {filteredTables.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No tables found matching "{search}"
-        </div>
+        <div className="text-center py-8 text-gray-500">No tables found matching "{search}"</div>
       )}
     </div>
   );
