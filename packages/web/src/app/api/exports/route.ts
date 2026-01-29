@@ -18,6 +18,7 @@ import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
+import { isValidAuth } from "@/lib/type-safety/route-helpers";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -48,7 +49,7 @@ export const POST = withSecurity(
 
         try {
           auth = await authenticateApiKey(request);
-          if (auth) {
+          if (isValidAuth(auth)) {
             tenantId = auth.tenantId || null;
             userId = auth.userId || null;
           } else {
@@ -66,6 +67,25 @@ export const POST = withSecurity(
                 });
                 tenantId = billingAccount?.tenantId || null;
               }
+            } catch (error) {
+              return NextResponse.json(
+                {
+                  error: "Unauthorized",
+                  message: "Authentication required",
+                },
+                { status: 401 }
+              );
+            }
+          }
+        } catch (error) {
+          return NextResponse.json(
+            {
+              error: "Unauthorized",
+              message: "Authentication required",
+            },
+            { status: 401 }
+          );
+        }
             } catch (error) {
               return NextResponse.json(
                 {
@@ -244,18 +264,18 @@ async function processExport(
         take: 10000, // Limit for performance
       });
 
-      data = matches.map((match) => ({
-        id: match.id,
-        matchType: match.matchType,
-        confidence: Number(match.confidence),
-        sourceAmount: Number(match.sourceTransaction.amount),
-        sourceCurrency: match.sourceTransaction.currency,
-        sourceDate: match.sourceTransaction.date,
-        sourceDescription: match.sourceTransaction.description,
-        amountDiff: match.amountDiff ? Number(match.amountDiff) : null,
-        dateDiff: match.dateDiff,
-        reviewed: match.reviewed,
-      }));
+        data = matches.map((match: any) => ({
+          id: match.id,
+          matchType: match.matchType,
+          confidence: Number(match.confidence || 0),
+          sourceAmount: Number(match.sourceTransaction?.amount || 0),
+          sourceCurrency: match.sourceTransaction?.currency || 'USD',
+          sourceDate: match.sourceTransaction?.date || new Date(),
+          sourceDescription: match.sourceTransaction?.description || '',
+          amountDiff: match.amountDiff ? Number(match.amountDiff) : null,
+          dateDiff: match.dateDiff,
+          reviewed: match.reviewed,
+        }));
     } else if (jobId) {
       // Export job results
       const results = await prisma.reconResult.findMany({
