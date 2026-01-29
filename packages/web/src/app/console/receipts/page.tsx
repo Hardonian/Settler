@@ -1,25 +1,32 @@
 /**
  * Console Receipts Page
- * 
+ *
  * Browse and view parsed receipts.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Receipt, Eye } from 'lucide-react';
-import { format } from 'date-fns';
-import { ConsoleErrorBoundary } from '@/components/console/ErrorBoundary';
+} from "@/components/ui/dialog";
+import { Receipt, Eye } from "lucide-react";
+import { format } from "date-fns";
+import { ConsoleErrorBoundary } from "@/components/console/ErrorBoundary";
 
 interface ReceiptListItem {
   id: string;
@@ -58,31 +65,31 @@ function ReceiptsPageContent() {
   const fetchReceipts = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/console/receipts');
-      
+      const res = await fetch("/api/console/receipts");
+
       if (res.status === 401) {
         // User not authenticated - redirect to sign in
-        window.location.href = '/signup';
+        window.location.href = "/signup";
         return;
       }
-      
+
       if (res.ok) {
         const data = await res.json();
         setReceipts(data.receipts || []);
       } else {
         // Handle non-200 responses gracefully
-        const errorText = await res.text().catch(() => 'Unknown error');
-        console.error('Failed to fetch receipts:', res.status, res.statusText, errorText);
+        const errorText = await res.text().catch(() => "Unknown error");
+        console.error("Failed to fetch receipts:", res.status, res.statusText, errorText);
         if (res.status >= 500) {
-          setError('Server error. Please try again later.');
+          setError("Server error. Please try again later.");
         } else {
           setReceipts([]); // Show empty state for client errors
         }
       }
-    } catch {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Failed to fetch receipts:', errorMessage);
-      setError('Failed to load receipts. Please try again.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      console.error("Failed to fetch receipts:", errorMessage);
+      setError("Failed to load receipts. Please try again.");
       setReceipts([]); // Show empty state on error
     } finally {
       setLoading(false);
@@ -92,30 +99,30 @@ function ReceiptsPageContent() {
   const viewReceipt = async (id: string) => {
     try {
       const res = await fetch(`/api/console/receipts/${id}`);
-      
+
       if (res.status === 401) {
         // User not authenticated - redirect to sign in
-        window.location.href = '/signup';
+        window.location.href = "/signup";
         return;
       }
-      
+
       if (res.ok) {
         const data = await res.json();
         if (data.receipt) {
           setSelectedReceipt(data.receipt);
           setDetailDialogOpen(true);
         } else {
-          console.error('Receipt not found in response');
+          console.error("Receipt not found in response");
         }
       } else if (res.status === 404) {
         // Receipt not found - show error or close dialog
-        console.warn('Receipt not found:', id);
+        console.warn("Receipt not found:", id);
         setDetailDialogOpen(false);
       } else {
-        console.error('Failed to fetch receipt details:', res.status, res.statusText);
+        console.error("Failed to fetch receipt details:", res.status, res.statusText);
       }
-    } catch {
-      console.error('Failed to fetch receipt details:', error);
+    } catch (err) {
+      console.error("Failed to fetch receipt details:", err);
       setDetailDialogOpen(false);
     }
   };
@@ -133,7 +140,12 @@ function ReceiptsPageContent() {
       <Card>
         <CardContent className="py-12 text-center">
           <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-          <Button onClick={() => { setError(null); fetchReceipts(); }}>
+          <Button
+            onClick={() => {
+              setError(null);
+              fetchReceipts();
+            }}
+          >
             Try Again
           </Button>
         </CardContent>
@@ -144,9 +156,7 @@ function ReceiptsPageContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          Receipts
-        </h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Receipts</h1>
         <p className="text-slate-600 dark:text-slate-400">
           Browse and view receipts parsed by the Receipts API.
         </p>
@@ -170,7 +180,7 @@ function ReceiptsPageContent() {
           <CardHeader>
             <CardTitle>Recent Receipts</CardTitle>
             <CardDescription>
-              {receipts.length} receipt{receipts.length !== 1 ? 's' : ''} parsed
+              {receipts.length} receipt{receipts.length !== 1 ? "s" : ""} parsed
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -189,30 +199,24 @@ function ReceiptsPageContent() {
                 {receipts.map((receipt) => (
                   <TableRow key={receipt.id}>
                     <TableCell>
-                      {receipt.date
-                        ? format(new Date(receipt.date), 'PP')
-                        : 'Unknown'}
+                      {receipt.date ? format(new Date(receipt.date), "PP") : "Unknown"}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {receipt.vendor || 'Unknown vendor'}
+                      {receipt.vendor || "Unknown vendor"}
                     </TableCell>
                     <TableCell>
                       {receipt.total && receipt.currency
                         ? `${receipt.currency} ${receipt.total.toFixed(2)}`
-                        : '—'}
+                        : "—"}
                     </TableCell>
                     <TableCell>{receipt.itemCount}</TableCell>
                     <TableCell>
                       {receipt.confidenceScore
                         ? `${(receipt.confidenceScore * 100).toFixed(0)}%`
-                        : '—'}
+                        : "—"}
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => viewReceipt(receipt.id)}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => viewReceipt(receipt.id)}>
                         <Eye className="w-4 h-4 mr-1" />
                         View
                       </Button>
@@ -230,57 +234,47 @@ function ReceiptsPageContent() {
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Receipt Details</DialogTitle>
-            <DialogDescription>
-              {selectedReceipt?.vendor || 'Unknown vendor'}
-            </DialogDescription>
+            <DialogDescription>{selectedReceipt?.vendor || "Unknown vendor"}</DialogDescription>
           </DialogHeader>
           {selectedReceipt && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    Date
-                  </p>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Date</p>
                   <p>
                     {selectedReceipt.date
-                      ? format(new Date(selectedReceipt.date), 'PPp')
-                      : 'Unknown'}
+                      ? format(new Date(selectedReceipt.date), "PPp")
+                      : "Unknown"}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
                     Payment Method
                   </p>
-                  <p>{selectedReceipt.paymentMethod || '—'}</p>
+                  <p>{selectedReceipt.paymentMethod || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    Subtotal
-                  </p>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Subtotal</p>
                   <p>
                     {selectedReceipt.subtotal && selectedReceipt.currency
                       ? `${selectedReceipt.currency} ${selectedReceipt.subtotal.toFixed(2)}`
-                      : '—'}
+                      : "—"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    Tax
-                  </p>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Tax</p>
                   <p>
                     {selectedReceipt.tax && selectedReceipt.currency
                       ? `${selectedReceipt.currency} ${selectedReceipt.tax.toFixed(2)}`
-                      : '—'}
+                      : "—"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    Total
-                  </p>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Total</p>
                   <p className="text-lg font-semibold">
                     {selectedReceipt.total && selectedReceipt.currency
                       ? `${selectedReceipt.currency} ${selectedReceipt.total.toFixed(2)}`
-                      : '—'}
+                      : "—"}
                   </p>
                 </div>
                 <div>
@@ -290,7 +284,7 @@ function ReceiptsPageContent() {
                   <p>
                     {selectedReceipt.confidenceScore
                       ? `${(selectedReceipt.confidenceScore * 100).toFixed(0)}%`
-                      : '—'}
+                      : "—"}
                   </p>
                 </div>
               </div>
@@ -314,16 +308,16 @@ function ReceiptsPageContent() {
                         {selectedReceipt.items.map((item, idx) => (
                           <TableRow key={idx}>
                             <TableCell>{item.name}</TableCell>
-                            <TableCell>{item.quantity || '—'}</TableCell>
+                            <TableCell>{item.quantity || "—"}</TableCell>
                             <TableCell>
                               {item.unitPrice
-                                ? `${selectedReceipt.currency || ''} ${item.unitPrice.toFixed(2)}`
-                                : '—'}
+                                ? `${selectedReceipt.currency || ""} ${item.unitPrice.toFixed(2)}`
+                                : "—"}
                             </TableCell>
                             <TableCell>
                               {item.lineTotal
-                                ? `${selectedReceipt.currency || ''} ${item.lineTotal.toFixed(2)}`
-                                : '—'}
+                                ? `${selectedReceipt.currency || ""} ${item.lineTotal.toFixed(2)}`
+                                : "—"}
                             </TableCell>
                           </TableRow>
                         ))}

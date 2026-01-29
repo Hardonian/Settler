@@ -1,27 +1,27 @@
 /**
  * Report an Issue Component
- * 
+ *
  * In-app issue reporting with auto-capture context
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface ReportIssueProps {
   onSuccess?: () => void;
 }
 
 export function ReportIssue({ onSuccess }: ReportIssueProps) {
-  const [subject, setSubject] = useState('');
-  const [description, setDescription] = useState('');
+  const [subject, setSubject] = useState("");
+  const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,9 +42,9 @@ export function ReportIssue({ onSuccess }: ReportIssueProps) {
         referrer: document.referrer,
       };
 
-      const response = await fetch('/api/support/report-issue', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/support/report-issue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           subject,
           description,
@@ -54,17 +54,17 @@ export function ReportIssue({ onSuccess }: ReportIssueProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to submit issue');
+        throw new Error(data.error || "Failed to submit issue");
       }
 
       setSuccess(true);
-      setSubject('');
-      setDescription('');
+      setSubject("");
+      setDescription("");
       if (onSuccess) {
         setTimeout(onSuccess, 2000);
       }
-    } catch {
-      setError(err instanceof Error ? err.message : 'Failed to submit issue');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit issue");
     } finally {
       setSubmitting(false);
     }
@@ -90,7 +90,8 @@ export function ReportIssue({ onSuccess }: ReportIssueProps) {
       <CardHeader>
         <CardTitle>Report an Issue</CardTitle>
         <CardDescription>
-          Describe the issue you're experiencing. We'll automatically capture context to help diagnose.
+          Describe the issue you're experiencing. We'll automatically capture context to help
+          diagnose.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -126,7 +127,8 @@ export function ReportIssue({ onSuccess }: ReportIssueProps) {
           )}
 
           <div className="text-xs text-muted-foreground">
-            We'll automatically capture your current page, browser info, and other context to help diagnose the issue.
+            We'll automatically capture your current page, browser info, and other context to help
+            diagnose the issue.
           </div>
 
           <Button type="submit" disabled={submitting} className="w-full">
@@ -136,7 +138,7 @@ export function ReportIssue({ onSuccess }: ReportIssueProps) {
                 Submitting...
               </>
             ) : (
-              'Submit Issue'
+              "Submit Issue"
             )}
           </Button>
         </form>

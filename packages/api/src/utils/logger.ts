@@ -74,7 +74,7 @@ const contextFormat = winston.format((info) => {
     ...info,
     ...traceContext,
     ...reqContext,
-  } as winston.Logform.TransformableInfo;
+  } as any;
 })();
 
 const logFormat = winston.format.combine(

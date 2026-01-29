@@ -1,29 +1,29 @@
 /**
  * Retry Button Component
- * 
+ *
  * Provides standardized retry functionality with loading states.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from './button';
-import { RefreshCw } from 'lucide-react';
+import { useState } from "react";
+import { Button } from "./button";
+import { RefreshCw } from "lucide-react";
 
 export interface RetryButtonProps {
   onRetry: () => Promise<void> | void;
   label?: string;
-  variant?: 'default' | 'outline' | 'ghost';
-  size?: 'sm' | 'default' | 'lg';
+  variant?: "default" | "outline" | "ghost";
+  size?: "sm" | "default" | "lg";
   className?: string;
 }
 
 export function RetryButton({
   onRetry,
-  label = 'Try again',
-  variant = 'outline',
-  size = 'default',
-  className = '',
+  label = "Try again",
+  variant = "outline",
+  size = "default",
+  className = "",
 }: RetryButtonProps) {
   const [isRetrying, setIsRetrying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +34,8 @@ export function RetryButton({
 
     try {
       await onRetry();
-    } catch {
-      setError(err instanceof Error ? err.message : 'Retry failed');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Retry failed");
     } finally {
       setIsRetrying(false);
     }
@@ -62,9 +62,7 @@ export function RetryButton({
           </>
         )}
       </Button>
-      {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }

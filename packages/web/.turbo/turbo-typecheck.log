@@ -2,8 +2,6 @@
 > @settler/web@1.0.0 typecheck C:\Users\scott\Documents\GitHub\Settler\packages\web
 > tsc --noEmit
 
-../adapters/src/index.ts(5,10): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
-../adapters/src/index.ts(6,10): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
 ../api/src/utils/logger.ts(70,31): error TS2349: This expression is not callable.
   Type 'Format' has no call signatures.
 ../api/src/utils/logger.ts(70,39): error TS7006: Parameter 'info' implicitly has an 'any' type.
@@ -74,7 +72,6 @@ src/app/api/v1/recon/jobs/route.ts(302,32): error TS7006: Parameter 'job' implic
 src/app/api/workspaces/route.ts(174,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
   Type 'undefined' is not assignable to type 'string'.
 src/app/api/workspaces/route.ts(276,47): error TS7006: Parameter 'ws' implicitly has an 'any' type.
-src/app/builder/[...page]/page.tsx(55,52): error TS2304: Cannot find name 'error'.
 src/app/components/RealtimePosts.tsx(54,49): error TS2304: Cannot find name 'err'.
 src/app/components/RealtimePosts.tsx(96,54): error TS2304: Cannot find name 'err'.
 src/app/components/RealtimePosts.tsx(100,66): error TS2304: Cannot find name 'err'.
@@ -536,5 +533,9 @@ src/lib/server/settler/reconciliation.ts(115,63): error TS7006: Parameter 't' im
 src/lib/server/settler/reconciliation.ts(282,46): error TS7006: Parameter 'm' implicitly has an 'any' type.
 src/lib/server/settler/reconciliation.ts(326,11): error TS2322: Type 'string' is not assignable to type 'Date'.
 src/lib/support/ticket-system.ts(105,23): error TS7006: Parameter 'log' implicitly has an 'any' type.
+src/lib/typed-env.ts(242,7): error TS2322: Type 'ZodObject<{ NODE_ENV: ZodOptional<ZodDefault<ZodEnum<{ development: "development"; production: "production"; test: "test"; }>>>; SUPABASE_URL: ZodOptional<ZodString>; ... 10 more ...; RESEND_FROM_EMAIL: ZodOptional<...>; }, $strict>' is not assignable to type 'ZodObject<{ NODE_ENV: ZodDefault<ZodEnum<{ development: "development"; production: "production"; test: "test"; }>>; SUPABASE_URL: ZodString; SUPABASE_ANON_KEY: ZodString; ... 9 more ...; RESEND_FROM_EMAIL: ZodOptional<...>; }, $strict>'.
+  Type '{ NODE_ENV: ZodOptional<ZodDefault<ZodEnum<{ development: "development"; production: "production"; test: "test"; }>>>; SUPABASE_URL: ZodOptional<ZodString>; ... 10 more ...; RESEND_FROM_EMAIL: ZodOptional<...>; }' is not assignable to type '{ NODE_ENV: ZodDefault<ZodEnum<{ development: "development"; production: "production"; test: "test"; }>>; SUPABASE_URL: ZodString; SUPABASE_ANON_KEY: ZodString; ... 9 more ...; RESEND_FROM_EMAIL: ZodOptional<...>; }'.
+    Types of property 'NODE_ENV' are incompatible.
+      Property 'removeDefault' is missing in type 'ZodOptional<ZodDefault<ZodEnum<{ development: "development"; production: "production"; test: "test"; }>>>' but required in type 'ZodDefault<ZodEnum<{ development: "development"; production: "production"; test: "test"; }>>'.
 src/lib/verify.ts(18,67): error TS2307: Cannot find module '/wasm/settler_verify_wasm.js' or its corresponding type declarations.
  ELIFECYCLE  Command failed with exit code 2.

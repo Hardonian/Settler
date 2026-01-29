@@ -3,18 +3,25 @@
  * Enhanced audit log viewer with filtering and exports
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Download, Filter, RefreshCw } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Download, Filter, RefreshCw } from "lucide-react";
+import { format } from "date-fns";
 
 interface AuditLog {
   id: number;
@@ -35,12 +42,12 @@ export function AdvancedAuditTrail() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
-    actor: '',
-    action: '',
-    schemaName: '',
-    tableName: '',
-    startDate: '',
-    endDate: '',
+    actor: "",
+    action: "",
+    schemaName: "",
+    tableName: "",
+    startDate: "",
+    endDate: "",
   });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -54,20 +61,20 @@ export function AdvancedAuditTrail() {
       setError(null);
 
       const params = new URLSearchParams();
-      if (filters.actor) params.append('actor', filters.actor);
-      if (filters.action) params.append('action', filters.action);
-      if (filters.schemaName) params.append('schemaName', filters.schemaName);
-      if (filters.tableName) params.append('tableName', filters.tableName);
-      if (filters.startDate) params.append('startDate', filters.startDate);
-      if (filters.endDate) params.append('endDate', filters.endDate);
+      if (filters.actor) params.append("actor", filters.actor);
+      if (filters.action) params.append("action", filters.action);
+      if (filters.schemaName) params.append("schemaName", filters.schemaName);
+      if (filters.tableName) params.append("tableName", filters.tableName);
+      if (filters.startDate) params.append("startDate", filters.startDate);
+      if (filters.endDate) params.append("endDate", filters.endDate);
 
       const res = await fetch(`/api/v1/audit-trail/logs?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch logs');
+      if (!res.ok) throw new Error("Failed to fetch logs");
 
       const data = await res.json();
       setLogs(data.data || []);
-    } catch {
-      setError(err instanceof Error ? err.message : 'Failed to load logs');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load logs");
     } finally {
       setLoading(false);
     }
@@ -76,23 +83,23 @@ export function AdvancedAuditTrail() {
   const handleExport = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/v1/audit-trail/exports', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/v1/audit-trail/exports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           filters,
-          exportFormat: 'csv',
+          exportFormat: "csv",
           expiresInDays: 7,
         }),
       });
 
-      if (!res.ok) throw new Error('Failed to create export');
+      if (!res.ok) throw new Error("Failed to create export");
 
       const data = await res.json();
       // In a real implementation, you'd download the file
       alert(`Export created: ${data.id}`);
     } catch {
-      setError(err instanceof Error ? err.message : 'Failed to export');
+      setError(err instanceof Error ? err.message : "Failed to export");
     } finally {
       setLoading(false);
     }
@@ -117,7 +124,7 @@ export function AdvancedAuditTrail() {
                 Export
               </Button>
               <Button variant="outline" onClick={fetchLogs} disabled={loading}>
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               </Button>
             </div>
           </div>
@@ -212,10 +219,10 @@ export function AdvancedAuditTrail() {
                   {logs.map((log) => (
                     <TableRow key={log.id}>
                       <TableCell className="font-mono text-xs">
-                        {format(new Date(log.at), 'MMM d, yyyy HH:mm:ss')}
+                        {format(new Date(log.at), "MMM d, yyyy HH:mm:ss")}
                       </TableCell>
                       <TableCell className="font-mono text-xs">
-                        {log.actor ? log.actor.slice(0, 8) + '...' : 'System'}
+                        {log.actor ? log.actor.slice(0, 8) + "..." : "System"}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">{log.action}</Badge>
@@ -224,7 +231,7 @@ export function AdvancedAuditTrail() {
                         {log.schemaName}.{log.tableName}
                       </TableCell>
                       <TableCell className="font-mono text-xs">
-                        {log.rowPk ? log.rowPk.slice(0, 8) + '...' : '-'}
+                        {log.rowPk ? log.rowPk.slice(0, 8) + "..." : "-"}
                       </TableCell>
                       <TableCell>
                         {log.complianceTags && log.complianceTags.length > 0 ? (
@@ -236,10 +243,10 @@ export function AdvancedAuditTrail() {
                             ))}
                           </div>
                         ) : (
-                          '-'
+                          "-"
                         )}
                       </TableCell>
-                      <TableCell className="font-mono text-xs">{log.ipAddress || '-'}</TableCell>
+                      <TableCell className="font-mono text-xs">{log.ipAddress || "-"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

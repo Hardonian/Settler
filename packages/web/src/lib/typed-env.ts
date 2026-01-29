@@ -152,7 +152,21 @@ export function validateServerEnv(
     DIRECT_URL: true,
   };
 
-  const schema = mode === "build" ? serverEnvSchema.partial(runtimeOptionalKeys) : serverEnvSchema;
+  // partial() with refinements can throw in some runtimes. Fall back gracefully.
+  // Use any to accommodate dynamic partial schemas which may differ in shape
+  // between build/runtime modes due to optional keys and refinements
+  let schema: any;
+  if (mode === "build") {
+    try {
+      // Attempt to allow runtime-optional keys during build via partial
+      schema = serverEnvSchema.partial(runtimeOptionalKeys);
+    } catch {
+      // Fallback to full schema if partial() is not supported due to refinements
+      schema = serverEnvSchema;
+    }
+  } else {
+    schema = serverEnvSchema;
+  }
   const result = schema.safeParse(pickEnv(input, SERVER_ENV_KEYS));
 
   if (!result.success) {
@@ -221,7 +235,17 @@ export function parseServerEnv(
     DIRECT_URL: true,
   };
 
-  const schema = mode === "build" ? serverEnvSchema.partial(runtimeOptionalKeys) : serverEnvSchema;
+  // partial() with refinements can throw in some runtimes. Fall back gracefully.
+  let schema: typeof serverEnvSchema;
+  if (mode === "build") {
+    try {
+      schema = serverEnvSchema.partial(runtimeOptionalKeys);
+    } catch {
+      schema = serverEnvSchema;
+    }
+  } else {
+    schema = serverEnvSchema;
+  }
   const result = schema.parse(pickEnv(input, SERVER_ENV_KEYS));
   // Cast to ServerEnv - in runtime mode all required fields are validated
   return result as ServerEnv;

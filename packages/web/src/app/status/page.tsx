@@ -29,7 +29,9 @@ export default function StatusPage() {
     { name: "Feature Flags", status: "operational", uptime: 100.0 },
     { name: "API Gateway", status: "operational", uptime: 99.99 },
   ]);
-  const [overallStatus, setOverallStatus] = useState<"operational" | "degraded" | "down">("operational");
+  const [overallStatus, setOverallStatus] = useState<"operational" | "degraded" | "down">(
+    "operational"
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,16 +40,16 @@ export default function StatusPage() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch('/api/status');
+        const response = await fetch("/api/status");
         if (!response.ok) {
-          throw new Error('Failed to fetch status');
+          throw new Error("Failed to fetch status");
         }
         const data: StatusResponse = await response.json();
         setSystems(data.systems || systems);
         setOverallStatus(data.overallStatus || "operational");
-      } catch {
-        console.error('Failed to load status:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load status');
+      } catch (err) {
+        console.error("Failed to load status:", err);
+        setError(err instanceof Error ? err.message : "Failed to load status");
         // Keep default values on error
       } finally {
         setLoading(false);
@@ -97,7 +99,7 @@ export default function StatusPage() {
       {/* Breadcrumbs */}
       <section className="px-4 sm:px-6 lg:px-8 pt-24">
         <div className="max-w-7xl mx-auto">
-          <Breadcrumbs items={[{ label: 'Status' }]} />
+          <Breadcrumbs items={[{ label: "Status" }]} />
         </div>
       </section>
 

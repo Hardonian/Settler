@@ -30,8 +30,8 @@ export function WelcomeDashboard({ userName, trialEndDate, onComplete }: Welcome
       } else {
         console.error("Failed to save pre-test answers");
       }
-    } catch {
-      console.error("Error saving pre-test answers:", error);
+    } catch (err) {
+      console.error("Error saving pre-test answers:", err);
     }
   };
 
