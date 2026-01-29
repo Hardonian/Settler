@@ -37,7 +37,7 @@ export function withUniversalBillingGate<
 
     // If public access is allowed, skip billing check
     if (allowPublic) {
-      return handler(...args);
+      return handler.apply(null, args);
     }
 
     // Check for active subscription
@@ -61,7 +61,7 @@ export function withUniversalBillingGate<
             )
           );
         }
-        return handler(...args);
+        return handler.apply(null, args);
       }
       
       // Otherwise, require subscription
@@ -77,7 +77,7 @@ export function withUniversalBillingGate<
     }
 
     // All checks passed, call handler
-    return handler(...args);
+    return handler.apply(null, args);
   }) as T;
 }
 

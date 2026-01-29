@@ -1457,18 +1457,6 @@ src/lib/logger.ts(53,9): error TS2375: Type '{ level: LogLevel; message: string;
     Type 'Error | undefined' is not assignable to type 'Error'.
       Type 'undefined' is not assignable to type 'Error'.
 src/lib/logging/logger.ts(55,7): error TS2412: Type '{ name: string; message: string; stack: string | undefined; } | undefined' is not assignable to type 'Error | undefined' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
-src/lib/metrics/service.ts(107,15): error TS7006: Parameter 'ba' implicitly has an 'any' type.
-src/lib/metrics/service.ts(111,16): error TS7006: Parameter 'sum' implicitly has an 'any' type.
-src/lib/metrics/service.ts(111,21): error TS7006: Parameter 'ba' implicitly has an 'any' type.
-src/lib/metrics/service.ts(137,15): error TS7006: Parameter 'uc' implicitly has an 'any' type.
-src/lib/metrics/service.ts(138,16): error TS7006: Parameter 'sum' implicitly has an 'any' type.
-src/lib/metrics/service.ts(138,21): error TS7006: Parameter 'uc' implicitly has an 'any' type.
-src/lib/metrics/service.ts(141,15): error TS7006: Parameter 'uc' implicitly has an 'any' type.
-src/lib/metrics/service.ts(142,16): error TS7006: Parameter 'sum' implicitly has an 'any' type.
-src/lib/metrics/service.ts(142,21): error TS7006: Parameter 'uc' implicitly has an 'any' type.
-src/lib/metrics/service.ts(145,15): error TS7006: Parameter 'uc' implicitly has an 'any' type.
-src/lib/metrics/service.ts(146,16): error TS7006: Parameter 'sum' implicitly has an 'any' type.
-src/lib/metrics/service.ts(146,21): error TS7006: Parameter 'uc' implicitly has an 'any' type.
 src/lib/middleware/api-security.ts(48,5): error TS2379: Argument of type '{ maxRequests: number | undefined; windowMs: number | undefined; }' is not assignable to parameter of type 'RateLimitOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'maxRequests' are incompatible.
     Type 'number | undefined' is not assignable to type 'number'.

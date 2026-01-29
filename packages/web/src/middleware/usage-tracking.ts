@@ -74,7 +74,7 @@ export async function trackReconciliationTransaction(
     tenantId,
     userId,
     eventType: 'reconciliation_transaction',
-    integrationId,
+    ...(integrationId !== undefined && { integrationId }),
     quantity: transactionCount,
     unit: 'transaction',
     metadata: {
@@ -125,8 +125,8 @@ export async function getCurrentUsage(
     };
   }
 
-  const totalTransactions = (data ?? []).reduce((sum, event) => {
-    return sum + Number(event.quantity || 0);
+  const totalTransactions = (data ?? []).reduce((sum: number, event: typeof data[0]) => {
+    return sum + Number(event?.quantity || 0);
   }, 0) || 0;
 
   // Calculate cost: $0.01 per transaction
@@ -197,7 +197,7 @@ export function withUsageTracking<
     const startTime = Date.now();
 
     // Call handler
-    const response = await handler(...args);
+    const response = await handler.apply(null, args);
 
     // Track usage after successful request
     if (response.status < 400) {
