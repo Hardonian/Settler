@@ -138,7 +138,7 @@ export const env = cleanEnv(process.env, {
   JAEGER_ENDPOINT: url({ default: undefined } as const),
 
   // Sentry Configuration
-  SENTRY_DSN: url({ default: undefined } as const),
+  SENTRY_DSN: url({ default: undefined }),
   SENTRY_ENVIRONMENT: str({ default: undefined } as const),
   SENTRY_TRACES_SAMPLE_RATE: num({ default: 0.1 }),
 
